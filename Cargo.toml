@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "echo-sdk-protocol",
+    "echo-sdk-host",
+]
+default-members = [
+    "echo-sdk-protocol",
+    "echo-sdk-host",
+]
+resolver = "3"
