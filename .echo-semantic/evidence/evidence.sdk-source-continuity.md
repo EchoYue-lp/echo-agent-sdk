@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-source-continuity
 kind: evidence
-observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
+observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
 source_refs: [MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md, docs/adr/0028-source-first-multilanguage-sdk-runtime.md, docs/adr/0031-sdk-identity-governance-scope.md, docs/adr/0032-sdk-contract-scope-classification.md, contracts/sdk/source-contract.json, echo-sdk-protocol/src/facade.rs, echo-sdk-host/tests/extension_bridge_e2e.rs, sdks/shared/contract-digests.json]
 supports: [behavior.sdk-repository-ownership, rule.framework-runtime-authority, asset.sdk-source-product]
 limitations: ["本证据覆盖 source continuity 与文档 ownership，不证明 protocol 已纯化、accepted contract 已分离或完整独立 SDK 门禁已通过。"]

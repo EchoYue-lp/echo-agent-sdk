@@ -4,7 +4,7 @@ id: discovery.sdk-bootstrap
 kind: discovery
 source_snapshot:
   base_revision: ea21dfc58fa576296a0b1d0d3267c9632d84f0ae
-  content_digest: 4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
+  content_digest: d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
 scope: independent SDK repository, framework pin and accepted contract boundary
 inspected_paths: [Cargo.toml, echo-sdk-protocol, echo-sdk-host, contracts/sdk, sdks, docs/sdk, scripts, MIGRATION-SOURCE.md, docs/adr]
 candidate_refs: [map.sdk-product-boundary, asset.sdk-source-product]

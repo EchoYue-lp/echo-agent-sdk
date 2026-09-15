@@ -6,7 +6,7 @@ title: 独立 echo-agent SDK 产品
 asset_type: protocol
 status: active
 risk: high
-observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
+observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
 boundary_refs: [boundary.sdk-product]
 code_refs: [echo-sdk-protocol/src/lib.rs, echo-sdk-host/src/lib.rs, contracts/sdk/accepted-external-contract.json, contracts/sdk/source-contract.json, contracts/sdk/inventory-telemetry.json, sdks/typescript/src/index.ts, sdks/python/src/echo_agent_sdk/__init__.py, sdks/java/pom.xml, docs/sdk/README.md, scripts/check-sdk-contracts.sh, scripts/check-sdk-inventory-telemetry.sh, scripts/check-language-sdks.sh, scripts/export-language-sdk-catalog.sh]
 consumer_refs: [README.md, README.zh.md, .github/workflows/rust-ci.yml]

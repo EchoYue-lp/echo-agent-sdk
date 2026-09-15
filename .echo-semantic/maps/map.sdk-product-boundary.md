@@ -4,7 +4,7 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
+observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
 boundary_refs: [boundary.sdk-product]
 behavior_refs: [behavior.sdk-repository-ownership]
 rule_refs: [rule.framework-runtime-authority]

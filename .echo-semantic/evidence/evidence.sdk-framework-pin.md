@@ -2,11 +2,12 @@
 schema_version: 1
 id: evidence.sdk-framework-pin
 kind: evidence
-observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
+observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
 source_refs:
   - .github/workflows/rust-ci.yml
   - AGENTS.md
   - Cargo.lock
+  - deny.toml
   - MIGRATION-SOURCE.md
   - README.md
   - README.zh.md
@@ -56,6 +57,8 @@ command_results:
   - { command: "./scripts/check-sdk-contracts.sh", exit_code: 0 }
   - { command: "./scripts/check-sdk-inventory-telemetry.sh", exit_code: 0 }
   - { command: "./scripts/check-language-sdks.sh", exit_code: 0 }
+  - { command: "cargo audit --deny warnings", exit_code: 0 }
+  - { command: "cargo deny check all", exit_code: 0 }
 ---
 
 # SDK clean framework pin evidence
@@ -88,3 +91,5 @@ E2E、三语言测试与真实 Host quickstart，以及 SDK 文档和 CI 配置�
 Accepted artifact、extension schema、fixture、protocol DAG 或 framework provenance 漂移会让
 blocking gate 失败；只影响非 external Rust identity 的变化仅出现在独立 telemetry 报告中。
 本证据不证明尚未运行的 Windows/Linux CI 环境结果，也不代表已经发布二进制或 registry 包。
+依赖审计使用修复后的 `rustls` 版本与显式允许的 framework Git 源；cargo-deny 的重复版本
+提示属于现有依赖图告警，不改变审计退出结果。

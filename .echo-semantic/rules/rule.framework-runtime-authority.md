@@ -7,7 +7,7 @@ expectation: human_confirmed
 risk: high
 primary_focus: state_authority
 focus: [time_lifecycle, failure_concurrency, contract_evidence]
-observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
+observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
 behavior_refs: [behavior.sdk-repository-ownership]
 code_refs: [AGENTS.md, echo-sdk-host/src/lib.rs, echo-sdk-protocol/src/lib.rs, docs/adr/0001-sdk-repository-boundary.md]
 evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin]
