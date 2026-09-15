@@ -17,13 +17,15 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
-当前仓库处于 source import 阶段。源快照、已知未闭合项和后续入口记录在
-`MIGRATION-SOURCE.md`。在上游 `echo-agent` 当前语义治理完成并冻结可解析 revision 前：
+当前仓库已从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史。精确源快照、
+已知未闭合项和后续入口记录在 `MIGRATION-SOURCE.md`：
 
-- 允许原样承接 SDK-owned 源码、合同、三语言实现、文档、脚本和 CI；
-- 不以当前 contract drift、scope count 或独立构建失败为由在两边追逐修改；
-- 不宣称 SDK 已独立构建通过、合同闭合、Runnable 或 Parity complete；
-- 后续集中收敛必须以已确认的跨仓设计和计划为执行来源。
+- 冻结源码只证明迁移完整性，不自动证明独立构建、合同兼容或运行时正确；
+- 在 framework extraction commit 已推送并可精确 pin 前，不提前追逐 protocol、Host、
+  generated contract 或三语言修复；
+- 下一阶段必须集中完成 protocol 纯化、accepted external contract 分离、Host pin、
+  独立 CI 与三语言门禁，不能在 framework 与 SDK 两边并行维护同一修复；
+- 在上述门禁全部通过前，不宣称 SDK 已独立构建通过、Runnable 或 Parity complete。
 
 ## 分层与唯一权威
 

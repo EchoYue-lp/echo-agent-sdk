@@ -6,11 +6,12 @@ framework, connected through a source-built ACP Host and the
 
 ## Migration Status
 
-This repository currently contains the source-import checkpoint extracted
-from `echo-agent`. The upstream framework is still completing semantic
-governance, so independent build and compatibility closure are intentionally
-deferred. See [MIGRATION-SOURCE.md](MIGRATION-SOURCE.md) for the exact source
-revision, imported paths, known gaps, and the next convergence boundary.
+This repository contains the SDK source-continuity checkpoint extracted from
+`echo-agent`, including the SDK-owned history and the frozen framework source
+at `c5f7688`. Independent build and compatibility closure remain deferred to
+the next migration outcome. See [MIGRATION-SOURCE.md](MIGRATION-SOURCE.md) and
+[ADR 0001](docs/adr/0001-sdk-repository-boundary.md) for the source boundary,
+history, known gaps, and ownership decision.
 
 The repository must not be described as independently runnable or parity
 complete until its framework pin, protocol boundary, contract artifacts, Host

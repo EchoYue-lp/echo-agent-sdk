@@ -43,7 +43,7 @@ adapter.connect_to(Stdio::new()).await?;
 ```
 
 The compiled learning example
-[`demo72_acp_agent_adapter.rs`](../../echo-agent-learning/examples/demo72_acp_agent_adapter.rs)
+[`demo72_acp_agent_adapter.rs`](https://github.com/EchoYue-lp/echo-agent/blob/c5f7688212d45d5bdcdbf60342605e8bfb176cae/echo-agent-learning/examples/demo72_acp_agent_adapter.rs)
 uses a deterministic Agent and needs no model credentials.
 
 ## Current stable profile
