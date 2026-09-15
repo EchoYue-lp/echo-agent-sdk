@@ -3826,6 +3826,34 @@ pub fn build_facade_operation_catalog(
     })
 }
 
+/// Produce the language-facing catalog from the full Host catalog. Intrinsic
+/// Rust-only routes remain in the full artifact for Host routing and telemetry,
+/// but they are not part of the cross-language compatibility contract.
+pub fn filter_external_facade_operation_catalog(document: &serde_json::Value) -> serde_json::Value {
+    let mut filtered = document.clone();
+    let Some(object) = filtered.as_object_mut() else {
+        return filtered;
+    };
+    let route_count = {
+        let Some(routes) = object
+            .get_mut("routes")
+            .and_then(serde_json::Value::as_array_mut)
+        else {
+            return filtered;
+        };
+        routes.retain(|route| {
+            route
+                .get("surface")
+                .and_then(serde_json::Value::as_str)
+                .is_some_and(|surface| surface != "intrinsic")
+        });
+        routes.len()
+    };
+    object.insert("scope".to_string(), serde_json::json!("external_contract"));
+    object.insert("total_items".to_string(), serde_json::json!(route_count));
+    filtered
+}
+
 /// Handle kinds a facade resource may take (used by the generated catalog
 /// documentation and the Host resource ladder in plan 07 todo 2).
 pub fn facade_resource_kinds() -> &'static [HandleKind] {
@@ -4101,6 +4129,35 @@ mod tests {
             core_task.get("items").and_then(|v| v.as_u64()),
             Some(2),
             "alias and canonical item aggregate into one route"
+        );
+    }
+
+    #[test]
+    fn external_catalog_excludes_intrinsic_routes() {
+        let document = serde_json::json!({
+            "schema_version": 1,
+            "extension_protocol_version": 1,
+            "total_items": 2,
+            "families": [],
+            "routes": [
+                {"route": "invoke:accepted", "surface": "invoke"},
+                {"route": "intrinsic:rust-only", "surface": "intrinsic"}
+            ]
+        });
+        let filtered = filter_external_facade_operation_catalog(&document);
+        let routes = filtered
+            .get("routes")
+            .and_then(serde_json::Value::as_array)
+            .cloned()
+            .unwrap_or_default();
+        assert_eq!(routes.len(), 1);
+        assert_eq!(
+            filtered.get("scope").and_then(|v| v.as_str()),
+            Some("external_contract")
+        );
+        assert_eq!(
+            filtered.get("total_items").and_then(|v| v.as_u64()),
+            Some(1)
         );
     }
 }

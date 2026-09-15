@@ -2676,6 +2676,40 @@ pub enum ExtensionDescriptor {
     },
 }
 
+const HOOK_EVENT_NAMES: &[&str] = &[
+    "PreToolUse",
+    "PostToolUse",
+    "PostToolUseFailure",
+    "PermissionRequest",
+    "PermissionDenied",
+    "SessionStart",
+    "SessionEnd",
+    "Stop",
+    "Notification",
+    "UserPromptSubmit",
+    "PreCompact",
+    "PostCompact",
+    "ConfigChange",
+    "InstructionsLoaded",
+    "PostToolBatch",
+    "SubagentStart",
+    "SubagentStop",
+    "TaskCreated",
+    "TaskStarted",
+    "TaskCompleted",
+    "StopFailure",
+    "PluginLoaded",
+    "PluginDisabled",
+    "PostMemoryWrite",
+    "MemoryLayerChange",
+    "SkillCandidateDetected",
+    "SkillLifecycleTransition",
+    "SkillHealthCheck",
+    "SkillPatchApplied",
+    "SkillMergeApplied",
+    "RulePromoted",
+];
+
 impl ExtensionDescriptor {
     /// The extension kind this descriptor addresses.
     pub fn kind(&self) -> ExtensionKind {
@@ -2892,7 +2926,7 @@ impl ExtensionDescriptor {
             && (events.len() > 128
                 || events
                     .iter()
-                    .any(|event| echo_core::hooks::HookEvent::from_name(event).is_none()))
+                    .any(|event| !HOOK_EVENT_NAMES.contains(&event.as_str())))
         {
             return Err("hook descriptor contains an unknown or excessive event name");
         }

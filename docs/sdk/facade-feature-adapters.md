@@ -5,7 +5,7 @@ canonical route catalog, the feature model, the resource/stream lifecycle
 and the error boundaries of the `_echo_agent/*` facade family surfaces
 (plans 07 and 08 of the [SDK design](../supreme/specs/2026-09-04-source-first-multilanguage-sdk-runtime/design.md)).
 
-> **Status: Rust Host facade parity complete; language route baseline delivered.** Source-built
+> **Status: Rust Host facade parity complete; accepted language route contract delivered.** Source-built
 > TS/Python/Java clients consume the ACP core and generic facade
 > invoke surfaces. The Host serves every canonical source operation through a
 > concrete adapter or an evidence-backed language-local boundary, plus the task/subagent/structured-output families and
@@ -15,16 +15,19 @@ and the error boundaries of the `_echo_agent/*` facade family surfaces
 > process-local evidence, and all public stream routes have
 > a concrete lifecycle. Every executable catalog route is covered by the
 > language contract suites; process-local intrinsic items remain explicit
-> follow-up mappings. The program does not yet claim **Runnable** or **Parity
-> complete**.
+> follow-up mappings. The program claims runnable source paths only for the
+> accepted external contract; it does not claim symbol-for-symbol parity for
+> the complete Rust inventory or publish a bundled binary.
 
 ## 1. Canonical route catalog
 
-The generated `contracts/sdk/facade-operation-catalog.json` is the single
+The generated `contracts/sdk/facade-operation-catalog.json` is the full Host
 executable route authority. The Host embeds the committed artifact verbatim
 (`echo-sdk-host/src/core_profile/facade/registry.rs`) — the same bytes the
-contract drift gate verifies — so runtime admission never guesses execution
-semantics from paths.
+telemetry-aware contract generator verifies — so runtime admission never
+guesses execution semantics from paths. Language clients consume the filtered
+`contracts/sdk/accepted-facade-operation-catalog.json` projection, which is the
+blocking cross-language route contract.
 
 - Every root facade item resolves to **exactly one** canonical route by its
   canonical *source identity*; re-export aliases share one route and one

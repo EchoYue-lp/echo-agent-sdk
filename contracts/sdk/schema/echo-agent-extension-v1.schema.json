@@ -2025,7 +2025,7 @@
           "$ref": "#/definitions/EchoLimits"
         },
         "source_contract_digest": {
-          "description": "Digest of the generated source-compatibility inputs (`contracts/sdk/source-contract.json`: Cargo.lock + facade inventory + parity manifest). Negotiated separately from `contract_digest`; both must match for the SDK Client to enter Extended mode.",
+          "description": "Digest of the accepted external contract artifacts (`contracts/sdk/source-contract.json`). Full Rust inventory, Cargo.lock and framework provenance are telemetry/build inputs, not negotiation dimensions. Negotiated separately from `contract_digest`; both must match for the SDK Client to enter Extended mode.",
           "type": "string",
           "pattern": "^sha256:[0-9a-fA-F]{64}$"
         }

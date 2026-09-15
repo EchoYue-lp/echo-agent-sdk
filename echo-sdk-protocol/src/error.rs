@@ -453,49 +453,6 @@ impl AgentFailureWire {
         Self::from_fields(fields)
     }
 
-    /// Restore the framework failure without collapsing category, terminal
-    /// kind, retryability, code, status, or message into a generic error.
-    pub fn into_framework(self) -> Result<echo_core::error::AgentFailure, String> {
-        let category = match self.category.as_str() {
-            "llm" => echo_core::error::AgentFailureCategory::Llm,
-            "tool" => echo_core::error::AgentFailureCategory::Tool,
-            "parse" => echo_core::error::AgentFailureCategory::Parse,
-            "agent" => echo_core::error::AgentFailureCategory::Agent,
-            "config" => echo_core::error::AgentFailureCategory::Config,
-            "mcp" => echo_core::error::AgentFailureCategory::Mcp,
-            "memory" => echo_core::error::AgentFailureCategory::Memory,
-            "sandbox" => echo_core::error::AgentFailureCategory::Sandbox,
-            "runtime_state" => echo_core::error::AgentFailureCategory::RuntimeState,
-            "channel" => echo_core::error::AgentFailureCategory::Channel,
-            "io" => echo_core::error::AgentFailureCategory::Io,
-            "other" => echo_core::error::AgentFailureCategory::Other,
-            value => return Err(format!("unknown AgentFailure category {value}")),
-        };
-        let terminal_kind = match self.terminal_kind.as_str() {
-            "failed" => echo_core::error::AgentTerminalKind::Failed,
-            "cancelled" => echo_core::error::AgentTerminalKind::Cancelled,
-            "timed_out" => echo_core::error::AgentTerminalKind::TimedOut,
-            "permission_denied" => echo_core::error::AgentTerminalKind::PermissionDenied,
-            value => return Err(format!("unknown AgentFailure terminal_kind {value}")),
-        };
-        self.validate()
-            .map_err(|error| format!("invalid AgentFailureWire: {error}"))?;
-        if self.code.trim().is_empty() {
-            return Err("AgentFailure code must be non-empty".to_string());
-        }
-        if self.message.trim().is_empty() {
-            return Err("AgentFailure message must be non-empty".to_string());
-        }
-        Ok(echo_core::error::AgentFailure {
-            category,
-            terminal_kind,
-            retryable: self.retryable,
-            code: self.code,
-            http_status: self.http_status,
-            message: self.message,
-        })
-    }
-
     fn from_fields(fields: &[crate::scalar::WireField]) -> Result<Self, String> {
         let allowed = [
             "category",
@@ -585,29 +542,6 @@ impl AgentFailureWire {
                     value: WireValue::String(self.message),
                 },
             ],
-        }
-    }
-}
-
-impl From<&echo_core::error::AgentFailure> for AgentFailureWire {
-    fn from(failure: &echo_core::error::AgentFailure) -> Self {
-        fn serde_name(value: &impl serde::Serialize) -> String {
-            serde_json::to_value(value)
-                .ok()
-                .and_then(|value| value.as_str().map(str::to_string))
-                .unwrap_or_default()
-        }
-        Self {
-            category: serde_name(&failure.category),
-            terminal_kind: serde_name(&failure.terminal_kind),
-            retryable: failure.retryable,
-            code: failure.code.chars().take(128).collect(),
-            http_status: failure.http_status,
-            message: failure
-                .message
-                .chars()
-                .take(MAX_FAILURE_MESSAGE_CHARS)
-                .collect(),
         }
     }
 }

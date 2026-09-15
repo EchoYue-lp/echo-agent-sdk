@@ -8,10 +8,10 @@ risk: high
 primary_focus: state_authority
 focus: [data_durability, contract_evidence]
 boundary: boundary.sdk-product
-observed_at: source:dfb25170ad6ddac42bf3294b902a2815a34970ae1fb74dec4e905dd386b9e80c
+observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
 code_refs: [AGENTS.md, MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity]
+evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin]
 finding_refs: []
 ---
 
@@ -23,7 +23,8 @@ SDK Host、protocol、合同、三语言源码、SDK 文档、生成器与 CI �
 
 ## 当前行为
 
-Source-import commit 已承接完整 SDK 产品，source continuity 将补齐冻结 framework revision 的后续变化和历史。
+Source import 与 continuity 已承接完整 SDK 产品和历史；clean pin 已完成 protocol 纯化、Host
+精确 revision、accepted contract 分离和三语言独立门禁。
 
 ## 期望行为
 
@@ -31,7 +32,8 @@ Framework 只保留运行时权威与指向本仓的边界链接，不维护第�
 
 ## 触发、结果与副作用
 
-SDK 变更在本仓独立构建和验证；framework 依赖升级是显式 SDK commit。
+SDK 变更在本仓独立构建和验证；framework 依赖升级是显式 SDK commit，完整 Rust inventory
+只提供非阻断漂移遥测。
 
 ## 失败、重试与恢复
 

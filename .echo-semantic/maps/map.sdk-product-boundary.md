@@ -4,11 +4,11 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: source:dfb25170ad6ddac42bf3294b902a2815a34970ae1fb74dec4e905dd386b9e80c
+observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
 boundary_refs: [boundary.sdk-product]
 behavior_refs: [behavior.sdk-repository-ownership]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity]
+evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin]
 finding_refs: []
 audit_refs: []
 related_map_refs: []
@@ -19,20 +19,20 @@ scenarios:
     behavior_refs: [behavior.sdk-repository-ownership]
     evidence_refs: [evidence.sdk-source-continuity]
   protocol-and-host:
-    status: needs_review
-    source_refs: [echo-sdk-protocol/src/lib.rs, echo-sdk-host/src/lib.rs]
-    unknown: protocol dependency purification and exact framework pin are not completed in the source-import checkpoint
-    next_step: execute the subsequent SDK convergence outcome after framework extraction
+    status: mapped
+    source_refs: [echo-sdk-protocol/Cargo.toml, echo-sdk-host/Cargo.toml, echo-sdk-host/src/core_profile/wire.rs]
+    behavior_refs: [behavior.sdk-repository-ownership]
+    evidence_refs: [evidence.sdk-framework-pin]
   accepted-contract:
-    status: needs_review
-    source_refs: [contracts/sdk/parity-manifest.json, contracts/sdk/source-contract.json]
-    unknown: accepted external contract and full Rust inventory are not yet separated into blocking and telemetry artifacts
-    next_step: rebuild the contract gate in the independent SDK repository
+    status: mapped
+    source_refs: [contracts/sdk/accepted-external-contract.json, contracts/sdk/source-contract.json, contracts/sdk/inventory-telemetry.json]
+    behavior_refs: [behavior.sdk-repository-ownership]
+    evidence_refs: [evidence.sdk-framework-pin]
   language-clients:
-    status: needs_review
-    source_refs: [sdks/typescript/src/index.ts, sdks/python/src/echo_agent_sdk/__init__.py, sdks/java/pom.xml]
-    unknown: independent TypeScript Python and Java gates have not yet been rerun against the frozen framework revision
-    next_step: run the three language suites and quickstarts after contract regeneration
+    status: mapped
+    source_refs: [sdks/shared/contract-digests.json, sdks/typescript/src/index.ts, sdks/python/src/echo_agent_sdk/__init__.py, sdks/java/pom.xml]
+    behavior_refs: [behavior.sdk-repository-ownership]
+    evidence_refs: [evidence.sdk-framework-pin]
 ---
 
 # 独立 SDK 产品边界
@@ -47,7 +47,7 @@ scenarios:
 
 ## 行为关系
 
-SDK 只投影 framework runtime；source continuity 不改变运行行为。
+SDK 只投影 framework runtime；clean pin 将 framework 转换集中在 Host，不改变运行权威。
 
 ## 状态与数据流
 
@@ -59,7 +59,8 @@ Framework 拥有 Agent/Run/Task/Subagent 与 terminal 状态；Host 只持有协
 
 ## 生命周期与失败路径
 
-当前是 source-import checkpoint；缺失 pin、漂移或语言失败必须阻止后续 runnable 声明。
+Protocol DAG、framework pin、accepted contract、Host E2E 或语言 gate 失败会阻止交付声明；
+完整 Rust inventory 漂移只形成遥测信号。
 
 ## 权限与敏感信息
 
@@ -71,7 +72,7 @@ SDK 不新增线上权限模型，凭据不得写入合同、日志或迁移证�
 
 ## 场景处置清单
 
-历史与 ownership 已映射；protocol、contract 和三语言独立门禁保持 needs_review。
+历史、ownership、protocol/Host、accepted contract 和三语言独立门禁均已映射。
 
 ## 未展开项
 

@@ -46,18 +46,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - group: framework
-            packages: -p echo_agent
-          - group: tools
-            packages: -p echo_tools
-          - group: learning
-            packages: -p echo-agent-learning
+          - group: protocol
+            packages: -p echo-sdk-protocol
           - group: sdk-host
             packages: -p echo-sdk-host
-          - group: foundations
-            packages: >-
-              -p echo_core -p echo_execution -p echo_integration -p echo_macros
-              -p echo_orchestration -p echo_state
     env:
       CARGO_BUILD_JOBS: "1"
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -105,17 +97,13 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           cache-targets: "false"
-      - name: Compile framework libraries for Windows
+      - name: Compile SDK workspace for Windows
         run: cargo check --workspace --lib --all-features --locked
-      - name: Compile source-built SDK Host for Windows (all features)
-        run: cargo check -p echo-sdk-host --all-features --locked
-      - name: Exercise Windows atomic file replacement
-        run: cargo test -p echo_core --lib --all-features --locked utils::fs::tests
 
-  # Independent SDK contract signal: deterministic regeneration of the facade
-  # inventory, parity manifest, extension schema and fixtures must produce
-  # zero drift. Uses the exact nightly pinned in contracts/sdk/toolchain.json
-  # for rustdoc JSON; contract drift cannot pass through code review alone.
+  # Blocking SDK contract signal: deterministic regeneration of the accepted
+  # external contract, extension schema and fixtures must produce zero drift.
+  # The complete Rust inventory and Host catalog are retained in a separate
+  # non-blocking telemetry job below.
   sdk-contract:
     runs-on: ubuntu-latest
     env:
@@ -137,6 +125,29 @@ jobs:
           cache-targets: "false"
       - name: Check SDK contract artifacts
         run: ./scripts/check-sdk-contracts.sh
+
+  inventory-telemetry:
+    name: Rust inventory telemetry
+    runs-on: ubuntu-latest
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@v6
+      - name: Read pinned rustdoc toolchain
+        id: toolchain
+        run: |
+          toolchain=$(python3 -c "import json;print(json.load(open('contracts/sdk/toolchain.json'))['rustdoc']['toolchain'])")
+          echo "toolchain=$toolchain" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.toolchain.outputs.toolchain }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "false"
+      - name: Report complete Rust inventory drift
+        run: ./scripts/check-sdk-inventory-telemetry.sh
 
   language-sdk:
     name: source language SDKs

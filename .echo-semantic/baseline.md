@@ -4,7 +4,7 @@ id: baseline.repository
 kind: baseline
 source_snapshot:
   base_revision: ea21dfc58fa576296a0b1d0d3267c9632d84f0ae
-  content_digest: dfb25170ad6ddac42bf3294b902a2815a34970ae1fb74dec4e905dd386b9e80c
+  content_digest: 4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
 inventory_closure: open
 behavior_model_closure: open
 map_refs: [map.sdk-product-boundary]
@@ -36,7 +36,7 @@ coverage: []
 
 ## 源码快照
 
-当前 bootstrap 快照绑定 source-import 分支和排除本目录后的源码摘要。
+当前快照绑定 SDK clean-pin 工作树和排除本目录后的源码摘要。
 
 ## 仓库区域
 
@@ -44,8 +44,8 @@ Rust protocol/Host、合同和三语言 SDK 是生产范围；文档、CI、脚�
 
 ## 能力图与边界
 
-当前只建立 SDK 产品 ownership 边界；后续 protocol、Host lifecycle、external contract 与各语言
-投影会在独立收敛阶段展开。
+SDK 产品 ownership、protocol/Host 依赖边界、accepted external contract 与三语言投影已映射；
+更细粒度 capability/lifecycle 治理仍按 open 基线逐步展开。
 
 ## 覆盖网格
 
@@ -53,8 +53,10 @@ Rust protocol/Host、合同和三语言 SDK 是生产范围；文档、CI、脚�
 
 ## 未知与缺口
 
-Protocol 仍依赖 framework core，CI 与文档仍是 source-import 状态，动态入口见 Discovery。
+完整 capability inventory 和八视角覆盖尚未闭合，动态入口见 Discovery；这不影响本次
+protocol purity、framework pin 与 contract boundary 的已验证结论。
 
 ## 闭合结论
 
-该基线可用于迁移预检和严格源码快照校验，但不代表 SDK 已可独立运行或兼容合同已闭合。
+该基线可用于迁移预检和严格源码快照校验；独立 Host、合同与三语言门禁由
+`evidence.sdk-framework-pin` 证明，发布状态仍由后续仓库交付决定。

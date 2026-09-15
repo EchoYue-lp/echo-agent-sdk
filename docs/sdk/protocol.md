@@ -209,12 +209,16 @@ terminal or receipt (`run/wait` answers typed `host_exited`).
 
 ## Versioning and compatibility
 
-- Git revision is the source-delivery compatibility boundary.
+- Git revision is the source-delivery/provenance boundary, not a runtime
+  negotiation dimension.
 - The extension protocol version (currently `1`), the contract digest
   (sha256 over the canonical schema document), the source-contract digest
-  (sha256 over Cargo.lock + facade inventory + parity manifest, delivered as
-  the small generated `contracts/sdk/source-contract.json` that the Host
-  embeds) and the official ACP artifact versions move independently.
+  (sha256 over the accepted external contract and accepted facade catalog,
+  delivered as the small generated `contracts/sdk/source-contract.json` that
+  the Host embeds) and the official ACP artifact versions move independently.
+- The complete Rust public inventory and Host catalog remain available as
+  non-blocking telemetry/Host routing inputs. Cargo.lock, framework revision
+  and Rust-only scope changes do not by themselves reject Extended mode.
 - Additive wire fields are forward-compatible; unknown values surface as
   `WireValue::Unknown` without crashing older SDKs.
 - Removing fields, changing defaults or terminal/cancel semantics, or

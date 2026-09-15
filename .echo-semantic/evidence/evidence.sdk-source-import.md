@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-source-import
 kind: evidence
-observed_at: source:dfb25170ad6ddac42bf3294b902a2815a34970ae1fb74dec4e905dd386b9e80c
+observed_at: source:4b0bfff26c8072e1ab77b20c2c458d10e49ea91fe1896a1b3a8fe64db6d9da8f
 source_refs: [MIGRATION-SOURCE.md, Cargo.toml, echo-sdk-protocol/Cargo.toml, echo-sdk-host/Cargo.toml, docs/adr/0001-sdk-repository-boundary.md]
 supports: [behavior.sdk-repository-ownership, rule.framework-runtime-authority, asset.sdk-source-product]
 limitations: ["当前只证明 source-import 结构和 ownership；framework c5f7688 连续性、protocol 纯化与完整 SDK 门禁尚未完成。"]

@@ -151,10 +151,26 @@ mod tests {
     /// typo or a renamed root feature breaks the build instead of silently
     /// advertising a capability that does not exist.
     #[test]
-    fn framework_feature_table_matches_root_crate() {
-        let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../Cargo.toml");
-        let cargo_toml = std::fs::read_to_string(&manifest)
-            .unwrap_or_else(|error| panic!("reading root manifest: {error}"));
+    fn framework_feature_table_matches_root_crate() -> Result<(), Box<dyn std::error::Error>> {
+        let metadata = std::process::Command::new("cargo")
+            .args(["metadata", "--format-version", "1", "--locked"])
+            .output()?;
+        if !metadata.status.success() {
+            return Err("cargo metadata failed while locating echo_agent".into());
+        }
+        let document: serde_json::Value = serde_json::from_slice(&metadata.stdout)?;
+        let manifest = document
+            .get("packages")
+            .and_then(serde_json::Value::as_array)
+            .into_iter()
+            .flatten()
+            .find(|package| {
+                package.get("name").and_then(serde_json::Value::as_str) == Some("echo_agent")
+            })
+            .and_then(|package| package.get("manifest_path"))
+            .and_then(serde_json::Value::as_str)
+            .ok_or("cargo metadata did not expose echo_agent manifest_path")?;
+        let cargo_toml = std::fs::read_to_string(manifest)?;
         let mut in_features = false;
         let mut root_features = std::collections::BTreeSet::new();
         for line in cargo_toml.lines() {
@@ -180,6 +196,7 @@ mod tests {
                 "root crate has no feature {root}; FRAMEWORK_FEATURE_TABLE drifted"
             );
         }
+        Ok(())
     }
 
     #[test]

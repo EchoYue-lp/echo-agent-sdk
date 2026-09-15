@@ -5,9 +5,9 @@
 //! without touching the worktree. `--update` is the only mode that writes.
 //!
 //! Artifacts governed here:
-//! - `contracts/sdk/public-api.txt` — facade inventory snapshot per profile
-//! - `contracts/sdk/parity-manifest.json` — classification of every item
-//! - (extension schema + fixtures are added by `schema.rs` in the same flow)
+//! - complete inventory/Host catalog and `inventory-telemetry.json` — non-blocking drift evidence
+//! - accepted external contract/catalog and `source-contract.json` — blocking compatibility inputs
+//! - extension schema + fixtures — blocking wire-contract evidence
 //!
 //! The rustdoc toolchain is pinned in `contracts/sdk/toolchain.json`; if it
 //! is missing locally the tool fails with the exact install prerequisite
@@ -26,10 +26,27 @@ const TOOLCHAIN_JSON: &str = "contracts/sdk/toolchain.json";
 const PUBLIC_API_TXT: &str = "contracts/sdk/public-api.txt";
 const PARITY_MANIFEST_SCHEMA_JSON: &str = "contracts/sdk/parity-manifest.schema.json";
 const PARITY_MANIFEST_JSON: &str = "contracts/sdk/parity-manifest.json";
+const ACCEPTED_EXTERNAL_CONTRACT_JSON: &str = "contracts/sdk/accepted-external-contract.json";
+const ACCEPTED_EXTERNAL_CONTRACT_SCHEMA_JSON: &str =
+    "contracts/sdk/accepted-external-contract.schema.json";
+const ACCEPTED_FACADE_CATALOG_JSON: &str = "contracts/sdk/accepted-facade-operation-catalog.json";
+const INVENTORY_TELEMETRY_JSON: &str = "contracts/sdk/inventory-telemetry.json";
 
 fn main() -> ExitCode {
-    let update = std::env::args().any(|arg| arg == "--update");
-    let mode = if update { "update" } else { "check" };
+    let args: Vec<String> = std::env::args().collect();
+    let update = args.iter().any(|arg| arg == "--update");
+    let telemetry_check = args.iter().any(|arg| arg == "--telemetry-check");
+    if update && telemetry_check {
+        eprintln!("error: --update and --telemetry-check are mutually exclusive");
+        return ExitCode::FAILURE;
+    }
+    let mode = if update {
+        "update"
+    } else if telemetry_check {
+        "telemetry-check"
+    } else {
+        "check"
+    };
     eprintln!("echo-sdk-protocol export_schema: mode={mode}");
 
     let repo_root = match locate_repo_root() {
@@ -91,6 +108,8 @@ fn main() -> ExitCode {
     let manifest_document = inv::manifest_document(EXTENSION_PROTOCOL_VERSION, &profiles, &merged);
     let manifest = inv::render_parity_manifest(EXTENSION_PROTOCOL_VERSION, &profiles, &merged);
     let manifest_schema = inv::render_parity_manifest_schema();
+    let accepted_external_contract = inv::render_accepted_external_contract(&manifest_document);
+    let accepted_external_contract_schema = inv::render_accepted_external_contract_schema();
 
     // Canonical facade adapter catalog: one aggregate entry per route id,
     // built from the same manifest obligations that freeze the route table.
@@ -111,33 +130,31 @@ fn main() -> ExitCode {
         &route_obligations,
     );
     let facade_catalog_json = echo_sdk_protocol::schema::canonical_json(&facade_catalog);
-
-    // Source-compatibility digest over the fixed inputs: Cargo.lock plus the
-    // freshly generated inventory artifacts. The Host embeds only this
-    // small document (design §17/§18); it never embeds the inventory.
-    let cargo_lock_bytes = match std::fs::read(repo_root.join("Cargo.lock")) {
-        Ok(bytes) => bytes,
+    let accepted_facade_catalog =
+        echo_sdk_protocol::facade::filter_external_facade_operation_catalog(&facade_catalog);
+    let accepted_facade_catalog_json =
+        echo_sdk_protocol::schema::canonical_json(&accepted_facade_catalog);
+    let framework_source = match framework_dependency_source(&repo_root) {
+        Ok(source) => source,
         Err(error) => {
-            eprintln!("error: reading Cargo.lock: {error}");
+            eprintln!("error: {error}");
             return ExitCode::FAILURE;
         }
     };
+    let inventory_telemetry =
+        inv::render_inventory_telemetry(&manifest_document, &framework_source);
+
+    // Source-compatibility digest over accepted external artifacts only. The
+    // Host embeds this small document (design §17/§18); Cargo.lock, framework
+    // provenance and full Rust inventory stay diagnostic/telemetry inputs.
     let source_contract = echo_sdk_protocol::schema::build_source_contract_doc(&[
         (
             echo_sdk_protocol::schema::SOURCE_CONTRACT_INPUTS[0],
-            cargo_lock_bytes.as_slice(),
+            accepted_external_contract.as_bytes(),
         ),
         (
             echo_sdk_protocol::schema::SOURCE_CONTRACT_INPUTS[1],
-            snapshot.as_bytes(),
-        ),
-        (
-            echo_sdk_protocol::schema::SOURCE_CONTRACT_INPUTS[2],
-            manifest.as_bytes(),
-        ),
-        (
-            echo_sdk_protocol::schema::SOURCE_CONTRACT_INPUTS[3],
-            facade_catalog_json.as_bytes(),
+            accepted_facade_catalog_json.as_bytes(),
         ),
     ]);
 
@@ -148,6 +165,22 @@ fn main() -> ExitCode {
         (
             repo_root.join("contracts/sdk/facade-operation-catalog.json"),
             facade_catalog_json,
+        ),
+        (
+            repo_root.join(ACCEPTED_EXTERNAL_CONTRACT_JSON),
+            accepted_external_contract,
+        ),
+        (
+            repo_root.join(ACCEPTED_EXTERNAL_CONTRACT_SCHEMA_JSON),
+            accepted_external_contract_schema,
+        ),
+        (
+            repo_root.join(ACCEPTED_FACADE_CATALOG_JSON),
+            accepted_facade_catalog_json,
+        ),
+        (
+            repo_root.join(INVENTORY_TELEMETRY_JSON),
+            inventory_telemetry,
         ),
         (
             repo_root.join("contracts/sdk/source-contract.json"),
@@ -175,7 +208,16 @@ fn main() -> ExitCode {
     }
 
     let mut drifted: Vec<&PathBuf> = Vec::new();
+    let mut telemetry_drifted: Vec<&PathBuf> = Vec::new();
     for (path, content) in &artifacts {
+        let telemetry = matches!(
+            rel(&repo_root, path).as_str(),
+            PUBLIC_API_TXT
+                | PARITY_MANIFEST_SCHEMA_JSON
+                | PARITY_MANIFEST_JSON
+                | "contracts/sdk/facade-operation-catalog.json"
+                | INVENTORY_TELEMETRY_JSON
+        );
         match std::fs::read_to_string(path) {
             Ok(existing) if &existing == content => {
                 eprintln!(
@@ -185,17 +227,31 @@ fn main() -> ExitCode {
                 );
             }
             Ok(existing) => {
-                drifted.push(path);
+                if telemetry {
+                    telemetry_drifted.push(path);
+                } else {
+                    drifted.push(path);
+                }
                 eprintln!(
-                    "DRIFT: {} committed {} bytes, regenerated {} bytes",
+                    "{}: {} committed {} bytes, regenerated {} bytes",
+                    if telemetry {
+                        "TELEMETRY DRIFT"
+                    } else {
+                        "DRIFT"
+                    },
                     rel(&repo_root, path),
                     existing.len(),
                     content.len()
                 );
             }
             Err(err) if err.kind() == std::io::ErrorKind::NotFound => {
-                drifted.push(path);
-                eprintln!("MISSING: {}", rel(&repo_root, path));
+                if telemetry {
+                    telemetry_drifted.push(path);
+                    eprintln!("TELEMETRY MISSING: {}", rel(&repo_root, path));
+                } else {
+                    drifted.push(path);
+                    eprintln!("MISSING: {}", rel(&repo_root, path));
+                }
             }
             Err(err) => {
                 eprintln!("error: reading {}: {err}", rel(&repo_root, path));
@@ -222,9 +278,16 @@ fn main() -> ExitCode {
     }
 
     if drifted.is_empty() {
+        if telemetry_check && !telemetry_drifted.is_empty() {
+            eprintln!(
+                "telemetry drift observed: {} artifact(s); this signal is non-blocking",
+                telemetry_drifted.len()
+            );
+        }
         eprintln!(
-            "check passed: {} artifacts current ({} inventory items, rustdoc format {RUSTDOC_FORMAT_VERSION})",
-            artifacts.len(),
+            "check passed: {} blocking artifacts current ({} telemetry artifact(s) drifted; {} inventory items, rustdoc format {RUSTDOC_FORMAT_VERSION})",
+            artifacts.len().saturating_sub(telemetry_drifted.len()),
+            telemetry_drifted.len(),
             merged.len()
         );
         ExitCode::SUCCESS
@@ -299,9 +362,9 @@ fn load_rustdoc_toolchain(repo_root: &Path) -> Result<RustdocToolchain, String> 
 fn leaf_features_of_root_crate(repo_root: &Path) -> Result<Vec<String>, String> {
     let output = Command::new("cargo")
         .arg("metadata")
-        .arg("--no-deps")
         .arg("--format-version")
         .arg("1")
+        .arg("--locked")
         .current_dir(repo_root)
         .stderr(Stdio::null())
         .output()
@@ -333,13 +396,71 @@ fn leaf_features_of_root_crate(repo_root: &Path) -> Result<Vec<String>, String> 
     Err("echo_agent package not found in cargo metadata".to_string())
 }
 
+/// Read the exact framework package provenance from Cargo's resolved graph so
+/// the telemetry report cannot silently claim a different revision than the
+/// Host actually builds.
+fn framework_dependency_source(repo_root: &Path) -> Result<String, String> {
+    let output = Command::new("cargo")
+        .arg("metadata")
+        .arg("--format-version")
+        .arg("1")
+        .arg("--locked")
+        .current_dir(repo_root)
+        .output()
+        .map_err(|error| format!("running cargo metadata for framework provenance: {error}"))?;
+    if !output.status.success() {
+        return Err("cargo metadata failed while reading framework provenance".to_string());
+    }
+    let document: serde_json::Value = serde_json::from_slice(&output.stdout)
+        .map_err(|error| format!("parsing framework provenance metadata: {error}"))?;
+    document
+        .get("packages")
+        .and_then(serde_json::Value::as_array)
+        .into_iter()
+        .flatten()
+        .find(|package| {
+            package.get("name").and_then(serde_json::Value::as_str) == Some("echo_agent")
+        })
+        .and_then(|package| package.get("source"))
+        .and_then(serde_json::Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| "cargo metadata did not expose a Git source for echo_agent".to_string())
+}
+
+fn framework_manifest_path(repo_root: &Path) -> Result<PathBuf, String> {
+    let output = Command::new("cargo")
+        .arg("metadata")
+        .arg("--format-version")
+        .arg("1")
+        .arg("--locked")
+        .current_dir(repo_root)
+        .output()
+        .map_err(|error| format!("running cargo metadata for framework manifest: {error}"))?;
+    if !output.status.success() {
+        return Err("cargo metadata failed while locating framework manifest".to_string());
+    }
+    let document: serde_json::Value = serde_json::from_slice(&output.stdout)
+        .map_err(|error| format!("parsing framework manifest metadata: {error}"))?;
+    document
+        .get("packages")
+        .and_then(serde_json::Value::as_array)
+        .into_iter()
+        .flatten()
+        .find(|package| {
+            package.get("name").and_then(serde_json::Value::as_str) == Some("echo_agent")
+        })
+        .and_then(|package| package.get("manifest_path"))
+        .and_then(serde_json::Value::as_str)
+        .map(PathBuf::from)
+        .ok_or_else(|| "cargo metadata did not expose echo_agent manifest_path".to_string())
+}
+
 #[derive(Debug, Clone)]
 struct WorkspaceRustdocPackage {
     package_name: String,
     target_name: String,
     features: Vec<String>,
     manifest_path: PathBuf,
-    registry_source: bool,
 }
 
 struct RustdocRequest<'a> {
@@ -357,6 +478,10 @@ fn generate_profile(
     run_identity: &str,
     dependency_cache: &mut BTreeMap<(String, Vec<String>), String>,
 ) -> Result<Vec<PublicItem>, String> {
+    let framework_manifest = framework_manifest_path(repo_root)?;
+    let framework_root = framework_manifest
+        .parent()
+        .ok_or("framework manifest has no parent directory")?;
     let root_json = generate_rustdoc_json(
         repo_root,
         toolchain,
@@ -366,10 +491,10 @@ fn generate_profile(
             target_name: "echo_agent",
             features: &profile.features,
             profile_name: &profile.name,
-            external_manifest: None,
+            external_manifest: Some(framework_manifest.as_path()),
         },
     )?;
-    let root_json = attach_macro_behavior_digests(repo_root, "echo_agent", &root_json)?;
+    let root_json = attach_macro_behavior_digests(framework_root, "echo_agent", &root_json)?;
     let packages = resolved_workspace_dependencies(repo_root, profile)?;
     let mut dependencies = BTreeMap::new();
     for package in packages {
@@ -386,13 +511,14 @@ fn generate_profile(
                         target_name: &package.target_name,
                         features: &package.features,
                         profile_name: &profile.name,
-                        external_manifest: package
-                            .registry_source
-                            .then_some(package.manifest_path.as_path()),
+                        external_manifest: Some(package.manifest_path.as_path()),
                     },
                 )?;
+                let package_root = package.manifest_path.parent().ok_or_else(|| {
+                    format!("package {} manifest has no parent", package.package_name)
+                })?;
                 let generated =
-                    attach_macro_behavior_digests(repo_root, &package.target_name, &generated)?;
+                    attach_macro_behavior_digests(package_root, &package.target_name, &generated)?;
                 dependency_cache.insert(cache_key, generated.clone());
                 generated
             }
@@ -404,15 +530,15 @@ fn generate_profile(
 }
 
 fn attach_macro_behavior_digests(
-    repo_root: &Path,
+    package_root: &Path,
     target_name: &str,
     json: &str,
 ) -> Result<String, String> {
     let proc_macro_digest = if target_name == "echo_macros" {
         let mut files = Vec::new();
-        collect_rust_sources(&repo_root.join("echo-macros/src"), &mut files)?;
-        files.push(repo_root.join("echo-macros/Cargo.toml"));
-        Some(source_files_digest(repo_root, &files)?)
+        collect_rust_sources(&package_root.join("src"), &mut files)?;
+        files.push(package_root.join("Cargo.toml"));
+        Some(source_files_digest(package_root, &files)?)
     } else {
         None
     };
@@ -431,8 +557,15 @@ fn attach_macro_behavior_digests(
             } else if is_declarative_macro {
                 item.pointer("/span/filename")
                     .and_then(serde_json::Value::as_str)
-                    .map(|filename| repo_root.join(filename))
-                    .map(|path| source_files_digest(repo_root, &[path]))
+                    .map(|filename| {
+                        let path = Path::new(filename);
+                        if path.is_absolute() {
+                            path.to_path_buf()
+                        } else {
+                            package_root.join(path)
+                        }
+                    })
+                    .map(|path| source_files_digest(package_root, &[path]))
                     .transpose()?
             } else {
                 None
@@ -512,7 +645,7 @@ fn collect_rust_sources(directory: &Path, files: &mut Vec<PathBuf>) -> Result<()
     Ok(())
 }
 
-fn source_files_digest(repo_root: &Path, files: &[PathBuf]) -> Result<String, String> {
+fn source_files_digest(root: &Path, files: &[PathBuf]) -> Result<String, String> {
     let mut sorted = files.to_vec();
     sorted.sort();
     let mut sources = Vec::new();
@@ -520,7 +653,7 @@ fn source_files_digest(repo_root: &Path, files: &[PathBuf]) -> Result<String, St
         let content = std::fs::read_to_string(&path)
             .map_err(|error| format!("reading {}: {error}", path.display()))?;
         sources.push(serde_json::json!({
-            "path": rel(repo_root, &path),
+            "path": rel(root, &path),
             "content": content,
         }));
     }
@@ -535,6 +668,10 @@ fn generate_rustdoc_json(
     run_identity: &str,
     request: RustdocRequest<'_>,
 ) -> Result<String, String> {
+    let working_dir = request
+        .external_manifest
+        .map(workspace_root_for_manifest)
+        .unwrap_or_else(|| repo_root.to_path_buf());
     let mut command = Command::new("cargo");
     command
         .env("RUSTUP_TOOLCHAIN", &toolchain.name)
@@ -574,8 +711,7 @@ fn generate_rustdoc_json(
         .arg(format!("echo_sdk_contract_run_{run_identity}"))
         .arg("--cfg")
         .arg(format!("echo_sdk_contract_profile_{profile_cfg}"))
-        .current_dir(repo_root);
-
+        .current_dir(&working_dir);
     let output = command.output().map_err(|error| {
         format!(
             "spawning cargo rustdoc for {}: {error}",
@@ -601,10 +737,28 @@ fn generate_rustdoc_json(
     std::fs::read_to_string(&path).map_err(|error| format!("reading {}: {error}", path.display()))
 }
 
+fn workspace_root_for_manifest(manifest: &Path) -> PathBuf {
+    let mut current = manifest.parent().unwrap_or(Path::new("."));
+    loop {
+        let cargo_toml = current.join("Cargo.toml");
+        let has_workspace = std::fs::read_to_string(&cargo_toml)
+            .ok()
+            .is_some_and(|contents| contents.lines().any(|line| line.trim() == "[workspace]"));
+        if has_workspace {
+            return current.to_path_buf();
+        }
+        let Some(parent) = current.parent() else {
+            return current.to_path_buf();
+        };
+        current = parent;
+    }
+}
+
 fn resolved_workspace_dependencies(
     repo_root: &Path,
     profile: &FeatureProfile,
 ) -> Result<Vec<WorkspaceRustdocPackage>, String> {
+    let framework_manifest = framework_manifest_path(repo_root)?;
     let mut command = Command::new("cargo");
     command
         .arg("metadata")
@@ -612,6 +766,8 @@ fn resolved_workspace_dependencies(
         .arg("1")
         .arg("--locked")
         .arg("--no-default-features")
+        .arg("--manifest-path")
+        .arg(&framework_manifest)
         .current_dir(repo_root);
     if !profile.features.is_empty() {
         command.arg("--features").arg(profile.features.join(","));
@@ -624,10 +780,23 @@ fn resolved_workspace_dependencies(
     }
     let document: serde_json::Value = serde_json::from_slice(&output.stdout)
         .map_err(|error| format!("parsing cargo metadata for {}: {error}", profile.name))?;
+    let packages = document
+        .get("packages")
+        .and_then(serde_json::Value::as_array)
+        .ok_or("cargo metadata packages is missing")?;
     let root = document
         .pointer("/resolve/root")
         .and_then(serde_json::Value::as_str)
-        .ok_or("cargo metadata resolve.root is missing")?;
+        .or_else(|| {
+            packages
+                .iter()
+                .find(|package| {
+                    package.get("name").and_then(serde_json::Value::as_str) == Some("echo_agent")
+                })
+                .and_then(|package| package.get("id"))
+                .and_then(serde_json::Value::as_str)
+        })
+        .ok_or("cargo metadata has neither a workspace root nor echo_agent package")?;
     let nodes = document
         .pointer("/resolve/nodes")
         .and_then(serde_json::Value::as_array)
@@ -671,10 +840,6 @@ fn resolved_workspace_dependencies(
         }
     }
 
-    let packages = document
-        .get("packages")
-        .and_then(serde_json::Value::as_array)
-        .ok_or("cargo metadata packages is missing")?;
     let mut result = Vec::new();
     for package in packages {
         let Some(id) = package.get("id").and_then(serde_json::Value::as_str) else {
@@ -683,12 +848,12 @@ fn resolved_workspace_dependencies(
         let Some(features) = reachable.get(id) else {
             continue;
         };
-        let registry_source = package
-            .get("source")
-            .is_some_and(|source| !source.is_null());
         let Some(package_name) = package.get("name").and_then(serde_json::Value::as_str) else {
             continue;
         };
+        let registry_source = package
+            .get("source")
+            .is_some_and(|source| !source.is_null());
         if registry_source && package_name != "tokio-util" {
             continue;
         }
@@ -728,7 +893,6 @@ fn resolved_workspace_dependencies(
             target_name: target_name.to_string(),
             features: features.clone(),
             manifest_path,
-            registry_source,
         });
     }
     result.sort_by(|left, right| left.package_name.cmp(&right.package_name));
@@ -847,6 +1011,20 @@ fn validate_generated_schemas(
     if let Err(error) = validator.validate(&manifest) {
         return Err(format!(
             "generated parity manifest violates its schema: {error}"
+        ));
+    }
+
+    let accepted_schema: serde_json::Value =
+        serde_json::from_str(content(ACCEPTED_EXTERNAL_CONTRACT_SCHEMA_JSON)?)
+            .map_err(|error| format!("parsing generated accepted contract schema: {error}"))?;
+    let accepted: serde_json::Value =
+        serde_json::from_str(content(ACCEPTED_EXTERNAL_CONTRACT_JSON)?)
+            .map_err(|error| format!("parsing generated accepted contract: {error}"))?;
+    let accepted_validator = jsonschema::validator_for(&accepted_schema)
+        .map_err(|error| format!("compiling accepted contract schema: {error}"))?;
+    if let Err(error) = accepted_validator.validate(&accepted) {
+        return Err(format!(
+            "generated accepted external contract violates its schema: {error}"
         ));
     }
 

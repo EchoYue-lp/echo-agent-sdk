@@ -54,8 +54,9 @@ JSON-RPC `method not found` (-32601). A standard ACP Client is unaffected.
 - **Advertisement.** During `initialize` the Host publishes an
   `EchoAgentCapability` under `agentCapabilities._meta.echo_agent`: the
   extension protocol version, the extension `contract_digest` and
-  `source_contract_digest` (both sha256 over machine-generated contract
-  artifacts), the compiled leaf features, the declared capability families
+  `source_contract_digest` (the sha256 of the accepted external contract
+  artifacts; full Rust inventory is telemetry only), the compiled leaf features,
+  the declared capability families
   and the resource limits.
 - **Hello.** An SDK Client publishes an `EchoAgentClientHello` under
   `clientCapabilities._meta.echo_agent` with the same version/digest pair

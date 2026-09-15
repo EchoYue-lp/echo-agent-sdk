@@ -44,21 +44,16 @@ The source history is merged as a second parent rather than copied only as
 prose. This preserves both the new repository's initial commit and the filtered
 framework SDK history without rewriting either history.
 
-## Transitional State
+## Clean-Pin State
 
-The framework semantic-governance revision is frozen and the complete source
-continuity checkpoint is available here. This is still not an SDK compatibility
-release:
+The framework extraction revision is now pushed and pinned by the SDK Host:
+`1754877996778afac4e4db77ce37c330496760ea`. The protocol crate is framework
+free, the accepted external contract is separated from the complete Rust
+inventory telemetry, and generated artifacts are reproducible from an
+independent clone. The exact blocking/non-blocking boundary is recorded in
+`contracts/sdk/source-contract.json` and `contracts/sdk/inventory-telemetry.json`.
 
-- existing contract, generated-artifact, scope-count, and language parity
-  state from the frozen source is intentionally preserved;
-- the imported CI workflow still reflects its source-repository layout;
-- protocol dependency purification, accepted external contract separation,
-  deterministic regeneration, Host integration, and full language validation
-  remain deferred until the framework extraction revision is committed and
-  pinned.
-
-Do not describe this source-continuity checkpoint as independently runnable or
-parity complete. The cross-repository design and delivery map live in the
-`lp-agent` superproject under
+The source continuity history above remains the ancestry authority; this file
+does not claim a published binary or registry release. The cross-repository
+design and delivery map live in the `lp-agent` superproject under
 `docs/supreme/specs/2026-09-15-echo-agent-sdk-independent-repository/`.

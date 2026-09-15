@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-catalog="$repo_root/contracts/sdk/facade-operation-catalog.json"
+catalog="$repo_root/contracts/sdk/accepted-facade-operation-catalog.json"
 output="$repo_root/sdks/shared/facade-operation-catalog.json"
 digest_output="$repo_root/sdks/shared/contract-digests.json"
 schema="$repo_root/contracts/sdk/schema/echo-agent-extension-v1.schema.json"
@@ -27,7 +27,7 @@ if [[ "${1:-}" == "--check" ]]; then
   trap 'rm -f "$rendered"' EXIT
   render > "$rendered"
   cmp -s "$rendered" "$output" || {
-    printf 'DRIFT: %s is not generated from %s\n' "$output" "$catalog" >&2
+  printf 'DRIFT: %s is not generated from accepted contract catalog %s\n' "$output" "$catalog" >&2
     exit 1
   }
   contract_digest="sha256:$(shasum -a 256 "$schema" | awk '{print $1}')"

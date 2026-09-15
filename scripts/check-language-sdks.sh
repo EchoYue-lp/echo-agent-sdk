@@ -49,11 +49,7 @@ scope_counts=$(jq -r '
     ]
   | @tsv
 ' "$repo_root/contracts/sdk/parity-manifest.json")
-[[ "$scope_counts" == $'5620\t1773\t787\t90\t1443' ]] || {
-  echo "error: SDK scope counts drifted: $scope_counts" >&2
-  exit 1
-}
-printf 'SDK scopes (canonical): external=%s host_or_rust_only=%s language_intrinsic=%s internal_helper=%s deferred=%s\n' \
+printf 'SDK scopes (telemetry only, canonical): external=%s host_or_rust_only=%s language_intrinsic=%s internal_helper=%s deferred=%s\n' \
   ${scope_counts//$'\t'/ }
 
 cargo build -q -p echo-sdk-host --features sdk-facade-all --locked

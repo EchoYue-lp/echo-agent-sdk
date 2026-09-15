@@ -1506,6 +1506,92 @@ pub struct ParityManifest {
     pub entries: Vec<ManifestEntry>,
 }
 
+/// The committed, blocking compatibility surface for language SDKs. The full
+/// [`ParityManifest`] remains available for Rust inventory telemetry, but only
+/// entries explicitly classified as `external_contract` are copied here.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct AcceptedExternalContract {
+    pub schema_version: u32,
+    pub extension_protocol_version: u32,
+    pub entries: Vec<ManifestEntry>,
+}
+
+/// Build the blocking external contract from the complete inventory manifest.
+/// The filtering is intentionally explicit and deterministic; no language
+/// status or Rust-only inventory item can enter the compatibility surface by
+/// accident.
+pub fn accepted_external_contract_document(manifest: &ParityManifest) -> AcceptedExternalContract {
+    AcceptedExternalContract {
+        schema_version: 1,
+        extension_protocol_version: manifest.extension_protocol_version,
+        entries: manifest
+            .entries
+            .iter()
+            .filter(|entry| entry.sdk_scope == SdkScope::ExternalContract && entry.canonical)
+            .cloned()
+            .collect(),
+    }
+}
+
+pub fn render_accepted_external_contract(manifest: &ParityManifest) -> String {
+    serde_json::to_string_pretty(&accepted_external_contract_document(manifest)).unwrap_or_default()
+        + "\n"
+}
+
+pub fn render_accepted_external_contract_schema() -> String {
+    let schema = schemars::schema_for!(AcceptedExternalContract);
+    serde_json::to_string_pretty(&schema).unwrap_or_default() + "\n"
+}
+
+/// Render the non-blocking inventory telemetry summary. The complete
+/// `public-api.txt` and parity manifest remain the detailed evidence; this
+/// compact report makes their source revision, digest and scope counts easy to
+/// consume in CI artifacts without feeding them into runtime negotiation.
+pub fn inventory_telemetry_document(
+    manifest: &ParityManifest,
+    framework_source: &str,
+) -> serde_json::Value {
+    let mut scope_counts: BTreeMap<String, usize> = BTreeMap::new();
+    let mut canonical_items = 0usize;
+    for entry in &manifest.entries {
+        if entry.canonical {
+            canonical_items = canonical_items.saturating_add(1);
+            let count = scope_counts
+                .entry(entry.sdk_scope.as_str().to_string())
+                .or_insert(0);
+            *count = count.saturating_add(1);
+        }
+    }
+    serde_json::json!({
+        "schema_version": 1,
+        "kind": "rust_public_inventory_telemetry",
+        "framework_source": framework_source,
+        "extension_protocol_version": manifest.extension_protocol_version,
+        "rustdoc_format_version": manifest.generated.rustdoc_format_version,
+        "profiles": manifest.generated.profiles,
+        "inventory_digest": manifest.generated.inventory_digest,
+        "canonical_items": canonical_items,
+        "scope_counts": scope_counts,
+        "blocking_scope": "external_contract",
+        "runtime_negotiation_excludes": [
+            "cargo_lock",
+            "framework_revision",
+            "rust_public_inventory",
+            "host_or_rust_only",
+            "language_intrinsic",
+            "internal_helper",
+            "deferred"
+        ]
+    })
+}
+
+pub fn render_inventory_telemetry(manifest: &ParityManifest, framework_source: &str) -> String {
+    serde_json::to_string_pretty(&inventory_telemetry_document(manifest, framework_source))
+        .unwrap_or_default()
+        + "\n"
+}
+
 pub const LANGUAGES: &[&str] = &["typescript", "python", "java"];
 
 pub fn features_of_entry(entry: &InventoryEntry) -> BTreeSet<String> {

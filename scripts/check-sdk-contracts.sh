@@ -2,10 +2,9 @@
 
 # Read-only SDK contract drift check (design §20.2).
 #
-# Regenerates every contract artifact in memory (facade inventory, parity
-# manifest, extension schema, fixtures) and fails on any drift against the
-# committed copies, then runs the artifact-level consistency tests that do
-# not need a nightly toolchain.
+# Regenerates every contract artifact in memory. Accepted external artifacts,
+# extension schema and fixtures are blocking; the complete Rust inventory and
+# Host-only catalog are retained as non-blocking telemetry.
 #
 # Prerequisites (NOT auto-installed by this script; design §16/§20.5):
 #   rustup toolchain install <toolchain from contracts/sdk/toolchain.json>
@@ -25,6 +24,22 @@ fi
 
 cargo run -q -p echo-sdk-protocol --bin export_schema --locked -- --check
 scripts/export-language-sdk-catalog.sh --check
+
+protocol_tree=$(cargo tree -q -p echo-sdk-protocol --no-default-features --locked)
+if printf '%s\n' "$protocol_tree" | grep -Eq '(^|[[:space:]])echo_(agent|core|execution|integration|macros|orchestration|state|tools)([[:space:]]|$)'; then
+  echo "error: protocol dependency graph contains an echo framework crate" >&2
+  exit 1
+fi
+
+framework_source=$(cargo metadata --format-version 1 --locked | jq -r '
+  .packages[] | select(.name == "echo_agent") | .source // empty
+')
+expected_framework_source="git+https://github.com/EchoYue-lp/echo-agent.git?rev=1754877996778afac4e4db77ce37c330496760ea#1754877996778afac4e4db77ce37c330496760ea"
+[[ "$framework_source" == "$expected_framework_source" ]] || {
+  echo "error: echo_agent provenance is not pinned to the SDK extraction revision" >&2
+  printf 'expected: %s\nactual: %s\n' "$expected_framework_source" "$framework_source" >&2
+  exit 1
+}
 
 cargo test -q -p echo-sdk-protocol \
   --test facade_inventory \

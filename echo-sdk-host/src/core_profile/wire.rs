@@ -7,16 +7,20 @@
 //! operation/handle identity stay consistent across handlers.
 
 use echo_agent::agent::EventEnvelope;
-use echo_agent::error::ReactError;
+use echo_agent::error::{AgentFailure, ReactError};
+#[cfg(feature = "sdk-facade-adapters")]
+use echo_agent::error::{AgentFailureCategory, AgentTerminalKind};
 use echo_agent::llm::types::{FunctionCall, Message, MessageContent, ReasoningBlock, ToolCall};
 use echo_agent::runtime::{TurnDeliveryOutcome, TurnOutcome, TurnReceipt};
-use echo_sdk_protocol::error::{AgentFailureWire, EchoSdkError, ExtensionErrorCode, Retryability};
-use echo_sdk_protocol::event::{EventWireError, WireEventEnvelope};
+use echo_sdk_protocol::error::{
+    AgentFailureWire, EchoSdkError, ExtensionErrorCode, MAX_FAILURE_MESSAGE_CHARS, Retryability,
+};
+use echo_sdk_protocol::event::{EventWireError, WireEventEnvelope, WireEventPayload};
 use echo_sdk_protocol::handle::{HandleKind, WireHandle};
 use echo_sdk_protocol::methods::{
     LlmMessageWire, LlmReasoningBlockWire, RunReceiptWire, RunStatus, RunTerminal,
 };
-use echo_sdk_protocol::scalar::WireU64;
+use echo_sdk_protocol::scalar::{WireI64, WireNonZeroU64, WireTimestamp, WireU64, WireValue};
 
 /// Wire handle of a live object issued by this Host generation.
 pub(crate) fn handle(id: impl Into<String>, kind: HandleKind, generation: u64) -> WireHandle {
@@ -74,6 +78,74 @@ pub(crate) fn bounded_framework_message(message: &str) -> String {
 pub(crate) fn bounded_message(message: &str) -> String {
     const MAX_MESSAGE_CHARS: usize = 2048;
     message.chars().take(MAX_MESSAGE_CHARS).collect()
+}
+
+/// Project one framework failure into its lossless wire record. This adapter
+/// belongs to the Host so the protocol crate never depends on framework types.
+pub(crate) fn failure_wire(failure: &AgentFailure) -> AgentFailureWire {
+    fn serde_name(value: &impl serde::Serialize) -> String {
+        serde_json::to_value(value)
+            .ok()
+            .and_then(|value| value.as_str().map(str::to_string))
+            .unwrap_or_default()
+    }
+
+    AgentFailureWire {
+        category: serde_name(&failure.category),
+        terminal_kind: serde_name(&failure.terminal_kind),
+        retryable: failure.retryable,
+        code: failure.code.chars().take(128).collect(),
+        http_status: failure.http_status,
+        message: failure
+            .message
+            .chars()
+            .take(MAX_FAILURE_MESSAGE_CHARS)
+            .collect(),
+    }
+}
+
+/// Restore a framework failure from the closed wire value without flattening
+/// category, terminal kind, retryability, code, status, or message.
+#[cfg(feature = "sdk-facade-adapters")]
+pub(crate) fn failure_from_wire(wire: AgentFailureWire) -> Result<AgentFailure, String> {
+    let category = match wire.category.as_str() {
+        "llm" => AgentFailureCategory::Llm,
+        "tool" => AgentFailureCategory::Tool,
+        "parse" => AgentFailureCategory::Parse,
+        "agent" => AgentFailureCategory::Agent,
+        "config" => AgentFailureCategory::Config,
+        "mcp" => AgentFailureCategory::Mcp,
+        "memory" => AgentFailureCategory::Memory,
+        "sandbox" => AgentFailureCategory::Sandbox,
+        "runtime_state" => AgentFailureCategory::RuntimeState,
+        "channel" => AgentFailureCategory::Channel,
+        "io" => AgentFailureCategory::Io,
+        "other" => AgentFailureCategory::Other,
+        value => return Err(format!("unknown AgentFailure category {value}")),
+    };
+    let terminal_kind = match wire.terminal_kind.as_str() {
+        "failed" => AgentTerminalKind::Failed,
+        "cancelled" => AgentTerminalKind::Cancelled,
+        "timed_out" => AgentTerminalKind::TimedOut,
+        "permission_denied" => AgentTerminalKind::PermissionDenied,
+        value => return Err(format!("unknown AgentFailure terminal_kind {value}")),
+    };
+    wire.validate()
+        .map_err(|error| format!("invalid AgentFailureWire: {error}"))?;
+    if wire.code.trim().is_empty() {
+        return Err("AgentFailure code must be non-empty".to_string());
+    }
+    if wire.message.trim().is_empty() {
+        return Err("AgentFailure message must be non-empty".to_string());
+    }
+    Ok(AgentFailure {
+        category,
+        terminal_kind,
+        retryable: wire.retryable,
+        code: wire.code,
+        http_status: wire.http_status,
+        message: wire.message,
+    })
 }
 
 /// Convert the shared lossless Message wire DTO into the framework Message
@@ -149,7 +221,7 @@ pub(crate) fn terminal_of(receipt: &TurnReceipt) -> std::result::Result<RunTermi
         },
         TurnOutcome::Cancelled => RunTerminal::Cancelled,
         TurnOutcome::Failed(failure) => RunTerminal::Failed {
-            failure: AgentFailureWire::from(failure),
+            failure: failure_wire(failure),
         },
     };
     terminal.validate().map_err(|error| error.to_string())?;
@@ -169,7 +241,7 @@ pub(crate) fn receipt_wire(receipt: &TurnReceipt) -> std::result::Result<RunRece
         outcome: receipt.status().to_string(),
         delivery: Some(delivery.to_string()),
         delivery_error: match &receipt.delivery {
-            TurnDeliveryOutcome::Failed(failure) => Some(AgentFailureWire::from(failure)),
+            TurnDeliveryOutcome::Failed(failure) => Some(failure_wire(failure)),
             _ => None,
         },
         final_answer: receipt.final_answer.clone(),
@@ -206,7 +278,7 @@ pub(crate) fn status_of(receipt: Option<&TurnReceipt>) -> RunStatus {
 /// and payload are preserved verbatim; conversion failure is surfaced as a
 /// delivery error instead of shipping a lossy event.
 pub(crate) fn wire_envelope(envelope: &EventEnvelope) -> Result<WireEventEnvelope, EchoSdkError> {
-    WireEventEnvelope::try_from(envelope.clone()).map_err(|error: EventWireError| {
+    project_event_envelope(envelope).map_err(|error: EventWireError| {
         sdk_error(
             ExtensionErrorCode::SerializationViolation,
             format!("failed to project framework event: {error}"),
@@ -214,6 +286,64 @@ pub(crate) fn wire_envelope(envelope: &EventEnvelope) -> Result<WireEventEnvelop
             "_echo_agent/event",
         )
     })
+}
+
+fn project_event_envelope(envelope: &EventEnvelope) -> Result<WireEventEnvelope, EventWireError> {
+    let payload_value = serde_json::to_value(&envelope.payload)
+        .map_err(|error| EventWireError::InvalidPayload(error.to_string()))?;
+    let mut payload_object = payload_value
+        .as_object()
+        .cloned()
+        .ok_or_else(|| EventWireError::InvalidPayload("expected tagged object".to_string()))?;
+    let event_type = payload_object
+        .remove("type")
+        .and_then(|value| value.as_str().map(str::to_string))
+        .ok_or_else(|| EventWireError::InvalidPayload("missing type tag".to_string()))?;
+    let data = payload_object
+        .remove("data")
+        .map(WireValue::from_json)
+        .transpose()?;
+    if !payload_object.is_empty() {
+        return Err(EventWireError::InvalidPayload(
+            "unexpected fields outside type/data".to_string(),
+        ));
+    }
+    let wire = WireEventEnvelope {
+        schema_version: envelope.schema_version,
+        event_id: envelope.event_id.as_str().to_string(),
+        content_hash: envelope.content_hash.clone(),
+        sequence: WireNonZeroU64::try_from(envelope.sequence.to_string())?,
+        stream_id: envelope.stream_id.as_str().to_string(),
+        conversation_id: envelope
+            .conversation_id
+            .as_ref()
+            .map(|value| value.as_str().to_string()),
+        run_id: envelope
+            .run_id
+            .as_ref()
+            .map(|value| value.as_str().to_string()),
+        turn_id: envelope.turn_id.as_str().to_string(),
+        message_id: envelope
+            .message_id
+            .as_ref()
+            .map(|value| value.as_str().to_string()),
+        execution_id: envelope
+            .execution_id
+            .as_ref()
+            .map(|value| value.as_str().to_string()),
+        parent_event_id: envelope
+            .parent_event_id
+            .as_ref()
+            .map(|value| value.as_str().to_string()),
+        timestamp: WireTimestamp {
+            unix_seconds: WireI64::from_i64(envelope.timestamp.timestamp()),
+            nanos: envelope.timestamp.timestamp_subsec_nanos(),
+            rfc3339: Some(envelope.timestamp.to_rfc3339()),
+        },
+        payload: WireEventPayload { event_type, data },
+    };
+    wire.validate()?;
+    Ok(wire)
 }
 
 // ── Wire → framework conversions ───────────────────────────────────────────

@@ -85,12 +85,16 @@ explicit until their language-native behavior is delivered.
 |---|---|
 | `contracts/sdk/acp-baseline.json` | Pinned official ACP wire version (1), crate and schema artifact versions; tests assert the lockfile matches. |
 | `contracts/sdk/toolchain.json` | The exact nightly toolchain used for rustdoc-JSON inventory generation. Contributors only; normal builds never need it. |
-| `contracts/sdk/public-api.txt` | Deterministic root-facade snapshot with expanded workspace re-exports, members, fields, variants and API-shape digests. |
-| `contracts/sdk/parity-manifest.schema.json` | Machine schema for facade identities, SDK scope, signatures, feature availability, adapter obligations and language mappings. |
-| `contracts/sdk/parity-manifest.json` | Every facade item classified by consumer-facing `sdk_scope`, semantic rule, ACP relationship, feature condition, adapter operation and per-language mapping/test status. Entries use one JSON line each so diffs remain reviewable. |
+| `contracts/sdk/public-api.txt` | Complete deterministic root-facade snapshot used for Rust inventory telemetry; it is not a runtime compatibility gate. |
+| `contracts/sdk/parity-manifest.schema.json` | Machine schema for the complete inventory telemetry manifest. |
+| `contracts/sdk/parity-manifest.json` | Complete facade inventory classified by consumer-facing `sdk_scope`, semantic rule, ACP relationship, feature condition, adapter operation and per-language mapping/test status. |
+| `contracts/sdk/accepted-external-contract.json` | Generated blocking contract containing only canonical identities explicitly classified as `external_contract`; aliases remain in telemetry and inherit their canonical scope. |
+| `contracts/sdk/accepted-external-contract.schema.json` | Machine schema for the blocking external contract artifact. |
+| `contracts/sdk/accepted-facade-operation-catalog.json` | Language-facing catalog filtered to accepted non-intrinsic routes. |
+| `contracts/sdk/inventory-telemetry.json` | Compact non-blocking report with framework provenance, full inventory digest and scope counts. |
 | `contracts/sdk/schema/echo-agent-extension-v1.schema.json` | Generated JSON Schema of the `_echo_agent/*` extension DTOs and method catalog. |
 | `contracts/sdk/fixtures/extension/v1/` | Golden fixtures: valid samples must round-trip losslessly, invalid samples must be rejected deterministically. |
-| `contracts/sdk/source-contract.json` | Small generated source-compatibility digest (Cargo.lock + facade inventory + parity manifest) embedded by the Host and matched by the Client hello. |
+| `contracts/sdk/source-contract.json` | Small generated digest over the accepted external contract and accepted facade catalog, embedded by the Host and matched by the Client hello. |
 
 The generating code lives in the workspace member crate
 [`echo-sdk-protocol`](../../echo-sdk-protocol/) (`publish = false`). All
@@ -118,14 +122,14 @@ previous ones.
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
 | **Host facade parity** | Every canonical root operation/consumer trait/stream has a concrete Host route or evidence-backed language-local boundary | ✅ Plan 08 complete |
 | **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | ✅ source-built Host and language gates |
-| **External contract complete** | TypeScript, Python and Java pass every identity currently classified as `external_contract` | ✅ 5,607 canonical identities |
-| **Deferred capabilities dispositioned** | Every `deferred` capability has a product-level contract decision | ❌ 1,441 identities await capability grouping and review |
+| **External contract complete** | TypeScript, Python and Java pass every identity currently classified as `external_contract` | ✅ 5,620 canonical identities |
+| **Deferred capabilities dispositioned** | Every `deferred` capability has a product-level contract decision | ❌ 1,443 identities await capability grouping and review |
 | **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
 
 ### Identity inventory scope
 
-The current parity manifest contains 9,683 canonical identities. TypeScript,
-Python, and Java all mark 5,607 of them `done`; the
+The current parity manifest contains 9,713 canonical identities. TypeScript,
+Python, and Java all mark 5,620 of them `done`; the
 remaining 4,076 identities are all classified under the `intrinsic` route
 surface. Standard ACP, core extension, family, bridge, invoke, and value route
 surfaces have no remaining not-done canonical identities.
@@ -143,11 +147,11 @@ the adapter route and per-language status:
 
 | `sdk_scope` | Canonical items | Current meaning |
 |---|---:|---|
-| `external_contract` | 5,607 | Accepted TypeScript, Python and Java behavior with named contract tests. |
-| `host_or_rust_only` | 1,765 | Process-local or Host-owned runtime authority. |
-| `language_intrinsic` | 780 | Rust syntax, trait implementations and callback types represented idiomatically. |
+| `external_contract` | 5,620 | Accepted TypeScript, Python and Java behavior with named contract tests. |
+| `host_or_rust_only` | 1,773 | Process-local or Host-owned runtime authority. |
+| `language_intrinsic` | 787 | Rust syntax, trait implementations and callback types represented idiomatically. |
 | `internal_helper` | 90 | Rust testing support, not an SDK product surface. |
-| `deferred` | 1,441 | Potential capabilities awaiting capability-level contract review. |
+| `deferred` | 1,443 | Potential capabilities awaiting capability-level contract review. |
 
 The scope is generated, aliases inherit their canonical identity, and no row
 is manually promoted. A delivered intrinsic route remains an external contract;
@@ -304,13 +308,14 @@ without owning live-control registry state.
   [`toolchain.json`](../../contracts/sdk/toolchain.json); install it with
   `rustup toolchain install <toolchain>` if you intend to regenerate
   contracts. Nothing in a normal build installs it for you.
-- Any new public facade item or signature change appears in the inventory;
-  the parity manifest check then **blocks CI** until its semantic mapping and
-  generated artifacts are reviewed. Cross-crate glob re-exports are expanded
-  from matching workspace rustdoc documents instead of stored as `::*`
-  placeholders. Public registry re-exports use the exact locked dependency's
-  rustdoc JSON; procedural and declarative macros carry behavior-source
-  digests so helper/body changes cannot bypass drift detection.
+- Any new public facade item or signature change appears in the complete
+  inventory. Non-external changes are reported by telemetry without changing
+  the runtime digest; an accepted external change **blocks CI** until its
+  semantic mapping and generated artifacts are reviewed. Cross-crate glob
+  re-exports are expanded from matching framework rustdoc documents instead of
+  stored as `::*` placeholders. Public registry re-exports use the exact
+  locked dependency's rustdoc JSON; procedural and declarative macros carry
+  behavior-source digests so helper/body changes remain observable.
 - Extension versioning, digest and compatibility rules: see
   [protocol.md](protocol.md#versioning-and-compatibility).
 

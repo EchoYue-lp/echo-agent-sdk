@@ -5,8 +5,8 @@ use std::path::PathBuf;
 
 use echo_sdk_protocol::facade::{FACADE_FAMILIES, validate_facade_route_table};
 use echo_sdk_protocol::inventory::{
-    AcpRelationship, FeatureSemantics, ItemKind, ManifestEntry, ParityManifest, SdkScope,
-    SemanticClass,
+    AcceptedExternalContract, AcpRelationship, FeatureSemantics, ItemKind, ManifestEntry,
+    ParityManifest, SdkScope, SemanticClass,
 };
 use sha2::{Digest, Sha256};
 
@@ -155,6 +155,53 @@ fn sdk_scope_is_complete_deterministic_and_alias_safe() -> TestResult {
         find_entry(&manifest, "echo_agent::a2a::A2AClient::new")?.sdk_scope,
         SdkScope::Deferred
     );
+    Ok(())
+}
+
+#[test]
+fn accepted_external_contract_is_separate_from_inventory_telemetry() -> TestResult {
+    let full = manifest()?;
+    let accepted: AcceptedExternalContract =
+        serde_json::from_str(&read("contracts/sdk/accepted-external-contract.json")?)?;
+    assert_eq!(accepted.schema_version, 1);
+    assert_eq!(
+        accepted.extension_protocol_version,
+        full.extension_protocol_version
+    );
+    let expected = full
+        .entries
+        .iter()
+        .filter(|entry| entry.sdk_scope == SdkScope::ExternalContract && entry.canonical)
+        .count();
+    assert_eq!(accepted.entries.len(), expected);
+    assert!(accepted.entries.iter().all(|entry| {
+        entry.sdk_scope == SdkScope::ExternalContract
+            && entry.languages.values().all(|language| {
+                language.status == echo_sdk_protocol::inventory::LanguageImplementationStatus::Done
+            })
+    }));
+
+    let source_contract: serde_json::Value =
+        serde_json::from_str(&read("contracts/sdk/source-contract.json")?)?;
+    let input_paths: Vec<&str> = source_contract
+        .get("inputs")
+        .and_then(serde_json::Value::as_array)
+        .ok_or("source contract inputs are missing")?
+        .iter()
+        .filter_map(|input| input.get("path").and_then(serde_json::Value::as_str))
+        .collect();
+    assert_eq!(
+        input_paths,
+        vec![
+            "contracts/sdk/accepted-external-contract.json",
+            "contracts/sdk/accepted-facade-operation-catalog.json"
+        ]
+    );
+    assert!(!input_paths.iter().any(|path| {
+        path.contains("Cargo.lock")
+            || path.contains("public-api")
+            || path.contains("parity-manifest")
+    }));
     Ok(())
 }
 

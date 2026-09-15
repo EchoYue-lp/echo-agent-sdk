@@ -686,7 +686,7 @@ fn turn_outcome_value(outcome: echo_agent::runtime::TurnOutcome) -> WireValue {
             variant: "failed".to_string(),
             fields: vec![echo_sdk_protocol::scalar::WireField {
                 name: "failure".to_string(),
-                value: AgentFailureWire::from(&failure).into_wire_value(),
+                value: wire::failure_wire(&failure).into_wire_value(),
             }],
         },
     }
@@ -719,12 +719,12 @@ fn turn_outcome_classify(request: &FeatureOperationRequest) -> Result<WireValue,
             message,
             failure,
         } => {
-            let failure = AgentFailureWire::from_wire_value(&failure)
-                .map_err(|error| invalid(format!("AgentFailureWire payload is invalid: {error}")))?
-                .into_framework()
-                .map_err(|error| {
+            let failure = wire::failure_from_wire(
+                AgentFailureWire::from_wire_value(&failure).map_err(|error| {
                     invalid(format!("AgentFailureWire payload is invalid: {error}"))
-                })?;
+                })?,
+            )
+            .map_err(|error| invalid(format!("AgentFailureWire payload is invalid: {error}")))?;
             Some(echo_agent::agent::AgentEvent::Error {
                 source,
                 message,

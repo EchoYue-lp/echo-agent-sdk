@@ -156,10 +156,11 @@ pub struct EchoAgentCapability {
     /// schema export tool and pinned in the contract artifacts.
     #[schemars(regex(pattern = "^sha256:[0-9a-fA-F]{64}$"))]
     pub contract_digest: String,
-    /// Digest of the generated source-compatibility inputs
-    /// (`contracts/sdk/source-contract.json`: Cargo.lock + facade inventory +
-    /// parity manifest). Negotiated separately from `contract_digest`; both
-    /// must match for the SDK Client to enter Extended mode.
+    /// Digest of the accepted external contract artifacts
+    /// (`contracts/sdk/source-contract.json`). Full Rust inventory, Cargo.lock
+    /// and framework provenance are telemetry/build inputs, not negotiation
+    /// dimensions. Negotiated separately from `contract_digest`; both must
+    /// match for the SDK Client to enter Extended mode.
     #[schemars(regex(pattern = "^sha256:[0-9a-fA-F]{64}$"))]
     pub source_contract_digest: String,
     /// Leaf Cargo features compiled into the Host, sorted. Operations

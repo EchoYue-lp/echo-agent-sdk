@@ -16,7 +16,7 @@ contract store.
 
 ## Context
 
-ADR 0031 retained all 9,682 canonical Rust facade identities as deterministic
+ADR 0031 retained all canonical Rust facade identities as deterministic
 drift telemetry, but the manifest still lacked a direct answer to a different
 question: which identities make up the current cross-language SDK contract?
 
@@ -92,11 +92,11 @@ The current canonical distribution is:
 
 | Scope | Count |
 | --- | ---: |
-| `external_contract` | 5,607 |
-| `host_or_rust_only` | 1,765 |
-| `language_intrinsic` | 780 |
+| `external_contract` | 5,620 |
+| `host_or_rust_only` | 1,773 |
+| `language_intrinsic` | 787 |
 | `internal_helper` | 90 |
-| `deferred` | 1,441 |
+| `deferred` | 1,443 |
 
 The additional external identity is
 `TaskGraphCommit::expected_executions`, a typed precondition on the existing
@@ -125,16 +125,19 @@ or runtime behavior.
   not consume it.
 - Deferred work is reviewed and delivered by capability or Finding, never by
   identity count.
-- The operation catalog remains language-neutral and byte-stable because scope
-  belongs to identities, not aggregate routes.
+- The full Host operation catalog remains route-complete. A separately
+  generated accepted catalog is the language-facing compatibility input;
+  intrinsic Rust-only routes do not enter that artifact or the runtime digest.
 
 ## Verification
 
 - Generate the manifest and schema through `export_schema --update`; never edit
   the generated manifest manually.
-- Assert the five exact canonical counts, alias inheritance, and representative
-  identities in Rust and all three language catalog tests.
+- Assert the five canonical counts, alias inheritance, representative
+  identities, and the accepted-contract filter in Rust and all three language
+  catalog tests.
 - Require every `external_contract` mapping to be `done` with a named contract
   test.
-- Verify the facade operation catalog hash is unchanged.
+- Verify the accepted facade operation catalog and source-contract digests are
+  current; full inventory drift is retained as non-blocking telemetry.
 - Run SDK contract, language source, and semantic change-evidence gates.

@@ -279,13 +279,12 @@ pub fn extension_contract_digest() -> String {
 /// Algorithm identifier of the source-compatibility digest.
 pub const SOURCE_CONTRACT_ALGORITHM: &str = "sha256-length-prefixed-v1";
 
-/// Fixed input order of the source contract. The Host embeds only the small
-/// generated document — never the large inventory artifacts themselves.
+/// Fixed input order of the source contract. Only accepted external artifacts
+/// participate in runtime compatibility; Cargo.lock and full Rust inventory
+/// remain provenance/telemetry inputs.
 pub const SOURCE_CONTRACT_INPUTS: &[&str] = &[
-    "Cargo.lock",
-    "contracts/sdk/public-api.txt",
-    "contracts/sdk/parity-manifest.json",
-    "contracts/sdk/facade-operation-catalog.json",
+    "contracts/sdk/accepted-external-contract.json",
+    "contracts/sdk/accepted-facade-operation-catalog.json",
 ];
 
 /// Aggregate digest over the source-contract inputs: for every entry in the

@@ -50,9 +50,23 @@ without a sibling checkout; the ACP adapter document may replace its sibling
 example path with an immutable framework URL. Do not force-push or rewrite
 either source history.
 
-This source-continuity step does not purify the protocol dependency, change the
-accepted external contract, regenerate artifacts, or claim that the SDK is
-independently runnable. Those changes require their own reviewed delivery.
+The source-continuity import was followed by the reviewed clean-pin delivery.
+The current SDK protocol is framework-free, the Host pins framework extraction
+revision `1754877996778afac4e4db77ce37c330496760ea`, and accepted external
+contract artifacts are separated from full Rust inventory telemetry. These are
+independent follow-up changes recorded in the SDK delivery plan, not a rewrite
+of the preserved source history.
+
+## Amendment: Clean Framework Pin and Contract Boundary
+
+- Protocol dependency: `echo-sdk-protocol` has no `echo_agent`, `echo_core`, or
+  other framework crate dependency; framework type conversion lives in Host.
+- Host provenance: `echo-sdk-host` and `Cargo.lock` resolve the exact pushed
+  framework extraction revision `1754877996778afac4e4db77ce37c330496760ea`.
+- Compatibility: `contracts/sdk/source-contract.json` hashes only the accepted
+  external contract and accepted facade catalog. `public-api.txt`, the full
+  parity manifest, and `inventory-telemetry.json` remain non-blocking Rust
+  drift telemetry.
 
 ## Consequences
 

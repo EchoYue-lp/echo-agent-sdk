@@ -14,7 +14,6 @@ schemars = "0.8"
 sha2 = "0.10"
 base64 = "0.22"
 chrono = { version = "0.4", features = ["serde"] }
-echo_core = { version = "0.2.0", git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "989e3296cdf34e31c4150f99ac1615cf7aacfb7a" }
 jsonschema = { version = "0.49.9", default-features = false }
 # Official ACP artifacts, pinned exactly. The wire protocol version and the
 # crate/schema artifact versions are governed independently in

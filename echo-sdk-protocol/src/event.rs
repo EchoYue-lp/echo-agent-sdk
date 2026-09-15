@@ -1,11 +1,6 @@
 //! Lossless event, replay and gap contracts for the SDK extension profile.
 
 use agent_client_protocol::{JsonRpcNotification, JsonRpcRequest, JsonRpcResponse};
-use chrono::{DateTime, Utc};
-use echo_core::agent::{
-    AgentEvent, ConversationId, EventEnvelope, EventId, ExecutionId, MessageId, RunId, StreamId,
-    TurnId,
-};
 use serde::{Deserialize, Serialize};
 
 use crate::handle::{HandleKind, WireHandle};
@@ -99,7 +94,6 @@ pub enum EventWireError {
     InvalidTimestamp,
     InvalidPayload(String),
     Scalar(ScalarError),
-    Framework(String),
 }
 
 impl std::fmt::Display for EventWireError {
@@ -112,7 +106,6 @@ impl std::fmt::Display for EventWireError {
                 write!(formatter, "invalid AgentEvent payload: {message}")
             }
             Self::Scalar(error) => write!(formatter, "invalid wire scalar: {error}"),
-            Self::Framework(message) => write!(formatter, "invalid framework event: {message}"),
         }
     }
 }
@@ -122,126 +115,6 @@ impl std::error::Error for EventWireError {}
 impl From<ScalarError> for EventWireError {
     fn from(error: ScalarError) -> Self {
         Self::Scalar(error)
-    }
-}
-
-impl TryFrom<EventEnvelope<AgentEvent>> for WireEventEnvelope {
-    type Error = EventWireError;
-
-    fn try_from(envelope: EventEnvelope<AgentEvent>) -> Result<Self, Self::Error> {
-        let payload_value = serde_json::to_value(&envelope.payload)
-            .map_err(|error| EventWireError::InvalidPayload(error.to_string()))?;
-        let mut payload_object = payload_value
-            .as_object()
-            .cloned()
-            .ok_or_else(|| EventWireError::InvalidPayload("expected tagged object".to_string()))?;
-        let event_type = payload_object
-            .remove("type")
-            .and_then(|value| value.as_str().map(str::to_string))
-            .ok_or_else(|| EventWireError::InvalidPayload("missing type tag".to_string()))?;
-        let data = payload_object
-            .remove("data")
-            .map(WireValue::from_json)
-            .transpose()?;
-        if !payload_object.is_empty() {
-            return Err(EventWireError::InvalidPayload(
-                "unexpected fields outside type/data".to_string(),
-            ));
-        }
-        let timestamp = WireTimestamp {
-            unix_seconds: crate::scalar::WireI64::from_i64(envelope.timestamp.timestamp()),
-            nanos: envelope.timestamp.timestamp_subsec_nanos(),
-            rfc3339: Some(envelope.timestamp.to_rfc3339()),
-        };
-        let wire = Self {
-            schema_version: envelope.schema_version,
-            event_id: envelope.event_id.as_str().to_string(),
-            content_hash: envelope.content_hash,
-            sequence: WireNonZeroU64::try_from(envelope.sequence.to_string())?,
-            stream_id: envelope.stream_id.as_str().to_string(),
-            conversation_id: envelope
-                .conversation_id
-                .map(|value| value.as_str().to_string()),
-            run_id: envelope.run_id.map(|value| value.as_str().to_string()),
-            turn_id: envelope.turn_id.as_str().to_string(),
-            message_id: envelope.message_id.map(|value| value.as_str().to_string()),
-            execution_id: envelope
-                .execution_id
-                .map(|value| value.as_str().to_string()),
-            parent_event_id: envelope
-                .parent_event_id
-                .map(|value| value.as_str().to_string()),
-            timestamp,
-            payload: WireEventPayload { event_type, data },
-        };
-        wire.validate()?;
-        Ok(wire)
-    }
-}
-
-impl TryFrom<WireEventEnvelope> for EventEnvelope<AgentEvent> {
-    type Error = EventWireError;
-
-    fn try_from(wire: WireEventEnvelope) -> Result<Self, Self::Error> {
-        wire.validate()?;
-        let mut payload = serde_json::Map::new();
-        payload.insert(
-            "type".to_string(),
-            serde_json::Value::String(wire.payload.event_type),
-        );
-        if let Some(data) = wire.payload.data {
-            payload.insert("data".to_string(), data.into_json()?);
-        }
-        let payload = serde_json::from_value(serde_json::Value::Object(payload))
-            .map_err(|error| EventWireError::InvalidPayload(error.to_string()))?;
-        let seconds = wire
-            .timestamp
-            .unix_seconds
-            .to_i64()
-            .ok_or(EventWireError::InvalidTimestamp)?;
-        let timestamp = DateTime::<Utc>::from_timestamp(seconds, wire.timestamp.nanos)
-            .ok_or(EventWireError::InvalidTimestamp)?;
-        Ok(EventEnvelope {
-            schema_version: wire.schema_version,
-            event_id: EventId::new(wire.event_id)
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            content_hash: wire.content_hash,
-            sequence: wire
-                .sequence
-                .to_u64()
-                .ok_or(EventWireError::InvalidSequence)?,
-            stream_id: StreamId::new(wire.stream_id)
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            conversation_id: wire
-                .conversation_id
-                .map(ConversationId::new)
-                .transpose()
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            run_id: wire
-                .run_id
-                .map(RunId::new)
-                .transpose()
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            turn_id: TurnId::new(wire.turn_id)
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            message_id: wire
-                .message_id
-                .map(MessageId::new)
-                .transpose()
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            execution_id: wire
-                .execution_id
-                .map(ExecutionId::new)
-                .transpose()
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            parent_event_id: wire
-                .parent_event_id
-                .map(EventId::new)
-                .transpose()
-                .map_err(|error| EventWireError::Framework(error.to_string()))?,
-            timestamp,
-            payload,
-        })
     }
 }
 
@@ -500,20 +373,30 @@ impl GapNotification {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use echo_core::agent::EventIdentity;
 
-    #[test]
-    fn real_framework_event_round_trips() -> Result<(), Box<dyn std::error::Error>> {
-        let identity = EventIdentity::new("stream-1", "turn-1")?;
-        let framework =
-            EventEnvelope::new(&identity, 1, None, AgentEvent::Token("你好".to_string()))?;
-        let wire = WireEventEnvelope::try_from(framework.clone())?;
-        assert_eq!(wire.payload.event_type, "token");
-        let round_trip = EventEnvelope::<AgentEvent>::try_from(wire)?;
-        assert_eq!(round_trip.event_id, framework.event_id);
-        assert_eq!(round_trip.sequence, framework.sequence);
-        assert_eq!(round_trip.content_hash, framework.content_hash);
-        Ok(())
+    fn event(sequence: u64, event_type: &str) -> Result<WireEventEnvelope, ScalarError> {
+        Ok(WireEventEnvelope {
+            schema_version: 4,
+            event_id: format!("event-{sequence}"),
+            content_hash: format!("sha256:{}", "a".repeat(64)),
+            sequence: WireNonZeroU64::try_from(sequence.to_string())?,
+            stream_id: "stream-1".to_string(),
+            conversation_id: None,
+            run_id: None,
+            turn_id: "turn-1".to_string(),
+            message_id: None,
+            execution_id: None,
+            parent_event_id: None,
+            timestamp: WireTimestamp {
+                unix_seconds: crate::scalar::WireI64::from_i64(0),
+                nanos: 0,
+                rfc3339: None,
+            },
+            payload: WireEventPayload {
+                event_type: event_type.to_string(),
+                data: None,
+            },
+        })
     }
 
     #[test]
@@ -533,22 +416,8 @@ mod tests {
 
     #[test]
     fn replay_rejects_non_contiguous_events() -> Result<(), Box<dyn std::error::Error>> {
-        let identity = EventIdentity::new("stream-1", "turn-1")?;
-        let first = WireEventEnvelope::try_from(EventEnvelope::new(
-            &identity,
-            1,
-            None,
-            AgentEvent::ThinkStart,
-        )?)?;
-        let third = WireEventEnvelope::try_from(EventEnvelope::new(
-            &identity,
-            3,
-            None,
-            AgentEvent::ThinkEnd {
-                prompt_tokens: 1,
-                completion_tokens: 1,
-            },
-        )?)?;
+        let first = event(1, "think_start")?;
+        let third = event(3, "think_end")?;
         let response = ReplayResponse {
             requested_after_sequence: WireU64::from_u64(0),
             events: vec![first, third],
@@ -564,13 +433,7 @@ mod tests {
 
     #[test]
     fn replay_rejects_cursor_ahead_of_delivery() -> Result<(), Box<dyn std::error::Error>> {
-        let identity = EventIdentity::new("stream-1", "turn-1")?;
-        let event = WireEventEnvelope::try_from(EventEnvelope::new(
-            &identity,
-            1,
-            None,
-            AgentEvent::ThinkStart,
-        )?)?;
+        let event = event(1, "think_start")?;
         let response = ReplayResponse {
             requested_after_sequence: WireU64::from_u64(0),
             events: vec![event],

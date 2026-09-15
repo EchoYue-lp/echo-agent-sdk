@@ -17,15 +17,17 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
-当前仓库已从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史。精确源快照、
-已知未闭合项和后续入口记录在 `MIGRATION-SOURCE.md`：
+当前仓库已从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，并固定到已推送的
+framework extraction commit `1754877996778afac4e4db77ce37c330496760ea`。精确源快照、
+provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
 
-- 冻结源码只证明迁移完整性，不自动证明独立构建、合同兼容或运行时正确；
-- 在 framework extraction commit 已推送并可精确 pin 前，不提前追逐 protocol、Host、
-  generated contract 或三语言修复；
-- 下一阶段必须集中完成 protocol 纯化、accepted external contract 分离、Host pin、
-  独立 CI 与三语言门禁，不能在 framework 与 SDK 两边并行维护同一修复；
-- 在上述门禁全部通过前，不宣称 SDK 已独立构建通过、Runnable 或 Parity complete。
+- protocol 是纯 wire/schema crate；framework 类型转换只能位于 Host adapter；
+- `source-contract.json` 只覆盖 accepted external contract 和 accepted catalog；完整
+  Rust public inventory、Host-only catalog、Cargo.lock 与 framework revision 只做遥测或构建 provenance；
+- framework 与 SDK 不并行维护同一修复；framework 语义治理完成后，SDK 通过显式 revision
+  升级集中闭合 accepted contract 变化；
+- 独立构建、Host E2E 和三语言 gate 是当前交付的剩余验收面，在全部通过前不得宣称
+  release 或 Parity complete。
 
 ## 分层与唯一权威
 
