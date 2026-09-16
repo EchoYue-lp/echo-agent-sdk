@@ -3,19 +3,19 @@ schema_version: 1
 id: finding.sdk-wave2-cutover-integrity
 kind: finding
 type: evidence_gap
-status: open
+status: resolved
 severity: high
 primary_focus: contract_evidence
 focus: [data_durability, state_authority, time_lifecycle]
 boundary_ref: boundary.sdk-product
 behavior_refs: [behavior.sdk-repository-ownership]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair]
-audit_refs: []
+evidence_refs: [evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification]
+audit_refs: [audit.sdk-wave2-cutover-final-rereview]
 decision_refs: []
 repair_evidence_refs: [evidence.sdk-wave2-cutover-repair]
-verification_evidence_refs: []
-rereview_audit_refs: []
+verification_evidence_refs: [evidence.sdk-wave2-cutover-final-verification]
+rereview_audit_refs: [audit.sdk-wave2-cutover-final-rereview]
 discovered_at: 863cd5b34b516fa4a0021fe26f43b06c64c7c0b7
 ---
 
@@ -45,5 +45,6 @@ accepted contract/inventory payload，无法证明删除前后的来源连续性
 
 修复分支以 merge commit 恢复 `b80cf06`、`89d18f0`、`6f743d1` 和 SDK main 的共同 ancestry，
 并使用唯一 generator 把 Host pin、accepted contract、inventory telemetry、三语言 catalog 与文档
-同步到 framework 最终 main revision `27c7701e1eb116db1076da7f84bb68898544a44c`。本 Finding 保持 open，
-等待完整本地门禁、独立复审、远端 CI 与 merge ancestry 对账。
+同步到 framework 最终 main revision `27c7701e1eb116db1076da7f84bb68898544a44c`。SDK PR #2 已以
+merge commit `146f69a923e7df02417528c3dce6533312be85e1` 合入，完整本地门禁、独立复审、
+8/8 远端 CI 与五个 ancestry 锚点均已对账，本 Finding 现已闭合。

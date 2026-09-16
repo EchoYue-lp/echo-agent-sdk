@@ -8,9 +8,9 @@ observed_at: source:4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293
 boundary_refs: [boundary.sdk-product]
 behavior_refs: [behavior.sdk-repository-ownership]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair]
+evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification]
 finding_refs: [finding.sdk-wave2-cutover-integrity]
-audit_refs: []
+audit_refs: [audit.sdk-wave2-cutover-final-rereview]
 related_map_refs: []
 scenarios:
   source-history:
