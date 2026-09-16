@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-source-continuity
 kind: evidence
-observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
+observed_at: b80cf068b2fb69b62913f23260980b4ce2ebf941
 source_refs: [MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md, docs/adr/0028-source-first-multilanguage-sdk-runtime.md, docs/adr/0031-sdk-identity-governance-scope.md, docs/adr/0032-sdk-contract-scope-classification.md, contracts/sdk/source-contract.json, echo-sdk-protocol/src/facade.rs, echo-sdk-host/tests/extension_bridge_e2e.rs, sdks/shared/contract-digests.json]
 supports: [behavior.sdk-repository-ownership, rule.framework-runtime-authority, asset.sdk-source-product]
 limitations: ["本证据覆盖 source continuity 与文档 ownership，不证明 protocol 已纯化、accepted contract 已分离或完整独立 SDK 门禁已通过。"]
@@ -14,7 +14,9 @@ limitations: ["本证据覆盖 source continuity 与文档 ownership，不证明
 
 过滤后的 framework SDK history tip 是 `28d6709c93a7809c1eb3ba744d3e4cc89b0332f7`，
 对应原 framework 冻结 revision `c5f7688212d45d5bdcdbf60342605e8bfb176cae` 的
-SDK-owned 路径。任务分支通过未提交双根 merge 保留该父线与 `ea21dfc` source-import 父线。
+SDK-owned 路径。双父 merge `b80cf068b2fb69b62913f23260980b4ce2ebf941` 保留该父线与
+`ea21dfc` source-import 父线；修复基线 `7beee9d416ac304c3cec6df6646f558496ab577d`
+进一步把 SDK main 与 clean-pin lineage 合入同一可追溯历史。
 
 源 revision 的 SDK-owned tree 与当前仓均有 602 个文件。Contracts、三语言、scripts、
 Host/Protocol（排除各自 Cargo manifest）逐目录一致；初始 import 到冻结 tree 的实际工作树
@@ -35,5 +37,5 @@ source-first design 和 SDK 文档链接检查。
 
 ## 已知缺口
 
-最终 merge commit 与远端 SHA 在本 Evidence 所属提交完成后由 Git 对账证明。Protocol purity、
-framework pin、合同分离、Host E2E 与三语言完整门禁属于后续 SDK 收敛结果。
+最终 MR merge commit 与远端 main ancestry 仍需在本分支交付后由 Git 对账证明。Protocol purity、
+framework pin、合同分离、Host E2E 与三语言门禁由后续 Evidence 分别证明。

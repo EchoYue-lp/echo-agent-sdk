@@ -10,7 +10,7 @@ provides the product-neutral default factory and official stdio composition.
 
 ```toml
 [dependencies]
-echo-agent = { version = "0.2.0", git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "1754877996778afac4e4db77ce37c330496760ea", default-features = false, features = ["acp"] }
+echo-agent = { version = "0.2.0", git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "27c7701e1eb116db1076da7f84bb68898544a44c", default-features = false, features = ["acp"] }
 agent-client-protocol = "=2.1.0"
 ```
 

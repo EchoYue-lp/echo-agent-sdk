@@ -2,8 +2,8 @@
 schema_version: 1
 id: evidence.sdk-source-import
 kind: evidence
-observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
-source_refs: [MIGRATION-SOURCE.md, Cargo.toml, echo-sdk-protocol/Cargo.toml, echo-sdk-host/Cargo.toml, docs/adr/0001-sdk-repository-boundary.md]
+observed_at: ea21dfc58fa576296a0b1d0d3267c9632d84f0ae
+source_refs: [MIGRATION-SOURCE.md, Cargo.toml, echo-sdk-protocol/Cargo.toml, echo-sdk-host/Cargo.toml]
 supports: [behavior.sdk-repository-ownership, rule.framework-runtime-authority, asset.sdk-source-product]
 limitations: ["当前只证明 source-import 结构和 ownership；framework c5f7688 连续性、protocol 纯化与完整 SDK 门禁尚未完成。"]
 ---
@@ -17,7 +17,7 @@ limitations: ["当前只证明 source-import 结构和 ownership；framework c5f
 
 ## 来源与范围
 
-来源包括迁移说明、根 workspace、两份 Rust crate manifest 和 repository boundary ADR。
+来源包括迁移说明、根 workspace 和两份 Rust crate manifest。
 
 ## 已知缺口
 

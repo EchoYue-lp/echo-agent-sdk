@@ -47,7 +47,7 @@ framework SDK history without rewriting either history.
 ## Clean-Pin State
 
 The framework extraction revision is now pushed and pinned by the SDK Host:
-`1754877996778afac4e4db77ce37c330496760ea`. The protocol crate is framework
+`27c7701e1eb116db1076da7f84bb68898544a44c`. The protocol crate is framework
 free, the accepted external contract is separated from the complete Rust
 inventory telemetry, and generated artifacts are reproducible from an
 independent clone. The exact blocking/non-blocking boundary is recorded in

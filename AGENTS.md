@@ -18,7 +18,7 @@ superproject 中的规则文件才能冷启动。
 ## 当前迁移门禁
 
 当前仓库已从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，并固定到已推送的
-framework extraction commit `1754877996778afac4e4db77ce37c330496760ea`。精确源快照、
+framework extraction commit `27c7701e1eb116db1076da7f84bb68898544a44c`。精确源快照、
 provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
 
 - protocol 是纯 wire/schema crate；framework 类型转换只能位于 Host adapter；

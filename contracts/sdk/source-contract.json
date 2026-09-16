@@ -3,14 +3,14 @@
   "inputs": [
     {
       "path": "contracts/sdk/accepted-external-contract.json",
-      "bytes": 10656987,
-      "sha256": "sha256:268192f5d99af5a0c149180fea166870cb3193751fa255d334709f0e3fa736ac"
+      "bytes": 10660878,
+      "sha256": "sha256:901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45"
     },
     {
       "path": "contracts/sdk/accepted-facade-operation-catalog.json",
       "bytes": 520705,
-      "sha256": "sha256:44d4972bac92db658435bfdd1261ef7c7989fbb5a88badf5eaf28eab5d49cdc2"
+      "sha256": "sha256:107eb4d7194fa8fdf855c8a77c8cd27450b26cf17c1b3600b848494c4fccea9f"
     }
   ],
-  "aggregate_digest": "sha256:549e0d4885f27bb74ff82892ce791ecef52807eec8902c03aeb68c86b98604da"
+  "aggregate_digest": "sha256:038e42ac6a99918ba5bf9ca4757364de6a2236c16478e912ce374204692c481b"
 }

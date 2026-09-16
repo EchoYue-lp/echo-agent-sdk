@@ -6,14 +6,14 @@ title: 独立 echo-agent SDK 产品
 asset_type: protocol
 status: active
 risk: high
-observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
+observed_at: source:4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293e6db
 boundary_refs: [boundary.sdk-product]
 code_refs: [echo-sdk-protocol/src/lib.rs, echo-sdk-host/src/lib.rs, contracts/sdk/accepted-external-contract.json, contracts/sdk/source-contract.json, contracts/sdk/inventory-telemetry.json, sdks/typescript/src/index.ts, sdks/python/src/echo_agent_sdk/__init__.py, sdks/java/pom.xml, docs/sdk/README.md, scripts/check-sdk-contracts.sh, scripts/check-sdk-inventory-telemetry.sh, scripts/check-language-sdks.sh, scripts/export-language-sdk-catalog.sh]
 consumer_refs: [README.md, README.zh.md, .github/workflows/rust-ci.yml]
 behavior_refs: [behavior.sdk-repository-ownership]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin]
-finding_refs: []
+evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair]
+finding_refs: [finding.sdk-wave2-cutover-integrity]
 candidate_refs: []
 ---
 
@@ -29,7 +29,7 @@ SDK protocol、Host、合同、三语言 client、文档、生成器与 CI 的�
 
 ## 生命周期
 
-Source continuity 与独立 protocol/contract/Host/language 收敛已完成，后续由独立仓版本与发布流程治理。
+Source continuity、framework 精确 pin、protocol/contract/Host/language 收敛与 Wave 2 inventory 接收均已映射，后续由独立仓版本与发布流程治理。
 
 ## 候选关系
 

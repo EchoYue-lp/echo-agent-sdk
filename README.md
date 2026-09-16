@@ -7,7 +7,7 @@ framework, connected through a source-built ACP Host and the
 ## Migration Status
 
 This repository contains the SDK-owned history and the clean framework
-extraction pin `1754877996778afac4e4db77ce37c330496760ea`. The protocol crate is
+extraction pin `27c7701e1eb116db1076da7f84bb68898544a44c`. The protocol crate is
 framework-free, the Host resolves that exact upstream revision, and accepted
 external contract artifacts are separated from full Rust inventory telemetry.
 The remaining release status is governed by the language and integration gates;

@@ -2,17 +2,17 @@
 schema_version: 1
 id: behavior.sdk-repository-ownership
 kind: behavior
-status: verified
+status: stale
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
 focus: [data_durability, contract_evidence]
 boundary: boundary.sdk-product
-observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
+observed_at: source:4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293e6db
 code_refs: [AGENTS.md, MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin]
-finding_refs: []
+evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair]
+finding_refs: [finding.sdk-wave2-cutover-integrity]
 ---
 
 # SDK repository ownership
@@ -23,8 +23,9 @@ SDK Host、protocol、合同、三语言源码、SDK 文档、生成器与 CI �
 
 ## 当前行为
 
-Source import 与 continuity 已承接完整 SDK 产品和历史；clean pin 已完成 protocol 纯化、Host
-精确 revision、accepted contract 分离和三语言独立门禁。
+Source import 与 continuity 已承接完整 SDK 产品和历史；当前修复分支恢复被 squash 丢失的
+双父 ancestry，并把 Host pin、accepted contract、inventory telemetry 和三语言 catalog
+同步到 framework Wave 2 最终 main revision。最终门禁与 SDK merge ancestry 尚待验证，因此本 Behavior 暂为 stale。
 
 ## 期望行为
 
