@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-framework-pin
 kind: evidence
-observed_at: source:d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
+observed_at: 6f743d1f37b604dbeb315c75b9e608a5254dcfe2
 source_refs:
   - .github/workflows/rust-ci.yml
   - AGENTS.md

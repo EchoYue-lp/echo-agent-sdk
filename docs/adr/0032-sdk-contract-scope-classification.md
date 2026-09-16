@@ -92,19 +92,19 @@ The current canonical distribution is:
 
 | Scope | Count |
 | --- | ---: |
-| `external_contract` | 5,620 |
-| `host_or_rust_only` | 1,773 |
-| `language_intrinsic` | 787 |
+| `external_contract` | 5,622 |
+| `host_or_rust_only` | 1,774 |
+| `language_intrinsic` | 790 |
 | `internal_helper` | 90 |
-| `deferred` | 1,443 |
+| `deferred` | 1,448 |
 
-The additional external identity is
-`TaskGraphCommit::expected_executions`, a typed precondition on the existing
-`value:task` route. The 551 identities that use an intrinsic route but already have three
+This inventory increment adds `JournalIdentity` and
+`CheckpointFrame::journal_identity` to the accepted `value:state` contract.
+The 551 identities that use an intrinsic route but already have three
 language implementations remain `external_contract`. Route mechanics do not
 downgrade delivered behavior.
 
-`deferred` is not a rejection or a set of 1,441 tasks. It is a capability
+`deferred` is not a rejection or a collection of per-identity tasks. It is a capability
 backlog. An item moves into the external contract only when an externally
 useful capability, Host/native authority, behavior contract, and language
 evidence exist. A scope field must never be edited to bypass those steps.

@@ -122,15 +122,15 @@ previous ones.
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
 | **Host facade parity** | Every canonical root operation/consumer trait/stream has a concrete Host route or evidence-backed language-local boundary | ✅ Plan 08 complete |
 | **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | ✅ source-built Host and language gates |
-| **External contract complete** | TypeScript, Python and Java pass every identity currently classified as `external_contract` | ✅ 5,620 canonical identities |
-| **Deferred capabilities dispositioned** | Every `deferred` capability has a product-level contract decision | ❌ 1,443 identities await capability grouping and review |
+| **External contract complete** | TypeScript, Python and Java pass every identity currently classified as `external_contract` | ✅ 5,622 canonical identities |
+| **Deferred capabilities dispositioned** | Every `deferred` capability has a product-level contract decision | ❌ 1,448 identities await capability grouping and review |
 | **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
 
 ### Identity inventory scope
 
-The current parity manifest contains 9,713 canonical identities. TypeScript,
-Python, and Java all mark 5,620 of them `done`; the
-remaining 4,076 identities are all classified under the `intrinsic` route
+The current parity manifest contains 9,724 canonical identities. TypeScript,
+Python, and Java all mark 5,622 of them `done`; the
+remaining 4,102 identities are all classified under the `intrinsic` route
 surface. Standard ACP, core extension, family, bridge, invoke, and value route
 surfaces have no remaining not-done canonical identities.
 
@@ -147,11 +147,11 @@ the adapter route and per-language status:
 
 | `sdk_scope` | Canonical items | Current meaning |
 |---|---:|---|
-| `external_contract` | 5,620 | Accepted TypeScript, Python and Java behavior with named contract tests. |
-| `host_or_rust_only` | 1,773 | Process-local or Host-owned runtime authority. |
-| `language_intrinsic` | 787 | Rust syntax, trait implementations and callback types represented idiomatically. |
+| `external_contract` | 5,622 | Accepted TypeScript, Python and Java behavior with named contract tests. |
+| `host_or_rust_only` | 1,774 | Process-local or Host-owned runtime authority. |
+| `language_intrinsic` | 790 | Rust syntax, trait implementations and callback types represented idiomatically. |
 | `internal_helper` | 90 | Rust testing support, not an SDK product surface. |
-| `deferred` | 1,443 | Potential capabilities awaiting capability-level contract review. |
+| `deferred` | 1,448 | Potential capabilities awaiting capability-level contract review. |
 
 The scope is generated, aliases inherit their canonical identity, and no row
 is manually promoted. A delivered intrinsic route remains an external contract;

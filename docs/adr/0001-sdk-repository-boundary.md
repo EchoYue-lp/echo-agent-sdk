@@ -52,7 +52,7 @@ either source history.
 
 The source-continuity import was followed by the reviewed clean-pin delivery.
 The current SDK protocol is framework-free, the Host pins framework extraction
-revision `1754877996778afac4e4db77ce37c330496760ea`, and accepted external
+revision `27c7701e1eb116db1076da7f84bb68898544a44c`, and accepted external
 contract artifacts are separated from full Rust inventory telemetry. These are
 independent follow-up changes recorded in the SDK delivery plan, not a rewrite
 of the preserved source history.
@@ -62,7 +62,7 @@ of the preserved source history.
 - Protocol dependency: `echo-sdk-protocol` has no `echo_agent`, `echo_core`, or
   other framework crate dependency; framework type conversion lives in Host.
 - Host provenance: `echo-sdk-host` and `Cargo.lock` resolve the exact pushed
-  framework extraction revision `1754877996778afac4e4db77ce37c330496760ea`.
+  framework extraction revision `27c7701e1eb116db1076da7f84bb68898544a44c`.
 - Compatibility: `contracts/sdk/source-contract.json` hashes only the accepted
   external contract and accepted facade catalog. `public-api.txt`, the full
   parity manifest, and `inventory-telemetry.json` remain non-blocking Rust

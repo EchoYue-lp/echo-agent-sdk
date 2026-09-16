@@ -3,8 +3,8 @@ schema_version: 1
 id: baseline.repository
 kind: baseline
 source_snapshot:
-  base_revision: ea21dfc58fa576296a0b1d0d3267c9632d84f0ae
-  content_digest: d66d41ae73c5e05d8bc1781eb8f457abe1f0e2730a8e3b40f5af32a500a7616f
+  base_revision: 7beee9d416ac304c3cec6df6646f558496ab577d
+  content_digest: 4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293e6db
 inventory_closure: open
 behavior_model_closure: open
 map_refs: [map.sdk-product-boundary]
@@ -29,7 +29,15 @@ regions:
   - { path: sdks, status: in_scope }
 boundaries:
   - { id: boundary.sdk-product, map_ref: map.sdk-product-boundary, risk: high }
-coverage: []
+coverage:
+  - { region: echo-sdk-host, lens: trigger_input, status: needs_review, unknown: "Host complete entrypoint inventory remains open" }
+  - { region: echo-sdk-host, lens: result_side_effect, status: needs_review, unknown: "Host side-effect settlement inventory remains open" }
+  - { region: echo-sdk-host, lens: state_authority, status: needs_review, unknown: "Host adapter authority review remains open" }
+  - { region: echo-sdk-host, lens: data_durability, status: needs_review, unknown: "Host durability boundary review remains open" }
+  - { region: echo-sdk-host, lens: time_lifecycle, status: needs_review, unknown: "Host lifecycle inventory remains open" }
+  - { region: echo-sdk-host, lens: failure_concurrency, status: needs_review, unknown: "Host concurrency and recovery review remains open" }
+  - { region: echo-sdk-host, lens: permission_external, status: needs_review, unknown: "Host external-effect and permission review remains open" }
+  - { region: echo-sdk-host, lens: contract_evidence, status: needs_review, unknown: "Host contract evidence inventory remains open" }
 ---
 
 # echo-agent-sdk 语义基线
