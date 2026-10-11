@@ -67,6 +67,13 @@ of the preserved source history.
   external contract and accepted facade catalog. `public-api.txt`, the full
   parity manifest, and `inventory-telemetry.json` remain non-blocking Rust
   drift telemetry.
+- Language compatibility checks consume the committed accepted artifact directly.
+  Scope quantities and intrinsic membership hashes are reported as telemetry,
+  while inventory classification, alias integrity, and generator consistency
+  remain tooling correctness checks. A changed non-external count or membership
+  hash alone must not fail a delivery gate. Classification examples validate
+  identities only when present; non-external Rust identity membership is not
+  frozen by the compatibility tests.
 
 ## Consequences
 

@@ -32,8 +32,8 @@ java_major=${java_version%%.*}
 scripts/export-language-sdk-catalog.sh --check
 
 external_incomplete=$(jq -r '
-  [.entries[] | select(.sdk_scope == "external_contract") | .languages | to_entries[] | select(.value.status != "done")] | length
-' "$repo_root/contracts/sdk/parity-manifest.json")
+  [.entries[] | .languages | to_entries[] | select(.value.status != "done")] | length
+' "$repo_root/contracts/sdk/accepted-external-contract.json")
 [[ "$external_incomplete" == "0" ]] || {
   echo "error: external SDK contracts contain incomplete language mappings" >&2
   exit 1

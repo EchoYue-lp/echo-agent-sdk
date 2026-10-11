@@ -237,11 +237,20 @@ impl CoreProfileState {
                 .lock()
                 .unwrap_or_else(|poisoned| poisoned.into_inner()) = Some(error);
         }
-        let _ =
-            self.pending_settlements
-                .fetch_update(Ordering::AcqRel, Ordering::Acquire, |current| {
-                    Some(current.saturating_sub(1))
-                });
+        // Keep the saturating decrement compatible with the Rust 1.95 minimum.
+        // A failed CAS reloads the concurrent settlement count before retrying.
+        let mut current = self.pending_settlements.load(Ordering::Acquire);
+        loop {
+            match self.pending_settlements.compare_exchange_weak(
+                current,
+                current.saturating_sub(1),
+                Ordering::AcqRel,
+                Ordering::Acquire,
+            ) {
+                Ok(_) => break,
+                Err(actual) => current = actual,
+            }
+        }
         self.settlement_notify.notify_waiters();
     }
 
