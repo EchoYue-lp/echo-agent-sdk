@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-wave2-cutover-repair
 kind: evidence
-observed_at: source:4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293e6db
+observed_at: c8941c6033c8cd5f698502483fb28a80953be48d
 source_refs:
   - AGENTS.md
   - Cargo.lock

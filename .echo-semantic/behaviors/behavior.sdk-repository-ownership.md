@@ -8,10 +8,10 @@ risk: high
 primary_focus: state_authority
 focus: [data_durability, contract_evidence]
 boundary: boundary.sdk-product
-observed_at: source:4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293e6db
+observed_at: source:18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
 code_refs: [AGENTS.md, MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification]
+evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification, evidence.sdk-compatibility-gates]
 finding_refs: [finding.sdk-wave2-cutover-integrity]
 ---
 
@@ -35,6 +35,8 @@ Framework 只保留运行时权威与指向本仓的边界链接，不维护第�
 
 SDK 变更在本仓独立构建和验证；framework 依赖升级是显式 SDK commit，完整 Rust inventory
 只提供非阻断漂移遥测。
+三语言 catalog 测试直接读取 accepted artifact；完整 inventory 的 scope 数量和 intrinsic
+membership 只打印遥测，分类样例不要求未接受的 identity 必须存在。
 
 ## 失败、重试与恢复
 

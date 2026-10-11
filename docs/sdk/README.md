@@ -304,6 +304,9 @@ without owning live-control registry state.
 
 ## For contributors
 
+- Compatibility tests read the accepted external contract. Full Rust inventory
+  scope counts and intrinsic membership digests are telemetry; their changes
+  do not freeze the language SDKs or extend the accepted contract.
 - The inventory toolchain is pinned in
   [`toolchain.json`](../../contracts/sdk/toolchain.json); install it with
   `rustup toolchain install <toolchain>` if you intend to regenerate

@@ -7,8 +7,8 @@ import { FacadeCatalog } from "../dist/catalog.js";
 const catalogDocument = JSON.parse(
   readFileSync(fileURLToPath(new URL("../../shared/facade-operation-catalog.json", import.meta.url)), "utf8"),
 );
-const parityManifest = JSON.parse(
-  readFileSync(fileURLToPath(new URL("../../../contracts/sdk/parity-manifest.json", import.meta.url)), "utf8"),
+const acceptedContract = JSON.parse(
+  readFileSync(fileURLToPath(new URL("../../../contracts/sdk/accepted-external-contract.json", import.meta.url)), "utf8"),
 );
 
 function expectedOperations() {
@@ -73,27 +73,10 @@ test("families group the same canonical operation identities", () => {
 });
 
 test("every external SDK contract has a completed TypeScript mapping", () => {
-  assert.ok(parityManifest.entries.length > 0);
-  const counts = new Map();
-  for (const entry of parityManifest.entries) {
-    assert.ok(
-      ["external_contract", "host_or_rust_only", "language_intrinsic", "internal_helper", "deferred"]
-        .includes(entry.sdk_scope),
-      entry.path,
-    );
-    if (entry.canonical) {
-      counts.set(entry.sdk_scope, (counts.get(entry.sdk_scope) ?? 0) + 1);
-    }
-    if (entry.sdk_scope === "external_contract") {
-      assert.equal(entry.languages.typescript.status, "done", entry.path);
-    }
+  assert.ok(acceptedContract.entries.length > 0);
+  for (const entry of acceptedContract.entries) {
+    assert.equal(entry.sdk_scope, "external_contract", entry.path);
+    assert.equal(entry.languages.typescript.status, "done", entry.path);
     assert.match(entry.languages.typescript.contract_test, /^sdk-parity\//u, entry.path);
   }
-  assert.deepEqual(Object.fromEntries(counts), {
-    deferred: 1448,
-    external_contract: 5622,
-    host_or_rust_only: 1774,
-    internal_helper: 90,
-    language_intrinsic: 790,
-  });
 });

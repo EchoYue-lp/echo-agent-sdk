@@ -4,15 +4,21 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: source:4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293e6db
+observed_at: source:18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
 boundary_refs: [boundary.sdk-product]
 behavior_refs: [behavior.sdk-repository-ownership]
 rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification]
+evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification, evidence.sdk-compatibility-gates]
 finding_refs: [finding.sdk-wave2-cutover-integrity]
 audit_refs: [audit.sdk-wave2-cutover-final-rereview]
 related_map_refs: []
 scenarios:
+  compatibility-gates:
+    status: mapped
+    source_refs: [echo-sdk-protocol/tests/facade_inventory.rs, scripts/check-language-sdks.sh, sdks/typescript/test/catalog.test.js, sdks/python/tests/test_catalog.py, sdks/java/src/test/java/com/echoagent/sdk/FacadeParityTest.java, echo-sdk-host/src/core_profile/state.rs]
+    behavior_refs: [behavior.sdk-repository-ownership]
+    rule_refs: [rule.framework-runtime-authority]
+    evidence_refs: [evidence.sdk-compatibility-gates]
   source-history:
     status: mapped
     source_refs: [MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md]
@@ -72,6 +78,8 @@ Framework 拥有 Agent/Run/Task/Subagent 与 terminal 状态；Host 只持有协
 
 Protocol DAG、framework pin、accepted contract、Host E2E 或语言 gate 失败会阻止交付声明；
 完整 Rust inventory 漂移只形成遥测信号。
+分类样例只检查仍存在的 identity；完整 scope 数量与 intrinsic membership 不冻结兼容面。
+Host 结算计数器保留饱和递减与 Acquire/AcqRel 顺序，不引入新的结算权威。
 
 ## 权限与敏感信息
 

@@ -4,7 +4,7 @@ id: baseline.repository
 kind: baseline
 source_snapshot:
   base_revision: 7beee9d416ac304c3cec6df6646f558496ab577d
-  content_digest: 4a4b9005728bf4b6ca1298ed3d92d9b9eab0d20416602abf075116a3c293e6db
+  content_digest: 18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
 inventory_closure: open
 behavior_model_closure: open
 map_refs: [map.sdk-product-boundary]
