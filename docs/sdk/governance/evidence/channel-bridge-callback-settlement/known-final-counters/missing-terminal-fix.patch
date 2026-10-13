@@ -1,0 +1,28 @@
+--- missing-terminal-current-before.rs
++++ missing-terminal-current-after.rs
+@@ -1220,6 +1220,25 @@
+                 };
+                 // A response is a callback-return fact. The lease and session guard
+                 // must be released before the framework driver observes that fact.
++                // Prior stream notifications are routed inline by the ACP
++                // dispatch loop before this ordered response callback. At this
++                // point callback return without a terminal is an invalid flow,
++                // not permission to wait forever for user-detached work.
++                if response_policy == CallbackStreamPolicy::Channel
++                    && matches!(&result, Ok(None))
++                    && let Some(sink) = response_sink
++                {
++                    sink.terminate(|sequence| ExtensionStreamEvent::Failed {
++                        stream: sink.stream_handle().clone(),
++                        sequence,
++                        error: sdk_error(
++                            ExtensionErrorCode::SerializationViolation,
++                            "channel callback returned without a stream terminal",
++                            Retryability::Never,
++                            "_echo_agent/extension/stream",
++                        ),
++                    });
++                }
+                 if response_policy == CallbackStreamPolicy::CustomAgent
+                     && matches!(&result, Ok(None))
+                 {

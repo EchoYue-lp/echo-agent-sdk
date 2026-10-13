@@ -6,6 +6,8 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from .errors import EchoAgentError
+
 MIN_I64 = -(1 << 63)
 MAX_U64 = (1 << 64) - 1
 MAX_HANDLE_ID_CHARS = 256
@@ -252,6 +254,8 @@ class WireHandle:
     def from_dict(cls, value: Any) -> WireHandle:
         if not isinstance(value, dict):
             raise TypeError("handle must be an object")
+        if set(value) != {"id", "generation", "kind"}:
+            raise TypeError("explicit wire handle fields must be exact")
         return cls(value.get("id"), value.get("generation"), value.get("kind"))
 
     def to_dict(self) -> dict[str, str]:
@@ -277,7 +281,32 @@ def to_wire(value: Any) -> dict[str, Any]:
         return {"kind": "null"}
     if isinstance(value, WireHandle):
         return {"kind": "handle", "value": value.to_dict()}
-    if isinstance(value, dict) and isinstance(value.get("kind"), str):
+    if (
+        isinstance(value, dict)
+        and isinstance(value.get("kind"), str)
+        and (
+            value.get("kind")
+            in {
+                "null",
+                "bool",
+                "string",
+                "i64",
+                "u64",
+                "f64",
+                "bytes",
+                "duration",
+                "timestamp",
+                "path",
+                "handle",
+                "list",
+                "map",
+                "record",
+                "variant",
+                "unknown",
+            }
+            or not {"id", "generation"}.intersection(value)
+        )
+    ):
         kind = value["kind"]
         if kind == "handle":
             WireHandle.from_dict(value.get("value"))
@@ -320,17 +349,23 @@ def from_wire(value: Any) -> Any:
     if kind == "bool":
         raw = value.get("value")
         if not isinstance(raw, bool):
-            raise TypeError("wire bool value must be boolean")
+            raise EchoAgentError(
+                "serialization_violation", "wire bool value must be boolean"
+            )
         return raw
     if kind == "string":
         raw = value.get("value")
         if not isinstance(raw, str):
-            raise TypeError("wire string value must be text")
+            raise EchoAgentError(
+                "serialization_violation", "wire string value must be text"
+            )
         return raw
     if kind == "f64":
         raw = value.get("value")
         if isinstance(raw, bool) or not isinstance(raw, (int, float)):
-            raise TypeError("wire f64 value must be numeric")
+            raise EchoAgentError(
+                "serialization_violation", "wire f64 value must be numeric"
+            )
         if not math.isfinite(raw):
             raise ValueError("wire floats must be finite")
         return raw
@@ -341,16 +376,50 @@ def from_wire(value: Any) -> Any:
     if kind == "handle":
         return WireHandle.from_dict(value.get("value"))
     if kind == "list":
-        return [from_wire(item) for item in value.get("value", [])]
+        raw = value.get("value")
+        if not isinstance(raw, list):
+            raise EchoAgentError(
+                "serialization_violation", "wire list requires an array value"
+            )
+        return [_decode_wire_child(item) for item in raw]
     if kind == "map":
+        raw = value.get("value")
+        if not isinstance(raw, list):
+            raise EchoAgentError(
+                "serialization_violation", "wire map requires an entry array"
+            )
         result: dict[str, Any] = {}
-        for entry in value.get("value", []):
-            if not isinstance(entry, dict):
-                continue
+        for entry in raw:
+            if not isinstance(entry, dict) or "value" not in entry:
+                raise EchoAgentError(
+                    "serialization_violation", "map entry requires an explicit value"
+                )
             key = entry.get("key")
-            if isinstance(key, dict) and key.get("kind") == "string":
-                result[str(key.get("value", ""))] = from_wire(entry.get("value"))
+            if (
+                not isinstance(key, dict)
+                or key.get("kind") != "string"
+                or not isinstance(key.get("value"), str)
+            ):
+                raise EchoAgentError(
+                    "serialization_violation",
+                    "native map projection requires string keys",
+                )
+            name = key["value"]
+            if name in result:
+                raise EchoAgentError(
+                    "serialization_violation",
+                    "native map projection cannot preserve duplicate keys",
+                )
+            result[name] = _decode_wire_child(entry["value"])
         return result
     # Keep the discriminator for typed and future additive variants so values
     # remain observable and round-trip without a language-specific schema.
     return value
+
+
+def _decode_wire_child(value: Any) -> Any:
+    if not isinstance(value, dict) or not isinstance(value.get("kind"), str):
+        raise EchoAgentError(
+            "serialization_violation", "wire container child requires its discriminator"
+        )
+    return from_wire(value)

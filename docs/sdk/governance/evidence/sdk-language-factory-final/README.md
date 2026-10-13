@@ -1,0 +1,11 @@
+# Factory结算修复后的当前候选完整语言门禁
+
+同官方脚本scripts/check-language-sdks.sh单entry实际exit0（246秒、90884字节未截断），所有原步骤真实执行：候选catalog export检查、lockedHostbuild、npmci/TSbuild/examples/全290tests/quickstart、Ruffwholecheck/175fmt、UVmodulepytest357tests+18subtests/quickstart、Maven67suites320tests/classpath/Javaquickstart。无额外ROOT覆盖、case过滤、skip或强串行。
+
+源码四目录before/after哈希全部一致；sharedtarget脚本构建Host与指定immutableFactorysettlement Host摘要bb4f3c2b...完全一致，producer source-build-manifest摘要5e0f1538...明确8个framework包是Gitb9099558...、无localpathpatch。实际source摘要与67JUnitXML、runcommandreceipt/run和完整log都固定于本包。
+
+Rust14矩阵与Factory两个新缺陷的修复/反例/独立审查另归task-context-consumption/rust-gates-reviewed-final；其结果不是旧8dHost语言门禁。本包专门验证bb4f这个新Host完整三语言，旧8d源码切点证据始终保留，不盲绑定当前。
+
+JavaTestNOP已独立审查，SLF4J警告0、编译警告0；负例Host错误RPC响应的运行时WARN原文保留于summary与fulllog，没有被过滤。当前duplicate依赖50提示政策仍待人裁决，工具退出0不能解除SDKAGENTS规则冲突；新manifest依赖门禁另归sdk-current-dependency-policy-after-feature-wiring。
+
+sourcecontract仍受控3cd候选，12accepted身份/运行时5s选择、后续frame目标revision、SDK最终全局语义/main验收未由此包完成。npm/PyPI/Maven发布继续排除。

@@ -1,0 +1,16 @@
+   Compiling echo_integration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-integration)
+   Compiling echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 1m 21s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-6d8b8adb0d80813f)
+
+running 6 tests
+test core_profile::extension_bridge::tests::channel_callback_cancel_retains_actual_response_owner ... ok
+test core_profile::extension_bridge::tests::channel_stream_drop_retains_connection_response_owner ... ok
+test core_profile::extension_bridge::tests::channel_stream_terminal_waits_for_actual_callback_return ... ok
+test core_profile::extension_bridge::tests::channel_stream_cancel_waits_for_actual_callback_return ... ok
+test core_profile::extension_bridge::tests::channel_callback_timeout_retains_actual_response_owner ... ok
+test core_profile::extension_bridge::tests::channel_stream_timeout_waits_for_actual_callback_return ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 145 filtered out; finished in 0.50s
+

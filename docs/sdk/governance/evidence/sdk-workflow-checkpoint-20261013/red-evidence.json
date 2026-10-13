@@ -1,0 +1,418 @@
+{
+  "host": "/tmp/echo-sdk-governance-parent-driver-host",
+  "host_sha256": "6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5",
+  "scenario_rows": 48,
+  "workflow_calls": 47,
+  "session_close_calls": 1,
+  "runs": [
+    {
+      "language": "typescript",
+      "work": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-workflow-H1S8pq",
+      "exit_code": 1,
+      "scenario_rows": 48,
+      "proofs": [
+        {
+          "operation": "tuple-resume",
+          "accepted_sequence_fields": 17,
+          "result": {
+            "outcome": "interrupted",
+            "pending_node": "end",
+            "prompt": "Node 'end' requires confirmation before execution",
+            "checkpoint": {
+              "id": "66e08142-b1bc-46c5-9d56-6a3cac644605",
+              "graph_name": "shared-workflow-中文🙂",
+              "workflow_run_id": "ae791dfa-e76f-4161-999e-455e9aea7337",
+              "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+              "generation": "1",
+              "resume_attempt_id": null,
+              "current_node": "end",
+              "state_snapshot": {
+                "values": {
+                  "memo": "checkpoint 中文🙂",
+                  "context": {
+                    "optional": null,
+                    "list": [
+                      "a",
+                      "b"
+                    ]
+                  },
+                  "approved": true
+                },
+                "messages": [],
+                "current_node": "yes"
+              },
+              "path": [
+                "start",
+                "gate",
+                "yes"
+              ],
+              "step_count": "3",
+              "created_at": "2026-10-13T13:37:09.205834+08:00",
+              "continuation": {
+                "kind": "node"
+              },
+              "interrupt_type": "beforenode",
+              "parent_checkpoint_id": "7f4c54a5-d83a-4877-ba99-73304ef30be6",
+              "label": null,
+              "tags": [],
+              "branch": null
+            }
+          },
+          "canonical_parent_after": null
+        },
+        {
+          "operation": "tuple-with-state",
+          "accepted_sequence_fields": 17,
+          "result": {
+            "outcome": "interrupted",
+            "pending_node": "end",
+            "prompt": "Node 'end' requires confirmation before execution",
+            "checkpoint": {
+              "id": "a0d02b56-f13c-4065-bc94-b1314a7d42db",
+              "graph_name": "shared-workflow-中文🙂",
+              "workflow_run_id": "2318909a-eeca-405a-890c-100f1a158e97",
+              "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+              "generation": "1",
+              "resume_attempt_id": null,
+              "current_node": "end",
+              "state_snapshot": {
+                "values": {
+                  "approved": false,
+                  "memo": "checkpoint 中文🙂",
+                  "unapproved_mutation": "must-not-execute",
+                  "context": {
+                    "optional": null,
+                    "list": [
+                      "a",
+                      "b"
+                    ]
+                  }
+                },
+                "messages": [],
+                "current_node": "no"
+              },
+              "path": [
+                "start",
+                "gate",
+                "no"
+              ],
+              "step_count": "3",
+              "created_at": "2026-10-13T13:37:09.329882+08:00",
+              "continuation": {
+                "kind": "node"
+              },
+              "interrupt_type": "beforenode",
+              "parent_checkpoint_id": "923b1281-6bf8-497e-9c64-d1055642d884",
+              "label": null,
+              "tags": [],
+              "branch": null
+            }
+          },
+          "canonical_parent_after": null
+        }
+      ],
+      "files": [
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/run.log",
+          "sha256": "5cca2e8a5bfae570f896134fe802eb21375e65ebcaba60daf03bd61210fbcd4d"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/results.json",
+          "sha256": "f1f611e30d079f9e6ded7069f628eb89a062f9d692c4edc5050132c8a6a31e1d"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/call-tuple-resume.json",
+          "sha256": "49a0f45b55851bc6e775c4e2dce910722d4310046065790cad8ee837e8010c9c"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/scenario.json",
+          "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/call-resume-exact.json",
+          "sha256": "38f211c01f0f5edc6013284c7945dec6231d51cb977afef22a67eec2b0613aaf"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/call-tuple-with-state.json",
+          "sha256": "73bc1cbe9f4836b38970b011ccf7f4221a09fcd5fb511386797d51bd9da9473a"
+        }
+      ]
+    },
+    {
+      "language": "python",
+      "work": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-ab7tjtww",
+      "exit_code": 1,
+      "scenario_rows": 48,
+      "proofs": [
+        {
+          "operation": "tuple-resume",
+          "accepted_sequence_fields": 17,
+          "result": {
+            "outcome": "interrupted",
+            "pending_node": "end",
+            "prompt": "Node 'end' requires confirmation before execution",
+            "checkpoint": {
+              "id": "260496cd-a080-48b7-b455-eb4c8a01580d",
+              "graph_name": "shared-workflow-中文🙂",
+              "workflow_run_id": "81a270b6-d9dd-4a45-9e4c-9c99d56c83ea",
+              "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+              "generation": "1",
+              "resume_attempt_id": null,
+              "current_node": "end",
+              "state_snapshot": {
+                "values": {
+                  "memo": "checkpoint 中文🙂",
+                  "context": {
+                    "optional": null,
+                    "list": [
+                      "a",
+                      "b"
+                    ]
+                  },
+                  "approved": true
+                },
+                "messages": [],
+                "current_node": "yes"
+              },
+              "path": [
+                "start",
+                "gate",
+                "yes"
+              ],
+              "step_count": "3",
+              "created_at": "2026-10-13T13:37:45.119704+08:00",
+              "continuation": {
+                "kind": "node"
+              },
+              "interrupt_type": "beforenode",
+              "parent_checkpoint_id": "feb6094b-48f2-4792-a06f-8801093d24fd",
+              "label": null,
+              "tags": [],
+              "branch": null
+            }
+          },
+          "canonical_parent_after": null
+        },
+        {
+          "operation": "tuple-with-state",
+          "accepted_sequence_fields": 17,
+          "result": {
+            "outcome": "interrupted",
+            "pending_node": "end",
+            "prompt": "Node 'end' requires confirmation before execution",
+            "checkpoint": {
+              "id": "ad70c054-7473-47a1-acdc-5b42cad4cd04",
+              "graph_name": "shared-workflow-中文🙂",
+              "workflow_run_id": "1bd34563-2a08-40c0-a05a-1def42f116cb",
+              "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+              "generation": "1",
+              "resume_attempt_id": null,
+              "current_node": "end",
+              "state_snapshot": {
+                "values": {
+                  "context": {
+                    "optional": null,
+                    "list": [
+                      "a",
+                      "b"
+                    ]
+                  },
+                  "unapproved_mutation": "must-not-execute",
+                  "approved": false,
+                  "memo": "checkpoint 中文🙂"
+                },
+                "messages": [],
+                "current_node": "no"
+              },
+              "path": [
+                "start",
+                "gate",
+                "no"
+              ],
+              "step_count": "3",
+              "created_at": "2026-10-13T13:37:45.211370+08:00",
+              "continuation": {
+                "kind": "node"
+              },
+              "interrupt_type": "beforenode",
+              "parent_checkpoint_id": "276acd75-6981-4ceb-a9de-a13791d362ad",
+              "label": null,
+              "tags": [],
+              "branch": null
+            }
+          },
+          "canonical_parent_after": null
+        }
+      ],
+      "files": [
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/run.log",
+          "sha256": "0e7d7ecf4affda2790fc913fb0c2cc12ae37b322101544911e72ebc06f628ec1"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/results.json",
+          "sha256": "0f670ce2ef8194c28e4bfd9e883b5b4ec940860d599b08559eb0f3a516fbe4e0"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/call-tuple-resume.json",
+          "sha256": "2894d4c2fa156f9f799637df636efd92f1ecdd502526c963dcf104986499c9bf"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/scenario.json",
+          "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/call-resume-exact.json",
+          "sha256": "61b273b9bd06125343b144142084936506d2f51b4ab88f378c931b3607e2c9f2"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/call-tuple-with-state.json",
+          "sha256": "0fed67e63eb09454cd2a9340de5939867558234e4dcd3aaaa87ea127b78574e1"
+        }
+      ]
+    },
+    {
+      "language": "java",
+      "work": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-workflow-6453864302468165499",
+      "exit_code": 1,
+      "scenario_rows": 48,
+      "proofs": [
+        {
+          "operation": "tuple-resume",
+          "accepted_sequence_fields": 17,
+          "result": {
+            "outcome": "interrupted",
+            "pending_node": "end",
+            "prompt": "Node 'end' requires confirmation before execution",
+            "checkpoint": {
+              "id": "2c00b1a9-e86f-4afb-b64f-f269e75798b3",
+              "graph_name": "shared-workflow-中文🙂",
+              "workflow_run_id": "ac568d1f-a9b3-4ae5-b918-54d4e191d03c",
+              "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+              "generation": "1",
+              "resume_attempt_id": null,
+              "current_node": "end",
+              "state_snapshot": {
+                "values": {
+                  "context": {
+                    "optional": null,
+                    "list": [
+                      "a",
+                      "b"
+                    ]
+                  },
+                  "memo": "checkpoint 中文🙂",
+                  "approved": true
+                },
+                "messages": [],
+                "current_node": "yes"
+              },
+              "path": [
+                "start",
+                "gate",
+                "yes"
+              ],
+              "step_count": "3",
+              "created_at": "2026-10-13T13:38:02.894176+08:00",
+              "continuation": {
+                "kind": "node"
+              },
+              "interrupt_type": "beforenode",
+              "parent_checkpoint_id": "c092b479-91a3-4be0-ab2d-f7a8bfc50dff",
+              "label": null,
+              "tags": [],
+              "branch": null
+            }
+          },
+          "canonical_parent_after": null
+        },
+        {
+          "operation": "tuple-with-state",
+          "accepted_sequence_fields": 17,
+          "result": {
+            "outcome": "interrupted",
+            "pending_node": "end",
+            "prompt": "Node 'end' requires confirmation before execution",
+            "checkpoint": {
+              "id": "3243c120-5fb8-4a7f-bf77-a0598a6f27a5",
+              "graph_name": "shared-workflow-中文🙂",
+              "workflow_run_id": "8ed37480-153a-426c-bf06-5141a573bcc3",
+              "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+              "generation": "1",
+              "resume_attempt_id": null,
+              "current_node": "end",
+              "state_snapshot": {
+                "values": {
+                  "approved": false,
+                  "memo": "checkpoint 中文🙂",
+                  "unapproved_mutation": "must-not-execute",
+                  "context": {
+                    "optional": null,
+                    "list": [
+                      "a",
+                      "b"
+                    ]
+                  }
+                },
+                "messages": [],
+                "current_node": "no"
+              },
+              "path": [
+                "start",
+                "gate",
+                "no"
+              ],
+              "step_count": "3",
+              "created_at": "2026-10-13T13:38:03.014897+08:00",
+              "continuation": {
+                "kind": "node"
+              },
+              "interrupt_type": "beforenode",
+              "parent_checkpoint_id": "666bb8cc-a5a3-40ba-8177-a8743481b680",
+              "label": null,
+              "tags": [],
+              "branch": null
+            }
+          },
+          "canonical_parent_after": null
+        }
+      ],
+      "files": [
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/run.log",
+          "sha256": "f86bafc69cc982a102e9cc221359226d2cd3be311d6d4a832b1eb3a9ace8de80"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/results.json",
+          "sha256": "91840ff9180951b234ee4fc4cec6e2432676698d28f43ce299d06a96ab6bdc7b"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/call-tuple-resume.json",
+          "sha256": "60c86a61b30e8122663982627d61d2ac66bdd45add7ef94e54826730f5677447"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/scenario.json",
+          "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/call-resume-exact.json",
+          "sha256": "c0f27a3a4fb19593addda9b19292a8b1fab445f39ee27d55906b4db57ccb4b7e"
+        },
+        {
+          "path": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/call-tuple-with-state.json",
+          "sha256": "d75a8df82245088a66c36d8ab35b446766f1bef77772df58201018af55f370f4"
+        }
+      ]
+    }
+  ],
+  "sdk_source_not_changed": true,
+  "note": "Real native SDK calls. Legal object checkpoint input explicitly encoded as public WireValue map to disambiguate domain continuation.kind. Both array checkpoint routes accept and consume real canonical state. Whole shared verifier remains red; never changed expected invalid_value to fit bug.",
+  "old_source_provenance": {
+    "source": "/tmp/sdk-workflow-shape-reconstructed-original.rs",
+    "sha256": "8a9fa9dbff4a00ca1e4f7234e22f5192f5449d025acff161868241a5fcd1c4a5",
+    "classification": "exact inverse reconstruction matched independent frozen original6711 source manifests; not a preexisting backup",
+    "receipt": "/tmp/sdk-workflow-shape-original-reconstruction.json",
+    "receipt_sha256": "291dd98838825940a36959f2ca135e8c223425c6a28776ddffb437731ea2c0a0",
+    "counterexample_authority": "actual immutable6711 Host runs, not reconstructed source execution"
+  }
+}

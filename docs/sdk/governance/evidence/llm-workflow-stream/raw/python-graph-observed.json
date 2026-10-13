@@ -1,0 +1,541 @@
+{
+  "callback_count": 0,
+  "wrong_owner": {
+    "code": "invalid_value",
+    "message": "facade resource belongs to another session",
+    "operation": "_echo_agent/workflow/op",
+    "details": null
+  },
+  "wrong_cancel": {
+    "code": "invalid_value",
+    "message": "facade resource belongs to another session",
+    "operation": "_echo_agent/workflow/op",
+    "details": null
+  },
+  "events": [
+    {
+      "kind": "variant",
+      "value": {
+        "type_id": "echo_sdk::FacadeStreamEvent",
+        "variant": "item",
+        "fields": [
+          {
+            "name": "stream",
+            "value": {
+              "kind": "handle",
+              "value": {
+                "id": "stream-092b9524-a256-4aba-96be-b23565aba2b8",
+                "generation": "1",
+                "kind": "stream"
+              }
+            }
+          },
+          {
+            "name": "sequence",
+            "value": {
+              "kind": "u64",
+              "value": "1"
+            }
+          },
+          {
+            "name": "value",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "echo_orchestration::workflow::WorkflowEvent",
+                "variant": "node_start",
+                "fields": [
+                  {
+                    "name": "node_name",
+                    "value": {
+                      "kind": "string",
+                      "value": "start🙂"
+                    }
+                  },
+                  {
+                    "name": "step_index",
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "variant",
+      "value": {
+        "type_id": "echo_sdk::FacadeStreamEvent",
+        "variant": "item",
+        "fields": [
+          {
+            "name": "stream",
+            "value": {
+              "kind": "handle",
+              "value": {
+                "id": "stream-092b9524-a256-4aba-96be-b23565aba2b8",
+                "generation": "1",
+                "kind": "stream"
+              }
+            }
+          },
+          {
+            "name": "sequence",
+            "value": {
+              "kind": "u64",
+              "value": "2"
+            }
+          },
+          {
+            "name": "value",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "echo_orchestration::workflow::WorkflowEvent",
+                "variant": "node_end",
+                "fields": [
+                  {
+                    "name": "node_name",
+                    "value": {
+                      "kind": "string",
+                      "value": "start🙂"
+                    }
+                  },
+                  {
+                    "name": "step_index",
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "name": "elapsed",
+                    "value": {
+                      "kind": "duration",
+                      "value": {
+                        "seconds": "0",
+                        "nanos": 14334
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "variant",
+      "value": {
+        "type_id": "echo_sdk::FacadeStreamEvent",
+        "variant": "item",
+        "fields": [
+          {
+            "name": "stream",
+            "value": {
+              "kind": "handle",
+              "value": {
+                "id": "stream-092b9524-a256-4aba-96be-b23565aba2b8",
+                "generation": "1",
+                "kind": "stream"
+              }
+            }
+          },
+          {
+            "name": "sequence",
+            "value": {
+              "kind": "u64",
+              "value": "3"
+            }
+          },
+          {
+            "name": "value",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "echo_orchestration::workflow::WorkflowEvent",
+                "variant": "node_start",
+                "fields": [
+                  {
+                    "name": "node_name",
+                    "value": {
+                      "kind": "string",
+                      "value": "end🙂"
+                    }
+                  },
+                  {
+                    "name": "step_index",
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "variant",
+      "value": {
+        "type_id": "echo_sdk::FacadeStreamEvent",
+        "variant": "item",
+        "fields": [
+          {
+            "name": "stream",
+            "value": {
+              "kind": "handle",
+              "value": {
+                "id": "stream-092b9524-a256-4aba-96be-b23565aba2b8",
+                "generation": "1",
+                "kind": "stream"
+              }
+            }
+          },
+          {
+            "name": "sequence",
+            "value": {
+              "kind": "u64",
+              "value": "4"
+            }
+          },
+          {
+            "name": "value",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "echo_orchestration::workflow::WorkflowEvent",
+                "variant": "node_end",
+                "fields": [
+                  {
+                    "name": "node_name",
+                    "value": {
+                      "kind": "string",
+                      "value": "end🙂"
+                    }
+                  },
+                  {
+                    "name": "step_index",
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "name": "elapsed",
+                    "value": {
+                      "kind": "duration",
+                      "value": {
+                        "seconds": "0",
+                        "nanos": 1416
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "variant",
+      "value": {
+        "type_id": "echo_sdk::FacadeStreamEvent",
+        "variant": "item",
+        "fields": [
+          {
+            "name": "stream",
+            "value": {
+              "kind": "handle",
+              "value": {
+                "id": "stream-092b9524-a256-4aba-96be-b23565aba2b8",
+                "generation": "1",
+                "kind": "stream"
+              }
+            }
+          },
+          {
+            "name": "sequence",
+            "value": {
+              "kind": "u64",
+              "value": "5"
+            }
+          },
+          {
+            "name": "value",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "echo_orchestration::workflow::WorkflowEvent",
+                "variant": "completed",
+                "fields": [
+                  {
+                    "name": "result",
+                    "value": {
+                      "kind": "string",
+                      "value": ""
+                    }
+                  },
+                  {
+                    "name": "total_steps",
+                    "value": {
+                      "kind": "u64",
+                      "value": "2"
+                    }
+                  },
+                  {
+                    "name": "elapsed",
+                    "value": {
+                      "kind": "duration",
+                      "value": {
+                        "seconds": "0",
+                        "nanos": 235834
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "variant",
+      "value": {
+        "type_id": "echo_sdk::FacadeStreamEvent",
+        "variant": "complete",
+        "fields": [
+          {
+            "name": "stream",
+            "value": {
+              "kind": "handle",
+              "value": {
+                "id": "stream-092b9524-a256-4aba-96be-b23565aba2b8",
+                "generation": "1",
+                "kind": "stream"
+              }
+            }
+          },
+          {
+            "name": "sequence",
+            "value": {
+              "kind": "u64",
+              "value": "6"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "cancel": {
+    "cancelled": true
+  },
+  "cancelled_events": [
+    {
+      "kind": "variant",
+      "value": {
+        "type_id": "echo_sdk::FacadeStreamEvent",
+        "variant": "failed",
+        "fields": [
+          {
+            "name": "stream",
+            "value": {
+              "kind": "handle",
+              "value": {
+                "id": "stream-ff0f2382-bdec-4f94-af9f-d6cc54805fef",
+                "generation": "1",
+                "kind": "stream"
+              }
+            }
+          },
+          {
+            "name": "sequence",
+            "value": {
+              "kind": "u64",
+              "value": "1"
+            }
+          },
+          {
+            "name": "value",
+            "value": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "code"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "cancelled"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "message"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "Agent Error: Cancelled: Graph 'pure-graph🙂' cancelled after 0 steps"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "retryable"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "never"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "operation"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "_echo_agent/workflow/op"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "details"
+                  },
+                  "value": {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "fields"
+                        },
+                        "value": {
+                          "kind": "list",
+                          "value": [
+                            {
+                              "kind": "map",
+                              "value": [
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "key"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "framework_failure_category"
+                                  }
+                                },
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "value"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "agent"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "map",
+                              "value": [
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "key"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "framework_terminal_kind"
+                                  }
+                                },
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "value"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "cancelled"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "map",
+                              "value": [
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "key"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "framework_failure_code"
+                                  }
+                                },
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "value"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "agent_cancelled"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "map",
+                              "value": [
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "key"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "framework_retryable"
+                                  }
+                                },
+                                {
+                                  "key": {
+                                    "kind": "string",
+                                    "value": "value"
+                                  },
+                                  "value": {
+                                    "kind": "string",
+                                    "value": "false"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

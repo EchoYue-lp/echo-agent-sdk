@@ -1,0 +1,56 @@
+Workflow evidence retained: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-_ed1mljj
+F
+=================================== FAILURES ===================================
+___________ test_workflow_checkpoint_branch_owner_and_shape_boundary ___________
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(not HOST,reason="real Host binary required")
+    async def test_workflow_checkpoint_branch_owner_and_shape_boundary():
+        work=Path(tempfile.mkdtemp(prefix="sdk-py-workflow-"));sdk=None;passed=False
+        try:
+            await helper(work,"--prepare")
+            scenario=json.loads((work/"scenario.json").read_text())
+            sdk=await EchoAgentClient.spawn(HOST,"--config",str(work/"host.json"))
+            agent=await sdk.create_agent()
+            sessions={"a":await agent.create_session(),"b":await agent.create_session()}
+            rows=[];results={}
+            for step in scenario["steps"]:
+                session=sessions[step["session"]]
+                if step.get("action")=="close":
+                    await session.close();row={"id":step["id"],"outcome":"closed"};rows.append(row);results[step["id"]]=row;(work/"results.json").write_text(json.dumps(rows,ensure_ascii=False));continue
+                resolution=work/"resolve.json";resolution.write_text(json.dumps({"value":step["arguments"],"results":results},ensure_ascii=False))
+>               arguments=json.loads(await helper(work,"--resolve",str(resolution)))
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tmp/sdk-workflow-candidate-fixture/test_workflow_host.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-_ed1mljj')
+arguments = ('--resolve', '/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-_ed1mljj/resolve.json')
+
+    async def helper(work, *arguments):
+        process=await asyncio.create_subprocess_exec(sys.executable,str(FIXTURE),"--work",str(work),*arguments,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE)
+        output,diagnostics=await process.communicate()
+>       assert process.returncode==0,diagnostics.decode()
+E       AssertionError: Traceback (most recent call last):
+E           File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 215, in <module>
+E             if __name__ == "__main__": main()
+E                                        ^^^^^^
+E           File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 210, in main
+E             print(json.dumps(resolve(request["value"], request["results"]), ensure_ascii=False))
+E                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 27, in resolve
+E             return [resolve(item, results) for item in value]
+E                     ^^^^^^^^^^^^^^^^^^^^^^
+E           File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 31, in resolve
+E             selected = results[value["$ref"]]["value"]
+E                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+E         KeyError: 'value'
+E         
+E       assert 1 == 0
+E        +  where 1 = <Process 16856>.returncode
+
+/tmp/sdk-workflow-candidate-fixture/test_workflow_host.py:21: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../../../../../../tmp/sdk-workflow-candidate-fixture/test_workflow_host.py::test_workflow_checkpoint_branch_owner_and_shape_boundary
+1 failed in 1.12s

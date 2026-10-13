@@ -19,11 +19,35 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
     private final String isolationLevel;
     private final boolean supportsStreaming;
     private final boolean supportsNotifications;
+    private final boolean executionCasV1;
     private final BigInteger claimHeartbeatIntervalMs;
+    private final ManagedPersistence.ConversationProjectionCapability conversationProjection;
+    private final ManagedPersistence.RuntimeStateCapability runtimeState;
+    private final ManagedPersistence.PersistenceCallCapability persistenceCall;
 
     private AgentComponentDescriptor(
             String component, String name, String isolationLevel, boolean supportsStreaming,
             boolean supportsNotifications, BigInteger claimHeartbeatIntervalMs) {
+        this(component, name, isolationLevel, supportsStreaming, supportsNotifications, claimHeartbeatIntervalMs,
+                ManagedPersistence.ConversationProjectionCapability.unsupported,
+                ManagedPersistence.RuntimeStateCapability.unsupported,
+                ManagedPersistence.PersistenceCallCapability.unsupported);
+    }
+
+    private AgentComponentDescriptor(String component, String name, String isolationLevel,
+            boolean supportsStreaming, boolean supportsNotifications, BigInteger claimHeartbeatIntervalMs,
+            ManagedPersistence.ConversationProjectionCapability conversationProjection,
+            ManagedPersistence.RuntimeStateCapability runtimeState,
+            ManagedPersistence.PersistenceCallCapability persistenceCall) {
+        this(component, name, isolationLevel, supportsStreaming, supportsNotifications, claimHeartbeatIntervalMs,
+                conversationProjection, runtimeState, persistenceCall, false);
+    }
+
+    private AgentComponentDescriptor(String component, String name, String isolationLevel,
+            boolean supportsStreaming, boolean supportsNotifications, BigInteger claimHeartbeatIntervalMs,
+            ManagedPersistence.ConversationProjectionCapability conversationProjection,
+            ManagedPersistence.RuntimeStateCapability runtimeState,
+            ManagedPersistence.PersistenceCallCapability persistenceCall, boolean executionCasV1) {
         if (!COMPONENTS.contains(component)) {
             throw new IllegalArgumentException("unknown Agent component kind");
         }
@@ -32,7 +56,25 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
         this.isolationLevel = isolationLevel;
         this.supportsStreaming = supportsStreaming;
         this.supportsNotifications = supportsNotifications;
+        if (executionCasV1 && !"revisioned_task_store".equals(component)) {
+            throw new IllegalArgumentException("execution CAS capability requires a revisioned task store");
+        }
+        this.executionCasV1 = executionCasV1;
         this.claimHeartbeatIntervalMs = claimHeartbeatIntervalMs;
+        if (conversationProjection == null || runtimeState == null || persistenceCall == null) {
+            throw new IllegalArgumentException("managed capabilities must not be null");
+        }
+        if (conversationProjection != ManagedPersistence.ConversationProjectionCapability.unsupported
+                && !"conversation_store".equals(component)) throw new IllegalArgumentException("conversation projection requires conversation_store");
+        if (runtimeState != ManagedPersistence.RuntimeStateCapability.unsupported
+                && !"runtime_state_store".equals(component)) throw new IllegalArgumentException("runtime state requires runtime_state_store");
+        if (persistenceCall != ManagedPersistence.PersistenceCallCapability.unsupported
+                && !Set.of("conversation_store", "runtime_state_store").contains(component)) {
+            throw new IllegalArgumentException("persistence deadline requires a managed store");
+        }
+        this.conversationProjection = conversationProjection;
+        this.runtimeState = runtimeState;
+        this.persistenceCall = persistenceCall;
         if (supportsStreaming && !Set.of("sandbox_executor", "workflow").contains(component)) {
             throw new IllegalArgumentException("streaming is only valid for sandbox and workflow");
         }
@@ -85,6 +127,34 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
                 "workflow_checkpoint_store", name, null, false, false, claimHeartbeatIntervalMs);
     }
 
+    public static AgentComponentDescriptor managedConversationStore(String name) {
+        return of("conversation_store", name).withManagedCapabilities(
+                ManagedPersistence.ConversationProjectionCapability.atomic_v1,
+                ManagedPersistence.RuntimeStateCapability.unsupported,
+                ManagedPersistence.PersistenceCallCapability.absolute_deadline_v1);
+    }
+
+    public static AgentComponentDescriptor managedRuntimeStateStore(String name) {
+        return of("runtime_state_store", name).withManagedCapabilities(
+                ManagedPersistence.ConversationProjectionCapability.unsupported,
+                ManagedPersistence.RuntimeStateCapability.revisioned_v1,
+                ManagedPersistence.PersistenceCallCapability.absolute_deadline_v1);
+    }
+
+    public AgentComponentDescriptor withManagedCapabilities(
+            ManagedPersistence.ConversationProjectionCapability conversationProjection,
+            ManagedPersistence.RuntimeStateCapability runtimeState,
+            ManagedPersistence.PersistenceCallCapability persistenceCall) {
+        return new AgentComponentDescriptor(component, name, isolationLevel, supportsStreaming,
+                supportsNotifications, claimHeartbeatIntervalMs, conversationProjection, runtimeState, persistenceCall, executionCasV1);
+    }
+
+    /** Opt into the existing typed execution CAS callback; framework alone owns transition semantics. */
+    public AgentComponentDescriptor withExecutionCasV1(boolean supported) {
+        return new AgentComponentDescriptor(component, name, isolationLevel, supportsStreaming,
+                supportsNotifications, claimHeartbeatIntervalMs, conversationProjection, runtimeState, persistenceCall, supported);
+    }
+
     @Override public String kind() { return "agent_component"; }
 
     @Override public ObjectNode toJson() {
@@ -92,6 +162,10 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
                 .put("component", component)
                 .put("name", name);
         var capabilities = descriptor.putObject("capabilities");
+        capabilities.put("conversation_projection", conversationProjection.name());
+        capabilities.put("runtime_state", runtimeState.name());
+        capabilities.put("persistence_call", persistenceCall.name());
+        capabilities.put("execution_cas_v1", executionCasV1);
         if (isolationLevel == null) capabilities.putNull("isolation_level");
         else capabilities.put("isolation_level", isolationLevel);
         capabilities.put("supports_streaming", supportsStreaming);

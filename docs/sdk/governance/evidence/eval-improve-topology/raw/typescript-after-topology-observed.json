@@ -1,0 +1,195 @@
+{
+  "language": "typescript",
+  "group": "topology",
+  "created": [],
+  "closed": [],
+  "executed": [],
+  "callbacks": [],
+  "factory_finally": 0,
+  "cancel_observed": 0,
+  "rows": [
+    {
+      "id": "tracker",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-420a5ee6-8e39-44a3-bf55-1fe5d755ddd0",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "node-0",
+      "outcome": "result",
+      "value": null
+    },
+    {
+      "id": "node-1",
+      "outcome": "result",
+      "value": null
+    },
+    {
+      "id": "duration",
+      "outcome": "result",
+      "value": null
+    },
+    {
+      "id": "second-call",
+      "outcome": "result",
+      "value": {
+        "ok": true
+      }
+    },
+    {
+      "id": "nodes",
+      "outcome": "result",
+      "value": [
+        {
+          "id": "agent🙂",
+          "label": "Agent 中文",
+          "node_type": "Agent",
+          "metadata": {
+            "optional": "",
+            "model": "固定"
+          }
+        },
+        {
+          "id": "subagent🌊",
+          "label": "Subagent 🌊",
+          "node_type": "Subagent",
+          "metadata": {
+            "owner": "agent🙂"
+          }
+        }
+      ]
+    },
+    {
+      "id": "edges",
+      "outcome": "result",
+      "value": [
+        {
+          "from": "agent🙂",
+          "to": "subagent🌊",
+          "label": "再次🙂",
+          "call_count": "2",
+          "last_called": "2026-10-14T01:09:46.656211+08:00",
+          "total_duration_ms": "123"
+        }
+      ]
+    },
+    {
+      "id": "stats",
+      "outcome": "result",
+      "value": {
+        "node_count": "2",
+        "edge_count": "1",
+        "total_calls": "2"
+      }
+    },
+    {
+      "id": "snapshot",
+      "outcome": "result",
+      "value": {
+        "nodes": [
+          {
+            "id": "agent🙂",
+            "label": "Agent 中文",
+            "node_type": "Agent",
+            "metadata": {
+              "optional": "",
+              "model": "固定"
+            }
+          },
+          {
+            "id": "subagent🌊",
+            "label": "Subagent 🌊",
+            "node_type": "Subagent",
+            "metadata": {
+              "owner": "agent🙂"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "from": "agent🙂",
+            "to": "subagent🌊",
+            "label": "再次🙂",
+            "call_count": "2",
+            "last_called": "2026-10-14T01:09:46.656211+08:00",
+            "total_duration_ms": "123"
+          }
+        ],
+        "stats": {
+          "node_count": "2",
+          "edge_count": "1",
+          "total_calls": "2"
+        }
+      }
+    },
+    {
+      "id": "to_json",
+      "outcome": "result",
+      "value": "{\n  \"nodes\": [\n    {\n      \"id\": \"agent🙂\",\n      \"label\": \"Agent 中文\",\n      \"node_type\": \"Agent\",\n      \"metadata\": {\n        \"optional\": \"\",\n        \"model\": \"固定\"\n      }\n    },\n    {\n      \"id\": \"subagent🌊\",\n      \"label\": \"Subagent 🌊\",\n      \"node_type\": \"Subagent\",\n      \"metadata\": {\n        \"owner\": \"agent🙂\"\n      }\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"agent🙂\",\n      \"to\": \"subagent🌊\",\n      \"label\": \"再次🙂\",\n      \"call_count\": 2,\n      \"last_called\": \"2026-10-14T01:09:46.656211+08:00\",\n      \"total_duration_ms\": 123\n    }\n  ],\n  \"stats\": {\n    \"node_count\": 2,\n    \"edge_count\": 1,\n    \"total_calls\": 2\n  }\n}"
+    },
+    {
+      "id": "to_mermaid",
+      "outcome": "result",
+      "value": "graph TD\n    agent🙂[\"🤖  Agent 中文\"]\n    subagent🌊[\"⚙️  Subagent 🌊\"]\n    agent🙂 -->|\"再次🙂 (x2)\"| subagent🌊"
+    },
+    {
+      "id": "to_dot",
+      "outcome": "result",
+      "value": "digraph AgentTopology {\n    rankdir=TB;\n    node [shape=box, style=rounded];\n\n    \"agent🙂\" [label=\"Agent 中文\", shape=box, style=\"filled,rounded\", fillcolor=\"#42A5F5\"];\n    \"subagent🌊\" [label=\"Subagent 🌊\", shape=box, style=\"filled,rounded\", fillcolor=\"#64B5F6\"];\n\n    \"agent🙂\" -> \"subagent🌊\" [label=\"再次🙂 (x2)\", penwidth=2.0];\n}"
+    },
+    {
+      "id": "foreign",
+      "outcome": "error",
+      "code": "invalid_value",
+      "message": "facade resource belongs to another session",
+      "operation": "_echo_agent/integration/op"
+    },
+    {
+      "id": "after-foreign",
+      "outcome": "result",
+      "value": {
+        "node_count": "2",
+        "edge_count": "1",
+        "total_calls": "2"
+      }
+    },
+    {
+      "id": "clear",
+      "outcome": "result",
+      "value": null
+    },
+    {
+      "id": "empty",
+      "outcome": "result",
+      "value": {
+        "nodes": [],
+        "edges": [],
+        "stats": {
+          "node_count": "0",
+          "edge_count": "0",
+          "total_calls": "0"
+        }
+      }
+    },
+    {
+      "id": "close",
+      "outcome": "result",
+      "value": {
+        "value": {
+          "kind": "bool",
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "closed",
+      "outcome": "error",
+      "code": "closed_handle",
+      "message": "handle was already released by this Host generation",
+      "operation": "_echo_agent/integration/op"
+    }
+  ]
+}

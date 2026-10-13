@@ -1,0 +1,1574 @@
+{
+  "language" : "java",
+  "group" : "improve",
+  "rows" : [ {
+    "id" : "loop",
+    "outcome" : "result",
+    "value" : {
+      "id" : "facade_resource-a73cfe94-e287-4b67-b69a-004bd04c37ea",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }
+  }, {
+    "id" : "max",
+    "outcome" : "result",
+    "value" : {
+      "id" : "facade_resource-7ff98a1a-493f-4310-8773-10b2189a0c97",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }
+  }, {
+    "id" : "holdout",
+    "outcome" : "result",
+    "value" : {
+      "id" : "facade_resource-31a6a1c9-eabb-44f3-9c29-9756b7e7782a",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }
+  }, {
+    "id" : "threshold",
+    "outcome" : "result",
+    "value" : {
+      "id" : "facade_resource-39298214-2a24-4ce4-86bc-1391f69f61f5",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }
+  }, {
+    "id" : "early",
+    "outcome" : "result",
+    "value" : {
+      "iterations" : [ {
+        "iteration" : "0",
+        "eval_report" : {
+          "total" : "2",
+          "passed" : "2",
+          "failed" : "0",
+          "avg_score" : 1.0,
+          "std_dev" : 0.0,
+          "min_score" : 1.0,
+          "max_score" : 1.0,
+          "delta_vs_baseline" : null,
+          "total_tool_calls" : "0",
+          "total_tokens_in" : "0",
+          "total_tokens_out" : "0",
+          "total_cached_tokens_in" : "0",
+          "total_cache_creation_tokens_in" : "0",
+          "cache_hit_rate" : null,
+          "total_tool_errors" : "0",
+          "max_protected_context_tokens" : "0",
+          "total_file_changes" : "0",
+          "results" : [ {
+            "case_id" : "case-2",
+            "success" : true,
+            "score" : 1.0,
+            "metrics" : [ {
+              "name" : "output_contains",
+              "score" : 1.0,
+              "detail" : "Looking for: OK 中文\uD83D\uDE42"
+            } ],
+            "violations" : [ ],
+            "run_id" : null,
+            "duration_ms" : "1",
+            "tool_calls" : "0",
+            "tokens_in" : "0",
+            "tokens_out" : "0",
+            "cached_tokens_in" : "0",
+            "cache_creation_tokens_in" : "0",
+            "cache_hit_rate" : null,
+            "tool_errors" : "0",
+            "max_protected_context_tokens" : "0",
+            "file_changes" : "0",
+            "compile_ok" : null,
+            "tests_pass" : null
+          }, {
+            "case_id" : "case-3",
+            "success" : true,
+            "score" : 1.0,
+            "metrics" : [ {
+              "name" : "output_contains",
+              "score" : 1.0,
+              "detail" : "Looking for: OK 中文\uD83D\uDE42"
+            } ],
+            "violations" : [ ],
+            "run_id" : null,
+            "duration_ms" : "1",
+            "tool_calls" : "0",
+            "tokens_in" : "0",
+            "tokens_out" : "0",
+            "cached_tokens_in" : "0",
+            "cache_creation_tokens_in" : "0",
+            "cache_hit_rate" : null,
+            "tool_errors" : "0",
+            "max_protected_context_tokens" : "0",
+            "file_changes" : "0",
+            "compile_ok" : null,
+            "tests_pass" : null
+          } ]
+        },
+        "train_score" : 1.0,
+        "critiques" : [ ],
+        "suggestions" : [ ],
+        "duration_ms" : "13"
+      } ],
+      "best_score" : 1.0,
+      "best_iteration" : "0",
+      "total_duration_ms" : "13"
+    }
+  }, {
+    "id" : "max-threshold",
+    "outcome" : "result",
+    "value" : {
+      "id" : "facade_resource-c9daf5b1-78e2-4117-adda-3efbc24b1b09",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }
+  }, {
+    "id" : "maximum",
+    "outcome" : "result",
+    "value" : {
+      "iterations" : [ {
+        "iteration" : "0",
+        "eval_report" : {
+          "total" : "2",
+          "passed" : "2",
+          "failed" : "0",
+          "avg_score" : 1.0,
+          "std_dev" : 0.0,
+          "min_score" : 1.0,
+          "max_score" : 1.0,
+          "delta_vs_baseline" : null,
+          "total_tool_calls" : "0",
+          "total_tokens_in" : "0",
+          "total_tokens_out" : "0",
+          "total_cached_tokens_in" : "0",
+          "total_cache_creation_tokens_in" : "0",
+          "cache_hit_rate" : null,
+          "total_tool_errors" : "0",
+          "max_protected_context_tokens" : "0",
+          "total_file_changes" : "0",
+          "results" : [ {
+            "case_id" : "case-2",
+            "success" : true,
+            "score" : 1.0,
+            "metrics" : [ {
+              "name" : "output_contains",
+              "score" : 1.0,
+              "detail" : "Looking for: OK 中文\uD83D\uDE42"
+            } ],
+            "violations" : [ ],
+            "run_id" : null,
+            "duration_ms" : "1",
+            "tool_calls" : "0",
+            "tokens_in" : "0",
+            "tokens_out" : "0",
+            "cached_tokens_in" : "0",
+            "cache_creation_tokens_in" : "0",
+            "cache_hit_rate" : null,
+            "tool_errors" : "0",
+            "max_protected_context_tokens" : "0",
+            "file_changes" : "0",
+            "compile_ok" : null,
+            "tests_pass" : null
+          }, {
+            "case_id" : "case-3",
+            "success" : true,
+            "score" : 1.0,
+            "metrics" : [ {
+              "name" : "output_contains",
+              "score" : 1.0,
+              "detail" : "Looking for: OK 中文\uD83D\uDE42"
+            } ],
+            "violations" : [ ],
+            "run_id" : null,
+            "duration_ms" : "1",
+            "tool_calls" : "0",
+            "tokens_in" : "0",
+            "tokens_out" : "0",
+            "cached_tokens_in" : "0",
+            "cache_creation_tokens_in" : "0",
+            "cache_hit_rate" : null,
+            "tool_errors" : "0",
+            "max_protected_context_tokens" : "0",
+            "file_changes" : "0",
+            "compile_ok" : null,
+            "tests_pass" : null
+          } ]
+        },
+        "train_score" : 1.0,
+        "critiques" : [ ],
+        "suggestions" : [ ],
+        "duration_ms" : "10"
+      }, {
+        "iteration" : "1",
+        "eval_report" : {
+          "total" : "2",
+          "passed" : "2",
+          "failed" : "0",
+          "avg_score" : 1.0,
+          "std_dev" : 0.0,
+          "min_score" : 1.0,
+          "max_score" : 1.0,
+          "delta_vs_baseline" : null,
+          "total_tool_calls" : "0",
+          "total_tokens_in" : "0",
+          "total_tokens_out" : "0",
+          "total_cached_tokens_in" : "0",
+          "total_cache_creation_tokens_in" : "0",
+          "cache_hit_rate" : null,
+          "total_tool_errors" : "0",
+          "max_protected_context_tokens" : "0",
+          "total_file_changes" : "0",
+          "results" : [ {
+            "case_id" : "case-2",
+            "success" : true,
+            "score" : 1.0,
+            "metrics" : [ {
+              "name" : "output_contains",
+              "score" : 1.0,
+              "detail" : "Looking for: OK 中文\uD83D\uDE42"
+            } ],
+            "violations" : [ ],
+            "run_id" : null,
+            "duration_ms" : "1",
+            "tool_calls" : "0",
+            "tokens_in" : "0",
+            "tokens_out" : "0",
+            "cached_tokens_in" : "0",
+            "cache_creation_tokens_in" : "0",
+            "cache_hit_rate" : null,
+            "tool_errors" : "0",
+            "max_protected_context_tokens" : "0",
+            "file_changes" : "0",
+            "compile_ok" : null,
+            "tests_pass" : null
+          }, {
+            "case_id" : "case-3",
+            "success" : true,
+            "score" : 1.0,
+            "metrics" : [ {
+              "name" : "output_contains",
+              "score" : 1.0,
+              "detail" : "Looking for: OK 中文\uD83D\uDE42"
+            } ],
+            "violations" : [ ],
+            "run_id" : null,
+            "duration_ms" : "1",
+            "tool_calls" : "0",
+            "tokens_in" : "0",
+            "tokens_out" : "0",
+            "cached_tokens_in" : "0",
+            "cache_creation_tokens_in" : "0",
+            "cache_hit_rate" : null,
+            "tool_errors" : "0",
+            "max_protected_context_tokens" : "0",
+            "file_changes" : "0",
+            "compile_ok" : null,
+            "tests_pass" : null
+          } ]
+        },
+        "train_score" : 1.0,
+        "critiques" : [ ],
+        "suggestions" : [ ],
+        "duration_ms" : "10"
+      } ],
+      "best_score" : 1.0,
+      "best_iteration" : "0",
+      "total_duration_ms" : "21"
+    }
+  }, {
+    "id" : "max-get",
+    "outcome" : "result",
+    "value" : "2"
+  }, {
+    "id" : "holdout-get",
+    "outcome" : "result",
+    "value" : 0.5
+  }, {
+    "id" : "threshold-get",
+    "outcome" : "result",
+    "value" : 1.1
+  }, {
+    "id" : "store",
+    "outcome" : "result",
+    "value" : {
+      "resource" : {
+        "id" : "facade_resource-6c3cf86a-6c48-4efb-b200-9d7dbe820add",
+        "generation" : "1",
+        "kind" : "facade_resource"
+      }
+    }
+  }, {
+    "id" : "save-run",
+    "outcome" : "result",
+    "value" : {
+      "ok" : true
+    }
+  }, {
+    "id" : "load-run",
+    "outcome" : "result",
+    "value" : {
+      "run" : {
+        "run_id" : "trajectory-中文\uD83D\uDE42",
+        "parent_run_id" : "parent\uD83D\uDE42",
+        "agent_name" : "native-agent\uD83D\uDE42",
+        "model" : "fixed-model",
+        "provider" : null,
+        "turn_id" : "turn\uD83D\uDE42",
+        "execution_id" : "execute\uD83D\uDE42",
+        "session_id" : "session\uD83D\uDE42",
+        "status" : "completed",
+        "input" : "读写中文\uD83D\uDE42",
+        "events" : [ {
+          "type" : "tool_call",
+          "call_id" : "call\uD83D\uDE42",
+          "name" : "write_file",
+          "args" : {
+            "path" : "file\uD83D\uDE42",
+            "content" : "written\uD83D\uDE42"
+          },
+          "risk" : "write",
+          "duration_ms" : "11"
+        }, {
+          "type" : "file_edit",
+          "tool" : "write_file",
+          "path" : "file\uD83D\uDE42"
+        }, {
+          "type" : "tool_result",
+          "call_id" : "call\uD83D\uDE42",
+          "name" : "write_file",
+          "success" : true,
+          "output_preview" : "写入\uD83D\uDE42",
+          "output_truncated" : false,
+          "duration_ms" : "11",
+          "original_bytes" : "9",
+          "returned_bytes" : "9",
+          "estimated_tokens" : "3",
+          "output_handling" : null
+        } ],
+        "final_output" : "完成\uD83D\uDE42",
+        "error" : null,
+        "token_usage" : {
+          "prompt_tokens" : "17",
+          "completion_tokens" : "5",
+          "total_tokens" : "22",
+          "cached_prompt_tokens" : "3",
+          "cache_creation_prompt_tokens" : "0",
+          "usage_reported_calls" : "1",
+          "usage_missing_calls" : "0"
+        },
+        "timings" : {
+          "total_duration_ms" : "123",
+          "llm_duration_ms" : "112",
+          "tool_duration_ms" : "11"
+        },
+        "started_at" : "2026-10-13T08:00:00.123456789+08:00",
+        "finished_at" : "2026-10-13T08:00:00.246456789+08:00"
+      }
+    }
+  }, {
+    "id" : "sharegpt",
+    "outcome" : "result",
+    "value" : [ {
+      "from" : "human",
+      "value" : "读写中文\uD83D\uDE42"
+    }, {
+      "from" : "gpt",
+      "value" : "\uD83D\uDD27 Tool Call: write_file\n{\n  \"path\": \"file\uD83D\uDE42\",\n  \"content\": \"written\uD83D\uDE42\"\n}"
+    }, {
+      "from" : "tool",
+      "value" : "✅ write_file: 写入\uD83D\uDE42"
+    }, {
+      "from" : "gpt",
+      "value" : "完成\uD83D\uDE42"
+    } ]
+  }, {
+    "id" : "analyze",
+    "outcome" : "result",
+    "value" : {
+      "run_id" : "trajectory-中文\uD83D\uDE42",
+      "success" : true,
+      "score" : 0.6666666666666667,
+      "issues" : [ {
+        "WriteWithoutRead" : {
+          "tool" : "write",
+          "count" : "1"
+        }
+      } ],
+      "suggestions" : [ {
+        "type" : "prompt_change",
+        "section" : "tools",
+        "suggestion" : "Add instruction: 'Always read a file with read_file before editing it. This was violated 1 time(s).'"
+      }, {
+        "type" : "policy_change",
+        "rule" : "force_read_before_edit: true",
+        "reason" : "Agent wrote files without reading first 1 time(s)"
+      } ]
+    }
+  }, {
+    "id" : "analyze-failed",
+    "outcome" : "result",
+    "value" : {
+      "run_id" : "trajectory-中文\uD83D\uDE42",
+      "success" : false,
+      "score" : 0.6666666666666667,
+      "issues" : [ {
+        "WriteWithoutRead" : {
+          "tool" : "write",
+          "count" : "1"
+        }
+      } ],
+      "suggestions" : [ {
+        "type" : "prompt_change",
+        "section" : "tools",
+        "suggestion" : "Add instruction: 'Always read a file with read_file before editing it. This was violated 1 time(s).'"
+      }, {
+        "type" : "policy_change",
+        "rule" : "force_read_before_edit: true",
+        "reason" : "Agent wrote files without reading first 1 time(s)"
+      } ]
+    }
+  }, {
+    "id" : "saver",
+    "outcome" : "result",
+    "value" : {
+      "id" : "facade_resource-81e16e9f-9855-4d8d-8621-e07df41d97f1",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }
+  }, {
+    "id" : "save",
+    "outcome" : "result",
+    "value" : true
+  }, {
+    "id" : "skip-nonterminal",
+    "outcome" : "result",
+    "value" : false
+  }, {
+    "id" : "list",
+    "outcome" : "result",
+    "value" : [ {
+      "id" : "trajectory-中文\uD83D\uDE42",
+      "session_id" : "session\uD83D\uDE42",
+      "conversations" : [ {
+        "from" : "human",
+        "value" : "读写中文\uD83D\uDE42"
+      }, {
+        "from" : "gpt",
+        "value" : "\uD83D\uDD27 Tool Call: write_file\n{\n  \"path\": \"file\uD83D\uDE42\",\n  \"content\": \"written\uD83D\uDE42\"\n}"
+      }, {
+        "from" : "tool",
+        "value" : "✅ write_file: 写入\uD83D\uDE42"
+      }, {
+        "from" : "gpt",
+        "value" : "完成\uD83D\uDE42"
+      } ],
+      "model" : "model\uD83D\uDE42",
+      "completed" : true,
+      "timestamp" : "2026-10-14T01:09:40.870773+08:00",
+      "token_usage" : "22",
+      "tool_call_count" : "1",
+      "duration_ms" : "123"
+    } ]
+  }, {
+    "id" : "stats",
+    "outcome" : "result",
+    "value" : {
+      "total" : "1",
+      "completed" : "1",
+      "failed" : "0",
+      "total_tokens" : "22",
+      "total_tool_calls" : "1",
+      "avg_duration_ms" : "123"
+    }
+  }, {
+    "id" : "block",
+    "outcome" : "result",
+    "value" : true
+  }, {
+    "id" : "failed-save",
+    "outcome" : "error",
+    "code" : "framework_error",
+    "message" : "IO Error: Not a directory (os error 20)",
+    "operation" : "echo_agent::improve::trajectory::TrajectorySaver::save",
+    "details" : {
+      "fields" : [ {
+        "key" : "framework_failure_category",
+        "value" : "io"
+      }, {
+        "key" : "framework_terminal_kind",
+        "value" : "failed"
+      }, {
+        "key" : "framework_failure_code",
+        "value" : "io"
+      }, {
+        "key" : "framework_retryable",
+        "value" : "true"
+      } ]
+    }
+  }, {
+    "id" : "restore",
+    "outcome" : "result",
+    "value" : true
+  }, {
+    "id" : "saver-reopen",
+    "outcome" : "result",
+    "value" : {
+      "id" : "facade_resource-7de559fc-ca9e-4b4f-9aec-920f25abebb1",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }
+  }, {
+    "id" : "reopened-list",
+    "outcome" : "result",
+    "value" : [ {
+      "id" : "trajectory-中文\uD83D\uDE42",
+      "session_id" : "session\uD83D\uDE42",
+      "conversations" : [ {
+        "from" : "human",
+        "value" : "读写中文\uD83D\uDE42"
+      }, {
+        "from" : "gpt",
+        "value" : "\uD83D\uDD27 Tool Call: write_file\n{\n  \"path\": \"file\uD83D\uDE42\",\n  \"content\": \"written\uD83D\uDE42\"\n}"
+      }, {
+        "from" : "tool",
+        "value" : "✅ write_file: 写入\uD83D\uDE42"
+      }, {
+        "from" : "gpt",
+        "value" : "完成\uD83D\uDE42"
+      } ],
+      "model" : "model\uD83D\uDE42",
+      "completed" : true,
+      "timestamp" : "2026-10-14T01:09:40.870773+08:00",
+      "token_usage" : "22",
+      "tool_call_count" : "1",
+      "duration_ms" : "123"
+    } ]
+  }, {
+    "id" : "reopened-stats",
+    "outcome" : "result",
+    "value" : {
+      "total" : "1",
+      "completed" : "1",
+      "failed" : "0",
+      "total_tokens" : "22",
+      "total_tool_calls" : "1",
+      "avg_duration_ms" : "123"
+    }
+  } ],
+  "trajectory_bytes_before" : [ "eyJpZCI6InRyYWplY3Rvcnkt5Lit5paH8J+ZgiIsInNlc3Npb25faWQiOiJzZXNzaW9u8J+ZgiIsImNvbnZlcnNhdGlvbnMiOlt7ImZyb20iOiJodW1hbiIsInZhbHVlIjoi6K+75YaZ5Lit5paH8J+ZgiJ9LHsiZnJvbSI6ImdwdCIsInZhbHVlIjoi8J+UpyBUb29sIENhbGw6IHdyaXRlX2ZpbGVcbntcbiAgXCJwYXRoXCI6IFwiZmlsZfCfmYJcIixcbiAgXCJjb250ZW50XCI6IFwid3JpdHRlbvCfmYJcIlxufSJ9LHsiZnJvbSI6InRvb2wiLCJ2YWx1ZSI6IuKchSB3cml0ZV9maWxlOiDlhpnlhaXwn5mCIn0seyJmcm9tIjoiZ3B0IiwidmFsdWUiOiLlrozmiJDwn5mCIn1dLCJtb2RlbCI6Im1vZGVs8J+ZgiIsImNvbXBsZXRlZCI6dHJ1ZSwidGltZXN0YW1wIjoiMjAyNi0xMC0xNFQwMTowOTo0MC44NzA3NzMrMDg6MDAiLCJ0b2tlbl91c2FnZSI6MjIsInRvb2xfY2FsbF9jb3VudCI6MSwiZHVyYXRpb25fbXMiOjEyM30K" ],
+  "trajectory_bytes_after" : [ "eyJpZCI6InRyYWplY3Rvcnkt5Lit5paH8J+ZgiIsInNlc3Npb25faWQiOiJzZXNzaW9u8J+ZgiIsImNvbnZlcnNhdGlvbnMiOlt7ImZyb20iOiJodW1hbiIsInZhbHVlIjoi6K+75YaZ5Lit5paH8J+ZgiJ9LHsiZnJvbSI6ImdwdCIsInZhbHVlIjoi8J+UpyBUb29sIENhbGw6IHdyaXRlX2ZpbGVcbntcbiAgXCJwYXRoXCI6IFwiZmlsZfCfmYJcIixcbiAgXCJjb250ZW50XCI6IFwid3JpdHRlbvCfmYJcIlxufSJ9LHsiZnJvbSI6InRvb2wiLCJ2YWx1ZSI6IuKchSB3cml0ZV9maWxlOiDlhpnlhaXwn5mCIn0seyJmcm9tIjoiZ3B0IiwidmFsdWUiOiLlrozmiJDwn5mCIn1dLCJtb2RlbCI6Im1vZGVs8J+ZgiIsImNvbXBsZXRlZCI6dHJ1ZSwidGltZXN0YW1wIjoiMjAyNi0xMC0xNFQwMTowOTo0MC44NzA3NzMrMDg6MDAiLCJ0b2tlbl91c2FnZSI6MjIsInRvb2xfY2FsbF9jb3VudCI6MSwiZHVyYXRpb25fbXMiOjEyM30K" ],
+  "created" : [ "extension-25beccd1-7c6c-47bc-acd8-4422a9c8339d", "extension-95f6cd03-54c2-4bcc-918b-983d45092229", "extension-73912154-815a-41f0-a7f9-5a2045df1497", "extension-63f82a05-a053-4f7d-b2c6-3117d3e5d265", "extension-cb2b2272-bf26-44f7-9b49-0fa77de41398", "extension-b29f9e8f-3eec-438d-9eb7-8115732ae961", "extension-4cb4fcc6-3d19-4512-a87a-039ad8d4d4a2", "extension-25cf096c-5ce1-4aca-a664-4b04a5dd3c80", "extension-fc164c9e-7fea-434c-9cf5-1a362fa656d4", "extension-afcb6162-124a-4c14-baa3-827b8f5c9ff8", "extension-2565de25-c4ba-414f-837f-34c25ecf3f06", "extension-6c1f89bf-54a5-4254-9f2a-b7a23ea62bd5" ],
+  "closed" : [ "extension-25beccd1-7c6c-47bc-acd8-4422a9c8339d", "extension-95f6cd03-54c2-4bcc-918b-983d45092229", "extension-73912154-815a-41f0-a7f9-5a2045df1497", "extension-63f82a05-a053-4f7d-b2c6-3117d3e5d265", "extension-cb2b2272-bf26-44f7-9b49-0fa77de41398", "extension-b29f9e8f-3eec-438d-9eb7-8115732ae961", "extension-4cb4fcc6-3d19-4512-a87a-039ad8d4d4a2", "extension-25cf096c-5ce1-4aca-a664-4b04a5dd3c80", "extension-fc164c9e-7fea-434c-9cf5-1a362fa656d4", "extension-afcb6162-124a-4c14-baa3-827b8f5c9ff8", "extension-2565de25-c4ba-414f-837f-34c25ecf3f06", "extension-6c1f89bf-54a5-4254-9f2a-b7a23ea62bd5" ],
+  "executed" : [ "extension-25beccd1-7c6c-47bc-acd8-4422a9c8339d", "extension-95f6cd03-54c2-4bcc-918b-983d45092229", "extension-73912154-815a-41f0-a7f9-5a2045df1497", "extension-63f82a05-a053-4f7d-b2c6-3117d3e5d265", "extension-cb2b2272-bf26-44f7-9b49-0fa77de41398", "extension-b29f9e8f-3eec-438d-9eb7-8115732ae961", "extension-4cb4fcc6-3d19-4512-a87a-039ad8d4d4a2", "extension-25cf096c-5ce1-4aca-a664-4b04a5dd3c80", "extension-fc164c9e-7fea-434c-9cf5-1a362fa656d4", "extension-afcb6162-124a-4c14-baa3-827b8f5c9ff8", "extension-2565de25-c4ba-414f-837f-34c25ecf3f06", "extension-6c1f89bf-54a5-4254-9f2a-b7a23ea62bd5" ],
+  "callbacks" : [ {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-0",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-25beccd1-7c6c-47bc-acd8-4422a9c8339d",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-25beccd1-7c6c-47bc-acd8-4422a9c8339d",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-1",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-aede1e43-e0ab-4282-8920-ca33f3781922",
+      "turn_id" : "eval-aede1e43-e0ab-4282-8920-ca33f3781922",
+      "execution_id" : "eval-aede1e43-e0ab-4282-8920-ca33f3781922"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-b58c4a4e-8eff-43e5-b113-226253baa79e",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-25beccd1-7c6c-47bc-acd8-4422a9c8339d",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-2",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-3",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-95f6cd03-54c2-4bcc-918b-983d45092229",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-95f6cd03-54c2-4bcc-918b-983d45092229",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-4",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-d07c3796-dcaf-4ee7-a296-89b2d2aa2aee",
+      "turn_id" : "eval-d07c3796-dcaf-4ee7-a296-89b2d2aa2aee",
+      "execution_id" : "eval-d07c3796-dcaf-4ee7-a296-89b2d2aa2aee"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-dadcbb11-c24f-4989-8372-4111bde14277",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-95f6cd03-54c2-4bcc-918b-983d45092229",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-5",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-6",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-73912154-815a-41f0-a7f9-5a2045df1497",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-73912154-815a-41f0-a7f9-5a2045df1497",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-7",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-b39dbe0f-1488-4f1b-a8a4-f992cbe21fa4",
+      "turn_id" : "eval-b39dbe0f-1488-4f1b-a8a4-f992cbe21fa4",
+      "execution_id" : "eval-b39dbe0f-1488-4f1b-a8a4-f992cbe21fa4"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-70fdfa2c-fb10-42d9-823a-eba0ad57546e",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-73912154-815a-41f0-a7f9-5a2045df1497",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-8",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-9",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-63f82a05-a053-4f7d-b2c6-3117d3e5d265",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-63f82a05-a053-4f7d-b2c6-3117d3e5d265",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-10",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-1d7f6f13-8f17-40ba-baeb-e1761ec0d88a",
+      "turn_id" : "eval-1d7f6f13-8f17-40ba-baeb-e1761ec0d88a",
+      "execution_id" : "eval-1d7f6f13-8f17-40ba-baeb-e1761ec0d88a"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-4c1e7f93-7db3-4d33-82d2-11f70f56daad",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-63f82a05-a053-4f7d-b2c6-3117d3e5d265",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-11",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-12",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-cb2b2272-bf26-44f7-9b49-0fa77de41398",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-cb2b2272-bf26-44f7-9b49-0fa77de41398",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-13",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-5474e578-248d-4c54-b272-ebee2223d857",
+      "turn_id" : "eval-5474e578-248d-4c54-b272-ebee2223d857",
+      "execution_id" : "eval-5474e578-248d-4c54-b272-ebee2223d857"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-3e66231a-94f0-47b4-970b-fb554c9de782",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-cb2b2272-bf26-44f7-9b49-0fa77de41398",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-14",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-15",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-b29f9e8f-3eec-438d-9eb7-8115732ae961",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-b29f9e8f-3eec-438d-9eb7-8115732ae961",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-16",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-3d6d7a9e-cbf0-4c66-8cfe-ba98c4466ad9",
+      "turn_id" : "eval-3d6d7a9e-cbf0-4c66-8cfe-ba98c4466ad9",
+      "execution_id" : "eval-3d6d7a9e-cbf0-4c66-8cfe-ba98c4466ad9"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-f2ad1b59-d52a-42f8-8169-4b92f8c45596",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-b29f9e8f-3eec-438d-9eb7-8115732ae961",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-17",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-18",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-4cb4fcc6-3d19-4512-a87a-039ad8d4d4a2",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-4cb4fcc6-3d19-4512-a87a-039ad8d4d4a2",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-19",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-e585c088-d923-4559-b855-0f3172fe61b9",
+      "turn_id" : "eval-e585c088-d923-4559-b855-0f3172fe61b9",
+      "execution_id" : "eval-e585c088-d923-4559-b855-0f3172fe61b9"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-6055ffb9-ebde-408c-997d-d17366fbee22",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-4cb4fcc6-3d19-4512-a87a-039ad8d4d4a2",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-20",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-21",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-25cf096c-5ce1-4aca-a664-4b04a5dd3c80",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-25cf096c-5ce1-4aca-a664-4b04a5dd3c80",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-22",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-76f2e204-4f45-44dd-b77a-3c9f83cb3aba",
+      "turn_id" : "eval-76f2e204-4f45-44dd-b77a-3c9f83cb3aba",
+      "execution_id" : "eval-76f2e204-4f45-44dd-b77a-3c9f83cb3aba"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-ebce0512-0ff4-4348-96a5-1a68a8842341",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-25cf096c-5ce1-4aca-a664-4b04a5dd3c80",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-23",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-24",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-fc164c9e-7fea-434c-9cf5-1a362fa656d4",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-fc164c9e-7fea-434c-9cf5-1a362fa656d4",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-25",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-c2c88f87-97ab-415b-b824-64927cd2b575",
+      "turn_id" : "eval-c2c88f87-97ab-415b-b824-64927cd2b575",
+      "execution_id" : "eval-c2c88f87-97ab-415b-b824-64927cd2b575"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-4baf9584-7130-4810-83d4-4f56ff34c121",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-fc164c9e-7fea-434c-9cf5-1a362fa656d4",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-26",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-27",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-afcb6162-124a-4c14-baa3-827b8f5c9ff8",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-afcb6162-124a-4c14-baa3-827b8f5c9ff8",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-28",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-5e67379b-04e1-4077-ad0a-a37e6b393f14",
+      "turn_id" : "eval-5e67379b-04e1-4077-ad0a-a37e6b393f14",
+      "execution_id" : "eval-5e67379b-04e1-4077-ad0a-a37e6b393f14"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-5f1a27aa-bb9a-43f5-9846-f3db30c8d436",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-afcb6162-124a-4c14-baa3-827b8f5c9ff8",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-29",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-30",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-2565de25-c4ba-414f-837f-34c25ecf3f06",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-2565de25-c4ba-414f-837f-34c25ecf3f06",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-31",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-b7c084d3-a0a2-4e83-9065-76b4e4bf82c3",
+      "turn_id" : "eval-b7c084d3-a0a2-4e83-9065-76b4e4bf82c3",
+      "execution_id" : "eval-b7c084d3-a0a2-4e83-9065-76b4e4bf82c3"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-550c156d-7481-488f-9759-72204ea4147f",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-2565de25-c4ba-414f-837f-34c25ecf3f06",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-32",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "extension" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-33",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "factory_create_agent",
+      "input" : {
+        "instance" : {
+          "id" : "extension-6c1f89bf-54a5-4254-9f2a-b7a23ea62bd5",
+          "generation" : "1",
+          "kind" : "extension"
+        },
+        "model" : "",
+        "name" : "analysis-factory",
+        "system_prompt" : "",
+        "tool_count" : "0"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-6c1f89bf-54a5-4254-9f2a-b7a23ea62bd5",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-34",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9",
+      "run_id" : "eval-67b80639-09d6-420b-b334-ec93fabfa2c3",
+      "turn_id" : "eval-67b80639-09d6-420b-b334-ec93fabfa2c3",
+      "execution_id" : "eval-67b80639-09d6-420b-b334-ec93fabfa2c3"
+    },
+    "invocation" : {
+      "operation" : "agent_execute_stream",
+      "input" : {
+        "task" : "good"
+      }
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    },
+    "stream" : {
+      "id" : "stream-57da2d4b-6dfe-47ef-a2ee-9511da044016",
+      "generation" : "1",
+      "kind" : "stream"
+    }
+  }, {
+    "factory_origin" : {
+      "id" : "extension-3e8f05aa-6e64-4dc9-b7a3-514bbd686abf",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "extension" : {
+      "id" : "extension-6c1f89bf-54a5-4254-9f2a-b7a23ea62bd5",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-e871e66a5a694d3987ba5f5368d9a4d4-35",
+    "context" : {
+      "session_id" : "sess_c6b3e1d4-bf1d-42a5-8519-8b5915d62fb9"
+    },
+    "invocation" : {
+      "operation" : "agent_close",
+      "input" : null
+    },
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  } ],
+  "factory_finally" : 12,
+  "cancel_observed" : 0
+}

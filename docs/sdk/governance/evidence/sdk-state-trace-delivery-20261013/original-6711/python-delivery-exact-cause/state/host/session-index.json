@@ -1,0 +1,11 @@
+[
+  {
+    "session_id": "sess_34c8169f-f13c-4072-97ea-51fe5366a318",
+    "agent_handle_id": "agent-2",
+    "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+    "cwd": {
+      "encoding": "utf8",
+      "path": "/private/tmp/sdk-state-trace-delivery-candidate-fixture"
+    }
+  }
+]

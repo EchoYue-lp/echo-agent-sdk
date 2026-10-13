@@ -6,11 +6,13 @@ framework's Agent / Session / Run object model with typed JSON-RPC methods,
 generation-fenced handles, full `EventEnvelope` streaming, bounded live
 delivery with ACK, durable replay and restart recovery.
 
-> **Status.** The core profile is delivered as a Rust Host capability with
-> real-process E2E coverage (see `echo-sdk-host/tests/core_profile_e2e.rs`).
-> Source-built TypeScript, Python and Java clients negotiate and consume the
-> same profile; the executable route baseline is green, while intrinsic
-> facade mappings remain before **Runnable** and **Parity complete**.
+> **Governance candidate.** Rust Host and source-built TypeScript, Python
+> and Java clients implement this profile. The current lifecycle and recovery
+> changes still require final contract, real-Host language and exact-main
+> acceptance; historical passing tests do not prove the candidate complete.
+> Cross-language compatibility covers the explicitly accepted external
+> contract, not every Rust public identity. See the
+> [governance evidence matrix](governance/behavior-evidence-matrix.md).
 
 ## Enabling the profile
 
@@ -78,9 +80,10 @@ JSON-RPC `method not found` (-32601). A standard ACP Client is unaffected.
 | Runs | `runs` | `_echo_agent/run/start`, `/get`, `/wait`, `/cancel`, `/steer`, plus the `_echo_agent/event`, `_echo_agent/event/ack` notifications |
 | Event replay | `event_replay` | `_echo_agent/run/replay`, plus the `_echo_agent/gap` notification |
 
-Task graphs, subagents, extension bridge, structured output and feature
-operations are **not** part of this profile yet; they are not advertised and
-their methods answer method-not-found.
+Task graphs, Subagents, structured output and feature operations are added
+by `sdk-facade-adapters`; reverse calls are added by `sdk-extension-bridge`.
+They are advertised only when their handlers and required features are
+compiled. A core-only build does not advertise those additional surfaces.
 
 ## Object model and handles
 
@@ -120,6 +123,10 @@ prompt turns in Extended mode.
   and as a `_echo_agent/event` notification. Exactly one terminal event ends
   a run; terminals come only from the framework.
 - The Client acknowledges consumed cursors with `_echo_agent/event/ack`.
+  Receiving a notification or enqueueing an outbound frame is not proof of
+  application consumption. Live iterators/publishers ACK at their consumption
+  boundary; gap recovery requires an explicit ACK after applying the snapshot
+  and consuming the returned replay page. Fetching replay never ACKs it.
 - While the outstanding (un-ACKed) count/bytes stay inside
   `max_outstanding_live_events` / `max_event_bytes`, delivery is live. At
   the bound the Host sends **one** `_echo_agent/gap` notification and pauses
@@ -129,7 +136,18 @@ prompt turns in Extended mode.
 - `run/replay` is bounded by `max_replay_events` / `max_replay_bytes` and
   addressed by a current-generation stream handle. Replays below the journal
   retention floor return a typed gap with a snapshot watermark. A replay
-  response is validated against the contract before it is sent.
+  response is validated against the contract before it is sent. Successful
+  publication records the returned page as announced, so its consumed cursor
+  can be ACKed; failed publication must not advance that bound.
+- Snapshot ACK advances the continuation floor monotonically. Live
+  continuation starts after the greater of that floor and the sent cursor;
+  events covered by the applied snapshot are not resent. Duplicate or older
+  ACKs cannot move the floor backward, and ACKs beyond announced live,
+  snapshot or replay facts are rejected without resuming delivery. Explicit
+  historical replay still honors its requested cursor and journal retention.
+  This is the Issue #120 boundary,
+  covered by the three language `GapAckHost` scenarios; final candidate
+  acceptance remains recorded in the governance evidence matrix.
 
 ## Persistence, recovery and shutdown
 
@@ -156,9 +174,22 @@ The state root layout:
   continue from the framework's committed checkpoint only.
 - Shutdown order (stdin EOF and clean close share it): stop run admission →
   cancel active runs → bounded wait for receipts → flush journals/index →
-  close Session Agents → release handles.
+  close Session Agents → release handles. Timeout or cleanup failure is an
+  error, not a fabricated terminal or a successful release. Failed close
+  retains the cleanup owner for retry; successful repeated close is idempotent.
+- Rust embedders can retain a `HostCloseOwner` for the owned Host entry points.
+  Its close path keeps the official connection actor polling while framework
+  drivers and callbacks settle. This is a Rust/Host ownership facility, not
+  a new language wire operation. The active-Run manual-close fix is part of
+  the current candidate and needs final validation before a completion claim.
 
 ## Errors
+
+Framework-backed feature failures retain their canonical category, terminal
+kind, cause code, retryability and optional HTTP status in bounded error
+details. Cancellation is `cancelled`; a framework timeout is `framework_error`
+with a `timed_out` cause. The operation remains non-retryable: a retryable cause
+does not authorize repeating an operation with potentially committed effects.
 
 `_echo_agent/*` failures use one fixed JSON-RPC server-error code
 (`-32050`); `error.data` carries the bounded `EchoSdkError` envelope

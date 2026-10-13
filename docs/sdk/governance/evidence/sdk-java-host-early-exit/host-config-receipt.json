@@ -1,0 +1,6 @@
+{
+  "hostSha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10",
+  "exitCode": 2,
+  "stdoutBytes": 0,
+  "stderr": "echo-agent-sdk-host: sdk_profile.state_root must be an absolute path\n"
+}

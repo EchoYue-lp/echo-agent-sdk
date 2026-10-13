@@ -1,0 +1,24 @@
+TAP version 13
+# Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/runtime/managed-retirement/typescript-retirement-false-s9wTSQ
+# Subtest: accepted managed exact clear retirement enabled=false
+ok 1 - accepted managed exact clear retirement enabled=false
+  ---
+  duration_ms: 5859.324083
+  type: 'test'
+  ...
+# Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/runtime/managed-retirement/typescript-retirement-true-VX7nUh
+# Subtest: accepted managed exact clear retirement enabled=true
+ok 2 - accepted managed exact clear retirement enabled=true
+  ---
+  duration_ms: 10606.320875
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16702.0915

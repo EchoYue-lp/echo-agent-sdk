@@ -1,0 +1,155 @@
+.............................F.................................F.        [100%]
+=================================== FAILURES ===================================
+______ test_paused_consumer_external_replay_ack_coalesces_covered_tail[1] ______
+
+window = 1
+tmp_path = PosixPath('/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/pytest-of-ls/pytest-953/test_paused_consumer_external_0')
+
+    @pytest.mark.parametrize("window", [1, 2])
+    @pytest.mark.asyncio
+    async def test_paused_consumer_external_replay_ack_coalesces_covered_tail(
+        window, tmp_path
+    ):
+        model = await asyncio.create_subprocess_exec(
+            "python3",
+            str(TESTING / "gap_ack_fixture.py"),
+            "--work",
+            str(tmp_path),
+            "--mode",
+            "window",
+        )
+        try:
+            await wait_for(lambda: (tmp_path / "ready").exists())
+            config_path = tmp_path / "host.json"
+            config = json.loads(config_path.read_text())
+            config["sdk_profile"]["limits"]["max_outstanding_live_events"] = window
+            config_path.write_text(json.dumps(config))
+            async with await EchoAgentClient.spawn(
+                "python3",
+                str(TESTING / "gap_ack_host_proxy.py"),
+                HOST,
+                str(config_path),
+                max_buffered_events=window,
+            ) as sdk:
+                agent = await sdk.create_agent()
+                session = await agent.create_session()
+                run = await session.start_run("coalesced external recovery")
+                await wait_for(lambda: (tmp_path / "parked").exists())
+                first = next(
+                    frame
+                    for frame in notifications(tmp_path)
+                    if frame["method"] == "_echo_agent/gap"
+                )["params"]["gap"]
+                covered = {}
+                cursor = "0"
+                first_page = await run.replay(cursor, 64)
+                for event in first_page["events"]:
+                    if int(event["sequence"]) <= int(first["snapshot_watermark"]):
+                        covered[event["sequence"]] = event["event_id"]
+                        cursor = event["sequence"]
+                assert cursor == first["snapshot_watermark"]
+                await sdk.notify(
+                    "echo_agent/event/ack",
+                    {
+                        "ack": {
+                            "stream": run.stream.to_dict(),
+                            "last_processed_sequence": cursor,
+                        }
+                    },
+                )
+                (tmp_path / "release").touch()
+                await wait_for(
+                    lambda: (
+                        len(
+                            [
+                                frame
+                                for frame in notifications(tmp_path)
+                                if frame["method"] == "_echo_agent/gap"
+                            ]
+                        )
+                        >= 2
+                    )
+                )
+                iterator = run.events
+                item = await asyncio.wait_for(anext(iterator), 5)
+>               assert "gap" in item
+E               AssertionError: assert 'gap' in {'stream': {'id': '6f696caa-af98-4856-ac4a-10b81ac20e5a', 'generation': '1', 'kind': 'stream'}, 'envelope': {'schema_v...5b2', 'content_hash': 'sha256:68efab256d3c98af777b037873b3b66a0355e0fd244aee28fae63ee635a181b2', 'sequence': '3', ...}}
+
+tests/test_gap_ack_host.py:344: AssertionError
+_____ test_observed_snapshot_ack_filters_covered_queue_without_future_ack ______
+
+    @pytest.mark.asyncio
+    async def test_observed_snapshot_ack_filters_covered_queue_without_future_ack():
+        from echo_agent_sdk.client import _AsyncQueue, _EventFeed
+    
+        client = object.__new__(EchoAgentClient)
+        stream = WireHandle("s", "1", "stream")
+        queue = _AsyncQueue(8)
+        feed = _EventFeed(queue, stream, 2, 1, 2)
+        client._events = {stream.id: feed}
+        client._replay_ranges = {}
+        client._event_cursors = {}
+        client._closed = False
+        client.connection = SimpleNamespace(ext_notification=AsyncMock())
+        event = lambda seq: {"stream": stream.to_dict(), "envelope": {"sequence": str(seq)}}
+        gap = lambda seq: {
+            "stream": stream.to_dict(),
+            "gap": {
+                "from_sequence": str(seq),
+                "to_sequence": str(seq),
+                "snapshot_watermark": str(seq),
+                "reason": "bounded",
+            },
+        }
+        queue.push(event(1))
+        queue.push(gap(2), control=True)
+>       await client.notify(
+            "echo_agent/event/ack",
+            {"ack": {"stream": stream.to_dict(), "last_processed_sequence": "100"}},
+        )
+
+tests/test_protocol_integrity.py:484: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x105e157c0>
+method = 'echo_agent/event/ack'
+params = {'ack': {'stream': {'id': 's', 'generation': '1', 'kind': 'stream'}, 'last_processed_sequence': '100'}}
+
+    async def notify(self, method: str, params: Any = None) -> None:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        feed = None
+        observed = False
+        submission = object()
+        if method.removeprefix("_") == "echo_agent/event/ack" and isinstance(
+            params, dict
+        ):
+            # The owned submission may outlive this caller. Validate and send
+            # the same snapshot even if the caller reuses its mutable request.
+            params = deepcopy(params)
+            ack = params.get("ack", {})
+            stream = WireHandle.from_dict(ack.get("stream"))
+            sequence = int(
+                _canonical_u64_text(ack.get("last_processed_sequence"), "ACK cursor")
+            )
+            feed = self._events.get(stream.id)
+            if feed is not None and feed.handle == stream:
+                covered = _replay_covers_cursor(
+                    self._replay_ranges.get(stream, []), feed.last_sequence, sequence
+                )
+                observed = (
+                    covered
+                    or sequence == feed.last_gap_watermark
+                    or sequence <= self._event_cursors.get(stream, 0)
+>                   or any(base <= sequence <= end for base, end in feed.live_ranges)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                )
+E               TypeError: 'int' object is not iterable
+
+src/echo_agent_sdk/client.py:3440: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_gap_ack_host.py::test_paused_consumer_external_replay_ack_coalesces_covered_tail[1]
+FAILED tests/test_protocol_integrity.py::test_observed_snapshot_ack_filters_covered_queue_without_future_ack
+2 failed, 63 passed in 9.49s

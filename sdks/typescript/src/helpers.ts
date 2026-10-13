@@ -3,6 +3,7 @@ import type {
   ToolFailure,
   ToolFailureCategory,
   ToolResultData,
+  ToolEffect,
   ToolResultContent,
   ToolResultKind,
   WireValue,
@@ -115,6 +116,7 @@ export class ToolResultValue implements ToolResultData {
   public readonly metadata?: Readonly<Record<string, string>>;
   public readonly mime_type?: string | null;
   public readonly model_content?: readonly ToolResultContent[];
+  public readonly effects?: readonly ToolEffect[];
 
   private constructor(state: ToolResultData) {
     this.kind = state.kind;
@@ -128,6 +130,7 @@ export class ToolResultValue implements ToolResultData {
     this.metadata = state.metadata;
     this.mime_type = state.mime_type;
     this.model_content = state.model_content;
+    this.effects = state.effects;
   }
 
   public static success(output: string): ToolResultValue {
@@ -226,6 +229,11 @@ export class ToolResultValue implements ToolResultData {
     return this.copy({ model_content: [...(this.model_content ?? []), { ...content }] });
   }
 
+  public withEffects(effects: readonly ToolEffect[]): ToolResultValue {
+    for(const effect of effects)validateToolEffect(effect);
+    return this.copy({effects: effects.map(effect => ({...effect}))});
+  }
+
   public toJSON(): ToolResultData {
     return {
       kind: this.kind,
@@ -239,6 +247,7 @@ export class ToolResultValue implements ToolResultData {
       metadata: this.metadata,
       mime_type: this.mime_type,
       model_content: this.model_content,
+      effects: this.effects,
     };
   }
 
@@ -255,6 +264,7 @@ export class ToolResultValue implements ToolResultData {
       metadata: state.metadata,
       mime_type: state.mime_type,
       model_content: state.model_content,
+      effects: state.effects,
     });
   }
 
@@ -509,4 +519,17 @@ function trimRustWhitespace(value: string): string {
   while (start < end && isWhitespace(characters[start])) start += 1;
   while (end > start && isWhitespace(characters[end - 1])) end -= 1;
   return characters.slice(start, end).join("");
+}
+
+export function validateToolEffect(value: ToolEffect): void {
+  const allowed:Record<string,readonly string[]>={file_read:["effect","path"],file_edit:["effect","path"],test_run:["effect","command","passed","failure_count"],subagent_run:["effect","agent_name","task","outcome"]};
+  const fields=allowed[value.effect];
+  if(!fields||Object.keys(value).some(field=>!fields.includes(field)))throw new TypeError("unknown tool effect fields");
+  if(value.effect==="file_read"||value.effect==="file_edit"){if(typeof value.path!=="string")throw new TypeError("effect path must be text");return;}
+  if(value.effect==="test_run"){
+    if(typeof value.command!=="string"||typeof value.passed!=="boolean")throw new TypeError("test effect requires command and passed");
+    if(value.failure_count!=null)wireU64(value.failure_count);return;
+  }
+  if(value.effect==="subagent_run"&&[value.agent_name,value.task,value.outcome].every(item=>typeof item==="string"))return;
+  throw new TypeError("unknown or malformed tool effect");
 }

@@ -1,0 +1,20 @@
+{
+  "matched": true,
+  "cases": 29,
+  "lifecycle": 1,
+  "text_document_calls_including_post_error_continuation": 44,
+  "results_sha256": "ece179c4d1c1480f3cdf384a05dface9fb1561a7c605b38335d756d6092dadba",
+  "request_trace_sha256": "867d13100e4b6eb05ceda666f8082aca7681dd23fcfe00d2f59dba9a00d7453c",
+  "roots": {
+    "typescript": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-lsp-1f9VqP",
+    "python": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-lsp-r2w6jhlp",
+    "java": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-8575209733529805165"
+  },
+  "log_sha256": {
+    "/tmp/sdk-lsp-typescript-green.log": "d2af0f6efd9f20182f2d55dea1c48d94119c9b6edce603fb1e167729e97ba155",
+    "/tmp/sdk-lsp-python-green.log": "cfaa3ba95bcd6486c09356b55b8c17a4883c7a1b6b7059066749ecf3c2a47028",
+    "/tmp/sdk-lsp-java-green.log": "278a67c8697d64cd787abbefe7c6f2d4d09506d178428b01bb53149d1b0bb951"
+  },
+  "host": "/tmp/echo-sdk-governance-family-handle-host",
+  "host_sha256": "fc63c0815b319424ea2c64a94d3fc6a365a3dff6b70882a23b9edd1266d2f6eb"
+}

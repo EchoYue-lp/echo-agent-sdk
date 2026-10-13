@@ -1,0 +1,18 @@
+{
+  "host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802",
+  "sdk_custom_agent_class_current_source": "source references do not imply entire current tree is binary snapshot",
+  "samples": [
+    {
+      "language": "python",
+      "file": "python-before-eval-observed.json"
+    },
+    {
+      "language": "java",
+      "file": "java-before-eval-observed.json"
+    },
+    {
+      "language": "typescript",
+      "file": "typescript-before-eval-observed.json"
+    }
+  ]
+}

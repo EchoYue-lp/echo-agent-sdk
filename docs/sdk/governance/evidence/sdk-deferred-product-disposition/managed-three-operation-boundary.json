@@ -1,0 +1,22 @@
+{
+  "framework_revision": "77de6ca90ad842eb4b7b2921a4baa954f41cccfe",
+  "framework_src_state_mod_sha256": "cac9b348d528361593d13675cd269b9ef8ff7d341f86de47eb884fb25644fc88",
+  "current_read_equals_merged_blob": true,
+  "accepted_forward_entries": [
+    "echo_agent::state::clear_persisted_runtime_incarnation",
+    "echo_agent::state::delete_persisted_conversation"
+  ],
+  "unaccepted_new_forward_helper": [],
+  "reverse_operations": [
+    "conversation_delete_managed_with_context",
+    "runtime_begin_scope_retirement_with_context",
+    "runtime_continue_scope_retirement_with_context"
+  ],
+  "sdk_source_sha256": {
+    "echo-sdk-host/src/core_profile/facade/source_operations.rs": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73",
+    "echo-sdk-host/src/core_profile/extension_bridge.rs": "b045bf65932f226bd70789d980df04d6b1fe4d9f5475dfa8b2e0e537d264bd09",
+    "echo-sdk-protocol/src/methods.rs": "9e9deb481eb7850a039fc930971a2f9363db6e7905490165121dd28a57641000",
+    "echo-sdk-protocol/src/managed.rs": "4d0ae5fbd88a73f91aa4042ad5e70fce1a33bcc7a4d50e055d5defe963e5887d"
+  },
+  "meaning": "three reverse DTOs remain protocol/adapter obligations, not new SDK forward consumer promise; stable-request frameworkdeletecaller stays Rust/Host only until an exact forward acceptance"
+}

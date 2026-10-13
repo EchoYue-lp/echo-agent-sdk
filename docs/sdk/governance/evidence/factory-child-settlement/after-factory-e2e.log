@@ -1,0 +1,13 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 48.75s
+     Running tests/extension_bridge_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/extension_bridge_e2e-4a6d4877e2246c9b)
+
+running 5 tests
+test factory_presubmit_failure_releases_unseen_child ... ok
+test same_factory_constructs_independent_instances_across_concurrent_sessions ... ok
+test eval_and_improve_source_adapters_invoke_agent_factory_lazily ... ok
+test factory_and_custom_agent_extensions_round_trip ... ok
+test cancelled_factory_stream_closes_and_releases_instance ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 29 filtered out; finished in 3.03s
+

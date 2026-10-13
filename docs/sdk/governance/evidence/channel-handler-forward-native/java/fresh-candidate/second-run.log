@@ -1,0 +1,32 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Channel forward Java receipt: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-native/java-channel-forward-11296100262377045614/receipt.json
+[ERROR] Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.636 s <<< FAILURE! -- in com.echoagent.sdk.ChannelHandlerForwardHostTest
+[ERROR] com.echoagent.sdk.ChannelHandlerForwardHostTest.completeOwnerBindingStartRollbackAndClosedFamilyDigestFence -- Time elapsed: 0.474 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: handle generation 18446744073709551615 is from a future Host generation 1 ==> expected: <stale_handle> but was: <invalid_value>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1156)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.failure(ChannelHandlerForwardHostTest.java:51)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.completeOwnerBindingStartRollbackAndClosedFamilyDigestFence(ChannelHandlerForwardHostTest.java:190)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] Failures: 
+[ERROR]   ChannelHandlerForwardHostTest.completeOwnerBindingStartRollbackAndClosedFamilyDigestFence:190->failure:51 handle generation 18446744073709551615 is from a future Host generation 1 ==> expected: <stale_handle> but was: <invalid_value>
+[ERROR] Tests run: 3, Failures: 1, Errors: 0, Skipped: 0
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project echo-agent-sdk-source: There are test failures.
+[ERROR] 
+[ERROR] See /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

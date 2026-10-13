@@ -1,0 +1,152 @@
+---
+schema_version: 1
+id: map.sdk-language-clients
+kind: capability_map
+title: 三语言与无损值
+risk: high
+observed_at: source:3ea544c47e331b5d29a6624f978f3595619bef39fa5985230351098d38930404
+boundary_refs:
+- boundary.sdk-language-clients
+behavior_refs:
+- behavior.sdk-language-clients
+- behavior.sdk-family-value
+- behavior.sdk-family-intrinsic
+rule_refs:
+- rule.framework-runtime-authority
+evidence_refs:
+- evidence.sdk-family-catalog-method-routing-candidate
+- evidence.sdk-ack-recovery-verification
+- evidence.sdk-stream-cancellation-routing-verification
+- evidence.sdk-java-host-early-exit-verification
+- evidence.sdk-official-current-language-gate
+- evidence.sdk-official-factory-final-language-gate
+finding_refs:
+- finding.sdk-ack-submission-consumption
+- finding.sdk-inventory-acceptance-authority
+- finding.sdk-language-close-retry
+- finding.sdk-language-consumption-ack
+- finding.sdk-language-error-fidelity
+- finding.sdk-negotiation-response-validation
+- finding.sdk-wire-data-fidelity
+- finding.sdk-family-catalog-method-routing
+- finding.sdk-java-original-child-exit-lifecycle
+audit_refs:
+- audit.sdk-ack-recovery-rereview
+- audit.sdk-java-host-early-exit-rereview
+related_map_refs:
+- map.sdk-product-boundary
+scenarios:
+  behavior-lifecycle-failure:
+    status: mapped
+    source_refs:
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/src/wire.ts
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/src/echo_agent_sdk/wire.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/WireValues.java
+    - echo-sdk-protocol/src/scalar.rs
+    - echo-sdk-protocol/src/error.rs
+    - contracts/sdk/accepted-external-contract.json
+    - scripts/check-language-sdks.sh
+    - sdks/typescript/test/lsp-host.test.js
+    - sdks/python/tests/test_lsp_diagnostics_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+    behavior_refs:
+    - behavior.sdk-language-clients
+    finding_refs:
+    - finding.sdk-ack-submission-consumption
+    - finding.sdk-inventory-acceptance-authority
+    - finding.sdk-language-close-retry
+    - finding.sdk-language-consumption-ack
+    - finding.sdk-language-error-fidelity
+    - finding.sdk-negotiation-response-validation
+    - finding.sdk-wire-data-fidelity
+    review_scope: Entry, unique authority, normal lifecycle and named failure obligations
+      have been inspected and linked. Mapped records the model, not bug-free/runtime/main
+      closure; open Findings remain explicit.
+  family-value:
+    status: needs_review
+    source_refs:
+    - echo-sdk-protocol/src/scalar.rs
+    behavior_refs:
+    - behavior.sdk-family-value
+    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
+    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+  family-intrinsic:
+    status: needs_review
+    source_refs:
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/src/wire.ts
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/src/echo_agent_sdk/wire.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/WireValues.java
+    - echo-sdk-protocol/src/scalar.rs
+    - echo-sdk-protocol/src/error.rs
+    - contracts/sdk/accepted-external-contract.json
+    behavior_refs:
+    - behavior.sdk-family-intrinsic
+    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
+    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+---
+
+# 三语言与无损值
+
+## 能力范围
+
+TS/Python/Java经官方ACP transport消费同一accepted合同；严格value/error投影保留大整数canonical text、Unicode/path/time/bytes、handle/operation/retryable/details。ACK只在已消费或显式处理snapshot/replay coverage后提交；提交失败/取消不写“已成功ACK”，gap不autoACK，迟订阅有界feed与terminal replay自然EOF已有真实场景。close保同一transport/cleanup owner，不伪关闭。LSP原29request及后继42diagnostic共同语料比较结果、完整typed错误和真实请求/通知副作用，均通过。
+
+## 入口与输出
+
+源码入口与实际注册/分派路径由本 Map 的 source_refs 定位。输出为 typed response/error、framework committed event 或 generation-fenced handle；所有动态入口仍需逐场景验证。
+
+## 行为关系
+
+本能力经 official ACP/profile 或具体 catalog route 到 Host adapter，然后调用框架权威。跨能力调用与三语言消费见 docs/sdk/governance/capability-map.md。
+
+## 状态与数据流
+
+Framework 拥有 Run/Task/Store 的事实与终态；Host 只拥有寻址、可取消资源 owner 与协议发送状态；客户端确认已消费事实。
+
+## 策略来源与优先级
+
+用户八项治理目标与 AGENTS.md 约束行为；accepted external contract 约束兼容；compiled feature/canonical framework service 约束实现。完整 Rust inventory 不扩承诺。
+
+## 生命周期与失败路径
+
+TS/Python/Java经官方ACP transport消费同一accepted合同；严格value/error投影保留大整数canonical text、Unicode/path/time/bytes、handle/operation/retryable/details。ACK只在已消费或显式处理snapshot/replay coverage后提交；提交失败/取消不写“已成功ACK”，gap不autoACK，迟订阅有界feed与terminal replay自然EOF已有真实场景。close保同一transport/cleanup owner，不伪关闭。LSP原29request及后继42diagnostic共同语料比较结果、完整typed错误和真实请求/通知副作用，均通过。
+
+仍缺：native值/错误/ACK/关闭使用实际consumer与对应官方transport证据；新retention/pending ACK窗口须匹配修复后源。最终三语言完整门禁、精确生成签名和发布pin另验，不以旧whole语言counts替当前源。
+
+## 权限与敏感信息
+
+本地 SDK 不引入线上权限门控。继续保持框架自动行为 permission authority，凭据不进入日志/合同/错误；资源 gate 仅防止错误owner和无意数据丢失。
+
+## 用户侧投影
+
+TypeScript/Python/Java 对已接受能力暴露惯用接口，handle/error/value 必须无损；不能用成功默认值或丢字段改变权威事实。
+
+## 场景处置清单
+
+主场景mapped只表示模型已展开；关联family Behavior仍needs_review，具体Evidence按支持关系与原epoch读取。剩余义务：native值/错误/ACK/关闭使用实际consumer与对应官方transport证据；新retention/pending ACK窗口须匹配修复后源。最终三语言完整门禁、精确生成签名和发布pin另验，不以旧whole语言counts替当前源。
+
+## 未展开项
+
+组级主路径mapped表示入口、唯一权威、生命周期与具名失败义务已建模；41个family Behavior仍needs_review，开放Finding及最终交付分别保留。旧候选的八crate临时patch与95ecpin保持原运行epoch；当前Host已pin published b909并移除patch，但最终nightlyprofiles/唯一合同生成与SDKwhole源码门禁仍待。frameworkmain交付证据不替SDK精确main/CI。完整Rust inventory仅遥测；accepted字段必须由唯一生成器明确裁决。
+
+native值/错误/ACK/关闭使用实际consumer与对应官方transport证据；新retention/pending ACK窗口须匹配修复后源。最终三语言完整门禁、精确生成签名和发布pin另验，不以旧whole语言counts替当前源。
+
+## 当前观察、归档和后继边界
+
+原fc63证据已保存为仓库内不可变历史收据，原观察epoch不可恢复为Git时不补造提交。原6711证据归档支持具名局部断言；原27个历史输入中tools.rs已变，具名测试body保持可对照；55个6711运行输入中tools.rs和Workflow已变更。新Workflow语义或其它后继场景必须绑定自己的来源/日志；不把旧整套418/TS240/Python300/Java264冒充最终当前通过。支持见历史审计Evidence及evidence.sdk-parent-driver-candidate-verification的限制，family needs_review和开放Finding保留，主场景mapped不扩运行证据。
+
+## 建模完成与验证状态区别
+
+组级主路径已按入口、唯一权威、生命周期和具名失败义务完成映射，故主场景mapped。family Behavior仍needs_review，已知open Finding与有限证据保留；mapped不等于verified、所有lens covered或最终交付。剩余事项采用明确合同/故障原因，不以无限未枚举组合拒绝建模。

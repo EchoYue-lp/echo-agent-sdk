@@ -1,0 +1,105 @@
+{
+  "recorded_at_utc": "2026-10-13T15:35:54.535286+00:00",
+  "scope": "Python AgentComponentCall optional stream field projection; existing accepted typed consumer repair",
+  "host_sha256": "07442919df0108592f93585a76f6a9cbc429f279a81876a70b56b959f53c6c2b",
+  "before": {
+    "native_selected_tests": 1,
+    "failed": 1,
+    "cause": "AgentComponentCall object has no attribute stream",
+    "actual_first_pull_variant": "failed",
+    "sequence": "1"
+  },
+  "after": {
+    "passed": 5,
+    "failed": 0,
+    "native_groups": 3,
+    "focused_dto_tests": 2,
+    "workflow_callbacks": 5,
+    "workflow_callback_finally": 5,
+    "workflow_producer_finally": 2
+  },
+  "suite_attempt": {
+    "passed": 265,
+    "failed": 3,
+    "skipped": 54,
+    "gate": "failed; parent and ACK owner notified; final combined SDK gate required"
+  },
+  "raw_files": [
+    {
+      "path": "README.md",
+      "sha256": "2b682af1e8e38b3ebc8926b8588be9b0b6afdccb31fca998111f40b9e6ee661f"
+    },
+    {
+      "path": "after-AgentComponentCall.py.txt",
+      "sha256": "c6e9e868daa869415155a4e80065c341bf953c0735302776f5447e23e172cd46"
+    },
+    {
+      "path": "after-source.json",
+      "sha256": "ca2cc9d2a8bac5fb218379fb311213a8cd54544acb334899b18569439b6f90bc"
+    },
+    {
+      "path": "before-AgentComponentCall.py.txt",
+      "sha256": "d9b337bfbb8e7b0c02cbb4ac0fef5f71081e9c94a7ecb75e6867797fba2b4485"
+    },
+    {
+      "path": "before-source.json",
+      "sha256": "34f55514fc758d3d46c2ba3e443b676131be52626ca53a8437b57a567e78d44a"
+    },
+    {
+      "path": "python-after-graph-observed.json",
+      "sha256": "e42e0664c6445316425eab1aabd90630753e766fef8cb231465e2993abd951d3"
+    },
+    {
+      "path": "python-after-graph-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "python-after-llm-observed.json",
+      "sha256": "9cf25d2f7dc116828a6470ea7b9389242cb18b256abd637dae07bb6c46516a08"
+    },
+    {
+      "path": "python-after-llm-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "python-after-workflow-observed.json",
+      "sha256": "438b76fa9aa4b65d51573ce1fc9cffd8021e01016c7d408239e75bb768b47f88"
+    },
+    {
+      "path": "python-after-workflow-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "python-after.log",
+      "sha256": "99b33f71da11435596c2962b8061c507364a2b0024d012775bcd7bd92e3de2d6"
+    },
+    {
+      "path": "python-before-observed.json",
+      "sha256": "16250faca2f50a4d374c12c5134f922b72999b2968c82de0bbb30b4096959472"
+    },
+    {
+      "path": "python-before-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "python-before.log",
+      "sha256": "d235613f618a3bebcfe61b1fce28b27b1f137d9e9199faa91a9b96c54793f585"
+    },
+    {
+      "path": "python-related-contracts.log",
+      "sha256": "db150d1058afd2dee25e534faa3bafd8a6fe7cae5b1c977a946aeaba4d137293"
+    },
+    {
+      "path": "python-suite.log",
+      "sha256": "57a6e6a20d4c91c169050865ba2de00ded6e66a48cb57e2f0b8e9c60d1388d91"
+    },
+    {
+      "path": "ruff.log",
+      "sha256": "afa20b27dacc9bf0aba3c1d265964c21e04ab42f6e39e2dd4769718ceded003a"
+    }
+  ],
+  "related_contracts": {
+    "passed": 41,
+    "failed": 0
+  }
+}

@@ -1,0 +1,4 @@
+com.echoagent:echo-agent-sdk-source:jar:0.1.0
++- com.agentclientprotocol:acp-core:jar:0.17.0:compile
+|  \- org.slf4j:slf4j-api:jar:2.0.18:compile
+\- org.slf4j:slf4j-nop:jar:2.0.18:test

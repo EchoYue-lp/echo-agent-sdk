@@ -1,0 +1,30 @@
+{
+  "provenance": "host_actor_delta_review actual completed finitePASS/action0 relayed byparent",
+  "scope": "final four known Custom stream paths and I2prefix; currentbridge43ecf356/handlerfa6;17counterrecordSHA checked independently;officialExtendedCloseOwnerInitialize Chunk1Complete2 oldfilter redremote-seq1fail→sameRouterpreserveprefix1green",
+  "missingterminal": "delete only actualresponse missingterminalguard; actualcallbackreturned source remainspending10.26sec truefail;restoremtimefirststaleartifact failure explicitlynotafterproof; freshCompiled48.19sec sameafter1green .32sec",
+  "implementation": "sameoriginal issuedstream completeowner/gen/bytes/existingremoteledger; no secondstreamauthority orpublicAPI",
+  "source_sha256": {
+    "bridge": "43ecf356e4deb1004158540708b664e6e022ddf4afc9f545d240903c4758fefe",
+    "handler": "fa6a744e6300c3be3c509b6cfaf88b40301e40a8f8746122c6e0109d074ff2cd"
+  },
+  "counter_files_sha256": {
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-after.log": "9e0e305c46e5d567fa577b984e24cfa2fe8cbdff945ef30b95d7968983369cbb",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-after-fresh.log": "28ddc7aa385125619f33b01c6ca76a899cc7df084c55e4b8a4e7b6d552f909fb",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-before-corrected.log": "ea22772b5108c7425e0bddb83e0d13f41d107c99bf8c8894f8e1c0cac0f9e0e7",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-before.log": "845f848458bc55de7a6e8097706f4f9a0e9c8ac226f72cdcfeb8c5eaa6c8d424",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-after.log": "daa34a36fc094447cf52b9e99c27db963610e917542c1bc987d5d687a3104739",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/run-focused.mjs": "b527741dcc98be786047720163b83f9aeb2b785456c7f7bf608b55fe6566c88b",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-handler-before.rs": "cca0f365a12d9d7bea2dce82a57e71386803f2cfb123077b0d8423fee7052562",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-before-source.rs": "2b2f4d6a2dbfbc6fdfff7753bc11c8147101f87272d6a8ab4f24ec6b1789302a",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-after-source.rs": "2b2f4d6a2dbfbc6fdfff7753bc11c8147101f87272d6a8ab4f24ec6b1789302a",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-current-after.rs": "2b2f4d6a2dbfbc6fdfff7753bc11c8147101f87272d6a8ab4f24ec6b1789302a",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-before.log": "b4933e0aa79e8e8186fdb6ace68e66b88728e604bfcc2497bd1b91cd1ce6853b",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-fix.patch": "37a8ddf940b3189857992a36ba3c36de72d07f564ee3b69b1b40ff8754ec9baf",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-current-before.rs": "4243711b39b8e7e11786e7cd862bd8ca8335825fea23d4162712a25d1ef5c84a",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-fix.patch": "ccbd1fc83b3bde0f3f25425ce5c0b9f60f43fa520da32932fcfd00a2626a7933",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-before-final.log": "0329ed77ba60f93d1a52f12d25ae054f085d26ee339a52ef3eaee02915dbd191",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-handler-after.rs": "fa6a744e6300c3be3c509b6cfaf88b40301e40a8f8746122c6e0109d074ff2cd",
+    "docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/receipt.json": "7497f80f7dde08bd2e1b342f0f12a9432f08454291e2ca910f4e905776ae7d49"
+  },
+  "limits": "not latestHost162/fullcombinedbinary/finalpublishedpin/main"
+}

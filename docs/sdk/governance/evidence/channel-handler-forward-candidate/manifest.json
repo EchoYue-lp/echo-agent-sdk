@@ -1,0 +1,63 @@
+{
+  "status": "compiled-initial-stream-red-fixed-once-full-regression-pending",
+  "sources": {
+    "echo-sdk-host/src/core_profile/facade/integrations.rs": "1ddd9ff366621eda03ced1f6089eeae80f151635dbb8d42cb6321d8a9623e3ab",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "33c327b50f513e1e7ca9afb0247ccc6e282204d9b865d62c757747c64fd27fae",
+    "echo-sdk-host/src/core_profile/handles.rs": "8c66cab1884085c2d0591fd8d909623d0c3a07a588c21e0334a098a3e273dca1",
+    "echo-sdk-host/src/core_profile/extension_bridge.rs": "ed5f3446bdca72cdbc324ff0fe7fbbfdf2cdd6c4ea7430a6070aa2580732b0a6"
+  },
+  "authority": "docs/supreme/specs/2026-10-13T1800-channel-handler-forward/design.md",
+  "completed_source_work": [
+    "six channels family routes and existing stream controls",
+    "full extension address registration binding and start preflight",
+    "strict inbound conversion, maximum u64 and attachment bytes",
+    "resource shared permit and close early cancel signal",
+    "collector-owned stream setup acknowledgement and quota rollback",
+    "original entry forwarding; removed proxy duplicate handler Arc"
+  ],
+  "pending": [
+    "bridge six official ACP cases after fixture dispatch fix",
+    "full Host library regression after parent/child role fix",
+    "new framework retire/open atomic race source requires fresh validation",
+    "fresh immutable forward Host and three-language twelve scenario groups",
+    "independent review and final gates/published pin"
+  ],
+  "tests_prepared_not_run": [
+    "strict conversion roundtrip and malformed input",
+    "full handler identity mismatch stops all start side effects",
+    "early resource close operation child cancellation and tombstone",
+    "new forward routes reuse existing channels stream controls",
+    "producer token cancellation with a buffered item must not advance registry item watermark"
+  ],
+  "validation_only": {
+    "rustfmt_2024_check": 0,
+    "diff_whitespace_check": 0
+  },
+  "historical_evidence": "owned-channel/resource-admission-epoch applies to previous source20c908/51a6/4562; does not prove new draft",
+  "actual_stream_counterexample": {
+    "log": "stream-cancel-before/actual-before.log",
+    "exit_code": 101,
+    "failed": 1,
+    "observed_event": "item",
+    "expected_event": "cancelled",
+    "producer_cancel_token_input_unchanged_after_fix": true
+  },
+  "first_after": {
+    "passed": 1,
+    "failed": 0,
+    "scope": "same producer semantic parent token, buffer item cancellation focused regression"
+  },
+  "full_library_first": {
+    "passed": 140,
+    "failed": 11,
+    "failures": [
+      "six official ACP fixture dispatch wait (bridge owner repaired fixture only)",
+      "five local cleanup cancellation projected as semantic cancellation (fixed parent/child signal roles; old expectations retained)"
+    ],
+    "log_actual": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-hostlib-all.log"
+  },
+  "cancel_roles": {
+    "registry_parent": "semantic cancellation commits state under original stream mutex; producer.cancel keeps original meaning",
+    "producer_child": "local cleanup/wake; failure/close cleanup cannot rewrite parent terminal cause; producer.cleanup wakes old framework producers"
+  }
+}

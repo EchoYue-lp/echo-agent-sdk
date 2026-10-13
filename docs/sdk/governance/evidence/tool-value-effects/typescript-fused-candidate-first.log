@@ -1,0 +1,61 @@
+TAP version 13
+# Traceback (most recent call last):
+#   File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 1115, in <module>
+#     main()
+#   File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 977, in main
+#     {"tools": verify, "search": verify_search, "sandbox": verify_sandbox}[
+#   File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 550, in verify
+#     assert describe["rows"] == [
+# AssertionError: {'columns': ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], 'rows': [[None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None]], 'total_rows': 4}
+# Subtest: accepted tool exact values, errors and actual effects
+not ok 1 - accepted tool exact values, errors and actual effects
+  ---
+  duration_ms: 10266.924625
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/tool-value-effect-host.test.js:21:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Command failed: python3 /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py --work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-wfZUVx --verify /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-wfZUVx/results.json
+    Traceback (most recent call last):
+      File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 1115, in <module>
+        main()
+      File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 977, in main
+        {"tools": verify, "search": verify_search, "sandbox": verify_sandbox}[
+      File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 550, in verify
+        assert describe["rows"] == [
+    AssertionError: {'columns': ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], 'rows': [[None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None]], 'total_rows': 4}
+    
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    genericNodeError (node:internal/errors:983:15)
+    wrappedFn (node:internal/errors:537:14)
+    checkExecSyncError (node:child_process:916:11)
+    execFileSync (node:child_process:952:15)
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/tool-value-effect-host.test.js:35:17)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# SearchProvider verified: {"provider_calls": 4, "success_calls": 1, "failure_attempts": 3, "title_url_snippet_exact": true, "canonical_agent_run_count": 2} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-search-WHsY5d
+# Subtest: SearchProvider exact title/url/snippet and real Agent tool failure
+ok 2 - SearchProvider exact title/url/snippet and real Agent tool failure
+  ---
+  duration_ms: 8818.121625
+  type: 'test'
+  ...
+# Sandbox verified: {"producer_processes": 3, "physically_joined": 3, "cancel_and_close_pending_invocation": 2, "post_answer_cancel": false} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-sandbox-Jpokp7
+# Subtest: Sandbox stream real process completion, pending cancel and repeated close
+ok 3 - Sandbox stream real process completion, pending cancel and repeated close
+  ---
+  duration_ms: 5779.688792
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 2
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25084.781375

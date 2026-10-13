@@ -1,0 +1,3786 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-b909-natural-eof-host",
+  "host_sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10",
+  "raw_identity": {
+    "agent": {
+      "id": "agent-2",
+      "generation": "1",
+      "kind": "agent"
+    },
+    "session": {
+      "id": "session-e5351723-4893-4ea0-beeb-d373325b056e",
+      "generation": "1",
+      "kind": "session"
+    },
+    "capability": {
+      "extension_protocol_version": 1,
+      "contract_digest": "sha256:df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61",
+      "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6",
+      "features": [
+        "a2a",
+        "acp",
+        "channels",
+        "chart",
+        "content-guard",
+        "data",
+        "database",
+        "eval",
+        "files",
+        "git",
+        "human-loop",
+        "improve",
+        "lsp",
+        "mcp",
+        "media",
+        "project-rules",
+        "rag",
+        "research",
+        "shell",
+        "sqlite",
+        "statistics",
+        "subagent",
+        "telemetry",
+        "testing",
+        "topology",
+        "web"
+      ],
+      "capabilities": [
+        {
+          "capability": "agent_lifecycle",
+          "required": false
+        },
+        {
+          "capability": "session_handles",
+          "required": false
+        },
+        {
+          "capability": "runs",
+          "required": false
+        },
+        {
+          "capability": "event_replay",
+          "required": false
+        },
+        {
+          "capability": "extension_bridge",
+          "required": false
+        },
+        {
+          "capability": "feature_surfaces",
+          "required": false
+        },
+        {
+          "capability": "task_graph",
+          "required": false
+        },
+        {
+          "capability": "subagents",
+          "required": false
+        },
+        {
+          "capability": "structured_output",
+          "required": false
+        }
+      ],
+      "limits": {
+        "max_message_bytes": "1048576",
+        "max_stream_buffer_events": "128",
+        "max_callback_concurrency": 8,
+        "callback_timeout": {
+          "seconds": "30",
+          "nanos": 0
+        },
+        "max_replay_events": "512",
+        "max_structured_output_bytes": "262144",
+        "max_outstanding_live_events": "128",
+        "max_stream_buffer_bytes": "134217728",
+        "max_replay_bytes": "8388608",
+        "max_open_handles": "512",
+        "max_registered_extensions": "64",
+        "max_extension_descriptor_bytes": "65536",
+        "max_extension_payload_bytes": "1048576",
+        "max_extension_stream_bytes": "262144",
+        "max_inflight_extension_invocations": "16",
+        "max_facade_resources": "256",
+        "max_facade_streams": "128",
+        "max_facade_page_items": "512",
+        "max_facade_operation_args": "64"
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "file-create",
+      "operation": "create_file",
+      "arguments": [
+        "中文🙂/note.txt"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "File created successfully: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt",
+        "truncated": false,
+        "effects": [
+          {
+            "effect": "file_edit",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt"
+          }
+        ]
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": "",
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "file-append",
+      "operation": "append_file",
+      "arguments": [
+        "中文🙂/note.txt",
+        "one 中文🙂\n"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": "",
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Appended 15 bytes to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt'",
+        "truncated": false,
+        "effects": [
+          {
+            "effect": "file_edit",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt"
+          }
+        ]
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": "one 中文🙂\n",
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "file-update",
+      "operation": "update_file",
+      "arguments": [
+        "中文🙂/note.txt",
+        "one",
+        "two"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": "one 中文🙂\n",
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "File updated: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt",
+        "truncated": false,
+        "effects": [
+          {
+            "effect": "file_edit",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt"
+          }
+        ]
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "file-update-missing",
+      "operation": "update_file",
+      "arguments": [
+        "中文🙂/note.txt",
+        "absent",
+        "bad"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "Specified content not found in file, replacement failed: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt",
+        "failure": {
+          "category": "invalid_arguments",
+          "recovery": "correct_arguments",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "file-create-existing",
+      "operation": "create_file",
+      "arguments": [
+        "中文🙂/note.txt"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "File already exists: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt",
+        "failure": {
+          "category": "invalid_arguments",
+          "recovery": "correct_arguments",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "file-write-stale",
+      "operation": "write_file",
+      "arguments": [
+        "sentinel.txt",
+        "bad",
+        "0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "File '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/sentinel.txt' changed since it was read (expected 0000000000000000000000000000000000000000000000000000000000000000, actual 8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e)",
+        "failure": {
+          "category": "invalid_arguments",
+          "recovery": "correct_arguments",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "file-move",
+      "operation": "move_file",
+      "arguments": [
+        "中文🙂/note.txt",
+        "中文🙂/moved.txt"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": "two 中文🙂\n",
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "File moved successfully, old_path: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt, new_path: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt.",
+        "truncated": false,
+        "effects": [
+          {
+            "effect": "file_edit",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/note.txt"
+          },
+          {
+            "effect": "file_edit",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt"
+          }
+        ]
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "two 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-patch",
+      "operation": "apply_patch",
+      "arguments": [
+        "*** Begin Patch\n*** Update File: 中文🙂/moved.txt\n@@\n-two 中文🙂\n+three 中文🙂\n*** End Patch"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "two 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "diff",
+          "unified_diff": "--- 中文🙂/moved.txt\n+++ 中文🙂/moved.txt\n@@ -1 +1 @@\n-two 中文🙂\n+three 中文🙂\n"
+        },
+        "success": true,
+        "output": "Applied patch across 1 file:\n--- 中文🙂/moved.txt\n+++ 中文🙂/moved.txt\n@@ -1 +1 @@\n-two 中文🙂\n+three 中文🙂\n",
+        "truncated": false,
+        "metadata": {
+          "changed_files": "1",
+          "dry_run": "false",
+          "git_checkpoints": "{\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt\":\"000000000000000018de2e0aa19a55a8-0000763b-0000000000000000\"}"
+        },
+        "effects": [
+          {
+            "effect": "file_edit",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt"
+          }
+        ]
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-patch-rollback",
+      "operation": "apply_patch",
+      "arguments": [
+        "*** Begin Patch\n*** Update File: 中文🙂/moved.txt\n@@\n-three 中文🙂\n+bad\n*** Update File: missing.txt\n@@\n-absent\n+bad\n*** End Patch"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "cannot access 'missing.txt': No such file or directory (os error 2)",
+        "failure": {
+          "category": "invalid_arguments",
+          "recovery": "correct_arguments",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-read",
+      "operation": "read_file",
+      "arguments": [
+        "中文🙂/moved.txt"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "1|three 中文🙂\n",
+        "truncated": false,
+        "metadata": {
+          "content_hash": "db9d1228fdd566608bf3ddd5e5cde0d8cc4f3f5b10edcd889cda56481203527a",
+          "encoding": "utf-8",
+          "end_line": "1",
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt",
+          "remaining_lines": "0",
+          "start_line": "1",
+          "total_lines": "1"
+        },
+        "effects": [
+          {
+            "effect": "file_read",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt"
+          }
+        ]
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-diff",
+      "operation": "diff",
+      "arguments": [
+        "中文🙂/moved.txt",
+        null,
+        "four 中文🙂\n"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt\n+++ <provided content>\n@@ -1 +1 @@\n-three 中文🙂\n+four 中文🙂",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-list",
+      "operation": "list_dir",
+      "arguments": [
+        "src"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Directory '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/src' contents:\n  [File] main.py\n\nTotal: 0 dirs, 1 files; 1 returned",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-grep",
+      "operation": "grep",
+      "arguments": [
+        "中文🙂",
+        "src",
+        "*.py"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/src/main.py:2:      return \"中文🙂\"\n\n1 matches returned (1 total)",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-glob",
+      "operation": "glob",
+      "arguments": [
+        "*.py",
+        "src"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/src/main.py\n\n1 files returned (1 total)",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-map",
+      "operation": "repo_map",
+      "arguments": [
+        "src",
+        3,
+        "symbols"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "main.py:\n  fn target_symbol (line 1)",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "2",
+          "page.total": "2",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-search",
+      "operation": "code_search",
+      "arguments": [
+        "target_symbol",
+        "src",
+        "*.py"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Found 1 match(es) on this page (1 total) for 'target_symbol' in /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/src:\n\n/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/src/main.py:1 - function target_symbol\n  def target_symbol():",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-missing",
+      "operation": "read_file",
+      "arguments": [
+        "missing.txt"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "File does not exist: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/missing.txt",
+        "failure": {
+          "category": "invalid_arguments",
+          "recovery": "correct_arguments",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      }
+    },
+    {
+      "id": "file-delete",
+      "operation": "delete_file",
+      "arguments": [
+        "中文🙂/moved.txt"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": "three 中文🙂\n"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "File deleted successfully: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt",
+        "truncated": false,
+        "metadata": {
+          "git_checkpoint": "000000000000000018de2e0aa6659958-0000763b-0000000000000001"
+        },
+        "effects": [
+          {
+            "effect": "file_edit",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt"
+          }
+        ]
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "file-delete-missing",
+      "operation": "delete_file",
+      "arguments": [
+        "中文🙂/moved.txt"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "File does not exist: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/中文🙂/moved.txt",
+        "failure": {
+          "category": "invalid_arguments",
+          "recovery": "correct_arguments",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-persist",
+      "operation": "echo_core::tools::artifact::persist_tool_output",
+      "arguments": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactConfig",
+            "fields": [
+              {
+                "name": "root_dir",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp"
+                  }
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              },
+              {
+                "name": "threshold_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "max_age_secs",
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactIdentity",
+            "fields": [
+              {
+                "name": "conversation_id",
+                "value": {
+                  "kind": "string",
+                  "value": "tool-proof"
+                }
+              },
+              {
+                "name": "run_id",
+                "value": {
+                  "kind": "null"
+                }
+              },
+              {
+                "name": "call_id",
+                "value": {
+                  "kind": "string",
+                  "value": "utf8"
+                }
+              },
+              {
+                "name": "tool_name",
+                "value": {
+                  "kind": "string",
+                  "value": "tool-proof"
+                }
+              }
+            ]
+          }
+        },
+        "中文🙂\nAβEND\nZ1234"
+      ],
+      "expected": "value",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": "record",
+        "value": {
+          "type_id": "echo_core::tools::artifact::ToolOutputArtifactRef",
+          "fields": [
+            {
+              "name": "path",
+              "value": {
+                "kind": "path",
+                "value": {
+                  "encoding": "utf8",
+                  "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/tool-proof-dd2add247f51/session-3f3af1ecebbd/utf8-941b7ecd47e5-tool-proof-dd2add247f51-b5a737ff-ae26-43c4-b7db-db6fda7b39f7.log"
+                }
+              }
+            },
+            {
+              "name": "artifact_bytes",
+              "value": {
+                "kind": "u64",
+                "value": "23"
+              }
+            },
+            {
+              "name": "payload_bytes",
+              "value": {
+                "kind": "u64",
+                "value": "23"
+              }
+            },
+            {
+              "name": "sha256",
+              "value": {
+                "kind": "string",
+                "value": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077"
+              }
+            },
+            {
+              "name": "retention",
+              "value": {
+                "kind": "string",
+                "value": "temporary_1h"
+              }
+            }
+          ]
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-page-0",
+      "operation": "echo_tools::files::artifact::read_artifact_page",
+      "arguments": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactConfig",
+            "fields": [
+              {
+                "name": "root_dir",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp"
+                  }
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              },
+              {
+                "name": "threshold_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "max_age_secs",
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactRef",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/tool-proof-dd2add247f51/session-3f3af1ecebbd/utf8-941b7ecd47e5-tool-proof-dd2add247f51-b5a737ff-ae26-43c4-b7db-db6fda7b39f7.log"
+                  }
+                }
+              },
+              {
+                "name": "artifact_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "payload_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "sha256",
+                "value": {
+                  "kind": "string",
+                  "value": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077"
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              }
+            ]
+          }
+        },
+        null,
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_tools::files::artifact::ArtifactPageLimit",
+            "variant": "bytes",
+            "fields": [
+              {
+                "name": "value",
+                "value": {
+                  "kind": "u64",
+                  "value": "8"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expected": "value",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "content": "中文",
+        "next_cursor": "v4:6:23:1791920325063992546:5702cf717d51731ea9e43200b140fcd3ac55ae69952445751bbd6058655b0ca9:fc98e70e48b2945decf242b44f86acfc3daeb9794bf3e5b9f7a9b3c1d13ff5aa:f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        "complete": false,
+        "sha256": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        "start_byte": "0",
+        "end_byte": "6",
+        "total_bytes": "23"
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-page-1",
+      "operation": "echo_tools::files::artifact::read_artifact_page",
+      "arguments": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactConfig",
+            "fields": [
+              {
+                "name": "root_dir",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp"
+                  }
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              },
+              {
+                "name": "threshold_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "max_age_secs",
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactRef",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/tool-proof-dd2add247f51/session-3f3af1ecebbd/utf8-941b7ecd47e5-tool-proof-dd2add247f51-b5a737ff-ae26-43c4-b7db-db6fda7b39f7.log"
+                  }
+                }
+              },
+              {
+                "name": "artifact_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "payload_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "sha256",
+                "value": {
+                  "kind": "string",
+                  "value": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077"
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              }
+            ]
+          }
+        },
+        "v4:6:23:1791920325063992546:5702cf717d51731ea9e43200b140fcd3ac55ae69952445751bbd6058655b0ca9:fc98e70e48b2945decf242b44f86acfc3daeb9794bf3e5b9f7a9b3c1d13ff5aa:f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_tools::files::artifact::ArtifactPageLimit",
+            "variant": "bytes",
+            "fields": [
+              {
+                "name": "value",
+                "value": {
+                  "kind": "u64",
+                  "value": "8"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expected": "value",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "content": "🙂\nAβ",
+        "next_cursor": "v4:14:23:1791920325063992546:5702cf717d51731ea9e43200b140fcd3ac55ae69952445751bbd6058655b0ca9:fc98e70e48b2945decf242b44f86acfc3daeb9794bf3e5b9f7a9b3c1d13ff5aa:f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        "complete": false,
+        "sha256": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        "start_byte": "6",
+        "end_byte": "14",
+        "total_bytes": "23"
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-page-2",
+      "operation": "echo_tools::files::artifact::read_artifact_page",
+      "arguments": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactConfig",
+            "fields": [
+              {
+                "name": "root_dir",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp"
+                  }
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              },
+              {
+                "name": "threshold_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "max_age_secs",
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactRef",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/tool-proof-dd2add247f51/session-3f3af1ecebbd/utf8-941b7ecd47e5-tool-proof-dd2add247f51-b5a737ff-ae26-43c4-b7db-db6fda7b39f7.log"
+                  }
+                }
+              },
+              {
+                "name": "artifact_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "payload_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "sha256",
+                "value": {
+                  "kind": "string",
+                  "value": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077"
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              }
+            ]
+          }
+        },
+        "v4:14:23:1791920325063992546:5702cf717d51731ea9e43200b140fcd3ac55ae69952445751bbd6058655b0ca9:fc98e70e48b2945decf242b44f86acfc3daeb9794bf3e5b9f7a9b3c1d13ff5aa:f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_tools::files::artifact::ArtifactPageLimit",
+            "variant": "bytes",
+            "fields": [
+              {
+                "name": "value",
+                "value": {
+                  "kind": "u64",
+                  "value": "8"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expected": "value",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "content": "END\nZ123",
+        "next_cursor": "v4:22:23:1791920325063992546:5702cf717d51731ea9e43200b140fcd3ac55ae69952445751bbd6058655b0ca9:fc98e70e48b2945decf242b44f86acfc3daeb9794bf3e5b9f7a9b3c1d13ff5aa:f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        "complete": false,
+        "sha256": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        "start_byte": "14",
+        "end_byte": "22",
+        "total_bytes": "23"
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-page-3",
+      "operation": "echo_tools::files::artifact::read_artifact_page",
+      "arguments": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactConfig",
+            "fields": [
+              {
+                "name": "root_dir",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp"
+                  }
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              },
+              {
+                "name": "threshold_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "max_age_secs",
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactRef",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/tool-proof-dd2add247f51/session-3f3af1ecebbd/utf8-941b7ecd47e5-tool-proof-dd2add247f51-b5a737ff-ae26-43c4-b7db-db6fda7b39f7.log"
+                  }
+                }
+              },
+              {
+                "name": "artifact_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "payload_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "sha256",
+                "value": {
+                  "kind": "string",
+                  "value": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077"
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              }
+            ]
+          }
+        },
+        "v4:22:23:1791920325063992546:5702cf717d51731ea9e43200b140fcd3ac55ae69952445751bbd6058655b0ca9:fc98e70e48b2945decf242b44f86acfc3daeb9794bf3e5b9f7a9b3c1d13ff5aa:f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_tools::files::artifact::ArtifactPageLimit",
+            "variant": "bytes",
+            "fields": [
+              {
+                "name": "value",
+                "value": {
+                  "kind": "u64",
+                  "value": "8"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expected": "value",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "content": "4",
+        "next_cursor": null,
+        "complete": true,
+        "sha256": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        "start_byte": "22",
+        "end_byte": "23",
+        "total_bytes": "23"
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-bad-cursor",
+      "operation": "echo_tools::files::artifact::read_artifact_page",
+      "arguments": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactConfig",
+            "fields": [
+              {
+                "name": "root_dir",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp"
+                  }
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              },
+              {
+                "name": "threshold_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "max_age_secs",
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactRef",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/tool-proof-dd2add247f51/session-3f3af1ecebbd/utf8-941b7ecd47e5-tool-proof-dd2add247f51-b5a737ff-ae26-43c4-b7db-db6fda7b39f7.log"
+                  }
+                }
+              },
+              {
+                "name": "artifact_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "payload_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "sha256",
+                "value": {
+                  "kind": "string",
+                  "value": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077"
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              }
+            ]
+          }
+        },
+        "malformed",
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_tools::files::artifact::ArtifactPageLimit",
+            "variant": "bytes",
+            "fields": [
+              {
+                "name": "value",
+                "value": {
+                  "kind": "u64",
+                  "value": "8"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expected": "rpc_error",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "artifact cursor has an unsupported version",
+        "operation": "echo_tools::files::artifact::read_artifact_page",
+        "retryable": "never",
+        "handle": null,
+        "details": null
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-mutate",
+      "action": "mutate_artifact",
+      "ref": "artifact-persist",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "artifact-stale",
+      "operation": "echo_tools::files::artifact::read_artifact_page",
+      "arguments": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactConfig",
+            "fields": [
+              {
+                "name": "root_dir",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp"
+                  }
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              },
+              {
+                "name": "threshold_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "max_age_secs",
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_core::tools::artifact::ToolOutputArtifactRef",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/tool-proof-dd2add247f51/session-3f3af1ecebbd/utf8-941b7ecd47e5-tool-proof-dd2add247f51-b5a737ff-ae26-43c4-b7db-db6fda7b39f7.log"
+                  }
+                }
+              },
+              {
+                "name": "artifact_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "payload_bytes",
+                "value": {
+                  "kind": "u64",
+                  "value": "23"
+                }
+              },
+              {
+                "name": "sha256",
+                "value": {
+                  "kind": "string",
+                  "value": "f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077"
+                }
+              },
+              {
+                "name": "retention",
+                "value": {
+                  "kind": "string",
+                  "value": "temporary_1h"
+                }
+              }
+            ]
+          }
+        },
+        "v4:6:23:1791920325063992546:5702cf717d51731ea9e43200b140fcd3ac55ae69952445751bbd6058655b0ca9:fc98e70e48b2945decf242b44f86acfc3daeb9794bf3e5b9f7a9b3c1d13ff5aa:f6061f657a7a7467cb6ba10c5c46b0e45a42a8946ea516b18e20056b0d19b077",
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_tools::files::artifact::ArtifactPageLimit",
+            "variant": "bytes",
+            "fields": [
+              {
+                "name": "value",
+                "value": {
+                  "kind": "u64",
+                  "value": "8"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expected": "rpc_error",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "artifact length changed: expected 23, actual 19",
+        "operation": "echo_tools::files::artifact::read_artifact_page",
+        "retryable": "never",
+        "handle": null,
+        "details": null
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "shell-unicode",
+      "operation": "shell",
+      "arguments": [
+        "printf '中文🙂\\n'"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "command_output",
+          "exit_code": "0"
+        },
+        "success": true,
+        "output": "中文🙂\n",
+        "truncated": false,
+        "metadata": {
+          "duration_ms": "1",
+          "exit_code": "0",
+          "output_truncated": "false",
+          "stderr_bytes": "0",
+          "stdout_bytes": "11",
+          "working_dir": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "shell-stderr",
+      "operation": "shell",
+      "arguments": [
+        "ls missing-shell-proof"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "command_output",
+          "exit_code": "1"
+        },
+        "success": false,
+        "output": "ls: missing-shell-proof: No such file or directory\n",
+        "error": "Command execution failed, exit code: 1\nstdout: \nstderr: ls: missing-shell-proof: No such file or directory\n",
+        "failure": {
+          "category": "permanent",
+          "recovery": "verify_then_retry",
+          "side_effect": "possible",
+          "postcondition": "inspect command output and affected targets before continuing"
+        },
+        "truncated": false,
+        "metadata": {
+          "duration_ms": "1",
+          "exit_code": "1",
+          "output_truncated": "false",
+          "stderr_bytes": "51",
+          "stdout_bytes": "0",
+          "working_dir": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "shell-timeout",
+      "operation": "shell",
+      "arguments": [
+        "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/tail.txt",
+        1
+      ],
+      "expected": "tool_failure",
+      "watch_process": true,
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "process_before": [
+        {
+          "pid": 30339,
+          "ppid": 30267,
+          "command": "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/tail.txt"
+        }
+      ],
+      "result": {
+        "kind": {
+          "kind": "command_output",
+          "exit_code": "-1"
+        },
+        "success": false,
+        "output": "tail-ready 中文🙂\n",
+        "error": "Command timeout\nstdout: tail-ready 中文🙂\n\nstderr: ",
+        "failure": {
+          "category": "timeout",
+          "recovery": "verify_then_retry",
+          "side_effect": "possible",
+          "postcondition": "verify the process stopped and inspect command targets before retrying"
+        },
+        "truncated": false,
+        "metadata": {
+          "duration_ms": "1006",
+          "exit_code": "-1",
+          "output_truncated": "false",
+          "stderr_bytes": "0",
+          "stdout_bytes": "22",
+          "working_dir": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k"
+        }
+      },
+      "process_after": [],
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "shell-signal",
+      "operation": "shell",
+      "arguments": [
+        "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/tail.txt",
+        5
+      ],
+      "expected": "tool_failure",
+      "watch_process": true,
+      "terminate_observed": true,
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "process_before": [
+        {
+          "pid": 30409,
+          "ppid": 30267,
+          "command": "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/tail.txt"
+        }
+      ],
+      "result": {
+        "kind": {
+          "kind": "command_output",
+          "exit_code": "-1"
+        },
+        "success": false,
+        "output": "tail-ready 中文🙂\n",
+        "error": "Command execution failed, exit code: -1\nstdout: tail-ready 中文🙂\n\nstderr: ",
+        "failure": {
+          "category": "permanent",
+          "recovery": "verify_then_retry",
+          "side_effect": "possible",
+          "postcondition": "inspect command output and affected targets before continuing"
+        },
+        "truncated": false,
+        "metadata": {
+          "duration_ms": "103",
+          "exit_code": "-1",
+          "output_truncated": "false",
+          "stderr_bytes": "0",
+          "stdout_bytes": "22",
+          "working_dir": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k"
+        }
+      },
+      "process_after": [],
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "shell-policy",
+      "operation": "shell",
+      "arguments": [
+        "python3 blocked.py"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "⚠️  Manual confirmation required: Command 'python3' may cause system changes, requires manual confirmation\nCommand: python3 blocked.py\n\nPlease use the human_loop module to confirm before executing.",
+        "failure": {
+          "category": "permanent",
+          "recovery": "stop",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "web-fetch",
+      "operation": "web_fetch",
+      "arguments": [
+        "http://127.0.0.1:52752/html"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "URL: http://127.0.0.1:52752/html\nStatus: 200 OK\nContent-Type: text/html; charset=utf-8\n\n# 中文🙂 Heading\n\n段落 beta🙂\n\n[链接🙂][1]\n\n───\none\n───\n\n[1]: /target\n",
+        "truncated": false,
+        "mime_type": "text/html; charset=utf-8",
+        "metadata": {
+          "url": "http://127.0.0.1:52752/html"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "web-truncated",
+      "operation": "web_fetch",
+      "arguments": [
+        "http://127.0.0.1:52752/large",
+        8
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "URL: http://127.0.0.1:52752/large\nStatus: 200 OK\nContent-Type: text/html; charset=utf-8\n\nlarge 中文\n\n[... content truncated ...]\n\nFull content artifact: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/echo_agent_artifacts/tool-logs/sess_72b2fd98-787e-45ea-ae5b-3c04eea42a36-ad654e999ac8/session-3f3af1ecebbd/call_9332050d-f5a1-47af-8a59-61c84f2befe9-aa08862a51e7-web_fetch-3f2690ac7303-411924a4-fed1-4df8-8e4f-b58dadbb14f6.log (sha256 eab21be82ed8ff371789cfe4fc5830889fc5bdfa294ca65b10fa7cbb7481a807). Use read_artifact to continue.",
+        "truncated": true,
+        "mime_type": "text/html; charset=utf-8",
+        "artifact": {
+          "path": {
+            "encoding": "utf8",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/artifact-temp/echo_agent_artifacts/tool-logs/sess_72b2fd98-787e-45ea-ae5b-3c04eea42a36-ad654e999ac8/session-3f3af1ecebbd/call_9332050d-f5a1-47af-8a59-61c84f2befe9-aa08862a51e7-web_fetch-3f2690ac7303-411924a4-fed1-4df8-8e4f-b58dadbb14f6.log"
+          },
+          "artifact_bytes": "2040089",
+          "payload_bytes": "2040089",
+          "sha256": "eab21be82ed8ff371789cfe4fc5830889fc5bdfa294ca65b10fa7cbb7481a807",
+          "retention": "temporary_1h"
+        },
+        "metadata": {
+          "original_bytes": "2040089",
+          "output_handling": "spilled",
+          "returned_bytes": "599",
+          "url": "http://127.0.0.1:52752/large"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "web-extract",
+      "operation": "web_extract",
+      "arguments": [
+        "<html><head><title>中文🙂 Title</title></head><body><h1>中文🙂 Heading</h1><p>段落 beta🙂</p><a href=\"/target\">链接🙂</a><table><tr><td>one</td></tr></table></body></html>",
+        "all"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"headings\":[{\"tag\":\"h1\",\"text\":\"中文🙂 Heading\"}],\"links\":[{\"text\":\"链接🙂\",\"href\":\"/target\"}],\"paragraphs\":[\"段落 beta🙂\"],\"table_count\":1}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "headings"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "tag"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "h1"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "text"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "中文🙂 Heading"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "links"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "text"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "链接🙂"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "href"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "/target"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "paragraphs"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "段落 beta🙂"
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "table_count"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            }
+          ]
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "web-http-error",
+      "operation": "web_fetch",
+      "arguments": [
+        "http://127.0.0.1:52752/503"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "HTTP request failed, status code: 503 Service Unavailable",
+        "failure": {
+          "category": "permanent",
+          "recovery": "stop",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "web-closed-port",
+      "operation": "web_fetch",
+      "arguments": [
+        "http://127.0.0.1:1/unreachable"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "Request failed: Tool Error: Tool 'security' execution failed: SSRF-safe request failed: error sending request for url (http://127.0.0.1:1/unreachable)",
+        "failure": {
+          "category": "permanent",
+          "recovery": "stop",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-tables",
+      "operation": "list_tables",
+      "arguments": [
+        "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/fixture.db"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"columns\":[\"table_name\"],\"rows\":[[\"records\"]],\"total_rows\":1}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "table_name"
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "rows"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "string",
+                        "value": "records"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_rows"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            }
+          ]
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-describe",
+      "operation": "describe_table",
+      "arguments": [
+        "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/fixture.db",
+        "records"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"columns\":[\"cid\",\"name\",\"type\",\"notnull\",\"dflt_value\",\"pk\"],\"rows\":[[0,\"id\",\"INTEGER\",0,null,1],[1,\"label\",\"TEXT\",1,null,0],[2,\"quantity\",\"INTEGER\",0,\"7\",0],[3,\"note\",\"TEXT\",0,null,0]],\"total_rows\":4}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "cid"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "name"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "type"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "notnull"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "dflt_value"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "pk"
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "rows"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "u64",
+                        "value": "0"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "id"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "INTEGER"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "0"
+                      },
+                      {
+                        "kind": "null"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "u64",
+                        "value": "1"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "label"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "TEXT"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "1"
+                      },
+                      {
+                        "kind": "null"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "u64",
+                        "value": "2"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "quantity"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "INTEGER"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "0"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "7"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "u64",
+                        "value": "3"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "note"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "TEXT"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "0"
+                      },
+                      {
+                        "kind": "null"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_rows"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "4"
+              }
+            }
+          ]
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-page-0",
+      "operation": "sql_query",
+      "arguments": [
+        "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/fixture.db",
+        "SELECT id,label,quantity,note FROM records ORDER BY id",
+        2
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"columns\":[\"id\",\"label\",\"quantity\",\"note\"],\"rows\":[[1,\"中文🙂\",3,null],[2,\"beta\",7,\"note\"]],\"page\":{\"next_cursor\":\"eyJ2ZXJzaW9uIjoxLCJmaW5nZXJwcmludCI6ImEwM2I4OGQyZDM3NGIyZThkNWIyYWZiMDM0M2RlOWQxOTA5YjVhYzlmNGVjYTJjOTI5YmY2M2EyMTU0MWRjZGIiLCJvZmZzZXQiOjIsImxpbWl0IjoyfQ\",\"truncated\":true,\"total_known\":false,\"returned\":2}}\n[page]{\"next_cursor\":\"eyJ2ZXJzaW9uIjoxLCJmaW5nZXJwcmludCI6ImEwM2I4OGQyZDM3NGIyZThkNWIyYWZiMDM0M2RlOWQxOTA5YjVhYzlmNGVjYTJjOTI5YmY2M2EyMTU0MWRjZGIiLCJvZmZzZXQiOjIsImxpbWl0IjoyfQ\",\"returned\":2,\"total\":null,\"total_known\":false,\"truncated\":true}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "id"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "label"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "quantity"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "note"
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "rows"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "u64",
+                        "value": "1"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "中文🙂"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "3"
+                      },
+                      {
+                        "kind": "null"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "u64",
+                        "value": "2"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "beta"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "7"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "note"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "page"
+              },
+              "value": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "next_cursor"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "eyJ2ZXJzaW9uIjoxLCJmaW5nZXJwcmludCI6ImEwM2I4OGQyZDM3NGIyZThkNWIyYWZiMDM0M2RlOWQxOTA5YjVhYzlmNGVjYTJjOTI5YmY2M2EyMTU0MWRjZGIiLCJvZmZzZXQiOjIsImxpbWl0IjoyfQ"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "truncated"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "total_known"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "returned"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "2"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": true,
+        "metadata": {
+          "page.next_cursor": "eyJ2ZXJzaW9uIjoxLCJmaW5nZXJwcmludCI6ImEwM2I4OGQyZDM3NGIyZThkNWIyYWZiMDM0M2RlOWQxOTA5YjVhYzlmNGVjYTJjOTI5YmY2M2EyMTU0MWRjZGIiLCJvZmZzZXQiOjIsImxpbWl0IjoyfQ",
+          "page.returned": "2",
+          "page.total_known": "false",
+          "page.truncated": "true"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-page-1",
+      "operation": "sql_query",
+      "arguments": [
+        "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/fixture.db",
+        "SELECT id,label,quantity,note FROM records ORDER BY id",
+        2,
+        "eyJ2ZXJzaW9uIjoxLCJmaW5nZXJwcmludCI6ImEwM2I4OGQyZDM3NGIyZThkNWIyYWZiMDM0M2RlOWQxOTA5YjVhYzlmNGVjYTJjOTI5YmY2M2EyMTU0MWRjZGIiLCJvZmZzZXQiOjIsImxpbWl0IjoyfQ"
+      ],
+      "expected": "success",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"columns\":[\"id\",\"label\",\"quantity\",\"note\"],\"rows\":[[3,\"gamma\",9,\"\"]],\"page\":{\"truncated\":false,\"total_known\":false,\"returned\":1}}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "id"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "label"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "quantity"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "note"
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "rows"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "list",
+                    "value": [
+                      {
+                        "kind": "u64",
+                        "value": "3"
+                      },
+                      {
+                        "kind": "string",
+                        "value": "gamma"
+                      },
+                      {
+                        "kind": "u64",
+                        "value": "9"
+                      },
+                      {
+                        "kind": "string",
+                        "value": ""
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "page"
+              },
+              "value": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "truncated"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "total_known"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "returned"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total_known": "false",
+          "page.truncated": "false"
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-stale-cursor",
+      "operation": "sql_query",
+      "arguments": [
+        "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/fixture.db",
+        "SELECT id,label,quantity,note FROM records ORDER BY id DESC",
+        2,
+        "eyJ2ZXJzaW9uIjoxLCJmaW5nZXJwcmludCI6ImEwM2I4OGQyZDM3NGIyZThkNWIyYWZiMDM0M2RlOWQxOTA5YjVhYzlmNGVjYTJjOTI5YmY2M2EyMTU0MWRjZGIiLCJvZmZzZXQiOjIsImxpbWl0IjoyfQ"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "Query failed: Tool Error: Invalid parameter 'cursor': SQL cursor does not match this query and limit",
+        "failure": {
+          "category": "permanent",
+          "recovery": "stop",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-bad-url",
+      "operation": "sql_query",
+      "arguments": [
+        "wrong://db",
+        "SELECT id,label,quantity,note FROM records ORDER BY id"
+      ],
+      "expected": "rpc_error",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'connection_url': Unsupported database scheme 'wrong'. Use sqlite://, mysql://, or postgresql://",
+        "operation": "sql_query",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-missing",
+      "operation": "sql_query",
+      "arguments": [
+        "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/missing.db",
+        "SELECT id,label,quantity,note FROM records ORDER BY id"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "Query failed: Tool Error: Tool 'database' execution failed: Database connection failed: error returned from database: (code: 14) unable to open database file",
+        "failure": {
+          "category": "permanent",
+          "recovery": "stop",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "db-sql-error",
+      "operation": "sql_query",
+      "arguments": [
+        "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-za6bsj2k/fixture.db",
+        "SELECT unknown FROM records"
+      ],
+      "expected": "tool_failure",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "structured_error",
+          "error_code": "tool_error"
+        },
+        "success": false,
+        "output": "",
+        "error": "Query failed: Tool Error: Tool 'database' execution failed: Query execution failed: error returned from database: (code: 1) no such column: unknown",
+        "failure": {
+          "category": "permanent",
+          "recovery": "stop",
+          "side_effect": "none"
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "research-arxiv_search",
+      "operation": "arxiv_search",
+      "arguments": [
+        "agent artificial intelligence",
+        1
+      ],
+      "expected": "external",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"query\":\"agent artificial intelligence\",\"total_results\":1,\"papers\":[{\"arxiv_id\":\"2204.10358v1\",\"title\":\"Creative Problem Solving in Artificially Intelligent Agents: A Survey and Framework\",\"authors\":[\"Evana Gizzi\",\"Lakshmi Nair\",\"Sonia Chernova\",\"Jivko Sinapov\"],\"abstract\":\"Creative Problem Solving (CPS) is a sub-area within Artificial Intelligence (AI) that focuses on methods for solving off-nominal, or anomalous problems in autonomous systems. Despite many advancements in planning and learning, resolving novel problems or adapting existing knowledge to a new context, especially in cases where the environment may change in unpredictable ways post deployment, remains a limiting factor in the safe and useful integration of intelligent systems. The emergence of increasingly autonomous systems dictates the necessity for AI agents to deal with environmental uncertainty through creativity. To stimulate further research in CPS, we present a definition and a framework of CPS, which we adopt to categorize existing AI methods in this field. Our framework consists of four main components of a CPS problem, namely, 1) problem formulation, 2) knowledge representation, 3) method of knowledge manipulation, and 4) method of evaluation. We conclude our survey with open research questions, and suggested directions for the future.\",\"published\":\"2022-04-21T18:31:44Z\",\"pdf_url\":\"\",\"categories\":[]}]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "query"
+              },
+              "value": {
+                "kind": "string",
+                "value": "agent artificial intelligence"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_results"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "papers"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "arxiv_id"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "2204.10358v1"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "title"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "Creative Problem Solving in Artificially Intelligent Agents: A Survey and Framework"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "authors"
+                        },
+                        "value": {
+                          "kind": "list",
+                          "value": [
+                            {
+                              "kind": "string",
+                              "value": "Evana Gizzi"
+                            },
+                            {
+                              "kind": "string",
+                              "value": "Lakshmi Nair"
+                            },
+                            {
+                              "kind": "string",
+                              "value": "Sonia Chernova"
+                            },
+                            {
+                              "kind": "string",
+                              "value": "Jivko Sinapov"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "abstract"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "Creative Problem Solving (CPS) is a sub-area within Artificial Intelligence (AI) that focuses on methods for solving off-nominal, or anomalous problems in autonomous systems. Despite many advancements in planning and learning, resolving novel problems or adapting existing knowledge to a new context, especially in cases where the environment may change in unpredictable ways post deployment, remains a limiting factor in the safe and useful integration of intelligent systems. The emergence of increasingly autonomous systems dictates the necessity for AI agents to deal with environmental uncertainty through creativity. To stimulate further research in CPS, we present a definition and a framework of CPS, which we adopt to categorize existing AI methods in this field. Our framework consists of four main components of a CPS problem, namely, 1) problem formulation, 2) knowledge representation, 3) method of knowledge manipulation, and 4) method of evaluation. We conclude our survey with open research questions, and suggested directions for the future."
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "published"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "2022-04-21T18:31:44Z"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "pdf_url"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": ""
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "categories"
+                        },
+                        "value": {
+                          "kind": "list",
+                          "value": []
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "research-semantic_scholar_search",
+      "operation": "semantic_scholar_search",
+      "arguments": [
+        "agent artificial intelligence",
+        1
+      ],
+      "expected": "external",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'semantic_scholar_search' execution failed: Semantic Scholar API error (429 Too Many Requests): {\"message\": \"Too Many Requests. Please wait and try again or apply for a key for higher rate limits. https://www.semanticscholar.org/product/api#api-key-form\", \"code\": \"429\"}",
+        "operation": "semantic_scholar_search",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "research-pubmed_search",
+      "operation": "pubmed_search",
+      "arguments": [
+        "agent artificial intelligence",
+        1
+      ],
+      "expected": "external",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"query\":\"agent artificial intelligence\",\"total_results\":16567,\"returned\":0,\"papers\":[]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "query"
+              },
+              "value": {
+                "kind": "string",
+                "value": "agent artificial intelligence"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_results"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "16567"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "returned"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "0"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "papers"
+              },
+              "value": {
+                "kind": "list",
+                "value": []
+              }
+            }
+          ]
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    },
+    {
+      "id": "research-clinical_trials_search",
+      "operation": "clinical_trials_search",
+      "arguments": [
+        "agent artificial intelligence",
+        1
+      ],
+      "expected": "external",
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_before": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      },
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"query\":\"agent artificial intelligence\",\"total_results\":386,\"returned\":1,\"studies\":[{\"nct_id\":\"NCT06806163\",\"title\":\"Machine-Learning Prediction and Reducing Overdoses With EHR Nudges\",\"status\":\"ACTIVE_NOT_RECRUITING\",\"phase\":\"NA\",\"conditions\":[\"Opioid Overdose\",\"Opioid Use\",\"Opioid Use Disorder\",\"Opioids\"],\"interventions\":[\"EHR-Embedded Elevated-Risk Flag: Clinicians seeing patients at elevated predicted risk will see a flag on the EHR 'storyboard' during in person or telephone encounters indicating the patient is at elevated predicted risk of opioid overdose. The clinician will have the option of including this information into their decision-making process when providing care. There will be no best practice alerts/behavioral nudges in this arm.\",\"EHR-Embedded Elevated-Risk Flag with Behavioral Nudges: Clinicians seeing patients at elevated predicted risk for opioid overdose will see a flag on the EHR storyboard indicating that the patient is at elevated predicted risk.\\n\\nClinicians will also receive up to 4 best practice alerts/behavioral nudges during an in-person or telephone primary care encounter with elevated risk patients when certain requirements are met: 1) if the patient does not have an active naloxone prescription on their medication list, the clinicians will receive an active choice alert during any medication ordering to encourage naloxone prescription; 2) if the patient's opioid dosage is \\\\>50 MME, OR they are ordered a new opioid prescription, OR they have an overlapping opioid and benzodiazepine prescription order, the clinicians will receive an accountable justification alert when the relevant order is entered.\",\"Usual Care: Patients in the practices randomized to the Usual Care arm will receive standard care practice without change.\"],\"primary_outcomes\":[\"Prescribing Practices Composite Score [Assessed at 4 months following study enrollment (i.e., at 4 months after the first encounter in the study period. An encounter refers to the 1st primary care visit for a patient enrolled in the study.)]\"],\"enrollment\":1350,\"start_date\":\"2025-03-10\",\"completion_date\":\"2026-05-31\",\"url\":\"https://clinicaltrials.gov/study/NCT06806163\"}]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "query"
+              },
+              "value": {
+                "kind": "string",
+                "value": "agent artificial intelligence"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_results"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "386"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "returned"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "studies"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "nct_id"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "NCT06806163"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "title"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "Machine-Learning Prediction and Reducing Overdoses With EHR Nudges"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "status"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "ACTIVE_NOT_RECRUITING"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "phase"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "NA"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "conditions"
+                        },
+                        "value": {
+                          "kind": "list",
+                          "value": [
+                            {
+                              "kind": "string",
+                              "value": "Opioid Overdose"
+                            },
+                            {
+                              "kind": "string",
+                              "value": "Opioid Use"
+                            },
+                            {
+                              "kind": "string",
+                              "value": "Opioid Use Disorder"
+                            },
+                            {
+                              "kind": "string",
+                              "value": "Opioids"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "interventions"
+                        },
+                        "value": {
+                          "kind": "list",
+                          "value": [
+                            {
+                              "kind": "string",
+                              "value": "EHR-Embedded Elevated-Risk Flag: Clinicians seeing patients at elevated predicted risk will see a flag on the EHR 'storyboard' during in person or telephone encounters indicating the patient is at elevated predicted risk of opioid overdose. The clinician will have the option of including this information into their decision-making process when providing care. There will be no best practice alerts/behavioral nudges in this arm."
+                            },
+                            {
+                              "kind": "string",
+                              "value": "EHR-Embedded Elevated-Risk Flag with Behavioral Nudges: Clinicians seeing patients at elevated predicted risk for opioid overdose will see a flag on the EHR storyboard indicating that the patient is at elevated predicted risk.\n\nClinicians will also receive up to 4 best practice alerts/behavioral nudges during an in-person or telephone primary care encounter with elevated risk patients when certain requirements are met: 1) if the patient does not have an active naloxone prescription on their medication list, the clinicians will receive an active choice alert during any medication ordering to encourage naloxone prescription; 2) if the patient's opioid dosage is \\>50 MME, OR they are ordered a new opioid prescription, OR they have an overlapping opioid and benzodiazepine prescription order, the clinicians will receive an accountable justification alert when the relevant order is entered."
+                            },
+                            {
+                              "kind": "string",
+                              "value": "Usual Care: Patients in the practices randomized to the Usual Care arm will receive standard care practice without change."
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "primary_outcomes"
+                        },
+                        "value": {
+                          "kind": "list",
+                          "value": [
+                            {
+                              "kind": "string",
+                              "value": "Prescribing Practices Composite Score [Assessed at 4 months following study enrollment (i.e., at 4 months after the first encounter in the study period. An encounter refers to the 1st primary care visit for a patient enrolled in the study.)]"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "enrollment"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "1350"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "start_date"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "2025-03-10"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "completion_date"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "2026-05-31"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "url"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "https://clinicaltrials.gov/study/NCT06806163"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "files_after": {
+        "中文🙂/note.txt": null,
+        "中文🙂/moved.txt": null
+      }
+    }
+  ]
+}

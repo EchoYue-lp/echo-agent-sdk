@@ -1,0 +1,20 @@
+[
+  {
+    "session_id": "sess_597f9ddd-896a-4bd6-80a2-ea40fe12c899",
+    "agent_handle_id": "agent-2",
+    "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+    "cwd": {
+      "encoding": "utf8",
+      "path": "/private/tmp/sdk-state-trace-delivery-candidate-fixture"
+    }
+  },
+  {
+    "session_id": "sess_9bb45740-614f-4cb6-953d-e7080cf9d6f1",
+    "agent_handle_id": "agent-2",
+    "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+    "cwd": {
+      "encoding": "utf8",
+      "path": "/private/tmp/sdk-state-trace-delivery-candidate-fixture"
+    }
+  }
+]

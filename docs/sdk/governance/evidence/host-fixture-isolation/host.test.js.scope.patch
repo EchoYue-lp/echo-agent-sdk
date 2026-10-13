@@ -1,0 +1,36 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-fixture-isolation/before-source/host.test.js	2026-10-12 15:42:08
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-fixture-isolation/after-source/host.test.js	2026-10-14 03:51:59
+@@ -1,14 +1,24 @@
++import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
+ import { fileURLToPath } from "node:url";
+ import test from "node:test";
+ import assert from "node:assert/strict";
+ import { EchoAgentClient } from "../dist/index.js";
+ 
+ test("source SDK reaches a real Host when configured", { skip: !process.env.ECHO_AGENT_SDK_HOST }, async () => {
++  const work = await mkdtemp(join(tmpdir(), "sdk-ts-smoke-"));
+   let sdk;
+   try {
++    const config = JSON.parse(await readFile(process.env.ECHO_AGENT_SDK_CONFIG, "utf8"));
++    // Each independently spawned Host owns its file-backed state root.
++    config.sdk_profile.state_root = join(work, "state");
++    if (config.default_agent.agent.memory_path !== undefined) config.default_agent.agent.memory_path = join(work, "memory.jsonl");
++    const configPath = join(work, "host.json");
++    await writeFile(configPath, JSON.stringify(config));
+     sdk = await EchoAgentClient.spawn({
+       hostCommand: process.env.ECHO_AGENT_SDK_HOST,
+-      args: ["--config", process.env.ECHO_AGENT_SDK_CONFIG],
++      args: ["--config", configPath],
+       onStderr: (chunk) => process.stderr.write(chunk),
+     });
+     const registration = await sdk.registerLlmClient(
+@@ -104,6 +114,7 @@
+     await agent.close();
+   } finally {
+     await sdk?.close();
++    await rm(work, { recursive: true, force: true });
+   }
+ });
+ 

@@ -1,0 +1,40 @@
+{
+  "binary": "/tmp/echo-sdk-governance-family-handle-host",
+  "sha256": "fc63c0815b319424ea2c64a94d3fc6a365a3dff6b70882a23b9edd1266d2f6eb",
+  "digests": {
+    "contract_digest": "sha256:df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61",
+    "source_contract_digest": "sha256:ce80aa3a7793d4460e082772eb24fa228734d65f98ec997af2087be27b8e015e"
+  },
+  "Host_full_local_results": [
+    [
+      "136",
+      "0",
+      "0"
+    ],
+    [
+      "31",
+      "0",
+      "0"
+    ],
+    [
+      "34",
+      "0",
+      "0"
+    ],
+    [
+      "12",
+      "0",
+      "0"
+    ]
+  ],
+  "log": "/tmp/sdk-final-host-local-candidate.log",
+  "log_sha256": "9cc8e5d25a399b1d10611548c31a2f4fe6fd6ac96d59b3a79a2ef9f083eb73dd",
+  "classification": "temporary combined framework canonical source; not final published-pin/main evidence",
+  "source_files": {
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "39144d4615852e06027a95dbb9228457a65ffa6e6b7db458a56d14b6e076d260",
+    "echo-sdk-host/src/core_profile/facade/source_operations.rs": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73",
+    "echo-sdk-host/src/core_profile/facade/integrations.rs": "0175774dce4d6eadc7ac7f640da6da6711f53880f9ebaa8940ef85b416ddce85",
+    "echo-sdk-host/src/core_profile/handles.rs": "e155ffd659d468840679855d17ecc0df96213500de2c506e52214781e9b75d39",
+    "sdks/python/src/echo_agent_sdk/client.py": "61e61202c914b111951714de559c4d3efe74bfce29c4e62f14b292142f8ed021"
+  }
+}

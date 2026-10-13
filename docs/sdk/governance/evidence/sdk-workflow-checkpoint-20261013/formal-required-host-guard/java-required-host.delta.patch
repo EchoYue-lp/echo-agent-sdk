@@ -1,0 +1,11 @@
+--- verified48epoch/WorkflowCheckpointHostTest.java
++++ guard-only/WorkflowCheckpointHostTest.java
+@@ -20,7 +20,7 @@
+   assertTrue(child.waitFor(10,TimeUnit.SECONDS));assertEquals(0,child.exitValue(),output);return output;
+  }
+  @Test public void routingCheckpointClaimsBranchOwnerAndShapeBoundary()throws Exception{
+-  var host=System.getenv("ECHO_AGENT_SDK_HOST");if("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E")))assertNotNull(host,"required Workflow Host missing");assumeTrue(host!=null&&!host.isBlank());
++  var host=System.getenv("ECHO_AGENT_SDK_HOST");if("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E")))assertTrue(host!=null&&!host.isBlank(),"required Workflow Host missing");assumeTrue(host!=null&&!host.isBlank());
+   var fixture=Path.of("../shared/testing/workflow_checkpoint_fixture.py").toAbsolutePath();var work=Files.createTempDirectory("sdk-java-workflow-");EchoAgentClient sdk=null;boolean passed=false;
+   try{
+    helper(fixture,work,"--prepare");var scenario=JsonSupport.MAPPER.readTree(Files.readString(work.resolve("scenario.json")));

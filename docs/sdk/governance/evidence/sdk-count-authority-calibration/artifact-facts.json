@@ -1,0 +1,20 @@
+{
+  "record_kind": "artifactname/epoch calibration only, not a generated snapshot or completion denominator",
+  "old_generated_framework_source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=27c7701e1eb116db1076da7f84bb68898544a44c#27c7701e1eb116db1076da7f84bb68898544a44c",
+  "accepted_external_canonical_blocking_seed_entries": 5622,
+  "inventory_telemetry_canonical_items": 9724,
+  "parity_manifest_total_entries_aliases_and_intrinsic": 23672,
+  "raw_profile_public_items": {
+    "default": 23552,
+    "full": 36519
+  },
+  "raw_profile_counts_provenance": "uniquegenerator writer read reported byparent; rawextracts beforemergecanonical, not accepted scope",
+  "artifact_sha256": {
+    "contracts/sdk/accepted-external-contract.json": "901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45",
+    "contracts/sdk/inventory-telemetry.json": "6e6f3695a20f56a89d0c033fe0794e17da4d574c90fcdf65136937bf28067356",
+    "contracts/sdk/parity-manifest.json": "73cc165e1e2b7d428dcf6d0906d80a55ce62216bf44f6716907da849aa206ab0"
+  },
+  "explicit_acceptance_plan": "TaskExecution2fields +DiagnosticCodeenum/2variants exact5accept;Curator save1retire; supportingvalue3 nextwholeupdate pending; helperidentities notautoaccepted",
+  "framework_main": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "SDK_runtime": "no current allsourcegate claims; sourcepinb909/patchremoved but nightlyprofiles/generatorongoing"
+}

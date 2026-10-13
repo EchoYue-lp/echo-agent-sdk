@@ -1,0 +1,14 @@
+{
+  "classification": "new actual local Host with strict workflow checkpoint object input; not full new-snapshot/standalone/main proof",
+  "host": "/tmp/echo-sdk-governance-workflow-shape-host",
+  "host_sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2",
+  "source_sha256": {
+    "echo-sdk-host/src/core_profile/facade/workflow.rs": "f5c72f5e132d0de1e2fd6b9a17fb892201026838cff72db4b5a802bed02e7701"
+  },
+  "original_source_sha256": "8a9fa9dbff4a00ca1e4f7234e22f5192f5449d025acff161868241a5fcd1c4a5",
+  "original_host_sha256": "6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5",
+  "focused_log": "/tmp/sdk-workflow-shape-focused.log",
+  "build_log": "/tmp/sdk-workflow-shape-host-build-correct-target.log",
+  "incorrect_target_log": "/tmp/sdk-workflow-shape-host-build.log",
+  "incorrect_target_resolution": "command corrected from nonexistent echo-sdk-host binary to manifest declared echo-agent-sdk-host; no production fix needed"
+}

@@ -1,0 +1,6 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Computation verified: {"native_calls": 50, "typed_errors": 19, "oracle_groups": 9, "final_pivot_boundaries": 5, "protected_files": 8, "host_sha256": "7bbd1569367b0b1004fbe1cbc537b6869a2bc685bb1ca14e63228b1746aee3b2"}
+
+Java native public corpus 50 work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/computation-work/sdk-computation-native-java-16071095358900943689

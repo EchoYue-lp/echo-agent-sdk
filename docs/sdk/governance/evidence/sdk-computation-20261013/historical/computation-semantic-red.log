@@ -1,0 +1,32 @@
+test_overlap_should_redact_complete_card_once (verify_corpus.OriginalSemanticCounterexamples) ... FAIL
+test_pivot_should_preserve_every_input_cell (verify_corpus.OriginalSemanticCounterexamples) ... FAIL
+
+======================================================================
+FAIL: test_overlap_should_redact_complete_card_once (verify_corpus.OriginalSemanticCounterexamples)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/sdk-computation-candidate-fixture/verify_corpus.py", line 72, in test_overlap_should_redact_complete_card_once
+    self.assertEqual(ROWS['guard-overlap-redact']['result'],{'redacted':'[REDACTED:CARD]'})
+AssertionError: {'redacted': '[REDACTED:CARD]E]111'} != {'redacted': '[REDACTED:CARD]'}
+- {'redacted': '[REDACTED:CARD]E]111'}
+?                              -----
+
++ {'redacted': '[REDACTED:CARD]'}
+
+======================================================================
+FAIL: test_pivot_should_preserve_every_input_cell (verify_corpus.OriginalSemanticCounterexamples)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/sdk-computation-candidate-fixture/verify_corpus.py", line 75, in test_pivot_should_preserve_every_input_cell
+    self.assertEqual(set(value['pivot_values']),{'q1','q2'})
+AssertionError: Items in the first set but not the second:
+'"q2"'
+'"q1"'
+Items in the second set but not the first:
+'q1'
+'q2'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+FAILED (failures=2)

@@ -67,7 +67,29 @@ impl MemoryStoreAuthority {
     feature = "sdk-extension-bridge"
 ))]
 struct FailedEvalAgent {
-    message: String,
+    // The eval factory is infallible, so its fallback Agent transfers the
+    // original construction error to the one canonical framework turn.
+    // ReactError can contain non-cloneable IO errors; taking the exact value
+    // once avoids reconstructing its category from display text.
+    error: std::sync::Mutex<Option<echo_agent::error::ReactError>>,
+}
+
+#[cfg(all(
+    any(feature = "framework-eval", feature = "framework-improve"),
+    feature = "sdk-extension-bridge"
+))]
+impl FailedEvalAgent {
+    fn take_error(&self) -> echo_agent::error::ReactError {
+        self.error
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .take()
+            .unwrap_or_else(|| {
+                echo_agent::error::ReactError::Other(
+                    "eval factory failure has already been consumed".to_string(),
+                )
+            })
+    }
 }
 
 #[cfg(all(
@@ -91,7 +113,7 @@ impl echo_agent::agent::Agent for FailedEvalAgent {
         &'a self,
         _task: &'a str,
     ) -> futures::future::BoxFuture<'a, echo_agent::error::Result<String>> {
-        Box::pin(async { Err(echo_agent::error::ReactError::Other(self.message.clone())) })
+        Box::pin(async { Err(self.take_error()) })
     }
 
     fn execute_stream<'a>(
@@ -108,10 +130,7 @@ impl echo_agent::agent::Agent for FailedEvalAgent {
     > {
         Box::pin(async {
             use futures::StreamExt as _;
-            Ok(futures::stream::once(async {
-                Err(echo_agent::error::ReactError::Other(self.message.clone()))
-            })
-            .boxed())
+            Ok(futures::stream::once(async { Err(self.take_error()) }).boxed())
         })
     }
 }
@@ -784,7 +803,7 @@ async fn dispatch_subagent_with_depth(
                 return agent
                     .chat(&task)
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()));
+                    .map_err(|error| wire::framework_error(&error, &request.operation));
             }
         },
     };
@@ -823,7 +842,7 @@ async fn dispatch_subagent_with_depth(
         .subagent_executor
         .dispatch(dispatch)
         .await
-        .map_err(|error| framework(&request.operation, error.to_string()))?;
+        .map_err(|error| wire::framework_error(&error, &request.operation))?;
     Ok(result.output)
 }
 
@@ -870,7 +889,7 @@ fn string_field(
 }
 
 #[cfg(feature = "framework-subagent")]
-fn runtime_context_from_json(
+pub(crate) fn runtime_context_from_json(
     value: Option<serde_json::Value>,
 ) -> Result<Option<echo_agent::tools::ExternalRunContext>, EchoSdkError> {
     let Some(value) = value else { return Ok(None) };
@@ -926,7 +945,7 @@ fn string_list(
 }
 
 #[cfg(feature = "framework-subagent")]
-fn prompt_context_from_json(
+pub(crate) fn prompt_context_from_json(
     value: Option<serde_json::Value>,
 ) -> Result<Option<echo_agent::agent::subagent::prompt::SubagentTaskContext>, EchoSdkError> {
     let Some(value) = value else { return Ok(None) };
@@ -936,6 +955,19 @@ fn prompt_context_from_json(
     let object = value
         .as_object()
         .ok_or_else(|| invalid("prompt_context must be a record"))?;
+    let allowed = [
+        "task_title",
+        "user_goal",
+        "workspace",
+        "files",
+        "execution_checks",
+        "acceptance_criteria",
+        "required_artifacts",
+        "constraints",
+    ];
+    if object.keys().any(|key| !allowed.contains(&key.as_str())) {
+        return Err(invalid("prompt_context contains an unknown field"));
+    }
     let string_value = |key: &str| -> Result<Option<String>, EchoSdkError> {
         match object.get(key) {
             None | Some(serde_json::Value::Null) => Ok(None),
@@ -1080,7 +1112,7 @@ async fn dispatch_rich_subagent(
         Some(identity) => executor.dispatch_attempt(dispatch, identity).await,
         None => executor.dispatch(dispatch).await,
     }
-    .map_err(|error| framework(&request.operation, error.to_string()))?;
+    .map_err(|error| wire::framework_error(&error, &request.operation))?;
     result_wire(result, &request.operation)
 }
 
@@ -1979,94 +2011,59 @@ fn discovery_scopes_from_wire(
 }
 
 #[cfg(feature = "framework-mcp")]
-async fn register_mcp_client_resource(
+fn register_mcp_client_resources(
     state: &CoreProfileState,
     session: &WireHandle,
-    client: std::sync::Arc<echo_agent::mcp::McpClient>,
+    clients: Vec<Arc<echo_agent::mcp::McpClient>>,
     operation: &str,
-) -> Result<serde_json::Value, EchoSdkError> {
+) -> Result<Vec<serde_json::Value>, EchoSdkError> {
     let owner = state
         .handles
         .session(session)
         .map_err(|error| error.with_operation(operation))?
         .acp_session_id
         .clone();
-    let server_name = client.server_name().to_string();
-    let existing_clients = {
-        let clients = state
-            .facade
-            .integrations
-            .mcp_clients
-            .lock()
-            .unwrap_or_else(|error| error.into_inner());
-        clients
-            .iter()
-            .map(|(id, client)| (id.clone(), client.server_name().to_string()))
-            .collect::<Vec<_>>()
-    };
-    let old_ids = existing_clients
-        .into_iter()
-        .filter(|(id, existing_name)| {
-            existing_name == &server_name
-                && state
-                    .handles
-                    .facade_resource(
-                        &WireHandle {
-                            id: id.clone(),
-                            generation: WireU64::from_u64(state.handles.generation()),
-                            kind: HandleKind::FacadeResource,
-                        },
-                        operation,
-                    )
-                    .ok()
-                    .and_then(|record| record.owner_session.clone())
-                    .as_deref()
-                    == Some(owner.as_str())
-        })
-        .map(|(id, _)| id)
-        .collect::<Vec<_>>();
-    for id in old_ids {
-        let old_client = state
-            .facade
-            .integrations
-            .mcp_clients
-            .lock()
-            .unwrap_or_else(|error| error.into_inner())
-            .remove(&id);
-        let old_handle = WireHandle {
-            id,
-            generation: WireU64::from_u64(state.handles.generation()),
-            kind: HandleKind::FacadeResource,
-        };
-        let _ = state.handles.close_facade_resource(&old_handle, operation);
-        if let Some(client) = old_client {
-            client.close().await;
-        }
-    }
-    let (resource, _) = state.handles.register_facade_resource(
+    let handles = super::integrations::register_agent_mcp_clients(
+        &state.handles,
+        &state.facade.integrations,
+        &clients,
+        &owner,
         state.limits.max_facade_resources,
-        "mcp",
-        "mcp.client",
-        Some(&owner),
         operation,
     )?;
-    let tools = client
-        .tools()
-        .iter()
-        .map(|tool| tool.name.clone())
-        .collect::<Vec<_>>();
-    state
-        .facade
-        .integrations
-        .mcp_clients
-        .lock()
-        .unwrap_or_else(|error| error.into_inner())
-        .insert(resource.id.clone(), client);
-    Ok(serde_json::json!({
-        "resource": resource,
-        "server_name": server_name,
-        "tools": tools,
-    }))
+    Ok(clients
+        .into_iter()
+        .zip(handles)
+        .map(|(client, resource)| {
+            serde_json::json!({
+                "resource": resource,
+                "server_name": client.server_name(),
+                "tools": client.tools().iter().map(|tool|tool.name.clone()).collect::<Vec<_>>(),
+            })
+        })
+        .collect())
+}
+
+#[cfg(feature = "framework-mcp")]
+async fn register_mcp_client_resource(
+    state: &CoreProfileState,
+    session: &WireHandle,
+    client: std::sync::Arc<echo_agent::mcp::McpClient>,
+    operation: &str,
+) -> Result<serde_json::Value, EchoSdkError> {
+    // A singleton uses the same exact-Arc/Session publication lock as batch
+    // loading. Concurrent getter and batch calls cannot mint duplicate aliases.
+    register_mcp_client_resources(state, session, vec![client], operation)?
+        .into_iter()
+        .next()
+        .ok_or_else(|| {
+            wire::sdk_error(
+                ExtensionErrorCode::FrameworkError,
+                "MCP singleton publication omitted its resource",
+                Retryability::Never,
+                operation,
+            )
+        })
 }
 
 /// Translate the two direct Agent execution methods into the existing typed
@@ -2410,7 +2407,7 @@ pub(crate) async fn dispatch(
                 Some("check") => guard
                     .check(&content)
                     .map(content_guard_result_value)
-                    .map_err(|error| framework(&request.operation, error.to_string())),
+                    .map_err(|error| wire::framework_error(&error, &request.operation)),
                 Some("detect") => snapshot_value(
                     request,
                     serde_json::to_value(guard.detect(&content))
@@ -2566,9 +2563,19 @@ pub(crate) async fn dispatch(
             )
             .filter(|proxy| proxy.component() == AgentComponentKindWire::McpTransport)
             .ok_or_else(|| invalid("extension is not an McpTransport component"))?;
-            let client = echo_agent::mcp::McpClient::from_transport(server_name, Arc::new(proxy))
-                .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+            let client = state
+                .facade
+                .integrations
+                .prepare_mcp_client(
+                    &state.handles,
+                    &owner,
+                    state.limits.max_facade_resources,
+                    || {
+                        echo_agent::mcp::McpClient::from_transport(server_name, Arc::new(proxy))
+                            .map_err(|error| framework(&request.operation, error.to_string()))
+                    },
+                )
+                .await?;
             let handle = match super::integrations::register_mcp_client(
                 &state.handles,
                 &state.facade.integrations,
@@ -2578,7 +2585,17 @@ pub(crate) async fn dispatch(
             ) {
                 Ok(handle) => handle,
                 Err(error) => {
-                    client.close().await;
+                    if let Err(cleanup_error) = client.close().await {
+                        // The shared integration owner retains cleanup debt for
+                        // Session/connection settlement; never drop it on failure.
+                        return Err(framework(
+                            &request.operation,
+                            format!(
+                                "MCP publication failed: {}; cleanup pending: {cleanup_error}",
+                                error.message
+                            ),
+                        ));
+                    }
                     return Err(error);
                 }
             };
@@ -2586,546 +2603,65 @@ pub(crate) async fn dispatch(
         }
         #[cfg(feature = "framework-eval")]
         "echo_agent::eval::runner::EvalRunner::new" => {
-            let owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 2 {
-                return Err(invalid("EvalRunner::new accepts [Session, workspace_root]"));
-            }
-            let workspace_root = path_argument(request, 1)?;
-            let resource = register_source_resource(state, &owner, "eval", "eval.runner")?;
-            state
-                .facade
-                .eval_runners
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .insert(
-                    resource.id.clone(),
-                    Arc::new(echo_agent::eval::EvalRunner::new(workspace_root)),
-                );
-            Ok(WireValue::Handle(resource))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-eval")]
         "echo_agent::eval::runner::EvalRunner::with_run_store"
         | "echo_agent::eval::runner::EvalRunner::with_grader" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource = source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
-            let runner = state
-                .facade
-                .eval_runners
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
-            let configured = if request.operation.ends_with("::with_run_store") {
-                if request.arguments.len() != 3 {
-                    return Err(invalid(
-                        "with_run_store accepts [Session, runner, RunStore]",
-                    ));
-                }
-                runner.as_ref().clone().with_run_store(
-                    run_store_argument(state, request, &owner, 2)?
-                        .ok_or_else(|| invalid("with_run_store does not accept null"))?,
-                )
-            } else {
-                if request.arguments.len() != 4 {
-                    return Err(invalid(
-                        "with_grader accepts [Session, runner, grader, Agent]",
-                    ));
-                }
-                let grader_resource =
-                    source_resource_at(state, request, &owner, 2, "eval", "eval.grader")?;
-                let grader = state
-                    .facade
-                    .llm_graders
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .get(&grader_resource.id)
-                    .cloned()
-                    .ok_or_else(|| invalid("LlmGrader resource is closed"))?;
-                runner.as_ref().clone().with_grader(
-                    grader.as_ref().clone(),
-                    explicit_agent_argument(state, request, &owner, 3).await?,
-                )
-            };
-            let configured_resource =
-                register_source_resource(state, &owner, "eval", "eval.runner")?;
-            state
-                .facade
-                .eval_runners
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .insert(configured_resource.id.clone(), Arc::new(configured));
-            Ok(WireValue::Handle(configured_resource))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-eval")]
         "echo_agent::eval::runner::EvalRunner::timeout_secs"
         | "echo_agent::eval::runner::EvalRunner::workspace_root" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource = source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
-            let runner = state
-                .facade
-                .eval_runners
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
-            if request.arguments.len() == 2 {
-                return if request.operation.ends_with("::timeout_secs") {
-                    Ok(WireValue::U64(WireU64::from_u64(runner.timeout_secs)))
-                } else {
-                    Ok(WireValue::Path(
-                        wire::path_to_wire(&runner.workspace_root).map_err(invalid)?,
-                    ))
-                };
-            }
-            if request.arguments.len() != 3 {
-                return Err(invalid(
-                    "EvalRunner property accepts [Session, runner, value?]",
-                ));
-            }
-            let mut configured = runner.as_ref().clone();
-            if request.operation.ends_with("::timeout_secs") {
-                configured.timeout_secs = u64_argument(request, 2)?;
-            } else {
-                configured.workspace_root = path_argument(request, 2)?;
-            }
-            let configured_resource =
-                register_source_resource(state, &owner, "eval", "eval.runner")?;
-            state
-                .facade
-                .eval_runners
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .insert(configured_resource.id.clone(), Arc::new(configured));
-            Ok(WireValue::Handle(configured_resource))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-eval")]
         "echo_agent::eval::runner::EvalRunner::run"
         | "echo_agent::eval::runner::EvalRunner::evaluate_run_constraints" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource = source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
-            let runner = state
-                .facade
-                .eval_runners
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
-            if request.operation.ends_with("::run") {
-                if request.arguments.len() != 4 {
-                    return Err(invalid(
-                        "EvalRunner::run accepts [Session, runner, case, Agent]",
-                    ));
-                }
-                let case: echo_agent::eval::EvalCase =
-                    serde_json::from_value(json_argument(request, 2, "eval case")?)
-                        .map_err(|error| invalid(format!("eval case is malformed: {error}")))?;
-                let agent = explicit_agent_argument(state, request, &owner, 3).await?;
-                let result = runner.run(&case, agent.as_ref()).await;
-                return snapshot_value(
-                    request,
-                    serde_json::to_value(result)
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                );
-            }
-            if request.operation.ends_with("::evaluate_run_constraints") {
-                if request.arguments.len() != 4 {
-                    return Err(invalid(
-                        "evaluate_run_constraints accepts [Session, runner, constraints, run]",
-                    ));
-                }
-                let constraints =
-                    serde_json::from_value(json_argument(request, 2, "eval constraints")?)
-                        .map_err(|error| {
-                            invalid(format!("eval constraints are malformed: {error}"))
-                        })?;
-                let run = serde_json::from_value(json_argument(request, 3, "run")?)
-                    .map_err(|error| invalid(format!("run is malformed: {error}")))?;
-                return snapshot_value(
-                    request,
-                    serde_json::to_value(runner.evaluate_run_constraints(&constraints, &run))
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                );
-            }
-            Err(invalid("unknown EvalRunner operation"))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(all(feature = "framework-eval", feature = "sdk-extension-bridge"))]
         "echo_agent::eval::runner::EvalRunner::run_all"
         | "echo_agent::eval::runner::EvalRunner::run_all_async" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource = source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
-            if request.arguments.len() != 4 {
-                return Err(invalid(
-                    "EvalRunner::run_all accepts [Session, runner, cases, AgentFactory]",
-                ));
-            }
-            let runner = state
-                .facade
-                .eval_runners
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
-            let cases: Vec<echo_agent::eval::EvalCase> =
-                serde_json::from_value(json_argument(request, 2, "eval cases")?)
-                    .map_err(|error| invalid(format!("eval cases are malformed: {error}")))?;
-            use echo_agent::agent::subagent::AgentFactory as _;
-            let factory = agent_factory_argument(state, request, &owner, 3)?;
-            let report = runner
-                .run_all_async(&cases, || {
-                    let factory = factory.clone();
-                    async move {
-                        match factory.create().await {
-                            Ok(agent) => agent,
-                            Err(error) => Box::new(FailedEvalAgent {
-                                message: error.to_string(),
-                            }) as Box<dyn Agent>,
-                        }
-                    }
-                })
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(report)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-eval")]
         "echo_agent::eval::grader::LlmGrader::new" => {
-            let owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("LlmGrader::new accepts [Session]"));
-            }
-            let resource = register_source_resource(state, &owner, "eval", "eval.grader")?;
-            state
-                .facade
-                .llm_graders
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .insert(
-                    resource.id.clone(),
-                    Arc::new(echo_agent::eval::LlmGrader::new()),
-                );
-            Ok(WireValue::Handle(resource))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-eval")]
         "echo_agent::eval::grader::LlmGrader::grade"
         | "echo_agent::eval::grader::LlmGrader::grade_with_trajectory" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource = source_resource_at(state, request, &owner, 1, "eval", "eval.grader")?;
-            let grader = state
-                .facade
-                .llm_graders
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("LlmGrader receiver is closed"))?;
-            let task = string_argument(request, 2, "task")?;
-            let output = string_argument(request, 3, "output")?;
-            let assertions: Vec<echo_agent::eval::grader::Assertion> =
-                serde_json::from_value(json_argument(request, 4, "assertions")?)
-                    .map_err(|error| invalid(format!("assertions are malformed: {error}")))?;
-            let report = if request.operation.ends_with("::grade_with_trajectory") {
-                if request.arguments.len() != 7 {
-                    return Err(invalid(
-                        "grade_with_trajectory accepts [Session, grader, task, output, assertions, trajectory, Agent]",
-                    ));
-                }
-                let trajectory = match request.arguments.get(5) {
-                    Some(WireValue::Null) => None,
-                    Some(WireValue::String(value)) => Some(value.as_str()),
-                    _ => return Err(invalid("trajectory must be String or null")),
-                };
-                grader
-                    .grade_with_trajectory(
-                        explicit_agent_argument(state, request, &owner, 6)
-                            .await?
-                            .as_ref(),
-                        &task,
-                        &output,
-                        &assertions,
-                        trajectory,
-                    )
-                    .await
-            } else {
-                if request.arguments.len() != 6 {
-                    return Err(invalid(
-                        "LlmGrader::grade accepts [Session, grader, task, output, assertions, Agent]",
-                    ));
-                }
-                grader
-                    .grade(
-                        explicit_agent_argument(state, request, &owner, 5)
-                            .await?
-                            .as_ref(),
-                        &task,
-                        &output,
-                        &assertions,
-                    )
-                    .await
-            };
-            snapshot_value(
-                request,
-                serde_json::to_value(report)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-improve")]
         "echo_agent::improve::loop::ImprovementLoop::new" => {
-            let owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("ImprovementLoop::new accepts [Session]"));
-            }
-            let resource = register_source_resource(state, &owner, "improve", "improve.loop")?;
-            state
-                .facade
-                .improvement_loops
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .insert(
-                    resource.id.clone(),
-                    Arc::new(echo_agent::improve::ImprovementLoop::new()),
-                );
-            Ok(WireValue::Handle(resource))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-improve")]
         "echo_agent::improve::loop::ImprovementLoop::max_iterations"
         | "echo_agent::improve::loop::ImprovementLoop::improvement_threshold"
         | "echo_agent::improve::loop::ImprovementLoop::holdout_ratio" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource =
-                source_resource_at(state, request, &owner, 1, "improve", "improve.loop")?;
-            let loop_authority = state
-                .facade
-                .improvement_loops
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("ImprovementLoop receiver is closed"))?;
-            if request.arguments.len() == 2 {
-                return match request
-                    .operation
-                    .rsplit_once("::")
-                    .map(|(_, property)| property)
-                {
-                    Some("max_iterations") => Ok(WireValue::U64(WireU64::from_u64(
-                        u64::try_from(loop_authority.max_iterations).unwrap_or(u64::MAX),
-                    ))),
-                    Some("improvement_threshold") => {
-                        Ok(WireValue::F64(loop_authority.improvement_threshold))
-                    }
-                    _ => Ok(WireValue::F64(loop_authority.holdout_ratio)),
-                };
-            }
-            if request.arguments.len() != 3 {
-                return Err(invalid(
-                    "ImprovementLoop property accepts [Session, loop, value?]",
-                ));
-            }
-            let mut configured = loop_authority.as_ref().clone();
-            match request
-                .operation
-                .rsplit_once("::")
-                .map(|(_, property)| property)
-            {
-                Some("max_iterations") => configured.max_iterations = usize_argument(request, 2)?,
-                Some("improvement_threshold") => {
-                    let WireValue::F64(value) = request
-                        .arguments
-                        .get(2)
-                        .ok_or_else(|| invalid("improvement_threshold is required"))?
-                    else {
-                        return Err(invalid("improvement_threshold must be F64"));
-                    };
-                    if !value.is_finite() {
-                        return Err(invalid("improvement_threshold must be finite"));
-                    }
-                    configured.improvement_threshold = *value;
-                }
-                _ => {
-                    let WireValue::F64(value) = request
-                        .arguments
-                        .get(2)
-                        .ok_or_else(|| invalid("holdout_ratio is required"))?
-                    else {
-                        return Err(invalid("holdout_ratio must be F64"));
-                    };
-                    if !value.is_finite() {
-                        return Err(invalid("holdout_ratio must be finite"));
-                    }
-                    configured.holdout_ratio = *value;
-                }
-            }
-            let configured_resource =
-                register_source_resource(state, &owner, "improve", "improve.loop")?;
-            state
-                .facade
-                .improvement_loops
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .insert(configured_resource.id.clone(), Arc::new(configured));
-            Ok(WireValue::Handle(configured_resource))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(all(feature = "framework-improve", feature = "sdk-extension-bridge"))]
         "echo_agent::improve::loop::ImprovementLoop::run"
         | "echo_agent::improve::loop::ImprovementLoop::run_async" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource =
-                source_resource_at(state, request, &owner, 1, "improve", "improve.loop")?;
-            if request.arguments.len() != 5 {
-                return Err(invalid(
-                    "ImprovementLoop::run accepts [Session, loop, cases, AgentFactory, RunStore|null]",
-                ));
-            }
-            let loop_authority = state
-                .facade
-                .improvement_loops
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("ImprovementLoop receiver is closed"))?;
-            let cases = serde_json::from_value::<Vec<echo_agent::eval::EvalCase>>(json_argument(
-                request, 2, "cases",
-            )?)
-            .map_err(|error| invalid(format!("eval cases are malformed: {error}")))?;
-            let run_store = run_store_argument(state, request, &owner, 4)?;
-            {
-                use echo_agent::agent::subagent::AgentFactory as _;
-                let factory = agent_factory_argument(state, request, &owner, 3)?;
-                let result = loop_authority
-                    .run_async(
-                        &cases,
-                        || {
-                            let factory = factory.clone();
-                            async move {
-                                match factory.create().await {
-                                    Ok(agent) => agent,
-                                    Err(error) => Box::new(FailedEvalAgent {
-                                        message: error.to_string(),
-                                    })
-                                        as Box<dyn Agent>,
-                                }
-                            }
-                        },
-                        &run_store,
-                    )
-                    .await;
-                snapshot_value(
-                    request,
-                    serde_json::to_value(result)
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                )
-            }
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-improve")]
         "echo_agent::improve::trajectory::TrajectorySaver::convert_run_to_sharegpt" => {
-            let _owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "TrajectorySaver::convert_run_to_sharegpt accepts [Session, run]",
-                ));
-            }
-            let run = serde_json::from_value(json_argument(request, 1, "run")?)
-                .map_err(|error| invalid(format!("run is malformed: {error}")))?;
-            snapshot_value(
-                request,
-                serde_json::to_value(
-                    echo_agent::improve::TrajectorySaver::convert_run_to_sharegpt(&run),
-                )
-                .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-improve")]
         "echo_agent::improve::trajectory::TrajectorySaver::new" => {
-            let owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 2 {
-                return Err(invalid("TrajectorySaver::new accepts [Session, base_dir]"));
-            }
-            let base_dir = path_argument(request, 1)?;
-            let saver = echo_agent::improve::TrajectorySaver::new(base_dir)
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            let resource =
-                register_source_resource(state, &owner, "improve", "improve.trajectory_saver")?;
-            state
-                .facade
-                .trajectory_savers
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .insert(resource.id.clone(), Arc::new(saver));
-            Ok(WireValue::Handle(resource))
+            dispatch_analysis_source(state, handles, request).await
         }
         #[cfg(feature = "framework-improve")]
         "echo_agent::improve::trajectory::TrajectorySaver::save"
         | "echo_agent::improve::trajectory::TrajectorySaver::list"
         | "echo_agent::improve::trajectory::TrajectorySaver::stats" => {
-            let owner = source_session_owner(state, request).await?;
-            let resource = source_resource_at(
-                state,
-                request,
-                &owner,
-                1,
-                "improve",
-                "improve.trajectory_saver",
-            )?;
-            let saver = state
-                .facade
-                .trajectory_savers
-                .lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .get(&resource.id)
-                .cloned()
-                .ok_or_else(|| invalid("TrajectorySaver receiver is closed"))?;
-            let value = if request.operation.ends_with("::save") {
-                if request.arguments.len() != 4 {
-                    return Err(invalid(
-                        "TrajectorySaver::save accepts [Session, saver, run, model]",
-                    ));
-                }
-                let run = serde_json::from_value(json_argument(request, 2, "run")?)
-                    .map_err(|error| invalid(format!("run is malformed: {error}")))?;
-                let model = string_argument(request, 3, "model")?;
-                serde_json::to_value(
-                    saver
-                        .save(&run, &model)
-                        .await
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                )
-            } else if request.operation.ends_with("::list") {
-                if request.arguments.len() != 3 {
-                    return Err(invalid(
-                        "TrajectorySaver::list accepts [Session, saver, date_prefix|null]",
-                    ));
-                }
-                let prefix = match request.arguments.get(2) {
-                    Some(WireValue::Null) => None,
-                    Some(WireValue::String(value)) => Some(value.as_str()),
-                    _ => return Err(invalid("date_prefix must be String or null")),
-                };
-                serde_json::to_value(
-                    saver
-                        .list(prefix)
-                        .await
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                )
-            } else {
-                if request.arguments.len() != 2 {
-                    return Err(invalid("TrajectorySaver::stats accepts [Session, saver]"));
-                }
-                serde_json::to_value(
-                    saver
-                        .stats()
-                        .await
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                )
-            }
-            .map_err(|error| framework(&request.operation, error.to_string()))?;
-            snapshot_value(request, value)
+            dispatch_analysis_source(state, handles, request).await
         }
         "echo_core::plugin::registry::PluginRegistry::new" => {
             let owner = source_session_owner(state, request).await?;
@@ -3548,7 +3084,7 @@ pub(crate) async fn dispatch(
                     }
                     MemoryStoreAuthority::File(Arc::new(
                         echo_agent::memory::FileStore::new(path_argument(request, 1)?)
-                            .map_err(|error| framework(&request.operation, error.to_string()))?,
+                            .map_err(|error| wire::framework_error(&error, &request.operation))?,
                     ))
                 }
                 _ => {
@@ -3560,7 +3096,7 @@ pub(crate) async fn dispatch(
                         MemoryStoreAuthority::Sqlite(Arc::new(
                             echo_agent::memory::SqliteStore::new(path_argument(request, 1)?)
                                 .map_err(|error| {
-                                    framework(&request.operation, error.to_string())
+                                    wire::framework_error(&error, &request.operation)
                                 })?,
                         ))
                     }
@@ -3633,7 +3169,7 @@ pub(crate) async fn dispatch(
                 store
                     .flush_public()
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
             } else {
                 if request.arguments.len() != 3 {
                     return Err(invalid(
@@ -3659,7 +3195,7 @@ pub(crate) async fn dispatch(
                         )
                     }))
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
             }
             Ok(WireValue::Null)
         }
@@ -3689,7 +3225,7 @@ pub(crate) async fn dispatch(
                     path_argument(request, 1)?,
                     Arc::new(proxy),
                 )
-                .map_err(|error| framework(&request.operation, error.to_string()))?,
+                .map_err(|error| wire::framework_error(&error, &request.operation))?,
             ));
             let resource = register_source_resource(state, &owner, "memory", "memory.store")?;
             state
@@ -3980,7 +3516,7 @@ pub(crate) async fn dispatch(
             }
             let path = path_argument(request, 1)?;
             let state = echo_agent::evolution::CuratorState::try_load(&path)
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             snapshot_value(
                 request,
                 serde_json::to_value(state)
@@ -3989,17 +3525,14 @@ pub(crate) async fn dispatch(
         }
         "echo_agent::evolution::curator::CuratorState::save" => {
             let _owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 3 {
-                return Err(invalid("CuratorState::save accepts [Session, state, Path]"));
-            }
-            let curator: echo_agent::evolution::CuratorState =
-                serde_json::from_value(json_argument(request, 1, "curator state")?)
-                    .map_err(|error| invalid(format!("curator state is malformed: {error}")))?;
-            let path = path_argument(request, 2)?;
-            curator
-                .save(&path)
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            Ok(WireValue::Null)
+            // The framework retired direct snapshot writes so they cannot
+            // bypass candidate publication. Do not recreate that authority here.
+            Err(wire::sdk_error(
+                ExtensionErrorCode::FeatureUnavailable,
+                "CuratorState is a read-only snapshot; use the framework Curator prepare/record/promote operations",
+                Retryability::Never,
+                "_echo_agent/facade/invoke",
+            ).with_operation(request.operation.clone()))
         }
         "echo_agent::evolution::merge::SkillSimilarityDetector::compute_similarity" => {
             let _owner = source_session_owner(state, request).await?;
@@ -4418,7 +3951,7 @@ pub(crate) async fn dispatch(
                         })
                     })
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
                 snapshot_value(
                     request,
                     serde_json::json!({
@@ -4458,7 +3991,7 @@ pub(crate) async fn dispatch(
                         })
                     })
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
                 snapshot_value(
                     request,
                     serde_json::json!({
@@ -4897,901 +4430,144 @@ pub(crate) async fn dispatch(
         | "echo_core::agent::Agent::working_dir"
         | "echo_agent::agent::Agent::working_dir"
         | "echo_agent::agent::react::ReactAgent::working_dir" => {
-            let handle = agent_handle(request)?;
-            handles.check_shape_and_generation(handle, HandleKind::Agent, METHOD)?;
-            let snapshot = handles.agent(handle)?.definition.snapshot();
-            let live = match request.arguments.len() {
-                0 => None,
-                1 => Some(session_agent(state, request).await?),
-                _ => return Err(invalid("Agent accessor accepts zero or one Session handle")),
-            };
-            let value = match request.operation.rsplit_once("::").map(|(_, name)| name) {
-                Some("name") => live
-                    .as_ref()
-                    .map(|agent| serde_json::json!(agent.name()))
-                    .unwrap_or_else(|| serde_json::json!(snapshot.name)),
-                Some("model_name") => live
-                    .as_ref()
-                    .map(|agent| serde_json::json!(agent.model_name()))
-                    .unwrap_or_else(|| serde_json::json!(snapshot.model_name)),
-                Some("system_prompt") => live
-                    .as_ref()
-                    .map(|agent| serde_json::json!(agent.system_prompt()))
-                    .unwrap_or_else(|| serde_json::json!(snapshot.system_prompt)),
-                Some("current_system_prompt") => {
-                    if live.is_some() {
-                        let authorities = session_authorities(state, request).await?;
-                        serde_json::json!(
-                            authorities
-                                .agent_handle
-                                .read(|agent| agent.current_system_prompt())
-                                .await
-                        )
-                    } else {
-                        serde_json::json!(snapshot.system_prompt)
-                    }
-                }
-                Some("tool_names") | Some("list_tools") => live
-                    .as_ref()
-                    .map(|agent| serde_json::json!(agent.tool_names()))
-                    .unwrap_or_else(|| serde_json::json!(snapshot.tool_names)),
-                Some("skill_names") => live
-                    .as_ref()
-                    .map(|agent| serde_json::json!(agent.skill_names()))
-                    .unwrap_or_else(|| serde_json::json!(snapshot.skill_names)),
-                Some("mcp_server_names") | Some("list_mcp_servers") => live
-                    .as_ref()
-                    .map(|agent| serde_json::json!(agent.mcp_server_names()))
-                    .unwrap_or_else(|| serde_json::json!(snapshot.mcp_server_names)),
-                Some("working_dir") => live
-                    .as_ref()
-                    .map(|agent| serde_json::json!(agent.working_dir()))
-                    .unwrap_or_else(|| serde_json::json!(snapshot.working_dir)),
-                _ => return Err(framework(&request.operation, "unknown Agent accessor")),
-            };
-            snapshot_value(request, value)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::skill_names" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("skill_names accepts exactly one Session handle"));
-            }
-            let names = authorities
-                .agent_handle
-                .read(|agent| agent.skill_names())
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(names)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
-        // `Agent::current_run_id` is an observational accessor. An Agent
-        // definition has no active run; a Session argument reads the live
-        // Agent instance used by the ACP runtime.
         "echo_core::agent::Agent::current_run_id" | "echo_agent::agent::Agent::current_run_id" => {
-            if request.arguments.is_empty() {
-                let handle = agent_handle(request)?;
-                handles.check_shape_and_generation(handle, HandleKind::Agent, METHOD)?;
-                handles.agent(handle)?;
-                snapshot_value(request, serde_json::Value::Null)
-            } else {
-                let agent = session_agent(state, request).await?;
-                if request.arguments.len() != 1 {
-                    return Err(invalid("current_run_id accepts zero or one Session handle"));
-                }
-                snapshot_value(request, serde_json::json!(agent.current_run_id()))
-            }
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::current_run_id" => {
-            if request.arguments.is_empty() {
-                let handle = agent_handle(request)?;
-                handles.check_shape_and_generation(handle, HandleKind::Agent, METHOD)?;
-                handles.agent(handle)?;
-                snapshot_value(request, serde_json::Value::Null)
-            } else {
-                let agent = session_agent(state, request).await?;
-                if request.arguments.len() != 1 {
-                    return Err(invalid("current_run_id accepts zero or one Session handle"));
-                }
-                snapshot_value(request, serde_json::json!(agent.current_run_id()))
-            }
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_core::agent::Agent::disabled_tool_names"
         | "echo_agent::agent::Agent::disabled_tool_names" => {
-            let agent = session_agent(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "live Agent accessor accepts exactly one Session handle",
-                ));
-            }
-            snapshot_value(
-                request,
-                serde_json::to_value(agent.disabled_tool_names())
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::disabled_tool_names" => {
-            let agent = session_agent(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "live Agent accessor accepts exactly one Session handle",
-                ));
-            }
-            snapshot_value(
-                request,
-                serde_json::to_value(agent.disabled_tool_names())
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_core::agent::Agent::token_usage_summary"
         | "echo_agent::agent::Agent::token_usage_summary" => {
-            let agent = session_agent(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "live Agent accessor accepts exactly one Session handle",
-                ));
-            }
-            let usage = agent.token_usage_summary();
-            snapshot_value(
-                request,
-                serde_json::json!({
-                    "model_name": usage.model_name,
-                    "total_prompt_tokens": WireU64::from_u64(usage.total_prompt_tokens),
-                    "total_completion_tokens": WireU64::from_u64(usage.total_completion_tokens),
-                    "total_tokens": WireU64::from_u64(usage.total_tokens),
-                    "total_cached_prompt_tokens": WireU64::from_u64(usage.total_cached_prompt_tokens),
-                    "total_cache_creation_prompt_tokens": WireU64::from_u64(usage.total_cache_creation_prompt_tokens),
-                    "request_count": WireU64::from_u64(usage.request_count),
-                }),
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::token_usage_summary" => {
-            let agent = session_agent(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "live Agent accessor accepts exactly one Session handle",
-                ));
-            }
-            let usage = agent.token_usage_summary();
-            snapshot_value(
-                request,
-                serde_json::json!({
-                    "model_name": usage.model_name,
-                    "total_prompt_tokens": WireU64::from_u64(usage.total_prompt_tokens),
-                    "total_completion_tokens": WireU64::from_u64(usage.total_completion_tokens),
-                    "total_tokens": WireU64::from_u64(usage.total_tokens),
-                    "total_cached_prompt_tokens": WireU64::from_u64(usage.total_cached_prompt_tokens),
-                    "total_cache_creation_prompt_tokens": WireU64::from_u64(usage.total_cache_creation_prompt_tokens),
-                    "request_count": WireU64::from_u64(usage.request_count),
-                }),
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::max_iterations"
         | "echo_agent::agent::react::ReactAgent::max_iterations" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("max_iterations accepts exactly one Session handle"));
-            }
-            let max_iterations = authorities
-                .agent_handle
-                .read(|agent| agent.max_iterations())
-                .await;
-            let max_iterations = u64::try_from(max_iterations)
-                .map_err(|_| framework(&request.operation, "max_iterations exceeds WireU64"))?;
-            snapshot_value(
-                request,
-                serde_json::json!(WireU64::from_u64(max_iterations)),
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::is_plan_mode"
         | "echo_agent::agent::react::ReactAgent::is_plan_mode" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("is_plan_mode accepts exactly one Session handle"));
-            }
-            snapshot_value(
-                request,
-                serde_json::json!(
-                    authorities
-                        .agent_handle
-                        .read(|agent| agent.is_plan_mode())
-                        .await
-                ),
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::get_permission_mode"
         | "echo_agent::agent::react::ReactAgent::get_permission_mode" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "get_permission_mode accepts exactly one Session handle",
-                ));
-            }
-            let mode = authorities
-                .agent_handle
-                .read(|agent| agent.get_permission_mode())
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(mode)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::context_stats"
         | "echo_agent::agent::react::ReactAgent::context_stats" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("context_stats accepts exactly one Session handle"));
-            }
-            let stats = authorities
-                .agent_handle
-                .read_async(|agent| Box::pin(agent.context_stats()))
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(stats)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::snapshot"
         | "echo_agent::agent::react::ReactAgent::snapshot" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("snapshot accepts exactly one Session handle"));
-            }
-            let snapshot = authorities
-                .agent_handle
-                .read_async(|agent| Box::pin(agent.snapshot()))
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(snapshot)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::snapshots"
         | "echo_agent::agent::react::ReactAgent::snapshots" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("snapshots accepts exactly one Session handle"));
-            }
-            let snapshots = authorities
-                .agent_handle
-                .read(|agent| agent.snapshots())
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(snapshots)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::latest_snapshot"
         | "echo_agent::agent::react::ReactAgent::latest_snapshot" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "latest_snapshot accepts exactly one Session handle",
-                ));
-            }
-            let snapshot = authorities
-                .agent_handle
-                .read(|agent| agent.latest_snapshot())
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(snapshot)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::conversation_id"
         | "echo_agent::agent::react::ReactAgent::conversation_id" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "conversation_id accepts exactly one Session handle",
-                ));
-            }
-            snapshot_value(
-                request,
-                serde_json::to_value(
-                    authorities
-                        .agent_handle
-                        .read(|agent| agent.conversation_id().map(str::to_string))
-                        .await,
-                )
-                .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::has_memory_layer_manager"
         | "echo_agent::agent::react::ReactAgent::has_memory_layer_manager" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "has_memory_layer_manager accepts exactly one Session handle",
-                ));
-            }
-            snapshot_value(
-                request,
-                serde_json::json!(
-                    authorities
-                        .agent_handle
-                        .read(|agent| agent.has_memory_layer_manager())
-                        .await
-                ),
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::thinking"
         | "echo_agent::agent::react::ReactAgent::thinking" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("thinking accepts exactly one Session handle"));
-            }
-            snapshot_value(
-                request,
-                serde_json::to_value(
-                    authorities
-                        .agent_handle
-                        .read(|agent| agent.thinking().cloned())
-                        .await,
-                )
-                .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_plan_mode"
         | "echo_agent::agent::react::ReactAgent::set_plan_mode" => {
-            let authorities = session_authorities(state, request).await?;
-            let enabled = match request.arguments.get(1) {
-                Some(WireValue::Bool(value)) => *value,
-                Some(_) => return Err(invalid("set_plan_mode requires a boolean value")),
-                None => return Err(invalid("set_plan_mode requires a boolean value")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid("set_plan_mode accepts [Session handle, Bool]"));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_plan_mode(enabled))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_permission_mode"
         | "echo_agent::agent::react::ReactAgent::set_permission_mode" => {
-            let authorities = session_authorities(state, request).await?;
-            let mode_value = request
-                .arguments
-                .get(1)
-                .cloned()
-                .ok_or_else(|| invalid("set_permission_mode requires a mode value"))?
-                .into_json()
-                .map_err(|error| {
-                    invalid(format!("permission mode is not a wire value: {error}"))
-                })?;
-            let mode: echo_agent::tools::permission::PermissionMode =
-                serde_json::from_value(mode_value)
-                    .map_err(|error| invalid(format!("permission mode is invalid: {error}")))?;
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "set_permission_mode accepts [Session handle, PermissionMode]",
-                ));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_permission_mode(mode))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_conversation_id"
         | "echo_agent::agent::react::ReactAgent::set_conversation_id" => {
-            let authorities = session_authorities(state, request).await?;
-            let conversation_id = match request.arguments.get(1) {
-                Some(WireValue::String(value)) if !value.trim().is_empty() => value.clone(),
-                Some(_) => return Err(invalid("set_conversation_id requires a non-empty string")),
-                None => return Err(invalid("set_conversation_id requires a string value")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "set_conversation_id accepts [Session handle, String]",
-                ));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_conversation_id(conversation_id))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_model"
         | "echo_agent::agent::react::ReactAgent::set_model" => {
-            let authorities = session_authorities(state, request).await?;
-            let model = match request.arguments.get(1) {
-                Some(WireValue::String(value)) if !value.trim().is_empty() => value.clone(),
-                Some(_) => return Err(invalid("set_model requires a non-empty string")),
-                None => return Err(invalid("set_model requires a model name")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid("set_model accepts [Session handle, String]"));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_model(&model))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_temperature"
         | "echo_agent::agent::react::ReactAgent::set_temperature" => {
-            let authorities = session_authorities(state, request).await?;
-            let temperature = match request.arguments.get(1) {
-                Some(WireValue::Null) => None,
-                Some(value) => {
-                    let json = value.clone().into_json().map_err(|error| {
-                        invalid(format!("temperature is not a wire value: {error}"))
-                    })?;
-                    let parsed: f32 = serde_json::from_value(json)
-                        .map_err(|error| invalid(format!("temperature is invalid: {error}")))?;
-                    if !parsed.is_finite() {
-                        return Err(invalid("temperature must be finite"));
-                    }
-                    Some(parsed)
-                }
-                None => return Err(invalid("set_temperature requires a value")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "set_temperature accepts [Session handle, F64|null]",
-                ));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_temperature(temperature))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_max_tokens"
         | "echo_agent::agent::react::ReactAgent::set_max_tokens" => {
-            let authorities = session_authorities(state, request).await?;
-            let max_tokens = match request.arguments.get(1) {
-                Some(WireValue::Null) => None,
-                Some(WireValue::U64(value)) => Some(
-                    value
-                        .to_u64()
-                        .ok_or_else(|| invalid("max_tokens value is invalid"))
-                        .and_then(|value| {
-                            u32::try_from(value).map_err(|_| invalid("max_tokens exceeds u32"))
-                        })?,
-                ),
-                Some(_) => return Err(invalid("set_max_tokens requires a U64|null value")),
-                None => return Err(invalid("set_max_tokens requires a value")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid("set_max_tokens accepts [Session handle, U64|null]"));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_max_tokens(max_tokens))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_thinking"
         | "echo_agent::agent::react::ReactAgent::set_thinking" => {
-            let authorities = session_authorities(state, request).await?;
-            let value = request
-                .arguments
-                .get(1)
-                .cloned()
-                .ok_or_else(|| invalid("set_thinking requires a value"))?;
-            let thinking =
-                match value {
-                    WireValue::Null => None,
-                    value => {
-                        let json = value.into_json().map_err(|error| {
-                            invalid(format!("thinking is not a wire value: {error}"))
-                        })?;
-                        if let serde_json::Value::String(spec) = &json {
-                            echo_agent::llm::ThinkingConfig::parse_spec(spec)
-                                .map_err(|error| invalid(format!("thinking is invalid: {error}")))?
-                        } else {
-                            Some(serde_json::from_value(json).map_err(|error| {
-                                invalid(format!("thinking is invalid: {error}"))
-                            })?)
-                        }
-                    }
-                };
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "set_thinking accepts [Session handle, ThinkingConfig|null]",
-                ));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_thinking(thinking))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_token_limit"
         | "echo_agent::agent::react::ReactAgent::set_token_limit" => {
-            let authorities = session_authorities(state, request).await?;
-            let token_limit = match request.arguments.get(1) {
-                Some(WireValue::U64(value)) => value
-                    .to_u64()
-                    .ok_or_else(|| invalid("token_limit value is invalid"))
-                    .and_then(|value| {
-                        usize::try_from(value)
-                            .map_err(|_| invalid("token_limit exceeds platform usize"))
-                    })?,
-                Some(_) => return Err(invalid("set_token_limit requires a U64 value")),
-                None => return Err(invalid("set_token_limit requires a U64 value")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid("set_token_limit accepts [Session handle, U64]"));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_token_limit(token_limit))
-                .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_disabled_tools"
         | "echo_agent::agent::react::ReactAgent::set_disabled_tools" => {
-            let authorities = session_authorities(state, request).await?;
-            let disabled = match request.arguments.get(1) {
-                Some(WireValue::Null) => None,
-                Some(WireValue::List(values)) => {
-                    let mut names = std::collections::HashSet::with_capacity(values.len());
-                    for value in values {
-                        let WireValue::String(name) = value else {
-                            return Err(invalid("set_disabled_tools list must contain strings"));
-                        };
-                        if name.trim().is_empty() {
-                            return Err(invalid("set_disabled_tools names must be non-empty"));
-                        }
-                        names.insert(name.clone());
-                    }
-                    Some(names)
-                }
-                Some(_) => {
-                    return Err(invalid("set_disabled_tools requires a string list|null"));
-                }
-                None => return Err(invalid("set_disabled_tools requires a value")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "set_disabled_tools accepts [Session handle, List<String>|Null]",
-                ));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_disabled_tools(disabled))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_store"
         | "echo_agent::agent::react::ReactAgent::set_store" => {
-            #[cfg(feature = "sdk-extension-bridge")]
-            {
-                let authorities = session_authorities(state, request).await?;
-                let session_handle = match request.arguments.first() {
-                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
-                    Some(WireValue::Handle(_)) => {
-                        return Err(invalid("set_store requires a Session handle"));
-                    }
-                    Some(_) | None => return Err(invalid("set_store requires a Session handle")),
-                };
-                let extension = match request.arguments.get(1) {
-                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
-                        handle.clone()
-                    }
-                    Some(WireValue::Handle(_)) => {
-                        return Err(invalid("set_store requires an Extension handle"));
-                    }
-                    Some(_) | None => {
-                        return Err(invalid("set_store requires an Extension handle"));
-                    }
-                };
-                if request.arguments.len() != 2 {
-                    return Err(invalid(
-                        "set_store accepts [Session handle, Extension handle]",
-                    ));
-                }
-                let record = handles.extension(&extension)?;
-                if record.kind != echo_sdk_protocol::methods::ExtensionKind::Store {
-                    return Err(invalid("set_store requires a Store extension handle"));
-                }
-                let session_record = handles.session(session_handle)?;
-                let proxy = crate::core_profile::extension_bridge::ExtensionStoreProxy::new(
-                    state.extension_bridge.clone(),
-                    extension,
-                    session_record.acp_session_id.clone(),
-                )
-                .ok_or_else(|| {
-                    framework(&request.operation, "Store extension proxy is unavailable")
-                })?;
-                authorities
-                    .agent_handle
-                    .write(|agent| agent.set_store(Arc::new(proxy)))
-                    .await;
-                snapshot_value(request, serde_json::Value::Null)
-            }
-            #[cfg(not(feature = "sdk-extension-bridge"))]
-            {
-                let _ = (state, handles, request);
-                Err(framework(
-                    "echo_agent::agent::react::ReactAgent::set_store",
-                    "set_store requires the SDK extension bridge",
-                ))
-            }
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::ReactAgent::set_max_iterations"
         | "echo_agent::agent::react::ReactAgent::set_max_iterations" => {
-            let authorities = session_authorities(state, request).await?;
-            let max = match request.arguments.get(1) {
-                Some(WireValue::U64(value)) => value
-                    .to_u64()
-                    .ok_or_else(|| invalid("max_iterations value is invalid"))
-                    .and_then(|value| {
-                        usize::try_from(value)
-                            .map_err(|_| invalid("max_iterations exceeds platform usize"))
-                    })?,
-                Some(_) => return Err(invalid("set_max_iterations requires a U64 value")),
-                None => return Err(invalid("set_max_iterations requires a U64 value")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid("set_max_iterations accepts [Session handle, U64]"));
-            }
-            authorities
-                .agent_handle
-                .write(|agent| agent.set_max_iterations(max))
-                .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::force_checkpoint" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "force_checkpoint accepts exactly one Session handle",
-                ));
-            }
-            authorities
-                .agent_handle
-                .read_async(|agent| Box::pin(agent.force_checkpoint()))
-                .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::resume_from_state_store" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "resume_from_state_store accepts exactly one Session handle",
-                ));
-            }
-            let checkpoint = authorities
-                .agent_handle
-                .read_async(|agent| Box::pin(agent.resume_from_state_store()))
-                .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            snapshot_value(
-                request,
-                serde_json::to_value(checkpoint)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::rollback" => {
-            let authorities = session_authorities(state, request).await?;
-            let steps = match request.arguments.get(1) {
-                Some(WireValue::U64(value)) => value
-                    .to_u64()
-                    .ok_or_else(|| invalid("rollback steps are invalid"))
-                    .and_then(|value| {
-                        usize::try_from(value).map_err(|_| invalid("rollback steps exceed usize"))
-                    })?,
-                _ => return Err(invalid("rollback requires a U64 steps argument")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid("rollback accepts [Session handle, U64]"));
-            }
-            let snapshot = authorities
-                .agent_handle
-                .read_async(|agent| Box::pin(agent.rollback(steps)))
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(snapshot)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::rollback_to" => {
-            let authorities = session_authorities(state, request).await?;
-            let snapshot_id = match request.arguments.get(1) {
-                Some(WireValue::String(value)) if !value.trim().is_empty() => value.clone(),
-                _ => return Err(invalid("rollback_to requires a snapshot id")),
-            };
-            if request.arguments.len() != 2 {
-                return Err(invalid("rollback_to accepts [Session handle, String]"));
-            }
-            let snapshot_id_for_call = std::sync::Arc::new(snapshot_id);
-            let snapshot = authorities
-                .agent_handle
-                .read_async(move |agent| {
-                    let snapshot_id = snapshot_id_for_call.clone();
-                    Box::pin(async move { agent.rollback_to(&snapshot_id).await })
-                })
-                .await;
-            snapshot_value(
-                request,
-                serde_json::to_value(snapshot)
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::shutdown" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid("shutdown accepts exactly one Session handle"));
-            }
-            authorities
-                .agent_handle
-                .read_async(|agent| Box::pin(agent.shutdown()))
-                .await;
-            snapshot_value(request, serde_json::Value::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::force_compress_context" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 1 {
-                return Err(invalid(
-                    "force_compress_context accepts exactly one Session handle",
-                ));
-            }
-            let (stats, checkpoint) = authorities
-                .agent_handle
-                .read_async(|agent| Box::pin(agent.force_compress_context()))
-                .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            snapshot_value(
-                request,
-                serde_json::json!({
-                    "stats": {
-                        "before_count": stats.before_count,
-                        "after_count": stats.after_count,
-                        "evicted": stats.evicted,
-                        "before_tokens": stats.before_tokens,
-                        "after_tokens": stats.after_tokens,
-                    },
-                    "checkpoint": serde_json::to_value(checkpoint)
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                }),
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         #[cfg(feature = "sdk-extension-bridge")]
         "echo_agent::agent::react::ReactAgent::set_compressor" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "set_compressor accepts [Session, ContextCompressor extension]",
-                ));
-            }
-            let session = match request.arguments.first() {
-                Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
-                _ => return Err(invalid("set_compressor requires a Session handle")),
-            };
-            let extension = match request.arguments.get(1) {
-                Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
-                    handle.clone()
-                }
-                _ => {
-                    return Err(invalid(
-                        "set_compressor requires a ContextCompressor extension handle",
-                    ));
-                }
-            };
-            let session_id = state.handles.session(session)?.acp_session_id.clone();
-            let proxy =
-                crate::core_profile::extension_bridge::ExtensionContextCompressorProxy::new(
-                    state.extension_bridge.clone(),
-                    extension,
-                    session_id,
-                )
-                .ok_or_else(|| invalid("extension is not a ContextCompressor"))?;
-            authorities
-                .agent_handle
-                .read_async(move |agent| Box::pin(agent.set_compressor(proxy)))
-                .await;
-            Ok(WireValue::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         #[cfg(feature = "sdk-extension-bridge")]
         "echo_agent::agent::react::ReactAgent::set_intent_router" => {
-            let authorities = session_authorities(state, request).await?;
-            if !(2..=4).contains(&request.arguments.len()) {
-                return Err(invalid(
-                    "set_intent_router accepts [Session, IntentClassifier extension, config?, available_skills?]",
-                ));
-            }
-            let session = match request.arguments.first() {
-                Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
-                _ => return Err(invalid("set_intent_router requires a Session handle")),
-            };
-            let extension = match request.arguments.get(1) {
-                Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
-                    handle.clone()
-                }
-                _ => return Err(invalid("set_intent_router requires an Extension handle")),
-            };
-            let config = match request.arguments.get(2) {
-                None | Some(WireValue::Null) => echo_agent::intent::IntentRouterConfig::default(),
-                Some(value) => serde_json::from_value(
-                    value
-                        .clone()
-                        .into_json()
-                        .map_err(|error| invalid(error.to_string()))?,
-                )
-                .map_err(|error| invalid(format!("intent router config is malformed: {error}")))?,
-            };
-            let available_skills = match request.arguments.get(3) {
-                None | Some(WireValue::Null) => None,
-                Some(WireValue::List(values)) => Some(
-                    values
-                        .iter()
-                        .map(|value| match value {
-                            WireValue::String(value) => Ok(value.clone()),
-                            _ => Err(invalid("available skill names must be strings")),
-                        })
-                        .collect::<Result<Vec<_>, EchoSdkError>>()?,
-                ),
-                _ => return Err(invalid("available_skills must be a List or null")),
-            };
-            let session_id = state.handles.session(session)?.acp_session_id.clone();
-            let proxy = crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
-                state.extension_bridge.clone(),
-                extension,
-                session_id,
-            )
-            .filter(|proxy| proxy.component() == AgentComponentKindWire::IntentClassifier)
-            .ok_or_else(|| invalid("extension is not an IntentClassifier"))?;
-            let mut router = echo_agent::intent::IntentRouter::new(Box::new(proxy), config);
-            if let Some(skills) = available_skills {
-                router = router.with_available_skills(skills);
-            }
-            authorities
-                .agent_handle
-                .write(move |agent| agent.set_intent_router(router))
-                .await;
-            Ok(WireValue::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         #[cfg(feature = "sdk-extension-bridge")]
         "echo_agent::agent::react::ReactAgent::set_skill_load_policy" => {
-            let authorities = session_authorities(state, request).await?;
-            let session_id = source_session_owner(state, request).await?;
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "set_skill_load_policy accepts [Session, SkillLoadPolicy extension or null]",
-                ));
-            }
-            let policy = match request.arguments.get(1) {
-                Some(WireValue::Null) => None,
-                Some(WireValue::Handle(extension)) if extension.kind == HandleKind::Extension => {
-                    let proxy =
-                        crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
-                            state.extension_bridge.clone(),
-                            extension.clone(),
-                            session_id.clone(),
-                        )
-                        .filter(|proxy| {
-                            proxy.component() == AgentComponentKindWire::SkillLoadPolicy
-                        })
-                        .ok_or_else(|| invalid("extension is not a SkillLoadPolicy component"))?;
-                    Some(Arc::new(proxy) as Arc<dyn echo_agent::skills::external::SkillLoadPolicy>)
-                }
-                _ => {
-                    return Err(invalid(
-                        "set_skill_load_policy requires an Extension handle or null",
-                    ));
-                }
-            };
-            authorities
-                .agent_handle
-                .write(move |agent| agent.set_skill_load_policy(policy))
-                .await;
-            Ok(WireValue::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         #[cfg(feature = "sdk-extension-bridge")]
         "echo_agent::agent::react::ReactAgent::set_audit_logger"
@@ -5802,140 +4578,10 @@ pub(crate) async fn dispatch(
         | "echo_agent::agent::react::ReactAgent::set_run_store"
         | "echo_agent::agent::react::ReactAgent::set_sandbox_executor"
         | "echo_agent::agent::react::ReactAgent::set_state_store" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 2 {
-                return Err(invalid(
-                    "Agent component setter accepts [Session, AgentComponent extension]",
-                ));
-            }
-            let session = match request.arguments.first() {
-                Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
-                _ => return Err(invalid("Agent component setter requires a Session handle")),
-            };
-            let extension = match request.arguments.get(1) {
-                Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
-                    handle.clone()
-                }
-                _ => {
-                    return Err(invalid(
-                        "Agent component setter requires an Extension handle",
-                    ));
-                }
-            };
-            let expected = match request.operation.as_str() {
-                "echo_agent::agent::react::ReactAgent::set_audit_logger" => {
-                    AgentComponentKindWire::AuditLogger
-                }
-                "echo_agent::agent::react::ReactAgent::set_conversation_store" => {
-                    AgentComponentKindWire::ConversationStore
-                }
-                "echo_agent::agent::react::ReactAgent::set_memory_trigger_sink" => {
-                    AgentComponentKindWire::MemoryTriggerSink
-                }
-                "echo_agent::agent::react::ReactAgent::set_memory_promoter" => {
-                    AgentComponentKindWire::MemoryPromoter
-                }
-                "echo_agent::agent::react::ReactAgent::set_pre_model_context_projector" => {
-                    AgentComponentKindWire::ContextProjector
-                }
-                "echo_agent::agent::react::ReactAgent::set_run_store" => {
-                    AgentComponentKindWire::RunStore
-                }
-                "echo_agent::agent::react::ReactAgent::set_sandbox_executor" => {
-                    AgentComponentKindWire::SandboxExecutor
-                }
-                _ => AgentComponentKindWire::RuntimeStateStore,
-            };
-            let session_id = state.handles.session(session)?.acp_session_id.clone();
-            let proxy = crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
-                state.extension_bridge.clone(),
-                extension,
-                session_id,
-            )
-            .filter(|proxy| proxy.component() == expected)
-            .ok_or_else(|| invalid("extension component does not match the Agent setter"))?;
-            if expected == AgentComponentKindWire::MemoryPromoter {
-                authorities
-                    .agent_handle
-                    .read_async(move |agent| Box::pin(agent.set_memory_promoter(Arc::new(proxy))))
-                    .await;
-                return Ok(WireValue::Null);
-            }
-            authorities
-                .agent_handle
-                .write(move |agent| match expected {
-                    AgentComponentKindWire::AuditLogger => agent.set_audit_logger(Arc::new(proxy)),
-                    AgentComponentKindWire::ConversationStore => {
-                        agent.set_conversation_store(Arc::new(proxy));
-                    }
-                    AgentComponentKindWire::MemoryTriggerSink => {
-                        agent.set_memory_trigger_sink(Some(Arc::new(proxy)));
-                    }
-                    AgentComponentKindWire::ContextProjector => {
-                        agent.set_pre_model_context_projector(Some(Arc::new(proxy)));
-                    }
-                    AgentComponentKindWire::RunStore => agent.set_run_store(Arc::new(proxy)),
-                    AgentComponentKindWire::SandboxExecutor => {
-                        agent.set_sandbox_executor(Arc::new(proxy));
-                    }
-                    AgentComponentKindWire::RuntimeStateStore => {
-                        agent.set_state_store(Arc::new(proxy));
-                    }
-                    AgentComponentKindWire::Guard => {
-                        agent.set_guard_manager(echo_agent::guard::GuardManager::from_guards(vec![
-                            Arc::new(proxy),
-                        ]))
-                    }
-                    AgentComponentKindWire::SearchProvider
-                    | AgentComponentKindWire::WorkflowCheckpointStore
-                    | AgentComponentKindWire::RevisionedTaskStore
-                    | AgentComponentKindWire::McpTransport
-                    | AgentComponentKindWire::Embedder
-                    | AgentComponentKindWire::MemoryPromoter
-                    | AgentComponentKindWire::Workflow
-                    | AgentComponentKindWire::IntentClassifier
-                    | AgentComponentKindWire::SkillLoadPolicy => drop(proxy),
-                })
-                .await;
-            Ok(WireValue::Null)
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::force_compress_with_focus_and_hooks" => {
-            let authorities = session_authorities(state, request).await?;
-            if request.arguments.len() != 4 {
-                return Err(invalid(
-                    "force_compress_with_focus_and_hooks accepts [Session, focus, window, matcher]",
-                ));
-            }
-            let focus = std::sync::Arc::new(string_argument(request, 1, "focus instructions")?);
-            let window = usize_argument(request, 2)?;
-            let matcher = std::sync::Arc::new(string_argument(request, 3, "hook matcher")?);
-            let (stats, checkpoint) = authorities
-                .agent_handle
-                .read_async(move |agent| {
-                    let focus = focus.clone();
-                    let matcher = matcher.clone();
-                    Box::pin(async move {
-                        agent
-                            .force_compress_with_focus_and_hooks(&focus, window, &matcher)
-                            .await
-                    })
-                })
-                .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
-            snapshot_value(
-                request,
-                serde_json::json!({
-                    "stats": {
-                        "before_count": stats.before_count,
-                        "after_count": stats.after_count,
-                        "evicted": stats.evicted,
-                        "before_tokens": stats.before_tokens,
-                        "after_tokens": stats.after_tokens,
-                    },
-                    "checkpoint": serde_json::to_value(checkpoint)
-                        .map_err(|error| framework(&request.operation, error.to_string()))?,
-                }),
-            )
+            dispatch_agent_context_source(state, handles, request).await
         }
         "echo_agent::agent::react::ReactAgent::load_mcp_config" => {
             #[cfg(feature = "framework-mcp")]
@@ -5959,14 +4605,9 @@ pub(crate) async fn dispatch(
                     .agent_handle
                     .write_async(move |agent| Box::pin(agent.load_mcp_config(config)))
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
-                let mut resources = Vec::with_capacity(clients.len());
-                for client in clients {
-                    resources.push(
-                        register_mcp_client_resource(state, session, client, &request.operation)
-                            .await?,
-                    );
-                }
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                let resources =
+                    register_mcp_client_resources(state, session, clients, &request.operation)?;
                 snapshot_value(request, serde_json::json!({"clients": resources}))
             }
             #[cfg(not(feature = "framework-mcp"))]
@@ -5997,14 +4638,9 @@ pub(crate) async fn dispatch(
                     .agent_handle
                     .write_async(move |agent| Box::pin(agent.load_mcp_from_file(path)))
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
-                let mut resources = Vec::with_capacity(clients.len());
-                for client in clients {
-                    resources.push(
-                        register_mcp_client_resource(state, session, client, &request.operation)
-                            .await?,
-                    );
-                }
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                let resources =
+                    register_mcp_client_resources(state, session, clients, &request.operation)?;
                 snapshot_value(request, serde_json::json!({"clients": resources}))
             }
             #[cfg(not(feature = "framework-mcp"))]
@@ -6045,7 +4681,7 @@ pub(crate) async fn dispatch(
                         )
                     })
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
                 let name_for_read = name.clone();
                 let client = authorities
                     .agent_handle
@@ -6093,15 +4729,19 @@ pub(crate) async fn dispatch(
                     return Err(invalid("disconnect_mcp accepts [Session handle, String]"));
                 }
                 let name = std::sync::Arc::new(name);
-                let name_for_cleanup = name.clone();
-                let disconnected = authorities
+                let (exact_client, disconnected) = authorities
                     .agent_handle
                     .write_async(move |agent| {
                         let name = name.clone();
-                        Box::pin(async move { agent.disconnect_mcp(&name).await })
+                        Box::pin(async move {
+                            let client = agent.mcp_client(&name);
+                            let disconnected = agent.disconnect_mcp(&name).await?;
+                            Ok::<_, echo_agent::error::ReactError>((client, disconnected))
+                        })
                     })
-                    .await;
-                if disconnected {
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                if disconnected && let Some(exact_client) = exact_client {
                     let clients = {
                         let clients = state
                             .facade
@@ -6111,48 +4751,30 @@ pub(crate) async fn dispatch(
                             .unwrap_or_else(|error| error.into_inner());
                         clients
                             .iter()
-                            .map(|(id, client)| (id.clone(), client.server_name().to_string()))
+                            .filter(|(_, client)| Arc::ptr_eq(client, &exact_client))
+                            .map(|(id, _)| id.clone())
                             .collect::<Vec<_>>()
                     };
-                    let resource_ids = clients
-                        .into_iter()
-                        .filter(|(id, client_name)| {
-                            client_name == name_for_cleanup.as_str()
-                                && state
-                                    .handles
-                                    .facade_resource(
-                                        &WireHandle {
-                                            id: id.clone(),
-                                            generation: WireU64::from_u64(
-                                                state.handles.generation(),
-                                            ),
-                                            kind: HandleKind::FacadeResource,
-                                        },
-                                        &request.operation,
-                                    )
-                                    .ok()
-                                    .and_then(|record| record.owner_session.clone())
-                                    .as_deref()
-                                    == Some(owner.as_str())
-                        })
-                        .map(|(id, _)| id)
-                        .collect::<Vec<_>>();
-                    for id in resource_ids {
+                    for id in clients {
+                        let handle = WireHandle {
+                            id,
+                            generation: WireU64::from_u64(state.handles.generation()),
+                            kind: HandleKind::FacadeResource,
+                        };
+                        let record = state.handles.facade_resource(&handle, &request.operation)?;
+                        if record.owner_session.as_deref() != Some(owner.as_str()) {
+                            continue;
+                        }
+                        state
+                            .handles
+                            .close_facade_resource(&handle, &request.operation)?;
                         state
                             .facade
                             .integrations
                             .mcp_clients
                             .lock()
                             .unwrap_or_else(|error| error.into_inner())
-                            .remove(&id);
-                        let handle = WireHandle {
-                            id,
-                            generation: WireU64::from_u64(state.handles.generation()),
-                            kind: HandleKind::FacadeResource,
-                        };
-                        let _ = state
-                            .handles
-                            .close_facade_resource(&handle, &request.operation);
+                            .remove(&handle.id);
                     }
                 }
                 snapshot_value(request, serde_json::Value::Bool(disconnected))
@@ -6198,7 +4820,7 @@ pub(crate) async fn dispatch(
                         Box::pin(async move { agent.connect_mcp_from_json(&name, &config).await })
                     })
                     .await
-                    .map_err(|error| framework(&request.operation, error.to_string()))?;
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
                 snapshot_value(
                     request,
                     register_mcp_client_resource(state, session, client, METHOD).await?,
@@ -6215,70 +4837,40 @@ pub(crate) async fn dispatch(
         "echo_agent::agent::react::ReactAgent::mcp_client" => {
             #[cfg(feature = "framework-mcp")]
             {
-                // Resolve the receiver and Session together before looking up
-                // the resource.  A client from another Agent/Session must not
-                // become addressable merely because its server name matches.
-                let _authorities = session_authorities(state, request).await?;
+                let authorities = session_authorities(state, request).await?;
                 let session = match request.arguments.first() {
                     Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
                     _ => return Err(invalid("mcp_client requires a Session handle")),
                 };
-                let owner = state.handles.session(session)?.acp_session_id.clone();
                 let name = match request.arguments.get(1) {
-                    Some(WireValue::String(value)) if !value.trim().is_empty() => value,
+                    Some(WireValue::String(value)) if !value.trim().is_empty() => value.clone(),
                     _ => return Err(invalid("mcp_client requires a server name")),
                 };
                 if request.arguments.len() != 2 {
                     return Err(invalid("mcp_client accepts [Session handle, name]"));
                 }
-                let clients = {
-                    let clients = state
-                        .facade
-                        .integrations
-                        .mcp_clients
-                        .lock()
-                        .unwrap_or_else(|error| error.into_inner());
-                    clients
-                        .iter()
-                        .map(|(id, client)| (id.clone(), client.server_name().to_string()))
-                        .collect::<Vec<_>>()
-                };
-                let id = clients
-                    .into_iter()
-                    .find(|(id, client_name)| {
-                        client_name == name
-                            && state
-                                .handles
-                                .facade_resource(
-                                    &WireHandle {
-                                        id: id.clone(),
-                                        generation: WireU64::from_u64(state.handles.generation()),
-                                        kind: HandleKind::FacadeResource,
-                                    },
+                // The framework receiver selects the exact client. Host aliases
+                // from independent managers cannot satisfy this getter by name.
+                let client = authorities
+                    .agent_handle
+                    .read(|agent| agent.mcp_client(&name))
+                    .await;
+                let value = match client {
+                    None => serde_json::Value::Null,
+                    Some(client) => {
+                        register_mcp_client_resource(state, session, client, &request.operation)
+                            .await?
+                            .get("resource")
+                            .cloned()
+                            .ok_or_else(|| {
+                                framework(
                                     &request.operation,
+                                    "MCP client alias publication omitted resource",
                                 )
-                                .ok()
-                                .and_then(|record| record.owner_session.clone())
-                                .as_deref()
-                                == Some(owner.as_str())
-                    })
-                    .map(|(id, _)| id);
-                let value = id.and_then(|id| {
-                    let handle = WireHandle {
-                        id,
-                        generation: WireU64::from_u64(state.handles.generation()),
-                        kind: HandleKind::FacadeResource,
-                    };
-                    let record = state
-                        .handles
-                        .facade_resource(&handle, &request.operation)
-                        .ok()?;
-                    if record.owner_session.as_deref() != Some(owner.as_str()) {
-                        return None;
+                            })?
                     }
-                    Some(serde_json::json!(handle))
-                });
-                snapshot_value(request, value.unwrap_or(serde_json::Value::Null))
+                };
+                snapshot_value(request, value)
             }
             #[cfg(not(feature = "framework-mcp"))]
             {
@@ -6304,7 +4896,7 @@ pub(crate) async fn dispatch(
                     Box::pin(async move { agent.activate_skill(&name).await })
                 })
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             snapshot_value(request, serde_json::Value::Null)
         }
         "echo_agent::agent::react::ReactAgent::has_skill" => {
@@ -6393,7 +4985,7 @@ pub(crate) async fn dispatch(
                     Box::pin(async move { agent.skill_registry().activate(&name).await })
                 })
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             skill_content_value(request, content)
         }
         "echo_execution::skills::registry::SkillRegistry::activate_with_args"
@@ -6427,7 +5019,7 @@ pub(crate) async fn dispatch(
                     })
                 })
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             skill_content_value(request, content)
         }
         "echo_execution::skills::registry::SkillRegistry::mark_activated"
@@ -6536,7 +5128,7 @@ pub(crate) async fn dispatch(
                 .agent_handle
                 .write_async(move |agent| Box::pin(agent.register_skill_descriptor(descriptor)))
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             Ok(WireValue::Null)
         }
         "echo_execution::skills::registry::SkillRegistry::register_prepared"
@@ -6564,7 +5156,7 @@ pub(crate) async fn dispatch(
                 .agent_handle
                 .write_async(move |agent| Box::pin(agent.register_prepared_skill(document)))
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             Ok(WireValue::Null)
         }
         "echo_execution::skills::registry::SkillRegistry::tag_source_with_variables"
@@ -7070,7 +5662,7 @@ pub(crate) async fn dispatch(
                     Box::pin(async move { agent.discover_skills(&scopes).await })
                 })
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             snapshot_value(
                 request,
                 serde_json::to_value(names)
@@ -7118,7 +5710,7 @@ pub(crate) async fn dispatch(
                     })
                 })
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             snapshot_value(
                 request,
                 serde_json::to_value(names)
@@ -7186,7 +5778,7 @@ pub(crate) async fn dispatch(
                     })
                 })
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             snapshot_value(
                 request,
                 serde_json::to_value(names)
@@ -7467,7 +6059,7 @@ pub(crate) async fn dispatch(
             let result = agent
                 .delegate_to(target, task)
                 .await
-                .map_err(|error| framework(&request.operation, error.to_string()))?;
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
             snapshot_value(request, serde_json::Value::String(result))
         }
         "echo_agent::agent::react::ReactAgent::delegate_to_agent_with_cancel"
@@ -7665,12 +6257,12 @@ pub(crate) async fn dispatch(
                     agent
                         .delegate_to(&definition.name, task)
                         .await
-                        .map_err(|error| framework(&request.operation, error.to_string()))?
+                        .map_err(|error| wire::framework_error(&error, &request.operation))?
                 } else {
                     agent
                         .chat(task)
                         .await
-                        .map_err(|error| framework(&request.operation, error.to_string()))?
+                        .map_err(|error| wire::framework_error(&error, &request.operation))?
                 };
                 snapshot_value(request, serde_json::Value::String(result))
             }
@@ -7802,7 +6394,8 @@ pub(crate) async fn dispatch(
                     .write_async(move |agent| {
                         Box::pin(async move { agent.load_messages(messages).await })
                     })
-                    .await;
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
                 return snapshot_value(request, serde_json::Value::Null);
             }
             if request.arguments.len() != 1 {
@@ -7920,6 +6513,1676 @@ pub(crate) async fn dispatch(
             "source operation is canonical but has no Host authority adapter",
         )),
     }
+}
+
+// Agent accessors and configuration mutations have a separate private future
+// so evaluating an analysis operation does not inherit their temporary stack
+// slots. This preserves exact dispatch and the live Agent authority.
+fn dispatch_agent_context_source<'a>(
+    state: &'a CoreProfileState,
+    handles: &'a HandleRegistry,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    Box::pin(async move {
+        match request.operation.as_str() {
+            "echo_core::agent::Agent::name"
+            | "echo_agent::agent::Agent::name"
+            | "echo_agent::agent::react::ReactAgent::name"
+            | "echo_core::agent::Agent::model_name"
+            | "echo_agent::agent::Agent::model_name"
+            | "echo_agent::agent::react::ReactAgent::model_name"
+            | "echo_core::agent::Agent::system_prompt"
+            | "echo_agent::agent::Agent::system_prompt"
+            | "echo_agent::agent::react::ReactAgent::current_system_prompt"
+            | "echo_core::agent::Agent::tool_names"
+            | "echo_agent::agent::Agent::tool_names"
+            | "echo_agent::agent::react::ReactAgent::tool_names"
+            | "echo_agent::agent::react::ReactAgent::list_tools"
+            | "echo_core::agent::Agent::skill_names"
+            | "echo_agent::agent::Agent::skill_names"
+            | "echo_core::agent::Agent::mcp_server_names"
+            | "echo_agent::agent::Agent::mcp_server_names"
+            | "echo_agent::agent::react::ReactAgent::mcp_server_names"
+            | "echo_agent::agent::react::ReactAgent::list_mcp_servers"
+            | "echo_core::agent::Agent::working_dir"
+            | "echo_agent::agent::Agent::working_dir"
+            | "echo_agent::agent::react::ReactAgent::working_dir" => {
+                let handle = agent_handle(request)?;
+                handles.check_shape_and_generation(handle, HandleKind::Agent, METHOD)?;
+                let snapshot = handles.agent(handle)?.definition.snapshot();
+                let live = match request.arguments.len() {
+                    0 => None,
+                    1 => Some(session_agent(state, request).await?),
+                    _ => return Err(invalid("Agent accessor accepts zero or one Session handle")),
+                };
+                let value = match request.operation.rsplit_once("::").map(|(_, name)| name) {
+                    Some("name") => live
+                        .as_ref()
+                        .map(|agent| serde_json::json!(agent.name()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.name)),
+                    Some("model_name") => live
+                        .as_ref()
+                        .map(|agent| serde_json::json!(agent.model_name()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.model_name)),
+                    Some("system_prompt") => live
+                        .as_ref()
+                        .map(|agent| serde_json::json!(agent.system_prompt()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.system_prompt)),
+                    Some("current_system_prompt") => {
+                        if live.is_some() {
+                            let authorities = session_authorities(state, request).await?;
+                            serde_json::json!(
+                                authorities
+                                    .agent_handle
+                                    .read(|agent| agent.current_system_prompt())
+                                    .await
+                            )
+                        } else {
+                            serde_json::json!(snapshot.system_prompt)
+                        }
+                    }
+                    Some("tool_names") | Some("list_tools") => live
+                        .as_ref()
+                        .map(|agent| serde_json::json!(agent.tool_names()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.tool_names)),
+                    Some("skill_names") => live
+                        .as_ref()
+                        .map(|agent| serde_json::json!(agent.skill_names()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.skill_names)),
+                    Some("mcp_server_names") | Some("list_mcp_servers") => live
+                        .as_ref()
+                        .map(|agent| serde_json::json!(agent.mcp_server_names()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.mcp_server_names)),
+                    Some("working_dir") => live
+                        .as_ref()
+                        .map(|agent| serde_json::json!(agent.working_dir()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.working_dir)),
+                    _ => return Err(framework(&request.operation, "unknown Agent accessor")),
+                };
+                snapshot_value(request, value)
+            }
+            "echo_agent::agent::react::ReactAgent::skill_names" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("skill_names accepts exactly one Session handle"));
+                }
+                let names = authorities
+                    .agent_handle
+                    .read(|agent| agent.skill_names())
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(names)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            // `Agent::current_run_id` is an observational accessor. An Agent
+            // definition has no active run; a Session argument reads the live
+            // Agent instance used by the ACP runtime.
+            "echo_core::agent::Agent::current_run_id"
+            | "echo_agent::agent::Agent::current_run_id" => {
+                if request.arguments.is_empty() {
+                    let handle = agent_handle(request)?;
+                    handles.check_shape_and_generation(handle, HandleKind::Agent, METHOD)?;
+                    handles.agent(handle)?;
+                    snapshot_value(request, serde_json::Value::Null)
+                } else {
+                    let agent = session_agent(state, request).await?;
+                    if request.arguments.len() != 1 {
+                        return Err(invalid("current_run_id accepts zero or one Session handle"));
+                    }
+                    snapshot_value(request, serde_json::json!(agent.current_run_id()))
+                }
+            }
+            "echo_agent::agent::react::ReactAgent::current_run_id" => {
+                if request.arguments.is_empty() {
+                    let handle = agent_handle(request)?;
+                    handles.check_shape_and_generation(handle, HandleKind::Agent, METHOD)?;
+                    handles.agent(handle)?;
+                    snapshot_value(request, serde_json::Value::Null)
+                } else {
+                    let agent = session_agent(state, request).await?;
+                    if request.arguments.len() != 1 {
+                        return Err(invalid("current_run_id accepts zero or one Session handle"));
+                    }
+                    snapshot_value(request, serde_json::json!(agent.current_run_id()))
+                }
+            }
+            "echo_core::agent::Agent::disabled_tool_names"
+            | "echo_agent::agent::Agent::disabled_tool_names" => {
+                let agent = session_agent(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "live Agent accessor accepts exactly one Session handle",
+                    ));
+                }
+                snapshot_value(
+                    request,
+                    serde_json::to_value(agent.disabled_tool_names())
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::react::ReactAgent::disabled_tool_names" => {
+                let agent = session_agent(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "live Agent accessor accepts exactly one Session handle",
+                    ));
+                }
+                snapshot_value(
+                    request,
+                    serde_json::to_value(agent.disabled_tool_names())
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_core::agent::Agent::token_usage_summary"
+            | "echo_agent::agent::Agent::token_usage_summary" => {
+                let agent = session_agent(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "live Agent accessor accepts exactly one Session handle",
+                    ));
+                }
+                let usage = agent.token_usage_summary();
+                snapshot_value(
+                    request,
+                    serde_json::json!({
+                        "model_name": usage.model_name,
+                        "total_prompt_tokens": WireU64::from_u64(usage.total_prompt_tokens),
+                        "total_completion_tokens": WireU64::from_u64(usage.total_completion_tokens),
+                        "total_tokens": WireU64::from_u64(usage.total_tokens),
+                        "total_cached_prompt_tokens": WireU64::from_u64(usage.total_cached_prompt_tokens),
+                        "total_cache_creation_prompt_tokens": WireU64::from_u64(usage.total_cache_creation_prompt_tokens),
+                        "request_count": WireU64::from_u64(usage.request_count),
+                    }),
+                )
+            }
+            "echo_agent::agent::react::ReactAgent::token_usage_summary" => {
+                let agent = session_agent(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "live Agent accessor accepts exactly one Session handle",
+                    ));
+                }
+                let usage = agent.token_usage_summary();
+                snapshot_value(
+                    request,
+                    serde_json::json!({
+                        "model_name": usage.model_name,
+                        "total_prompt_tokens": WireU64::from_u64(usage.total_prompt_tokens),
+                        "total_completion_tokens": WireU64::from_u64(usage.total_completion_tokens),
+                        "total_tokens": WireU64::from_u64(usage.total_tokens),
+                        "total_cached_prompt_tokens": WireU64::from_u64(usage.total_cached_prompt_tokens),
+                        "total_cache_creation_prompt_tokens": WireU64::from_u64(usage.total_cache_creation_prompt_tokens),
+                        "request_count": WireU64::from_u64(usage.request_count),
+                    }),
+                )
+            }
+            "echo_agent::agent::ReactAgent::max_iterations"
+            | "echo_agent::agent::react::ReactAgent::max_iterations" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("max_iterations accepts exactly one Session handle"));
+                }
+                let max_iterations = authorities
+                    .agent_handle
+                    .read(|agent| agent.max_iterations())
+                    .await;
+                let max_iterations = u64::try_from(max_iterations)
+                    .map_err(|_| framework(&request.operation, "max_iterations exceeds WireU64"))?;
+                snapshot_value(
+                    request,
+                    serde_json::json!(WireU64::from_u64(max_iterations)),
+                )
+            }
+            "echo_agent::agent::ReactAgent::is_plan_mode"
+            | "echo_agent::agent::react::ReactAgent::is_plan_mode" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("is_plan_mode accepts exactly one Session handle"));
+                }
+                snapshot_value(
+                    request,
+                    serde_json::json!(
+                        authorities
+                            .agent_handle
+                            .read(|agent| agent.is_plan_mode())
+                            .await
+                    ),
+                )
+            }
+            "echo_agent::agent::ReactAgent::get_permission_mode"
+            | "echo_agent::agent::react::ReactAgent::get_permission_mode" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "get_permission_mode accepts exactly one Session handle",
+                    ));
+                }
+                let mode = authorities
+                    .agent_handle
+                    .read(|agent| agent.get_permission_mode())
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(mode)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::ReactAgent::context_stats"
+            | "echo_agent::agent::react::ReactAgent::context_stats" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("context_stats accepts exactly one Session handle"));
+                }
+                let stats = authorities
+                    .agent_handle
+                    .read_async(|agent| Box::pin(agent.context_stats()))
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(stats)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::ReactAgent::snapshot"
+            | "echo_agent::agent::react::ReactAgent::snapshot" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("snapshot accepts exactly one Session handle"));
+                }
+                let snapshot = authorities
+                    .agent_handle
+                    .read_async(|agent| Box::pin(agent.snapshot()))
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(snapshot)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::ReactAgent::snapshots"
+            | "echo_agent::agent::react::ReactAgent::snapshots" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("snapshots accepts exactly one Session handle"));
+                }
+                let snapshots = authorities
+                    .agent_handle
+                    .read(|agent| agent.snapshots())
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(snapshots)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::ReactAgent::latest_snapshot"
+            | "echo_agent::agent::react::ReactAgent::latest_snapshot" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "latest_snapshot accepts exactly one Session handle",
+                    ));
+                }
+                let snapshot = authorities
+                    .agent_handle
+                    .read(|agent| agent.latest_snapshot())
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(snapshot)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::ReactAgent::conversation_id"
+            | "echo_agent::agent::react::ReactAgent::conversation_id" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "conversation_id accepts exactly one Session handle",
+                    ));
+                }
+                snapshot_value(
+                    request,
+                    serde_json::to_value(
+                        authorities
+                            .agent_handle
+                            .read(|agent| agent.conversation_id().map(str::to_string))
+                            .await,
+                    )
+                    .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::ReactAgent::has_memory_layer_manager"
+            | "echo_agent::agent::react::ReactAgent::has_memory_layer_manager" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "has_memory_layer_manager accepts exactly one Session handle",
+                    ));
+                }
+                snapshot_value(
+                    request,
+                    serde_json::json!(
+                        authorities
+                            .agent_handle
+                            .read(|agent| agent.has_memory_layer_manager())
+                            .await
+                    ),
+                )
+            }
+            "echo_agent::agent::ReactAgent::thinking"
+            | "echo_agent::agent::react::ReactAgent::thinking" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("thinking accepts exactly one Session handle"));
+                }
+                snapshot_value(
+                    request,
+                    serde_json::to_value(
+                        authorities
+                            .agent_handle
+                            .read(|agent| agent.thinking().cloned())
+                            .await,
+                    )
+                    .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::ReactAgent::set_plan_mode"
+            | "echo_agent::agent::react::ReactAgent::set_plan_mode" => {
+                let authorities = session_authorities(state, request).await?;
+                let enabled = match request.arguments.get(1) {
+                    Some(WireValue::Bool(value)) => *value,
+                    Some(_) => return Err(invalid("set_plan_mode requires a boolean value")),
+                    None => return Err(invalid("set_plan_mode requires a boolean value")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid("set_plan_mode accepts [Session handle, Bool]"));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_plan_mode(enabled))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_permission_mode"
+            | "echo_agent::agent::react::ReactAgent::set_permission_mode" => {
+                let authorities = session_authorities(state, request).await?;
+                let mode_value = request
+                    .arguments
+                    .get(1)
+                    .cloned()
+                    .ok_or_else(|| invalid("set_permission_mode requires a mode value"))?
+                    .into_json()
+                    .map_err(|error| {
+                        invalid(format!("permission mode is not a wire value: {error}"))
+                    })?;
+                let mode: echo_agent::tools::permission::PermissionMode =
+                    serde_json::from_value(mode_value)
+                        .map_err(|error| invalid(format!("permission mode is invalid: {error}")))?;
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "set_permission_mode accepts [Session handle, PermissionMode]",
+                    ));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_permission_mode(mode))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_conversation_id"
+            | "echo_agent::agent::react::ReactAgent::set_conversation_id" => {
+                let authorities = session_authorities(state, request).await?;
+                let conversation_id = match request.arguments.get(1) {
+                    Some(WireValue::String(value)) if !value.trim().is_empty() => value.clone(),
+                    Some(_) => {
+                        return Err(invalid("set_conversation_id requires a non-empty string"));
+                    }
+                    None => return Err(invalid("set_conversation_id requires a string value")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "set_conversation_id accepts [Session handle, String]",
+                    ));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_conversation_id(conversation_id))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_model"
+            | "echo_agent::agent::react::ReactAgent::set_model" => {
+                let authorities = session_authorities(state, request).await?;
+                let model = match request.arguments.get(1) {
+                    Some(WireValue::String(value)) if !value.trim().is_empty() => value.clone(),
+                    Some(_) => return Err(invalid("set_model requires a non-empty string")),
+                    None => return Err(invalid("set_model requires a model name")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid("set_model accepts [Session handle, String]"));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_model(&model))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_temperature"
+            | "echo_agent::agent::react::ReactAgent::set_temperature" => {
+                let authorities = session_authorities(state, request).await?;
+                let temperature = match request.arguments.get(1) {
+                    Some(WireValue::Null) => None,
+                    Some(value) => {
+                        let json = value.clone().into_json().map_err(|error| {
+                            invalid(format!("temperature is not a wire value: {error}"))
+                        })?;
+                        let parsed: f32 = serde_json::from_value(json)
+                            .map_err(|error| invalid(format!("temperature is invalid: {error}")))?;
+                        if !parsed.is_finite() {
+                            return Err(invalid("temperature must be finite"));
+                        }
+                        Some(parsed)
+                    }
+                    None => return Err(invalid("set_temperature requires a value")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "set_temperature accepts [Session handle, F64|null]",
+                    ));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_temperature(temperature))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_max_tokens"
+            | "echo_agent::agent::react::ReactAgent::set_max_tokens" => {
+                let authorities = session_authorities(state, request).await?;
+                let max_tokens = match request.arguments.get(1) {
+                    Some(WireValue::Null) => None,
+                    Some(WireValue::U64(value)) => Some(
+                        value
+                            .to_u64()
+                            .ok_or_else(|| invalid("max_tokens value is invalid"))
+                            .and_then(|value| {
+                                u32::try_from(value).map_err(|_| invalid("max_tokens exceeds u32"))
+                            })?,
+                    ),
+                    Some(_) => return Err(invalid("set_max_tokens requires a U64|null value")),
+                    None => return Err(invalid("set_max_tokens requires a value")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid("set_max_tokens accepts [Session handle, U64|null]"));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_max_tokens(max_tokens))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_thinking"
+            | "echo_agent::agent::react::ReactAgent::set_thinking" => {
+                let authorities = session_authorities(state, request).await?;
+                let value = request
+                    .arguments
+                    .get(1)
+                    .cloned()
+                    .ok_or_else(|| invalid("set_thinking requires a value"))?;
+                let thinking = match value {
+                    WireValue::Null => None,
+                    value => {
+                        let json = value.into_json().map_err(|error| {
+                            invalid(format!("thinking is not a wire value: {error}"))
+                        })?;
+                        if let serde_json::Value::String(spec) = &json {
+                            echo_agent::llm::ThinkingConfig::parse_spec(spec)
+                                .map_err(|error| invalid(format!("thinking is invalid: {error}")))?
+                        } else {
+                            Some(serde_json::from_value(json).map_err(|error| {
+                                invalid(format!("thinking is invalid: {error}"))
+                            })?)
+                        }
+                    }
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "set_thinking accepts [Session handle, ThinkingConfig|null]",
+                    ));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_thinking(thinking))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_token_limit"
+            | "echo_agent::agent::react::ReactAgent::set_token_limit" => {
+                let authorities = session_authorities(state, request).await?;
+                let token_limit = match request.arguments.get(1) {
+                    Some(WireValue::U64(value)) => value
+                        .to_u64()
+                        .ok_or_else(|| invalid("token_limit value is invalid"))
+                        .and_then(|value| {
+                            usize::try_from(value)
+                                .map_err(|_| invalid("token_limit exceeds platform usize"))
+                        })?,
+                    Some(_) => return Err(invalid("set_token_limit requires a U64 value")),
+                    None => return Err(invalid("set_token_limit requires a U64 value")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid("set_token_limit accepts [Session handle, U64]"));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_token_limit(token_limit))
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_disabled_tools"
+            | "echo_agent::agent::react::ReactAgent::set_disabled_tools" => {
+                let authorities = session_authorities(state, request).await?;
+                let disabled = match request.arguments.get(1) {
+                    Some(WireValue::Null) => None,
+                    Some(WireValue::List(values)) => {
+                        let mut names = std::collections::HashSet::with_capacity(values.len());
+                        for value in values {
+                            let WireValue::String(name) = value else {
+                                return Err(invalid(
+                                    "set_disabled_tools list must contain strings",
+                                ));
+                            };
+                            if name.trim().is_empty() {
+                                return Err(invalid("set_disabled_tools names must be non-empty"));
+                            }
+                            names.insert(name.clone());
+                        }
+                        Some(names)
+                    }
+                    Some(_) => {
+                        return Err(invalid("set_disabled_tools requires a string list|null"));
+                    }
+                    None => return Err(invalid("set_disabled_tools requires a value")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "set_disabled_tools accepts [Session handle, List<String>|Null]",
+                    ));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_disabled_tools(disabled))
+                    .await;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::ReactAgent::set_store"
+            | "echo_agent::agent::react::ReactAgent::set_store" => {
+                #[cfg(feature = "sdk-extension-bridge")]
+                {
+                    let authorities = session_authorities(state, request).await?;
+                    let session_handle = match request.arguments.first() {
+                        Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => {
+                            handle
+                        }
+                        Some(WireValue::Handle(_)) => {
+                            return Err(invalid("set_store requires a Session handle"));
+                        }
+                        Some(_) | None => {
+                            return Err(invalid("set_store requires a Session handle"));
+                        }
+                    };
+                    let extension = match request.arguments.get(1) {
+                        Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
+                            handle.clone()
+                        }
+                        Some(WireValue::Handle(_)) => {
+                            return Err(invalid("set_store requires an Extension handle"));
+                        }
+                        Some(_) | None => {
+                            return Err(invalid("set_store requires an Extension handle"));
+                        }
+                    };
+                    if request.arguments.len() != 2 {
+                        return Err(invalid(
+                            "set_store accepts [Session handle, Extension handle]",
+                        ));
+                    }
+                    let record = handles.extension(&extension)?;
+                    if record.kind != echo_sdk_protocol::methods::ExtensionKind::Store {
+                        return Err(invalid("set_store requires a Store extension handle"));
+                    }
+                    let session_record = handles.session(session_handle)?;
+                    let proxy = crate::core_profile::extension_bridge::ExtensionStoreProxy::new(
+                        state.extension_bridge.clone(),
+                        extension,
+                        session_record.acp_session_id.clone(),
+                    )
+                    .ok_or_else(|| {
+                        framework(&request.operation, "Store extension proxy is unavailable")
+                    })?;
+                    authorities
+                        .agent_handle
+                        .write(|agent| agent.set_store(Arc::new(proxy)))
+                        .await;
+                    snapshot_value(request, serde_json::Value::Null)
+                }
+                #[cfg(not(feature = "sdk-extension-bridge"))]
+                {
+                    let _ = (state, handles, request);
+                    Err(framework(
+                        "echo_agent::agent::react::ReactAgent::set_store",
+                        "set_store requires the SDK extension bridge",
+                    ))
+                }
+            }
+            "echo_agent::agent::ReactAgent::set_max_iterations"
+            | "echo_agent::agent::react::ReactAgent::set_max_iterations" => {
+                let authorities = session_authorities(state, request).await?;
+                let max = match request.arguments.get(1) {
+                    Some(WireValue::U64(value)) => value
+                        .to_u64()
+                        .ok_or_else(|| invalid("max_iterations value is invalid"))
+                        .and_then(|value| {
+                            usize::try_from(value)
+                                .map_err(|_| invalid("max_iterations exceeds platform usize"))
+                        })?,
+                    Some(_) => return Err(invalid("set_max_iterations requires a U64 value")),
+                    None => return Err(invalid("set_max_iterations requires a U64 value")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid("set_max_iterations accepts [Session handle, U64]"));
+                }
+                authorities
+                    .agent_handle
+                    .write(|agent| agent.set_max_iterations(max))
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::react::ReactAgent::force_checkpoint" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "force_checkpoint accepts exactly one Session handle",
+                    ));
+                }
+                authorities
+                    .agent_handle
+                    .read_async(|agent| Box::pin(agent.force_checkpoint()))
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::react::ReactAgent::resume_from_state_store" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "resume_from_state_store accepts exactly one Session handle",
+                    ));
+                }
+                let checkpoint = authorities
+                    .agent_handle
+                    .read_async(|agent| Box::pin(agent.resume_from_state_store()))
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(checkpoint)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::react::ReactAgent::rollback" => {
+                let authorities = session_authorities(state, request).await?;
+                let steps = match request.arguments.get(1) {
+                    Some(WireValue::U64(value)) => value
+                        .to_u64()
+                        .ok_or_else(|| invalid("rollback steps are invalid"))
+                        .and_then(|value| {
+                            usize::try_from(value)
+                                .map_err(|_| invalid("rollback steps exceed usize"))
+                        })?,
+                    _ => return Err(invalid("rollback requires a U64 steps argument")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid("rollback accepts [Session handle, U64]"));
+                }
+                let snapshot = authorities
+                    .agent_handle
+                    .read_async(|agent| Box::pin(agent.rollback(steps)))
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(snapshot)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::react::ReactAgent::rollback_to" => {
+                let authorities = session_authorities(state, request).await?;
+                let snapshot_id = match request.arguments.get(1) {
+                    Some(WireValue::String(value)) if !value.trim().is_empty() => value.clone(),
+                    _ => return Err(invalid("rollback_to requires a snapshot id")),
+                };
+                if request.arguments.len() != 2 {
+                    return Err(invalid("rollback_to accepts [Session handle, String]"));
+                }
+                let snapshot_id_for_call = std::sync::Arc::new(snapshot_id);
+                let snapshot = authorities
+                    .agent_handle
+                    .read_async(move |agent| {
+                        let snapshot_id = snapshot_id_for_call.clone();
+                        Box::pin(async move { agent.rollback_to(&snapshot_id).await })
+                    })
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(snapshot)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            "echo_agent::agent::react::ReactAgent::shutdown" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("shutdown accepts exactly one Session handle"));
+                }
+                authorities
+                    .agent_handle
+                    .read_async(|agent| Box::pin(agent.shutdown()))
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                snapshot_value(request, serde_json::Value::Null)
+            }
+            "echo_agent::agent::react::ReactAgent::force_compress_context" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid(
+                        "force_compress_context accepts exactly one Session handle",
+                    ));
+                }
+                let (stats, checkpoint) = authorities
+                    .agent_handle
+                    .read_async(|agent| Box::pin(agent.force_compress_context()))
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                snapshot_value(
+                    request,
+                    serde_json::json!({
+                        "stats": {
+                            "before_count": stats.before_count,
+                            "after_count": stats.after_count,
+                            "evicted": stats.evicted,
+                            "before_tokens": stats.before_tokens,
+                            "after_tokens": stats.after_tokens,
+                        },
+                        "checkpoint": serde_json::to_value(checkpoint)
+                            .map_err(|error| framework(&request.operation, error.to_string()))?,
+                    }),
+                )
+            }
+            #[cfg(feature = "sdk-extension-bridge")]
+            "echo_agent::agent::react::ReactAgent::set_compressor" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "set_compressor accepts [Session, ContextCompressor extension]",
+                    ));
+                }
+                let session = match request.arguments.first() {
+                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
+                    _ => return Err(invalid("set_compressor requires a Session handle")),
+                };
+                let extension = match request.arguments.get(1) {
+                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
+                        handle.clone()
+                    }
+                    _ => {
+                        return Err(invalid(
+                            "set_compressor requires a ContextCompressor extension handle",
+                        ));
+                    }
+                };
+                let session_id = state.handles.session(session)?.acp_session_id.clone();
+                let proxy =
+                    crate::core_profile::extension_bridge::ExtensionContextCompressorProxy::new(
+                        state.extension_bridge.clone(),
+                        extension,
+                        session_id,
+                    )
+                    .ok_or_else(|| invalid("extension is not a ContextCompressor"))?;
+                authorities
+                    .agent_handle
+                    .read_async(move |agent| Box::pin(agent.set_compressor(proxy)))
+                    .await;
+                Ok(WireValue::Null)
+            }
+            #[cfg(feature = "sdk-extension-bridge")]
+            "echo_agent::agent::react::ReactAgent::set_intent_router" => {
+                let authorities = session_authorities(state, request).await?;
+                if !(2..=4).contains(&request.arguments.len()) {
+                    return Err(invalid(
+                        "set_intent_router accepts [Session, IntentClassifier extension, config?, available_skills?]",
+                    ));
+                }
+                let session = match request.arguments.first() {
+                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
+                    _ => return Err(invalid("set_intent_router requires a Session handle")),
+                };
+                let extension = match request.arguments.get(1) {
+                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
+                        handle.clone()
+                    }
+                    _ => return Err(invalid("set_intent_router requires an Extension handle")),
+                };
+                let config = match request.arguments.get(2) {
+                    None | Some(WireValue::Null) => {
+                        echo_agent::intent::IntentRouterConfig::default()
+                    }
+                    Some(value) => serde_json::from_value(
+                        value
+                            .clone()
+                            .into_json()
+                            .map_err(|error| invalid(error.to_string()))?,
+                    )
+                    .map_err(|error| {
+                        invalid(format!("intent router config is malformed: {error}"))
+                    })?,
+                };
+                let available_skills = match request.arguments.get(3) {
+                    None | Some(WireValue::Null) => None,
+                    Some(WireValue::List(values)) => Some(
+                        values
+                            .iter()
+                            .map(|value| match value {
+                                WireValue::String(value) => Ok(value.clone()),
+                                _ => Err(invalid("available skill names must be strings")),
+                            })
+                            .collect::<Result<Vec<_>, EchoSdkError>>()?,
+                    ),
+                    _ => return Err(invalid("available_skills must be a List or null")),
+                };
+                let session_id = state.handles.session(session)?.acp_session_id.clone();
+                let proxy =
+                    crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
+                        state.extension_bridge.clone(),
+                        extension,
+                        session_id,
+                    )
+                    .filter(|proxy| proxy.component() == AgentComponentKindWire::IntentClassifier)
+                    .ok_or_else(|| invalid("extension is not an IntentClassifier"))?;
+                let mut router = echo_agent::intent::IntentRouter::new(Box::new(proxy), config);
+                if let Some(skills) = available_skills {
+                    router = router.with_available_skills(skills);
+                }
+                authorities
+                    .agent_handle
+                    .write(move |agent| agent.set_intent_router(router))
+                    .await;
+                Ok(WireValue::Null)
+            }
+            #[cfg(feature = "sdk-extension-bridge")]
+            "echo_agent::agent::react::ReactAgent::set_skill_load_policy" => {
+                let authorities = session_authorities(state, request).await?;
+                let session_id = source_session_owner(state, request).await?;
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "set_skill_load_policy accepts [Session, SkillLoadPolicy extension or null]",
+                    ));
+                }
+                let policy = match request.arguments.get(1) {
+                    Some(WireValue::Null) => None,
+                    Some(WireValue::Handle(extension))
+                        if extension.kind == HandleKind::Extension =>
+                    {
+                        let proxy =
+                        crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
+                            state.extension_bridge.clone(),
+                            extension.clone(),
+                            session_id.clone(),
+                        )
+                        .filter(|proxy| {
+                            proxy.component() == AgentComponentKindWire::SkillLoadPolicy
+                        })
+                        .ok_or_else(|| invalid("extension is not a SkillLoadPolicy component"))?;
+                        Some(Arc::new(proxy)
+                            as Arc<dyn echo_agent::skills::external::SkillLoadPolicy>)
+                    }
+                    _ => {
+                        return Err(invalid(
+                            "set_skill_load_policy requires an Extension handle or null",
+                        ));
+                    }
+                };
+                authorities
+                    .agent_handle
+                    .write(move |agent| agent.set_skill_load_policy(policy))
+                    .await;
+                Ok(WireValue::Null)
+            }
+            #[cfg(feature = "sdk-extension-bridge")]
+            "echo_agent::agent::react::ReactAgent::set_audit_logger"
+            | "echo_agent::agent::react::ReactAgent::set_conversation_store"
+            | "echo_agent::agent::react::ReactAgent::set_memory_trigger_sink"
+            | "echo_agent::agent::react::ReactAgent::set_memory_promoter"
+            | "echo_agent::agent::react::ReactAgent::set_pre_model_context_projector"
+            | "echo_agent::agent::react::ReactAgent::set_run_store"
+            | "echo_agent::agent::react::ReactAgent::set_sandbox_executor"
+            | "echo_agent::agent::react::ReactAgent::set_state_store" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "Agent component setter accepts [Session, AgentComponent extension]",
+                    ));
+                }
+                let session = match request.arguments.first() {
+                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => handle,
+                    _ => return Err(invalid("Agent component setter requires a Session handle")),
+                };
+                let extension = match request.arguments.get(1) {
+                    Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
+                        handle.clone()
+                    }
+                    _ => {
+                        return Err(invalid(
+                            "Agent component setter requires an Extension handle",
+                        ));
+                    }
+                };
+                let expected = match request.operation.as_str() {
+                    "echo_agent::agent::react::ReactAgent::set_audit_logger" => {
+                        AgentComponentKindWire::AuditLogger
+                    }
+                    "echo_agent::agent::react::ReactAgent::set_conversation_store" => {
+                        AgentComponentKindWire::ConversationStore
+                    }
+                    "echo_agent::agent::react::ReactAgent::set_memory_trigger_sink" => {
+                        AgentComponentKindWire::MemoryTriggerSink
+                    }
+                    "echo_agent::agent::react::ReactAgent::set_memory_promoter" => {
+                        AgentComponentKindWire::MemoryPromoter
+                    }
+                    "echo_agent::agent::react::ReactAgent::set_pre_model_context_projector" => {
+                        AgentComponentKindWire::ContextProjector
+                    }
+                    "echo_agent::agent::react::ReactAgent::set_run_store" => {
+                        AgentComponentKindWire::RunStore
+                    }
+                    "echo_agent::agent::react::ReactAgent::set_sandbox_executor" => {
+                        AgentComponentKindWire::SandboxExecutor
+                    }
+                    _ => AgentComponentKindWire::RuntimeStateStore,
+                };
+                let session_id = state.handles.session(session)?.acp_session_id.clone();
+                let proxy =
+                    crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
+                        state.extension_bridge.clone(),
+                        extension,
+                        session_id,
+                    )
+                    .filter(|proxy| proxy.component() == expected)
+                    .ok_or_else(|| {
+                        invalid("extension component does not match the Agent setter")
+                    })?;
+                if expected == AgentComponentKindWire::MemoryPromoter {
+                    authorities
+                        .agent_handle
+                        .read_async(move |agent| {
+                            Box::pin(agent.set_memory_promoter(Arc::new(proxy)))
+                        })
+                        .await;
+                    return Ok(WireValue::Null);
+                }
+                authorities
+                    .agent_handle
+                    .write(move |agent| match expected {
+                        AgentComponentKindWire::AuditLogger => {
+                            agent.set_audit_logger(Arc::new(proxy))
+                        }
+                        AgentComponentKindWire::ConversationStore => {
+                            agent.set_conversation_store(Arc::new(proxy));
+                        }
+                        AgentComponentKindWire::MemoryTriggerSink => {
+                            agent.set_memory_trigger_sink(Some(Arc::new(proxy)));
+                        }
+                        AgentComponentKindWire::ContextProjector => {
+                            agent.set_pre_model_context_projector(Some(Arc::new(proxy)));
+                        }
+                        AgentComponentKindWire::RunStore => agent.set_run_store(Arc::new(proxy)),
+                        AgentComponentKindWire::SandboxExecutor => {
+                            agent.set_sandbox_executor(Arc::new(proxy));
+                        }
+                        AgentComponentKindWire::RuntimeStateStore => {
+                            agent.set_state_store(Arc::new(proxy));
+                        }
+                        AgentComponentKindWire::Guard => agent.set_guard_manager(
+                            echo_agent::guard::GuardManager::from_guards(vec![Arc::new(proxy)]),
+                        ),
+                        AgentComponentKindWire::SearchProvider
+                        | AgentComponentKindWire::WorkflowCheckpointStore
+                        | AgentComponentKindWire::RevisionedTaskStore
+                        | AgentComponentKindWire::McpTransport
+                        | AgentComponentKindWire::Embedder
+                        | AgentComponentKindWire::MemoryPromoter
+                        | AgentComponentKindWire::Workflow
+                        | AgentComponentKindWire::IntentClassifier
+                        | AgentComponentKindWire::SkillLoadPolicy => drop(proxy),
+                    })
+                    .await;
+                Ok(WireValue::Null)
+            }
+            "echo_agent::agent::react::ReactAgent::force_compress_with_focus_and_hooks" => {
+                let authorities = session_authorities(state, request).await?;
+                if request.arguments.len() != 4 {
+                    return Err(invalid(
+                        "force_compress_with_focus_and_hooks accepts [Session, focus, window, matcher]",
+                    ));
+                }
+                let focus = std::sync::Arc::new(string_argument(request, 1, "focus instructions")?);
+                let window = usize_argument(request, 2)?;
+                let matcher = std::sync::Arc::new(string_argument(request, 3, "hook matcher")?);
+                let (stats, checkpoint) = authorities
+                    .agent_handle
+                    .read_async(move |agent| {
+                        let focus = focus.clone();
+                        let matcher = matcher.clone();
+                        Box::pin(async move {
+                            agent
+                                .force_compress_with_focus_and_hooks(&focus, window, &matcher)
+                                .await
+                        })
+                    })
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                snapshot_value(
+                    request,
+                    serde_json::json!({
+                        "stats": {
+                            "before_count": stats.before_count,
+                            "after_count": stats.after_count,
+                            "evicted": stats.evicted,
+                            "before_tokens": stats.before_tokens,
+                            "after_tokens": stats.after_tokens,
+                        },
+                        "checkpoint": serde_json::to_value(checkpoint)
+                            .map_err(|error| framework(&request.operation, error.to_string()))?,
+                    }),
+                )
+            }
+            _ => Err(framework(
+                &request.operation,
+                "source operation is canonical but has no Host authority adapter",
+            )),
+        }
+    })
+}
+
+// Keep source-operation futures on private capability boundaries so an
+// unrelated lightweight operation does not inherit every analysis future's
+// stack frame. All addressing and authority remain in the original dispatcher.
+#[cfg(any(feature = "framework-eval", feature = "framework-improve"))]
+fn dispatch_analysis_source<'a>(
+    state: &'a CoreProfileState,
+    _handles: &'a HandleRegistry,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    Box::pin(async move {
+        match request.operation.as_str() {
+            #[cfg(feature = "framework-eval")]
+            "echo_agent::eval::runner::EvalRunner::new" => {
+                let owner = source_session_owner(state, request).await?;
+                if request.arguments.len() != 2 {
+                    return Err(invalid("EvalRunner::new accepts [Session, workspace_root]"));
+                }
+                let workspace_root = path_argument(request, 1)?;
+                let resource = register_source_resource(state, &owner, "eval", "eval.runner")?;
+                state
+                    .facade
+                    .eval_runners
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .insert(
+                        resource.id.clone(),
+                        Arc::new(echo_agent::eval::EvalRunner::new(workspace_root)),
+                    );
+                Ok(WireValue::Handle(resource))
+            }
+            #[cfg(feature = "framework-eval")]
+            "echo_agent::eval::runner::EvalRunner::with_run_store"
+            | "echo_agent::eval::runner::EvalRunner::with_grader" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource =
+                    source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
+                let runner = state
+                    .facade
+                    .eval_runners
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
+                let configured = if request.operation.ends_with("::with_run_store") {
+                    if request.arguments.len() != 3 {
+                        return Err(invalid(
+                            "with_run_store accepts [Session, runner, RunStore]",
+                        ));
+                    }
+                    runner.as_ref().clone().with_run_store(
+                        run_store_argument(state, request, &owner, 2)?
+                            .ok_or_else(|| invalid("with_run_store does not accept null"))?,
+                    )
+                } else {
+                    if request.arguments.len() != 4 {
+                        return Err(invalid(
+                            "with_grader accepts [Session, runner, grader, Agent]",
+                        ));
+                    }
+                    let grader_resource =
+                        source_resource_at(state, request, &owner, 2, "eval", "eval.grader")?;
+                    let grader = state
+                        .facade
+                        .llm_graders
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .get(&grader_resource.id)
+                        .cloned()
+                        .ok_or_else(|| invalid("LlmGrader resource is closed"))?;
+                    runner.as_ref().clone().with_grader(
+                        grader.as_ref().clone(),
+                        explicit_agent_argument(state, request, &owner, 3).await?,
+                    )
+                };
+                let configured_resource =
+                    register_source_resource(state, &owner, "eval", "eval.runner")?;
+                state
+                    .facade
+                    .eval_runners
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .insert(configured_resource.id.clone(), Arc::new(configured));
+                Ok(WireValue::Handle(configured_resource))
+            }
+            #[cfg(feature = "framework-eval")]
+            "echo_agent::eval::runner::EvalRunner::timeout_secs"
+            | "echo_agent::eval::runner::EvalRunner::workspace_root" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource =
+                    source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
+                let runner = state
+                    .facade
+                    .eval_runners
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
+                if request.arguments.len() == 2 {
+                    return if request.operation.ends_with("::timeout_secs") {
+                        Ok(WireValue::U64(WireU64::from_u64(runner.timeout_secs)))
+                    } else {
+                        Ok(WireValue::Path(
+                            wire::path_to_wire(&runner.workspace_root).map_err(invalid)?,
+                        ))
+                    };
+                }
+                if request.arguments.len() != 3 {
+                    return Err(invalid(
+                        "EvalRunner property accepts [Session, runner, value?]",
+                    ));
+                }
+                let mut configured = runner.as_ref().clone();
+                if request.operation.ends_with("::timeout_secs") {
+                    configured.timeout_secs = u64_argument(request, 2)?;
+                } else {
+                    configured.workspace_root = path_argument(request, 2)?;
+                }
+                let configured_resource =
+                    register_source_resource(state, &owner, "eval", "eval.runner")?;
+                state
+                    .facade
+                    .eval_runners
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .insert(configured_resource.id.clone(), Arc::new(configured));
+                Ok(WireValue::Handle(configured_resource))
+            }
+            #[cfg(feature = "framework-eval")]
+            "echo_agent::eval::runner::EvalRunner::run"
+            | "echo_agent::eval::runner::EvalRunner::evaluate_run_constraints" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource =
+                    source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
+                let runner = state
+                    .facade
+                    .eval_runners
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
+                if request.operation.ends_with("::run") {
+                    if request.arguments.len() != 4 {
+                        return Err(invalid(
+                            "EvalRunner::run accepts [Session, runner, case, Agent]",
+                        ));
+                    }
+                    let case: echo_agent::eval::EvalCase =
+                        serde_json::from_value(json_argument(request, 2, "eval case")?)
+                            .map_err(|error| invalid(format!("eval case is malformed: {error}")))?;
+                    let agent = explicit_agent_argument(state, request, &owner, 3).await?;
+                    let result = runner.run(&case, agent.as_ref()).await;
+                    return snapshot_value(
+                        request,
+                        serde_json::to_value(result)
+                            .map_err(|error| framework(&request.operation, error.to_string()))?,
+                    );
+                }
+                if request.operation.ends_with("::evaluate_run_constraints") {
+                    if request.arguments.len() != 4 {
+                        return Err(invalid(
+                            "evaluate_run_constraints accepts [Session, runner, constraints, run]",
+                        ));
+                    }
+                    let constraints =
+                        serde_json::from_value(json_argument(request, 2, "eval constraints")?)
+                            .map_err(|error| {
+                                invalid(format!("eval constraints are malformed: {error}"))
+                            })?;
+                    let run = serde_json::from_value(json_argument(request, 3, "run")?)
+                        .map_err(|error| invalid(format!("run is malformed: {error}")))?;
+                    return snapshot_value(
+                        request,
+                        serde_json::to_value(runner.evaluate_run_constraints(&constraints, &run))
+                            .map_err(|error| framework(&request.operation, error.to_string()))?,
+                    );
+                }
+                Err(invalid("unknown EvalRunner operation"))
+            }
+            #[cfg(all(feature = "framework-eval", feature = "sdk-extension-bridge"))]
+            "echo_agent::eval::runner::EvalRunner::run_all"
+            | "echo_agent::eval::runner::EvalRunner::run_all_async" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource =
+                    source_resource_at(state, request, &owner, 1, "eval", "eval.runner")?;
+                if request.arguments.len() != 4 {
+                    return Err(invalid(
+                        "EvalRunner::run_all accepts [Session, runner, cases, AgentFactory]",
+                    ));
+                }
+                let runner = state
+                    .facade
+                    .eval_runners
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("EvalRunner receiver is closed"))?;
+                let cases: Vec<echo_agent::eval::EvalCase> =
+                    serde_json::from_value(json_argument(request, 2, "eval cases")?)
+                        .map_err(|error| invalid(format!("eval cases are malformed: {error}")))?;
+                use echo_agent::agent::subagent::AgentFactory as _;
+                let factory = agent_factory_argument(state, request, &owner, 3)?;
+                let report = runner
+                    .run_all_async(&cases, || {
+                        let factory = factory.clone();
+                        async move {
+                            match factory.create().await {
+                                Ok(agent) => agent,
+                                Err(error) => Box::new(FailedEvalAgent {
+                                    error: std::sync::Mutex::new(Some(error)),
+                                }) as Box<dyn Agent>,
+                            }
+                        }
+                    })
+                    .await;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(report)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            #[cfg(feature = "framework-eval")]
+            "echo_agent::eval::grader::LlmGrader::new" => {
+                let owner = source_session_owner(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("LlmGrader::new accepts [Session]"));
+                }
+                let resource = register_source_resource(state, &owner, "eval", "eval.grader")?;
+                state
+                    .facade
+                    .llm_graders
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .insert(
+                        resource.id.clone(),
+                        Arc::new(echo_agent::eval::LlmGrader::new()),
+                    );
+                Ok(WireValue::Handle(resource))
+            }
+            #[cfg(feature = "framework-eval")]
+            "echo_agent::eval::grader::LlmGrader::grade"
+            | "echo_agent::eval::grader::LlmGrader::grade_with_trajectory" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource =
+                    source_resource_at(state, request, &owner, 1, "eval", "eval.grader")?;
+                let grader = state
+                    .facade
+                    .llm_graders
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("LlmGrader receiver is closed"))?;
+                let task = string_argument(request, 2, "task")?;
+                let output = string_argument(request, 3, "output")?;
+                let assertions: Vec<echo_agent::eval::grader::Assertion> =
+                    serde_json::from_value(json_argument(request, 4, "assertions")?)
+                        .map_err(|error| invalid(format!("assertions are malformed: {error}")))?;
+                let report = if request.operation.ends_with("::grade_with_trajectory") {
+                    if request.arguments.len() != 7 {
+                        return Err(invalid(
+                            "grade_with_trajectory accepts [Session, grader, task, output, assertions, trajectory, Agent]",
+                        ));
+                    }
+                    let trajectory = match request.arguments.get(5) {
+                        Some(WireValue::Null) => None,
+                        Some(WireValue::String(value)) => Some(value.as_str()),
+                        _ => return Err(invalid("trajectory must be String or null")),
+                    };
+                    grader
+                        .grade_with_trajectory(
+                            explicit_agent_argument(state, request, &owner, 6)
+                                .await?
+                                .as_ref(),
+                            &task,
+                            &output,
+                            &assertions,
+                            trajectory,
+                        )
+                        .await
+                } else {
+                    if request.arguments.len() != 6 {
+                        return Err(invalid(
+                            "LlmGrader::grade accepts [Session, grader, task, output, assertions, Agent]",
+                        ));
+                    }
+                    grader
+                        .grade(
+                            explicit_agent_argument(state, request, &owner, 5)
+                                .await?
+                                .as_ref(),
+                            &task,
+                            &output,
+                            &assertions,
+                        )
+                        .await
+                };
+                snapshot_value(
+                    request,
+                    serde_json::to_value(report)
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            #[cfg(feature = "framework-improve")]
+            "echo_agent::improve::loop::ImprovementLoop::new" => {
+                let owner = source_session_owner(state, request).await?;
+                if request.arguments.len() != 1 {
+                    return Err(invalid("ImprovementLoop::new accepts [Session]"));
+                }
+                let resource = register_source_resource(state, &owner, "improve", "improve.loop")?;
+                state
+                    .facade
+                    .improvement_loops
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .insert(
+                        resource.id.clone(),
+                        Arc::new(echo_agent::improve::ImprovementLoop::new()),
+                    );
+                Ok(WireValue::Handle(resource))
+            }
+            #[cfg(feature = "framework-improve")]
+            "echo_agent::improve::loop::ImprovementLoop::max_iterations"
+            | "echo_agent::improve::loop::ImprovementLoop::improvement_threshold"
+            | "echo_agent::improve::loop::ImprovementLoop::holdout_ratio" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource =
+                    source_resource_at(state, request, &owner, 1, "improve", "improve.loop")?;
+                let loop_authority = state
+                    .facade
+                    .improvement_loops
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("ImprovementLoop receiver is closed"))?;
+                if request.arguments.len() == 2 {
+                    return match request
+                        .operation
+                        .rsplit_once("::")
+                        .map(|(_, property)| property)
+                    {
+                        Some("max_iterations") => Ok(WireValue::U64(WireU64::from_u64(
+                            u64::try_from(loop_authority.max_iterations).unwrap_or(u64::MAX),
+                        ))),
+                        Some("improvement_threshold") => {
+                            Ok(WireValue::F64(loop_authority.improvement_threshold))
+                        }
+                        _ => Ok(WireValue::F64(loop_authority.holdout_ratio)),
+                    };
+                }
+                if request.arguments.len() != 3 {
+                    return Err(invalid(
+                        "ImprovementLoop property accepts [Session, loop, value?]",
+                    ));
+                }
+                let mut configured = loop_authority.as_ref().clone();
+                match request
+                    .operation
+                    .rsplit_once("::")
+                    .map(|(_, property)| property)
+                {
+                    Some("max_iterations") => {
+                        configured.max_iterations = usize_argument(request, 2)?
+                    }
+                    Some("improvement_threshold") => {
+                        let WireValue::F64(value) = request
+                            .arguments
+                            .get(2)
+                            .ok_or_else(|| invalid("improvement_threshold is required"))?
+                        else {
+                            return Err(invalid("improvement_threshold must be F64"));
+                        };
+                        if !value.is_finite() {
+                            return Err(invalid("improvement_threshold must be finite"));
+                        }
+                        configured.improvement_threshold = *value;
+                    }
+                    _ => {
+                        let WireValue::F64(value) = request
+                            .arguments
+                            .get(2)
+                            .ok_or_else(|| invalid("holdout_ratio is required"))?
+                        else {
+                            return Err(invalid("holdout_ratio must be F64"));
+                        };
+                        if !value.is_finite() {
+                            return Err(invalid("holdout_ratio must be finite"));
+                        }
+                        configured.holdout_ratio = *value;
+                    }
+                }
+                let configured_resource =
+                    register_source_resource(state, &owner, "improve", "improve.loop")?;
+                state
+                    .facade
+                    .improvement_loops
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .insert(configured_resource.id.clone(), Arc::new(configured));
+                Ok(WireValue::Handle(configured_resource))
+            }
+            #[cfg(all(feature = "framework-improve", feature = "sdk-extension-bridge"))]
+            "echo_agent::improve::loop::ImprovementLoop::run"
+            | "echo_agent::improve::loop::ImprovementLoop::run_async" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource =
+                    source_resource_at(state, request, &owner, 1, "improve", "improve.loop")?;
+                if request.arguments.len() != 5 {
+                    return Err(invalid(
+                        "ImprovementLoop::run accepts [Session, loop, cases, AgentFactory, RunStore|null]",
+                    ));
+                }
+                let loop_authority = state
+                    .facade
+                    .improvement_loops
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("ImprovementLoop receiver is closed"))?;
+                let cases = serde_json::from_value::<Vec<echo_agent::eval::EvalCase>>(
+                    json_argument(request, 2, "cases")?,
+                )
+                .map_err(|error| invalid(format!("eval cases are malformed: {error}")))?;
+                let run_store = run_store_argument(state, request, &owner, 4)?;
+                {
+                    use echo_agent::agent::subagent::AgentFactory as _;
+                    let factory = agent_factory_argument(state, request, &owner, 3)?;
+                    let result = loop_authority
+                        .run_async(
+                            &cases,
+                            || {
+                                let factory = factory.clone();
+                                async move {
+                                    match factory.create().await {
+                                        Ok(agent) => agent,
+                                        Err(error) => Box::new(FailedEvalAgent {
+                                            error: std::sync::Mutex::new(Some(error)),
+                                        })
+                                            as Box<dyn Agent>,
+                                    }
+                                }
+                            },
+                            &run_store,
+                        )
+                        .await;
+                    snapshot_value(
+                        request,
+                        serde_json::to_value(result)
+                            .map_err(|error| framework(&request.operation, error.to_string()))?,
+                    )
+                }
+            }
+            #[cfg(feature = "framework-improve")]
+            "echo_agent::improve::trajectory::TrajectorySaver::convert_run_to_sharegpt" => {
+                let _owner = source_session_owner(state, request).await?;
+                if request.arguments.len() != 2 {
+                    return Err(invalid(
+                        "TrajectorySaver::convert_run_to_sharegpt accepts [Session, run]",
+                    ));
+                }
+                let run = serde_json::from_value(json_argument(request, 1, "run")?)
+                    .map_err(|error| invalid(format!("run is malformed: {error}")))?;
+                snapshot_value(
+                    request,
+                    serde_json::to_value(
+                        echo_agent::improve::TrajectorySaver::convert_run_to_sharegpt(&run),
+                    )
+                    .map_err(|error| framework(&request.operation, error.to_string()))?,
+                )
+            }
+            #[cfg(feature = "framework-improve")]
+            "echo_agent::improve::trajectory::TrajectorySaver::new" => {
+                let owner = source_session_owner(state, request).await?;
+                if request.arguments.len() != 2 {
+                    return Err(invalid("TrajectorySaver::new accepts [Session, base_dir]"));
+                }
+                let base_dir = path_argument(request, 1)?;
+                let saver = echo_agent::improve::TrajectorySaver::new(base_dir)
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
+                let resource =
+                    register_source_resource(state, &owner, "improve", "improve.trajectory_saver")?;
+                state
+                    .facade
+                    .trajectory_savers
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .insert(resource.id.clone(), Arc::new(saver));
+                Ok(WireValue::Handle(resource))
+            }
+            #[cfg(feature = "framework-improve")]
+            "echo_agent::improve::trajectory::TrajectorySaver::save"
+            | "echo_agent::improve::trajectory::TrajectorySaver::list"
+            | "echo_agent::improve::trajectory::TrajectorySaver::stats" => {
+                let owner = source_session_owner(state, request).await?;
+                let resource = source_resource_at(
+                    state,
+                    request,
+                    &owner,
+                    1,
+                    "improve",
+                    "improve.trajectory_saver",
+                )?;
+                let saver = state
+                    .facade
+                    .trajectory_savers
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .get(&resource.id)
+                    .cloned()
+                    .ok_or_else(|| invalid("TrajectorySaver receiver is closed"))?;
+                let value =
+                    if request.operation.ends_with("::save") {
+                        if request.arguments.len() != 4 {
+                            return Err(invalid(
+                                "TrajectorySaver::save accepts [Session, saver, run, model]",
+                            ));
+                        }
+                        let run = serde_json::from_value(json_argument(request, 2, "run")?)
+                            .map_err(|error| invalid(format!("run is malformed: {error}")))?;
+                        let model = string_argument(request, 3, "model")?;
+                        serde_json::to_value(
+                            saver.save(&run, &model).await.map_err(|error| {
+                                wire::framework_error(&error, &request.operation)
+                            })?,
+                        )
+                    } else if request.operation.ends_with("::list") {
+                        if request.arguments.len() != 3 {
+                            return Err(invalid(
+                                "TrajectorySaver::list accepts [Session, saver, date_prefix|null]",
+                            ));
+                        }
+                        let prefix = match request.arguments.get(2) {
+                            Some(WireValue::Null) => None,
+                            Some(WireValue::String(value)) => Some(value.as_str()),
+                            _ => return Err(invalid("date_prefix must be String or null")),
+                        };
+                        serde_json::to_value(
+                            saver.list(prefix).await.map_err(|error| {
+                                wire::framework_error(&error, &request.operation)
+                            })?,
+                        )
+                    } else {
+                        if request.arguments.len() != 2 {
+                            return Err(invalid("TrajectorySaver::stats accepts [Session, saver]"));
+                        }
+                        serde_json::to_value(
+                            saver.stats().await.map_err(|error| {
+                                wire::framework_error(&error, &request.operation)
+                            })?,
+                        )
+                    }
+                    .map_err(|error| framework(&request.operation, error.to_string()))?;
+                snapshot_value(request, value)
+            }
+            _ => Err(framework(
+                &request.operation,
+                "source operation is canonical but has no Host authority adapter",
+            )),
+        }
+    })
 }
 
 #[cfg(test)]
@@ -8104,6 +8367,67 @@ mod tests {
                 "iterations": null,
             })
         );
+        Ok(())
+    }
+}
+
+#[cfg(all(test, feature = "framework-eval", feature = "sdk-extension-bridge"))]
+mod eval_factory_failure_regressions {
+    use super::FailedEvalAgent;
+    use echo_agent::error::{AgentError, LlmError, ReactError};
+
+    #[tokio::test]
+    async fn factory_failure_retains_canonical_cause_in_real_eval_result()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for (error, expected_violation) in [
+            (
+                ReactError::from(AgentError::Cancelled("中文🙂 factory stop".to_string())),
+                "Agent cancelled",
+            ),
+            (
+                ReactError::from(AgentError::Timeout("factory deadline".to_string())),
+                "Agent error (agent_timeout)",
+            ),
+            (
+                ReactError::from(LlmError::ApiError {
+                    status: 429,
+                    message: "rate limited".to_string(),
+                }),
+                "Agent error (llm_api)",
+            ),
+        ] {
+            let directory = tempfile::tempdir()?;
+            let runner = echo_agent::eval::EvalRunner::new(directory.path().to_path_buf());
+            let agent = FailedEvalAgent {
+                error: std::sync::Mutex::new(Some(error)),
+            };
+            let case = echo_agent::eval::EvalCase {
+                id: "factory-failure".to_string(),
+                name: "factory failure is a failed evaluation".to_string(),
+                description: String::new(),
+                domain: None,
+                task: "return result".to_string(),
+                project_fixture: None,
+                success_criteria: echo_agent::eval::SuccessCriteria::OutputContains {
+                    substring: "never produced".to_string(),
+                },
+                constraints: Default::default(),
+            };
+            let result = runner.run(&case, &agent).await;
+            assert!(!result.success);
+            assert!(
+                result
+                    .violations
+                    .iter()
+                    .any(|value| value.contains(expected_violation)),
+                "canonical factory cause lost: {:?}",
+                result.violations
+            );
+            assert!(
+                directory.path().read_dir()?.next().is_none(),
+                "a settled factory failure must release its eval workspace"
+            );
+        }
         Ok(())
     }
 }

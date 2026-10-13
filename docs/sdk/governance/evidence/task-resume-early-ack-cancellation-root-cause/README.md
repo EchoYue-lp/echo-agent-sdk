@@ -1,0 +1,13 @@
+# Task resume after early streaming ACK: read-only root cause
+
+The accepted TypeScript Task pause/resume scenario fails against immutable Host `8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10`. Its original TaskStore contains twelve commits: A is claimed, paused, resumed and re-claimed, then fails with `extension_conflict`; B and C complete, D remains pending, and the language callback log contains no A2 invocation.
+
+The [receipt](receipt.json) records Debug phases 1–3 only. [Original boundary trace](current-immutable-trace.log) and the [controlled route trace](current-client-cancel-route-corrected.log) run the same original scenario with unchanged timing and assertions. The private compiled-client copy adds only the [two observation statements](diagnostic-only-observation.patch): route deletion at callback return and route presence when a real cancel notice arrives. It changes no cancellation or terminal behavior.
+
+The matching A1 invocation has its cancellation route deleted at streaming setup ACK (`1791921372058` ms). The Host's later cancel notice arrives for that same invocation at `1791921372083` ms, and the client reports `present:false`. A1 never observes the signal or sends a cancelled terminal. Its genuine callback lease therefore remains held, and resumed A2 receives the exclusive conflict. See [timeline](timeline.json) and the exact diagnostic [TaskStore](scenarios/route-lookup/task-store.json).
+
+TypeScript, Python and Java currently remove their cancellation route in the original reverse request's finally callback, including early setup ACKs. The repair belongs to the original client invocation/stream lifecycle: retain that route through the accepted stream producer contract and release it at its existing terminal or explicit cleanup. Disabling Host exclusivity, sleeping before resume or weakening its physical completion requirement would hide the failure.
+
+The framework's synchronous dispatch cancellation branch can drop its streaming wait before physical callback settlement. A separate lane is reviewing that boundary; this archive does not claim it is closed or make it an alternative cause for the independently observed missing client route.
+
+An initial private diagnostic copy lacked relative shared-catalog dependencies; that attempt is explicitly classified as a fixture error and is not behavioral evidence. All source bytes, original snapshots, diagnostic inputs and logs are fixed by [SHA-256 manifest](SHA256SUMS.json). This lane performed no production repair and claims no after result, final SDK completion or exact-main acceptance.

@@ -1,0 +1,337 @@
+[ {
+  "mode" : "success",
+  "started" : true,
+  "cancel_observed" : false,
+  "finally" : 2,
+  "sent" : [ {
+    "channel" : "stdout",
+    "chunk" : "sandbox 中文\uD83D\uDE42\n"
+  } ],
+  "stream" : {
+    "id" : "stream-cc8f79f5-98fe-405f-a8e5-484f7dae2442",
+    "generation" : "1",
+    "kind" : "stream"
+  },
+  "command" : {
+    "kind" : {
+      "Shell" : "printf 'sandbox 中文\uD83D\uDE42\\n'"
+    },
+    "minimum_isolation" : null,
+    "working_dir" : null,
+    "env" : { },
+    "timeout" : {
+      "secs" : "30",
+      "nanos" : "0"
+    },
+    "stdin" : null
+  },
+  "invocation_id" : "invocation-13addb7bcf1f440f91c96206477302d8-0",
+  "pid" : 26214,
+  "events" : [ {
+    "kind" : "variant",
+    "value" : {
+      "type_id" : "echo_sdk::FacadeStreamEvent",
+      "variant" : "item",
+      "fields" : [ {
+        "name" : "stream",
+        "value" : {
+          "kind" : "handle",
+          "value" : {
+            "id" : "stream-cc8f79f5-98fe-405f-a8e5-484f7dae2442",
+            "generation" : "1",
+            "kind" : "stream"
+          }
+        }
+      }, {
+        "name" : "sequence",
+        "value" : {
+          "kind" : "u64",
+          "value" : "1"
+        }
+      }, {
+        "name" : "value",
+        "value" : {
+          "kind" : "map",
+          "value" : [ {
+            "key" : {
+              "kind" : "string",
+              "value" : "event_type"
+            },
+            "value" : {
+              "kind" : "string",
+              "value" : "output"
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "channel"
+            },
+            "value" : {
+              "kind" : "string",
+              "value" : "stdout"
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "chunk"
+            },
+            "value" : {
+              "kind" : "string",
+              "value" : "sandbox 中文\uD83D\uDE42\n"
+            }
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "kind" : "variant",
+    "value" : {
+      "type_id" : "echo_sdk::FacadeStreamEvent",
+      "variant" : "item",
+      "fields" : [ {
+        "name" : "stream",
+        "value" : {
+          "kind" : "handle",
+          "value" : {
+            "id" : "stream-cc8f79f5-98fe-405f-a8e5-484f7dae2442",
+            "generation" : "1",
+            "kind" : "stream"
+          }
+        }
+      }, {
+        "name" : "sequence",
+        "value" : {
+          "kind" : "u64",
+          "value" : "2"
+        }
+      }, {
+        "name" : "value",
+        "value" : {
+          "kind" : "map",
+          "value" : [ {
+            "key" : {
+              "kind" : "string",
+              "value" : "event_type"
+            },
+            "value" : {
+              "kind" : "string",
+              "value" : "complete"
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "exit_code"
+            },
+            "value" : {
+              "kind" : "u64",
+              "value" : "0"
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "stdout"
+            },
+            "value" : {
+              "kind" : "string",
+              "value" : "sandbox 中文\uD83D\uDE42\n"
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "stderr"
+            },
+            "value" : {
+              "kind" : "string",
+              "value" : ""
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "duration"
+            },
+            "value" : {
+              "kind" : "map",
+              "value" : [ {
+                "key" : {
+                  "kind" : "string",
+                  "value" : "secs"
+                },
+                "value" : {
+                  "kind" : "u64",
+                  "value" : "0"
+                }
+              }, {
+                "key" : {
+                  "kind" : "string",
+                  "value" : "nanos"
+                },
+                "value" : {
+                  "kind" : "u64",
+                  "value" : "18044875"
+                }
+              } ]
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "sandbox_type"
+            },
+            "value" : {
+              "kind" : "string",
+              "value" : "owned-native-fixture"
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "timed_out"
+            },
+            "value" : {
+              "kind" : "bool",
+              "value" : false
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "cancelled"
+            },
+            "value" : {
+              "kind" : "bool",
+              "value" : false
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "output_truncated"
+            },
+            "value" : {
+              "kind" : "bool",
+              "value" : false
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "stdout_bytes"
+            },
+            "value" : {
+              "kind" : "u64",
+              "value" : "19"
+            }
+          }, {
+            "key" : {
+              "kind" : "string",
+              "value" : "stderr_bytes"
+            },
+            "value" : {
+              "kind" : "u64",
+              "value" : "0"
+            }
+          } ]
+        }
+      } ]
+    }
+  }, {
+    "kind" : "variant",
+    "value" : {
+      "type_id" : "echo_sdk::FacadeStreamEvent",
+      "variant" : "complete",
+      "fields" : [ {
+        "name" : "stream",
+        "value" : {
+          "kind" : "handle",
+          "value" : {
+            "id" : "stream-cc8f79f5-98fe-405f-a8e5-484f7dae2442",
+            "generation" : "1",
+            "kind" : "stream"
+          }
+        }
+      }, {
+        "name" : "sequence",
+        "value" : {
+          "kind" : "u64",
+          "value" : "3"
+        }
+      } ]
+    }
+  } ],
+  "exit_code" : 0,
+  "pid_alive" : false,
+  "repeated_close" : false,
+  "protected" : {
+    "sentinel.txt" : "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+    "fixture.db" : "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+    "src/main.py" : "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+  },
+  "cleanup_calls" : 1
+}, {
+  "mode" : "cancel",
+  "started" : true,
+  "cancel_observed" : false,
+  "finally" : 2,
+  "sent" : [ ],
+  "stream" : {
+    "id" : "stream-fb5d3ccb-0c4a-4995-b678-facf6266218f",
+    "generation" : "1",
+    "kind" : "stream"
+  },
+  "command" : {
+    "kind" : {
+      "Shell" : "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-sandbox-9677924905275280060/tail.txt"
+    },
+    "minimum_isolation" : null,
+    "working_dir" : null,
+    "env" : { },
+    "timeout" : {
+      "secs" : "30",
+      "nanos" : "0"
+    },
+    "stdin" : null
+  },
+  "invocation_id" : "invocation-13addb7bcf1f440f91c96206477302d8-2",
+  "pid" : 26215,
+  "close_result" : true,
+  "exit_code" : 143,
+  "pid_alive" : false,
+  "repeated_close" : false,
+  "protected" : {
+    "sentinel.txt" : "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+    "fixture.db" : "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+    "src/main.py" : "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+  },
+  "cleanup_calls" : 1
+}, {
+  "mode" : "close",
+  "started" : true,
+  "cancel_observed" : false,
+  "finally" : 2,
+  "sent" : [ ],
+  "stream" : {
+    "id" : "stream-a7449d0d-b609-4675-aed2-56b46fc56d99",
+    "generation" : "1",
+    "kind" : "stream"
+  },
+  "command" : {
+    "kind" : {
+      "Shell" : "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-sandbox-9677924905275280060/tail.txt"
+    },
+    "minimum_isolation" : null,
+    "working_dir" : null,
+    "env" : { },
+    "timeout" : {
+      "secs" : "30",
+      "nanos" : "0"
+    },
+    "stdin" : null
+  },
+  "invocation_id" : "invocation-13addb7bcf1f440f91c96206477302d8-4",
+  "pid" : 26271,
+  "exit_code" : 143,
+  "close_result" : false,
+  "pid_alive" : false,
+  "repeated_close" : false,
+  "protected" : {
+    "sentinel.txt" : "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+    "fixture.db" : "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+    "src/main.py" : "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+  },
+  "cleanup_calls" : 1
+} ]

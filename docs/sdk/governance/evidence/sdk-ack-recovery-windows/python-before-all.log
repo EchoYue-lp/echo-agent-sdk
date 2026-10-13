@@ -1,0 +1,185 @@
+.............FFFF                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_retention_replay_bridge_requires_successful_official_write ________
+
+    @pytest.mark.asyncio
+    async def test_retention_replay_bridge_requires_successful_official_write():
+        from echo_agent_sdk.client import RunHandle
+        client, stream, feed, _ = fixture()
+        await client.connection.close()
+        transport = ReplayTransport(recovery_page(stream))
+        client.connection = ClientSideConnection(_Callbacks({}, 8), transport)
+        client._replay_ranges.clear()
+        feed.replay_terminal_sequence = None
+        try:
+            run = RunHandle(client, WireHandle("run", "1", "run"), stream)
+            assert (await run.replay("1"))["gap"]["snapshot_watermark"] == "5"
+            assert feed.last_sequence == 1
+            # The retention gap connects to snapshot 5, not any absent interior fact.
+            unknown = asyncio.create_task(ack(client, stream, 3))
+            (await transport.entered.get()).set_result(None)
+            await unknown
+            assert stream not in client._event_cursors
+            pending = asyncio.create_task(ack(client, stream, 6))
+            send = await transport.entered.get()
+            assert feed.last_sequence == 1
+            assert stream not in client._event_cursors
+            send.set_result(None)
+            await pending
+>           assert client._event_cursors[stream] == 6
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: WireHandle(id='stream', generation='1', kind='stream')
+
+tests/test_ack_submission.py:325: KeyError
+___ test_pending_replay_ack_allows_contiguous_gap_without_consumption[False] ___
+
+success = False
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("success", [False, True])
+    async def test_pending_replay_ack_allows_contiguous_gap_without_consumption(success):
+        client, stream, feed, transport = fixture()
+        feed.replay_terminal_sequence = None
+        pending = asyncio.create_task(ack(client, stream, 10))
+        send = await transport.entered.get()
+        gap = {"stream": stream.to_dict(), "gap": {
+            "from_sequence": "11", "to_sequence": "12", "snapshot_watermark": "12",
+            "reason": "oversized event"}}
+        try:
+>           assert feed.accept_gap(gap)
+                   ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ack_submission.py:345: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = _EventFeed(queue=<echo_agent_sdk.client._AsyncQueue object at 0x10718ff50>, handle=WireHandle(id='stream', generation=... last_sequence=10, last_live_sequence=1, last_gap_watermark=0, replay_terminal_sequence=None, pending_ack_sequences={})
+value = {'stream': {'id': 'stream', 'generation': '1', 'kind': 'stream'}, 'gap': {'from_sequence': '11', 'to_sequence': '12', 'snapshot_watermark': '12', 'reason': 'oversized event'}}
+
+    def accept_gap(self, value: Mapping[str, Any]) -> bool:
+        stream = _parse_event_stream(value)
+        self.bind(stream)
+        gap = value.get("gap")
+        if not isinstance(gap, Mapping):
+            raise EchoAgentError(
+                "serialization_violation", "gap notification is missing its gap"
+            )
+        from_sequence = _parse_positive_sequence(
+            gap.get("from_sequence"), "gap from_sequence"
+        )
+        to_sequence = _parse_positive_sequence(
+            gap.get("to_sequence"), "gap to_sequence"
+        )
+        watermark = _parse_positive_sequence(
+            gap.get("snapshot_watermark"), "gap snapshot_watermark"
+        )
+        reason = gap.get("reason")
+        if (
+            not isinstance(reason, str)
+            or not reason.strip()
+            or to_sequence < from_sequence
+            or watermark < to_sequence
+            or watermark < self.last_sequence
+            or (
+                watermark > self.last_sequence
+                and self.last_sequence > 0
+                and from_sequence != self.last_sequence + 1
+            )
+        ):
+>           raise EchoAgentError(
+                "serialization_violation", "gap sequence range is malformed"
+            )
+E           echo_agent_sdk.errors.EchoAgentError: gap sequence range is malformed
+
+/tmp/sdk-ack-recovery-before/sdks/python/src/echo_agent_sdk/client.py:2805: EchoAgentError
+___ test_pending_replay_ack_allows_contiguous_gap_without_consumption[True] ____
+
+success = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("success", [False, True])
+    async def test_pending_replay_ack_allows_contiguous_gap_without_consumption(success):
+        client, stream, feed, transport = fixture()
+        feed.replay_terminal_sequence = None
+        pending = asyncio.create_task(ack(client, stream, 10))
+        send = await transport.entered.get()
+        gap = {"stream": stream.to_dict(), "gap": {
+            "from_sequence": "11", "to_sequence": "12", "snapshot_watermark": "12",
+            "reason": "oversized event"}}
+        try:
+>           assert feed.accept_gap(gap)
+                   ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ack_submission.py:345: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = _EventFeed(queue=<echo_agent_sdk.client._AsyncQueue object at 0x107191e50>, handle=WireHandle(id='stream', generation=... last_sequence=10, last_live_sequence=1, last_gap_watermark=0, replay_terminal_sequence=None, pending_ack_sequences={})
+value = {'stream': {'id': 'stream', 'generation': '1', 'kind': 'stream'}, 'gap': {'from_sequence': '11', 'to_sequence': '12', 'snapshot_watermark': '12', 'reason': 'oversized event'}}
+
+    def accept_gap(self, value: Mapping[str, Any]) -> bool:
+        stream = _parse_event_stream(value)
+        self.bind(stream)
+        gap = value.get("gap")
+        if not isinstance(gap, Mapping):
+            raise EchoAgentError(
+                "serialization_violation", "gap notification is missing its gap"
+            )
+        from_sequence = _parse_positive_sequence(
+            gap.get("from_sequence"), "gap from_sequence"
+        )
+        to_sequence = _parse_positive_sequence(
+            gap.get("to_sequence"), "gap to_sequence"
+        )
+        watermark = _parse_positive_sequence(
+            gap.get("snapshot_watermark"), "gap snapshot_watermark"
+        )
+        reason = gap.get("reason")
+        if (
+            not isinstance(reason, str)
+            or not reason.strip()
+            or to_sequence < from_sequence
+            or watermark < to_sequence
+            or watermark < self.last_sequence
+            or (
+                watermark > self.last_sequence
+                and self.last_sequence > 0
+                and from_sequence != self.last_sequence + 1
+            )
+        ):
+>           raise EchoAgentError(
+                "serialization_violation", "gap sequence range is malformed"
+            )
+E           echo_agent_sdk.errors.EchoAgentError: gap sequence range is malformed
+
+/tmp/sdk-ack-recovery-before/sdks/python/src/echo_agent_sdk/client.py:2805: EchoAgentError
+______ test_gap_plus_empty_after_gap_page_cannot_authorize_missing_cursor ______
+
+    @pytest.mark.asyncio
+    async def test_gap_plus_empty_after_gap_page_cannot_authorize_missing_cursor():
+        from echo_agent_sdk.client import RunHandle
+        client, stream, feed, _ = fixture()
+        await client.connection.close()
+        response = {"requested_after_sequence": "10", "events": [],
+                    "next_cursor": {"stream_id": stream.id, "last_processed_sequence": "10"}}
+        transport = ReplayTransport(response)
+        client.connection = ClientSideConnection(_Callbacks({}, 8), transport)
+        client._replay_ranges.clear()
+        feed.replay_terminal_sequence = None
+        feed.accept_gap({"stream": stream.to_dict(), "gap": {
+            "from_sequence": "2", "to_sequence": "12", "snapshot_watermark": "12",
+            "reason": "pause"}})
+        try:
+            await RunHandle(client, WireHandle("run", "1", "run"), stream).replay("10")
+            unknown = asyncio.create_task(ack(client, stream, 10))
+            (await transport.entered.get()).set_result(None)
+            await unknown
+>           assert stream not in client._event_cursors
+E           AssertionError: assert WireHandle(id='stream', generation='1', kind='stream') not in {WireHandle(id='stream', generation='1', kind='stream'): 10}
+E            +  where {WireHandle(id='stream', generation='1', kind='stream'): 10} = <echo_agent_sdk.client.EchoAgentClient object at 0x1071961e0>._event_cursors
+
+tests/test_ack_submission.py:390: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_ack_submission.py::test_retention_replay_bridge_requires_successful_official_write
+FAILED tests/test_ack_submission.py::test_pending_replay_ack_allows_contiguous_gap_without_consumption[False]
+FAILED tests/test_ack_submission.py::test_pending_replay_ack_allows_contiguous_gap_without_consumption[True]
+FAILED tests/test_ack_submission.py::test_gap_plus_empty_after_gap_page_cannot_authorize_missing_cursor
+4 failed, 13 passed in 0.98s

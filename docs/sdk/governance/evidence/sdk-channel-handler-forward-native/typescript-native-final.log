@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: Channel forward native single/stream/reply, typed fidelity, explicit failures and metadata
+ok 1 - Channel forward native single/stream/reply, typed fidelity, explicit failures and metadata
+  ---
+  duration_ms: 5297.45675
+  type: 'test'
+  ...
+# Subtest: Channel forward exact Session/manager/stream generation and batch binding before effects
+ok 2 - Channel forward exact Session/manager/stream generation and batch binding before effects
+  ---
+  duration_ms: 5292.185333
+  type: 'test'
+  ...
+# Subtest: Channel forward rejects unstarted/starting/start rollback before native handler
+ok 3 - Channel forward rejects unstarted/starting/start rollback before native handler
+  ---
+  duration_ms: 5276.987042
+  type: 'test'
+  ...
+# Subtest: Channel stream cancellation waits actual callback finally while independent work survives
+ok 4 - Channel stream cancellation waits actual callback finally while independent work survives
+  ---
+  duration_ms: 5262.479584
+  type: 'test'
+  ...
+# Subtest: Channel unconsumed full buffer stop cancels before write permit
+ok 5 - Channel unconsumed full buffer stop cancels before write permit
+  ---
+  duration_ms: 5262.674417
+  type: 'test'
+  ...
+# Subtest: Channel unconsumed full buffer resource cancels before write permit
+ok 6 - Channel unconsumed full buffer resource cancels before write permit
+  ---
+  duration_ms: 5235.134125
+  type: 'test'
+  ...
+# Subtest: Channel unconsumed full buffer session cancels before write permit
+ok 7 - Channel unconsumed full buffer session cancels before write permit
+  ---
+  duration_ms: 5335.217667
+  type: 'test'
+  ...
+# Subtest: Channel resource close retains real cancelled callback and failed stop retry owner
+ok 8 - Channel resource close retains real cancelled callback and failed stop retry owner
+  ---
+  duration_ms: 5260.206458
+  type: 'test'
+  ...
+# Subtest: Channel forward wrong family/digest/argument shape reject before callback
+ok 9 - Channel forward wrong family/digest/argument shape reject before callback
+  ---
+  duration_ms: 5272.87575
+  type: 'test'
+  ...
+# Subtest: Channel genuine transport disconnect cancels callback and waits actual local finally
+ok 10 - Channel genuine transport disconnect cancels callback and waits actual local finally
+  ---
+  duration_ms: 5247.275083
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 53295.449667

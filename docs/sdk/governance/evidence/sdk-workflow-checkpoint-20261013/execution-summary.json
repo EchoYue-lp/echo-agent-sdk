@@ -1,0 +1,32 @@
+{
+  "accepted_operations": 24,
+  "exercised_operations": [
+    "workflow.graph.branch",
+    "workflow.graph.build",
+    "workflow.graph.list_checkpoints",
+    "workflow.graph.list_checkpoints_by_graph",
+    "workflow.graph.load_checkpoint",
+    "workflow.graph.restore",
+    "workflow.graph.resume",
+    "workflow.graph.resume_exact",
+    "workflow.graph.resume_with_state",
+    "workflow.graph.run",
+    "workflow.graph.run_until_interrupt",
+    "workflow.graph.tag_checkpoint",
+    "workflow.state.get",
+    "workflow.state.keys",
+    "workflow.state.new",
+    "workflow.state.set",
+    "workflow.state.snapshot"
+  ],
+  "exercised_operation_count": 17,
+  "scenario_rows": 48,
+  "workflow_calls": 47,
+  "session_close_calls": 1,
+  "expected_rpc_errors": 11,
+  "normalized_all_three_equal": true,
+  "proof_path": "/tmp/sdk-workflow-candidate-fixture/workflow-red-green-proof.json",
+  "proof_sha256": "9c092c49c7ca823e9dfc6835ea7911b83891c2dce61b3a4e8111edc0b6615359",
+  "report_sha256": "1ab800b406dd8e135405dfd70100ff4734a7bfbe33d2325b856657a8289a2d85",
+  "non_claims": "7 accepted operations and restart/publishedpin/main not covered"
+}

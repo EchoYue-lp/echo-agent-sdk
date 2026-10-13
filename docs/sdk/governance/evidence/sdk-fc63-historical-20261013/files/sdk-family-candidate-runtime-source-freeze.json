@@ -1,0 +1,1233 @@
+{
+  "captured_at_utc": "2026-10-13T04:09:38.091128+00:00",
+  "host_proof": {
+    "binary": "/tmp/echo-sdk-governance-family-handle-host",
+    "sha256": "fc63c0815b319424ea2c64a94d3fc6a365a3dff6b70882a23b9edd1266d2f6eb",
+    "digests": {
+      "contract_digest": "sha256:df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61",
+      "source_contract_digest": "sha256:ce80aa3a7793d4460e082772eb24fa228734d65f98ec997af2087be27b8e015e"
+    },
+    "Host_full_local_results": [
+      [
+        "136",
+        "0",
+        "0"
+      ],
+      [
+        "31",
+        "0",
+        "0"
+      ],
+      [
+        "34",
+        "0",
+        "0"
+      ],
+      [
+        "12",
+        "0",
+        "0"
+      ]
+    ],
+    "log": "/tmp/sdk-final-host-local-candidate.log",
+    "log_sha256": "9cc8e5d25a399b1d10611548c31a2f4fe6fd6ac96d59b3a79a2ef9f083eb73dd",
+    "classification": "temporary combined framework canonical source; not final published-pin/main evidence",
+    "source_files": {
+      "echo-sdk-host/src/core_profile/facade/mod.rs": "39144d4615852e06027a95dbb9228457a65ffa6e6b7db458a56d14b6e076d260",
+      "echo-sdk-host/src/core_profile/facade/source_operations.rs": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73",
+      "echo-sdk-host/src/core_profile/facade/integrations.rs": "0175774dce4d6eadc7ac7f640da6da6711f53880f9ebaa8940ef85b416ddce85",
+      "echo-sdk-host/src/core_profile/handles.rs": "e155ffd659d468840679855d17ecc0df96213500de2c506e52214781e9b75d39",
+      "sdks/python/src/echo_agent_sdk/client.py": "61e61202c914b111951714de559c4d3efe74bfce29c4e62f14b292142f8ed021"
+    }
+  },
+  "language_proof_sha256": "70e3c3504c5172824e61dd3e296421e14b12d8536a99070813a1772f084cd195",
+  "lsp_comparison": {
+    "matched": true,
+    "cases": 29,
+    "lifecycle": 1,
+    "text_document_calls_including_post_error_continuation": 44,
+    "results_sha256": "ece179c4d1c1480f3cdf384a05dface9fb1561a7c605b38335d756d6092dadba",
+    "request_trace_sha256": "867d13100e4b6eb05ceda666f8082aca7681dd23fcfe00d2f59dba9a00d7453c",
+    "roots": {
+      "typescript": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-lsp-1f9VqP",
+      "python": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-lsp-r2w6jhlp",
+      "java": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-8575209733529805165"
+    },
+    "log_sha256": {
+      "/tmp/sdk-lsp-typescript-green.log": "d2af0f6efd9f20182f2d55dea1c48d94119c9b6edce603fb1e167729e97ba155",
+      "/tmp/sdk-lsp-python-green.log": "cfaa3ba95bcd6486c09356b55b8c17a4883c7a1b6b7059066749ecf3c2a47028",
+      "/tmp/sdk-lsp-java-green.log": "278a67c8697d64cd787abbefe7c6f2d4d09506d178428b01bb53149d1b0bb951"
+    },
+    "host": "/tmp/echo-sdk-governance-family-handle-host",
+    "host_sha256": "fc63c0815b319424ea2c64a94d3fc6a365a3dff6b70882a23b9edd1266d2f6eb"
+  },
+  "source_files": {
+    "echo-sdk-host/tests/core_profile_e2e.rs": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+    "echo-sdk-host/src/lib.rs": "182240a61b6e062ae885fec7fa9b6ad09b8cdad6a43440f710435adcf64de64e",
+    "echo-sdk-host/tests/extension_bridge_e2e.rs": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+    "sdks/typescript/test/gap-ack-host.test.js": "9dc38ace8c1b92e6fed4f250765d25cd1f58f374b13ba42b93480f4b59d5da50",
+    "sdks/python/tests/test_gap_ack_host.py": "22feda11c405baf3cd19dce3cee0fcd82af526d59962e051566da35e1da21629",
+    "sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java": "97647a1b983d097fa2e562af0c2644374f9ed5b48dae59bdfce767ae5b32021d",
+    "sdks/typescript/test/host.test.js": "796aadc7a3449b6bd31d54951b811e0f263a79745dc94e6f0cdd35f70702cd17",
+    "echo-sdk-host/src/core_profile/wire.rs": "47cafb0e9b836e007adad2ac1e805e6ad7ef4f7ff85dc30dac1afbde3ca082c5",
+    "sdks/typescript/test/wire.test.js": "aa78e2fd30c772f41679e7de0b82b935ddc110fcb3d299c7d6f2ba3d0ec476db",
+    "sdks/python/tests/test_protocol_integrity.py": "5a5a94e2ff80e4b92bffeb945219d03d46e6c2067f04322aed1667ca5e49b79c",
+    "sdks/java/src/test/java/com/echoagent/sdk/ProtocolIntegrityTest.java": "0535003e1d9b433475081fd40f71233fe8256f8cb88d57635105773f0d677947",
+    "sdks/typescript/test/intrinsic-tool-values.test.js": "c9f2d5b8b855d6efa0dcb5a99102b27347d63700776bf204639776f03254935b",
+    "sdks/typescript/test/helpers.test.js": "3cd4d401c8688ad477df39670ad97e9a2e7305ad76b42e8359adb03c464d374a",
+    "sdks/java/src/test/java/com/echoagent/sdk/IntrinsicToolValueTest.java": "ce694baaaa876bbe18c94783c3bf4bb61cb49e0114ef80444b4a064506036ac9",
+    "echo-sdk-host/src/core_profile/facade/memory.rs": "1532ab8b88dc82af92f15ea334ea1cbe64cf7c8aa7248f9315b3387eeda4fa0f",
+    "echo-sdk-host/src/core_profile/facade/state_delivery.rs": "21ce0c4f56c85691aa461d22a3e2b6837a0e335073c8a136bda916597201c728",
+    "sdks/typescript/test/managed-host.test.js": "03d90c67ce4b47f38e11aa8aee44dbd7d11a0fb7b525a00efa02bb403148fa7b",
+    "echo-sdk-host/src/core_profile/facade/observability.rs": "2875aafb87d6543a43135c635e065899f8b58c6325b6a9497e5d07903e1cf8e9",
+    "echo-sdk-host/src/core_profile/facade/source_operations.rs": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73",
+    "sdks/typescript/test/lsp-host.test.js": "013b60857cee38d511f554e3c514b7c3dcb25232ffe70c3fec13d394ced31d13",
+    "sdks/python/tests/test_lsp_host.py": "e0bf74be9fb2c26cfe5efd5cf433adc2676cfed0636a4ecaccb8a560d84a7c40",
+    "sdks/java/src/test/java/com/echoagent/sdk/LspHostTest.java": "f10562ebf0a0f59223cd9de50ff0b80ca12dbe03d99410c9771f06b5bfe534e1",
+    "echo-sdk-host/src/core_profile/facade/telemetry.rs": "1cb40ac5ff8e6a76b6c9d57f75ecd807612f9629261fdaa47d34433215c04705",
+    "echo-sdk-host/src/core_profile/facade/tools.rs": "f1aed97fde97185218d8babdedf914da8564b9a8c9be05d721f17357dd96c7c1",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "39144d4615852e06027a95dbb9228457a65ffa6e6b7db458a56d14b6e076d260",
+    "echo-sdk-host/src/core_profile/events.rs": "e4ae808abb8f916a7318faec3643c5a56cd1bbd143e9e88cb447e0cf7127f7de"
+  },
+  "selected_test_bodies": {
+    "echo-sdk-host/tests/core_profile_e2e.rs#valid_hello_completes_full_core_lifecycle": {
+      "function_body_sha256": "23c344c7e25d596ee5a3f6395c23d6cb5e4dadd6f9975a80086dac4502f89976",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert!(advertisement.validate_shape().is_empty());",
+        "assert!(advertisement.declares(ExtensionCapability::Runs));",
+        "assert_eq!(agent, again);",
+        "assert_eq!(describe.snapshot.model_name, \"fixture-model\");",
+        "assert!(!session.acp_session_id.is_empty());",
+        "assert_eq!(permission_mode, serde_json::json!(\"default\"));",
+        "assert_eq!(decoded_facade_response(permission_update).map_err(|error| {",
+        "assert_eq!(permission_check.get(\"decision\"), Some(&serde_json::json!(\"deny\")));",
+        "assert_eq!(decoded_facade_response(record_approval).map_err(|error| {",
+        "assert_eq!(decoded_facade_response(is_approved).map_err(|error| {",
+        "assert_eq!(started.run.kind, HandleKind::Run);",
+        "assert_eq!(started.stream.kind, HandleKind::Stream);",
+        "assert_eq!(terminals, 1, \"exactly one terminal event\");",
+        "assert!(all_events",
+        "assert!(wait.settled, \"run must settle\");",
+        "assert_eq!(terminal_status, \"completed\");",
+        "assert!(wait.receipt.is_some());",
+        "assert_eq!(get.status, RunStatus::Completed);",
+        "assert_eq!(get.stream.as_ref().map(|s| s.id.clone()), Some(started.stream.id.clone()));",
+        "assert!(!replay.events.is_empty(), \"journal replay returns events\");",
+        "assert!(",
+        "assert!(gaps.lock().expect(\"gaps lock\").is_empty());",
+        "assert!(closed_session.released);",
+        "assert!(closed_agent.released);"
+      ]
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#agent_cascade_preserves_same_named_other_manager_and_releases_resources": {
+      "function_body_sha256": "2172c7d867a92a592b1c5febf2243ec0cbf45948726a15ca0c05ea3c223fd23e",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": [
+        "assert_eq!(alias, live_handle);",
+        "assert!(closed.released);",
+        "assert!(!again.released);",
+        "assert!(!session_closed.released);",
+        "assert!(",
+        "assert!(status.success());"
+      ]
+    },
+    "echo-sdk-host/src/lib.rs#manual_close_keeps_active_run_actor_until_cleanup_and_receipt_settle": {
+      "function_body_sha256": "2c02a6815aa9768d892fd4c0a9b4e6148de822f64257da2adae8891d146fb95b",
+      "file_sha256": "182240a61b6e062ae885fec7fa9b6ad09b8cdad6a43440f710435adcf64de64e",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#extended_standard_prompt_bridges_shared_core_handles": {
+      "function_body_sha256": "fac5b5092ff85fb9c8f7eb6a594e53b64addda195bab46dcf04dddefcdecae83",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(session_handle.kind, HandleKind::Session);",
+        "assert_eq!(run.kind, HandleKind::Run);",
+        "assert_eq!(stream.kind, HandleKind::Stream);",
+        "assert_eq!(get.status, RunStatus::Completed);",
+        "assert!(!replay.events.is_empty());"
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#explicit_session_create_reserves_persisted_turn_identity_before_new_run": {
+      "function_body_sha256": "79852fe04e8c5467accece6e48805eabe3e84fa02d3b431bce35c4d46a4b45ac",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#session_load_reserves_persisted_turn_identity_before_new_run": {
+      "function_body_sha256": "e111ae41283517257c4772e621a79b87aef4fa24936e7a75215422847433b52e",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#malformed_recovered_identity_rejects_actual_method_without_handle_publication": {
+      "function_body_sha256": "6fc7b73594709eab8d22225d61179f6915d5c1688651ff871200d6ef012fb9b3",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(",
+        "assert!(typed.message.contains(\"Recovered ACP Turn identity\"));",
+        "assert_eq!(typed.operation.as_deref(), Some(\"_echo_agent/session/load\"));",
+        "assert!(typed.message.contains(\"Recovered ACP Turn identity\"));",
+        "assert_eq!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#killed_active_run_is_interrupted_never_completed": {
+      "function_body_sha256": "92028324cf7d4e9990af7f058ee18d1ef56cf4828bc27ce9a311721b7c8b33ef",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert!(interrupted.terminal.is_none());",
+        "assert_eq!(get.status, RunStatus::Interrupted);",
+        "assert!(get.terminal.is_none());",
+        "assert!(get.receipt.is_none());",
+        "assert_eq!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#turn_receipt_source_operations_project_live_and_recovered": {
+      "function_body_sha256": "5f5cce3d8df3766584b923792fa9be85a701c713fcc9fe832e778704b24394eb",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert!(matches!(",
+        "assert_eq!(pending_outcome, echo_sdk_protocol::scalar::WireValue::Null);",
+        "assert!(wait.settled);",
+        "assert_eq!(outcome_status, serde_json::json!(\"completed\"));",
+        "assert_eq!(status, serde_json::json!(\"completed\"));",
+        "assert!(",
+        "assert!(",
+        "assert_eq!(invalid_arguments.code, ExtensionErrorCode::InvalidValue);",
+        "assert_eq!(invalid_receiver.code, ExtensionErrorCode::InvalidValue);",
+        "assert_eq!(outcome_status, serde_json::json!(\"completed\"));",
+        "assert_eq!(status, serde_json::json!(\"completed\"));",
+        "assert!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_terminal": {
+      "function_body_sha256": "6aaf080680d9aff074979870814941189f5c06cd98cdcab980772b469c4fe7ea",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(",
+        "assert_eq!(",
+        "assert!(",
+        "assert!(unregister(&connection, &sandbox).await?);",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#ack_window_snapshot_ack_resumes_strictly_after_watermark": {
+      "function_body_sha256": "35ab10862c488f3d8fa093b201a7f1bac28ee8e2e276eb9f85e903fddc931e15",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#consumed_single_replay_page_ack_resumes_live_after_page_cursor": {
+      "function_body_sha256": "adf7cf63e9b26e05adf5d2aa2a894a62697ed066198bb074a3223d41390a7884",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#consumed_multiple_replay_page_ack_resumes_live_after_page_cursor": {
+      "function_body_sha256": "629ff2f9c6809e64eb61d2c80720ae4b15b6ad78d559e6ea6d57b33d8584740f",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#task_rpc_shares_the_session_task_authority": {
+      "function_body_sha256": "743dd1b80bcd4e1cd19fd56707fb79e8bad771f767d79b244616455fc8f7e7da",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(created.tasks.len(), 2);",
+        "assert_eq!(created.tasks[0].kind, HandleKind::PlanTask);",
+        "assert_ne!(created.tasks[0].id, \"plan\");",
+        "assert!(revision_one >= 1);",
+        "assert_eq!(listed.tasks.len(), 2);",
+        "assert!(listed.tasks.iter().all(|summary| {",
+        "assert!(revision_two > revision_one);",
+        "assert!(",
+        "assert_eq!(",
+        "assert!(matches!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#task_pause_is_exact_and_resume_reuses_canonical_dependency_result": {
+      "function_body_sha256": "e690a401124ebc991bc318f4e458c4f1e99dcb5c13821f85794e353a2c40f034",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#task_cancel_is_exact_and_pending_sibling_continues": {
+      "function_body_sha256": "209452244ebb6ec689ddf029752de67e1f6e3735b35768a16865d90eea287217",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#crud_only_task_store_rejects_execute_before_runtime_side_effects": {
+      "function_body_sha256": "4169ab96396e7ebc5a469eac3f13141859a7361addbe108833db6e2e4299c065",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert_eq!(typed.code, ExtensionErrorCode::FeatureUnavailable);",
+        "assert!(listed.tasks.iter().all(|task| matches!(task.status, WireTaskStatus::Pending)));",
+        "assert_eq!(backend.execution_commits.load(Ordering::Acquire), 0, \"capability preflight must not probe a runtime mutation\");",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#revisioned_task_extension_is_shared_by_crud_and_execution": {
+      "function_body_sha256": "2c0ffc22895ca68e59de3d8a308179ff407125c0f7f1e699051c59858c7474f8",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert_eq!(created.tasks.len(), 2);",
+        "assert_eq!(backend.relation_commits.load(Ordering::Acquire), 1);",
+        "assert!(backend.execution_commits.load(Ordering::Acquire) >= 4, \"claim and terminal writes must use the registered backend\");",
+        "assert_eq!(graphs.len(), 1);",
+        "assert_eq!(graph.snapshot.revision.to_u64(), Some(1), \"runtime execution CAS must not bump relation revision\");",
+        "assert!(graph.snapshot.tasks.iter().all(|task| matches!(task.execution.status, WireTaskStatus::Completed) && task.execution.result.is_some()), \"Completed must carry its durable result in the backend transaction\");",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#subagent_short_await_preserves_result_and_dispatch_receipt": {
+      "function_body_sha256": "71f97d047df595d61e88e0acbea57645570ef0396fe840f8e6d6cf539f639feb",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(",
+        "assert!(",
+        "assert!(timed.result.is_none());",
+        "assert!(",
+        "assert!(result.result.is_some());",
+        "assert_eq!(result, repeated, \"await result must remain repeatable\");",
+        "assert!(",
+        "assert!(",
+        "assert_eq!(",
+        "assert_eq!(typed.code, ExtensionErrorCode::InvalidValue);",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#subagent_family_dispatches_and_controls_live_attempts": {
+      "function_body_sha256": "1f5ebe592aaece11cc5481a5ed995730676b93fba328a324fac57094e46aa37f",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert!(",
+        "assert!(",
+        "Ok(response) => assert!(",
+        "assert_eq!(typed.code, ExtensionErrorCode::FrameworkError);",
+        "assert!(cancelled.accepted, \"cancel must be accepted\");",
+        "assert_eq!(cancelled_error.code, ExtensionErrorCode::Cancelled);",
+        "assert!(",
+        "assert_eq!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#same_factory_constructs_independent_instances_across_concurrent_sessions": {
+      "function_body_sha256": "01ee3d7fc5ccf73d926d6f9b4ebebdec003a022cf7b4c90f6680586e6cdf31ca",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(!data.to_string().contains(\"extension_conflict\"), \"independent factory creations must not share the child execution lock\");",
+        "assert_eq!(created.len(), 2); assert_eq!(created.iter().collect::<std::collections::BTreeSet<_>>().len(), 2);",
+        "assert_eq!(closed.iter().collect::<std::collections::BTreeSet<_>>(), created.iter().collect::<std::collections::BTreeSet<_>>());",
+        "assert!(unregister(&connection, &factory).await?);",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#tool_bridge_round_trip_with_callbacks_intervention_and_hook": {
+      "function_body_sha256": "734145f1c470c8fd1ce8fb22d6746fa8a1cb3ba20f7ac0e5e1e532f2cb29d06c",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(capability.declares(ExtensionCapability::ExtensionBridge));",
+        "assert!(",
+        "assert_eq!(again.id, tool.id);",
+        "assert!(conflict.is_err(), \"descriptor conflict must fail closed\");",
+        "assert!(",
+        "assert_eq!(prompt.stop_reason, v1::StopReason::EndTurn);",
+        "assert!(unregister(&connection, &tool).await?);",
+        "assert!(!unregister(&connection, &tool).await?);",
+        "assert!(unregister(&connection, &callback).await?);",
+        "assert!(unregister(&connection, &intervention).await?);",
+        "assert!(unregister(&connection, &hook).await?);",
+        "assert!(stale_result.is_err());",
+        "assert!(outcome.is_ok(), \"scenario failed: {outcome:?}\");",
+        "assert!(",
+        "assert!(",
+        "assert!(",
+        "assert!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#managed_persistence_deadline_and_lost_ack_preserve_commit_authority": {
+      "function_body_sha256": "36da500716b0b2ea323f6434de746bb41db49d37706fc9c2bad97fff6de5c4bc",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(terminal.terminal.is_some());",
+        "assert_eq!(",
+        "assert!(",
+        "assert!(",
+        "assert!(deferred_unknown, \"post-dispatch deadline must preserve a typed deferred effect with its committed operation identity\");",
+        "assert!(",
+        "assert!(",
+        "assert!(receipt_count > 0);",
+        "assert_eq!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt": {
+      "function_body_sha256": "0141ed0a0eace3dfbe7fa7ee6a552b410ec471cc48374e6b220ba54173515eab",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(",
+        "assert!(!committed_receipts.is_empty());",
+        "assert!(",
+        "assert!(",
+        "assert!(",
+        "assert!(",
+        "assert_eq!(receipts.get(&operation), Some(&original));"
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#cancelled_initial_stream_response_releases_session_callback_owner": {
+      "function_body_sha256": "e8a2ce4cc8e685cfc8a33c2da9eac25b42b368a83a9aebdef7d9fdca6ef4293f",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(matches!(terminal.terminal, Some(RunTerminal::Cancelled)));",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/src/core_profile/wire.rs#managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds": {
+      "function_body_sha256": "59375e6056db9935cbdc31f8174cbe96a8aec5751294ab39b2549eaf4363f632",
+      "file_sha256": "47cafb0e9b836e007adad2ac1e805e6ad7ef4f7ff85dc30dac1afbde3ca082c5",
+      "assertion_lines": [
+        "assert_eq!(wire.timestamp.unix_seconds.to_i64(), Some(-1));",
+        "assert_eq!(wire.timestamp.nanos, 123_456_789);",
+        "assert_eq!(",
+        "assert_eq!(projected.scope.revision.as_str(), \"18446744073709551615\");",
+        "assert_eq!("
+      ]
+    },
+    "echo-sdk-host/src/core_profile/wire.rs#unix_non_utf8_paths_round_trip_without_loss": {
+      "function_body_sha256": "a3894f5cc69ecfbf4ebb1e7efa336b901de30df89044ca948705a5ccd06f0f40",
+      "file_sha256": "47cafb0e9b836e007adad2ac1e805e6ad7ef4f7ff85dc30dac1afbde3ca082c5",
+      "assertion_lines": [
+        "assert_eq!(restored.as_os_str().as_bytes(), path.as_os_str().as_bytes());"
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed": {
+      "function_body_sha256": "9f4f63beaa3d9bd1a802468b1fb08126d3aa368538ab58f5340ee9bbb7b97752",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert!(advertisement.declares(ExtensionCapability::FeatureSurfaces));",
+        "assert_eq!(source_value, serde_json::Value::Null);",
+        "assert!(name.as_str().is_some_and(|value| !value.is_empty()));",
+        "assert!(react_prompt.as_str().is_some_and(|value| !value.is_empty()));",
+        "assert_eq!(current_prompt, serde_json::json!(\"runtime override\"));",
+        "assert_eq!(load_skills, serde_json::json!([\"projection-skill\"]));",
+        "assert!(listed_skills.iter().all(|skill| {",
+        "assert!(registry_count",
+        "assert!(registry_descriptors.is_array());",
+        "assert_eq!(decoded_facade_response(registry_installed).map_err(|error| {",
+        "assert_eq!(registry_code_skills, serde_json::json!([]));",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert!(registry_descriptor.get(\"location\").is_none());",
+        "assert_eq!(registry_code_skill, serde_json::Value::Null);",
+        "assert_eq!(registry_allowed_tools, serde_json::Value::Null);",
+        "assert!(registry_catalog.contains(\"projection-skill\"));",
+        "assert_eq!(registry_sandbox, serde_json::Value::Null);",
+        "assert_eq!(registry_dependencies, serde_json::json!([]));",
+        "assert_eq!(tag_result, serde_json::Value::Null);",
+        "assert_eq!(unregister_count, serde_json::json!(\"1\"));",
+        "assert!(descriptors_after_source_unload",
+        "assert_eq!(load_skills, serde_json::json!([\"projection-skill\"]));",
+        "assert_eq!(unregister_names, serde_json::json!([\"projection-skill\"]));"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/memory.rs#malformed_namespace_never_writes_and_replacement_store_is_live_authority": {
+      "function_body_sha256": "ac8c2b7839aa5269112763f01f07a26627b92f36f72ec39c888a1284402b8500",
+      "file_sha256": "1532ab8b88dc82af92f15ea334ea1cbe64cf7c8aa7248f9315b3387eeda4fa0f",
+      "assertion_lines": [
+        "assert!(",
+        "assert!(first.get(&[\"合法\"], \"key\").await?.is_none());",
+        "assert!(first.get(&[\"中文🌳\"], \"key\").await?.is_none());",
+        "assert!(second.get(&[\"中文🌳\"], \"key\").await?.is_some());",
+        "assert_eq!(result.get(\"value\"), Some(&json!(\"B\")));"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/memory.rs#unsupported_store_operation_keeps_memory_cause_without_mutation": {
+      "function_body_sha256": "a180e2f2522b2f45986c57785bc58cd9e75933c6027b76e4a985b0d09b346e83",
+      "file_sha256": "1532ab8b88dc82af92f15ea334ea1cbe64cf7c8aa7248f9315b3387eeda4fa0f",
+      "assertion_lines": [
+        "assert_eq!(error.code, ExtensionErrorCode::FrameworkError);",
+        "assert_eq!(error.retryable, Retryability::Never);",
+        "assert_eq!(error.operation.as_deref(), Some(METHOD));",
+        "assert_eq!(",
+        "assert_eq!(before.value, serde_json::json!(\"preserved\"));",
+        "assert_eq!(store.list(&[\"中文🙂\"]).await?.len(), 1);"
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#workflow_family_runs_declarative_graphs_over_the_framework_engine": {
+      "function_body_sha256": "9bbbe06d87c20b17690746d2f553a7f8cea1b0f410f95e590a3894d0ae7e1843",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(",
+        "assert_eq!(built.get(\"nodes\"), Some(&serde_json::json!(5)));",
+        "assert_eq!(built.get(\"edges\"), Some(&serde_json::json!(4)));",
+        "assert_eq!(",
+        "assert_eq!(first.get(\"pending_node\"), Some(&serde_json::json!(\"end\")));",
+        "assert_eq!(",
+        "assert_eq!(by_graph.as_array().map(Vec::len), Some(1));",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert!(path.contains(&serde_json::json!(\"yes\")));",
+        "assert!(!path.contains(&serde_json::json!(\"no\")));",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert!(second_path.contains(&serde_json::json!(\"no\")));",
+        "assert!(!second_path.contains(&serde_json::json!(\"yes\")));",
+        "assert_eq!(",
+        "assert_eq!(got.get(\"value\"), Some(&serde_json::json!(7)));",
+        "assert_eq!(set.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert!(keys.contains(&serde_json::json!(\"seed\")));",
+        "assert!(keys.contains(&serde_json::json!(\"extra\")));",
+        "assert_eq!(cancelled.get(\"cancelled\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(typed.code, ExtensionErrorCode::Cancelled);",
+        "assert_eq!(typed.operation.as_deref(), Some(\"_echo_agent/workflow/op\"));",
+        "assert_eq!("
+      ]
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#workflow_cancel_preserves_canonical_failure_in_rpc_and_stream_terminal": {
+      "function_body_sha256": "d86576509e26ff0f5765fccfc94d53a34ecd6bbe522d19c0776a3275ad7df99f",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": [
+        "assert_eq!(error.code, ExtensionErrorCode::Cancelled);",
+        "assert_eq!(error.retryable, Retryability::Never);",
+        "assert_eq!(error.operation.as_deref(), Some(\"_echo_agent/workflow/op\"));",
+        "assert_eq!(fields.iter().find(|field| field.key == key).map(|field| field.value.as_str()), Some(expected));",
+        "assert_eq!(variant, \"failed\", \"a cancelled producer must never report complete\");"
+      ]
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#workflow_stream_uses_unified_handle_backpressure_and_close": {
+      "function_body_sha256": "b6cfe8ec0d488e27bb657661b778c2554ca0c0d99cc3fee18e4c96db49050e69",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": [
+        "assert_eq!(stream.kind, HandleKind::Stream);",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert!(matches!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#workflow_agent_component_stream_flows_through_facade_pull_stream": {
+      "function_body_sha256": "d599131644032eb8509fbb149b568639ea4dee399a5135fc0ddcc17316a571d2",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(",
+        "assert!(",
+        "assert!(",
+        "assert!(unregister(&connection, &workflow).await?);",
+        "assert!(unregister(&connection, &sandbox).await?);",
+        "assert!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#state_delivery_and_trace_families_use_framework_services": {
+      "function_body_sha256": "effa64d7385e5b6542cfeadd2d09ecf9a33c9b18ab4bcbb1ace89304ad93b0a8",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(saved.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(runtime_ids.len(), 1);",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(enqueued.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(",
+        "assert_eq!(transitioned.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(settled.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(records.len(), 1);",
+        "assert_eq!(",
+        "assert!(",
+        "assert_eq!(",
+        "assert_eq!(saved_run.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(typed_error(&unknown)?.code, ExtensionErrorCode::InvalidValue);"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/state_delivery.rs#exact_claim_roundtrip_rejects_delayed_attempt_and_id_only": {
+      "function_body_sha256": "5617250cf2c385c74b2bccaecc1dacd95ea87ef345461acd33f7b42d761f0e8e",
+      "file_sha256": "21ce0c4f56c85691aa461d22a3e2b6837a0e335073c8a136bda916597201c728",
+      "assertion_lines": [
+        "assert_eq!(serde_json::to_value(exact)?, first);",
+        "assert_ne!(first.get(\"attempt_id\"), second.get(\"attempt_id\"));",
+        "assert!(",
+        "assert!(",
+        "assert!(claim_of(&incomplete).is_err());"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/observability.rs#failed_trace_open_does_not_consume_the_only_resource_slot": {
+      "function_body_sha256": "2b108b05074595650bce50c37519fab73f38831e61bb9b1669c86584b6b2f619",
+      "file_sha256": "2875aafb87d6543a43135c635e065899f8b58c6325b6a9497e5d07903e1cf8e9",
+      "assertion_lines": [
+        "assert!(",
+        "assert!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#eval_and_improve_families_use_the_framework_analyzers": {
+      "function_body_sha256": "bea55a70b5e4f3c96da432873ca13c0cbc7e2ab52cbe11c3df67ecdaf948abd3",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(",
+        "assert_eq!(report.get(\"total\"), Some(&serde_json::json!(2)));",
+        "assert_eq!(report.get(\"passed\"), Some(&serde_json::json!(1)));",
+        "assert_eq!(report.get(\"failed\"), Some(&serde_json::json!(1)));",
+        "assert!(",
+        "assert_eq!(critique.get(\"run_id\"), Some(&serde_json::json!(\"run-eval-1\")));",
+        "assert_eq!(critique.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(typed_error(&unknown)?.code, ExtensionErrorCode::InvalidValue);"
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#eval_and_improve_source_adapters_invoke_agent_factory_lazily": {
+      "function_body_sha256": "2634dff3dd052c8fe1958cf966e2187de69c6ef5a9ff7f3a6a2f44d2bc2db0ac",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(unregister(&connection, &factory).await?);",
+        "assert!(outcome.is_ok(), \"lazy factory scenario failed: {outcome:?}\");",
+        "assert_eq!(",
+        "assert_eq!(created.len(), 4);",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/source_operations.rs#factory_failure_retains_canonical_cause_in_real_eval_result": {
+      "function_body_sha256": "fbb6102773d335f3beb3001c6a26d30f8a2b5b389a63f784493858d59f421981",
+      "file_sha256": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73",
+      "assertion_lines": [
+        "assert!(!result.success);",
+        "assert!(",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#store_and_human_loop_extensions_round_trip": {
+      "function_body_sha256": "5205e2718be057d913a12b4c84901196c75d5595d8b32c318b32aae2c464d76d",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert!(",
+        "assert_eq!(prompt.stop_reason, v1::StopReason::EndTurn);",
+        "assert!(unregister(&connection, &store).await?);",
+        "assert!(",
+        "assert!(",
+        "assert_eq!(prompt.stop_reason, v1::StopReason::EndTurn);",
+        "assert!(unregister(&connection, &human).await?);",
+        "assert!(outcome.is_ok(), \"human-loop scenario failed: {outcome:?}\");",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_config_batch_quota_failure_does_not_publish_unreturned_prefix": {
+      "function_body_sha256": "7731a01ac9292370cd8c3140511da12b344b0ad3bdec6ceee9af910d35b4b3f0",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_file_batch_quota_failure_does_not_publish_unreturned_prefix": {
+      "function_body_sha256": "143b60faaf6f60ada3f594668e4b7bdff6d094cb306944ba7309a051d85187e9",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_config_batch_preserves_best_effort_and_existing_alias": {
+      "function_body_sha256": "a3ee9bc716a011bbb91bbd3a52c582f37a74753b6d9a606864a5e2b38ac7598a",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": []
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#integration_families_use_framework_managers_and_clients": {
+      "function_body_sha256": "c5f77ef769c508f3fbee8d4cf28780a06b9193986ba0ef0cb25975a8a53ccb87",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert!(",
+        "assert_eq!(",
+        "assert_eq!(added.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(recorded.get(\"ok\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(nodes.as_array().map(Vec::len), Some(3));",
+        "assert!(nodes.as_array().is_some_and(|nodes| nodes.iter().any(|node| {",
+        "assert_eq!(edges.as_array().map(Vec::len), Some(1));",
+        "assert!(stats.is_object());",
+        "assert!(stats.get(\"nodes\").is_none(), \"stats must not return the full snapshot\");",
+        "assert_eq!(typed_error(&cross)?.code, ExtensionErrorCode::InvalidValue);"
+      ]
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#a2a_sse_stream_delivers_items_then_terminal": {
+      "function_body_sha256": "c5d6be09abfe5e22515b665d438af94d3516bbf77bb2c209e76cac2753530f4e",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": [
+        "assert_eq!(source_send.get(\"id\"), Some(&serde_json::json!(\"task-1\")));",
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert!(",
+        "assert_eq!(stream.kind, HandleKind::Stream);",
+        "assert_eq!(variants, vec![\"item\", \"item\", \"complete\"]);"
+      ]
+    },
+    "echo-sdk-host/tests/extension_bridge_e2e.rs#channel_plugin_facade_round_trip": {
+      "function_body_sha256": "9c8388d26e369d952c5f6183cf05a2c5e8cfea10f346711d61c564c81055a479",
+      "file_sha256": "9c951e262f4557a24d98cef44f3c17981231a6a77108262e9031e03ba4d1c88f",
+      "assertion_lines": [
+        "assert_eq!(registered.get(\"registered\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(started.get(\"channels\"), Some(&serde_json::json!(1)));",
+        "assert_eq!(started.get(\"failures\"), Some(&serde_json::json!(0)));",
+        "assert_eq!(",
+        "assert_eq!(healthy.get(\"healthy\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(sent.get(\"sent\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(stopped.get(\"stopped\"), Some(&serde_json::json!(true)));"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/telemetry.rs#invalid_console_flag_is_rejected_before_process_initialization": {
+      "function_body_sha256": "d9668bdaa9246a5822080478f523dc4b9c445cec136408ca0f10f6d175275d94",
+      "file_sha256": "1cb40ac5ff8e6a76b6c9d57f75ecd807612f9629261fdaa47d34433215c04705",
+      "assertion_lines": [
+        "assert!(",
+        "assert_eq!(enable_console_of(None).ok(), Some(false));",
+        "assert_eq!(enable_console_of(Some(&json!(null))).ok(), Some(false));",
+        "assert_eq!(enable_console_of(Some(&json!(true))).ok(), Some(true));"
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#tool_families_execute_framework_tools_with_the_session_cwd": {
+      "function_body_sha256": "b77c17e495acff874f67fd6f1943ebcf6e987ba513b35682b711512d30e75bb5",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(written.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(read.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert!(",
+        "assert_eq!(shell.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert!(",
+        "assert_eq!(extracted.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert!(",
+        "assert_eq!(clean, serde_json::json!(true));",
+        "assert!(matches!(",
+        "assert_eq!(",
+        "assert!(content.contains(\"root agents rule\"));",
+        "assert!(content.contains(\"nested agents rule\"));",
+        "assert!(!content.contains(\"must be excluded\"));",
+        "assert_eq!(typed_error(&unknown)?.code, ExtensionErrorCode::InvalidValue);"
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#source_files_and_skill_registry_preserve_rust_authority": {
+      "function_body_sha256": "76185ac356480c24b932158e77da0e98f6329ae40413d08b61bfa5cbee76fed6",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(contains_secret, WireValue::Bool(true));",
+        "assert!(matches!(",
+        "assert_eq!(isolation, WireValue::String(\"container\".to_string()));",
+        "assert_eq!(validated.get(\"valid\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(",
+        "assert_eq!(guard.kind, HandleKind::FacadeResource);",
+        "assert!(matches!(len, WireValue::U64(value) if value.to_u64() == Some(11)));",
+        "assert_eq!(typed.code, ExtensionErrorCode::InvalidValue);",
+        "assert_eq!(std::fs::read(&file_path).map_err(|error| {",
+        "assert_eq!(closed_guard, WireValue::Bool(true));",
+        "assert_eq!(",
+        "assert_eq!(lease.kind, HandleKind::FacadeResource);",
+        "assert_eq!(typed.code, ExtensionErrorCode::FrameworkError);",
+        "assert_eq!(",
+        "assert_eq!(closed_lease, WireValue::Bool(true));",
+        "assert_eq!(repeated_close, WireValue::Bool(false));",
+        "assert!(matches!(reacquired, WireValue::Handle(handle) if handle.kind == HandleKind::FacadeResource));",
+        "assert!(",
+        "assert_eq!(reset, WireValue::Null);",
+        "assert_eq!(activated, WireValue::Bool(true));"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/tools.rs#tool_family_projection_preserves_partial_effects_and_artifact": {
+      "function_body_sha256": "2eac6549b3bde4012eb6c6ac5a989a71bc97981275983160f5eb3981b6f886a3",
+      "file_sha256": "f1aed97fde97185218d8babdedf914da8564b9a8c9be05d721f17357dd96c7c1",
+      "assertion_lines": [
+        "assert_eq!(roundtrip.effects, result.effects);",
+        "assert_eq!(roundtrip.artifact, result.artifact);",
+        "assert_eq!(roundtrip.failure, result.failure);",
+        "assert_eq!(roundtrip.data, result.data);",
+        "assert!(roundtrip.truncated);",
+        "assert_eq!(roundtrip.model_content, result.model_content);"
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally": {
+      "function_body_sha256": "24e27e551a363a36be5c067fe97eb654de6b54fd235fc31ee3d2d71217539ae3",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(status.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert!(",
+        "assert_eq!(counted.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(",
+        "assert!(",
+        "assert_eq!(chunked.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(chart.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(stats.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(read.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert_eq!(read_output.get(\"rows\"), Some(&serde_json::json!(4)));",
+        "assert_eq!(explored.get(\"success\"), Some(&serde_json::json!(true)));",
+        "assert!(",
+        "assert_eq!(bibtex.get(\"success\"), Some(&serde_json::json!(true)));"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/tools.rs#rag_index_and_search_share_one_session_store": {
+      "function_body_sha256": "1dc3c797b10dd2d65c3bd96d75f3d8d3ba8e2aedc4b9a13b4dbec91ca5d38922",
+      "file_sha256": "f1aed97fde97185218d8babdedf914da8564b9a8c9be05d721f17357dd96c7c1",
+      "assertion_lines": [
+        "assert!(indexed.success, \"index failed: {}\", indexed.output);",
+        "assert!(found.success, \"search failed: {}\", found.output);",
+        "assert!(found.output.contains(\"session document\"));",
+        "assert!(isolated.success);",
+        "assert!(isolated.output.contains(\"No relevant documents\"));"
+      ]
+    },
+    "echo-sdk-host/tests/core_profile_e2e.rs#stateful_source_resources_preserve_owner_state_and_close": {
+      "function_body_sha256": "f59190dc0897eb12b573f3a601cf5d0335299ee0db5b3c37f47613280e147c67",
+      "file_sha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "assertion_lines": [
+        "assert_eq!(found.get(\"key\"), Some(&serde_json::json!(\"answer\")));",
+        "assert_eq!(found.get(\"value\"), Some(&serde_json::json!(\"42\")));",
+        "assert_eq!(",
+        "assert_eq!(count, WireValue::U64(WireU64::from_u64(0)));",
+        "assert_eq!(no_secret, WireValue::Bool(false));",
+        "assert_eq!(rendered, WireValue::String(String::new()));",
+        "assert_eq!(",
+        "assert_eq!("
+      ]
+    },
+    "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#facade_resource_limits_match_the_advertised_bound": {
+      "function_body_sha256": "80e241c918391793d335594324cf4b173451e58ec14ea30251d5c92b95d15512",
+      "file_sha256": "875b938aacd0886b84e74db7cde848f22b3d4fb28bdda61fd744d8beff1ce344",
+      "assertion_lines": [
+        "assert_eq!(",
+        "assert_eq!(",
+        "assert_eq!(typed.code, ExtensionErrorCode::PayloadTooLarge);",
+        "assert!("
+      ]
+    },
+    "echo-sdk-host/src/core_profile/facade/mod.rs#family_handle_argument_retains_opaque_resource_address": {
+      "function_body_sha256": "a5d6db297223db5c6d5b3f7d09d412db900fb8dcd3cbd1c41084c14855f15bc8",
+      "file_sha256": "39144d4615852e06027a95dbb9228457a65ffa6e6b7db458a56d14b6e076d260",
+      "assertion_lines": [
+        "assert_eq!(restored, handle);"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/events.rs#real_journal_retention_page_authorizes_only_its_returned_watermark": {
+      "function_body_sha256": "1a6cb1dd2f8871651656b0e274b25512a543a6d46a5660d0a94773a2f0c90a90",
+      "file_sha256": "e4ae808abb8f916a7318faec3643c5a56cd1bbd143e9e88cb447e0cf7127f7de",
+      "assertion_lines": [
+        "assert_eq!(journal.retention_metadata().retained_floor, 6);",
+        "assert_eq!(",
+        "assert_eq!(page.next_cursor.stream_id, stream.id);",
+        "assert_eq!(page.next_cursor.last_processed_sequence.to_u64(), Some(6));",
+        "assert_eq!(inner.acknowledge(6, 1)?, Some(6));",
+        "assert!(inner.acknowledge(7, 1).is_err());",
+        "assert_eq!(inner.last_sent_sequence, 6);"
+      ]
+    },
+    "echo-sdk-host/src/core_profile/events.rs#replay_publication_failure_and_empty_future_page_grant_no_ack_coverage": {
+      "function_body_sha256": "7aa603f52be918a2b6c10119b516abd103b6257785d9fe2ebaac03dde2d8f112",
+      "file_sha256": "e4ae808abb8f916a7318faec3643c5a56cd1bbd143e9e88cb447e0cf7127f7de",
+      "assertion_lines": [
+        "assert!(failed.is_err());",
+        "assert_eq!(inner.ackable_sequence, 2);",
+        "assert!(inner.acknowledge(8, 1).is_err());",
+        "assert_eq!(inner.ackable_sequence, 2);",
+        "assert!(inner.acknowledge(100, 1).is_err());",
+        "assert!(inner.paused);"
+      ]
+    }
+  },
+  "families": {
+    "agent_lifecycle": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#valid_hello_completes_full_core_lifecycle",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#agent_cascade_preserves_same_named_other_manager_and_releases_resources",
+        "echo-sdk-host/src/lib.rs#manual_close_keeps_active_run_actor_until_cleanup_and_receipt_settle"
+      ],
+      "claim": "真实 create/describe/close 和重复关闭、Agent cascade 后资源配额复用及两个同名独立 MCP manager 隔离；活 Run 的同一连接 actor 保持到清理与规范 receipt 结算。",
+      "missing": "多 Agent 创建/关闭并发及全部资源种类 publication fault 尚无逐种语言场景。",
+      "stage": "candidate_runtime_verified"
+    },
+    "session": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#extended_standard_prompt_bridges_shared_core_handles",
+        "echo-sdk-host/tests/core_profile_e2e.rs#explicit_session_create_reserves_persisted_turn_identity_before_new_run",
+        "echo-sdk-host/tests/core_profile_e2e.rs#session_load_reserves_persisted_turn_identity_before_new_run",
+        "echo-sdk-host/tests/core_profile_e2e.rs#malformed_recovered_identity_rejects_actual_method_without_handle_publication"
+      ],
+      "claim": "标准 prompt 与扩展 Session 共享对象；历史 native turn7 后 create/load 都精确分配 turn8；畸形身份报 create/load 实际 operation，重复失败无句柄配额泄漏。禁用 reservation 的真实反例两路径均产生 turn1。",
+      "missing": "两 Session 的全部 memory/Task 状态隔离、持久化 I/O fault 和 close debt 的三语言共同场景仍未穷尽。",
+      "stage": "candidate_runtime_verified"
+    },
+    "run": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#killed_active_run_is_interrupted_never_completed",
+        "echo-sdk-host/tests/core_profile_e2e.rs#turn_receipt_source_operations_project_live_and_recovered",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_terminal"
+      ],
+      "claim": "kill 后 recovered Run 是 Interrupted 而非 Completed；live/recovered receipt 与 delivery 字段保留；取消需等待 sandbox cleanup，并保留唯一 Cancelled terminal。三语言并行 Agent feed 场景证明取消 A 不改变 B 自然终态。",
+      "missing": "steer、并发 wait、取消与自然完成竞争的统一三语言矩阵仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "event_replay": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#ack_window_snapshot_ack_resumes_strictly_after_watermark",
+        "echo-sdk-host/tests/core_profile_e2e.rs#consumed_single_replay_page_ack_resumes_live_after_page_cursor",
+        "echo-sdk-host/tests/core_profile_e2e.rs#consumed_multiple_replay_page_ack_resumes_live_after_page_cursor",
+        "sdks/typescript/test/gap-ack-host.test.js",
+        "sdks/python/tests/test_gap_ack_host.py",
+        "sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java",
+        "echo-sdk-host/src/core_profile/events.rs#real_journal_retention_page_authorizes_only_its_returned_watermark",
+        "echo-sdk-host/src/core_profile/events.rs#replay_publication_failure_and_empty_future_page_grant_no_ack_coverage"
+      ],
+      "claim": "snapshot ACK 与 page cursor ACK 后只续发已覆盖水位之后事件；三语言 count/oversized、两窗口 external ACK、terminal replay ACK 自然 EOF 都实际执行，journal union/event_id 与唯一 terminal 对账；未来 ACK 不推进。另有真实 segmented journal 原生轮转/prune：追加1..6后retained_floor=6，replay返回gap水位5及cursor6；只允许ACK6，拒绝ACK7。replay响应enqueue失败和空future page均不扩大ACK coverage。",
+      "missing": "journal identity替换/错generation的明确故障场景，以及正式pin重启回放和已识别风险的独立复审仍待；原生prune及指定enqueue失败边界已有候选断言，不列为未验证。",
+      "stage": "candidate_runtime_verified"
+    },
+    "task": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#task_rpc_shares_the_session_task_authority",
+        "echo-sdk-host/tests/core_profile_e2e.rs#task_pause_is_exact_and_resume_reuses_canonical_dependency_result",
+        "echo-sdk-host/tests/core_profile_e2e.rs#task_cancel_is_exact_and_pending_sibling_continues",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#crud_only_task_store_rejects_execute_before_runtime_side_effects",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#revisioned_task_extension_is_shared_by_crud_and_execution"
+      ],
+      "claim": "CRUD 与 execute 真实共享 Session framework store；exact pause/resume 保存依赖结果，exact cancel 让 pending sibling 继续；仅 CRUD 后端 execute 在副作用前明确拒绝；CAS backend error 可查询 cause。",
+      "missing": "三语言 revisioned DAG/claim control/context 字段同场景比较与 published framework successor 验收仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "subagent": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#subagent_short_await_preserves_result_and_dispatch_receipt",
+        "echo-sdk-host/tests/core_profile_e2e.rs#subagent_family_dispatches_and_controls_live_attempts",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#same_factory_constructs_independent_instances_across_concurrent_sessions"
+      ],
+      "claim": "short await 后再次 await 仍得到完整结果与 dispatch receipt；真实 dispatch/control 触达活 attempt；同 Factory 跨 Session 并行创建不同子实例。",
+      "missing": "全部 context DTO 三语言字段级 round-trip、quota rollback 与 exact attempt 竞争反例仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "bridge": {
+      "refs": [
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#tool_bridge_round_trip_with_callbacks_intervention_and_hook",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#managed_persistence_deadline_and_lost_ack_preserve_commit_authority",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#cancelled_initial_stream_response_releases_session_callback_owner"
+      ],
+      "claim": "34 项真实反向调用实际执行；Tool/hook/callback、LLM stream、factory 和 managed store 的指定路径消费及错误结算；deadline-before-work 无 mutation、lost ACK/重启同 receipt、初始 ACK 被取消后释放 callback owner。三语言 managed/callback/late factory 场景亦实际执行。",
+      "missing": "接受的每个 component operation 的合法消费/异常结算尚未逐项覆盖；11 DTO corpus 不等于11实际持久化动作。",
+      "stage": "candidate_runtime_verified"
+    },
+    "standard": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#extended_standard_prompt_bridges_shared_core_handles",
+        "sdks/typescript/test/host.test.js"
+      ],
+      "claim": "extended standard session/prompt 的 end_turn、session/update 与 Session identity 同步；三语言真实 Host smoke/examples 亦执行标准 prompt。",
+      "missing": "无 profile 的独立 stdio_e2e suite 不在此 Host136/31/34/12 收据内；unsupported version/startup cleanup 与 plain ACP cancel/EOF 最终运行仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "value": {
+      "refs": [
+        "echo-sdk-host/src/core_profile/wire.rs#managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds",
+        "echo-sdk-host/src/core_profile/wire.rs#unix_non_utf8_paths_round_trip_without_loss",
+        "sdks/typescript/test/wire.test.js",
+        "sdks/python/tests/test_protocol_integrity.py",
+        "sdks/java/src/test/java/com/echoagent/sdk/ProtocolIntegrityTest.java"
+      ],
+      "claim": "指定 wire tests 保留大 revision、subseconds、result absent/null、non-UTF8 Unix path；三语言 wire/malformed corpus 和 typed error fields 实际执行。",
+      "missing": "Windows native path 与所有 accepted field 经 Host/framework 的统一 corpus 尚未完成；语言-local 单测不充当 Host round-trip。",
+      "stage": "candidate_runtime_verified"
+    },
+    "intrinsic": {
+      "refs": [
+        "sdks/typescript/test/intrinsic-tool-values.test.js",
+        "sdks/typescript/test/helpers.test.js",
+        "sdks/java/src/test/java/com/echoagent/sdk/IntrinsicToolValueTest.java"
+      ],
+      "claim": "实际语言-local ToolCallParams/ToolResult 构造、typed getters、failure recovery、不可变 modifier 与部分 helper 执行；done/catalog assertions 仅作声明检查，不支持行为完成。",
+      "missing": "全部 accepted intrinsic helpers 的逐项消费和三语言精确结果对比未完成，不冻结完整 intrinsic membership。",
+      "stage": "candidate_runtime_verified"
+    },
+    "memory": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed",
+        "echo-sdk-host/src/core_profile/facade/memory.rs#malformed_namespace_never_writes_and_replacement_store_is_live_authority",
+        "echo-sdk-host/src/core_profile/facade/memory.rs#unsupported_store_operation_keeps_memory_cause_without_mutation"
+      ],
+      "claim": "真实 family put/get/delete；adapter 反例证明 mixed namespace 不写入、替换 Store 后读当前 live authority，unsupported semantic search 保留 Memory cause 且原值不变；三语言 smoke 实际 put/get。",
+      "missing": "recall tool 与写入同实例、provenance/expiry/search/prune/dedup 与多 Session 隔离仍缺充分 Host 行为。",
+      "stage": "candidate_runtime_verified"
+    },
+    "workflow": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#workflow_family_runs_declarative_graphs_over_the_framework_engine",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#workflow_cancel_preserves_canonical_failure_in_rpc_and_stream_terminal",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#workflow_stream_uses_unified_handle_backpressure_and_close",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#workflow_agent_component_stream_flows_through_facade_pull_stream"
+      ],
+      "claim": "真实五节点四边条件图、checkpoint/state 操作；cancel 返回规范 Cancelled/cause 并在 stream failed terminal 保留；统一资源 owner/stream/backpressure/close 和反向 workflow-agent 消费实际执行。",
+      "missing": "resume_exact/restore/branch/tag 所有 state/checkpoint 字段及三语言重启共同场景未完成。",
+      "stage": "candidate_runtime_verified"
+    },
+    "delivery": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#state_delivery_and_trace_families_use_framework_services",
+        "echo-sdk-host/src/core_profile/facade/state_delivery.rs#exact_claim_roundtrip_rejects_delayed_attempt_and_id_only"
+      ],
+      "claim": "内存 ledger open/enqueue/claim/transition/settle/recover/snapshot；完整 claim 转换拒绝 id-only/旧 attempt，不重建当前 claim 冒充旧调用。",
+      "missing": "durable crash/lost ACK、并发 claim 唯一和三语言完整 CAS receipt 对账仍缺；内存路径不是 durable delivery 证明。",
+      "stage": "candidate_runtime_verified"
+    },
+    "state": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#state_delivery_and_trace_families_use_framework_services",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt",
+        "sdks/typescript/test/managed-host.test.js"
+      ],
+      "claim": "Host checkpoint facade 的 save/list/get/clear 指定断言；真实 managed 事务在 commit 后断连/重启保持 pending projection、AlreadyApplied 复用同 receipt，三语言比较副作用 ordinal 不重复。",
+      "missing": "文件后端所有字段、scope clear/I/O fault/atomicity 未由 managed backend 证据替代；11 managed typed calls 不等于全部实际操作。",
+      "stage": "candidate_runtime_verified"
+    },
+    "trace": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#state_delivery_and_trace_families_use_framework_services",
+        "echo-sdk-host/src/core_profile/facade/observability.rs#failed_trace_open_does_not_consume_the_only_resource_slot"
+      ],
+      "claim": "内存 trace save/load/list_recent；非法构造先校验后发布，不占唯一 resource slot，后续合法 open 成功。",
+      "missing": "JSONL reopen/retention/page/full events/usage 和 I/O fault 缺行为证据；不假定 facade trace 自动绑定 live collector。",
+      "stage": "candidate_runtime_verified"
+    },
+    "eval": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#eval_and_improve_families_use_the_framework_analyzers",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#eval_and_improve_source_adapters_invoke_agent_factory_lazily",
+        "echo-sdk-host/src/core_profile/facade/source_operations.rs#factory_failure_retains_canonical_cause_in_real_eval_result"
+      ],
+      "claim": "report total2/pass1/fail1 与 constraints；真实 EvalRunner lazy factory 子实例消费已执行，factory failure 在 case 结果保留 canonical cause；重型 Factory 两场景不再 stack overflow。",
+      "missing": "全部 grader/metric/error 字段、timeout/disconnect/cancel 的 runner cleanup 尚未穷尽。",
+      "stage": "candidate_runtime_verified"
+    },
+    "improve": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#eval_and_improve_families_use_the_framework_analyzers",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#eval_and_improve_source_adapters_invoke_agent_factory_lazily"
+      ],
+      "claim": "ShareGPT 内容、critique run_id/success、factory lazy invocation 指定断言实际执行。",
+      "missing": "source loop stop/cancel、trajectory save/reopen、缺 eval feature 的 standalone 行为矩阵未验证。",
+      "stage": "candidate_runtime_verified"
+    },
+    "permission": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#store_and_human_loop_extensions_round_trip"
+      ],
+      "claim": "source permission_mode setter/getter 和真实 HumanLoop 回调消费；部分 permission DTO unit 的未知 rule/source 拒绝实际执行。",
+      "missing": "完整 matcher/cache/context/TTL、两 Session live tool 决策隔离与撤销失败未覆盖。",
+      "stage": "candidate_runtime_verified"
+    },
+    "mcp": {
+      "refs": [
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_config_batch_quota_failure_does_not_publish_unreturned_prefix",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_file_batch_quota_failure_does_not_publish_unreturned_prefix",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_config_batch_preserves_best_effort_and_existing_alias",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#agent_cascade_preserves_same_named_other_manager_and_releases_resources"
+      ],
+      "claim": "config/file 两真实 stdio batch 在 quota1 拒绝整批 SDK alias，不发布无返回 prefix；已成功连接仍由 Agent 管理，best-effort accepted 行为保留，既有 alias 与同名其他 manager 不被误关；close debt unit 与 transport publication quota 场景实际执行。",
+      "missing": "HTTP/SSE全请求资源/prompts、取消 publication 与 native close fault 的三语言统一矩阵仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "a2a": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#integration_families_use_framework_managers_and_clients",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#a2a_sse_stream_delivers_items_then_terminal"
+      ],
+      "claim": "closed-port discovery 返回 FrameworkError；loopback SSE 产生 items 后唯一 terminal，并使用统一 stream。",
+      "missing": "discover/send/get/cancel 的完整远端 DTO、断线恢复和三语言同场景未覆盖，不推断远端取消。",
+      "stage": "candidate_runtime_verified"
+    },
+    "lsp": {
+      "refs": [
+        "sdks/typescript/test/lsp-host.test.js",
+        "sdks/python/tests/test_lsp_host.py",
+        "sdks/java/src/test/java/com/echoagent/sdk/LspHostTest.java"
+      ],
+      "claim": "同一真实 stdio fixture 的29 case+1 lifecycle 共30观察/44 text-document calls，三语言返回值/typed errors/request trace 哈希一致；malformed response 明确失败后后续请求可用，shutdown 进程已退出，旧 client 不能复活。",
+      "missing": "diagnostics push 的4项新增用例与新 framework 修复正在独立工作，未包括本冻结三语言收据；UTF-16版本/change/restart/owner竞态完整矩阵仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "channels": {
+      "refs": [
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#channel_plugin_facade_round_trip"
+      ],
+      "claim": "真实 plugin 经 facade manager 注册、start/send/stop 的指定输入/输出与 feature requirement 断言通过；未以 manager.open 代替插件消费。",
+      "missing": "所有 receive/attachment/重入、stop_exact sibling隔离及三语言 bridge异常资源结算仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "telemetry": {
+      "refs": [
+        "echo-sdk-host/src/core_profile/facade/telemetry.rs#invalid_console_flag_is_rejected_before_process_initialization",
+        "sdks/typescript/test/host.test.js"
+      ],
+      "claim": "invalid console string/number/list/map 在全局初始化前明确 InvalidValue，missing/null/true 的布尔规则精确；三语言 smoke status.initialized 为 boolean。",
+      "missing": "真实 exporter collector/flush/shutdown、secret logging、进程级重复生命周期缺行为证明。",
+      "stage": "candidate_runtime_verified"
+    },
+    "topology": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#integration_families_use_framework_managers_and_clients"
+      ],
+      "claim": "add node/record edge，snapshot2nodes1edge，再加 exact label/metadata 的节点得3nodes；stats 不返回 full snapshot，cross-session access 明确 InvalidValue。",
+      "missing": "duration/large counters、clear/导出一致性、并发 mutation 与三语言字段对比仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "web": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#tool_families_execute_framework_tools_with_the_session_cwd"
+      ],
+      "claim": "离线 web_extract 实际通过 success=true；这是一次真实 framework tool 调用，不包含 heading/body 精确值断言。",
+      "missing": "fetch/search/redirect/timeout/超大 body 的loopback与三语言内容/effect对账仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "files": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#tool_families_execute_framework_tools_with_the_session_cwd",
+        "echo-sdk-host/tests/core_profile_e2e.rs#source_files_and_skill_registry_preserve_rust_authority",
+        "echo-sdk-host/src/core_profile/facade/tools.rs#tool_family_projection_preserves_partial_effects_and_artifact"
+      ],
+      "claim": "真实相对 write/read 内容；source disk bytes、file guard/lease冲突、重复close/reacquire；ToolResult projection 保留 partial effects/artifact/model_content。",
+      "missing": "全部 accepted filesystem verbs、non-UTF8跨平台失败及三语言副作用一致性仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "shell": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#tool_families_execute_framework_tools_with_the_session_cwd",
+        "echo-sdk-host/tests/extension_bridge_e2e.rs#sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_terminal"
+      ],
+      "claim": "printf真实输出与 success；sandbox Cancelled terminal 在真实 cleanup副作用后结算，pending callback owner 相关桥测试实际通过。",
+      "missing": "native child signal/nonzeroexit/慢stream/kill后进程与slot完整三语言矩阵仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "git": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally"
+      ],
+      "claim": "隔离 temp repo 的 git_status success 并包含 points.csv 未跟踪文件。",
+      "missing": "commit/branch/worktree全部accepted操作和失败后dirty preservation未由一次status覆盖。",
+      "stage": "candidate_runtime_verified"
+    },
+    "database": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally"
+      ],
+      "claim": "真实 SQLite SELECT 只断言 success；DELETE 得 success=false且 read-only error。",
+      "missing": "COUNT精确值和拒绝后DB无写入未断言；rows/null/largeint/describe/timeout及三语言结果缺口。",
+      "stage": "candidate_runtime_verified"
+    },
+    "rag": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally",
+        "echo-sdk-host/src/core_profile/facade/tools.rs#rag_index_and_search_share_one_session_store"
+      ],
+      "claim": "真实 Host chunk工具success；TestEmbedder unit中同一Session工具集index/search命中、另一工具集不命中。",
+      "missing": "真实 Host HttpEmbedder网络路径/索引半提交/错误取消与三语言score/metadata缺口；TestEmbedder不是网络证据。",
+      "stage": "candidate_runtime_verified"
+    },
+    "chart": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally"
+      ],
+      "claim": "bar chart 请求color=null真实成功，只证明spec生成调用成功，不证明spec细节或raster渲染。",
+      "missing": "title/type/data/field/schema精确值和三语言可选项/failed effect未覆盖。",
+      "stage": "candidate_runtime_verified"
+    },
+    "media": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally"
+      ],
+      "claim": "local text_stats真实success；通用ToolResult image/effect字段unit不能扩张成media parser结果证明。",
+      "missing": "accepted parser/export每项语义结果、artifact bytes/malformedinput与三语言内容类型缺口。",
+      "stage": "candidate_runtime_verified"
+    },
+    "data": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally"
+      ],
+      "claim": "CSV read_data真实rows=4与success；明确读取tinydataset，不推断其余转换或export。",
+      "missing": "列/null/schema/transform质量、export文件与effect及三语言精确数值缺口。",
+      "stage": "candidate_runtime_verified"
+    },
+    "statistics": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally"
+      ],
+      "claim": "exploratory statistics真实success且output含inference=false；未断言均值/count精确数。",
+      "missing": "固定样本所有数值/empty/constant/nonfinite边界和三语言结果比较仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "research": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#remaining_tool_families_execute_framework_tools_locally"
+      ],
+      "claim": "离线bibtex_generate实际success；没有citation精确内容、search/PDF网络断言。",
+      "missing": "BibTeX字段、HTTPsearch分页/malformed/failedstatus/PDFbytes及三语言sideeffects仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "content_guard": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#tool_families_execute_framework_tools_with_the_session_cwd",
+        "echo-sdk-host/tests/core_profile_e2e.rs#stateful_source_resources_preserve_owner_state_and_close"
+      ],
+      "claim": "email detect nonempty matches、plain文本is_clean=true、PII返回rejected variant；source owner/close检查实际执行。",
+      "missing": "redact精确文本与中文emoji span、非法mode不默认及三语言完整fields仍缺。",
+      "stage": "candidate_runtime_verified"
+    },
+    "project_rules": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#tool_families_execute_framework_tools_with_the_session_cwd"
+      ],
+      "claim": "emptyworkspace is_empty=true；resolver文本包含root/nested AGENTS，排除CLAUDE内容。",
+      "missing": "precedence/source metadata精确值、liveSession prompt消费及partialIO/更新行为缺口。",
+      "stage": "candidate_runtime_verified"
+    },
+    "testing": {
+      "refs": [],
+      "claim": "当前已核材料只有accepted声明/catalog对应关系；未找到被本冻结Host/语言日志证明的testing合法行为消费。",
+      "missing": "需先明确accepted testing item是language值还是remote verb，再逐项补值roundtrip或显式unavailable；不能用catalog done关项。",
+      "stage": "assertion_present"
+    },
+    "structured_output": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed"
+      ],
+      "claim": "合法sample valid=true和非法请求typederror在真实Host执行。",
+      "missing": "false样本errors/path、schema超限/compilefailure、真正Run最终structuredresponse/repairpolicy及三语言缺口。",
+      "stage": "candidate_runtime_verified"
+    },
+    "source_operation": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed",
+        "echo-sdk-host/tests/core_profile_e2e.rs#stateful_source_resources_preserve_owner_state_and_close",
+        "echo-sdk-host/tests/core_profile_e2e.rs#source_files_and_skill_registry_preserve_rust_authority",
+        "echo-sdk-host/tests/core_profile_e2e.rs#turn_receipt_source_operations_project_live_and_recovered"
+      ],
+      "claim": "指定liveAgent setter/getter、resource方法/close、文件权威和receipt投影实际执行；全canonical null-input哨兵只支持adapter reachability。",
+      "missing": "accepted setter→真实consumer、所有sourceconstructor→合法method→close及各字段无损仍需逐能力归组，不以identity数量完成。",
+      "stage": "candidate_runtime_verified"
+    },
+    "invoke": {
+      "refs": [
+        "echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed",
+        "echo-sdk-host/tests/facade_feature_adapters_e2e.rs#facade_resource_limits_match_the_advertised_bound",
+        "echo-sdk-host/src/core_profile/facade/mod.rs#family_handle_argument_retains_opaque_resource_address"
+      ],
+      "claim": "真实unknown/signature/feature admission、resource配额/backpressure/cascade指定断言；family参数保留原opaque handle而非投影为enum；resourceclose失败保留owner的指定unit已执行。",
+      "missing": "每个resource kind publication/closefault/竞态与三语言invalidowner/kind组合仍需反例与正式pin复审。",
+      "stage": "candidate_runtime_verified"
+    }
+  },
+  "limitations": [
+    "assertions prove only named scenarios, not complete family",
+    "all observed family status remains needs_review",
+    "local combined canonical framework paths, not published pin or final main",
+    "new diagnostics tests not covered by frozen binary receipt"
+  ]
+}

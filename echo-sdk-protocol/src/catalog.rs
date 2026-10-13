@@ -13,9 +13,10 @@
 //!   connection as client-initiated requests;
 //! - notifications never carry a response payload type.
 //!
-//! The catalog binds to the parity manifest: manifest entries classified as
-//! `echo_extension` are the Rust facade items these methods are obligated to
-//! project; the adapter plans consume this table, they do not invent one.
+//! The catalog defines the accepted protocol methods. The complete Rust
+//! parity manifest is diagnostic inventory; discovering a public identity
+//! does not authorize another cross-language API. Accepted capability and
+//! source decisions select the blocking contract from that inventory.
 
 use crate::capability::ExtensionCapability;
 

@@ -1,0 +1,11 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/before/sdks/java/src/test/java/com/echoagent/sdk/ChannelHandlerForwardHostTest.java	2026-10-14 00:17:18
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/after/sdks/java/src/test/java/com/echoagent/sdk/ChannelHandlerForwardHostTest.java	2026-10-14 04:36:23
+@@ -23,7 +23,7 @@
+         assumeTrue(host != null && !host.isBlank(), "new-contract real Host required");
+         spec = JsonSupport.MAPPER.readTree(SHARED.resolve("channel_forward_scenarios.json").toFile());
+         String configured = System.getenv("ECHO_AGENT_SDK_CHANNEL_FORWARD_ROOT");
+-        Path root = configured == null ? Path.of("../../target/channel-forward") : Path.of(configured);
++        Path root = (configured == null ? Path.of("../../target/channel-forward") : Path.of(configured)).toAbsolutePath().normalize();
+         Files.createDirectories(root); evidenceRoot = Files.createTempDirectory(root, "java-channel-forward-");
+     }
+     static String sha(Path path) throws Exception { var digest = MessageDigest.getInstance("SHA-256"); try (var stream = Files.newInputStream(path)) { byte[] buffer = new byte[1024 * 1024]; int count; while ((count = stream.read(buffer)) != -1) digest.update(buffer, 0, count); } return HexFormat.of().formatHex(digest.digest()); }

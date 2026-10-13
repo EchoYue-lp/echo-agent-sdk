@@ -1,0 +1,781 @@
+{
+  "schema_version": 1,
+  "scope": "accepted value:testing payload projections only; no remote methods or Mock runtime",
+  "source_types": [
+    "MockToolContext",
+    "MockAgentStep field payloads",
+    "StreamChunk field payloads"
+  ],
+  "limitations": [
+    "Framework MockAgentStep/StreamChunk/MockToolContext have no serde codec; structural wrappers here are SDK WireValue representations of the accepted payloads, not reconstructed Rust Mock objects.",
+    "Unknown variants preserve opaque wrappers; this does not accept a new API or promise variant-specific semantic validation.",
+    "Invalid cases assert generic scalar/container lossless projection errors, not unspecified Mock-specific validators."
+  ],
+  "cases": [
+    {
+      "name": "context-all-identities",
+      "source_payload": "echo_agent::testing::MockToolContext",
+      "native_input": {
+        "conversation_id": "会话🙂",
+        "run_id": "run:7",
+        "turn_id": "turn:中文",
+        "execution_id": "exec:🧭",
+        "call_id": "call:工具",
+        "cancellation_provided": true
+      },
+      "expected_wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "conversation_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "会话🙂"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "run_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "run:7"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "turn_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "turn:中文"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "execution_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "exec:🧭"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "call_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "call:工具"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "cancellation_provided"
+            },
+            "value": {
+              "kind": "bool",
+              "value": true
+            }
+          }
+        ]
+      },
+      "expected_projection": {
+        "conversation_id": "会话🙂",
+        "run_id": "run:7",
+        "turn_id": "turn:中文",
+        "execution_id": "exec:🧭",
+        "call_id": "call:工具",
+        "cancellation_provided": true
+      }
+    },
+    {
+      "name": "context-null-identities",
+      "source_payload": "echo_agent::testing::MockToolContext",
+      "native_input": {
+        "conversation_id": null,
+        "run_id": null,
+        "turn_id": null,
+        "execution_id": null,
+        "call_id": null,
+        "cancellation_provided": false
+      },
+      "expected_wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "conversation_id"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "run_id"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "turn_id"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "execution_id"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "call_id"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "cancellation_provided"
+            },
+            "value": {
+              "kind": "bool",
+              "value": false
+            }
+          }
+        ]
+      },
+      "expected_projection": {
+        "conversation_id": null,
+        "run_id": null,
+        "turn_id": null,
+        "execution_id": null,
+        "call_id": null,
+        "cancellation_provided": false
+      }
+    },
+    {
+      "name": "context-absence-distinct",
+      "source_payload": "echo_agent::testing::MockToolContext",
+      "native_input": {
+        "cancellation_provided": false
+      },
+      "expected_wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "cancellation_provided"
+            },
+            "value": {
+              "kind": "bool",
+              "value": false
+            }
+          }
+        ]
+      },
+      "expected_projection": {
+        "cancellation_provided": false
+      }
+    },
+    {
+      "name": "delay-large-subsecond",
+      "source_payload": "echo_agent::testing::MockAgentStep::Delay::0",
+      "native_input": {
+        "kind": "duration",
+        "value": {
+          "seconds": "18446744073709551615",
+          "nanos": 999999999
+        }
+      },
+      "expected_wire": {
+        "kind": "duration",
+        "value": {
+          "seconds": "18446744073709551615",
+          "nanos": 999999999
+        }
+      },
+      "expected_projection": {
+        "kind": "duration",
+        "value": {
+          "seconds": "18446744073709551615",
+          "nanos": 999999999
+        }
+      }
+    },
+    {
+      "name": "agent-error-unicode",
+      "source_payload": "echo_agent::testing::MockAgentStep::Error::0",
+      "native_input": "工具失败：中文🙂\n继续",
+      "expected_wire": {
+        "kind": "string",
+        "value": "工具失败：中文🙂\n继续"
+      },
+      "expected_projection": "工具失败：中文🙂\n继续"
+    },
+    {
+      "name": "agent-event-final-answer",
+      "source_payload": "echo_agent::testing::MockAgentStep::Event::0",
+      "native_input": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_sdk_protocol::methods::AgentEventWire",
+          "variant": "final_answer",
+          "fields": [
+            {
+              "name": "text",
+              "value": {
+                "kind": "string",
+                "value": "最终回答🧭"
+              }
+            }
+          ]
+        }
+      },
+      "expected_wire": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_sdk_protocol::methods::AgentEventWire",
+          "variant": "final_answer",
+          "fields": [
+            {
+              "name": "text",
+              "value": {
+                "kind": "string",
+                "value": "最终回答🧭"
+              }
+            }
+          ]
+        }
+      },
+      "expected_projection": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_sdk_protocol::methods::AgentEventWire",
+          "variant": "final_answer",
+          "fields": [
+            {
+              "name": "text",
+              "value": {
+                "kind": "string",
+                "value": "最终回答🧭"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "delta-role-content-option",
+      "source_payload": "echo_agent::testing::StreamChunk::Delta::0",
+      "native_input": {
+        "role": "assistant",
+        "content": "中文🙂",
+        "reasoning_content": null,
+        "reasoning_blocks": null,
+        "tool_calls": null
+      },
+      "expected_wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "role"
+            },
+            "value": {
+              "kind": "string",
+              "value": "assistant"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "content"
+            },
+            "value": {
+              "kind": "string",
+              "value": "中文🙂"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "reasoning_content"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "reasoning_blocks"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "tool_calls"
+            },
+            "value": {
+              "kind": "null"
+            }
+          }
+        ]
+      },
+      "expected_projection": {
+        "role": "assistant",
+        "content": "中文🙂",
+        "reasoning_content": null,
+        "reasoning_blocks": null,
+        "tool_calls": null
+      }
+    },
+    {
+      "name": "stream-error-cause-value",
+      "source_payload": "echo_agent::testing::StreamChunk::Err::0",
+      "native_input": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_agent::error::ReactError",
+          "variant": "other",
+          "fields": [
+            {
+              "name": "message",
+              "value": {
+                "kind": "string",
+                "value": "连接中断中文🙂"
+              }
+            }
+          ]
+        }
+      },
+      "expected_wire": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_agent::error::ReactError",
+          "variant": "other",
+          "fields": [
+            {
+              "name": "message",
+              "value": {
+                "kind": "string",
+                "value": "连接中断中文🙂"
+              }
+            }
+          ]
+        }
+      },
+      "expected_projection": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_agent::error::ReactError",
+          "variant": "other",
+          "fields": [
+            {
+              "name": "message",
+              "value": {
+                "kind": "string",
+                "value": "连接中断中文🙂"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "terminal-finish-usage",
+      "source_payload": "echo_agent::testing::StreamChunk::Terminal",
+      "native_input": {
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 4294967295,
+          "completion_tokens": 2,
+          "total_tokens": null
+        }
+      },
+      "expected_wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "finish_reason"
+            },
+            "value": {
+              "kind": "string",
+              "value": "stop"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "usage"
+            },
+            "value": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "prompt_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "4294967295"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "completion_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "2"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "total_tokens"
+                  },
+                  "value": {
+                    "kind": "null"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expected_projection": {
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": "4294967295",
+          "completion_tokens": "2",
+          "total_tokens": null
+        }
+      }
+    },
+    {
+      "name": "terminal-null-option",
+      "source_payload": "echo_agent::testing::StreamChunk::Terminal",
+      "native_input": {
+        "finish_reason": null,
+        "usage": null
+      },
+      "expected_wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "finish_reason"
+            },
+            "value": {
+              "kind": "null"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "usage"
+            },
+            "value": {
+              "kind": "null"
+            }
+          }
+        ]
+      },
+      "expected_projection": {
+        "finish_reason": null,
+        "usage": null
+      }
+    },
+    {
+      "name": "typed-context-record",
+      "source_payload": "echo_agent::testing::MockToolContext",
+      "native_input": {
+        "kind": "record",
+        "value": {
+          "type_id": "echo_agent::testing::MockToolContext",
+          "fields": [
+            {
+              "name": "call_id",
+              "value": {
+                "kind": "string",
+                "value": "call:中文"
+              }
+            },
+            {
+              "name": "run_id",
+              "value": {
+                "kind": "null"
+              }
+            },
+            {
+              "name": "cancellation_provided",
+              "value": {
+                "kind": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      },
+      "expected_wire": {
+        "kind": "record",
+        "value": {
+          "type_id": "echo_agent::testing::MockToolContext",
+          "fields": [
+            {
+              "name": "call_id",
+              "value": {
+                "kind": "string",
+                "value": "call:中文"
+              }
+            },
+            {
+              "name": "run_id",
+              "value": {
+                "kind": "null"
+              }
+            },
+            {
+              "name": "cancellation_provided",
+              "value": {
+                "kind": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      },
+      "expected_projection": {
+        "kind": "record",
+        "value": {
+          "type_id": "echo_agent::testing::MockToolContext",
+          "fields": [
+            {
+              "name": "call_id",
+              "value": {
+                "kind": "string",
+                "value": "call:中文"
+              }
+            },
+            {
+              "name": "run_id",
+              "value": {
+                "kind": "null"
+              }
+            },
+            {
+              "name": "cancellation_provided",
+              "value": {
+                "kind": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "future-variant-preserved",
+      "source_payload": "not accepted additive fixture",
+      "native_input": {
+        "kind": "variant",
+        "value": {
+          "type_id": "future.testing.value",
+          "variant": "future_step",
+          "fields": [
+            {
+              "name": "revision",
+              "value": {
+                "kind": "u64",
+                "value": "9007199254740993"
+              }
+            },
+            {
+              "name": "说明",
+              "value": {
+                "kind": "string",
+                "value": "新增🙂"
+              }
+            }
+          ]
+        }
+      },
+      "expected_wire": {
+        "kind": "variant",
+        "value": {
+          "type_id": "future.testing.value",
+          "variant": "future_step",
+          "fields": [
+            {
+              "name": "revision",
+              "value": {
+                "kind": "u64",
+                "value": "9007199254740993"
+              }
+            },
+            {
+              "name": "说明",
+              "value": {
+                "kind": "string",
+                "value": "新增🙂"
+              }
+            }
+          ]
+        }
+      },
+      "expected_projection": {
+        "kind": "variant",
+        "value": {
+          "type_id": "future.testing.value",
+          "variant": "future_step",
+          "fields": [
+            {
+              "name": "revision",
+              "value": {
+                "kind": "u64",
+                "value": "9007199254740993"
+              }
+            },
+            {
+              "name": "说明",
+              "value": {
+                "kind": "string",
+                "value": "新增🙂"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "invalid_cases": [
+    {
+      "name": "boolean-not-number",
+      "wire": {
+        "kind": "bool",
+        "value": 1
+      }
+    },
+    {
+      "name": "error-text-not-object",
+      "wire": {
+        "kind": "string",
+        "value": {
+          "message": "错误"
+        }
+      }
+    },
+    {
+      "name": "noncanonical-delay-seconds",
+      "wire": {
+        "kind": "u64",
+        "value": "01"
+      }
+    },
+    {
+      "name": "overflow-delay-seconds",
+      "wire": {
+        "kind": "u64",
+        "value": "18446744073709551616"
+      }
+    },
+    {
+      "name": "missing-nested-discriminator",
+      "wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "context"
+            },
+            "value": {
+              "value": "lost"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate-context-fields",
+      "wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "call_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "one"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "call_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "two"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "nonstring-context-field-name",
+      "wire": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "u64",
+              "value": "1"
+            },
+            "value": {
+              "kind": "string",
+              "value": "one"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

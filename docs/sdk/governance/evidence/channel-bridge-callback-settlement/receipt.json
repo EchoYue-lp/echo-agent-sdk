@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "scope": "Channel-specific callback-return settlement only",
+  "sdkHead": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "frameworkManagerDigest": "bab117d7d2284cd7632051a76bcae1109dc0d16a5199ac7b32126eff27db5e3d",
+  "sourceDigest": "ed5f3446bdca72cdbc324ff0fe7fbbfdf2cdd6c4ea7430a6070aa2580732b0a6",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--lib",
+    "--all-features",
+    "--locked",
+    "core_profile::extension_bridge::tests::channel_",
+    "--",
+    "--nocapture"
+  ],
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "result": {
+    "exitCode": 0,
+    "passed": 6,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 145
+  },
+  "facts": [
+    "Official ACP connection response task retains the original lease through callback return",
+    "Once cancellation and timeout wait for held callback completion",
+    "Stream terminal does not end consumption before the original callback return",
+    "Stream cancellation, timeout and caller stream drop retain original callback completion owner",
+    "Same original extension B answers while A callback cleanup is held",
+    "After cleanup release A callback return is observed, authority in_flight is zero and stream sink is removed"
+  ],
+  "attempts": [
+    {
+      "log": "raw/ordering-fixture-attempt.log",
+      "classification": "test_fixture_error",
+      "reason": "Official on_receive_request dispatch waited on test release and blocked cancellation/B dispatch; six timeout failures are not old production behavior counterexamples",
+      "allHostPass": 140,
+      "allHostFail": 11,
+      "channelFixtureFail": 6,
+      "otherStreamCauseFail": 5
+    },
+    {
+      "log": "raw/missing-dependency-attempt.log",
+      "classification": "compile_error",
+      "reason": "Initial adapter used undeclared async_stream; replaced by existing futures stream unfold without adding a dependency"
+    }
+  ],
+  "limits": [
+    "No three-language or external provider proof in this receipt",
+    "Callback return proves registered callback completion, not detached user jobs",
+    "No historical production red reproduction has run for this new helper yet",
+    "No final main/published framework pin acceptance"
+  ]
+}

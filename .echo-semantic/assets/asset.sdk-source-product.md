@@ -1,20 +1,55 @@
 ---
-schema_version: 1
-id: asset.sdk-source-product
-kind: asset
-title: 独立 echo-agent SDK 产品
-asset_type: protocol
-status: active
-risk: high
-observed_at: source:18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
-boundary_refs: [boundary.sdk-product]
-code_refs: [echo-sdk-protocol/src/lib.rs, echo-sdk-host/src/lib.rs, contracts/sdk/accepted-external-contract.json, contracts/sdk/source-contract.json, contracts/sdk/inventory-telemetry.json, sdks/typescript/src/index.ts, sdks/python/src/echo_agent_sdk/__init__.py, sdks/java/pom.xml, docs/sdk/README.md, scripts/check-sdk-contracts.sh, scripts/check-sdk-inventory-telemetry.sh, scripts/check-language-sdks.sh, scripts/export-language-sdk-catalog.sh]
-consumer_refs: [README.md, README.zh.md, .github/workflows/rust-ci.yml]
-behavior_refs: [behavior.sdk-repository-ownership]
-rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification, evidence.sdk-compatibility-gates]
-finding_refs: [finding.sdk-wave2-cutover-integrity]
-candidate_refs: []
+{
+  "schema_version": 1,
+  "id": "asset.sdk-source-product",
+  "kind": "asset",
+  "title": "独立 echo-agent SDK 产品",
+  "asset_type": "protocol",
+  "status": "active",
+  "risk": "high",
+  "observed_at": "source:3ea544c47e331b5d29a6624f978f3595619bef39fa5985230351098d38930404",
+  "boundary_refs": [
+    "boundary.sdk-product"
+  ],
+  "code_refs": [
+    "echo-sdk-protocol/src/lib.rs",
+    "echo-sdk-host/src/lib.rs",
+    "contracts/sdk/accepted-external-contract.json",
+    "contracts/sdk/source-contract.json",
+    "contracts/sdk/inventory-telemetry.json",
+    "sdks/typescript/src/index.ts",
+    "sdks/python/src/echo_agent_sdk/__init__.py",
+    "sdks/java/pom.xml",
+    "docs/sdk/README.md",
+    "scripts/check-sdk-contracts.sh",
+    "scripts/check-sdk-inventory-telemetry.sh",
+    "scripts/check-language-sdks.sh",
+    "scripts/export-language-sdk-catalog.sh"
+  ],
+  "consumer_refs": [
+    "README.md",
+    "README.zh.md",
+    ".github/workflows/rust-ci.yml"
+  ],
+  "behavior_refs": [
+    "behavior.sdk-repository-ownership"
+  ],
+  "rule_refs": [
+    "rule.framework-runtime-authority"
+  ],
+  "evidence_refs": [
+    "evidence.sdk-source-import",
+    "evidence.sdk-source-continuity",
+    "evidence.sdk-framework-pin",
+    "evidence.sdk-wave2-cutover-repair",
+    "evidence.sdk-wave2-cutover-final-verification",
+    "evidence.sdk-compatibility-gates"
+  ],
+  "finding_refs": [
+    "finding.sdk-wave2-cutover-integrity"
+  ],
+  "candidate_refs": []
+}
 ---
 
 # 独立 echo-agent SDK 产品
@@ -38,3 +73,7 @@ Source continuity、framework 精确 pin、protocol/contract/Host/language 收�
 ## 未知与限制
 
 当前源码交付已通过独立构建和三语言门禁；完整 inventory 不构成跨语言 parity 承诺，发布制品仍未交付。
+
+## 当前治理快照限制
+
+上述已验证行为绑定历史 `30d7e219`。本轮显式 framework 升级、扩展桥/Task/事件/资源修复及三语言变化仍在实现和反例验证中；当前源码摘要、合同生成、独立复审和 main 验收完成前，不恢复 verified/closure 声明。

@@ -274,15 +274,33 @@ async def test_session_update_preserves_standard_session_identity() -> None:
 async def test_event_consumption_acknowledges_highest_contiguous_sequence() -> None:
     sent: list[tuple[str, object]] = []
 
-    class StubClient:
-        def __init__(self) -> None:
-            self._event_cursors: dict[WireHandle, int] = {}
+    from acp.client.connection import ClientSideConnection
 
-        async def notify(self, method: str, params: object) -> None:
-            sent.append((method, params))
+    class NativeTransport:
+        async def send(self, message):
+            sent.append((message["method"].removeprefix("_"), message["params"]))
 
-    client = StubClient()
+        async def receive(self):
+            return None
+
+        async def close(self):
+            return None
+
+    client = object.__new__(EchoAgentClient)
+    client.connection = ClientSideConnection(
+        _Callbacks({}, 8), NativeTransport(), listening=False
+    )
+    client._event_cursors = {}
+    client._replay_ranges = {}
+    client._closed = False
     stream = WireHandle("stream-1", "1", "stream")
+    feed = _EventFeed(_AsyncQueue(), stream)
+    event = {
+        "stream": stream.to_dict(),
+        "envelope": {"stream_id": stream.id, "sequence": "1"},
+    }
+    assert feed.accept_event(event)
+    client._events = {stream.id: feed}
     await EchoAgentClient._ack_event(
         client,  # type: ignore[arg-type]
         stream,
@@ -294,6 +312,8 @@ async def test_event_consumption_acknowledges_highest_contiguous_sequence() -> N
         {"stream": stream.to_dict(), "envelope": {"sequence": "1"}},
     )
 
+    assert client._event_cursors[stream] == 1
+    await client.connection.close()
     assert sent == [
         (
             "echo_agent/event/ack",
@@ -437,6 +457,10 @@ def test_typed_descriptors_render_the_frozen_extension_shapes() -> None:
         "component": "audit_logger",
         "name": "python-audit",
         "capabilities": {
+            "execution_cas_v1": False,
+            "conversation_projection": "unsupported",
+            "runtime_state": "unsupported",
+            "persistence_call": "unsupported",
             "isolation_level": None,
             "supports_streaming": False,
             "supports_notifications": False,

@@ -1,0 +1,88 @@
+{
+  "scope": "Node callback failures awaited/propagated; Java cancel exactcounts explicit; no business/backendfixture/input changes",
+  "files": [
+    {
+      "path": "sdks/typescript/test/task-subagent-host.test.js",
+      "before_verified_cb9_sha256": "b3667de18a9178c503a03f1f01d46ca772a68b4b6095ee36bd5f1bda73eb63fc",
+      "after_review_sha256": "29a2a9cf0c356d4ef9a4de16d83b4df039502d7f927ae80039f048c72ef0c3a5",
+      "normal_runtime_execution": "pending root current full language gate70572; original CB9 formal4 proof preserved with its original consumer hash"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java",
+      "before_verified_cb9_sha256": "ed6d051738e16ededccf9f7443fa382dee1c9db197628690f0527675676a62f5",
+      "after_review_sha256": "661439b90ca22913c248238116e64eccaa987f85b0b0573546cc983e66ed674b",
+      "normal_runtime_execution": "pending root current full language gate70572; original CB9 formal4 proof preserved with its original consumer hash"
+    }
+  ],
+  "typescript_runtime_after_review": {
+    "host_sha256": "c52da2d346d8848074b646e5442ecc83890cd68991f08287780280f871b59f89",
+    "source_sha256": "29a2a9cf0c356d4ef9a4de16d83b4df039502d7f927ae80039f048c72ef0c3a5",
+    "exit_code": 0,
+    "tests": 4,
+    "failures": 0,
+    "skipped": 0,
+    "log_sha256": "e85d1c715ddfcabb2702b88f49b200053300c7f9581bbeb31a60e5ad6b896668",
+    "raw_files": [
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/pause/fixture.json",
+        "sha256": "02bf08b0ed51291ec046aa073b2b164b0668502bfdb3f1d3be0ad137a58b0b86"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/pause/ready",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/pause/task-store.json",
+        "sha256": "328775d9e3952ddbbfc3026d697583dd9daf8c5179802efbd9338f4a34fb269d"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/pause/observed.json",
+        "sha256": "db7a4bcb95a9ad088af3bdcf672c4aa70ba31a7b607a1407bbdbca877ec522af"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/cancel/fixture.json",
+        "sha256": "5232f423bafdf92aa567dd3e6db33da7d81cde67bce1b491d40a0fee8b9a3d63"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/cancel/ready",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/cancel/task-store.json",
+        "sha256": "8aff7859723594162d930b470157b90734f9c138bb0bf815e6327f5cf79e9574"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/cancel/observed.json",
+        "sha256": "3d458ca1da4a296675bd5dfd19da98dcef1b9020e0e4ae5e61b56fd23162c55b"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/subagent-await/fixture.json",
+        "sha256": "b0d177ac52463d85d00d3d9cc05f34dbda37cad47875296cfe163a339f5031d6"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/subagent-await/ready",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/subagent-await/observed.json",
+        "sha256": "7bbac1488d3fff5bfc10043c93622e19559d4c3b79a2e86e56dcbcdc7ff24d75"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/crud-only/fixture.json",
+        "sha256": "51ab94c1004e03f1d216d578cbf354f7c15985b91ee95ef8935b7067d87a4ee7"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/crud-only/ready",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/crud-only/task-store.json",
+        "sha256": "6cfc20f44a041a79d179beeec5db235040b756edbaf845e49a8fa5b0bb431bef"
+      },
+      {
+        "path": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/review-consumer-delta/typescript-c52-verified/crud-only/observed.json",
+        "sha256": "1545bc28ce6ee00a130a5f9e1edc23c9aa4633a536e64f9c42455ea3cd413dab"
+      }
+    ]
+  }
+}

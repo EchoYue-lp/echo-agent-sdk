@@ -1,0 +1,94 @@
+unformatted: File would be reformatted
+  --> /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/compare_channel_forward_results.py:2:1
+   |
+1  | """Compare genuine language-consumer receipts; never create Host observations."""
+2  +
+3  | from __future__ import annotations
+--------------------------------------------------------------------------------
+13 |     result.setdefault("reply_to", None)
+   -     result["attachments"] = [dict(attachment, filename=attachment.get("filename"))
+   -                              for attachment in result["attachments"]]
+14 +     result["attachments"] = [
+15 +         dict(attachment, filename=attachment.get("filename"))
+16 +         for attachment in result["attachments"]
+17 +     ]
+18 |     return result
+19 |
+20 |
+21 | def normalize_core(value: dict) -> dict:
+   -     return {**value, "single": normalize_message(value["single"]),
+   -             "items": [normalize_message(item) for item in value["items"]]}
+22 +     return {
+23 +         **value,
+24 +         "single": normalize_message(value["single"]),
+25 +         "items": [normalize_message(item) for item in value["items"]],
+26 +     }
+27 |
+--------------------------------------------------------------------------------
+32 |     args = parser.parse_args()
+   -     scenario = json.loads(Path(__file__).with_name("channel_forward_scenarios.json").read_text())
+33 +     scenario = json.loads(
+34 +         Path(__file__).with_name("channel_forward_scenarios.json").read_text()
+35 +     )
+36 |     expected = normalize_core(scenario["normalized_core_expected"])
+--------------------------------------------------------------------------------
+46 |             raise ValueError(f"missing actual binary/source provenance: {path}")
+   -         core = next(row for row in receipt["scenarios"] if row["scenario"] == "single-stream-reply")
+47 +         core = next(
+48 +             row
+49 +             for row in receipt["scenarios"]
+50 +             if row["scenario"] == "single-stream-reply"
+51 +         )
+52 |         if normalize_core(core["observed"]) != expected:
+--------------------------------------------------------------------------------
+58 |             if row is None:
+   -                 raise ValueError(f"missing native malformed-input receipt: {path}: {case['id']}")
+59 +                 raise ValueError(
+60 +                     f"missing native malformed-input receipt: {path}: {case['id']}"
+61 +                 )
+62 |             error_code = row.get("error_code", row.get("error", {}).get("code"))
+   -             if error_code != "invalid_value" or row.get("callback_delta") != 0 or row.get("callback_delta_expected") != 0:
+   -                 raise ValueError(f"malformed input failed to preserve error/callback-zero: {path}: {case['id']}")
+   -             invalid[case["id"]] = {"error_code": error_code, "callback_delta": row["callback_delta"]}
+63 +             if (
+64 +                 error_code != "invalid_value"
+65 +                 or row.get("callback_delta") != 0
+66 +                 or row.get("callback_delta_expected") != 0
+67 +             ):
+68 +                 raise ValueError(
+69 +                     f"malformed input failed to preserve error/callback-zero: {path}: {case['id']}"
+70 +                 )
+71 +             invalid[case["id"]] = {
+72 +                 "error_code": error_code,
+73 +                 "callback_delta": row["callback_delta"],
+74 +             }
+75 |         observed_invalid[language] = invalid
+76 |         for row in receipt["scenarios"]:
+   -             if row.get("callback_delta_expected") == 0 and row.get("callback_delta") != 0:
+   -                 raise ValueError(f"invalid request invoked the native handler: {path}: {row['scenario']}")
+77 +             if (
+78 +                 row.get("callback_delta_expected") == 0
+79 +                 and row.get("callback_delta") != 0
+80 +             ):
+81 +                 raise ValueError(
+82 +                     f"invalid request invoked the native handler: {path}: {row['scenario']}"
+83 +                 )
+84 |     if languages != {"typescript", "python", "java"}:
+   -         raise ValueError(f"comparison requires all three native languages, got {sorted(languages)}")
+85 +         raise ValueError(
+86 +             f"comparison requires all three native languages, got {sorted(languages)}"
+87 +         )
+88 |     values = list(observed_invalid.values())
+89 |     if any(value != values[0] for value in values[1:]):
+   -         raise ValueError("native malformed-input error/callback results differ across languages")
+   -     print("three native Channel forward results, exact sequences, terminal, callback counts and twelve invalid-input errors agree")
+90 +         raise ValueError(
+91 +             "native malformed-input error/callback results differ across languages"
+92 +         )
+93 +     print(
+94 +         "three native Channel forward results, exact sequences, terminal, callback counts and twelve invalid-input errors agree"
+95 +     )
+96 |
+   |
+
+1 file would be reformatted, 174 files already formatted

@@ -1,0 +1,178 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+___________ test_real_host_gap_before_official_ack_completion[False] ___________
+
+success = False
+tmp_path = PosixPath('/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/pytest-of-ls/pytest-950/test_real_host_gap_before_offi0')
+
+    @pytest.mark.skipif(not HOST, reason="ECHO_AGENT_SDK_HOST is required")
+    @pytest.mark.parametrize("success", [False, True])
+    @pytest.mark.asyncio
+    async def test_real_host_gap_before_official_ack_completion(success, tmp_path):
+        """The genuine Host resumes while the genuine ACP write is still pending."""
+        model = await asyncio.create_subprocess_exec(
+            "python3",
+            str(TESTING / "gap_ack_fixture.py"),
+            "--work",
+            str(tmp_path),
+            "--mode",
+            "oversized",
+        )
+        try:
+            await wait_for(lambda: (tmp_path / "ready").exists())
+            async with await EchoAgentClient.spawn(
+                "python3",
+                str(TESTING / "gap_ack_host_proxy.py"),
+                HOST,
+                str(tmp_path / "host.json"),
+            ) as sdk:
+                agent = await sdk.create_agent()
+                session = await agent.create_session()
+                run = await session.start_run("pending ACK real continuation 中文🌊")
+                await wait_for(lambda: (tmp_path / "parked").exists())
+                await wait_for(lambda: run.stream.id in sdk._events)
+                page = await run.replay("0", 64)
+                cursor = int(page["next_cursor"]["last_processed_sequence"])
+                feed = sdk._events[run.stream.id]
+                old_sequence = feed.last_sequence
+                assert cursor > old_sequence
+                before = len(notifications(tmp_path))
+                native = sdk.connection.ext_notification
+                entered = asyncio.Event()
+                completion = asyncio.get_running_loop().create_future()
+    
+                async def gated_notification(method, params):
+                    await native(method, params)
+                    if method == "echo_agent/event/ack":
+                        entered.set()
+                        await completion
+    
+                sdk.connection.ext_notification = gated_notification
+                task = asyncio.create_task(
+                    sdk.notify(
+                        "echo_agent/event/ack",
+                        {
+                            "ack": {
+                                "stream": run.stream.to_dict(),
+                                "last_processed_sequence": str(cursor),
+                            }
+                        },
+                    )
+                )
+                try:
+                    await asyncio.wait_for(entered.wait(), 5)
+                    assert run.stream not in sdk._event_cursors
+                    (tmp_path / "release").touch()
+                    await wait_for(lambda: len(notifications(tmp_path)) > before)
+                    next_gap = notifications(tmp_path)[before]["params"]["gap"]
+                    assert int(next_gap["from_sequence"]) == cursor + 1
+>                   await wait_for(
+                        lambda: feed.last_sequence == int(next_gap["snapshot_watermark"])
+                    )
+
+tests/test_gap_ack_host.py:523: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+predicate = <function test_real_host_gap_before_official_ack_completion.<locals>.<lambda> at 0x1051edd00>
+
+    async def wait_for(predicate) -> None:
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + 10
+        while not predicate():
+>           assert loop.time() < deadline, "real Host scenario did not reach its barrier"
+E           AssertionError: real Host scenario did not reach its barrier
+E           assert 2057752.663021916 < 2057752.659805083
+E            +  where 2057752.663021916 = time()
+E            +    where time = <_UnixSelectorEventLoop running=True closed=False debug=False>.time
+
+tests/test_gap_ack_host.py:20: AssertionError
+___________ test_real_host_gap_before_official_ack_completion[True] ____________
+
+success = True
+tmp_path = PosixPath('/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/pytest-of-ls/pytest-950/test_real_host_gap_before_offi1')
+
+    @pytest.mark.skipif(not HOST, reason="ECHO_AGENT_SDK_HOST is required")
+    @pytest.mark.parametrize("success", [False, True])
+    @pytest.mark.asyncio
+    async def test_real_host_gap_before_official_ack_completion(success, tmp_path):
+        """The genuine Host resumes while the genuine ACP write is still pending."""
+        model = await asyncio.create_subprocess_exec(
+            "python3",
+            str(TESTING / "gap_ack_fixture.py"),
+            "--work",
+            str(tmp_path),
+            "--mode",
+            "oversized",
+        )
+        try:
+            await wait_for(lambda: (tmp_path / "ready").exists())
+            async with await EchoAgentClient.spawn(
+                "python3",
+                str(TESTING / "gap_ack_host_proxy.py"),
+                HOST,
+                str(tmp_path / "host.json"),
+            ) as sdk:
+                agent = await sdk.create_agent()
+                session = await agent.create_session()
+                run = await session.start_run("pending ACK real continuation 中文🌊")
+                await wait_for(lambda: (tmp_path / "parked").exists())
+                await wait_for(lambda: run.stream.id in sdk._events)
+                page = await run.replay("0", 64)
+                cursor = int(page["next_cursor"]["last_processed_sequence"])
+                feed = sdk._events[run.stream.id]
+                old_sequence = feed.last_sequence
+                assert cursor > old_sequence
+                before = len(notifications(tmp_path))
+                native = sdk.connection.ext_notification
+                entered = asyncio.Event()
+                completion = asyncio.get_running_loop().create_future()
+    
+                async def gated_notification(method, params):
+                    await native(method, params)
+                    if method == "echo_agent/event/ack":
+                        entered.set()
+                        await completion
+    
+                sdk.connection.ext_notification = gated_notification
+                task = asyncio.create_task(
+                    sdk.notify(
+                        "echo_agent/event/ack",
+                        {
+                            "ack": {
+                                "stream": run.stream.to_dict(),
+                                "last_processed_sequence": str(cursor),
+                            }
+                        },
+                    )
+                )
+                try:
+                    await asyncio.wait_for(entered.wait(), 5)
+                    assert run.stream not in sdk._event_cursors
+                    (tmp_path / "release").touch()
+                    await wait_for(lambda: len(notifications(tmp_path)) > before)
+                    next_gap = notifications(tmp_path)[before]["params"]["gap"]
+                    assert int(next_gap["from_sequence"]) == cursor + 1
+>                   await wait_for(
+                        lambda: feed.last_sequence == int(next_gap["snapshot_watermark"])
+                    )
+
+tests/test_gap_ack_host.py:523: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+predicate = <function test_real_host_gap_before_official_ack_completion.<locals>.<lambda> at 0x106992ca0>
+
+    async def wait_for(predicate) -> None:
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + 10
+        while not predicate():
+>           assert loop.time() < deadline, "real Host scenario did not reach its barrier"
+E           AssertionError: real Host scenario did not reach its barrier
+E           assert 2057763.274005666 < 2057763.265667208
+E            +  where 2057763.274005666 = time()
+E            +    where time = <_UnixSelectorEventLoop running=True closed=False debug=False>.time
+
+tests/test_gap_ack_host.py:20: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_gap_ack_host.py::test_real_host_gap_before_official_ack_completion[False]
+FAILED tests/test_gap_ack_host.py::test_real_host_gap_before_official_ack_completion[True]
+2 failed, 9 deselected in 22.13s

@@ -1,0 +1,18 @@
+{
+  "label": "java-test-nop-provider",
+  "command": [
+    "bash",
+    "-c",
+    "mvn -q test && mvn -q dependency:build-classpath -Dmdep.outputFile=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-test-logging-provider/java.cp && java -cp \"target/classes:$(cat /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-test-logging-provider/java.cp)\" com.echoagent.sdk.Example \"$ECHO_AGENT_SDK_HOST\" \"$ECHO_AGENT_SDK_CONFIG\" /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/facade-operation-catalog.json"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-test-logging-provider/full-java.log",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 9332,
+  "bytesWritten": 9332,
+  "startedAt": "2026-10-13T21:08:17.121Z",
+  "finishedAt": "2026-10-13T21:09:38.174Z"
+}

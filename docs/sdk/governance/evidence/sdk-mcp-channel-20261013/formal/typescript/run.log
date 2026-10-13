@@ -1,0 +1,38 @@
+TAP version 13
+# MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-stdio-fH3XH3
+# MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-transport-retry-nfiGLs
+# Subtest: MCP real stdio metadata/resources/prompts and same-name owner cleanup
+ok 1 - MCP real stdio metadata/resources/prompts and same-name owner cleanup
+  ---
+  duration_ms: 5621.867958
+  type: 'test'
+  ...
+# MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-normal-XCDOE0
+# Subtest: MCP registered transport failed close retains exact client/quota for retry
+ok 2 - MCP registered transport failed close retains exact client/quota for retry
+  ---
+  duration_ms: 5260.453042
+  type: 'test'
+  ...
+# MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-retry-nqNXrE
+# Subtest: Channels attachments/exact stop normal
+ok 3 - Channels attachments/exact stop normal
+  ---
+  duration_ms: 5241.769459
+  type: 'test'
+  ...
+# Subtest: Channels attachments/exact stop retry
+ok 4 - Channels attachments/exact stop retry
+  ---
+  duration_ms: 5249.970791
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21560.632375

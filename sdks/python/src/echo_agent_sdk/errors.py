@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .wire import WireHandle
 
 
 class EchoAgentError(RuntimeError):
@@ -13,6 +16,7 @@ class EchoAgentError(RuntimeError):
         retryable: str = "never",
         operation: str | None = None,
         details: Any = None,
+        handle: WireHandle | None = None,
     ) -> None:
         super().__init__(message)
         self.code = code
@@ -20,6 +24,7 @@ class EchoAgentError(RuntimeError):
         self.retryable = retryable
         self.operation = operation
         self.details = details
+        self.handle = handle
 
     @classmethod
     def from_exception(
@@ -28,6 +33,8 @@ class EchoAgentError(RuntimeError):
         data = getattr(error, "data", None)
         if not isinstance(data, dict):
             data = {}
+        from .wire import WireHandle
+
         return cls(
             str(data.get("code", "transport_error")),
             str(data.get("message", str(error))),
@@ -36,4 +43,7 @@ class EchoAgentError(RuntimeError):
             if isinstance(data.get("operation"), str)
             else operation,
             data.get("details"),
+            WireHandle.from_dict(data["handle"])
+            if data.get("handle") is not None
+            else None,
         )

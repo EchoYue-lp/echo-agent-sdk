@@ -1,0 +1,19 @@
+{
+  "name": "task-store-execution-cas-opt-in-valid",
+  "kind": "valid",
+  "target": "ExtensionRegisterRequest",
+  "description": "A revisioned task store explicitly declares execution CAS before runtime dispatch.",
+  "payload": {
+    "kind": "agent_component",
+    "implementation_id": "task-store",
+    "descriptor": {
+      "kind": "agent_component",
+      "descriptor_version": 1,
+      "component": "revisioned_task_store",
+      "name": "task-store",
+      "capabilities": {
+        "execution_cas_v1": true
+      }
+    }
+  }
+}

@@ -1,0 +1,106 @@
+"""TMP accepted public-client proof for native computation surfaces."""
+import asyncio
+import hashlib
+import json
+import math
+import sys
+import tempfile
+from pathlib import Path
+from echo_agent_sdk import EchoAgentClient,EchoAgentError,from_wire,to_wire
+
+ROOT=Path(__file__).parent
+REPO=Path('/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance')
+HOST='/tmp/echo-sdk-governance-tool-validation-host'
+DIGEST='sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+
+async def main():
+    work=Path(tempfile.mkdtemp(prefix='sdk-computation-python-'))
+    (work/'stats.csv').write_text('value,label\n1,一\n2,二\n3,三\n4,四\n')
+    (work/'input.csv').write_text('id,group,quarter,value\n1,a,q1,1\n2,a,q2,2\n3,b,q1,3\n4,b,q2,4\n')
+    (work/'lookup.csv').write_text('id,label\n1,中文\n3,emoji😀\n')
+    (work/'quality.csv').write_text('id,value,label\n1,10,中文\n2,,emoji😀\n3,-1,alpha\n4,100,beta\n')
+    sentinel=work/'sentinel.txt';sentinel.write_bytes(b'unchanged\n')
+    config=json.loads((REPO/'echo-sdk-host/config.sdk.example.json').read_text());config['sdk_profile']['state_root']=str(work/'state');config['default_agent']['agent']['memory_path']=str(work/'memory.jsonl');(work/'host.json').write_text(json.dumps(config))
+    rows=[]
+    async with await EchoAgentClient.spawn(HOST,'--config',str(work/'host.json'))as sdk:
+        agent=await sdk.create_agent();session=await agent.create_session(str(work))
+        async def call(identifier,operation,args,expect=None):
+            try:
+                if operation.startswith('content-guard.'):
+                    route=sdk.catalog.resolve(operation)
+                    response=await sdk.request(route.method,{'operation':operation,'signature_digest':route.signature,'handle':session.wire.to_dict(),'arguments':[to_wire(item)for item in args]})
+                    result=from_wire(response['value'])
+                else:
+                    result=await session.invoke(operation,args)
+                rows.append({'id':identifier,'operation':operation,'arguments':args,'result':result})
+                assert expect is None,(identifier,'expectedfailure',expect,result)
+                return result
+            except EchoAgentError as error:
+                row={'id':identifier,'operation':operation,'arguments':args,'error':{'code':error.code,'message':error.message,'retryable':error.retryable,'operation':error.operation,'handle':error.handle.to_dict()if error.handle else None,'details':error.details}}
+                rows.append(row)
+                assert expect is not None,(identifier,row)
+                assert error.code==expect,(identifier,row,expect)
+                return row['error']
+        # Tool parameters follow each existing schema declaration, no guessed columns.
+        stats=await call('stats-exact','exploratory_statistics',['value',str(work/'stats.csv')])
+        stats_data=from_wire(stats['data']) if stats.get('data') else json.loads(stats['output'])
+        s=stats_data['columns'][0]
+        assert stats_data['inference']is False
+        assert math.isclose(s['mean'],2.5)and math.isclose(s['sample_std_dev'],math.sqrt(5/3))
+        assert s['p25']==1.75 and s['median']==2.5 and s['p75']==3.25 and s['min']==1 and s['max']==4
+        assert int(s['valid_count'])==4 and int(s['missing_or_non_finite_count'])==0
+        numeric=await call('stats-nonnumeric','exploratory_statistics',['label',str(work/'stats.csv')])
+        numeric_data=from_wire(numeric['data']) if numeric.get('data') else json.loads(numeric['output'])
+        assert numeric_data['columns']==[{'name':'label','error':'Non-numeric column'}]
+        await call('stats-unknowncolumn','exploratory_statistics',['unknown',str(work/'stats.csv')],'framework_error')
+        async def structured(identifier,args,expected=None):
+            try:
+                value=await sdk.request('echo_agent/structured_output/validate',{'operation':'structured_output.validate','signature_digest':DIGEST,'handle':session.wire.to_dict(),'arguments':[to_wire(item)for item in args]})
+                result=from_wire(value['value']);rows.append({'id':identifier,'operation':'structured_output.validate','arguments':args,'result':result});assert expected is None;return result
+            except EchoAgentError as error:
+                rows.append({'id':identifier,'operation':'structured_output.validate','error':{'code':error.code,'message':error.message,'retryable':error.retryable,'operation':error.operation,'details':error.details}});assert error.code==expected;return None
+        schema={'type':'object','properties':{'count':{'type':'integer','minimum':1},'name':{'type':'string'}},'required':['count'],'additionalProperties':False}
+        assert(await structured('structured-valid',[schema,{'count':2,'name':'中文😀'}]))=={'valid':True,'errors':[]}
+        invalid=await structured('structured-invalid',[schema,{'count':0,'name':3}]);assert invalid['valid']is False and len(invalid['errors'])==2 and {e['instance_path']for e in invalid['errors']}=={'/count','/name'}
+        assert(await structured('structured-no-sample',[schema]))=={'valid':True,'errors':[]}
+        null=await structured('structured-null-sample',[schema,None]);assert null['valid']is False and null['errors'][0]['instance_path']==''
+        await structured('structured-bad-schema',['not-a-schema'],'invalid_value')
+        await structured('structured-too-large',[{'description':'a'*262145}],'payload_too_large')
+        lots=await structured('structured-error-bound',[{'type':'object','properties':{f'p{i}':{'type':'integer'}for i in range(20)},'required':[f'p{i}'for i in range(20)]},{}]);assert len(lots['errors'])==16 and lots['valid']is False
+        content='中😀 alice@example.com 尾'
+        detected=await call('guard-utf8-detect','content-guard.detect',[content]);assert len(detected['matches'])==1;match=detected['matches'][0];assert(int(match['start']),int(match['end']),match['matched'])==(8,25,'alice@example.com')
+        assert(await call('guard-utf8-redact','content-guard.redact',[content]))['redacted']=='中😀 [REDACTED:EMAIL] 尾'
+        assert(await call('guard-clean','content-guard.is_clean',['中😀清洁尾']))=={'clean':True}
+        for mode,variant in [('detect','detected'),('reject','rejected'),('redact','redacted')]:
+            checked=await call('guard-'+mode,'content-guard.check',[mode,content]);print('CHECK',checked,flush=True);assert checked.get('variant',checked.get('value',{}).get('variant'))==variant
+        await call('guard-illegalmode','content-guard.check',['illegal',content],'invalid_value')
+        chart_data=[{'label':'中文😀','value':1},{'label':'尾','value':4}]
+        for chart,mark in [('line','line'),('bar','bar'),('pie','arc'),('scatter','point'),('area','area'),('heatmap','rect'),('boxplot','boxplot')]:
+            result=await call('chart-'+chart,'generate_chart',[chart,'中😀标题','label','value',None,chart_data,321,123,'json']);spec=json.loads(result['output']);assert spec['mark']==mark and spec['data']['values']==chart_data and spec['width']==321 and spec['height']==123 and spec['title']=='中😀标题'
+        await call('chart-unknown','generate_chart',['illegal','bad','label','value',None,chart_data,321,123,'json'],'framework_error')
+        await call('chart-wrongformat','generate_chart',['bar','bad','label','value',None,chart_data,321,123,'png'],'framework_error')
+        await call('chart-trailingnullarity','generate_chart',['bar','bad','label','value',None,chart_data,321,123,'json',None],'invalid_value')
+        aggregate=await call('data-aggregate','aggregate_data',[str(work/'input.csv'),'group','value:sum,value:mean,value:count'])
+        joined=await call('data-join','join_data',[str(work/'input.csv'),str(work/'lookup.csv'),['id'],'left',None,None,None,10])
+        pivot=await call('data-pivot','pivot_data',[str(work/'input.csv'),'group','quarter','value','sum'])
+        quality=await call('data-missing','missing_value_analysis',[str(work/'quality.csv')])
+        consistency=await call('data-consistency','consistency_check',[str(work/'quality.csv'),json.dumps([{'column':'value','type':'range','min':0,'max':50}])])
+        await call('data-join-keyfail','join_data',[str(work/'input.csv'),str(work/'lookup.csv'),['unknown'],'inner'],'framework_error')
+        await call('data-pivot-colfail','pivot_data',[str(work/'input.csv'),'group','quarter','unknown','sum'],'framework_error')
+        await call('data-export-preserve-sentinel','export_data',[str(work/'input.csv'),str(sentinel),'illegal'],'framework_error')
+        assert sentinel.read_bytes()==b'unchanged\n'
+        # Known-overlap is observation, never patched or silently blessed.
+        overlap=await call('guard-overlap-detect','content-guard.detect',['4513812345678111'])
+        try:
+            route=sdk.catalog.resolve('content-guard.redact')
+            response=await sdk.request(route.method,{'operation':'content-guard.redact','signature_digest':route.signature,'handle':session.wire.to_dict(),'arguments':[to_wire('4513812345678111')]})
+            result=from_wire(response['value'])
+            rows.append({'id':'guard-overlap-redact','operation':'content-guard.redact','arguments':['4513812345678111'],'result':result,'expected':'one covering card replacement; no raw prefix remains'})
+        except EchoAgentError as error:
+            rows.append({'id':'guard-overlap-redact','error':{'code':error.code,'message':error.message,'operation':error.operation,'details':error.details},'expected':'one covering card replacement; no raw prefix remains'})
+        await session.close();await agent.close()
+    evidence={'host':HOST,'host_sha256':hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),'work':str(work),'rows':rows,'actual_side_effects':{'sentinel_sha256':hashlib.sha256(sentinel.read_bytes()).hexdigest(),'sentinel_contents':sentinel.read_text()},'classification':'temporaryactualconsumer nativecalculations/errors/sideeffects, overlap not validatedgreen'}
+    (ROOT/'python-computation-evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n')
+    print('actual computation rows',len(rows),'work',work)
+
+asyncio.run(main())

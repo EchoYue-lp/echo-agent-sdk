@@ -17,9 +17,13 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
-当前仓库已从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，并固定到已推送的
-framework extraction commit `27c7701e1eb116db1076da7f84bb68898544a44c`。精确源快照、
-provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
+仓库迁移从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，原 extraction pin 为
+`27c7701e1eb116db1076da7f84bb68898544a44c`；该历史归属保留在 `MIGRATION-SOURCE.md`。
+当前 Host 治理候选精确依赖已发布 framework `b9099558620f5f9693c736c85c214db14f62a8cb`，
+见 [published-pin provenance](docs/sdk/governance/evidence/sdk-final-framework-contract/published-pin-provenance.json)。
+[十二项 accepted-source 连续性方案](docs/sdk/governance/accepted-source-continuity-proposal.md)
+仍为 proposed；完整合同生成和 SDK main 验收尚未完成，不能由 pin 已发布推断 release。
+精确源快照、provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
 
 - protocol 是纯 wire/schema crate；framework 类型转换只能位于 Host adapter；
 - `source-contract.json` 只覆盖 accepted external contract 和 accepted catalog；完整

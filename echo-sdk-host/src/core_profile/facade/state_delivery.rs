@@ -14,7 +14,7 @@
 
 use echo_agent::delivery::{
     DeliveryClaim, DeliveryEnvelope, DeliveryEvent, DeliveryLedger, DeliveryLedgerConfig,
-    DeliveryLedgerError, DeliveryOutcome, DeliveryRecord, DeliverySettlement, DeliveryTransition,
+    DeliveryLedgerError, DeliveryOutcome, DeliverySettlement, DeliveryTransition,
 };
 use echo_agent::state::RuntimeStateStore as _;
 use echo_agent::state::journal::{MemoryCheckpointStore, MemoryEventJournal};
@@ -49,12 +49,7 @@ fn invalid(method: &'static str, message: impl Into<String>) -> EchoSdkError {
 }
 
 fn framework(method: &'static str, error: echo_agent::error::ReactError) -> EchoSdkError {
-    wire::sdk_error(
-        ExtensionErrorCode::FrameworkError,
-        wire::bounded_framework_message(&error.to_string()),
-        Retryability::Never,
-        method,
-    )
+    wire::framework_error(&error, method)
 }
 
 fn json_of(
@@ -62,7 +57,7 @@ fn json_of(
     value: &WireValue,
     position: usize,
 ) -> Result<serde_json::Value, EchoSdkError> {
-    value.clone().into_json().map_err(|error| {
+    super::family_argument_json(value).map_err(|error| {
         invalid(
             method,
             format!("argument {position} is not a lossless wire value: {error}"),
@@ -115,7 +110,14 @@ pub(crate) async fn dispatch_state(
                 .map_err(|error| framework(STATE_METHOD, error))?;
             let value = checkpoint
                 .as_ref()
-                .map(|checkpoint| serde_json::to_value(checkpoint).unwrap_or_default())
+                .map(serde_json::to_value)
+                .transpose()
+                .map_err(|error| {
+                    invalid(
+                        STATE_METHOD,
+                        format!("checkpoint serialization failed: {error}"),
+                    )
+                })?
                 .unwrap_or(serde_json::Value::Null);
             wire(serde_json::json!({"checkpoint": value}))
         }
@@ -202,37 +204,34 @@ fn ledger_record(
         })
 }
 
-/// Rebuild the framework claim for one message from the live projection;
-/// transitions require the exact claim identity the ledger issued.
+/// Preserve the caller's exact attempt identity; rebuilding from the current
+/// projection would let a delayed attempt settle a newer claim.
 fn claim_of(
-    record: &DeliveryLedgerRecord,
-    message_id: &str,
+    value: &serde_json::Value,
 ) -> Result<DeliveryClaim<String, serde_json::Value>, EchoSdkError> {
-    let found = record
-        .ledger
-        .with_projection(|projection| projection.record(message_id).cloned());
-    let found: DeliveryRecord<String, serde_json::Value> =
-        found.ok_or_else(|| invalid(DELIVERY_METHOD, format!("unknown message {message_id}")))?;
-    let attempt_id = found.attempt_id.ok_or_else(|| {
+    serde_json::from_value(value.clone()).map_err(|error| {
         invalid(
             DELIVERY_METHOD,
-            format!("message {message_id} has not been claimed yet"),
+            format!(
+                "delivery operation requires the complete claim returned by claim_next: {error}"
+            ),
         )
-    })?;
-    let claimed_at = found.claimed_at.ok_or_else(|| {
-        invalid(
-            DELIVERY_METHOD,
-            format!("message {message_id} has no claim timestamp"),
-        )
-    })?;
-    Ok(DeliveryClaim {
-        payload: found.payload,
-        message_id: found.message_id,
-        route: found.route,
-        attempt_id,
-        attempt: found.attempt,
-        claimed_at,
     })
+}
+
+fn optional_string_at<'a>(
+    arguments: &'a [serde_json::Value],
+    position: usize,
+    name: &str,
+) -> Result<Option<&'a str>, EchoSdkError> {
+    match arguments.get(position) {
+        None | Some(serde_json::Value::Null) => Ok(None),
+        Some(serde_json::Value::String(value)) => Ok(Some(value)),
+        Some(_) => Err(invalid(
+            DELIVERY_METHOD,
+            format!("{name} must be a string or null"),
+        )),
+    }
 }
 
 fn outcome_of(text: &str) -> Result<DeliveryOutcome, EchoSdkError> {
@@ -275,6 +274,23 @@ pub(crate) async fn dispatch_delivery(
         .enumerate()
         .map(|(position, value)| json_of(DELIVERY_METHOD, value, position))
         .collect::<Result<_, _>>()?;
+    let expected_arguments = match request.operation.as_str() {
+        "delivery.claim_next" => Some(1),
+        "delivery.transition" | "delivery.defer" => Some(4),
+        "delivery.settle" => Some(5),
+        _ => None,
+    };
+    if let Some(expected) = expected_arguments
+        && request.arguments.len() != expected
+    {
+        return Err(invalid(
+            DELIVERY_METHOD,
+            format!(
+                "{} requires exactly {expected} arguments; optional fields require explicit null",
+                request.operation
+            ),
+        ));
+    }
     match request.operation.as_str() {
         "delivery.ledger.open" => {
             let journal = Arc::new(MemoryEventJournal::<DeliveryEvent>::new());
@@ -341,15 +357,14 @@ pub(crate) async fn dispatch_delivery(
                 .claim_next()
                 .map_err(|error| framework(DELIVERY_METHOD, ledger_error(error)))?;
             let claim = claim
-                .map(|claim| {
-                    serde_json::json!({
-                        "message_id": claim.message_id,
-                        "route": claim.route,
-                        "payload": claim.payload,
-                        "attempt_id": claim.attempt_id,
-                        "attempt": claim.attempt,
-                    })
-                })
+                .map(serde_json::to_value)
+                .transpose()
+                .map_err(|error| {
+                    invalid(
+                        DELIVERY_METHOD,
+                        format!("claim serialization failed: {error}"),
+                    )
+                })?
                 .unwrap_or(serde_json::Value::Null);
             wire(serde_json::json!({"claim": claim}))
         }
@@ -360,11 +375,16 @@ pub(crate) async fn dispatch_delivery(
                 "a delivery ledger resource",
                 DELIVERY_METHOD,
             )?;
-            let message_id = string_at(DELIVERY_METHOD, &arguments, 1, "a message id")?;
+            let claim = claim_of(arguments.get(1).ok_or_else(|| {
+                invalid(
+                    DELIVERY_METHOD,
+                    "delivery operation requires a claim at argument 1",
+                )
+            })?)?;
             let kind = string_at(DELIVERY_METHOD, &arguments, 2, "a transition kind")?;
             let turn_id = string_at(DELIVERY_METHOD, &arguments, 3, "a turn id")?;
             let record = ledger_record(handles, ledgers, &resource, owner)?;
-            let claim = claim_of(&record, &message_id)?;
+
             let transition = match kind.as_str() {
                 "effect_started" => DeliveryTransition::effect_started(turn_id),
                 "mailbox_accepted" => DeliveryTransition::mailbox_accepted(turn_id),
@@ -391,11 +411,16 @@ pub(crate) async fn dispatch_delivery(
                 "a delivery ledger resource",
                 DELIVERY_METHOD,
             )?;
-            let message_id = string_at(DELIVERY_METHOD, &arguments, 1, "a message id")?;
+            let claim = claim_of(arguments.get(1).ok_or_else(|| {
+                invalid(
+                    DELIVERY_METHOD,
+                    "delivery operation requires a claim at argument 1",
+                )
+            })?)?;
             let reason = string_at(DELIVERY_METHOD, &arguments, 2, "a reason")?;
             let next_attempt_at = string_at(DELIVERY_METHOD, &arguments, 3, "an RFC3339 deadline")?;
             let record = ledger_record(handles, ledgers, &resource, owner)?;
-            let claim = claim_of(&record, &message_id)?;
+
             let parsed =
                 chrono::DateTime::parse_from_rfc3339(&next_attempt_at).map_err(|error| {
                     invalid(
@@ -417,12 +442,17 @@ pub(crate) async fn dispatch_delivery(
                 "a delivery ledger resource",
                 DELIVERY_METHOD,
             )?;
-            let message_id = string_at(DELIVERY_METHOD, &arguments, 1, "a message id")?;
+            let claim = claim_of(arguments.get(1).ok_or_else(|| {
+                invalid(
+                    DELIVERY_METHOD,
+                    "delivery operation requires a claim at argument 1",
+                )
+            })?)?;
             let outcome = string_at(DELIVERY_METHOD, &arguments, 2, "an outcome")?;
-            let reason = arguments.get(3).and_then(serde_json::Value::as_str);
-            let turn_id = arguments.get(4).and_then(serde_json::Value::as_str);
+            let reason = optional_string_at(&arguments, 3, "reason")?;
+            let turn_id = optional_string_at(&arguments, 4, "turn id")?;
             let record = ledger_record(handles, ledgers, &resource, owner)?;
-            let claim = claim_of(&record, &message_id)?;
+
             let settlement = DeliverySettlement::terminal(
                 turn_id.map(str::to_string),
                 outcome_of(&outcome)?,
@@ -460,13 +490,21 @@ pub(crate) async fn dispatch_delivery(
                 DELIVERY_METHOD,
             )?;
             let record = ledger_record(handles, ledgers, &resource, owner)?;
-            let page = record.ledger.with_projection(|projection| {
-                projection
-                    .records()
-                    .take(limits.page)
-                    .map(|record| serde_json::to_value(record).unwrap_or_default())
-                    .collect::<Vec<_>>()
-            });
+            let page = record
+                .ledger
+                .with_projection(|projection| {
+                    projection
+                        .records()
+                        .take(limits.page)
+                        .map(serde_json::to_value)
+                        .collect::<Result<Vec<_>, _>>()
+                })
+                .map_err(|error| {
+                    invalid(
+                        DELIVERY_METHOD,
+                        format!("delivery snapshot serialization failed: {error}"),
+                    )
+                })?;
             wire(serde_json::json!({"records": page}))
         }
         other => Err(invalid(
@@ -485,4 +523,189 @@ pub(crate) fn drop_session_ledgers(
         .lock()
         .unwrap_or_else(|error| error.into_inner())
         .retain(|id, _| !closed.iter().any(|closed_id| closed_id == id));
+}
+
+#[cfg(test)]
+mod adapter_regression_tests {
+    use super::*;
+    use serde_json::json;
+
+    fn request(
+        operation: &str,
+        values: Vec<serde_json::Value>,
+    ) -> Result<FeatureOperationRequest, Box<dyn std::error::Error>> {
+        Ok(FeatureOperationRequest {
+            operation: operation.to_string(),
+            signature_digest: String::new(),
+            handle: None,
+            arguments: values
+                .into_iter()
+                .map(WireValue::from_json)
+                .collect::<Result<_, _>>()?,
+        })
+    }
+
+    #[tokio::test]
+    async fn exact_claim_roundtrip_rejects_delayed_attempt_and_id_only()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let handles = HandleRegistry::new(1, 16);
+        let llm_config = echo_agent::llm::LlmConfig::for_provider(
+            "local",
+            "http://127.0.0.1:11434/v1",
+            "",
+            "unused",
+            echo_agent::llm::LlmApiProtocol::ChatCompletions,
+        )?;
+        let definition = crate::factory::PreparedAgentDefinition::new(
+            Default::default(),
+            Arc::new(echo_agent::llm::OpenAiClient::new(llm_config)?),
+            None,
+            false,
+        );
+        let (agent, _) = handles
+            .register_agent(Arc::new(definition), String::new())
+            .map_err(|error| std::io::Error::other(error.message))?;
+        handles
+            .register_session_with_cwd("owner".to_string(), agent.id, None)
+            .map_err(|error| std::io::Error::other(error.message))?;
+        let ledgers = std::sync::Mutex::new(HashMap::new());
+        let limits = super::super::FacadeFamilyLimits {
+            max_resources: 1,
+            page: 8,
+        };
+        let opened = dispatch_delivery(
+            &handles,
+            &ledgers,
+            "owner",
+            &request("delivery.ledger.open", vec![])?,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        let resource = opened.get("resource").cloned().ok_or("resource missing")?;
+        dispatch_delivery(
+            &handles,
+            &ledgers,
+            "owner",
+            &request(
+                "delivery.enqueue",
+                vec![
+                    resource.clone(),
+                    json!("message"),
+                    json!("route"),
+                    json!({"中文":"🌳"}),
+                ],
+            )?,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?;
+        let first = dispatch_delivery(
+            &handles,
+            &ledgers,
+            "owner",
+            &request("delivery.claim_next", vec![resource.clone()])?,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        let first = first.get("claim").cloned().ok_or("first claim missing")?;
+        let exact = claim_of(&first).map_err(|error| std::io::Error::other(error.message))?;
+        assert_eq!(serde_json::to_value(exact)?, first);
+        dispatch_delivery(
+            &handles,
+            &ledgers,
+            "owner",
+            &request(
+                "delivery.defer",
+                vec![
+                    resource.clone(),
+                    first.clone(),
+                    json!("retry"),
+                    json!((chrono::Utc::now() - chrono::Duration::seconds(1)).to_rfc3339()),
+                ],
+            )?,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?;
+        let second = dispatch_delivery(
+            &handles,
+            &ledgers,
+            "owner",
+            &request("delivery.claim_next", vec![resource.clone()])?,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        let second = second.get("claim").cloned().ok_or("second claim missing")?;
+        assert_ne!(first.get("attempt_id"), second.get("attempt_id"));
+        for operation in ["delivery.settle", "delivery.defer", "delivery.transition"] {
+            let extra = match operation {
+                "delivery.defer" => vec![json!("late"), json!(chrono::Utc::now().to_rfc3339())],
+                "delivery.transition" => vec![json!("effect_started"), json!("late-turn")],
+                _ => vec![json!("completed"), json!(null), json!(null)],
+            };
+            let mut arguments = vec![resource.clone(), first.clone()];
+            arguments.extend(extra);
+            assert!(
+                dispatch_delivery(
+                    &handles,
+                    &ledgers,
+                    "owner",
+                    &request(operation, arguments)?,
+                    limits
+                )
+                .await
+                .is_err_and(|error| error.code == ExtensionErrorCode::FrameworkError)
+            );
+        }
+        assert!(
+            dispatch_delivery(
+                &handles,
+                &ledgers,
+                "owner",
+                &request(
+                    "delivery.settle",
+                    vec![
+                        resource.clone(),
+                        json!("message"),
+                        json!("completed"),
+                        json!(null),
+                        json!(null)
+                    ]
+                )?,
+                limits
+            )
+            .await
+            .is_err_and(|error| error.code == ExtensionErrorCode::InvalidValue)
+        );
+        let mut incomplete = first;
+        if let Some(fields) = incomplete.as_object_mut() {
+            fields.remove("claimed_at");
+        }
+        assert!(claim_of(&incomplete).is_err());
+        dispatch_delivery(
+            &handles,
+            &ledgers,
+            "owner",
+            &request(
+                "delivery.settle",
+                vec![
+                    resource,
+                    second,
+                    json!("completed"),
+                    json!(null),
+                    json!(null),
+                ],
+            )?,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?;
+        Ok(())
+    }
 }

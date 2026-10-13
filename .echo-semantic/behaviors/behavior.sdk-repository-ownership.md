@@ -2,17 +2,35 @@
 schema_version: 1
 id: behavior.sdk-repository-ownership
 kind: behavior
-status: verified
+status: needs_review
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
-focus: [data_durability, contract_evidence]
+focus:
+- data_durability
+- contract_evidence
 boundary: boundary.sdk-product
-observed_at: source:18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
-code_refs: [AGENTS.md, MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md]
-rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification, evidence.sdk-compatibility-gates]
-finding_refs: [finding.sdk-wave2-cutover-integrity]
+observed_at: source:3ea544c47e331b5d29a6624f978f3595619bef39fa5985230351098d38930404
+code_refs:
+- AGENTS.md
+- MIGRATION-SOURCE.md
+- docs/adr/0001-sdk-repository-boundary.md
+rule_refs:
+- rule.framework-runtime-authority
+evidence_refs:
+- evidence.sdk-source-import
+- evidence.sdk-source-continuity
+- evidence.sdk-framework-pin
+- evidence.sdk-wave2-cutover-repair
+- evidence.sdk-wave2-cutover-final-verification
+- evidence.sdk-compatibility-gates
+- evidence.sdk-feature-wiring-verification
+- evidence.sdk-current-reviewed-rust-gates
+finding_refs:
+- finding.sdk-wave2-cutover-integrity
+- finding.sdk-accepted-source-continuity
+- finding.sdk-dependency-warning-policy-conflict
+- finding.sdk-test-feature-wiring
 ---
 
 # SDK repository ownership
@@ -49,3 +67,7 @@ membership 只打印遥测，分类样例不要求未接受的 identity 必须�
 ## 裁决记录
 
 用户确认 SDK 是依赖 echo-agent 的独立产品，并作为 lp-agent 第四个 submodule。
+
+## 当前治理快照限制
+
+上述已验证行为绑定历史 `30d7e219`。本轮显式 framework 升级、扩展桥/Task/事件/资源修复及三语言变化仍在实现和反例验证中；当前源码摘要、合同生成、独立复审和 main 验收完成前，不恢复 verified/closure 声明。

@@ -1,0 +1,21 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/gap-watermark-red-evidence/source/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 48.19s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-6d8b8adb0d80813f)
+
+running 1 test
+
+thread 'core_profile::extension_bridge::tests::custom_late_setup_ack_after_cancel_waits_for_remote_terminal' (129518896) panicked at echo-sdk-host/src/core_profile/extension_bridge.rs:9082:21:
+assertion `left == right` failed
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test core_profile::extension_bridge::tests::custom_late_setup_ack_after_cancel_waits_for_remote_terminal ... FAILED
+
+failures:
+
+failures:
+    core_profile::extension_bridge::tests::custom_late_setup_ack_after_cancel_waits_for_remote_terminal
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 157 filtered out; finished in 0.49s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

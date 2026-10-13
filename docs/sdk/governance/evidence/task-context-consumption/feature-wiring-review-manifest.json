@@ -1,0 +1,219 @@
+{
+  "scope": "test-dependency-and-feature-availability-only",
+  "frozenAt": "2026-10-13T22:12:06.323535+00:00",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "frameworkGitRevision": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "sources": [
+    {
+      "path": "echo-sdk-host/Cargo.toml",
+      "beforePath": "before-dev-test-dependencies-Cargo.toml",
+      "beforeSha256": "e1ee65763c18fd754bacfec922ba22d68180f3bea3114a25146f7d5bc1651a0e",
+      "currentSnapshot": "feature-wiring-current/echo-sdk-host/Cargo.toml",
+      "currentSha256": "7ab7770de3757e304dc6e65175c8cba8abc61c229afd015dad78653ff8afd3a6"
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/handles.rs",
+      "beforePath": "before-feature-wiring/echo-sdk-host/src/core_profile/handles.rs",
+      "beforeSha256": "8c66cab1884085c2d0591fd8d909623d0c3a07a588c21e0334a098a3e273dca1",
+      "currentSnapshot": "feature-wiring-current/echo-sdk-host/src/core_profile/handles.rs",
+      "currentSha256": "b78d63d156926a474b800cb0bf35a5627cb471ccf87a9789dcf6d5863b036fd4"
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/wire.rs",
+      "beforePath": "before-feature-wiring/echo-sdk-host/src/core_profile/wire.rs",
+      "beforeSha256": "47cafb0e9b836e007adad2ac1e805e6ad7ef4f7ff85dc30dac1afbde3ca082c5",
+      "currentSnapshot": "feature-wiring-current/echo-sdk-host/src/core_profile/wire.rs",
+      "currentSha256": "4d47c7c9e9d541087e0ef2e48cb9d6a495b357216ee92276ab6a6e267195be37"
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "beforePath": "before-feature-wiring/echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "beforeSha256": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73",
+      "currentSnapshot": "feature-wiring-current/echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "currentSha256": "91bd8f84f3a05b272b52911c7ba52d7cc54537d9f88790cfbb11578a57817a94"
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/stream.rs",
+      "beforePath": "before-feature-wiring/echo-sdk-host/src/core_profile/facade/stream.rs",
+      "beforeSha256": "1defec3e27aade8fdb906841280a5a7a62dc85b8d2770eceffcbbc3ea2fcdfa6",
+      "currentSnapshot": "feature-wiring-current/echo-sdk-host/src/core_profile/facade/stream.rs",
+      "currentSha256": "1d977c5a5a33f411c28c8f87ca369e200dcce36d94e6d8b600f174d74013609c"
+    },
+    {
+      "path": "echo-sdk-host/tests/core_profile_e2e.rs",
+      "beforePath": "before-feature-wiring/echo-sdk-host/tests/core_profile_e2e.rs",
+      "beforeSha256": "8fdd3f2a55e60193feec436bbf4af235bbc9e146e1ca77b9632fb9e25977d709",
+      "currentSnapshot": "feature-wiring-current/echo-sdk-host/tests/core_profile_e2e.rs",
+      "currentSha256": "be8ea7a559a273781c49f25c1cf7b0f3b05f8fd32ddb875b447d944129cbf5ac"
+    }
+  ],
+  "unchangedAnchors": {
+    "Cargo.lock": "a42cfbc993a3eabb714a6b221472600d424fa411226659458b7286d490f7e837",
+    "echo-sdk-host/src/core_profile/extension_bridge.rs": "8e7aad2896687394a507f339fb20cba2dbacb93fd42ab38b417534570204e8e9",
+    "echo-sdk-host/src/core_profile/facade/task_runtime.rs": "e46e619a603b599db1749e785f3460d27dec74f6ee7df6ef0209d86ab0f3b105"
+  },
+  "patch": "feature-wiring-only.patch",
+  "patchSha256": "12a266cb8eb1acdd268aa64b7081e6b1c720a15dbd1721c9d47ed683140ea4f0",
+  "receipts": [
+    {
+      "path": "rust-gates-factory-final/ci-default-host.log",
+      "sha256": "00db254f2ff16f29c0817009be759dd19611013f4217123338752172784f787d",
+      "bytes": 4312,
+      "results": [],
+      "warningLines": [
+        "warning: build failed, waiting for other jobs to finish..."
+      ],
+      "errorLines": [
+        "error[E0433]: cannot find module or crate `futures` in this scope",
+        "error[E0432]: unresolved import `futures`",
+        "error[E0433]: cannot find module or crate `futures` in this scope",
+        "error[E0433]: cannot find module or crate `futures` in this scope",
+        "error[E0433]: cannot find module or crate `futures` in this scope",
+        "error[E0433]: cannot find module or crate `tokio_util` in this scope",
+        "error[E0433]: cannot find module or crate `futures` in this scope",
+        "error[E0433]: cannot find module or crate `futures` in this scope",
+        "error: could not compile `echo-sdk-host` (lib test) due to 8 previous errors"
+      ]
+    },
+    {
+      "path": "default-host-devdeps-repaired.log",
+      "sha256": "ac5bf759732a7183718170df9e020b6e1fc34df9e9ed5a84e834d979845a6fb2",
+      "bytes": 5426,
+      "results": [
+        "test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "warningLines": [],
+      "errorLines": []
+    },
+    {
+      "path": "rust-gates-final-devdeps/ci-core-profile.log",
+      "sha256": "50b4bfa0dd9a822e367696c72b3d551f56da53cb0ba18afc6c2db43a6c1ff364",
+      "bytes": 3040,
+      "results": [],
+      "warningLines": [
+        "warning: methods `reserve_factory_instance`, `complete_factory_instance_reserved`, `commit_mcp_preparation`, and `close_facade_resources_of` are never used",
+        "warning: function `tool_result_to_wire` is never used",
+        "warning: `echo-sdk-host` (lib) generated 2 warnings",
+        "warning: build failed, waiting for other jobs to finish...",
+        "warning: methods `commit_mcp_preparation` and `close_facade_resources_of` are never used",
+        "warning: `echo-sdk-host` (lib test) generated 1 warning"
+      ],
+      "errorLines": [
+        "error[E0433]: cannot find type `WirePath` in this scope",
+        "error: could not compile `echo-sdk-host` (test \"core_profile_e2e\") due to 1 previous error"
+      ]
+    },
+    {
+      "path": "core-profile-feature-wiring-repaired.log",
+      "sha256": "4d6d904a88a18291288cca5de7cc030180dc6789317820ac2513517fc09b0c2d",
+      "bytes": 12072,
+      "results": [
+        "test result: ok. 85 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.52s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "warningLines": [
+        "warning: unused imports: `ToolFailureWire` and `ToolOutputArtifactRefWire`",
+        "warning: `echo-sdk-host` (lib) generated 1 warning (run `cargo fix --lib -p echo-sdk-host` to apply 1 suggestion)"
+      ],
+      "errorLines": []
+    },
+    {
+      "path": "feature-combinations-preflight/ci-core-profile.log",
+      "sha256": "bc14b7025f5d6f2b24d6c2b3dbf5ae3c90ba753eccd8bdc51134f7f19c28bece",
+      "bytes": 11595,
+      "results": [
+        "test result: ok. 85 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.51s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "warningLines": [],
+      "errorLines": []
+    },
+    {
+      "path": "feature-combinations-preflight/ci-bridge-no-run.log",
+      "sha256": "e1e611f4d803e1bb944d6e06537011d37ae9b780a50106eadd2a634a436ed298",
+      "bytes": 11498,
+      "results": [],
+      "warningLines": [
+        "warning: build failed, waiting for other jobs to finish..."
+      ],
+      "errorLines": [
+        "error: unused variable: `state`",
+        "error: function `dispatch_analysis_source` is never used",
+        "error: field `cancel` is never read",
+        "error: method `open_cooperative` is never used",
+        "error: could not compile `echo-sdk-host` (lib) due to 4 previous errors",
+        "error: could not compile `echo-sdk-host` (lib test) due to 2 previous errors"
+      ]
+    },
+    {
+      "path": "feature-combinations-repaired/ci-bridge-no-run.log",
+      "sha256": "b935ebff02d8d46eb8ee6c8ba924b52110278010da37aeedb3c46efef65d0ddb",
+      "bytes": 1650,
+      "results": [],
+      "warningLines": [],
+      "errorLines": []
+    },
+    {
+      "path": "feature-combinations-repaired/ci-bridge-e2e.log",
+      "sha256": "03595644e56762eb81a55b4c7b2aaec3dafde44b5e3f439213ae21a5c4c0b496",
+      "bytes": 2297,
+      "results": [
+        "test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 23.33s"
+      ],
+      "warningLines": [],
+      "errorLines": []
+    },
+    {
+      "path": "feature-combinations-repaired/ci-facade-e2e.log",
+      "sha256": "6b97969b46d3051757fb10bd01b2d6cc0b7501918547f99f62d1b1e43692f940",
+      "bytes": 3843,
+      "results": [
+        "test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.80s",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.17s"
+      ],
+      "warningLines": [],
+      "errorLines": []
+    },
+    {
+      "path": "feature-combinations-repaired/ci-no-bridge-source-admission.log",
+      "sha256": "5e912fde5fd401d77baddda2e169f8e9a4186ac00eae0bf5a0b83911ac5ec66f",
+      "bytes": 1758,
+      "results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.38s"
+      ],
+      "warningLines": [
+        "warning: trait `Projection` is never used",
+        "warning: `echo-sdk-host` (lib) generated 1 warning"
+      ],
+      "errorLines": []
+    },
+    {
+      "path": "no-bridge-final-zero-warning.log",
+      "sha256": "c64293bcf3c4f39a82d6d53a5d0f62edf6d20ebe6900b80d1bb139b98219b21f",
+      "bytes": 600,
+      "results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.37s"
+      ],
+      "warningLines": [],
+      "errorLines": []
+    }
+  ],
+  "final14Matrix": "not-started-pending-independent-review",
+  "generatedOrAcceptedSourceChanges": false
+}

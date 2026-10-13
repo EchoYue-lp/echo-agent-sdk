@@ -1,0 +1,39 @@
+{
+  "summary": {
+    "tests": 311,
+    "failures": 1,
+    "errors": 8,
+    "skipped": 0,
+    "suites": 66
+  },
+  "failed_suites": [
+    {
+      "name": "com.echoagent.sdk.ChannelHandlerForwardHostTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "3",
+      "skipped": "0"
+    },
+    {
+      "name": "com.echoagent.sdk.RagProjectRulesHostTest",
+      "tests": "1",
+      "failures": "1",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.echoagent.sdk.ToolValueEffectHostTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "3",
+      "skipped": "0"
+    },
+    {
+      "name": "com.echoagent.sdk.EvalImproveTopologyHostTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "2",
+      "skipped": "0"
+    }
+  ]
+}

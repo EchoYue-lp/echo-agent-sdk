@@ -1,0 +1,10 @@
+{
+  "original_host_sha256": "6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5",
+  "original_runtime_file_count": 55,
+  "changed_since_runtime_receipt": [
+    "echo-sdk-host/src/core_profile/facade/tools.rs",
+    "echo-sdk-host/src/core_profile/facade/workflow.rs"
+  ],
+  "historical_fc63_test_body_comparison": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/comparison.json",
+  "supports_limit": "original6711 suite evidence only; changed Workflow and Tool validator require their own successor verification; no full current inference"
+}

@@ -1,0 +1,16 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/gap-watermark-red-evidence/source/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 45.20s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-6d8b8adb0d80813f)
+
+running 1 test
+Error: "official ACP Channel owner test timed out"
+test core_profile::extension_bridge::tests::channel_stream_callback_return_without_terminal_fails_instead_of_hanging ... FAILED
+
+failures:
+
+failures:
+    core_profile::extension_bridge::tests::channel_stream_callback_return_without_terminal_fails_instead_of_hanging
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 161 filtered out; finished in 10.26s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

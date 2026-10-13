@@ -1,0 +1,29 @@
+.........................................F................               [100%]
+=================================== FAILURES ===================================
+_____________________ test_facade_requires_value_envelope ______________________
+
+>   ???
+
+/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_protocol_integrity.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x1076a46e0>
+family = 'memory', operation = 'operation', session = None, arguments = ()
+
+    async def family(
+        self,
+        family: str,
+        operation: str,
+        session: WireHandle | None,
+        arguments: Iterable[Any] = (),
+    ) -> Any:
+        # Family identity and method spelling are independently specified by
+        # the catalog (content_guard uses the content-guard wire method).
+>       resolved = self.catalog.resolve(operation)
+                   ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'resolve'
+
+src/echo_agent_sdk/client.py:3556: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_integrity.py::test_facade_requires_value_envelope
+1 failed, 57 passed in 6.44s

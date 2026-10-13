@@ -1,0 +1,326 @@
+FSearchProvider true Agent exact title/url/snippet/failure: evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-search-6t5o72sz
+.Sandbox true process complete/cancel/close: evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-sandbox-novfqqgc
+.
+=================================== FAILURES ===================================
+______________________ test_tool_value_effect_native_host ______________________
+
+    async def test_tool_value_effect_native_host():
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT))
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, str(Path(fixture.__file__)), "--work", str(work)
+        )
+        sdk = None
+        rows = []
+        byid = {}
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert proc.returncode is None, "fixture exited before ready"
+                    await asyncio.sleep(0.01)
+            sdk = await EchoAgentClient.spawn(
+                HOST,
+                "--config",
+                str(work / "host.json"),
+                env={**os.environ, "TMPDIR": str(work / "artifact-temp")},
+            )
+            agent = await sdk.create_agent()
+            session = await agent.create_session(str(work))
+            identity = {
+                "agent": agent.wire.to_dict(),
+                "session": session.wire.to_dict(),
+                "capability": sdk.capability,
+            }
+            for step in json.loads((work / "scenario.json").read_text())["rows"]:
+                row = copy.deepcopy(step)
+                row["protected_before"] = fixture.snapshot(work)
+                row["files_before"] = files(work)
+                if step.get("action") == "mutate_artifact":
+                    artifact = fixture.unrecord(byid[step["ref"]]["result"])
+                    fixture.decode_path(artifact["path"]).write_text(
+                        "mutated 中文🙂\n", encoding="utf8"
+                    )
+                else:
+                    arguments = fixture.resolve(step["arguments"], byid)
+                    row["arguments"] = arguments
+                    try:
+                        if step.get("watch_process"):
+                            task = asyncio.create_task(
+                                session.invoke(step["operation"], arguments)
+                            )
+                            pids = []
+                            for _ in range(50):
+                                pids = processes(work)
+                                if pids or task.done():
+                                    break
+                                await asyncio.sleep(0.01)
+                            row["process_before"] = pids
+                            if step.get("terminate_observed"):
+                                import signal
+    
+                                assert len(pids) == 1, pids
+                                assert processes(work) == pids, (
+                                    "own tail identity changed before signal"
+                                )
+                                os.kill(pids[0]["pid"], signal.SIGTERM)
+                            row["result"] = await task
+                            row["process_after"] = processes(work)
+                        else:
+                            row["result"] = await session.invoke(
+                                step["operation"], arguments
+                            )
+                    except EchoAgentError as error:
+                        row["error"] = {
+                            "code": error.code,
+                            "message": str(error),
+                            "operation": error.operation,
+                            "retryable": error.retryable,
+                            "handle": error.handle.to_dict() if error.handle else None,
+                            "details": error.details,
+                        }
+                row["protected_after"] = fixture.snapshot(work)
+                row["files_after"] = files(work)
+                rows.append(row)
+                byid[row["id"]] = row
+            await session.close()
+            await agent.close()
+            data = {
+                "work": str(work),
+                "host": HOST,
+                "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+                "raw_identity": identity,
+                "rows": rows,
+            }
+            (work / "results.json").write_text(
+                json.dumps(data, ensure_ascii=False, indent=2), encoding="utf8"
+            )
+            print(
+                "Tool value/effects:",
+>               json.dumps(fixture.verify(work, data), ensure_ascii=False),
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                "evidence:",
+                work,
+            )
+
+sdks/python/tests/test_tool_value_effect_host.py:147: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-smf6cnim')
+data = {'work': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-smf6cnim', 'host':...aa50ba7e5f0f2d2d2f500ed9a6', 'features': ['a2a', 'acp', 'channels', 'chart', 'content-guard', 'data', ...], ...}}, ...}
+
+    def verify(work, data):
+        rows = data["rows"]
+        expected = json.loads((work / "scenario.json").read_text())["rows"]
+        assert [r["id"] for r in rows] == [r["id"] for r in expected]
+        baseline = json.loads((work / "baseline.json").read_text())
+        byid = {r["id"]: r for r in rows}
+        for row, step in zip(rows, expected):
+            assert row["protected_before"] == row["protected_after"] == baseline, row["id"]
+            if step.get("action"):
+                continue
+            expectation = step["expected"]
+            if expectation == "rpc_error":
+                e = row["error"]
+                assert (
+                    e["code"] == "framework_error"
+                    and e["message"]
+                    and e["retryable"] == "never"
+                ), row
+                assert e["operation"] == step["operation"] and e["handle"] is None, e
+                if step["id"] == "db-bad-url":
+                    assert {
+                        item["key"]: item["value"] for item in e["details"]["fields"]
+                    } == {
+                        "framework_failure_category": "tool",
+                        "framework_terminal_kind": "failed",
+                        "framework_failure_code": "tool",
+                        "framework_retryable": "false",
+                    }, e
+                else:
+                    assert e["details"] is None, e
+            elif expectation == "external":
+                if "error" in row:
+                    assert (
+                        row["error"]["message"]
+                        and row["error"]["code"] == "framework_error"
+                    ), row
+                else:
+                    assert isinstance(row["result"]["output"], str) and isinstance(
+                        row["result"]["success"], bool
+                    ), row
+            else:
+                assert "error" not in row, row
+                if expectation != "value":
+                    assert row["result"]["success"] == (expectation == "success"), row
+                    assert isinstance(row["result"]["output"], str) and isinstance(
+                        row["result"]["kind"], dict
+                    ), row
+                    if expectation == "tool_failure":
+                        assert (
+                            row["result"]["error"]
+                            and row["result"]["failure"]["category"]
+                            and row["result"]["failure"]["recovery"]
+                            and row["result"]["failure"]["side_effect"]
+                        ), row
+                    if "data" in row["result"]:
+                        from tool_behavior_fixture import decode_typed_data
+    
+                        projected = decode_typed_data(row["result"]["data"])
+                        if row["result"]["kind"]["kind"] == "json":
+                            assert (
+                                projected
+                                == json.JSONDecoder().raw_decode(row["result"]["output"])[0]
+                            ), row
+    
+        def out(name):
+            return byid[name]["result"]["output"]
+    
+        def parsed(name):
+            return json.JSONDecoder().raw_decode(out(name))[0]
+    
+        assert (
+            not (work / "中文🙂/note.txt").exists()
+            and not (work / "中文🙂/moved.txt").exists()
+        )
+        assert "three 中文🙂" in out("file-read")
+        assert "-three 中文🙂" in out("file-diff") and "+four 中文🙂" in out("file-diff")
+        for name in ["file-list", "file-grep", "file-glob", "file-map", "file-search"]:
+            assert "main.py" in out(name), (name, out(name))
+        assert "target_symbol" in out("file-search") and "中文🙂" in out("file-grep")
+        states = {
+            "file-create": {"中文🙂/note.txt": "", "中文🙂/moved.txt": None},
+            "file-append": {"中文🙂/note.txt": "one 中文🙂\n", "中文🙂/moved.txt": None},
+            "file-update": {"中文🙂/note.txt": "two 中文🙂\n", "中文🙂/moved.txt": None},
+            "file-move": {"中文🙂/note.txt": None, "中文🙂/moved.txt": "two 中文🙂\n"},
+            "file-patch": {"中文🙂/note.txt": None, "中文🙂/moved.txt": "three 中文🙂\n"},
+            "file-delete": {"中文🙂/note.txt": None, "中文🙂/moved.txt": None},
+        }
+        for name, state in states.items():
+            assert byid[name]["files_after"] == state, (name, byid[name])
+            effects = byid[name]["result"].get("effects", [])
+            assert effects and all(e["effect"] == "file_edit" for e in effects), (
+                name,
+                effects,
+            )
+            assert all(
+                Path(e["path"]).resolve().is_relative_to(work.resolve()) for e in effects
+            )
+        for name in [
+            "file-update-missing",
+            "file-create-existing",
+            "file-write-stale",
+            "file-patch-rollback",
+            "file-missing",
+            "file-delete-missing",
+        ]:
+            row = byid[name]
+            assert row["files_before"] == row["files_after"], row
+            assert row["result"]["failure"]["side_effect"] == "none" and not row[
+                "result"
+            ].get("effects"), row
+        assert len(byid["file-move"]["result"]["effects"]) == 2
+        pages = [unrecord(byid[f"artifact-page-{n}"]["result"]) for n in range(4)]
+        assert "".join(p["content"] for p in pages) == PAYLOAD, pages
+        assert [int(p["start_byte"]) for p in pages] == [
+            0,
+            int(pages[0]["end_byte"]),
+            int(pages[1]["end_byte"]),
+            int(pages[2]["end_byte"]),
+        ]
+        assert all(
+            p["sha256"] == digest(PAYLOAD.encode())
+            and int(p["total_bytes"]) == len(PAYLOAD.encode())
+            for p in pages
+        )
+        assert (
+            not pages[0]["complete"]
+            and not pages[1]["complete"]
+            and not pages[2]["complete"]
+            and pages[3]["complete"]
+            and pages[3]["next_cursor"] is None
+        )
+        assert int(pages[-1]["end_byte"]) == len(PAYLOAD.encode())
+        shell = byid["shell-unicode"]["result"]
+        assert shell["kind"] == {
+            "kind": "command_output",
+            "exit_code": "0",
+        }, shell
+        assert out("shell-unicode") == "中文🙂\n", shell
+        assert byid["shell-stderr"]["result"]["kind"]["exit_code"] != "0"
+        timeout = byid["shell-timeout"]
+        assert (
+            timeout["result"]["failure"]["category"] == "timeout"
+            and timeout["process_before"]
+            and timeout["process_after"] == []
+        ), timeout
+        signal = byid["shell-signal"]
+        assert (
+            signal["process_before"]
+            and signal["process_after"] == []
+            and signal["result"]["kind"]["kind"] == "command_output"
+            and signal["result"]["kind"]["exit_code"] == "-1"
+        ), signal
+        assert (
+            signal["result"]["failure"]["category"] == "permanent"
+            and "timeout" not in signal["result"].get("error", "").lower()
+        ), signal
+        extract = parsed("web-extract")
+        assert extract == {
+            "headings": [{"tag": "h1", "text": "中文🙂 Heading"}],
+            "links": [{"text": "链接🙂", "href": "/target"}],
+            "paragraphs": ["段落 beta🙂"],
+            "table_count": 1,
+        }, extract
+        assert (
+            "中文🙂 Heading" in out("web-fetch")
+            and byid["web-truncated"]["result"]["truncated"] is True
+        )
+        webartifact = byid["web-truncated"]["result"]["artifact"]
+        b = decode_path(webartifact["path"]).read_bytes()
+        assert digest(b) == webartifact["sha256"] and "large 中文🙂" in b.decode()
+        assert (
+            len(b)
+            == int(webartifact["artifact_bytes"])
+            == int(webartifact["payload_bytes"])
+        )
+        assert (
+            decode_path(webartifact["path"])
+            .resolve()
+            .is_relative_to((work / "artifact-temp").resolve())
+        )
+        assert b.decode().count("large 中文🙂") == 120000
+        assert b.decode().startswith(
+            "URL: "
+            + byid["web-truncated"]["arguments"][0]
+            + "\nStatus: 200 OK\nContent-Type: text/html; charset=utf-8\n\n"
+        )
+        assert (
+            "content truncated" in out("web-truncated") and len(out("web-truncated")) < 1000
+        )
+        assert webartifact["retention"] == "temporary_1h"
+        assert parsed("db-tables") == {
+            "columns": ["table_name"],
+            "rows": [["records"]],
+            "total_rows": 1,
+        }
+        describe = parsed("db-describe")
+        assert describe["columns"] == [
+            "cid",
+            "name",
+            "type",
+            "notnull",
+            "dflt_value",
+            "pk",
+        ], describe
+>       assert describe["rows"] == [
+            [0, "id", "INTEGER", 0, None, 1],
+            [1, "label", "TEXT", 1, None, 0],
+            [2, "quantity", "INTEGER", 0, "7", 0],
+            [3, "note", "TEXT", 0, None, 0],
+        ], describe
+E       AssertionError: {'columns': ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], 'rows': [[None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None]], 'total_rows': 4}
+
+sdks/shared/testing/tool_value_effect_fixture.py:550: AssertionError
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_tool_value_effect_host.py::test_tool_value_effect_native_host
+1 failed, 2 passed in 10.24s

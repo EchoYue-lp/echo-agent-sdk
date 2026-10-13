@@ -1,0 +1,97 @@
+{
+  "phase": "java-actual-child-exit-and-late-subscriber-validated-not-all-EOF-or-full-suite",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "sourceFiles": {
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "06c1c0e54bd1fc830b05e981af70ea1f34a84153fc474448005eadc5a9ae0a12",
+    "sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java": "10f0a2b032ffe4085c1e076821010847e55dd3415e51e9b13fd6b4948be670a1"
+  },
+  "compiledClasses": {
+    "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient.class": {
+      "sha256": "3199a06db4d17299c3a4a060cde355f4848c4929f8f1e74d1f45a609e7c9935e",
+      "mtime": 1791924738.3521893
+    },
+    "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$OwnedStdioTransport.class": {
+      "sha256": "ed499c37a989aff3bd35e4bdca020c672c18066cec660146b06d6c20891465ac",
+      "mtime": 1791924738.3429198
+    },
+    "sdks/java/target/test-classes/com/echoagent/sdk/HostEarlyExitTest.class": {
+      "sha256": "81370e5682e4ab6771714d0442ecb3ca97c506921f40821700fb4250ece04ec2",
+      "mtime": 1791924739.4456532
+    }
+  },
+  "suites": {
+    "HostEarlyExitTest": {
+      "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+      "version": "3.0.2",
+      "name": "com.echoagent.sdk.HostEarlyExitTest",
+      "time": "0.17",
+      "tests": "7",
+      "errors": "0",
+      "skipped": "0",
+      "failures": "0"
+    },
+    "JavaClientCloseLifecycleTest": {
+      "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+      "version": "3.0.2",
+      "name": "com.echoagent.sdk.JavaClientCloseLifecycleTest",
+      "time": "0.012",
+      "tests": "3",
+      "errors": "0",
+      "skipped": "0",
+      "failures": "0"
+    },
+    "LifecycleTest": {
+      "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+      "version": "3.0.2",
+      "name": "com.echoagent.sdk.LifecycleTest",
+      "time": "0.022",
+      "tests": "17",
+      "errors": "0",
+      "skipped": "0",
+      "failures": "0"
+    },
+    "AckSubmissionTest": {
+      "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+      "version": "3.0.2",
+      "name": "com.echoagent.sdk.AckSubmissionTest",
+      "time": "0.103",
+      "tests": "18",
+      "errors": "0",
+      "skipped": "0",
+      "failures": "0"
+    },
+    "StreamCancellationRoutesTest": {
+      "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+      "version": "3.0.2",
+      "name": "com.echoagent.sdk.StreamCancellationRoutesTest",
+      "time": "0.337",
+      "tests": "4",
+      "errors": "0",
+      "skipped": "0",
+      "failures": "0"
+    },
+    "StreamCancellationRouteHostTest": {
+      "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+      "version": "3.0.2",
+      "name": "com.echoagent.sdk.StreamCancellationRouteHostTest",
+      "time": "0.248",
+      "tests": "1",
+      "errors": "0",
+      "skipped": "0",
+      "failures": "0"
+    },
+    "ProtocolHostTest": {
+      "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+      "version": "3.0.2",
+      "name": "com.echoagent.sdk.ProtocolHostTest",
+      "time": "2.923",
+      "tests": "7",
+      "errors": "0",
+      "skipped": "0",
+      "failures": "0"
+    }
+  },
+  "testCount": 57,
+  "hostBinary": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-b909-natural-eof-host",
+  "hostSha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10"
+}

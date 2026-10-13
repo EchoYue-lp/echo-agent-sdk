@@ -1,0 +1,285 @@
+{
+  "classification": "byte-identical original candidate receipts; not final changed-workflow snapshot",
+  "files": [
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/sdk-full-parent-driver-language-proof.json",
+      "sha256": "f60347ffb46458d76074960f9db8fa060e381b32c385c776f0093bd0445aad60",
+      "original_path": "/tmp/sdk-full-parent-driver-language-proof.json"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/sdk-full-parent-driver-language-gates.log",
+      "sha256": "558c509ff968ca6bdaaae6c8e736e9de318aae4e4cbd5cac983e4dcaeb82efa4",
+      "original_path": "/tmp/sdk-full-parent-driver-language-gates.log"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/sdk-full-parent-driver-language-gates.sh",
+      "sha256": "3ae67593182371c98141ae5bbe206a02e57c4428f6379d33e2a3a1d48a837eac",
+      "original_path": "/tmp/sdk-full-parent-driver-language-gates.sh"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/sdk-parent-driver-local-proof.json",
+      "sha256": "ba5be59d04a790c4323d11a3be24b49e35c8cf47634bc29181d33cc9b25efa59",
+      "original_path": "/tmp/sdk-parent-driver-local-proof.json"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/manifest.json",
+      "sha256": "ce6ff4c33cac7d3e58069b2b234754454395261fc5d20a234acc421e30677349",
+      "original_path": "/tmp/sdk-parent-driver-local-gates/manifest.json"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.A2ATaskStateTest.xml",
+      "sha256": "6b197164263a4a63001b31e787f54c946e936ccfd17e960a6f61031a9715e114",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.A2ATaskStateTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.A2AValueTest.xml",
+      "sha256": "9bd60798aa02c3f8bcfc61f8c2b3313884825f6bc3248b505dcdd2d891bb1d14",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.A2AValueTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.AckSubmissionTest.xml",
+      "sha256": "0622e4118632321db05bb9bcb907ef0037805e5d2e88927047c96dd64f62a059",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.AckSubmissionTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.CallbackAndEffectsTest.xml",
+      "sha256": "9159084f924514e39c42789c09e438c644c5d485fa57300d2423a4a4f2e8c5a4",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.CallbackAndEffectsTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.CallbackHostTest.xml",
+      "sha256": "7b32be9524d4b9c64390a30e95ebe09edafe3cf2337be708f5f4067a30701eb7",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.CallbackHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.DelayedSubscriberHostTest.xml",
+      "sha256": "cf5fa7a7e6a35807f71154c7c0fb6fdb72171a90776daa769a633808405f48c5",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.DelayedSubscriberHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.EventIdentityTest.xml",
+      "sha256": "7074ac68c6c4c8537ef58310c0eb90f80100e07dc7eeb39bd9774dd4d5e46fab",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.EventIdentityTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ExecutionUsageTest.xml",
+      "sha256": "606f3d6c6412fc83907527046790068c80f1520d903398ad51790ab88677cbca",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ExecutionUsageTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ExternalAckHostTest.xml",
+      "sha256": "f74e8b0e945c2d7c93158d4cfe62333e109d25080000a4e7b69d1c31defa084d",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ExternalAckHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.FacadeParityTest.xml",
+      "sha256": "3fbd31200c995ab2340109f4d3f52caf72d236e4199ff1f35390972951112992",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.FacadeParityTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml",
+      "sha256": "5f57e918b13a415db3eef9a9d8e822527bc3a330ec74c1f57f20c2e11b6d8052",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.FactoryHostTest.xml",
+      "sha256": "a8c628b9c871a428be682d0014c80fb461026083585a193f39f0ce0bc610c27b",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.FactoryHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.GapAckHostTest.xml",
+      "sha256": "868b4b1875e00b979927ec0e09b8c1a76c2c5b6a9e3d290dc9efc3911d90a295",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.GapAckHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.HookEventTest.xml",
+      "sha256": "b1fcf47aed1b97f6aeb5112d90c28fb48fc63ec5e37fdd17ad444791ca768caf",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.HookEventTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.InterventionResultTest.xml",
+      "sha256": "b04afae15cad9785e4b51f9c58288b4066a63a91b3fa5d86ce81cd08ee5c3750",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.InterventionResultTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.IntrinsicToolValueTest.xml",
+      "sha256": "58089da434660d02ce14d20971f585d4662e5f24dae7e6936a43212857ab4f68",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.IntrinsicToolValueTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.JavaClientCloseLifecycleTest.xml",
+      "sha256": "c94b4bdbbd6bfec7e84b789f3962fe7f52b9726c5093e2dce469a946b664eeeb",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.JavaClientCloseLifecycleTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.JsonSupportTest.xml",
+      "sha256": "8104c6a893beeea41eb18f2a0cacdcf80d51d377d2da3d35fdcc80ec81ee84ba",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.JsonSupportTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.LateFactoryHostTest.xml",
+      "sha256": "8737e37b6aa26c81115c5896188758949b38c838ccf6b1522fba79604ef54940",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.LateFactoryHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.LifecycleTest.xml",
+      "sha256": "1c2e3fe45c5994b85d592e271376b6e212d4450bf9406eda232febfabc4f2956",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.LifecycleTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.LlmApiProtocolTest.xml",
+      "sha256": "f7d629dc338d51676a3a593521d1a1ba7236f54a0a4d1da9c296c8bb8c0cb84b",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.LlmApiProtocolTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.LspDiagnosticsHostTest.xml",
+      "sha256": "7deee090516f0c73a84642859476e2637b7ccb504103717f608bd06fcf56cf3f",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.LspDiagnosticsHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.LspHostTest.xml",
+      "sha256": "b52cb53cba24e86386986df5ba5a7cebc518653360890d4676edaf5033060879",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.LspHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ManagedComponentOperationsTest.xml",
+      "sha256": "a76674ae06e2eedbdc6d7d49cec69299eea191fe81b5fa7b0fda275144dbb3e6",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ManagedComponentOperationsTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ManagedPersistenceTest.xml",
+      "sha256": "c64909a152ed93e29588b8ea1c0e9b2b544501c414c5791e4edf52a183911dfe",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ManagedPersistenceTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ManagedStoreHostTest.xml",
+      "sha256": "40fcab0b3831dae9f29a74c68f51e9c8cdb5f592310d02e69f52cddb023fbbba",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ManagedStoreHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.MemoryPolicyValuesTest.xml",
+      "sha256": "c6ed76055afa854652ea46d48695c9b94b3ff136656ee2cb38b201156ec235a7",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.MemoryPolicyValuesTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.MemoryScopeTest.xml",
+      "sha256": "ee02a0424c82e02bd7661e42844d09b36ec06339ecfb5e3e92e740a5a9a14fe9",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.MemoryScopeTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ModelInputModalityTest.xml",
+      "sha256": "a9dad2ef606074993d5452bccf35bc5dc497e43ca61a820c843feec8d045cc96",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ModelInputModalityTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ModelProfileTest.xml",
+      "sha256": "09fae8d7f7fbd3745463decd7507ebb9b4a8d6267a3b38b9f646ca1ad634c265",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ModelProfileTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ParallelSessionHostTest.xml",
+      "sha256": "ccd2d083f963950e340ef95c52ed395c1b641d8ca0d2653b9a7fadfe8e14da14",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ParallelSessionHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.PromptCacheLayoutTest.xml",
+      "sha256": "ee89357b201503a1a160b1ae649f3dc4be8d7fd04416a4d01daea6af23425d29",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.PromptCacheLayoutTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ProtocolHostTest.xml",
+      "sha256": "ba427a63ca01c360ae9ae1028caae9493aa8ff77c98791dd57537206eadb2049",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ProtocolHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml",
+      "sha256": "44166a605723058aa6906a0c8b20cc112beead16618ea03e1941bc8536a2de64",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ProviderCapabilitiesTest.xml",
+      "sha256": "73f6b2d34af311ce2b470689d663f3073565ac3d5afb59bf27d94fa7c10982ae",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ProviderCapabilitiesTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml",
+      "sha256": "7573f10b319b0e9a7ebea7b944c8bbb8e390df643bfd57c4e5075dfb9abc4227",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ResourceLimitsTest.xml",
+      "sha256": "e95798e379d1192900d44e8f19e79675ef62b62df748b0bec07f7a53e8f449e0",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ResourceLimitsTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ResponseFormatTest.xml",
+      "sha256": "6e45c54bfb419a26f3147969da5f7f4274d7c2ab18fad072274283e0f68236d8",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ResponseFormatTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.RetryPolicyTest.xml",
+      "sha256": "5e28857ad66dc7ad7563f5e9f2d7dd5dff9ffa5ddd6553d59a128f64e30fa5d9",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.RetryPolicyTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.RunReceiptApiTest.xml",
+      "sha256": "b4beedfc07e5541f59b4317b2ca2cb83be5a2d65d8e6724f1054064fbb180dd7",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.RunReceiptApiTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.TaskStoreTest.xml",
+      "sha256": "9a6d9696aca8d670a4abe1b8ee98afa406e77c51b2b85ba4f9765361549b3036",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.TaskStoreTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.TestingContractTest.xml",
+      "sha256": "51c3ed3a2e7a5474c365f7b80cafed6092cb358df2c6f0750a25ab1add06142e",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.TestingContractTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ThinkingConfigTest.xml",
+      "sha256": "ad0b1ef6281db01cecc1ae7f72358ad7f83573de02b1a45a52ff4a37bf8de0a3",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ThinkingConfigTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ThinkingProfileTest.xml",
+      "sha256": "609df59fbfea04e9eec8321829a34b04d412203e8257341e1f896faf8144fa99",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ThinkingProfileTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ThinkingProtocolTest.xml",
+      "sha256": "c232372525056c614ba08f6bc70cd50ea0edaa4430428fa9b335931ab173fa2c",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ThinkingProtocolTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.TimeValuesTest.xml",
+      "sha256": "2561a26caa9113e279b3db072a46e7a5e0ff808368bb35437609f68317cf3b1e",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.TimeValuesTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.TokenBudgetTest.xml",
+      "sha256": "6bdfd14ee9c8db417e08290a509f776550da8b0b81ab92fd8aedb55a073e5610",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.TokenBudgetTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml",
+      "sha256": "04ac37fbee657d1d4d08270481dc09bec2aebfcd9a0a4cdb082332435c548402",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.TurnModeTest.xml",
+      "sha256": "a54915b08420084db6deb877288f22dc4556cd782f5d0eaa4591b1e9fdb6de19",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.TurnModeTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.TypedExtensionTest.xml",
+      "sha256": "e58ba81138a4fcbfece9bdb6ef556772ee098154a43785d585cbf7af1c8a7380",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.TypedExtensionTest.xml"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/java-TEST-com.echoagent.sdk.Utf8SupportTest.xml",
+      "sha256": "40e382acd09ca1c111dfbcefecea1fe2ca71e874b7ea1fa649535b6ba55fa98a",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.Utf8SupportTest.xml"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "scope": "14 already accepted testing value fields in 3 payload types only; no remote method or Mock runtime",
+  "accepted_contract_sha256": "901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45",
+  "accepted_identities": [
+    "echo_agent::testing::MockAgentStep::Delay::0",
+    "echo_agent::testing::MockAgentStep::Error::0",
+    "echo_agent::testing::MockAgentStep::Event::0",
+    "echo_agent::testing::MockToolContext::call_id",
+    "echo_agent::testing::MockToolContext::cancellation_provided",
+    "echo_agent::testing::MockToolContext::conversation_id",
+    "echo_agent::testing::MockToolContext::execution_id",
+    "echo_agent::testing::MockToolContext::run_id",
+    "echo_agent::testing::MockToolContext::turn_id",
+    "echo_agent::testing::StreamChunk::Delay::0",
+    "echo_agent::testing::StreamChunk::Delta::0",
+    "echo_agent::testing::StreamChunk::Err::0",
+    "echo_agent::testing::StreamChunk::Terminal::finish_reason",
+    "echo_agent::testing::StreamChunk::Terminal::usage"
+  ],
+  "source_and_test_sha256": {
+    "sdks/shared/fixtures/testing-contract-values.json": "9d7c13f0b03ece4259d7e72e3b0e23c526cc248b43f05b90c7f8574f9216f011",
+    "sdks/typescript/test/testing-contract.test.js": "237b12508914ce3fdb9c5a4572be3ee77619d501d2aa81e3444455f9d546c3f2",
+    "sdks/python/tests/test_testing_contract.py": "66c558d6edb87add394b02a9ca08bc66fef211b7ee7d49ba29482afd65d45cec",
+    "sdks/java/src/test/java/com/echoagent/sdk/TestingContractTest.java": "b2f27e51dda07f4ba5e0139379f3ac491dac1b48a57018c0c84656e3a1b51c91",
+    "sdks/typescript/src/wire.ts": "99d2dd237af4abffd6b17c013dcbb46d3c640ecc62fc496babdcb4df3f35ec70",
+    "sdks/python/src/echo_agent_sdk/wire.py": "50d132ec93ebc09110ed52e549335ff6c789bf198a1cfc94253023d75966c374",
+    "sdks/java/src/main/java/com/echoagent/sdk/WireValues.java": "57305f5f276a266dd1d5e016db4179c4c7bda5fb9b2c6acbe77dfbb2aee0e545",
+    "sdks/java/src/main/java/com/echoagent/sdk/JsonSupport.java": "56d05f02022141827f5f942dd3d390aa336dc2243453210ee9cec68c9980e745"
+  },
+  "counts": {
+    "typescript": {
+      "tests": 19,
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0
+    },
+    "python": {
+      "tests": 19,
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0
+    },
+    "java": {
+      "junit_tests": 2,
+      "positive_assertion_loop": 12,
+      "invalid_assertion_loop": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "logs_sha256": {
+    "/tmp/sdk-testing-typescript.log": "0b44410a1bf96c9611dfc5758d51c49c4aca93e2e32dcd6ab1175dde0745a1db",
+    "/tmp/sdk-testing-typescript-current.log": "6a4f3ab30f6cae6d5786e6a9798dded7d3c236fc0f139a0255009f1f1336bdb3",
+    "/tmp/sdk-testing-python.log": "b84a5f56832006ce4e2bf9f759666949900308668a781b362e5aab41c6c2b8e8",
+    "/tmp/sdk-java-factory-whole-native-stage-full-maven.log": "5d2f8c0595efa37ea43e272167ac76d3dea553076ebd69c89c476a758490b4dd",
+    "/tmp/sdk-java-factory-whole-final-verified-maven.log": "8e45ef8dc37c70829df8d0ab17ecf51d8cdbd927e4d89b72813617be5974c47a"
+  },
+  "actual_outputs_sha256": {
+    "/tmp/sdk-testing-typescript-observed.json": "f6a3b33a64e140790db18acdf9d703bdcdd55cf2e18dfb638f16ac24efa4d221",
+    "/tmp/sdk-testing-python-observed.json": "037ca142bfcd7f83abe98f53537163b21df51308a3f0f7f4a406259f5aff6e31",
+    "/tmp/sdk-testing-typescript-rejections.json": "6fa320dc519d695ba6e46870a3c24d1170511a18dbc7e0ef0d1fde76adeeb646",
+    "/tmp/sdk-testing-python-rejections.json": "2a5de9d1fc503f01d58cb6fc6a41cc8cbd335d1fde6f63609570c9961dfa0b45"
+  },
+  "java_executed_class_sha256": "0342946cfbbcdbba3fa97f9d903099df66c66e4cdca2cea8b3377d4ad6cb12e6",
+  "java_xml_sha256": "4d5fa07e34833f8d016b65d1fa701315c5b6b014f4e241d63b734622554ecc0b",
+  "java_full_run_origin": "parent/writer confirmed session66363 native-stage fullMaven262 exit0; captured TestingContract XML has same 2 named tests; later Factory-only source changes require their own freeze and do not imply whole latestJava green",
+  "comparison": {
+    "typescript_python_raw_encoding_projection_match": true,
+    "java_public_invoke_projects_all_12_to_same_shared_expected_json": true,
+    "all_languages_explicitly_reject_same_7_invalid_values": true,
+    "raw_java_projection_dump_available": false,
+    "note": "Java dynamic same-expected assertions are execution evidence; no Java output transcript is invented"
+  },
+  "consumer_apis": {
+    "typescript": "public toWireValue/fromWireValue",
+    "python": "public to_wire/from_wire",
+    "java": "public WireValues.value + EchoAgentClient.invoke response projection through controlled official AcpClientSession/AcpClientTransport"
+  },
+  "limitations": [
+    "Pure accepted field-payload projections, not Rust MockAgentStep/StreamChunk reconstruction (Rust types have no serde codec)",
+    "Controlled Java transport echoes WireValues only and implements no testing remote API, Host runtime, Store or terminal authority",
+    "Malformed cases prove explicit scalar/container projection errors, not invented Mock-specific validators",
+    "Opaque unknown record/variant wrappers are retained, not an accepted new capability",
+    "Final published framework inventory/signature validation and independent full source/main remain pending"
+  ],
+  "production_modified": false,
+  "test_changes": "Python test formatting only",
+  "semantic_status": "needs_review retained; value-only candidate support does not prove testing runtime behavior",
+  "java_final_frozen_execution": {
+    "report": "/tmp/sdk-java-factory-whole-final-review/logs/xml/TEST-com.echoagent.sdk.TestingContractTest.xml",
+    "report_sha256": "3b2133b7a5a96ecc7818e3e15db129ce085d3cb0850751e4576b618776d7f747",
+    "manifest": "/tmp/sdk-java-factory-whole-final-review/manifest.json",
+    "manifest_sha256": "963696a341cccda22e4373a04ead30adee5ff92ac83fbf3e6d9317e0acb9dc19",
+    "full_maven_tool_session": 45147,
+    "full_maven_exit": 0,
+    "full_maven_tests": 264,
+    "full_maven_failures": 0,
+    "full_maven_errors": 0,
+    "full_maven_skipped": 0,
+    "testing_junit_tests": 2,
+    "testing_payload_positive_assertions": 12,
+    "testing_invalid_assertions": 7,
+    "client_source_sha256": "2bad1f8a4ec4ba0a84f2c6faa63007364b5be874303bec0fbb332ab33f55c223",
+    "host": "/tmp/echo-sdk-governance-diagnostics-host",
+    "kind": "controlled official ACP value projection remains local; real Host other suite scenarios not attributed to Mock runtime"
+  }
+}

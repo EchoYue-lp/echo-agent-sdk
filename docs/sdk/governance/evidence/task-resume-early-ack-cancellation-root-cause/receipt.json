@@ -1,0 +1,52 @@
+{
+  "task": "read-only Debug phases 1-3 of accepted Task pause/resume failure",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-b909-natural-eof-host",
+  "hostSha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10",
+  "originalFailure": "Task A1 Paused -> Pending -> Running A2 -> Failed extension_conflict; D remains Pending, B/C completed; no A2 callback",
+  "runs": {
+    "originalTrace": {
+      "session": 20740,
+      "log": "current-immutable-trace.log",
+      "exitCode": 1,
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0
+    },
+    "routeLookupTrace": {
+      "session": 8808,
+      "log": "current-client-cancel-route-corrected.log",
+      "exitCode": 1,
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "instrumentation": "only two console statements in a private dist copy; product behavior unchanged"
+    },
+    "routeLookupAttempt": {
+      "session": 68024,
+      "log": "current-client-cancel-route.log",
+      "classification": "fixture_error",
+      "reason": "copy lacked shared catalog relative-path dependencies, then diagnostic Host and test processes were terminated; no behavior conclusion"
+    }
+  },
+  "confirmedCause": "Client removes per-invocation cancellation route at original streaming setup ACK. Host later sends real cancellation notice for that invocation; client lookup is absent, so the async producer never observes cancellation or sends a terminal. Host correctly retains its original exclusive callback lease, causing resumed A2 conflict.",
+  "exactRouteFact": {
+    "invocationSuffix": "13",
+    "deletedAtUnixMs": 1791921372058,
+    "cancelNoticeLookupUnixMs": 1791921372083,
+    "routePresent": false,
+    "taskPausedObservedUnixMs": 1791921372096
+  },
+  "affectedExistingImplementations": {
+    "typescript": "client.ts finally deletes invocationControllers at request return",
+    "python": "client.py finally pops invocation_cancel at request return",
+    "java": "EchoAgentClient.java doFinally removes invocationCancellations at request return"
+  },
+  "repairClassification": "Existing accepted early-ACK callback cancellation lifecycle repair in three language clients. Keep the original route until the existing stream terminal or explicit unregister/connection cleanup; no new wire operation or scheduler.",
+  "frameworkSecondaryBoundary": "dispatch_sync cancellation branch can drop execute_agent_streaming before physical callback settlement. Separate read-only lane is assessing it; this receipt does not assert that boundary is closed or solely explains the client route loss.",
+  "status": "root_cause_confirmed; no production repair performed by this lane",
+  "limits": [
+    "No after-repair proof",
+    "No full SDK completion",
+    "No published-main acceptance inferred from these diagnostics"
+  ]
+}

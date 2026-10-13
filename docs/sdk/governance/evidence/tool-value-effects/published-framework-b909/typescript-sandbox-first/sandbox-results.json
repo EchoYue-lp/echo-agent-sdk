@@ -1,0 +1,224 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-sandbox-sBXzLs",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-b909-published-framework-candidate-host",
+  "host_sha256": "ee9ff37598f4061b0cc33a79d9c58e1ad4481d6592607fb308a28b7b425fc621",
+  "facts": [
+    {
+      "mode": "success",
+      "started": true,
+      "cancel_observed": false,
+      "finally": 1,
+      "pid": 81768,
+      "exit_code": 0,
+      "sent": [
+        {
+          "channel": "stdout",
+          "chunk": "sandbox 中文🙂\n"
+        }
+      ],
+      "stream": {
+        "id": "stream-d6cacd72-5e51-45d3-966b-e6bf2823f853",
+        "generation": "1",
+        "kind": "stream"
+      },
+      "command": {
+        "kind": {
+          "Shell": "printf 'sandbox 中文🙂\\n'"
+        },
+        "minimum_isolation": null,
+        "working_dir": null,
+        "env": {},
+        "timeout": {
+          "secs": "30",
+          "nanos": "0"
+        },
+        "stdin": null
+      },
+      "invocation_id": "invocation-f01a6cbe3a644ee4a7917ac66d538fe3-0",
+      "events": [
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_sdk::FacadeStreamEvent",
+            "variant": "item",
+            "fields": [
+              {
+                "name": "stream",
+                "value": {
+                  "kind": "handle",
+                  "value": {
+                    "id": "stream-d6cacd72-5e51-45d3-966b-e6bf2823f853",
+                    "generation": "1",
+                    "kind": "stream"
+                  }
+                }
+              },
+              {
+                "name": "sequence",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "value",
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "event_type"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "output"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "channel"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "stdout"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "sandbox 中文🙂\n"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_sdk::FacadeStreamEvent",
+            "variant": "complete",
+            "fields": [
+              {
+                "name": "stream",
+                "value": {
+                  "kind": "handle",
+                  "value": {
+                    "id": "stream-d6cacd72-5e51-45d3-966b-e6bf2823f853",
+                    "generation": "1",
+                    "kind": "stream"
+                  }
+                }
+              },
+              {
+                "name": "sequence",
+                "value": {
+                  "kind": "u64",
+                  "value": "2"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "exit_signal": null,
+      "terminal_returned_after_cleanup": true,
+      "pid_alive": false,
+      "repeated_close": false,
+      "protected": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "cleanup_calls": 1
+    },
+    {
+      "mode": "cancel",
+      "started": true,
+      "cancel_observed": true,
+      "finally": 1,
+      "pid": 81773,
+      "exit_code": -15,
+      "sent": [],
+      "stream": {
+        "id": "stream-26753984-5129-4240-be56-6739b1b3c650",
+        "generation": "1",
+        "kind": "stream"
+      },
+      "command": {
+        "kind": {
+          "Shell": "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-sandbox-sBXzLs/tail.txt"
+        },
+        "minimum_isolation": null,
+        "working_dir": null,
+        "env": {},
+        "timeout": {
+          "secs": "30",
+          "nanos": "0"
+        },
+        "stdin": null
+      },
+      "invocation_id": "invocation-f01a6cbe3a644ee4a7917ac66d538fe3-2",
+      "close_result": true,
+      "control_elapsed_ms": 0.6386250000032305,
+      "control_returned_after_cleanup": false,
+      "exit_signal": "SIGTERM",
+      "pid_alive": false,
+      "repeated_close": false,
+      "protected": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "cleanup_calls": 1
+    },
+    {
+      "mode": "close",
+      "started": true,
+      "cancel_observed": true,
+      "finally": 1,
+      "pid": 81778,
+      "exit_code": -15,
+      "sent": [],
+      "stream": {
+        "id": "stream-95b9e1a6-e8fa-411c-8e5c-873feca37c79",
+        "generation": "1",
+        "kind": "stream"
+      },
+      "command": {
+        "kind": {
+          "Shell": "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-sandbox-sBXzLs/tail.txt"
+        },
+        "minimum_isolation": null,
+        "working_dir": null,
+        "env": {},
+        "timeout": {
+          "secs": "30",
+          "nanos": "0"
+        },
+        "stdin": null
+      },
+      "invocation_id": "invocation-f01a6cbe3a644ee4a7917ac66d538fe3-4",
+      "exit_signal": "SIGTERM",
+      "close_result": false,
+      "control_elapsed_ms": 1.576375000000553,
+      "control_returned_after_cleanup": true,
+      "pid_alive": false,
+      "repeated_close": false,
+      "protected": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "cleanup_calls": 1
+    }
+  ]
+}

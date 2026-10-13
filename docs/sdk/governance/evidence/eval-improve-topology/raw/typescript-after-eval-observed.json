@@ -1,0 +1,858 @@
+{
+  "language": "typescript",
+  "group": "eval",
+  "created": [
+    "extension-3fa9350e-d026-4304-9c71-67b62893141e",
+    "extension-28fd62be-9ce2-4064-a309-0e1e18e9a1a1",
+    "extension-e42074c5-7b9c-4c31-874f-354e68c875ec"
+  ],
+  "closed": [
+    "extension-3fa9350e-d026-4304-9c71-67b62893141e",
+    "extension-28fd62be-9ce2-4064-a309-0e1e18e9a1a1",
+    "extension-e42074c5-7b9c-4c31-874f-354e68c875ec"
+  ],
+  "executed": [
+    "extension-3fa9350e-d026-4304-9c71-67b62893141e",
+    "extension-28fd62be-9ce2-4064-a309-0e1e18e9a1a1",
+    "extension-e42074c5-7b9c-4c31-874f-354e68c875ec"
+  ],
+  "callbacks": [
+    {
+      "extension": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-0",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-3fa9350e-d026-4304-9c71-67b62893141e",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-3fa9350e-d026-4304-9c71-67b62893141e",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-1",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98",
+        "run_id": "eval-d2da5bee-6f1b-45e8-9960-97a4a367d93f",
+        "turn_id": "eval-d2da5bee-6f1b-45e8-9960-97a4a367d93f",
+        "execution_id": "eval-d2da5bee-6f1b-45e8-9960-97a4a367d93f"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-4b1d3d1d-6d15-4731-ad1b-6bf1daf696c1",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-3fa9350e-d026-4304-9c71-67b62893141e",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-2",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-3",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-28fd62be-9ce2-4064-a309-0e1e18e9a1a1",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-28fd62be-9ce2-4064-a309-0e1e18e9a1a1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-4",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98",
+        "run_id": "eval-e82849f7-4ec9-4360-a40b-a3a9f9533260",
+        "turn_id": "eval-e82849f7-4ec9-4360-a40b-a3a9f9533260",
+        "execution_id": "eval-e82849f7-4ec9-4360-a40b-a3a9f9533260"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "bad"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-340ffd7c-85d4-4d83-8861-793216b8d900",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-28fd62be-9ce2-4064-a309-0e1e18e9a1a1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-5",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-6",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-e42074c5-7b9c-4c31-874f-354e68c875ec",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-e42074c5-7b9c-4c31-874f-354e68c875ec",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-7",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98",
+        "run_id": "eval-4080f719-463a-499f-92fa-ac2784afefeb",
+        "turn_id": "eval-4080f719-463a-499f-92fa-ac2784afefeb",
+        "execution_id": "eval-4080f719-463a-499f-92fa-ac2784afefeb"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "hang"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-c76a6b5d-2d22-49fc-945a-6e17d25f19e0",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-ac9a215e-f375-4915-930d-44bc0fe6ea89",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-e42074c5-7b9c-4c31-874f-354e68c875ec",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-8",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-47c9db01-4642-4197-8ebd-1f62f64d8f07",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-9",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98",
+        "run_id": "eval-63badd86-2100-40c6-a5ad-c72c296fc1d9",
+        "turn_id": "eval-63badd86-2100-40c6-a5ad-c72c296fc1d9",
+        "execution_id": "eval-63badd86-2100-40c6-a5ad-c72c296fc1d9"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-ba9a1742-9833-4681-b768-70e115727855",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-47c9db01-4642-4197-8ebd-1f62f64d8f07",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-10",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98",
+        "run_id": "eval-edba0254-d0d1-4e57-825a-032b6712ee98",
+        "turn_id": "eval-edba0254-d0d1-4e57-825a-032b6712ee98",
+        "execution_id": "eval-edba0254-d0d1-4e57-825a-032b6712ee98"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-ae692d5f-dcff-4166-8b16-19929c0ac339",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-47c9db01-4642-4197-8ebd-1f62f64d8f07",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-11",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_execute",
+        "input": {
+          "task": "You are an expert evaluator. You will receive:\n1. A TASK that an agent was asked to complete\n2. The agent's OUTPUT\n3. A list of ASSERTIONS to check\n\nFor each assertion, determine:\n- PASSED: true/false\n- CONFIDENCE: 0.0-1.0\n- EVIDENCE: quote the specific part of the output that proves or disproves\n- REASONING: explain your judgment\n\nOutput format (JSON):\n{\n  \"results\": [\n    {\"assertion_id\": \"...\", \"passed\": bool, \"confidence\": 0.0-1.0,\n     \"evidence\": \"...\", \"reasoning\": \"...\"}\n  ],\n  \"overall_assessment\": \"brief summary\"\n}\n\nBe strict but fair. If evidence is ambiguous, mark as not passed.\n\n--- TASK ---\ngood\n\n--- OUTPUT ---\n{\"results\":[{\"assertion_id\":\"a1\",\"passed\":true,\"confidence\":0.875,\"evidence\":\"OK\",\"reasoning\":\"fixed one🙂\"},{\"assertion_id\":\"a2\",\"passed\":false,\"confidence\":0.625,\"evidence\":\"none\",\"reasoning\":\"fixed two🙂\"}],\"overall_assessment\":\"fixed grade🙂\"}\n\n--- ASSERTIONS ---\n- [a1] Check: contains OK\n  Expected: OK\n- [a2] Check: contains 中文\n  Expected: 中文\n\nProvide your grading in the JSON format specified."
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-47c9db01-4642-4197-8ebd-1f62f64d8f07",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-12",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_execute",
+        "input": {
+          "task": "You are an expert evaluator. You will receive:\n1. A TASK that an agent was asked to complete\n2. The agent's OUTPUT\n3. A list of ASSERTIONS to check\n\nFor each assertion, determine:\n- PASSED: true/false\n- CONFIDENCE: 0.0-1.0\n- EVIDENCE: quote the specific part of the output that proves or disproves\n- REASONING: explain your judgment\n\nOutput format (JSON):\n{\n  \"results\": [\n    {\"assertion_id\": \"...\", \"passed\": bool, \"confidence\": 0.0-1.0,\n     \"evidence\": \"...\", \"reasoning\": \"...\"}\n  ],\n  \"overall_assessment\": \"brief summary\"\n}\n\nBe strict but fair. If evidence is ambiguous, mark as not passed.\n\n--- TASK ---\ngrade-task\n\n--- OUTPUT ---\nOK\n\n--- ASSERTIONS ---\n- [a1] Check: contains OK\n  Expected: OK\n- [a2] Check: contains 中文\n  Expected: 中文\n\nProvide your grading in the JSON format specified."
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-47c9db01-4642-4197-8ebd-1f62f64d8f07",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-13",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_execute",
+        "input": {
+          "task": "You are an expert evaluator. You will receive:\n1. A TASK that an agent was asked to complete\n2. The agent's OUTPUT\n3. A list of ASSERTIONS to check\n\nFor each assertion, determine:\n- PASSED: true/false\n- CONFIDENCE: 0.0-1.0\n- EVIDENCE: quote the specific part of the output that proves or disproves\n- REASONING: explain your judgment\n\nOutput format (JSON):\n{\n  \"results\": [\n    {\"assertion_id\": \"...\", \"passed\": bool, \"confidence\": 0.0-1.0,\n     \"evidence\": \"...\", \"reasoning\": \"...\"}\n  ],\n  \"overall_assessment\": \"brief summary\"\n}\n\nBe strict but fair. If evidence is ambiguous, mark as not passed.\n\n--- TASK ---\ngrade-task\n\n--- OUTPUT ---\nOK\n\n--- ASSERTIONS ---\n- [a1] Check: contains OK\n  Expected: OK\n- [a2] Check: contains 中文\n  Expected: 中文\n\nProvide your grading in the JSON format specified."
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-47c9db01-4642-4197-8ebd-1f62f64d8f07",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-14",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_execute",
+        "input": {
+          "task": "You are an expert evaluator. You will receive:\n1. A TASK that an agent was asked to complete\n2. The agent's OUTPUT\n3. A list of ASSERTIONS to check\n\nFor each assertion, determine:\n- PASSED: true/false\n- CONFIDENCE: 0.0-1.0\n- EVIDENCE: quote the specific part of the output that proves or disproves\n- REASONING: explain your judgment\n\nOutput format (JSON):\n{\n  \"results\": [\n    {\"assertion_id\": \"...\", \"passed\": bool, \"confidence\": 0.0-1.0,\n     \"evidence\": \"...\", \"reasoning\": \"...\"}\n  ],\n  \"overall_assessment\": \"brief summary\"\n}\n\nBe strict but fair. If evidence is ambiguous, mark as not passed.\n\n--- TASK ---\ngrade-task\n\n--- TRAJECTORY ---\n工具轨迹🙂\n\n--- OUTPUT ---\nOK\n\n--- ASSERTIONS ---\n- [a1] Check: contains OK\n  Expected: OK\n- [a2] Check: contains 中文\n  Expected: 中文\n\nProvide your grading in the JSON format specified."
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-47c9db01-4642-4197-8ebd-1f62f64d8f07",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-c7efb1bf5f5c4117a92cd7904aeb0364-15",
+      "context": {
+        "session_id": "sess_b6f9e5c9-07e9-4225-9d8a-db5b46494c98"
+      },
+      "invocation": {
+        "operation": "agent_execute",
+        "input": {
+          "task": "You are an expert evaluator. You will receive:\n1. A TASK that an agent was asked to complete\n2. The agent's OUTPUT\n3. A list of ASSERTIONS to check\n\nFor each assertion, determine:\n- PASSED: true/false\n- CONFIDENCE: 0.0-1.0\n- EVIDENCE: quote the specific part of the output that proves or disproves\n- REASONING: explain your judgment\n\nOutput format (JSON):\n{\n  \"results\": [\n    {\"assertion_id\": \"...\", \"passed\": bool, \"confidence\": 0.0-1.0,\n     \"evidence\": \"...\", \"reasoning\": \"...\"}\n  ],\n  \"overall_assessment\": \"brief summary\"\n}\n\nBe strict but fair. If evidence is ambiguous, mark as not passed.\n\n--- TASK ---\ngrade-task\n\n--- OUTPUT ---\nOK\n\n--- ASSERTIONS ---\n- [a1] Check: contains OK\n  Expected: OK\n- [a2] Check: contains 中文\n  Expected: 中文\n\nProvide your grading in the JSON format specified."
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    }
+  ],
+  "factory_finally": 3,
+  "cancel_observed": 1,
+  "rows": [
+    {
+      "id": "runner",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-87f9c2d4-a277-408f-be4a-c778a0536143",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "default-timeout",
+      "outcome": "result",
+      "value": "300"
+    },
+    {
+      "id": "workspace",
+      "outcome": "result",
+      "value": {
+        "kind": "path",
+        "value": {
+          "encoding": "utf8",
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/typescript-eval-4gUBDH/eval-root"
+        }
+      }
+    },
+    {
+      "id": "configured-root",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-1287ec7f-f216-4db2-9233-125f840ba032",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "timeout-runner",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-1f65cb44-8696-464e-ab87-091132cebf4b",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "configured-timeout",
+      "outcome": "result",
+      "value": "1"
+    },
+    {
+      "id": "store",
+      "outcome": "result",
+      "value": {
+        "resource": {
+          "id": "facade_resource-58ca36a9-49c1-4db2-b5e8-2b153c195986",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    },
+    {
+      "id": "save-run",
+      "outcome": "result",
+      "value": {
+        "ok": true
+      }
+    },
+    {
+      "id": "stored-runner",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-43dc5169-5705-4a18-bc1c-7e8be4aad882",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "run-all",
+      "outcome": "result",
+      "value": {
+        "total": "2",
+        "passed": "1",
+        "failed": "1",
+        "avg_score": 0.5,
+        "std_dev": 0.7071067811865476,
+        "min_score": 0,
+        "max_score": 1,
+        "delta_vs_baseline": null,
+        "total_tool_calls": "0",
+        "total_tokens_in": "0",
+        "total_tokens_out": "0",
+        "total_cached_tokens_in": "0",
+        "total_cache_creation_tokens_in": "0",
+        "cache_hit_rate": null,
+        "total_tool_errors": "0",
+        "max_protected_context_tokens": "0",
+        "total_file_changes": "0",
+        "results": [
+          {
+            "case_id": "pass",
+            "success": true,
+            "score": 1,
+            "metrics": [
+              {
+                "name": "output_contains",
+                "score": 1,
+                "detail": "Looking for: OK 中文🙂"
+              }
+            ],
+            "violations": [],
+            "run_id": null,
+            "duration_ms": "5",
+            "tool_calls": "0",
+            "tokens_in": "0",
+            "tokens_out": "0",
+            "cached_tokens_in": "0",
+            "cache_creation_tokens_in": "0",
+            "cache_hit_rate": null,
+            "tool_errors": "0",
+            "max_protected_context_tokens": "0",
+            "file_changes": "0",
+            "compile_ok": null,
+            "tests_pass": null
+          },
+          {
+            "case_id": "bad",
+            "success": false,
+            "score": 0,
+            "metrics": [
+              {
+                "name": "output_contains",
+                "score": 0,
+                "detail": "Looking for: OK 中文🙂"
+              }
+            ],
+            "violations": [
+              "Output missing: OK 中文🙂. Got: wrong response"
+            ],
+            "run_id": null,
+            "duration_ms": "1",
+            "tool_calls": "0",
+            "tokens_in": "0",
+            "tokens_out": "0",
+            "cached_tokens_in": "0",
+            "cache_creation_tokens_in": "0",
+            "cache_hit_rate": null,
+            "tool_errors": "0",
+            "max_protected_context_tokens": "0",
+            "file_changes": "0",
+            "compile_ok": null,
+            "tests_pass": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "timeout",
+      "outcome": "result",
+      "value": {
+        "total": "1",
+        "passed": "0",
+        "failed": "1",
+        "avg_score": 0,
+        "std_dev": 0,
+        "min_score": 0,
+        "max_score": 0,
+        "delta_vs_baseline": null,
+        "total_tool_calls": "0",
+        "total_tokens_in": "0",
+        "total_tokens_out": "0",
+        "total_cached_tokens_in": "0",
+        "total_cache_creation_tokens_in": "0",
+        "cache_hit_rate": null,
+        "total_tool_errors": "0",
+        "max_protected_context_tokens": "0",
+        "total_file_changes": "0",
+        "results": [
+          {
+            "case_id": "timeout",
+            "success": false,
+            "score": 0,
+            "metrics": [],
+            "violations": [
+              "Timeout",
+              "Turn settled after timeout: cancelled"
+            ],
+            "run_id": null,
+            "duration_ms": "1007",
+            "tool_calls": "0",
+            "tokens_in": "0",
+            "tokens_out": "0",
+            "cached_tokens_in": "0",
+            "cache_creation_tokens_in": "0",
+            "cache_hit_rate": null,
+            "tool_errors": "0",
+            "max_protected_context_tokens": "0",
+            "file_changes": "0",
+            "compile_ok": null,
+            "tests_pass": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "direct",
+      "outcome": "result",
+      "value": {
+        "case_id": "direct",
+        "success": true,
+        "score": 1,
+        "metrics": [
+          {
+            "name": "output_contains",
+            "score": 1,
+            "detail": "Looking for: OK 中文🙂"
+          }
+        ],
+        "violations": [],
+        "run_id": null,
+        "duration_ms": "1",
+        "tool_calls": "0",
+        "tokens_in": "0",
+        "tokens_out": "0",
+        "cached_tokens_in": "0",
+        "cache_creation_tokens_in": "0",
+        "cache_hit_rate": null,
+        "tool_errors": "0",
+        "max_protected_context_tokens": "0",
+        "file_changes": "0",
+        "compile_ok": null,
+        "tests_pass": null
+      }
+    },
+    {
+      "id": "constraints",
+      "outcome": "result",
+      "value": [
+        "Too many tool calls: 1 (max 0)",
+        "Write without read: write_file on file🙂",
+        "Forbidden path modified: file🙂",
+        "Too many files changed: 1 (max 0)"
+      ]
+    },
+    {
+      "id": "grader",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-1d93e987-7d97-4fa2-9b72-9ce882a2bbdc",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "grader-config",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-4d8ce157-2ced-472c-9b61-022ea4748822",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "mode-grade",
+      "outcome": "result",
+      "value": "grade"
+    },
+    {
+      "id": "graded-run",
+      "outcome": "result",
+      "value": {
+        "case_id": "graded",
+        "success": true,
+        "score": 0.5,
+        "metrics": [
+          {
+            "name": "llm_graded",
+            "score": 0.5,
+            "detail": "2 assertions, 50% pass rate"
+          }
+        ],
+        "violations": [],
+        "run_id": null,
+        "duration_ms": "1",
+        "tool_calls": "0",
+        "tokens_in": "0",
+        "tokens_out": "0",
+        "cached_tokens_in": "0",
+        "cache_creation_tokens_in": "0",
+        "cache_hit_rate": null,
+        "tool_errors": "0",
+        "max_protected_context_tokens": "0",
+        "file_changes": "0",
+        "compile_ok": null,
+        "tests_pass": null
+      }
+    },
+    {
+      "id": "grade",
+      "outcome": "result",
+      "value": {
+        "case_id": "",
+        "results": [
+          {
+            "assertion_id": "a1",
+            "passed": true,
+            "confidence": 0.875,
+            "evidence": "OK",
+            "reasoning": "fixed one🙂"
+          },
+          {
+            "assertion_id": "a2",
+            "passed": false,
+            "confidence": 0.625,
+            "evidence": "none",
+            "reasoning": "fixed two🙂"
+          }
+        ],
+        "pass_rate": 0.5,
+        "overall_assessment": "fixed grade🙂"
+      }
+    },
+    {
+      "id": "grade-null",
+      "outcome": "result",
+      "value": {
+        "case_id": "",
+        "results": [
+          {
+            "assertion_id": "a1",
+            "passed": true,
+            "confidence": 0.875,
+            "evidence": "OK",
+            "reasoning": "fixed one🙂"
+          },
+          {
+            "assertion_id": "a2",
+            "passed": false,
+            "confidence": 0.625,
+            "evidence": "none",
+            "reasoning": "fixed two🙂"
+          }
+        ],
+        "pass_rate": 0.5,
+        "overall_assessment": "fixed grade🙂"
+      }
+    },
+    {
+      "id": "grade-trajectory",
+      "outcome": "result",
+      "value": {
+        "case_id": "",
+        "results": [
+          {
+            "assertion_id": "a1",
+            "passed": true,
+            "confidence": 0.875,
+            "evidence": "OK",
+            "reasoning": "fixed one🙂"
+          },
+          {
+            "assertion_id": "a2",
+            "passed": false,
+            "confidence": 0.625,
+            "evidence": "none",
+            "reasoning": "fixed two🙂"
+          }
+        ],
+        "pass_rate": 0.5,
+        "overall_assessment": "fixed grade🙂"
+      }
+    },
+    {
+      "id": "mode-bad-grade",
+      "outcome": "result",
+      "value": "invalid_grade"
+    },
+    {
+      "id": "grade-bad",
+      "outcome": "result",
+      "value": {
+        "case_id": "",
+        "results": [
+          {
+            "assertion_id": "a1",
+            "passed": false,
+            "confidence": 0,
+            "evidence": "",
+            "reasoning": "grader response was not valid JSON"
+          },
+          {
+            "assertion_id": "a2",
+            "passed": false,
+            "confidence": 0,
+            "evidence": "",
+            "reasoning": "grader response was not valid JSON"
+          }
+        ],
+        "pass_rate": 0,
+        "overall_assessment": "grader response was not valid JSON"
+      }
+    },
+    {
+      "id": "foreign-runner",
+      "outcome": "error",
+      "code": "invalid_value",
+      "message": "facade resource belongs to another session",
+      "operation": "echo_agent::eval::runner::EvalRunner::timeout_secs"
+    }
+  ],
+  "deadline_waiter_pending_during_cleanup": true,
+  "workspace_exists_during_cleanup": true
+}

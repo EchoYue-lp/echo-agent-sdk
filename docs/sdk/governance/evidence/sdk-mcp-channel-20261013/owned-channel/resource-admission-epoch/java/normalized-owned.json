@@ -1,0 +1,292 @@
+{
+  "quota_refilled": 3,
+  "parked_other_access": true,
+  "stops": {
+    "a": 4,
+    "b": 3,
+    "other": 1
+  },
+  "inbound_handler_calls": 0,
+  "events": [
+    {
+      "metadata": "ids",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_send",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "resource-close",
+      "result": "closed_handle",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "resource-close",
+      "result": "closed_handle",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_send",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "resource-close",
+      "result": "closed_handle",
+      "id": "a"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "resource-close",
+      "result": "closed_handle",
+      "id": "a"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "resource-close",
+      "result": "closed_handle",
+      "id": "b"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "b"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "resource-close",
+      "result": "closed_handle",
+      "id": "b"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "other"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "other"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "other"
+    },
+    {
+      "metadata": "ids",
+      "operation": "channel_stop",
+      "phase": "session-close",
+      "result": "closed_handle",
+      "id": "other"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "other"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_health",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "other"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_start",
+      "phase": "active",
+      "result": "read-before-return",
+      "id": "other"
+    },
+    {
+      "metadata": "list",
+      "operation": "channel_stop",
+      "phase": "session-close",
+      "result": "closed_handle",
+      "id": "other"
+    }
+  ]
+}

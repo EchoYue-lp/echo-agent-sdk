@@ -1,0 +1,161 @@
+--- before/sdks/typescript/src/client.ts
++++ after/sdks/typescript/src/client.ts
+@@ -172,7 +172,7 @@
+   readonly queue: AsyncQueue<FacadeStreamItem>;
+   handle?: WireHandle;
+   lastEventSequence: bigint;
+-  replayRanges?: Array<{base: bigint; end: bigint}>;
++  replayRanges?: Array<{base: bigint; end: bigint; recoveryBase?: bigint}>;
+   acknowledgedSequence?: bigint;
+   lastLiveSequence?: bigint;
+   lastGapWatermark?: bigint;
+@@ -828,7 +828,8 @@
+     const parsed = parsePositiveSequence(sequence);
+     const feed = this.events.get(stream.id);
+     const owned = feed?.handle && sameHandle(feed.handle, stream);
+-    const covered = feed?.replayRanges?.some(range => range.base <= feed.lastEventSequence && range.end >= parsed);
++    const covered = feed?.replayRanges?.some(range => range.end >= parsed && (range.base <= feed.lastEventSequence && parsed > range.base
++      || (range.recoveryBase !== undefined && range.recoveryBase <= feed.lastEventSequence && parsed >= range.base)));
+     const observed = owned && (covered || parsed === feed.lastGapWatermark || parsed <= (feed.lastLiveSequence ?? 0n));
+     try {
+       await this.notify("_echo_agent/event/ack", {
+@@ -859,10 +860,12 @@
+       if(["final_answer","cancelled","error"].includes(event.envelope.payload.event_type))feed.replayTerminalSequence=BigInt(event.envelope.sequence);
+     }
+     const ranges = feed.replayRanges ??= [];
++    // A validated retention gap connects the request cursor to its snapshot.
++    // Only snapshot-or-later cursors are covered; absent interior events are not.
+     // Fold consecutive fetched pages; fetching does not mark any event consumed.
+-    const previous = ranges.find(range => range.end === base);
++    const previous = result.gap ? undefined : ranges.find(range => range.end === base);
+     if (previous) previous.end = end;
+-    else ranges.push({base,end});
++    else ranges.push({base,end,...(result.gap ? {recoveryBase: BigInt(result.requested_after_sequence)} : {})});
+     if (ranges.length > 512) ranges.shift();
+   }
+ 
+--- before/sdks/python/src/echo_agent_sdk/client.py
++++ after/sdks/python/src/echo_agent_sdk/client.py
+@@ -2800,6 +2800,13 @@
+                 watermark > self.last_sequence
+                 and self.last_sequence > 0
+                 and from_sequence != self.last_sequence + 1
++                # A peer may resume before the official ACK writer completes.
++                # This permits only its next fact; it never commits consumption.
++                and not any(
++                    from_sequence > self.last_sequence
++                    and from_sequence == predecessor + 1
++                    for predecessor in self.pending_ack_sequences.values()
++                )
+             )
+         ):
+             raise EchoAgentError(
+@@ -3112,7 +3119,9 @@
+         self._process_watch = process_watch
+         self._close_lock = asyncio.Lock()
+         self._event_cursors: dict[WireHandle, int] = {}
+-        self._replay_ranges: dict[WireHandle, list[tuple[int, int]]] = {}
++        self._replay_ranges: dict[
++            WireHandle, list[tuple[int, int] | tuple[int, int, int]]
++        ] = {}
+         self._ack_submissions: set[asyncio.Task[None]] = set()
+         self._closed = False
+ 
+@@ -3396,8 +3405,17 @@
+             feed = self._events.get(stream.id)
+             if feed is not None and feed.handle == stream:
+                 covered = any(
+-                    base <= feed.last_sequence and end >= sequence
+-                    for base, end in self._replay_ranges.get(stream, [])
++                    entry[1] >= sequence
++                    and (
++                        entry[0] <= feed.last_sequence
++                        and sequence > entry[0]
++                        or (
++                            len(entry) == 3
++                            and entry[2] <= feed.last_sequence
++                            and sequence >= entry[0]
++                        )
++                    )
++                    for entry in self._replay_ranges.get(stream, [])
+                 )
+                 observed = (
+                     covered
+@@ -4405,15 +4423,18 @@
+         adjacent = next(
+             (
+                 index
+-                for index, (_, previous_end) in enumerate(ranges)
+-                if previous_end == base
++                for index, entry in enumerate(ranges)
++                if entry[1] == base and not response.get("gap")
+             ),
+             None,
+         )
+         if adjacent is not None:
+-            ranges[adjacent] = (ranges[adjacent][0], end)
++            ranges[adjacent] = (ranges[adjacent][0], end, *ranges[adjacent][2:])
+         else:
+-            ranges.append((base, end))
++            # Keep the validated gap bridge, without granting absent interior cursors.
++            ranges.append(
++                (base, end, int(after_sequence)) if response.get("gap") else (base, end)
++            )
+         if len(ranges) > 512:
+             ranges.pop(0)
+         return response
+--- before/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
++++ after/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+@@ -33,7 +33,7 @@
+     private final AcpClientTransport transport;
+     private CompletionStage<Void> closeStage;
+     private final FacadeCatalog catalog;
+-    private record ReplayRange(java.math.BigInteger base, java.math.BigInteger end) {}
++    private record ReplayRange(java.math.BigInteger base, java.math.BigInteger end, java.math.BigInteger recoveryBase) {}
+     private final Map<WireHandle,List<ReplayRange>> replayRanges = new ConcurrentHashMap<>();
+     private final Map<WireHandle,java.math.BigInteger> replayTerminals = new ConcurrentHashMap<>();
+     private final java.util.Set<CompletableFuture<Void>> ackSubmissions = ConcurrentHashMap.newKeySet();
+@@ -539,9 +539,12 @@
+         var end=new java.math.BigInteger(response.path("next_cursor").path("last_processed_sequence").asText());
+         var ranges=replayRanges.computeIfAbsent(stream,ignored->new java.util.ArrayList<>());
+         synchronized(ranges){
+-            var previous=ranges.stream().filter(range->range.end().equals(base)).findFirst();
+-            if(previous.isPresent()){ranges.remove(previous.get());ranges.add(new ReplayRange(previous.get().base(),end));}
+-            else ranges.add(new ReplayRange(base,end));
++            var previous=ranges.stream().filter(range->!response.hasNonNull("gap") && range.end().equals(base)).findFirst();
++            if(previous.isPresent()){ranges.remove(previous.get());ranges.add(new ReplayRange(previous.get().base(),end,previous.get().recoveryBase()));}
++            // The validated retention gap connects only snapshot-or-later ACKs.
++            // Missing interior events never acquire consumption permission.
++            else ranges.add(new ReplayRange(base,end,response.hasNonNull("gap")
++                    ? new java.math.BigInteger(response.path("requested_after_sequence").textValue()) : null));
+             if(ranges.size()>512)ranges.remove(0);
+         }
+     }
+@@ -566,7 +569,10 @@
+                 boolean covered=false;
+                 if(ranges!=null){synchronized(ranges){
+                     var current=publisher.lastSequence();
+-                    covered=ranges.stream().anyMatch(range->range.base().compareTo(current)<=0&&range.end().compareTo(sequence)>=0);
++                    covered=ranges.stream().anyMatch(range->range.end().compareTo(sequence)>=0
++                            && (range.base().compareTo(current)<=0 && sequence.compareTo(range.base())>0
++                                || (range.recoveryBase()!=null && range.recoveryBase().compareTo(current)<=0
++                                    && sequence.compareTo(range.base())>=0)));
+                 }}
+                 if(covered||publisher.canAcknowledgeObserved(sequence)){
+                     observedPublisher=publisher;ackStream=stream;ackSequence=sequence;
+--- before/sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java
++++ after/sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java
+@@ -382,7 +382,12 @@
+             if (watermarkValue.compareTo(lastSequence) < 0
+                     || (watermarkValue.compareTo(lastSequence) > 0
+                         && lastSequence.signum() > 0
+-                        && !fromValue.equals(lastSequence.add(BigInteger.ONE)))) {
++                        && !fromValue.equals(lastSequence.add(BigInteger.ONE))
++                        // The peer can continue before ACK write completion;
++                        // only a validated pending predecessor permits this gap.
++                        && pendingAcknowledgements.values().stream()
++                            .noneMatch(predecessor -> fromValue.compareTo(lastSequence) > 0
++                                && fromValue.equals(predecessor.add(BigInteger.ONE))))) {
+                 fail(new EchoAgentException("serialization_violation", "gap sequence range is malformed",
+                         "never", "_echo_agent/gap", value));
+                 return;

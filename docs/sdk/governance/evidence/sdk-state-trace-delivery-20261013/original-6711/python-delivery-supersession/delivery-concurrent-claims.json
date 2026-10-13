@@ -1,0 +1,28 @@
+[
+  {
+    "claim": {
+      "payload": {
+        "text": "待投递🧭",
+        "nullable": null
+      },
+      "message_id": "message-中文🙂",
+      "route": "channel/local",
+      "attempt_id": "44932e75-318c-457c-9031-e01be4867b3b",
+      "attempt": "1",
+      "claimed_at": "2026-10-13T05:38:38.919206Z"
+    }
+  },
+  {
+    "claim": {
+      "payload": {
+        "text": "待投递🧭",
+        "nullable": null
+      },
+      "message_id": "message-中文🙂",
+      "route": "channel/local",
+      "attempt_id": "b68a936c-76bf-4437-95c5-f58881bdc1ec",
+      "attempt": "2",
+      "claimed_at": "2026-10-13T05:38:38.919734Z"
+    }
+  }
+]

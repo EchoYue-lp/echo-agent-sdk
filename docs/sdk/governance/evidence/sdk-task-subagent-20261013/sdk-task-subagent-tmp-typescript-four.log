@@ -1,0 +1,51 @@
+TAP version 13
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-pause-1pMnZ8
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-cancel-5N1u9C
+# Subtest: exact Task pause preserves independent B/C
+ok 1 - exact Task pause preserves independent B/C
+  ---
+  duration_ms: 5616.55325
+  type: 'test'
+  ...
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-subagent-await-RqUki9
+# Subtest: exact Task cancel preserves independent B/C
+ok 2 - exact Task cancel preserves independent B/C
+  ---
+  duration_ms: 5384.759209
+  type: 'test'
+  ...
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-crud-only-bbF0C9
+# Subtest: real Task/Subagent subagent-await
+not ok 3 - real Task/Subagent subagent-await
+  ---
+  duration_ms: 20268.067834
+  type: 'test'
+  location: '/private/tmp/sdk-task-subagent-candidate-fixture/task-subagent-host.test.js:116:50'
+  failureType: 'testCodeFailure'
+  error: 'observed framework condition did not occur'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    until (file:///private/tmp/sdk-task-subagent-candidate-fixture/task-subagent-host.test.js:12:92)
+    async singleScenario (file:///private/tmp/sdk-task-subagent-candidate-fixture/task-subagent-host.test.js:104:4)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: real Task/Subagent crud-only
+ok 4 - real Task/Subagent crud-only
+  ---
+  duration_ms: 5280.966417
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 3
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36676.268083

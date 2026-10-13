@@ -1,0 +1,20 @@
+{
+  "name": "task-store-execution-cas-string-invalid",
+  "kind": "invalid",
+  "target": "ExtensionRegisterRequest",
+  "description": "A string cannot opt a store into execution CAS.",
+  "payload": {
+    "kind": "agent_component",
+    "implementation_id": "task-store",
+    "descriptor": {
+      "kind": "agent_component",
+      "descriptor_version": 1,
+      "component": "revisioned_task_store",
+      "name": "task-store",
+      "capabilities": {
+        "execution_cas_v1": "true"
+      }
+    }
+  },
+  "expect_error": "invalid_value"
+}

@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------
+Test set: com.echoagent.sdk.ToolValueEffectHostTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.787 s <<< FAILURE! -- in com.echoagent.sdk.ToolValueEffectHostTest
+com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects -- Time elapsed: 0.691 s <<< ERROR!
+java.nio.file.FileSystemException: : Is a directory
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:100)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:261)
+	at java.base/java.nio.file.spi.FileSystemProvider.newOutputStream(FileSystemProvider.java:482)
+	at java.base/java.nio.file.Files.newOutputStream(Files.java:227)
+	at java.base/java.nio.file.Files.write(Files.java:3492)
+	at java.base/java.nio.file.Files.writeString(Files.java:3714)
+	at java.base/java.nio.file.Files.writeString(Files.java:3654)
+	at com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects(ToolValueEffectHostTest.java:30)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

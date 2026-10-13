@@ -1,0 +1,13 @@
+{
+  "name": "managed-projection-authority-u64-valid",
+  "kind": "valid",
+  "target": "ConversationProjectionAuthorityWire",
+  "description": "Managed revisions and epochs are decimal strings beyond the JavaScript safe integer range.",
+  "payload": {
+    "conversation_id": "会话",
+    "epoch": "9007199254740993",
+    "revision": "18446744073709551615",
+    "lifecycle": "live",
+    "delete_receipt_retention_floor_epoch": "0"
+  }
+}

@@ -1,0 +1,12 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 43.70s
+     Running tests/facade_feature_adapters_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/facade_feature_adapters_e2e-12f34397cdd878c6)
+
+running 4 tests
+test workflow_stream_uses_unified_handle_backpressure_and_close ... ok
+test a2a_sse_stream_delivers_items_then_terminal ... ok
+test workflow_cancel_preserves_canonical_failure_in_rpc_and_stream_terminal ... ok
+test connection_teardown_settles_a_blocked_facade_stream ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1.33s
+

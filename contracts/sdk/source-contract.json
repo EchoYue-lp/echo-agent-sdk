@@ -8,9 +8,9 @@
     },
     {
       "path": "contracts/sdk/accepted-facade-operation-catalog.json",
-      "bytes": 520705,
-      "sha256": "sha256:107eb4d7194fa8fdf855c8a77c8cd27450b26cf17c1b3600b848494c4fccea9f"
+      "bytes": 654124,
+      "sha256": "sha256:f5fa4b2794018cd24734ac89d8e3e4e544efb558db2aa3a3ff5819731ed2f5a4"
     }
   ],
-  "aggregate_digest": "sha256:038e42ac6a99918ba5bf9ca4757364de6a2236c16478e912ce374204692c481b"
+  "aggregate_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6"
 }

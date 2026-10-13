@@ -1,0 +1,26 @@
+--- a/echo-sdk-host/tests/core_profile_e2e.rs
++++ b/echo-sdk-host/tests/core_profile_e2e.rs
+@@ -878,6 +878,7 @@
+             }).block_task().await?;
+             assert!(snapshot.last_sequence.to_u64().unwrap_or_default() >= watermark,
+                 "gap ACK must cover a snapshot observed at or beyond its watermark");
++            println!("[gap-watermark] snapshot_watermark={watermark} initial_events={initial_event_count} initial_gaps={initial_gap_count}");
+             if let Some(page_size) = consumed_page_size {
+                 let parked_tail = snapshot.last_sequence.to_u64().ok_or_else(|| agent_client_protocol::Error::invalid_params().data("invalid snapshot tail"))?;
+                 let mut cursor = 0u64;
+@@ -960,6 +961,7 @@
+                 event.validate().map_err(|error| {
+                     agent_client_protocol::Error::invalid_params().data(error.to_string())
+                 })?;
++                println!("[gap-watermark] resumed_live_sequence={} snapshot_watermark={watermark}", event.envelope.sequence.to_u64().unwrap_or_default());
+                 assert!(event.envelope.sequence.to_u64().unwrap_or_default() > watermark);
+             }
+             let resumed_gaps = gaps.lock()
+@@ -969,6 +971,7 @@
+                 resumed.validate().map_err(|error| {
+                     agent_client_protocol::Error::invalid_params().data(error.to_string())
+                 })?;
++                println!("[gap-watermark] resumed_gap_from={} snapshot_watermark={watermark}", resumed.gap.from_sequence.to_u64().unwrap_or_default());
+                 assert!(resumed.gap.from_sequence.to_u64().unwrap_or_default() > watermark);
+             }
+             let replay = connection.send_request(ReplayRequest {

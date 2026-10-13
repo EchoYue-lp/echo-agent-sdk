@@ -1,0 +1,45 @@
+{
+  "classification": "actual small prototype before/after calls plus new418 Rust; formal malformedlanguage regression and fullclippy pending",
+  "files": [
+    {
+      "file": "sdk-tool-validation-host-proof.json",
+      "original": "/tmp/sdk-tool-validation-host-proof.json",
+      "sha256": "1c6e2511db43e3a7b7cd008410b496f7661eef7e546b6dbe6287bff45e458062"
+    },
+    {
+      "file": "sdk-chart-input-probe.log",
+      "original": "/tmp/sdk-chart-input-probe.log",
+      "sha256": "0ade84fc63876ecc3df9d43078da7a858a93d68a22cacc36e33ff83045f778c2"
+    },
+    {
+      "file": "sdk-chart-input-probe-green.log",
+      "original": "/tmp/sdk-chart-input-probe-green.log",
+      "sha256": "5cf8e266111cd96234832a85f5056c77997d9b02da560842b35826ed7c451d56"
+    },
+    {
+      "file": "sdk-chart-input-probe.py",
+      "original": "/tmp/sdk-chart-input-probe.py",
+      "sha256": "3b19adebaecd6c0d50e89fae957a420874b6c9d3129ce53539e162c5edf9c796"
+    },
+    {
+      "file": "sdk-chart-input-probe-green.py",
+      "original": "/tmp/sdk-chart-input-probe-green.py",
+      "sha256": "3c6f53afca653146b57622ff9d9c2a721c12f242ff401b6467c6fc8aa4dd845a"
+    },
+    {
+      "file": "sdk-canonical-tool-validation-full-rust-correct-reexport.log",
+      "original": "/tmp/sdk-canonical-tool-validation-full-rust-correct-reexport.log",
+      "sha256": "8b052a259b2ab83139a2c1b6599b389096eb497ba404b214e3e2244d278e9287"
+    },
+    {
+      "file": "sdk-canonical-tool-validation-full-rust.log",
+      "original": "/tmp/sdk-canonical-tool-validation-full-rust.log",
+      "sha256": "9b1a6155deae1dd997b2e922cef6b548acc44576afa50757197140107715c857"
+    },
+    {
+      "file": "sdk-canonical-tool-validation-host-build.log",
+      "original": "/tmp/sdk-canonical-tool-validation-host-build.log",
+      "sha256": "93e65aaeaeca0d12fb3d1c5d308d108732cfd015f70e16e3500718ff1a8cff5d"
+    }
+  ]
+}

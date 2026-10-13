@@ -1,0 +1,9 @@
+usage: verify_semantic.py [-h] [--root ROOT] [--strict-snapshot] [--base BASE]
+                          [--task-scope] [--task-id TASK_ID]
+                          [--session-id SESSION_ID]
+                          [--require-change-evidence] [--self-test]
+                          [--continuity-merge-base CONTINUITY_MERGE_BASE]
+                          [--continuity-predecessor CONTINUITY_PREDECESSOR]
+                          [--continuity-result CONTINUITY_RESULT]
+                          [--continuity-report CONTINUITY_REPORT]
+verify_semantic.py: error: 任务验证须提供 task-id 与 base，不能混用全局快照或连续性模式

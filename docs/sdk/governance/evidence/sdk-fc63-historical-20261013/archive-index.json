@@ -1,0 +1,59 @@
+{
+  "archive_type": "original immutable receipt inputs, no reconstructed global source snapshot",
+  "files": [
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-family-candidate-runtime-source-freeze.json",
+      "original": "/tmp/sdk-family-candidate-runtime-source-freeze.json",
+      "sha256": "c68a6a02a1890ffcc39f9504d4721138e9e6bce4c922404fa1b4e58c921c9728"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-full-frozen-language-proof.json",
+      "original": "/tmp/sdk-full-frozen-language-proof.json",
+      "sha256": "70e3c3504c5172824e61dd3e296421e14b12d8536a99070813a1772f084cd195"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-full-frozen-language-gates-corrected.log",
+      "original": "/tmp/sdk-full-frozen-language-gates-corrected.log",
+      "sha256": "c4af37edd548db47b65a40378ec710015d724082e9cefb75b271e0b914a39adf"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-full-frozen-language-gates.sh",
+      "original": "/tmp/sdk-full-frozen-language-gates.sh",
+      "sha256": "2472dc76d2cdb6fd3c4d48c60834feeda5d90421d41ebd2226e679e11bebc28e"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-final-host-local-candidate.log",
+      "original": "/tmp/sdk-final-host-local-candidate.log",
+      "sha256": "9cc8e5d25a399b1d10611548c31a2f4fe6fd6ac96d59b3a79a2ef9f083eb73dd"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-family-handle-host-validation.json",
+      "original": "/tmp/sdk-family-handle-host-validation.json",
+      "sha256": "3279a20dc80b7a0b0a06cc9d390b73ba864c45b2b7a8b6f4de152d3c37c1b15e"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-lsp-three-language-comparison.json",
+      "original": "/tmp/sdk-lsp-three-language-comparison.json",
+      "sha256": "08c2fb47e33b18c28f30f51186aeac7d9adf674d58869e6f4f97dddd042d3dbd"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-lsp-language-proof.json",
+      "original": "/tmp/sdk-lsp-language-proof.json",
+      "sha256": "70926cc265461071a234ee6e0a73b46342d86b30092fb4dc808cdf83ecf704aa"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-identity-reservation-disabled-red.log",
+      "original": "/tmp/sdk-identity-reservation-disabled-red.log",
+      "sha256": "a35a14bf50d739228a649fc670ced738051fb7acf006b87393a90d0ca43a96a5"
+    },
+    {
+      "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/sdk-identity-reservation-restored-full-core.log",
+      "original": "/tmp/sdk-identity-reservation-restored-full-core.log",
+      "sha256": "1aa6b9d52c398005d03d505471fa7385d606c68a1e2d2c9efcf65502d54f3432"
+    }
+  ],
+  "original_evidence": {
+    "file": "docs/sdk/governance/evidence/sdk-fc63-historical-20261013/files/evidence.sdk-candidate-behavior-verification.original.txt",
+    "sha256": "bc4d51253476df739969e4803f4cc854315ee335914191f698021791af5fc1b2"
+  }
+}

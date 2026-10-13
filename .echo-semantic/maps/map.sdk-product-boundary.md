@@ -4,52 +4,114 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: source:18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
-boundary_refs: [boundary.sdk-product]
-behavior_refs: [behavior.sdk-repository-ownership]
-rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification, evidence.sdk-compatibility-gates]
-finding_refs: [finding.sdk-wave2-cutover-integrity]
-audit_refs: [audit.sdk-wave2-cutover-final-rereview]
+observed_at: source:3ea544c47e331b5d29a6624f978f3595619bef39fa5985230351098d38930404
+boundary_refs:
+- boundary.sdk-product
+behavior_refs:
+- behavior.sdk-repository-ownership
+rule_refs:
+- rule.framework-runtime-authority
+evidence_refs:
+- evidence.sdk-source-import
+- evidence.sdk-source-continuity
+- evidence.sdk-framework-pin
+- evidence.sdk-wave2-cutover-repair
+- evidence.sdk-wave2-cutover-final-verification
+- evidence.sdk-compatibility-gates
+- evidence.sdk-feature-wiring-verification
+- evidence.sdk-current-reviewed-rust-gates
+finding_refs:
+- finding.sdk-wave2-cutover-integrity
+- finding.sdk-accepted-source-continuity
+- finding.sdk-dependency-warning-policy-conflict
+- finding.sdk-test-feature-wiring
+audit_refs:
+- audit.sdk-wave2-cutover-final-rereview
 related_map_refs: []
 scenarios:
   compatibility-gates:
     status: mapped
-    source_refs: [echo-sdk-protocol/tests/facade_inventory.rs, scripts/check-language-sdks.sh, sdks/typescript/test/catalog.test.js, sdks/python/tests/test_catalog.py, sdks/java/src/test/java/com/echoagent/sdk/FacadeParityTest.java, echo-sdk-host/src/core_profile/state.rs]
-    behavior_refs: [behavior.sdk-repository-ownership]
-    rule_refs: [rule.framework-runtime-authority]
-    evidence_refs: [evidence.sdk-compatibility-gates]
+    source_refs:
+    - echo-sdk-protocol/tests/facade_inventory.rs
+    - scripts/check-language-sdks.sh
+    - sdks/typescript/test/catalog.test.js
+    - sdks/python/tests/test_catalog.py
+    - sdks/java/src/test/java/com/echoagent/sdk/FacadeParityTest.java
+    - echo-sdk-host/src/core_profile/state.rs
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-compatibility-gates
   source-history:
     status: mapped
-    source_refs: [MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md]
-    behavior_refs: [behavior.sdk-repository-ownership]
-    evidence_refs: [evidence.sdk-source-continuity, evidence.sdk-wave2-cutover-repair]
-    finding_refs: [finding.sdk-wave2-cutover-integrity]
+    source_refs:
+    - MIGRATION-SOURCE.md
+    - docs/adr/0001-sdk-repository-boundary.md
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    evidence_refs:
+    - evidence.sdk-source-continuity
+    - evidence.sdk-wave2-cutover-repair
+    finding_refs:
+    - finding.sdk-wave2-cutover-integrity
   protocol-and-host:
     status: mapped
-    source_refs: [echo-sdk-protocol/Cargo.toml, echo-sdk-host/Cargo.toml, echo-sdk-host/src/core_profile/wire.rs]
-    behavior_refs: [behavior.sdk-repository-ownership]
-    evidence_refs: [evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair]
-    finding_refs: [finding.sdk-wave2-cutover-integrity]
+    source_refs:
+    - echo-sdk-protocol/Cargo.toml
+    - echo-sdk-host/Cargo.toml
+    - echo-sdk-host/src/core_profile/wire.rs
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    evidence_refs:
+    - evidence.sdk-framework-pin
+    - evidence.sdk-wave2-cutover-repair
+    finding_refs:
+    - finding.sdk-wave2-cutover-integrity
   accepted-contract:
     status: mapped
-    source_refs: [contracts/sdk/accepted-external-contract.json, contracts/sdk/source-contract.json, contracts/sdk/inventory-telemetry.json]
-    behavior_refs: [behavior.sdk-repository-ownership]
-    evidence_refs: [evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair]
-    finding_refs: [finding.sdk-wave2-cutover-integrity]
+    source_refs:
+    - contracts/sdk/accepted-external-contract.json
+    - contracts/sdk/source-contract.json
+    - contracts/sdk/inventory-telemetry.json
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    evidence_refs:
+    - evidence.sdk-framework-pin
+    - evidence.sdk-wave2-cutover-repair
+    finding_refs:
+    - finding.sdk-wave2-cutover-integrity
   language-clients:
     status: mapped
-    source_refs: [sdks/shared/contract-digests.json, sdks/typescript/src/index.ts, sdks/python/src/echo_agent_sdk/__init__.py, sdks/java/pom.xml]
-    behavior_refs: [behavior.sdk-repository-ownership]
-    evidence_refs: [evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair]
-    finding_refs: [finding.sdk-wave2-cutover-integrity]
+    source_refs:
+    - sdks/shared/contract-digests.json
+    - sdks/typescript/src/index.ts
+    - sdks/python/src/echo_agent_sdk/__init__.py
+    - sdks/java/pom.xml
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    evidence_refs:
+    - evidence.sdk-framework-pin
+    - evidence.sdk-wave2-cutover-repair
+    finding_refs:
+    - finding.sdk-wave2-cutover-integrity
   wave2-cutover:
     status: mapped
-    source_refs: [Cargo.lock, echo-sdk-host/Cargo.toml, echo-sdk-protocol/src/facade.rs, contracts/sdk/inventory-telemetry.json, sdks/shared/contract-digests.json]
-    behavior_refs: [behavior.sdk-repository-ownership]
-    rule_refs: [rule.framework-runtime-authority]
-    evidence_refs: [evidence.sdk-wave2-cutover-repair]
-    finding_refs: [finding.sdk-wave2-cutover-integrity]
+    source_refs:
+    - Cargo.lock
+    - echo-sdk-host/Cargo.toml
+    - echo-sdk-protocol/src/facade.rs
+    - contracts/sdk/inventory-telemetry.json
+    - sdks/shared/contract-digests.json
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-wave2-cutover-repair
+    finding_refs:
+    - finding.sdk-wave2-cutover-integrity
 ---
 
 # 独立 SDK 产品边界
@@ -96,3 +158,7 @@ SDK 不新增线上权限模型，凭据不得写入合同、日志或迁移证�
 ## 未展开项
 
 完整 capability 分类和生命周期将在后续 SDK 收敛阶段展开。
+
+## 当前治理快照限制
+
+上述已验证行为绑定历史 `30d7e219`。本轮显式 framework 升级、扩展桥/Task/事件/资源修复及三语言变化仍在实现和反例验证中；当前源码摘要、合同生成、独立复审和 main 验收完成前，不恢复 verified/closure 声明。

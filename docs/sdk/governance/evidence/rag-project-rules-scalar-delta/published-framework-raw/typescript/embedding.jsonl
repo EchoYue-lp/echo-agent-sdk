@@ -1,0 +1,13 @@
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "中文😀甲"}, "mode": "ok", "call": 1}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "乙丙丁戊"}, "mode": "ok", "call": 2}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "己庚辛"}, "mode": "ok", "call": 3}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "查询😀第一块"}, "mode": "ok", "call": 4}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "查询😀第一块"}, "mode": "ok", "call": 5}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "失败😀文"}, "mode": "second-503", "call": 1}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "档甲乙丙"}, "mode": "second-503", "call": 2}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "查询😀第一块"}, "mode": "ok", "call": 1}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "失败😀文"}, "mode": "bad-json", "call": 1}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "查询😀第一块"}, "mode": "ok", "call": 1}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "失败😀文"}, "mode": "empty-data", "call": 1}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "查询😀第一块"}, "mode": "ok", "call": 1}
+{"path": "/v1/embeddings", "request": {"model": "fixture-中文-embedding", "input": "查询😀第一块"}, "mode": "ok", "call": 2}

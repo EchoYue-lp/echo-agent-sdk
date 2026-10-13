@@ -1,0 +1,10 @@
+
+==================================== ERRORS ====================================
+____________ ERROR collecting tests/test_memory_permission_host.py _____________
+tests/test_memory_permission_host.py:19: in <module>
+    raise RuntimeError("required memory/permission Host binary is missing")
+E   RuntimeError: required memory/permission Host binary is missing
+=========================== short test summary info ============================
+ERROR tests/test_memory_permission_host.py - RuntimeError: required memory/pe...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+no tests collected, 1 error in 0.55s

@@ -1,0 +1,35 @@
+{
+  "native_comparison": "equal",
+  "consumers": [
+    {
+      "native_calls": 50,
+      "typed_errors": 19,
+      "oracle_groups": 9,
+      "final_pivot_boundaries": 5,
+      "protected_files": 8,
+      "host_sha256": "7bbd1569367b0b1004fbe1cbc537b6869a2bc685bb1ca14e63228b1746aee3b2"
+    },
+    {
+      "native_calls": 50,
+      "typed_errors": 19,
+      "oracle_groups": 9,
+      "final_pivot_boundaries": 5,
+      "protected_files": 8,
+      "host_sha256": "7bbd1569367b0b1004fbe1cbc537b6869a2bc685bb1ca14e63228b1746aee3b2"
+    },
+    {
+      "native_calls": 50,
+      "typed_errors": 19,
+      "oracle_groups": 9,
+      "final_pivot_boundaries": 5,
+      "protected_files": 8,
+      "host_sha256": "7bbd1569367b0b1004fbe1cbc537b6869a2bc685bb1ca14e63228b1746aee3b2"
+    }
+  ],
+  "normalization": [
+    "isolated working root",
+    "WireValue map association order",
+    "unordered Polars aggregate/join/pivot row and pivot-label order"
+  ],
+  "raw_data": "retained; checked against parsed output before ordering normalization"
+}

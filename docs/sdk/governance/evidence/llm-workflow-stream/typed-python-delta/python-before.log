@@ -1,0 +1,185 @@
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typed-python-delta/python-workflow-8ns3jrlu
+F
+=================================== FAILURES ===================================
+_______ test_workflow_extension_run_stream_error_cancel_close_and_owner ________
+
+    async def test_workflow_extension_run_stream_error_cancel_close_and_owner():
+        work, spec, sdk = await setup("workflow")
+        facts = {
+            "calls": [],
+            "producer_completed": 0,
+            "producer_errors": [],
+            "callbacks_completed": 0,
+        }
+        releases = {}
+        started = {}
+        producers = []
+        try:
+    
+            async def handler(call, cancellation):
+                mode = call.request.input
+                facts["calls"].append(
+                    {
+                        "operation": call.operation,
+                        "component_operation": call.component_operation,
+                        "input": mode,
+                        "extension": call.extension.to_dict() if call.extension else None,
+                        "invocation_id": call.invocation_id,
+                        "deadline": call.deadline,
+                    }
+                )
+                if call.component_operation == "workflow_run":
+                    return {
+                        "outcome": "result",
+                        "result": {
+                            "operation": "agent_component_call",
+                            "value": {
+                                "component": "workflow",
+                                "result": {
+                                    "operation": "workflow_run",
+                                    "value": {"output": spec["workflow_output"]},
+                                },
+                            },
+                        },
+                    }
+                started[mode].set()
+                stream = call.stream
+                assert stream is not None, "typed component dropped Host-issued stream"
+                facts["calls"][-1]["stream"] = stream.to_dict()
+                writer = sdk.stream_writer(stream)
+    
+                async def produce():
+                    try:
+                        if mode in releases:
+                            await releases[mode].wait()
+                            return
+                        chunks = (
+                            [spec["workflow_error_chunk"]]
+                            if mode == "failure"
+                            else spec["workflow_chunks"]
+                        )
+                        for chunk in chunks:
+                            await writer.chunk(chunk)
+                        if mode == "failure":
+                            await writer.failed(spec["failure"])
+                        else:
+                            await writer.complete(spec["workflow_complete"])
+                    except Exception as error:
+                        facts["producer_errors"].append(str(error))
+                        raise
+                    finally:
+                        facts["producer_completed"] += 1
+    
+                if mode in releases:
+                    # No independent producer is created for parked sources. The
+                    # callback itself remains owned until explicitly released.
+                    await releases[mode].wait()
+                else:
+                    producers.append(asyncio.create_task(produce()))
+                return {"outcome": "stream", "stream": stream.to_dict()}
+    
+            descriptor = AgentComponentDescriptor("workflow", "proof-workflow", supports_streaming=True)
+    
+            async def owned_handler(call, cancellation):
+                try:
+                    return await handler(call, cancellation)
+                finally:
+                    facts["callbacks_completed"] += 1
+    
+            registration = await sdk.register_agent_component(
+                "proof-workflow", descriptor, owned_handler
+            )
+            agent = await sdk.create_agent()
+            a = await agent.create_session()
+            b = await agent.create_session()
+            facts["run"] = await a.invoke(
+                "workflow.extension.run", [registration.wire, "input🙂"]
+            )
+            for mode in ("success", "failure"):
+                started[mode] = asyncio.Event()
+                stream = await a.invoke(
+                    "workflow.extension.run_stream", [registration.wire, mode]
+                )
+                if mode == "success":
+                    await asyncio.wait_for(started[mode].wait(), 5)
+                    facts["callback_count_before_wrong_owner"] = len(facts["calls"])
+                    facts["wrong_owner"] = await observed_error(
+                        b.invoke("workflow.stream.next", [stream])
+                    )
+                    facts["callback_count_after_wrong_owner"] = len(facts["calls"])
+                facts[mode] = await collect(a, stream)
+            for mode in ("cancel", "close"):
+                releases[mode] = asyncio.Event()
+                started[mode] = asyncio.Event()
+                stream = await a.invoke(
+                    "workflow.extension.run_stream", [registration.wire, mode]
+                )
+                await asyncio.wait_for(started[mode].wait(), 5)
+                if mode == "cancel":
+                    facts["cancel"] = await a.invoke("workflow.stream.cancel", [stream])
+                    releases[mode].set()
+                    facts["cancel_terminal"] = await a.invoke(
+                        "workflow.stream.next", [stream]
+                    )
+                else:
+                    closing = asyncio.create_task(
+                        a.invoke("workflow.stream.close", [stream])
+                    )
+                    await asyncio.sleep(0)
+                    releases[mode].set()
+                    facts["close"] = await closing
+                    facts["close_again"] = await a.invoke("workflow.stream.close", [stream])
+                    facts["after_close"] = await observed_error(
+                        a.invoke("workflow.stream.next", [stream])
+                    )
+            await asyncio.gather(*producers)
+            await a.close()
+            await b.close()
+            await agent.close()
+            await registration.close()
+        finally:
+            for release in releases.values():
+                release.set()
+            await sdk.close()
+            (work / "observed.json").write_text(
+                json.dumps(facts, ensure_ascii=False, indent=2)
+            )
+            print("LLM/Workflow evidence: " + str(work))
+>       print(await helper(work, "--verify", "workflow"))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+sdks/python/tests/test_llm_workflow_stream_host.py:346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typed-python-delta/python-workflow-8ns3jrlu')
+args = ('--verify', 'workflow')
+
+    async def helper(work, *args):
+        process = await asyncio.create_subprocess_exec(
+            sys.executable,
+            str(FIXTURE),
+            "--work",
+            str(work),
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        output, error = await process.communicate()
+>       assert process.returncode == 0, error.decode()
+E       AssertionError: Traceback (most recent call last):
+E           File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/llm_workflow_stream_fixture.py", line 397, in <module>
+E             main()
+E           File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/llm_workflow_stream_fixture.py", line 388, in main
+E             globals()["verify_" + arguments.verify](spec, facts)
+E           File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/llm_workflow_stream_fixture.py", line 307, in verify_workflow
+E             assert [fields(event)[0] for event in events] == variants
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         AssertionError
+E         
+E       assert 1 == 0
+E        +  where 1 = <Process 28695>.returncode
+
+sdks/python/tests/test_llm_workflow_stream_host.py:50: AssertionError
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_llm_workflow_stream_host.py::test_workflow_extension_run_stream_error_cancel_close_and_owner
+1 failed, 2 deselected in 1.08s
