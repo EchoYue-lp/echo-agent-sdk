@@ -5,9 +5,9 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "4a2da79fa534cfba5ab1d7c1dd22df8c971b9cc005bb24352260229d0b141c3c"
+    "content_digest": "473fb206df1cb4ee900ca23e54c955e7956c1e6363079d22d78acd35d4a3e334"
   },
-  "inventory_closure": "open",
+  "inventory_closure": "closed",
   "behavior_model_closure": "open",
   "map_refs": [
     "map.sdk-product-boundary",
@@ -751,6 +751,37 @@
   ]
 }
 ---
+
+# echo-agent-sdk 语义基线
+
+## 源码快照
+
+`base_revision`保留已发布SDK `30d7e219cc7d3aef0f75a19217c82898c363f50d` 作为可恢复祖先谱系。最终来源观察为SDK Git `e75e607a7f4e956399c9d3b4ed14213e6f303ef5`；官方source_digest(workingtree)与source_digest_at_revision(该Git)均为 `473fb206df1cb4ee900ca23e54c955e7956c1e6363079d22d78acd35d4a3e334`，4516个非语义文件逐树可恢复、没有剩余未入Git的摘要文件。内容摘要提供当前完整性，不冒称它是30d7树摘要。各Evidence/Audit继续按自身真实观察Git及运行输入读取，不因最终baseline更新而全部改成同一版本。
+
+## 仓库区域
+
+现有路径区域不变。根Cargo.toml、contracts、Protocol、Host及三语言SDK为五个in_scope；docs、脚本、CI、锁和其它根配置承担各自supporting角色。当前官方逐路径分类无缺失/重叠；历史归档中的源码、实验夹具和raw日志是取证材料，不成为新runtime authority。Git已跟踪及未忽略未跟踪路径均纳分类，路径数量不作能力完成分母。
+
+## 能力图与边界
+
+九张既有Map映射八个能力owner和仓库产品边界；既有41族索引不新增第二registry或第42族。Protocol/Host/语言/合同生成、框架执行权威与SDK薄转换的关系由现有Behavior/Rule及具名风险Audit/Evidence记录。已接受合同以唯一seed和accepted产物为准，完整Rustinventory只遥测；不知道或未接受的能力不得暗转accepted。
+
+## 覆盖网格
+
+五个in_scope区域均有八风险格，38个covered具已有实际有界源码审、故障假设和Evidence，根manifest无运行actor/并发状态的两格not_applicable有明确理由。库存闭合只确认路径分类、能力/权威/生命周期/失败的建模范围和有据风险审查已建立，不表示无缺陷或全族verified。covered允许保留已识别未解决Finding；不按测试或identity数量决定。
+
+## 未知与缺口
+
+行为模型闭合仍open：12项已接受source/kind处置待人；cleanup/Sandbox/Task resume三个宽Finding共享5秒物理结算B残余。它们属于两个待裁决单位，不风险接受或隐性退约。Windows原生消费者及适用远端SDK CI/main另需真实验收，不从本地三语言证明推断。原完整合同只读检查退出1的13项连续性错误保持，另1项已独立批准Curator保存的原依据不由本模型重作决定。未到达生成后续命令不算通过。
+
+## 闭合结论
+
+inventory_closure=closed表示本次有据的库存/风险建模闭合；behavior_model_closure=open保上述具体残余，41个Behavior不批量升verified。SDK pin00782的实际14Rust、完整三语言793输入及Git84消费者补证分别按正式包的原sourcecut证明有限行为，SDK main/registry交付独立。最终strict源码摘要验证使用真实fresh预检currentTaskBase `e75e607a7f4e956399c9d3b4ed14213e6f303ef5`，并保原30d全goal差异/36依据闭环、1032历史引用及Runtime793支持核对。原483task的8MiB/current锚、任务输入闭包和真实缺口分类保留；原30d诊断失败不被改写成成功。该门禁仍校验全项目对象、所有路径分类、当前摘要与变更依据，不只是本轮单字段或测试计数。
+
+## 原治理阶段文字（历史，原字节保留）
+
+下列旧“全视角未审”“Channel静态缺口”“Git I1开放”“候选未安装”等只描述原阶段。当前以前述精确范围和对应Finding为准，不抹旧source/time/raw，也不拿旧未跟踪草稿当长期当前事实源。
+
 
 # echo-agent-sdk 语义基线
 
