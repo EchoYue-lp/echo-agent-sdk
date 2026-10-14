@@ -1,0 +1,64 @@
+2026-10-14T08:04:47.595981Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(5) method=_echo_agent/run/start error=Error { code: -32050: Unknown error, message: "ACP Session already has an active Prompt Turn", data: Some(Object {"code": String("invalid_request"), "message": String("ACP Session already has an active Prompt Turn"), "retryable": String("after_delay"), "operation": String("_echo_agent/run/start")}) }
+2026-10-14T08:04:47.660142Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(7) method=_echo_agent/run/start error=Error { code: -32050: Unknown error, message: "ACP Session already has an active Prompt Turn", data: Some(Object {"code": String("invalid_request"), "message": String("ACP Session already has an active Prompt Turn"), "retryable": String("after_delay"), "operation": String("_echo_agent/run/start")}) }
+{
+  "exitCode": 0,
+  "caseCount": 1,
+  "cases": [
+    {
+      "id": "busy-before-effects-must-not-be-retained",
+      "initial": {
+        "run": {
+          "id": "sess_349136b4-680a-4540-8b61-e34e57a1c23d:turn:1",
+          "generation": "1",
+          "kind": "run"
+        },
+        "stream": {
+          "id": "1e6cadd8-ca08-4af5-8303-270a41723938",
+          "generation": "1",
+          "kind": "stream"
+        }
+      },
+      "busy": {
+        "error": {
+          "code": "invalid_request",
+          "message": "ACP Session already has an active Prompt Turn",
+          "operation": "_echo_agent/run/start",
+          "retryable": "after_delay",
+          "details": null
+        }
+      },
+      "initialSettlement": {
+        "settled": true,
+        "terminal": {
+          "status": "completed",
+          "final_answer": "canonical-response-1 中文🧪"
+        },
+        "receipt": {
+          "turn_id": "sess_349136b4-680a-4540-8b61-e34e57a1c23d:turn:1",
+          "outcome": "completed",
+          "delivery": "delivered",
+          "final_answer": "canonical-response-1 中文🧪",
+          "final_message_id": "sess_349136b4-680a-4540-8b61-e34e57a1c23d:turn:1:message",
+          "prompt_tokens": "0",
+          "completion_tokens": "0",
+          "llm_calls": "0",
+          "compaction_count": "0",
+          "last_event_sequence": "3",
+          "elapsed_ms": "162"
+        }
+      },
+      "retry": {
+        "error": {
+          "code": "invalid_request",
+          "message": "ACP Session already has an active Prompt Turn",
+          "operation": "_echo_agent/run/start",
+          "retryable": "after_delay",
+          "details": null
+        }
+      },
+      "retrySettlement": null,
+      "actualProviderCalls": 1
+    }
+  ],
+  "providerCallCount": 1
+}

@@ -1,0 +1,16 @@
+    Finished `test` profile [unoptimized] target(s) in 0.78s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-deb50fbc4d526ffc)
+
+running 9 tests
+test core_profile::events::tests::replay_publication_failure_and_empty_future_page_grant_no_ack_coverage ... ok
+test core_profile::handler::recovered_identity_tests::publication_original_registry_capacity_failure_releases_key_before_factory ... ok
+test core_profile::handler::recovered_identity_tests::publication_unkeyed_load_collision_cannot_consume_original_factory_observer ... ok
+test core_profile::handler::recovered_identity_tests::publication_receipt_budget_preserves_closed_keys_and_rejects_before_factory_effects ... ok
+test core_profile::handler::recovered_identity_tests::publication_first_waiter_cancelled_before_factory_releases_key_and_wakes_duplicate ... ok
+test core_profile::handler::recovered_identity_tests::publication_after_factory_admission_survives_waiter_cancel_and_close_drain_timeout ... ok
+test core_profile::handler::recovered_identity_tests::publication_eof_before_factory_cancels_held_admission_without_waiting_for_source ... ok
+test core_profile::handler::recovered_identity_tests::publication_public_rpc_cancel_before_factory_releases_key_and_keeps_connection_usable ... ok
+test core_profile::handler::recovered_identity_tests::publication_public_rpc_cancel_after_factory_keeps_one_original_job_and_receipt ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 177 filtered out; finished in 0.43s
+

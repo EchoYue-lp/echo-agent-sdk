@@ -47,3 +47,10 @@ docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/java-first.lo
 docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/python-first.log -diff
 docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/typescript-first.log -diff
 docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/typescript-second.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-implementation/current/candidate.diff -diff
+docs/sdk/governance/evidence/session-run-idempotency-implementation/current/gates/actual-rpc-cancellation.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-implementation/current/gates/keyed-core.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-implementation/current/gates/publication-tests.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-implementation/history/06/core32.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-implementation/history/06/hostlib184.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-implementation/history/bf1/candidate.diff -diff

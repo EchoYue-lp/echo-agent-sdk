@@ -1,0 +1,15 @@
+{
+  "args": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--lib",
+    "--all-features",
+    "--locked",
+    "publication_",
+    "--",
+    "--nocapture"
+  ],
+  "exitCode": 101
+}

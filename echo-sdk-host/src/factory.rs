@@ -152,6 +152,39 @@ pub(crate) struct CoreProfileSessionFactory {
     session_services:
         Arc<std::sync::Mutex<std::collections::HashMap<String, Arc<SessionAuthorityServices>>>>,
     max_definitions: usize,
+    publication_admissions:
+        Arc<std::sync::Mutex<std::collections::HashMap<String, PublicationAdmission>>>,
+}
+
+#[cfg(feature = "sdk-core-profile")]
+struct PublicationAdmission {
+    token: String,
+    definition: String,
+    observer: Option<Box<dyn FnOnce() -> Result<()> + Send>>,
+}
+
+/// This guard only associates one original request with the factory admission.
+/// Framework SessionRegistry remains the only capacity/identity authority.
+#[cfg(feature = "sdk-core-profile")]
+pub(crate) struct SessionPublicationGuard {
+    admissions: Arc<std::sync::Mutex<std::collections::HashMap<String, PublicationAdmission>>>,
+    session_id: String,
+    token: String,
+}
+#[cfg(feature = "sdk-core-profile")]
+impl Drop for SessionPublicationGuard {
+    fn drop(&mut self) {
+        let mut admissions = self
+            .admissions
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if admissions
+            .get(&self.session_id)
+            .is_some_and(|entry| entry.token == self.token)
+        {
+            admissions.remove(&self.session_id);
+        }
+    }
 }
 
 #[cfg(feature = "sdk-core-profile")]
@@ -235,7 +268,73 @@ impl CoreProfileSessionFactory {
             definitions: Arc::new(std::sync::Mutex::new(definitions)),
             session_services: Arc::new(std::sync::Mutex::new(std::collections::HashMap::new())),
             max_definitions,
+            publication_admissions: Arc::new(std::sync::Mutex::new(
+                std::collections::HashMap::new(),
+            )),
         }
+    }
+
+    /// All SDK insert paths, including unkeyed load, reserve this association.
+    /// Refusing an occupied address does not validate or mutate a Session.
+    pub(crate) fn associate_publication(
+        &self,
+        session_id: &str,
+        definition: &str,
+        observer: Option<Box<dyn FnOnce() -> Result<()> + Send>>,
+    ) -> std::result::Result<SessionPublicationGuard, ()> {
+        let mut admissions = self
+            .publication_admissions
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if admissions.contains_key(session_id) {
+            return Err(());
+        }
+        let token = uuid::Uuid::new_v4().to_string();
+        admissions.insert(
+            session_id.to_string(),
+            PublicationAdmission {
+                token: token.clone(),
+                definition: definition.to_string(),
+                observer,
+            },
+        );
+        Ok(SessionPublicationGuard {
+            admissions: self.publication_admissions.clone(),
+            session_id: session_id.to_string(),
+            token,
+        })
+    }
+
+    pub(crate) fn enter_publication_factory(&self, context: &AcpSessionContext) -> Result<()> {
+        let definition = context
+            .meta
+            .as_ref()
+            .and_then(|meta| meta.get(DEFINITION_META_KEY))
+            .and_then(serde_json::Value::as_str);
+        let observer = {
+            let mut admissions = self
+                .publication_admissions
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            match admissions.get_mut(&context.session_id.to_string()) {
+                Some(entry) if definition == Some(entry.definition.as_str()) => {
+                    entry.observer.take()
+                }
+                // Standard session/new has no SDK definition association. It
+                // cannot steal an observer even if an address were to collide.
+                Some(_) => {
+                    return Err(ReactError::Other(
+                        "Session factory publication owner mismatch".to_string(),
+                    ));
+                }
+                None => None,
+            }
+        };
+        // Caller cancellation/fencing locks the publication owner, never this map.
+        if let Some(observer) = observer {
+            observer()?
+        }
+        Ok(())
     }
 
     /// Authority services of one Session, if it is still open.
@@ -305,6 +404,7 @@ impl AcpSessionFactory for CoreProfileSessionFactory {
         let default = self.default.clone();
         let session_services = self.session_services.clone();
         let session_id = context.session_id.to_string();
+        let publication_factory = self.clone();
         Box::pin(async move {
             let definition = match definition_id {
                 Some(id) => definitions
@@ -317,6 +417,7 @@ impl AcpSessionFactory for CoreProfileSessionFactory {
                     })?,
                 None => default,
             };
+            publication_factory.enter_publication_factory(&context)?;
             let agent = definition.create_agent(&context).await?;
             let agent_handle = AgentHandle::new(agent);
             // Capture the framework authorities before the concrete agent

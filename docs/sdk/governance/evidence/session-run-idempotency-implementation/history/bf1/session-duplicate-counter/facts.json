@@ -1,0 +1,227 @@
+{
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-host",
+  "hostSHA256": "bf1f99f6b2a3189c0ab04247df533579b033b463c81b5089d8b1b9a915838bf3",
+  "fixture": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/memory_permission_fixture.py",
+  "fixtureSHA256": "60004dc5e0febe2d81c5ec870e413a3c4dbd6e3b66c76b67996e5718e1e73f58",
+  "requests": [
+    {
+      "method": "_echo_agent/session/create",
+      "params": {
+        "agent": {
+          "id": "agent-2",
+          "generation": "1",
+          "kind": "agent"
+        },
+        "session_id": "already-registered-session"
+      },
+      "response": {
+        "session": {
+          "id": "session-51c8666a-fb65-4c69-bb14-d90335565ff5",
+          "generation": "1",
+          "kind": "session"
+        },
+        "task_run": {
+          "id": "task_run-17f61677-2a4f-41c5-8d35-3a2a649b51d3",
+          "generation": "1",
+          "kind": "task_run"
+        },
+        "acp_session_id": "already-registered-session"
+      }
+    },
+    {
+      "method": "_echo_agent/session/create",
+      "params": {
+        "agent": {
+          "id": "agent-2",
+          "generation": "1",
+          "kind": "agent"
+        },
+        "session_id": "already-registered-session",
+        "idempotency_id": "duplicate-identity-key"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "ACP Session already-registered-session is already registered",
+        "operation": "_echo_agent/session/create",
+        "retryable": "never",
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "other"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "other"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "_echo_agent/session/close",
+      "params": {
+        "session": {
+          "id": "session-51c8666a-fb65-4c69-bb14-d90335565ff5",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      "response": {
+        "released": true
+      }
+    },
+    {
+      "method": "_echo_agent/session/create",
+      "params": {
+        "agent": {
+          "id": "agent-2",
+          "generation": "1",
+          "kind": "agent"
+        },
+        "session_id": "already-registered-session",
+        "idempotency_id": "duplicate-identity-key"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "ACP Session already-registered-session is already registered",
+        "operation": "_echo_agent/session/create",
+        "retryable": "never",
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "other"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "other"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "_echo_agent/session/close",
+      "params": {
+        "session": {
+          "id": "session-51c8666a-fb65-4c69-bb14-d90335565ff5",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      "response": {
+        "released": false
+      }
+    }
+  ],
+  "providerCalls": [],
+  "cases": [
+    {
+      "id": "framework-session-admission-duplicate-identity-before-factory",
+      "occupied": {
+        "session": {
+          "id": "session-51c8666a-fb65-4c69-bb14-d90335565ff5",
+          "generation": "1",
+          "kind": "session"
+        },
+        "task_run": {
+          "id": "task_run-17f61677-2a4f-41c5-8d35-3a2a649b51d3",
+          "generation": "1",
+          "kind": "task_run"
+        },
+        "acp_session_id": "already-registered-session"
+      },
+      "full": {
+        "error": {
+          "code": "framework_error",
+          "message": "ACP Session already-registered-session is already registered",
+          "operation": "_echo_agent/session/create",
+          "retryable": "never",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "other"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "other"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      },
+      "retry": {
+        "error": {
+          "code": "framework_error",
+          "message": "ACP Session already-registered-session is already registered",
+          "operation": "_echo_agent/session/create",
+          "retryable": "never",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "other"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "other"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "agent": {
+    "id": "agent-2",
+    "generation": "1",
+    "kind": "agent"
+  },
+  "behaviorAccepted": false,
+  "sessionIndex": [
+    {
+      "session_id": "already-registered-session",
+      "agent_handle_id": "agent-2",
+      "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+      "cwd": {
+        "encoding": "utf8",
+        "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/session-run-idempotency-implementation/session-capacity-counter"
+      }
+    }
+  ],
+  "exitCode": 0
+}

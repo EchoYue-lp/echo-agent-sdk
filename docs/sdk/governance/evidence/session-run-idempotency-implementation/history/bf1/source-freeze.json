@@ -1,0 +1,22 @@
+{
+  "actualHEAD": "bd8e42e732588181b7a2589d91e9ffdce02d23e1",
+  "scope": "only idempotent publication lane; not full SDK/runtime snapshot",
+  "files": {
+    "echo-sdk-host/src/core_profile/handler.rs": "52c2926d4e5b4c4d3ad6b45a130cdfc9b1d2269bb928b4806c5b213cac323283",
+    "echo-sdk-host/src/core_profile/handles.rs": "e8ae45dc15a7473c73f954721f3dc5a61e764b5023dadbe35f2b91817ff6c15b",
+    "echo-sdk-host/src/core_profile/state.rs": "8e3eb3592334cef9dae9bcc6787820528fc706c8b1276387e1e973d727f0eb80",
+    "echo-sdk-host/src/core_profile/mod.rs": "c766fb2a0f8355d917bbb5b16b65eb03e84dc7a7c78bc671208268ed39f9fa44",
+    "echo-sdk-host/tests/core_profile_e2e.rs": "a3cea6e37f359e880a11935846473203374a957e52b1d94205a53e5fbb195ca3",
+    "docs/adr/0037-session-run-idempotent-publication.md": "c68bff5d5e37d9bc66a61736a7bacae514e0c64e46b0c293837164569bcc5f6d",
+    "docs/sdk/sdk-core-profile.md": "2a103baec746fd3c3070d3e3b22b55c0eb423c9c9f9c525b5d2491cb12553810",
+    "docs/sdk/governance/session-run-idempotency-proposal.md": "f9450c38c7cc599f6b3dcd26265aa3953f8dbe6c52c42ef5d12b1c058970dfc9",
+    ".echo-semantic/findings/finding.sdk-session-run-idempotency-contract.md": "dc955aab73547026b7d4296e55039aead91850f77d7ec30d2876069f332eed1c"
+  },
+  "immutableHost": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-host",
+    "sha256": "bf1f99f6b2a3189c0ab04247df533579b033b463c81b5089d8b1b9a915838bf3",
+    "bytes": 706451968,
+    "compiledBy": "core-profile-regression cargo test --test core_profile_e2e --all-features; binary built by that Cargo command",
+    "framework": "a6346643bda47679a96760f56f45e41fd73b61b0"
+  }
+}

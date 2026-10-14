@@ -105,6 +105,21 @@ compiled. A core-only build does not advertise those additional surfaces.
   id is `closed_handle`. Handles never rebind.
 - `agent/create` with an `idempotency_id` returns the same handle for the
   same canonical config and a typed conflict for a different one.
+- `session/create` and `run/start` retain a keyed publication within the
+  current connection and handle generation, scoped to the operation and its
+  original Agent or Session owner. Identical validated payloads replay the
+  full original response, including after a Run completes; different payloads
+  return `invalid_request` before new effects. A genuinely closed owner or
+  published resource returns `closed_handle`, and that key cannot recreate it.
+  Client-side `RunHandle.close()` alone does not retire the Host Run.
+- The first keyed job retains its existing Host settlement owner when an RPC
+  observer is dropped. Cancellation before effect admission releases the key;
+  after admission the original result/cleanup settles without a second
+  execution. Duplicate observation cancellation affects only that waiter.
+  Entries are bounded and are not silently evicted. Connection teardown fences
+  admission and settles original jobs before discarding these mappings; keyed
+  replay across connections or process restarts is not promised. See
+  [ADR 0037](../adr/0037-session-run-idempotent-publication.md).
 
 ## Standard ↔ extension bridging
 

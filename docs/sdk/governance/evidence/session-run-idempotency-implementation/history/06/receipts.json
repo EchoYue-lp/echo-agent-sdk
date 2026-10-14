@@ -1,0 +1,68 @@
+[
+  {
+    "name": "admission-final-clippy",
+    "args": [
+      "cargo",
+      "clippy",
+      "-p",
+      "echo-sdk-host",
+      "--all-targets",
+      "--all-features",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "admission-final-panic-lints",
+    "args": [
+      "cargo",
+      "clippy",
+      "-p",
+      "echo-sdk-host",
+      "--lib",
+      "--bins",
+      "--all-features",
+      "--locked",
+      "--",
+      "-D",
+      "clippy::unwrap_used",
+      "-D",
+      "clippy::expect_used",
+      "-D",
+      "clippy::panic",
+      "-D",
+      "clippy::unreachable"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "admission-final-core-profile",
+    "args": [
+      "cargo",
+      "test",
+      "-p",
+      "echo-sdk-host",
+      "--test",
+      "core_profile_e2e",
+      "--all-features",
+      "--locked"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "admission-final-hostlib",
+    "args": [
+      "cargo",
+      "test",
+      "-p",
+      "echo-sdk-host",
+      "--lib",
+      "--all-features",
+      "--locked"
+    ],
+    "exitCode": 0
+  }
+]

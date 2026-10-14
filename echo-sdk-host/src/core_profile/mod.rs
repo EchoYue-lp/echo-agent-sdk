@@ -890,6 +890,7 @@ impl AcpConnectionProfile for SdkCoreProfile {
     }
 
     fn release_after_agents(&self) {
+        self.state.handles.discard_publications_after_settlement();
         // Connection teardown order ends here: extension registrations are
         // connection-owned and never survive the connection (design §12.1).
         #[cfg(feature = "sdk-extension-bridge")]
@@ -905,6 +906,7 @@ impl AcpConnectionProfile for SdkCoreProfile {
     ) -> futures::future::BoxFuture<'static, std::result::Result<(), String>> {
         let state = self.state.clone();
         Box::pin(async move {
+            state.handles.fence_publications();
             let sessions = state.handles.fence_sessions();
             for session in sessions {
                 let _publication = session.lifecycle.write().await;

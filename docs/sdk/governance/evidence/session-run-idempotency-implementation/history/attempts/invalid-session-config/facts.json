@@ -1,0 +1,17 @@
+{
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-host",
+  "hostSHA256": "bf1f99f6b2a3189c0ab04247df533579b033b463c81b5089d8b1b9a915838bf3",
+  "fixture": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/memory_permission_fixture.py",
+  "fixtureSHA256": "60004dc5e0febe2d81c5ec870e413a3c4dbd6e3b66c76b67996e5718e1e73f58",
+  "requests": [],
+  "providerCalls": [],
+  "cases": [],
+  "exitCode": 1,
+  "fatal": {
+    "code": "transport_error",
+    "message": "write EPIPE",
+    "operation": null,
+    "retryable": "never",
+    "details": null
+  }
+}

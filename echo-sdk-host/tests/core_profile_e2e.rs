@@ -8302,3 +8302,96 @@ async fn malformed_recovered_identity_rejects_actual_method_without_handle_publi
     );
     Ok(())
 }
+
+#[tokio::test]
+async fn keyed_session_and_run_replay_original_publication_without_repeating_provider()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    let calls = Arc::new(AtomicUsize::new(0));
+    let listener = TcpListener::bind("127.0.0.1:0").await?;
+    let address = listener.local_addr()?;
+    let model_calls = calls.clone();
+    let server = tokio::spawn(async move {
+        loop {
+            let Ok((mut socket, _)) = listener.accept().await else {
+                break;
+            };
+            if support::read_http_request(&mut socket).await.is_err() {
+                break;
+            }
+            model_calls.fetch_add(1, Ordering::AcqRel);
+            let body = "data: {\"id\":\"idempotency\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"one actual result\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n";
+            let headers = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                body.len()
+            );
+            if socket.write_all(headers.as_bytes()).await.is_err() {
+                break;
+            }
+            if socket.write_all(body.as_bytes()).await.is_err() {
+                break;
+            }
+        }
+    });
+    let work = tempfile::tempdir()?;
+    let state_root = tempfile::tempdir()?;
+    let config = write_config(
+        work.path(),
+        &format!("http://{address}/v1/chat/completions"),
+        state_root.path(),
+        None,
+    )?;
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    let scenario_calls = calls.clone();
+    let scenario = move |connection: ConnectionTo<agent_client_protocol::Agent>| -> BoxFuture<'static, agent_client_protocol::Result<()>> {
+        Box::pin(async move {
+            let typed_error = |error: &agent_client_protocol::Error| {
+                echo_sdk_protocol::error::EchoSdkError::from_jsonrpc_data(error.data.as_ref())
+                    .map_err(|message| agent_client_protocol::Error::internal_error().data(message))
+            };
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let request = SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: Some("one-session-publication".to_string()) };
+            let (one, two) = futures::try_join!(
+                connection.send_request(request.clone()).block_task(),
+                connection.send_request(request.clone()).block_task(),
+            )?;
+            assert_eq!(one, two, "concurrent same key did not replay the full original Session response");
+            assert_eq!(one, connection.send_request(request.clone()).block_task().await?);
+            let mut conflicting = request.clone();
+            conflicting.session_id = Some("another-session".to_string());
+            let conflict = connection.send_request(conflicting).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("changed Session payload must conflict"))?;
+            let conflict = typed_error(&conflict)?;
+            assert_eq!(conflict.code, echo_sdk_protocol::error::ExtensionErrorCode::InvalidRequest);
+            let run_request = RunStartRequest { session: one.session.clone(), input: RunInput::Chat { text: "one model effect".to_string() }, idempotency_id: Some("one-run-publication".to_string()) };
+            let (first, duplicate) = futures::try_join!(
+                connection.send_request(run_request.clone()).block_task(),
+                connection.send_request(run_request.clone()).block_task(),
+            )?;
+            assert_eq!(first, duplicate, "concurrent same key did not replay the full original Run response");
+            let receipt = connection.send_request(RunWaitRequest { run: first.run.clone(), timeout: Some(WireDuration { seconds: WireU64::from_u64(10), nanos: 0 }) }).block_task().await?;
+            assert!(receipt.settled);
+            let after_terminal = connection.send_request(run_request.clone()).block_task().await?;
+            assert_eq!(first, after_terminal);
+            assert_eq!(scenario_calls.load(Ordering::Acquire), 1, "key replay repeated the real model request");
+            let mut changed = run_request.clone();
+            changed.input = RunInput::Chat { text: "changed model effect".to_string() };
+            let conflict = connection.send_request(changed).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("changed Run input must conflict"))?;
+            assert_eq!(typed_error(&conflict)?.code, echo_sdk_protocol::error::ExtensionErrorCode::InvalidRequest);
+            assert_eq!(scenario_calls.load(Ordering::Acquire), 1);
+            connection.send_request(SessionCloseRequest { session: one.session.clone() }).block_task().await?;
+            let closed = connection.send_request(request).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("closed original Session must not be recreated"))?;
+            assert_eq!(typed_error(&closed)?.code, echo_sdk_protocol::error::ExtensionErrorCode::ClosedHandle);
+            let closed = connection.send_request(run_request).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("closed owner must reject Run replay"))?;
+            assert_eq!(typed_error(&closed)?.code, echo_sdk_protocol::error::ExtensionErrorCode::ClosedHandle);
+            assert_eq!(scenario_calls.load(Ordering::Acquire), 1);
+            connection.send_request(AgentCloseRequest { agent }).block_task().await?;
+            Ok(())
+        })
+    };
+    let result = drive(&mut host, events, updates, gaps, scenario).await;
+    server.abort();
+    result?;
+    Ok(())
+}

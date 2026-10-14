@@ -1,0 +1,6 @@
+{
+  "fmtCheckExitCode": 0,
+  "scopedDiffCheckExitCode": 0,
+  "recordedOnHEAD": "4e734936d6f0f06f60220747c57655eaeb64bfd7",
+  "scope": "frozen ten slice source/doc files; not whole snapshot semantic validation"
+}

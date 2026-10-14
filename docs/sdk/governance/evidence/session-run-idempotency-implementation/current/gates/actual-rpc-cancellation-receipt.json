@@ -1,0 +1,15 @@
+{
+  "args": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--lib",
+    "--all-features",
+    "--locked",
+    "publication_public_rpc_cancel",
+    "--",
+    "--nocapture"
+  ],
+  "exitCode": 0
+}

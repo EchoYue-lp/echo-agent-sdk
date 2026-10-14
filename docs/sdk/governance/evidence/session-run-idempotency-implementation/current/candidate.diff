@@ -1,0 +1,2120 @@
+diff --git a/docs/sdk/sdk-core-profile.md b/docs/sdk/sdk-core-profile.md
+index 913798d..64e9e39 100644
+--- a/docs/sdk/sdk-core-profile.md
++++ b/docs/sdk/sdk-core-profile.md
+@@ -105,6 +105,21 @@ compiled. A core-only build does not advertise those additional surfaces.
+   id is `closed_handle`. Handles never rebind.
+ - `agent/create` with an `idempotency_id` returns the same handle for the
+   same canonical config and a typed conflict for a different one.
++- `session/create` and `run/start` retain a keyed publication within the
++  current connection and handle generation, scoped to the operation and its
++  original Agent or Session owner. Identical validated payloads replay the
++  full original response, including after a Run completes; different payloads
++  return `invalid_request` before new effects. A genuinely closed owner or
++  published resource returns `closed_handle`, and that key cannot recreate it.
++  Client-side `RunHandle.close()` alone does not retire the Host Run.
++- The first keyed job retains its existing Host settlement owner when an RPC
++  observer is dropped. Cancellation before effect admission releases the key;
++  after admission the original result/cleanup settles without a second
++  execution. Duplicate observation cancellation affects only that waiter.
++  Entries are bounded and are not silently evicted. Connection teardown fences
++  admission and settles original jobs before discarding these mappings; keyed
++  replay across connections or process restarts is not promised. See
++  [ADR 0037](../adr/0037-session-run-idempotent-publication.md).
+ 
+ ## Standard ↔ extension bridging
+ 
+diff --git a/echo-sdk-host/src/core_profile/handler.rs b/echo-sdk-host/src/core_profile/handler.rs
+index 9a1ff69..fdf0731 100644
+--- a/echo-sdk-host/src/core_profile/handler.rs
++++ b/echo-sdk-host/src/core_profile/handler.rs
+@@ -257,56 +257,329 @@ pub(crate) async fn agent_close(
+     responder.respond(AgentCloseResponse { released: closed })
+ }
+ 
+-// ── Session handles ─────────────────────────────────────────────────────────
++/// Dropping the first observer only withdraws effect admission before it
++/// starts. The original job, unlike the RPC waiter, has a settlement owner.
++struct PublicationWaiterGuard(Option<Arc<super::handles::PublicationRecord>>);
++impl Drop for PublicationWaiterGuard {
++    fn drop(&mut self) {
++        if let Some(record) = &self.0 {
++            record.cancel_waiter_before_effects();
++        }
++    }
++}
++
++fn publication_owner(
++    state: &CoreProfileState,
++    owner: &echo_sdk_protocol::handle::WireHandle,
++    method: &str,
++) -> Result<(), agent_client_protocol::Error> {
++    let closing = match owner.kind {
++        HandleKind::Agent => state
++            .handles
++            .agent(owner)
++            .map(|record| record.closing.load(std::sync::atomic::Ordering::Acquire)),
++        HandleKind::Session => state
++            .handles
++            .session(owner)
++            .map(|record| record.closing.load(std::sync::atomic::Ordering::Acquire)),
++        _ => Err(wire::handle_error(
++            ExtensionErrorCode::InvalidValue,
++            "invalid publication owner",
++            method,
++            owner,
++        )),
++    }
++    .map_err(wire::into_jsonrpc_error)?;
++    if closing {
++        return Err(wire::into_jsonrpc_error(wire::handle_error(
++            ExtensionErrorCode::ClosedHandle,
++            "publication owner is closing",
++            method,
++            owner,
++        )));
++    }
++    Ok(())
++}
++
++async fn request_publication<F>(
++    state: Arc<CoreProfileState>,
++    owner: echo_sdk_protocol::handle::WireHandle,
++    method: &'static str,
++    key: Option<String>,
++    fingerprint: serde_json::Value,
++    create: F,
++) -> Result<super::handles::PublicationValue, agent_client_protocol::Error>
++where
++    F: FnOnce(
++        Option<Arc<super::handles::PublicationRecord>>,
++    ) -> futures::future::BoxFuture<
++        'static,
++        Result<super::handles::PublicationValue, agent_client_protocol::Error>,
++    >,
++{
++    let Some(key) = key else {
++        return create(None).await;
++    };
++    let (record, fresh) = state
++        .handles
++        .reserve_publication(&owner, method, &key, fingerprint)
++        .map_err(wire::into_jsonrpc_error)?;
++    let _waiter = PublicationWaiterGuard(fresh.then(|| record.clone()));
++    if fresh {
++        state.spawn_publication(record.clone(), create(Some(record.clone())));
++    }
++    let result = record.wait().await?;
++    // Owner and published resource must still be live; immutable receipts
++    // are retained even after close so their keys cannot recreate objects.
++    publication_owner(&state, &owner, method)?;
++    match &result {
++        super::handles::PublicationValue::Session(response) => {
++            state
++                .handles
++                .session(&response.session)
++                .map_err(wire::into_jsonrpc_error)?;
++        }
++        super::handles::PublicationValue::Run(response) => {
++            state
++                .handles
++                .run(&response.run)
++                .map_err(wire::into_jsonrpc_error)?;
++            state
++                .handles
++                .stream(&response.stream)
++                .map_err(wire::into_jsonrpc_error)?;
++        }
++    }
++    Ok(result)
++}
++
++fn publication_fingerprint<T: serde::Serialize>(
++    request: &T,
++    method: &str,
++) -> Result<serde_json::Value, agent_client_protocol::Error> {
++    let mut value = serde_json::to_value(request).map_err(|error| {
++        wire::into_jsonrpc_error(wire::sdk_error(
++            ExtensionErrorCode::SerializationViolation,
++            error.to_string(),
++            Retryability::Never,
++            method,
++        ))
++    })?;
++    if let Some(object) = value.as_object_mut() {
++        object.remove("idempotency_id");
++    }
++    Ok(value)
++}
+ 
+ pub(crate) async fn session_create(
+     state: Arc<CoreProfileState>,
+-    request: SessionCreateRequest,
++    mut request: SessionCreateRequest,
+     responder: Responder<SessionCreateResponse>,
++    connection: ConnectionTo<Client>,
++) -> Result<(), agent_client_protocol::Error> {
++    const METHOD: &str = "_echo_agent/session/create";
++    let keyed = request.idempotency_id.is_some();
++    let cancellation = responder.cancellation();
++    let operation = async {
++        require_extended(&state, METHOD).await?;
++        require_capability(&state, ExtensionCapability::SessionHandles, METHOD)?;
++        request.validate().map_err(|reason| {
++            wire::into_jsonrpc_error(wire::sdk_error(
++                ExtensionErrorCode::InvalidValue,
++                reason,
++                Retryability::Never,
++                METHOD,
++            ))
++        })?;
++        state
++            .handles
++            .check_shape_and_generation(&request.agent, HandleKind::Agent, METHOD)
++            .map_err(wire::into_jsonrpc_error)?;
++        publication_owner(&state, &request.agent, METHOD)?;
++        // Freeze the effective directory before fingerprinting optional defaults.
++        if request.idempotency_id.is_some() {
++            let cwd = wire::working_dir_from_wire(request.working_dir.as_ref())
++                .map_err(wire::into_jsonrpc_error)?
++                .map(Ok)
++                .unwrap_or_else(|| {
++                    std::env::current_dir().map_err(|error| {
++                        wire::sdk_error(
++                            ExtensionErrorCode::InvalidConfig,
++                            error.to_string(),
++                            Retryability::Never,
++                            METHOD,
++                        )
++                    })
++                })
++                .map_err(wire::into_jsonrpc_error)?;
++            if !cwd.is_absolute() {
++                return Err(wire::into_jsonrpc_error(wire::sdk_error(
++                    ExtensionErrorCode::InvalidValue,
++                    "working_dir must be absolute",
++                    Retryability::Never,
++                    METHOD,
++                )));
++            }
++            request.working_dir = Some(wire::path_to_wire(&cwd).map_err(|error| {
++                wire::into_jsonrpc_error(wire::sdk_error(
++                    ExtensionErrorCode::InvalidValue,
++                    error,
++                    Retryability::Never,
++                    METHOD,
++                ))
++            })?);
++        }
++        let fingerprint = publication_fingerprint(&request, METHOD)?;
++        let owner = request.agent.clone();
++        let key = request.idempotency_id.clone();
++        let job_state = state.clone();
++        request_publication(
++            state.clone(),
++            owner,
++            METHOD,
++            key,
++            fingerprint,
++            move |record| {
++                Box::pin(async move {
++                    session_create_fresh(job_state, request, record, connection)
++                        .await
++                        .map(super::handles::PublicationValue::Session)
++                })
++            },
++        )
++        .await
++    };
++    let outcome = if keyed {
++        tokio::select! {
++            biased;
++            () = cancellation.cancelled() => Err(wire::into_jsonrpc_error(wire::sdk_error(
++                ExtensionErrorCode::Cancelled, "request publication observation cancelled",
++                Retryability::Never, METHOD))),
++            outcome = operation => outcome,
++        }
++    } else {
++        operation.await
++    };
++    match outcome {
++        Ok(super::handles::PublicationValue::Session(response)) => responder.respond(response),
++        Ok(_) => responder.respond_with_error(
++            agent_client_protocol::Error::internal_error().data("wrong publication response kind"),
++        ),
++        Err(error) => responder.respond_with_error(error),
++    }
++}
++
++pub(crate) async fn run_start(
++    state: Arc<CoreProfileState>,
++    request: RunStartRequest,
++    responder: Responder<RunStartResponse>,
++    connection: ConnectionTo<Client>,
++) -> Result<(), agent_client_protocol::Error> {
++    const METHOD: &str = "_echo_agent/run/start";
++    let keyed = request.idempotency_id.is_some();
++    let cancellation = responder.cancellation();
++    let operation = async {
++        require_extended(&state, METHOD).await?;
++        require_capability(&state, ExtensionCapability::Runs, METHOD)?;
++        request.validate().map_err(|reason| {
++            wire::into_jsonrpc_error(wire::sdk_error(
++                ExtensionErrorCode::InvalidValue,
++                reason,
++                Retryability::Never,
++                METHOD,
++            ))
++        })?;
++        state
++            .handles
++            .check_shape_and_generation(&request.session, HandleKind::Session, METHOD)
++            .map_err(wire::into_jsonrpc_error)?;
++        publication_owner(&state, &request.session, METHOD)?;
++        let fingerprint = publication_fingerprint(&request, METHOD)?;
++        let owner = request.session.clone();
++        let key = request.idempotency_id.clone();
++        let job_state = state.clone();
++        request_publication(
++            state.clone(),
++            owner,
++            METHOD,
++            key,
++            fingerprint,
++            move |record| {
++                Box::pin(async move {
++                    run_start_fresh(job_state, request, record, connection)
++                        .await
++                        .map(|response| super::handles::PublicationValue::Run(Arc::new(response)))
++                })
++            },
++        )
++        .await
++    };
++    let outcome = if keyed {
++        tokio::select! {
++            biased;
++            () = cancellation.cancelled() => Err(wire::into_jsonrpc_error(wire::sdk_error(
++                ExtensionErrorCode::Cancelled, "request publication observation cancelled",
++                Retryability::Never, METHOD))),
++            outcome = operation => outcome,
++        }
++    } else {
++        operation.await
++    };
++    match outcome {
++        Ok(super::handles::PublicationValue::Run(response)) => {
++            responder.respond(response.as_ref().clone())
++        }
++        Ok(_) => responder.respond_with_error(
++            agent_client_protocol::Error::internal_error().data("wrong publication response kind"),
++        ),
++        Err(error) => responder.respond_with_error(error),
++    }
++}
++
++// ── Session handles ─────────────────────────────────────────────────────────
++
++async fn session_create_fresh(
++    state: Arc<CoreProfileState>,
++    request: SessionCreateRequest,
++    publication: Option<Arc<super::handles::PublicationRecord>>,
+     _connection: ConnectionTo<Client>,
+-) -> std::result::Result<(), agent_client_protocol::Error> {
++) -> std::result::Result<SessionCreateResponse, agent_client_protocol::Error> {
+     let method = "_echo_agent/session/create";
+     let services = require_extended(&state, method).await?;
+     require_capability(&state, ExtensionCapability::SessionHandles, method)?;
+     if let Err(reason) = request.validate() {
+-        return respond_error(
+-            |error| responder.respond_with_error(error),
+-            wire::sdk_error(
+-                ExtensionErrorCode::InvalidValue,
+-                reason,
+-                Retryability::Never,
+-                method,
+-            ),
+-        );
++        return Err(wire::into_jsonrpc_error(wire::sdk_error(
++            ExtensionErrorCode::InvalidValue,
++            reason,
++            Retryability::Never,
++            method,
++        )));
+     }
+     if let Err(error) =
+         state
+             .handles
+             .check_shape_and_generation(&request.agent, HandleKind::Agent, method)
+     {
+-        return respond_error(|error| responder.respond_with_error(error), error);
++        return Err(wire::into_jsonrpc_error(error));
+     }
+     let record = match state.handles.agent(&request.agent) {
+         Ok(record) => record,
+-        Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
++        Err(error) => return Err(wire::into_jsonrpc_error(error)),
+     };
+     let _lifecycle = record.lifecycle.lock().await;
+     if state.handles.is_closed(&request.agent)
+         || record.closing.load(std::sync::atomic::Ordering::Acquire)
+     {
+-        return respond_error(
+-            |error| responder.respond_with_error(error),
+-            wire::sdk_error(
+-                ExtensionErrorCode::ClosedHandle,
+-                "Agent is closing",
+-                Retryability::Never,
+-                method,
+-            ),
+-        );
++        return Err(wire::into_jsonrpc_error(wire::sdk_error(
++            ExtensionErrorCode::ClosedHandle,
++            "Agent is closing",
++            Retryability::Never,
++            method,
++        )));
+     }
+     let working_dir = match wire::working_dir_from_wire(request.working_dir.as_ref()) {
+         Ok(path) => path,
+-        Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
++        Err(error) => return Err(wire::into_jsonrpc_error(error)),
+     };
+     let session_id = match &request.session_id {
+         Some(explicit) => explicit.clone(),
+@@ -319,6 +592,7 @@ pub(crate) async fn session_create(
+         session_id,
+         working_dir,
+         method,
++        publication.as_ref(),
+     )
+     .await
+     {
+@@ -355,15 +629,12 @@ pub(crate) async fn session_create(
+                                         ),
+                                     )
+                                     .await;
+-                                return respond_error(
+-                                    |error| responder.respond_with_error(error),
+-                                    wire::sdk_error(
+-                                        ExtensionErrorCode::InvalidValue,
+-                                        error,
+-                                        Retryability::Never,
+-                                        method,
+-                                    ),
+-                                );
++                                return Err(wire::into_jsonrpc_error(wire::sdk_error(
++                                    ExtensionErrorCode::InvalidValue,
++                                    error,
++                                    Retryability::Never,
++                                    method,
++                                )));
+                             }
+                         },
+                         None => {
+@@ -374,15 +645,12 @@ pub(crate) async fn session_create(
+                                     acp_session_id.clone(),
+                                 ))
+                                 .await;
+-                            return respond_error(
+-                                |error| responder.respond_with_error(error),
+-                                wire::sdk_error(
+-                                    ExtensionErrorCode::FrameworkError,
+-                                    "Session disappeared before persistence",
+-                                    Retryability::Never,
+-                                    method,
+-                                ),
+-                            );
++                            return Err(wire::into_jsonrpc_error(wire::sdk_error(
++                                ExtensionErrorCode::FrameworkError,
++                                "Session disappeared before persistence",
++                                Retryability::Never,
++                                method,
++                            )));
+                         }
+                     };
+                     if let Err(error) = state.persistence.record_session(
+@@ -398,12 +666,11 @@ pub(crate) async fn session_create(
+                                 acp_session_id.clone(),
+                             ))
+                             .await;
+-                        return respond_error(
+-                            |error| responder.respond_with_error(error),
+-                            wire::framework_error(&error, method),
+-                        );
++                        return Err(wire::into_jsonrpc_error(wire::framework_error(
++                            &error, method,
++                        )));
+                     }
+-                    responder.respond(SessionCreateResponse {
++                    Ok(SessionCreateResponse {
+                         session,
+                         task_run,
+                         acp_session_id,
+@@ -416,23 +683,24 @@ pub(crate) async fn session_create(
+                             acp_session_id,
+                         ))
+                         .await;
+-                    respond_error(|error| responder.respond_with_error(error), error)
++                    Err(wire::into_jsonrpc_error(error))
+                 }
+             }
+         }
+-        Err(error) => respond_error(|error| responder.respond_with_error(error), error),
++        Err(error) => Err(wire::into_jsonrpc_error(error)),
+     }
+ }
+ 
+ /// Create the ACP Session (independent Agent included) through the shared
+ /// registry — the exact path standard `session/new` uses.
+ async fn create_session_on(
+-    state: &CoreProfileState,
++    state: &Arc<CoreProfileState>,
+     services: &Arc<echo_agent::acp::AcpConnectionServices>,
+     definition: &PreparedAgentDefinition,
+     session_id: String,
+     working_dir: Option<std::path::PathBuf>,
+     method: &'static str,
++    publication: Option<&Arc<super::handles::PublicationRecord>>,
+ ) -> std::result::Result<String, EchoSdkError> {
+     let cwd = match working_dir {
+         Some(path) if path.is_absolute() => path,
+@@ -474,6 +742,33 @@ async fn create_session_on(
+         client_capabilities: capabilities,
+         meta: Some(meta),
+     };
++    let observer: Option<Box<dyn FnOnce() -> echo_agent::error::Result<()> + Send>> = publication
++        .map(|publication| {
++            let weak_state = Arc::downgrade(state);
++            let publication = publication.clone();
++            Box::new(move || {
++                let state = weak_state.upgrade().ok_or_else(|| {
++                    echo_agent::error::ReactError::Other(
++                        "Session publication owner is unavailable".to_string(),
++                    )
++                })?;
++                state
++                    .handles
++                    .begin_publication_effects(&publication)
++                    .map_err(|error| echo_agent::error::ReactError::Other(error.to_string()))
++            }) as Box<dyn FnOnce() -> echo_agent::error::Result<()> + Send>
++        });
++    let _association = state
++        .session_factory
++        .associate_publication(&session_id, definition.id(), observer)
++        .map_err(|()| {
++            wire::sdk_error(
++                ExtensionErrorCode::InvalidRequest,
++                "Session publication admission is pending",
++                Retryability::AfterDelay,
++                method,
++            )
++        })?;
+     let inserted = services
+         .insert_session(context)
+         .await
+@@ -659,6 +954,7 @@ pub(crate) async fn session_load(
+         request.session_id.clone(),
+         effective_working_dir,
+         method,
++        None,
+     )
+     .await
+     {
+@@ -862,55 +1158,49 @@ async fn close_session_owned(
+ 
+ // ── Runs ────────────────────────────────────────────────────────────────────
+ 
+-pub(crate) async fn run_start(
++async fn run_start_fresh(
+     state: Arc<CoreProfileState>,
+     request: RunStartRequest,
+-    responder: Responder<RunStartResponse>,
++    publication: Option<Arc<super::handles::PublicationRecord>>,
+     connection: ConnectionTo<Client>,
+-) -> std::result::Result<(), agent_client_protocol::Error> {
++) -> std::result::Result<RunStartResponse, agent_client_protocol::Error> {
+     let method = "_echo_agent/run/start";
+     let services = require_extended(&state, method).await?;
+     require_capability(&state, ExtensionCapability::Runs, method)?;
+     if let Err(reason) = request.validate() {
+-        return respond_error(
+-            |error| responder.respond_with_error(error),
+-            wire::sdk_error(
+-                ExtensionErrorCode::InvalidValue,
+-                reason,
+-                Retryability::Never,
+-                method,
+-            ),
+-        );
++        return Err(wire::into_jsonrpc_error(wire::sdk_error(
++            ExtensionErrorCode::InvalidValue,
++            reason,
++            Retryability::Never,
++            method,
++        )));
+     }
+     if let Err(error) =
+         state
+             .handles
+             .check_shape_and_generation(&request.session, HandleKind::Session, method)
+     {
+-        return respond_error(|error| responder.respond_with_error(error), error);
++        return Err(wire::into_jsonrpc_error(error));
+     }
+     let (session, acp_session_id) = match resolve_session(&state, &request.session).await {
+         Ok(resolved) => resolved,
+-        Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
++        Err(error) => return Err(wire::into_jsonrpc_error(error)),
+     };
+     let session_record = match state.handles.session(&request.session) {
+         Ok(record) => record,
+-        Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
++        Err(error) => return Err(wire::into_jsonrpc_error(error)),
+     };
+     let _publication = session_record.lifecycle.read().await;
+     if session_record
+         .closing
+         .load(std::sync::atomic::Ordering::Acquire)
+     {
+-        return respond_error(
+-            |error| responder.respond_with_error(error),
+-            wire::handle_error(
+-                ExtensionErrorCode::ClosedHandle,
+-                "Session is closing",
+-                method,
+-                &request.session,
+-            ),
+-        );
++        return Err(wire::into_jsonrpc_error(wire::handle_error(
++            ExtensionErrorCode::ClosedHandle,
++            "Session is closing",
++            method,
++            &request.session,
++        )));
+     }
+     let agent_handle_id = session_record.agent_handle_id.clone();
+     let agent_fingerprint = match state.handles.agent_fingerprint(&wire::handle(
+@@ -919,35 +1209,34 @@ pub(crate) async fn run_start(
+         state.handles.generation(),
+     )) {
+         Ok(fingerprint) => fingerprint,
+-        Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
++        Err(error) => return Err(wire::into_jsonrpc_error(error)),
+     };
+-    let active = match session.begin_turn() {
+-        Ok(active) => active,
+-        Err(error) => {
+-            return respond_error(
+-                |error| responder.respond_with_error(error),
+-                wire::sdk_error(
+-                    ExtensionErrorCode::InvalidRequest,
+-                    error.to_string(),
+-                    Retryability::AfterDelay,
+-                    method,
+-                ),
+-            );
+-        }
++    let admit = || {
++        session.begin_turn().map_err(|error| {
++            wire::into_jsonrpc_error(wire::sdk_error(
++                ExtensionErrorCode::InvalidRequest,
++                error.to_string(),
++                Retryability::AfterDelay,
++                method,
++            ))
++        })
++    };
++    let active = match publication.as_ref() {
++        Some(publication) => state
++            .handles
++            .admit_publication_effects(publication, admit)?,
++        None => admit()?,
+     };
+     let run_id = active.turn.id().to_string();
+     let durable = match state.reserve_durable_settlement(&run_id) {
+         Ok(reservation) => reservation,
+         Err(error) => {
+-            return respond_error(
+-                |error| responder.respond_with_error(error),
+-                wire::sdk_error(
+-                    ExtensionErrorCode::PayloadTooLarge,
+-                    error,
+-                    Retryability::AfterDelay,
+-                    method,
+-                ),
+-            );
++            return Err(wire::into_jsonrpc_error(wire::sdk_error(
++                ExtensionErrorCode::PayloadTooLarge,
++                error,
++                Retryability::AfterDelay,
++                method,
++            )));
+         }
+     };
+     let identity = match EventIdentity::for_chat(
+@@ -958,10 +1247,9 @@ pub(crate) async fn run_start(
+     ) {
+         Ok(identity) => identity,
+         Err(error) => {
+-            return respond_error(
+-                |error| responder.respond_with_error(error),
+-                wire::framework_error(&error, method),
+-            );
++            return Err(wire::into_jsonrpc_error(wire::framework_error(
++                &error, method,
++            )));
+         }
+     };
+     // The stream handle id is exactly the envelope stream identity, so live
+@@ -981,7 +1269,7 @@ pub(crate) async fn run_start(
+             let message = match message {
+                 Ok(message) => message,
+                 Err(error) => {
+-                    return respond_error(|error| responder.respond_with_error(error), error);
++                    return Err(wire::into_jsonrpc_error(error));
+                 }
+             };
+             TurnRequest::from_message(identity, message)
+@@ -998,7 +1286,7 @@ pub(crate) async fn run_start(
+             let message = match message {
+                 Ok(message) => message,
+                 Err(error) => {
+-                    return respond_error(|error| responder.respond_with_error(error), error);
++                    return Err(wire::into_jsonrpc_error(error));
+                 }
+             };
+             TurnRequest::from_message(identity, message).mode(TurnMode::Execute)
+@@ -1020,10 +1308,9 @@ pub(crate) async fn run_start(
+             Some(coerced)
+         }
+         Err(error) => {
+-            return respond_error(
+-                |error| responder.respond_with_error(error),
+-                wire::framework_error(&error, method),
+-            );
++            return Err(wire::into_jsonrpc_error(wire::framework_error(
++                &error, method,
++            )));
+         }
+     };
+     let stream_handle = wire::handle(
+@@ -1046,15 +1333,12 @@ pub(crate) async fn run_start(
+     let cwd = match wire::path_to_wire(&session.context.cwd) {
+         Ok(cwd) => cwd,
+         Err(error) => {
+-            return respond_error(
+-                |error| responder.respond_with_error(error),
+-                wire::sdk_error(
+-                    ExtensionErrorCode::InvalidValue,
+-                    error,
+-                    Retryability::Never,
+-                    method,
+-                ),
+-            );
++            return Err(wire::into_jsonrpc_error(wire::sdk_error(
++                ExtensionErrorCode::InvalidValue,
++                error,
++                Retryability::Never,
++                method,
++            )));
+         }
+     };
+     if let Err(error) = state.persistence.record_run_started(
+@@ -1066,10 +1350,9 @@ pub(crate) async fn run_start(
+         Some(cwd),
+         input_kind(&request.input),
+     ) {
+-        return respond_error(
+-            |error| responder.respond_with_error(error),
+-            wire::framework_error(&error, method),
+-        );
++        return Err(wire::into_jsonrpc_error(wire::framework_error(
++            &error, method,
++        )));
+     }
+     let spec = RunStartSpec {
+         session: session.clone(),
+@@ -1095,10 +1378,9 @@ pub(crate) async fn run_start(
+                     run_id
+                 );
+             }
+-            return respond_error(
+-                |error| responder.respond_with_error(error),
+-                wire::framework_error(&error, method),
+-            );
++            return Err(wire::into_jsonrpc_error(wire::framework_error(
++                &error, method,
++            )));
+         }
+     };
+     let run_handle = match state.handles.register_live_run(
+@@ -1118,7 +1400,7 @@ pub(crate) async fn run_start(
+                 );
+             }
+             drop(task);
+-            return respond_error(|error| responder.respond_with_error(error), error);
++            return Err(wire::into_jsonrpc_error(error));
+         }
+     };
+     let stream_record = state
+@@ -1136,7 +1418,7 @@ pub(crate) async fn run_start(
+             );
+         }
+         drop(task);
+-        return respond_error(|error| responder.respond_with_error(error), error);
++        return Err(wire::into_jsonrpc_error(error));
+     }
+     state.register_delivery(delivery);
+     state.begin_settlement();
+@@ -1152,7 +1434,7 @@ pub(crate) async fn run_start(
+                 run_id
+             );
+         }
+-        return responder.respond_with_error(error);
++        return Err(error);
+     }
+     durable.admit();
+     let settle_state = state.clone();
+@@ -1171,7 +1453,7 @@ pub(crate) async fn run_start(
+         // count completion is not a claim that the write succeeded.
+         settle_state.finish_settlement(Ok(()));
+     });
+-    responder.respond(RunStartResponse {
++    Ok(RunStartResponse {
+         run: run_handle,
+         stream: stream_handle,
+         first_event: None,
+@@ -1942,6 +2224,7 @@ mod recovered_identity_tests {
+             stable_id.to_string(),
+             Some(root.path().to_path_buf()),
+             "_echo_agent/session/load",
++            None,
+         )
+         .await;
+         let error = match result {
+@@ -1966,4 +2249,772 @@ mod recovered_identity_tests {
+         drop(retained);
+         Ok(())
+     }
++    async fn publication_factory_fixture(
++        calls: Arc<AtomicUsize>,
++        started: Arc<tokio::sync::Notify>,
++        release: Arc<tokio::sync::Notify>,
++        receipt_budget: Option<usize>,
++    ) -> Result<
++        (
++            tempfile::TempDir,
++            Arc<CoreProfileState>,
++            Arc<echo_agent::acp::AcpConnectionServices>,
++        ),
++        Box<dyn std::error::Error>,
++    > {
++        let root = tempfile::tempdir()?;
++        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
++            "schema_version":1,"default_agent":{
++                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions"},
++                "agent":{"name":"fixture","enable_tools":true}
++            }
++        }))?;
++        let prepared = config.prepare()?;
++        let mut limits = crate::config::SdkProfileLimits::default();
++        if let Some(budget) = receipt_budget {
++            limits.max_open_handles = budget;
++        }
++        let state = CoreProfileState::install(
++            root.path(),
++            limits,
++            prepared.framework,
++            prepared.llm_client,
++        )?;
++        let publication_factory = state.session_factory.clone();
++        let factory = move |context: AcpSessionContext| {
++            let publication_factory = publication_factory.clone();
++            let calls = calls.clone();
++            let started = started.clone();
++            let release = release.clone();
++            async move {
++                publication_factory.enter_publication_factory(&context)?;
++                calls.fetch_add(1, Ordering::AcqRel);
++                started.notify_one();
++                release.notified().await;
++                Ok(Box::new(ReservationCloseAgent(Arc::new(
++                    ReservationCloseProbe::default(),
++                ))) as Box<dyn Agent>)
++            }
++        };
++        let registry = Arc::new(echo_agent::acp::SessionRegistry::new(Arc::new(factory), 4));
++        registry
++            .initialize(agent_client_protocol::schema::v1::ClientCapabilities::default())
++            .await;
++        let services = Arc::new(echo_agent::acp::AcpConnectionServices::new(
++            registry,
++            Arc::new(echo_agent::acp::AcpAdapterConfig::default()),
++        ));
++        state.bind_services(services.clone());
++        Ok((root, state, services))
++    }
++
++    fn actual_factory_publication(
++        state: Arc<CoreProfileState>,
++        services: Arc<echo_agent::acp::AcpConnectionServices>,
++        before_admission: Option<(Arc<tokio::sync::Notify>, Arc<tokio::sync::Notify>)>,
++    ) -> impl FnOnce(
++        Option<Arc<super::super::handles::PublicationRecord>>,
++    ) -> BoxFuture<
++        'static,
++        Result<super::super::handles::PublicationValue, agent_client_protocol::Error>,
++    > {
++        move |record| {
++            Box::pin(async move {
++                if let Some((parked, release)) = before_admission {
++                    parked.notify_one();
++                    release.notified().await;
++                }
++                let id = create_session_on(
++                    &state,
++                    &services,
++                    state.default_definition.as_ref(),
++                    "publication-factory-session".to_string(),
++                    None,
++                    "_echo_agent/session/create",
++                    record.as_ref(),
++                )
++                .await
++                .map_err(wire::into_jsonrpc_error)?;
++                let registered = state.handles.register_session_with_cwd(
++                    id.clone(),
++                    state.default_agent_handle.id.clone(),
++                    None,
++                );
++                let (session, task_run, _) = match registered {
++                    Ok(registered) => registered,
++                    Err(error) => {
++                        services
++                            .sessions()
++                            .close_session(&agent_client_protocol::schema::v1::SessionId::new(id))
++                            .await
++                            .map_err(|cleanup| {
++                                wire::into_jsonrpc_error(wire::framework_error(
++                                    &cleanup,
++                                    "_echo_agent/session/create",
++                                ))
++                            })?;
++                        return Err(wire::into_jsonrpc_error(error));
++                    }
++                };
++                Ok(super::super::handles::PublicationValue::Session(
++                    SessionCreateResponse {
++                        session,
++                        task_run,
++                        acp_session_id: id,
++                    },
++                ))
++            })
++        }
++    }
++
++    #[tokio::test]
++    async fn publication_first_waiter_cancelled_before_factory_releases_key_and_wakes_duplicate()
++    -> Result<(), Box<dyn std::error::Error>> {
++        let calls = Arc::new(AtomicUsize::new(0));
++        let started = Arc::new(tokio::sync::Notify::new());
++        let release = Arc::new(tokio::sync::Notify::new());
++        let (_root, state, services) =
++            publication_factory_fixture(calls.clone(), started.clone(), release.clone(), None)
++                .await?;
++        let parked = Arc::new(tokio::sync::Notify::new());
++        let admit = Arc::new(tokio::sync::Notify::new());
++        let owner = state.default_agent_handle.clone();
++        let first = tokio::spawn(request_publication(
++            state.clone(),
++            owner.clone(),
++            "_echo_agent/session/create",
++            Some("cancel-before".to_string()),
++            serde_json::json!({"input":"same"}),
++            actual_factory_publication(
++                state.clone(),
++                services.clone(),
++                Some((parked.clone(), admit.clone())),
++            ),
++        ));
++        tokio::time::timeout(Duration::from_secs(1), parked.notified()).await?;
++        let mut duplicate = Box::pin(request_publication(
++            state.clone(),
++            owner.clone(),
++            "_echo_agent/session/create",
++            Some("cancel-before".to_string()),
++            serde_json::json!({"input":"same"}),
++            actual_factory_publication(state.clone(), services.clone(), None),
++        ));
++        // Poll the real observer to Pending: its reservation lookup has joined
++        // the original job before cancellation, without timing assumptions.
++        assert!(matches!(
++            futures::poll!(duplicate.as_mut()),
++            std::task::Poll::Pending
++        ));
++        first.abort();
++        let _ = first.await;
++        let result = tokio::time::timeout(Duration::from_secs(1), duplicate).await?;
++        let error = result
++            .err()
++            .ok_or("cancelled first request unexpectedly published")?;
++        assert_eq!(
++            EchoSdkError::from_jsonrpc_data(error.data.as_ref())?.code,
++            ExtensionErrorCode::Cancelled
++        );
++        assert_eq!(
++            calls.load(Ordering::Acquire),
++            0,
++            "cancelled admission called the actual framework factory"
++        );
++        state.wait_settlements(Duration::from_secs(1)).await?;
++        // No release of the held pre-admission future was needed: cancellation
++        // actively releases and wakes, rather than waiting for that source.
++        admit.notify_one();
++        let retry = tokio::spawn(request_publication(
++            state.clone(),
++            owner,
++            "_echo_agent/session/create",
++            Some("cancel-before".to_string()),
++            serde_json::json!({"input":"same"}),
++            actual_factory_publication(state.clone(), services.clone(), None),
++        ));
++        tokio::time::timeout(Duration::from_secs(1), started.notified()).await?;
++        release.notify_one();
++        assert!(
++            tokio::time::timeout(Duration::from_secs(1), retry)
++                .await??
++                .is_ok()
++        );
++        assert_eq!(calls.load(Ordering::Acquire), 1);
++        services.close_sessions().await?;
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn publication_after_factory_admission_survives_waiter_cancel_and_close_drain_timeout()
++    -> Result<(), Box<dyn std::error::Error>> {
++        use echo_agent::acp::AcpConnectionProfile as _;
++        let calls = Arc::new(AtomicUsize::new(0));
++        let started = Arc::new(tokio::sync::Notify::new());
++        let release = Arc::new(tokio::sync::Notify::new());
++        let (_root, state, services) =
++            publication_factory_fixture(calls.clone(), started.clone(), release.clone(), None)
++                .await?;
++        let owner = state.default_agent_handle.clone();
++        let first = tokio::spawn(request_publication(
++            state.clone(),
++            owner.clone(),
++            "_echo_agent/session/create",
++            Some("cancel-after".to_string()),
++            serde_json::json!({"input":"same"}),
++            actual_factory_publication(state.clone(), services.clone(), None),
++        ));
++        tokio::time::timeout(Duration::from_secs(1), started.notified()).await?;
++        let (record, fresh) = state
++            .handles
++            .reserve_publication(
++                &owner,
++                "_echo_agent/session/create",
++                "cancel-after",
++                serde_json::json!({"input":"same"}),
++            )
++            .map_err(|error| error.message)?;
++        assert!(!fresh);
++        let mut duplicate = Box::pin(request_publication(
++            state.clone(),
++            owner.clone(),
++            "_echo_agent/session/create",
++            Some("cancel-after".to_string()),
++            serde_json::json!({"input":"same"}),
++            actual_factory_publication(state.clone(), services.clone(), None),
++        ));
++        assert!(matches!(
++            futures::poll!(duplicate.as_mut()),
++            std::task::Poll::Pending
++        ));
++        drop(duplicate);
++        first.abort();
++        let _ = first.await;
++        let profile = super::super::SdkCoreProfile {
++            state: state.clone(),
++        };
++        assert!(
++            profile
++                .wait_for_settlements(Duration::from_millis(1))
++                .await
++                .is_err(),
++            "held actual factory was reported settled"
++        );
++        assert_eq!(calls.load(Ordering::Acquire), 1);
++        // Existing close owner retains the receipt and rejects new admission.
++        let closed = state.handles.reserve_publication(
++            &owner,
++            "_echo_agent/session/create",
++            "cancel-after",
++            serde_json::json!({"input":"same"}),
++        );
++        assert!(closed.is_err_and(|error| error.code == ExtensionErrorCode::HostShuttingDown));
++        release.notify_one();
++        assert!(
++            tokio::time::timeout(Duration::from_secs(1), record.wait())
++                .await?
++                .is_err()
++        );
++        profile.wait_for_settlements(Duration::from_secs(1)).await?;
++        assert_eq!(calls.load(Ordering::Acquire), 1);
++        assert!(
++            services
++                .sessions()
++                .get(&agent_client_protocol::schema::v1::SessionId::new(
++                    "publication-factory-session"
++                ))
++                .await
++                .is_none(),
++            "original post-admission cleanup did not finish"
++        );
++        services.close_sessions().await?;
++        profile.release_after_agents();
++        assert!(
++            state
++                .handles
++                .reserve_publication(
++                    &owner,
++                    "_echo_agent/session/create",
++                    "new",
++                    serde_json::json!({})
++                )
++                .is_err()
++        );
++        Ok(())
++    }
++    #[tokio::test]
++    async fn publication_eof_before_factory_cancels_held_admission_without_waiting_for_source()
++    -> Result<(), Box<dyn std::error::Error>> {
++        use echo_agent::acp::AcpConnectionProfile as _;
++        let calls = Arc::new(AtomicUsize::new(0));
++        let started = Arc::new(tokio::sync::Notify::new());
++        let release = Arc::new(tokio::sync::Notify::new());
++        let (_root, state, services) =
++            publication_factory_fixture(calls.clone(), started, release, None).await?;
++        let parked = Arc::new(tokio::sync::Notify::new());
++        let never_released = Arc::new(tokio::sync::Notify::new());
++        let first = tokio::spawn(request_publication(
++            state.clone(),
++            state.default_agent_handle.clone(),
++            "_echo_agent/session/create",
++            Some("eof-before".to_string()),
++            serde_json::json!({}),
++            actual_factory_publication(
++                state.clone(),
++                services,
++                Some((parked.clone(), never_released)),
++            ),
++        ));
++        tokio::time::timeout(Duration::from_secs(1), parked.notified()).await?;
++        let profile = super::super::SdkCoreProfile {
++            state: state.clone(),
++        };
++        profile.wait_for_settlements(Duration::from_secs(1)).await?;
++        let error = first
++            .await?
++            .err()
++            .ok_or("closing publication succeeded before factory admission")?;
++        assert_eq!(
++            EchoSdkError::from_jsonrpc_data(error.data.as_ref())?.code,
++            ExtensionErrorCode::Cancelled
++        );
++        assert_eq!(calls.load(Ordering::Acquire), 0);
++        profile.release_after_agents();
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn publication_receipt_budget_preserves_closed_keys_and_rejects_before_factory_effects()
++    -> Result<(), Box<dyn std::error::Error>> {
++        let calls = Arc::new(AtomicUsize::new(0));
++        let started = Arc::new(tokio::sync::Notify::new());
++        let release = Arc::new(tokio::sync::Notify::new());
++        let (_root, state, services) =
++            publication_factory_fixture(calls.clone(), started.clone(), release.clone(), Some(6))
++                .await?;
++        let owner = state.default_agent_handle.clone();
++        for index in 0..6 {
++            let job = tokio::spawn(request_publication(
++                state.clone(),
++                owner.clone(),
++                "_echo_agent/session/create",
++                Some(format!("budget-{index}")),
++                serde_json::json!({}),
++                actual_factory_publication(state.clone(), services.clone(), None),
++            ));
++            tokio::time::timeout(Duration::from_secs(1), started.notified()).await?;
++            release.notify_one();
++            let value = tokio::time::timeout(Duration::from_secs(1), job).await???;
++            let super::super::handles::PublicationValue::Session(response) = value else {
++                return Err("unexpected Run publication".into());
++            };
++            services
++                .sessions()
++                .close_session(&agent_client_protocol::schema::v1::SessionId::new(
++                    response.acp_session_id,
++                ))
++                .await?;
++            state
++                .handles
++                .close_session(&response.session)
++                .map_err(|error| error.message)?;
++        }
++        let error = request_publication(
++            state.clone(),
++            owner.clone(),
++            "_echo_agent/session/create",
++            Some("budget-overflow".to_string()),
++            serde_json::json!({}),
++            actual_factory_publication(state.clone(), services.clone(), None),
++        )
++        .await
++        .err()
++        .ok_or("receipt budget admitted a seventh effect")?;
++        assert_eq!(
++            EchoSdkError::from_jsonrpc_data(error.data.as_ref())?.code,
++            ExtensionErrorCode::PayloadTooLarge
++        );
++        let error = request_publication(
++            state.clone(),
++            owner,
++            "_echo_agent/session/create",
++            Some("budget-0".to_string()),
++            serde_json::json!({}),
++            actual_factory_publication(state.clone(), services, None),
++        )
++        .await
++        .err()
++        .ok_or("old closed key was silently evicted and recreated")?;
++        assert_eq!(
++            EchoSdkError::from_jsonrpc_data(error.data.as_ref())?.code,
++            ExtensionErrorCode::ClosedHandle
++        );
++        assert_eq!(calls.load(Ordering::Acquire), 6);
++        state.wait_settlements(Duration::from_secs(1)).await?;
++        Ok(())
++    }
++    #[tokio::test]
++    async fn publication_original_registry_capacity_failure_releases_key_before_factory()
++    -> Result<(), Box<dyn std::error::Error>> {
++        let calls = Arc::new(AtomicUsize::new(0));
++        let started = Arc::new(tokio::sync::Notify::new());
++        let release = Arc::new(tokio::sync::Notify::new());
++        let (_root, state, services) =
++            publication_factory_fixture(calls.clone(), started, release.clone(), None).await?;
++        for index in 0..4 {
++            release.notify_one();
++            create_session_on(
++                &state,
++                &services,
++                state.default_definition.as_ref(),
++                format!("capacity-occupied-{index}"),
++                None,
++                "_echo_agent/session/create",
++                None,
++            )
++            .await
++            .map_err(|error| error.message)?;
++        }
++        let owner = state.default_agent_handle.clone();
++        let error = request_publication(
++            state.clone(),
++            owner.clone(),
++            "_echo_agent/session/create",
++            Some("framework-capacity".to_string()),
++            serde_json::json!({}),
++            actual_factory_publication(state.clone(), services.clone(), None),
++        )
++        .await
++        .err()
++        .ok_or("full original registry admitted an effect")?;
++        assert_eq!(
++            EchoSdkError::from_jsonrpc_data(error.data.as_ref())?.code,
++            ExtensionErrorCode::FrameworkError
++        );
++        assert_eq!(
++            calls.load(Ordering::Acquire),
++            4,
++            "capacity rejection invoked actual factory"
++        );
++        services
++            .sessions()
++            .close_session(&agent_client_protocol::schema::v1::SessionId::new(
++                "capacity-occupied-0",
++            ))
++            .await?;
++        release.notify_one();
++        assert!(
++            request_publication(
++                state.clone(),
++                owner,
++                "_echo_agent/session/create",
++                Some("framework-capacity".to_string()),
++                serde_json::json!({}),
++                actual_factory_publication(state.clone(), services.clone(), None)
++            )
++            .await
++            .is_ok(),
++            "no-effect framework capacity rejection was retained forever"
++        );
++        assert_eq!(calls.load(Ordering::Acquire), 5);
++        state.wait_settlements(Duration::from_secs(1)).await?;
++        services.close_sessions().await?;
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn publication_unkeyed_load_collision_cannot_consume_original_factory_observer()
++    -> Result<(), Box<dyn std::error::Error>> {
++        let calls = Arc::new(AtomicUsize::new(0));
++        let started = Arc::new(tokio::sync::Notify::new());
++        let release = Arc::new(tokio::sync::Notify::new());
++        let (_root, state, services) =
++            publication_factory_fixture(calls.clone(), started.clone(), release.clone(), None)
++                .await?;
++        let first = tokio::spawn(request_publication(
++            state.clone(),
++            state.default_agent_handle.clone(),
++            "_echo_agent/session/create",
++            Some("original-create".to_string()),
++            serde_json::json!({}),
++            actual_factory_publication(state.clone(), services.clone(), None),
++        ));
++        tokio::time::timeout(Duration::from_secs(1), started.notified()).await?;
++        let error = create_session_on(
++            &state,
++            &services,
++            state.default_definition.as_ref(),
++            "publication-factory-session".to_string(),
++            None,
++            "_echo_agent/session/load",
++            None,
++        )
++        .await
++        .err()
++        .ok_or("load collision stole an original factory")?;
++        assert_eq!(error.code, ExtensionErrorCode::InvalidRequest);
++        assert_eq!(error.retryable, Retryability::AfterDelay);
++        assert_eq!(calls.load(Ordering::Acquire), 1);
++        release.notify_one();
++        assert!(
++            tokio::time::timeout(Duration::from_secs(1), first)
++                .await??
++                .is_ok()
++        );
++        services
++            .sessions()
++            .close_session(&agent_client_protocol::schema::v1::SessionId::new(
++                "publication-factory-session",
++            ))
++            .await?;
++        release.notify_one();
++        assert!(
++            create_session_on(
++                &state,
++                &services,
++                state.default_definition.as_ref(),
++                "publication-factory-session".to_string(),
++                None,
++                "_echo_agent/session/load",
++                None
++            )
++            .await
++            .is_ok(),
++            "association guard leaked after the original factory settled"
++        );
++        assert_eq!(calls.load(Ordering::Acquire), 2);
++        services.close_sessions().await?;
++        Ok(())
++    }
++    async fn prove_publication_rpc_cancellation(
++        before_effects: bool,
++    ) -> Result<(), Box<dyn std::error::Error>> {
++        use agent_client_protocol::{Channel, Client as ClientRole, ConnectTo as _};
++        let root = tempfile::tempdir()?;
++        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
++            "schema_version":1,"default_agent":{
++                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions"},
++                "agent":{"name":"fixture","enable_tools":true}
++            }
++        }))?;
++        let prepared = config.prepare()?;
++        let state = CoreProfileState::install(
++            root.path(),
++            crate::config::SdkProfileLimits::default(),
++            prepared.framework,
++            prepared.llm_client,
++        )?;
++        let calls = Arc::new(AtomicUsize::new(0));
++        let started = Arc::new(tokio::sync::Notify::new());
++        let release = Arc::new(tokio::sync::Notify::new());
++        let factory = {
++            let publication_factory = state.session_factory.clone();
++            let calls = calls.clone();
++            let started = started.clone();
++            let release = release.clone();
++            move |context: AcpSessionContext| {
++                let publication_factory = publication_factory.clone();
++                let calls = calls.clone();
++                let started = started.clone();
++                let release = release.clone();
++                async move {
++                    publication_factory.enter_publication_factory(&context)?;
++                    calls.fetch_add(1, Ordering::AcqRel);
++                    started.notify_one();
++                    release.notified().await;
++                    Ok(Box::new(ReservationCloseAgent(Arc::new(
++                        ReservationCloseProbe::default(),
++                    ))) as Box<dyn Agent>)
++                }
++            }
++        };
++        let adapter = echo_agent::acp::AcpAgentAdapter::with_config(
++            factory,
++            echo_agent::acp::AcpAdapterConfig::default(),
++        )?
++        .with_profile(super::super::SdkCoreProfile {
++            state: state.clone(),
++        });
++        let close_owner = adapter.close_owner();
++        let (server_transport, client_transport) = Channel::duplex();
++        let server = tokio::spawn(async move {
++            let result = adapter.connect_to(server_transport).await;
++            eprintln!("actual cancellation test server outcome: {result:?}");
++            result
++        });
++        let done = Arc::new(tokio::sync::Notify::new());
++        let completed = done.clone();
++        let client_state = state.clone();
++        let client_calls = calls.clone();
++        let client_started = started.clone();
++        let client_release = release.clone();
++        let client = tokio::spawn(async move {
++            ClientRole
++                .builder()
++                .connect_with(client_transport, async move |connection| {
++                    let scenario = async {
++                        let mut initialize =
++                            agent_client_protocol::schema::v1::InitializeRequest::new(
++                                agent_client_protocol::schema::ProtocolVersion::V1,
++                            );
++                        let hello = echo_sdk_protocol::capability::EchoAgentClientHello {
++                            extension_protocol_version:
++                                echo_sdk_protocol::EXTENSION_PROTOCOL_VERSION,
++                            contract_digest: client_state.advertisement.contract_digest.clone(),
++                            source_contract_digest: client_state
++                                .advertisement
++                                .source_contract_digest
++                                .clone(),
++                            required_features: Vec::new(),
++                            required_capabilities: Vec::new(),
++                        };
++                        let mut meta = agent_client_protocol::schema::v1::Meta::new();
++                        meta.insert("echo_agent".to_string(), serde_json::to_value(hello)?);
++                        initialize.client_capabilities.meta = Some(meta);
++                        connection.send_request(initialize).block_task().await?;
++                        let owner = client_state.default_agent_handle.clone();
++                        let agent = client_state
++                            .handles
++                            .agent(&owner)
++                            .map_err(wire::into_jsonrpc_error)?;
++                        let gate = if before_effects {
++                            Some(agent.lifecycle.lock().await)
++                        } else {
++                            None
++                        };
++                        let request = SessionCreateRequest {
++                            agent: owner.clone(),
++                            working_dir: None,
++                            session_id: None,
++                            idempotency_id: Some("public-rpc-cancel".to_string()),
++                        };
++                        let first = connection.send_request(request.clone());
++                        if before_effects {
++                            let deadline = tokio::time::Instant::now() + Duration::from_secs(1);
++                            loop {
++                                if client_state
++                                    .wait_settlements(Duration::from_millis(1))
++                                    .await
++                                    .is_err()
++                                {
++                                    break;
++                                }
++                                if tokio::time::Instant::now() >= deadline {
++                                    return Err(agent_client_protocol::Error::internal_error()
++                                        .data("original keyed publication was not admitted"));
++                                }
++                                tokio::task::yield_now().await;
++                            }
++                        } else {
++                            tokio::time::timeout(Duration::from_secs(1), client_started.notified())
++                                .await
++                                .map_err(|error| {
++                                    agent_client_protocol::Error::internal_error()
++                                        .data(error.to_string())
++                                })?;
++                        }
++                        first.cancel()?; // Official ACP emits $/cancel_request for this exact request.
++                        let error = first.block_task().await.err().ok_or_else(|| {
++                            agent_client_protocol::Error::internal_error()
++                                .data("cancelled first RPC returned success")
++                        })?;
++                        assert_eq!(
++                            EchoSdkError::from_jsonrpc_data(error.data.as_ref())
++                                .map_err(|message| agent_client_protocol::Error::internal_error()
++                                    .data(message))?
++                                .code,
++                            ExtensionErrorCode::Cancelled
++                        );
++                        // The same official connection stays usable while original work is held.
++                        connection
++                            .send_request(echo_sdk_protocol::methods::AgentDescribeRequest {
++                                agent: owner,
++                            })
++                            .block_task()
++                            .await?;
++                        if before_effects {
++                            client_state
++                                .wait_settlements(Duration::from_secs(1))
++                                .await
++                                .map_err(|message| {
++                                    agent_client_protocol::Error::internal_error().data(message)
++                                })?;
++                            assert_eq!(client_calls.load(Ordering::Acquire), 0);
++                            drop(gate);
++                        } else {
++                            assert!(
++                                client_state
++                                    .wait_settlements(Duration::from_millis(1))
++                                    .await
++                                    .is_err()
++                            );
++                            assert_eq!(client_calls.load(Ordering::Acquire), 1);
++                            let duplicate = connection.send_request(request.clone());
++                            duplicate.cancel()?;
++                            let error = duplicate.block_task().await.err().ok_or_else(|| {
++                                agent_client_protocol::Error::internal_error()
++                                    .data("cancelled duplicate RPC returned success")
++                            })?;
++                            assert_eq!(
++                                EchoSdkError::from_jsonrpc_data(error.data.as_ref())
++                                    .map_err(|message| {
++                                        agent_client_protocol::Error::internal_error().data(message)
++                                    })?
++                                    .code,
++                                ExtensionErrorCode::Cancelled
++                            );
++                        }
++                        let retry = connection.send_request(request.clone());
++                        if before_effects {
++                            tokio::time::timeout(Duration::from_secs(1), client_started.notified())
++                                .await
++                                .map_err(|error| {
++                                    agent_client_protocol::Error::internal_error()
++                                        .data(error.to_string())
++                                })?;
++                        }
++                        client_release.notify_one();
++                        let response = retry.block_task().await?;
++                        assert_eq!(
++                            response,
++                            connection.send_request(request).block_task().await?
++                        );
++                        assert_eq!(client_calls.load(Ordering::Acquire), 1);
++                        connection
++                            .send_request(SessionCloseRequest {
++                                session: response.session,
++                            })
++                            .block_task()
++                            .await?;
++                        Ok::<(), agent_client_protocol::Error>(())
++                    }
++                    .await;
++                    completed.notify_one();
++                    scenario
++                })
++                .await
++        });
++        tokio::time::timeout(Duration::from_secs(5), done.notified()).await?;
++        server.abort();
++        let _ = server.await;
++        client.await??;
++        close_owner
++            .close()
++            .await
++            .map_err(|error| error.to_string())?;
++        state.wait_settlements(Duration::from_secs(1)).await?;
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn publication_public_rpc_cancel_before_factory_releases_key_and_keeps_connection_usable()
++    -> Result<(), Box<dyn std::error::Error>> {
++        prove_publication_rpc_cancellation(true).await
++    }
++
++    #[tokio::test]
++    async fn publication_public_rpc_cancel_after_factory_keeps_one_original_job_and_receipt()
++    -> Result<(), Box<dyn std::error::Error>> {
++        prove_publication_rpc_cancellation(false).await
++    }
+ }
+diff --git a/echo-sdk-host/src/core_profile/handles.rs b/echo-sdk-host/src/core_profile/handles.rs
+index e4a32f9..4d4dff7 100644
+--- a/echo-sdk-host/src/core_profile/handles.rs
++++ b/echo-sdk-host/src/core_profile/handles.rs
+@@ -188,6 +188,8 @@ struct HandleInner {
+     extension_index: HashMap<String, String>,
+     tombstones: VecDeque<(HandleKind, String)>,
+     idempotency: HashMap<String, Arc<AgentCreateOutcome>>,
++    publications: HashMap<PublicationKey, Arc<PublicationRecord>>,
++    publications_fenced: bool,
+     next_agent_id: u64,
+     next_extension_order: u64,
+ }
+@@ -197,6 +199,76 @@ pub(crate) struct AgentCreateOutcome {
+     pub agent: WireHandle,
+ }
+ 
++/// Immutable request publication, not a second Session/Turn execution state.
++#[derive(Clone)]
++pub(crate) enum PublicationValue {
++    Session(echo_sdk_protocol::methods::SessionCreateResponse),
++    Run(Arc<echo_sdk_protocol::methods::RunStartResponse>),
++}
++
++#[derive(Clone, Hash, PartialEq, Eq)]
++pub(crate) struct PublicationKey {
++    pub generation: u64,
++    pub operation: &'static str,
++    pub owner: String,
++    pub key: String,
++}
++
++struct PublicationObservation {
++    effects_started: bool,
++    caller_cancelled: bool,
++    result: Option<Result<PublicationValue, agent_client_protocol::Error>>,
++}
++
++pub(crate) struct PublicationRecord {
++    key: PublicationKey,
++    fingerprint: serde_json::Value,
++    observation: Mutex<PublicationObservation>,
++    changed: tokio::sync::Notify,
++    before_effect_cancel: tokio_util::sync::CancellationToken,
++}
++
++impl PublicationRecord {
++    pub(crate) fn cancel_waiter_before_effects(&self) {
++        let mut observation = self.observation.lock().unwrap_or_else(|e| e.into_inner());
++        if !observation.effects_started {
++            observation.caller_cancelled = true;
++            self.before_effect_cancel.cancel();
++        }
++    }
++
++    pub(crate) async fn cancelled_before_effects(&self) {
++        self.before_effect_cancel.cancelled().await;
++    }
++
++    pub(crate) fn cancellation_error(&self) -> agent_client_protocol::Error {
++        crate::core_profile::wire::into_jsonrpc_error(sdk_error(
++            ExtensionErrorCode::Cancelled,
++            "original request cancelled before effect admission",
++            Retryability::Never,
++            self.key.operation,
++        ))
++    }
++
++    pub(crate) async fn wait(&self) -> Result<PublicationValue, agent_client_protocol::Error> {
++        loop {
++            let notified = self.changed.notified();
++            tokio::pin!(notified);
++            notified.as_mut().enable();
++            let result = self
++                .observation
++                .lock()
++                .unwrap_or_else(|e| e.into_inner())
++                .result
++                .clone();
++            if let Some(result) = result {
++                return result;
++            }
++            notified.await;
++        }
++    }
++}
++
+ /// Errors of handle resolution, mapped to typed extension errors by
+ /// [`HandleRegistry::resolve_error`].
+ pub(crate) enum ResolveError {
+@@ -274,12 +346,172 @@ impl HandleRegistry {
+                 extension_index: HashMap::new(),
+                 tombstones: VecDeque::new(),
+                 idempotency: HashMap::new(),
++                publications: HashMap::new(),
++                publications_fenced: false,
+                 next_agent_id: 0,
+                 next_extension_order: 0,
+             }),
+         }
+     }
+ 
++    /// Reserve a connection-scoped request before any framework mutation.
++    /// Entries are never evicted: a lost replay/tombstone must not recreate work.
++    pub(crate) fn reserve_publication(
++        &self,
++        owner: &WireHandle,
++        operation: &'static str,
++        key: &str,
++        fingerprint: serde_json::Value,
++    ) -> Result<(Arc<PublicationRecord>, bool), EchoSdkError> {
++        let mut inner = self.lock();
++        if inner.publications_fenced {
++            return Err(sdk_error(
++                ExtensionErrorCode::HostShuttingDown,
++                "request publication admission is closed",
++                Retryability::Never,
++                operation,
++            ));
++        }
++        let key = PublicationKey {
++            generation: inner.generation,
++            operation,
++            owner: owner.id.clone(),
++            key: key.to_string(),
++        };
++        if let Some(record) = inner.publications.get(&key) {
++            let observation = record
++                .observation
++                .lock()
++                .unwrap_or_else(|error| error.into_inner());
++            if let Some(Ok(value)) = &observation.result {
++                let retired = match value {
++                    PublicationValue::Session(response) => inner
++                        .sessions
++                        .get(&response.session.id)
++                        .is_none_or(|session| {
++                            session.closing.load(std::sync::atomic::Ordering::Acquire)
++                        }),
++                    PublicationValue::Run(response) => {
++                        !inner.runs.contains_key(&response.run.id)
++                            || !inner.streams.contains_key(&response.stream.id)
++                    }
++                };
++                if retired {
++                    return Err(handle_error(
++                        ExtensionErrorCode::ClosedHandle,
++                        "idempotent publication refers to a closed resource",
++                        operation,
++                        owner,
++                    ));
++                }
++            }
++            drop(observation);
++            if record.fingerprint != fingerprint {
++                return Err(handle_error(
++                    ExtensionErrorCode::InvalidRequest,
++                    "idempotency id was already used with a different payload",
++                    operation,
++                    owner,
++                ));
++            }
++            return Ok((record.clone(), false));
++        }
++        if inner.publications.len() >= inner.max_handles {
++            return Err(sdk_error(
++                ExtensionErrorCode::PayloadTooLarge,
++                "request publication receipt quota is full",
++                Retryability::AfterDelay,
++                operation,
++            ));
++        }
++        let record = Arc::new(PublicationRecord {
++            key: key.clone(),
++            fingerprint,
++            observation: Mutex::new(PublicationObservation {
++                effects_started: false,
++                caller_cancelled: false,
++                result: None,
++            }),
++            changed: tokio::sync::Notify::new(),
++            before_effect_cancel: tokio_util::sync::CancellationToken::new(),
++        });
++        inner.publications.insert(key, record.clone());
++        Ok((record, true))
++    }
++
++    /// This marker is immediately before the original effect admission.
++    /// It only governs reservation release; framework owns the effect itself.
++    pub(crate) fn begin_publication_effects(
++        &self,
++        record: &PublicationRecord,
++    ) -> Result<(), agent_client_protocol::Error> {
++        self.admit_publication_effects(record, || Ok(()))
++    }
++
++    /// Cancellation/fencing and the original synchronous admission share this
++    /// lock. Only successful admission marks effects; busy/validation errors
++    /// still release the reservation and wake its original waiters.
++    pub(crate) fn admit_publication_effects<T>(
++        &self,
++        record: &PublicationRecord,
++        admit: impl FnOnce() -> Result<T, agent_client_protocol::Error>,
++    ) -> Result<T, agent_client_protocol::Error> {
++        let inner = self.lock();
++        let mut observation = record.observation.lock().unwrap_or_else(|e| e.into_inner());
++        if inner.publications_fenced {
++            return Err(crate::core_profile::wire::into_jsonrpc_error(sdk_error(
++                ExtensionErrorCode::HostShuttingDown,
++                "request publication admission is closed",
++                Retryability::Never,
++                record.key.operation,
++            )));
++        }
++        if observation.caller_cancelled {
++            return Err(record.cancellation_error());
++        }
++        let result = admit()?;
++        observation.effects_started = true;
++        Ok(result)
++    }
++
++    pub(crate) fn finish_publication(
++        &self,
++        record: &Arc<PublicationRecord>,
++        result: Result<PublicationValue, agent_client_protocol::Error>,
++    ) {
++        let mut inner = self.lock();
++        let mut observation = record.observation.lock().unwrap_or_else(|e| e.into_inner());
++        observation.result = Some(result);
++        if !observation.effects_started {
++            // Existing waiters keep this exact record; a later retry may reserve anew.
++            if inner
++                .publications
++                .get(&record.key)
++                .is_some_and(|current| Arc::ptr_eq(current, record))
++            {
++                inner.publications.remove(&record.key);
++            }
++        }
++        drop(observation);
++        drop(inner);
++        record.changed.notify_waiters();
++    }
++
++    pub(crate) fn fence_publications(&self) {
++        let mut inner = self.lock();
++        inner.publications_fenced = true;
++        for record in inner.publications.values() {
++            // Closing can withdraw only work that has not entered the original
++            // effect admission. Started effects keep their settlement owner.
++            record.cancel_waiter_before_effects();
++        }
++    }
++
++    /// Called only after the existing close owner has settled original jobs.
++    pub(crate) fn discard_publications_after_settlement(&self) {
++        self.lock().publications.clear();
++    }
++
+     pub fn generation(&self) -> u64 {
+         self.lock().generation
+     }
+diff --git a/echo-sdk-host/src/core_profile/mod.rs b/echo-sdk-host/src/core_profile/mod.rs
+index 76490ef..9321485 100644
+--- a/echo-sdk-host/src/core_profile/mod.rs
++++ b/echo-sdk-host/src/core_profile/mod.rs
+@@ -890,6 +890,7 @@ impl AcpConnectionProfile for SdkCoreProfile {
+     }
+ 
+     fn release_after_agents(&self) {
++        self.state.handles.discard_publications_after_settlement();
+         // Connection teardown order ends here: extension registrations are
+         // connection-owned and never survive the connection (design §12.1).
+         #[cfg(feature = "sdk-extension-bridge")]
+@@ -905,6 +906,7 @@ impl AcpConnectionProfile for SdkCoreProfile {
+     ) -> futures::future::BoxFuture<'static, std::result::Result<(), String>> {
+         let state = self.state.clone();
+         Box::pin(async move {
++            state.handles.fence_publications();
+             let sessions = state.handles.fence_sessions();
+             for session in sessions {
+                 let _publication = session.lifecycle.write().await;
+diff --git a/echo-sdk-host/src/core_profile/state.rs b/echo-sdk-host/src/core_profile/state.rs
+index d968dba..46697c2 100644
+--- a/echo-sdk-host/src/core_profile/state.rs
++++ b/echo-sdk-host/src/core_profile/state.rs
+@@ -378,6 +378,29 @@ impl CoreProfileState {
+     /// Reserve actual asynchronous completion work in the existing Host close
+     /// drain. Used by Run projection collectors and blocking facade lifecycle
+     /// collectors; a dropped RPC waiter does not finish this reservation.
++    /// The original publication job survives an RPC waiter being dropped.
++    /// Existing close/drain owns its lifetime through the settlement count.
++    pub(crate) fn spawn_publication(
++        self: &Arc<Self>,
++        record: Arc<super::handles::PublicationRecord>,
++        work: futures::future::BoxFuture<
++            'static,
++            std::result::Result<super::handles::PublicationValue, agent_client_protocol::Error>,
++        >,
++    ) {
++        self.begin_settlement();
++        let state = self.clone();
++        tokio::spawn(async move {
++            let result = tokio::select! {
++                biased;
++                () = record.cancelled_before_effects() => Err(record.cancellation_error()),
++                result = work => result,
++            };
++            state.handles.finish_publication(&record, result);
++            state.finish_settlement(Ok(()));
++        });
++    }
++
+     pub fn begin_settlement(&self) {
+         self.pending_settlements.fetch_add(1, Ordering::AcqRel);
+     }
+diff --git a/echo-sdk-host/src/factory.rs b/echo-sdk-host/src/factory.rs
+index bca778a..63b04ef 100644
+--- a/echo-sdk-host/src/factory.rs
++++ b/echo-sdk-host/src/factory.rs
+@@ -152,6 +152,39 @@ pub(crate) struct CoreProfileSessionFactory {
+     session_services:
+         Arc<std::sync::Mutex<std::collections::HashMap<String, Arc<SessionAuthorityServices>>>>,
+     max_definitions: usize,
++    publication_admissions:
++        Arc<std::sync::Mutex<std::collections::HashMap<String, PublicationAdmission>>>,
++}
++
++#[cfg(feature = "sdk-core-profile")]
++struct PublicationAdmission {
++    token: String,
++    definition: String,
++    observer: Option<Box<dyn FnOnce() -> Result<()> + Send>>,
++}
++
++/// This guard only associates one original request with the factory admission.
++/// Framework SessionRegistry remains the only capacity/identity authority.
++#[cfg(feature = "sdk-core-profile")]
++pub(crate) struct SessionPublicationGuard {
++    admissions: Arc<std::sync::Mutex<std::collections::HashMap<String, PublicationAdmission>>>,
++    session_id: String,
++    token: String,
++}
++#[cfg(feature = "sdk-core-profile")]
++impl Drop for SessionPublicationGuard {
++    fn drop(&mut self) {
++        let mut admissions = self
++            .admissions
++            .lock()
++            .unwrap_or_else(|error| error.into_inner());
++        if admissions
++            .get(&self.session_id)
++            .is_some_and(|entry| entry.token == self.token)
++        {
++            admissions.remove(&self.session_id);
++        }
++    }
+ }
+ 
+ #[cfg(feature = "sdk-core-profile")]
+@@ -235,7 +268,73 @@ impl CoreProfileSessionFactory {
+             definitions: Arc::new(std::sync::Mutex::new(definitions)),
+             session_services: Arc::new(std::sync::Mutex::new(std::collections::HashMap::new())),
+             max_definitions,
++            publication_admissions: Arc::new(std::sync::Mutex::new(
++                std::collections::HashMap::new(),
++            )),
++        }
++    }
++
++    /// All SDK insert paths, including unkeyed load, reserve this association.
++    /// Refusing an occupied address does not validate or mutate a Session.
++    pub(crate) fn associate_publication(
++        &self,
++        session_id: &str,
++        definition: &str,
++        observer: Option<Box<dyn FnOnce() -> Result<()> + Send>>,
++    ) -> std::result::Result<SessionPublicationGuard, ()> {
++        let mut admissions = self
++            .publication_admissions
++            .lock()
++            .unwrap_or_else(|error| error.into_inner());
++        if admissions.contains_key(session_id) {
++            return Err(());
++        }
++        let token = uuid::Uuid::new_v4().to_string();
++        admissions.insert(
++            session_id.to_string(),
++            PublicationAdmission {
++                token: token.clone(),
++                definition: definition.to_string(),
++                observer,
++            },
++        );
++        Ok(SessionPublicationGuard {
++            admissions: self.publication_admissions.clone(),
++            session_id: session_id.to_string(),
++            token,
++        })
++    }
++
++    pub(crate) fn enter_publication_factory(&self, context: &AcpSessionContext) -> Result<()> {
++        let definition = context
++            .meta
++            .as_ref()
++            .and_then(|meta| meta.get(DEFINITION_META_KEY))
++            .and_then(serde_json::Value::as_str);
++        let observer = {
++            let mut admissions = self
++                .publication_admissions
++                .lock()
++                .unwrap_or_else(|error| error.into_inner());
++            match admissions.get_mut(&context.session_id.to_string()) {
++                Some(entry) if definition == Some(entry.definition.as_str()) => {
++                    entry.observer.take()
++                }
++                // Standard session/new has no SDK definition association. It
++                // cannot steal an observer even if an address were to collide.
++                Some(_) => {
++                    return Err(ReactError::Other(
++                        "Session factory publication owner mismatch".to_string(),
++                    ));
++                }
++                None => None,
++            }
++        };
++        // Caller cancellation/fencing locks the publication owner, never this map.
++        if let Some(observer) = observer {
++            observer()?
+         }
++        Ok(())
+     }
+ 
+     /// Authority services of one Session, if it is still open.
+@@ -305,6 +404,7 @@ impl AcpSessionFactory for CoreProfileSessionFactory {
+         let default = self.default.clone();
+         let session_services = self.session_services.clone();
+         let session_id = context.session_id.to_string();
++        let publication_factory = self.clone();
+         Box::pin(async move {
+             let definition = match definition_id {
+                 Some(id) => definitions
+@@ -317,6 +417,7 @@ impl AcpSessionFactory for CoreProfileSessionFactory {
+                     })?,
+                 None => default,
+             };
++            publication_factory.enter_publication_factory(&context)?;
+             let agent = definition.create_agent(&context).await?;
+             let agent_handle = AgentHandle::new(agent);
+             // Capture the framework authorities before the concrete agent
+diff --git a/echo-sdk-host/tests/core_profile_e2e.rs b/echo-sdk-host/tests/core_profile_e2e.rs
+index 4cb068b..7584cfe 100644
+--- a/echo-sdk-host/tests/core_profile_e2e.rs
++++ b/echo-sdk-host/tests/core_profile_e2e.rs
+@@ -8302,3 +8302,96 @@ async fn malformed_recovered_identity_rejects_actual_method_without_handle_publi
+     );
+     Ok(())
+ }
++
++#[tokio::test]
++async fn keyed_session_and_run_replay_original_publication_without_repeating_provider()
++-> Result<(), Box<dyn std::error::Error>> {
++    use std::sync::atomic::{AtomicUsize, Ordering};
++    let calls = Arc::new(AtomicUsize::new(0));
++    let listener = TcpListener::bind("127.0.0.1:0").await?;
++    let address = listener.local_addr()?;
++    let model_calls = calls.clone();
++    let server = tokio::spawn(async move {
++        loop {
++            let Ok((mut socket, _)) = listener.accept().await else {
++                break;
++            };
++            if support::read_http_request(&mut socket).await.is_err() {
++                break;
++            }
++            model_calls.fetch_add(1, Ordering::AcqRel);
++            let body = "data: {\"id\":\"idempotency\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"one actual result\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n";
++            let headers = format!(
++                "HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
++                body.len()
++            );
++            if socket.write_all(headers.as_bytes()).await.is_err() {
++                break;
++            }
++            if socket.write_all(body.as_bytes()).await.is_err() {
++                break;
++            }
++        }
++    });
++    let work = tempfile::tempdir()?;
++    let state_root = tempfile::tempdir()?;
++    let config = write_config(
++        work.path(),
++        &format!("http://{address}/v1/chat/completions"),
++        state_root.path(),
++        None,
++    )?;
++    let mut host = spawn_host(&config).await?;
++    let (events, updates, gaps) = empty_collectors::<EventNotification>();
++    let scenario_calls = calls.clone();
++    let scenario = move |connection: ConnectionTo<agent_client_protocol::Agent>| -> BoxFuture<'static, agent_client_protocol::Result<()>> {
++        Box::pin(async move {
++            let typed_error = |error: &agent_client_protocol::Error| {
++                echo_sdk_protocol::error::EchoSdkError::from_jsonrpc_data(error.data.as_ref())
++                    .map_err(|message| agent_client_protocol::Error::internal_error().data(message))
++            };
++            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
++            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
++            let request = SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: Some("one-session-publication".to_string()) };
++            let (one, two) = futures::try_join!(
++                connection.send_request(request.clone()).block_task(),
++                connection.send_request(request.clone()).block_task(),
++            )?;
++            assert_eq!(one, two, "concurrent same key did not replay the full original Session response");
++            assert_eq!(one, connection.send_request(request.clone()).block_task().await?);
++            let mut conflicting = request.clone();
++            conflicting.session_id = Some("another-session".to_string());
++            let conflict = connection.send_request(conflicting).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("changed Session payload must conflict"))?;
++            let conflict = typed_error(&conflict)?;
++            assert_eq!(conflict.code, echo_sdk_protocol::error::ExtensionErrorCode::InvalidRequest);
++            let run_request = RunStartRequest { session: one.session.clone(), input: RunInput::Chat { text: "one model effect".to_string() }, idempotency_id: Some("one-run-publication".to_string()) };
++            let (first, duplicate) = futures::try_join!(
++                connection.send_request(run_request.clone()).block_task(),
++                connection.send_request(run_request.clone()).block_task(),
++            )?;
++            assert_eq!(first, duplicate, "concurrent same key did not replay the full original Run response");
++            let receipt = connection.send_request(RunWaitRequest { run: first.run.clone(), timeout: Some(WireDuration { seconds: WireU64::from_u64(10), nanos: 0 }) }).block_task().await?;
++            assert!(receipt.settled);
++            let after_terminal = connection.send_request(run_request.clone()).block_task().await?;
++            assert_eq!(first, after_terminal);
++            assert_eq!(scenario_calls.load(Ordering::Acquire), 1, "key replay repeated the real model request");
++            let mut changed = run_request.clone();
++            changed.input = RunInput::Chat { text: "changed model effect".to_string() };
++            let conflict = connection.send_request(changed).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("changed Run input must conflict"))?;
++            assert_eq!(typed_error(&conflict)?.code, echo_sdk_protocol::error::ExtensionErrorCode::InvalidRequest);
++            assert_eq!(scenario_calls.load(Ordering::Acquire), 1);
++            connection.send_request(SessionCloseRequest { session: one.session.clone() }).block_task().await?;
++            let closed = connection.send_request(request).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("closed original Session must not be recreated"))?;
++            assert_eq!(typed_error(&closed)?.code, echo_sdk_protocol::error::ExtensionErrorCode::ClosedHandle);
++            let closed = connection.send_request(run_request).block_task().await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("closed owner must reject Run replay"))?;
++            assert_eq!(typed_error(&closed)?.code, echo_sdk_protocol::error::ExtensionErrorCode::ClosedHandle);
++            assert_eq!(scenario_calls.load(Ordering::Acquire), 1);
++            connection.send_request(AgentCloseRequest { agent }).block_task().await?;
++            Ok(())
++        })
++    };
++    let result = drive(&mut host, events, updates, gaps, scenario).await;
++    server.abort();
++    result?;
++    Ok(())
++}

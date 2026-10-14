@@ -188,6 +188,8 @@ struct HandleInner {
     extension_index: HashMap<String, String>,
     tombstones: VecDeque<(HandleKind, String)>,
     idempotency: HashMap<String, Arc<AgentCreateOutcome>>,
+    publications: HashMap<PublicationKey, Arc<PublicationRecord>>,
+    publications_fenced: bool,
     next_agent_id: u64,
     next_extension_order: u64,
 }
@@ -195,6 +197,76 @@ struct HandleInner {
 /// Result of an idempotent `agent/create` invocation.
 pub(crate) struct AgentCreateOutcome {
     pub agent: WireHandle,
+}
+
+/// Immutable request publication, not a second Session/Turn execution state.
+#[derive(Clone)]
+pub(crate) enum PublicationValue {
+    Session(echo_sdk_protocol::methods::SessionCreateResponse),
+    Run(Arc<echo_sdk_protocol::methods::RunStartResponse>),
+}
+
+#[derive(Clone, Hash, PartialEq, Eq)]
+pub(crate) struct PublicationKey {
+    pub generation: u64,
+    pub operation: &'static str,
+    pub owner: String,
+    pub key: String,
+}
+
+struct PublicationObservation {
+    effects_started: bool,
+    caller_cancelled: bool,
+    result: Option<Result<PublicationValue, agent_client_protocol::Error>>,
+}
+
+pub(crate) struct PublicationRecord {
+    key: PublicationKey,
+    fingerprint: serde_json::Value,
+    observation: Mutex<PublicationObservation>,
+    changed: tokio::sync::Notify,
+    before_effect_cancel: tokio_util::sync::CancellationToken,
+}
+
+impl PublicationRecord {
+    pub(crate) fn cancel_waiter_before_effects(&self) {
+        let mut observation = self.observation.lock().unwrap_or_else(|e| e.into_inner());
+        if !observation.effects_started {
+            observation.caller_cancelled = true;
+            self.before_effect_cancel.cancel();
+        }
+    }
+
+    pub(crate) async fn cancelled_before_effects(&self) {
+        self.before_effect_cancel.cancelled().await;
+    }
+
+    pub(crate) fn cancellation_error(&self) -> agent_client_protocol::Error {
+        crate::core_profile::wire::into_jsonrpc_error(sdk_error(
+            ExtensionErrorCode::Cancelled,
+            "original request cancelled before effect admission",
+            Retryability::Never,
+            self.key.operation,
+        ))
+    }
+
+    pub(crate) async fn wait(&self) -> Result<PublicationValue, agent_client_protocol::Error> {
+        loop {
+            let notified = self.changed.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+            let result = self
+                .observation
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .result
+                .clone();
+            if let Some(result) = result {
+                return result;
+            }
+            notified.await;
+        }
+    }
 }
 
 /// Errors of handle resolution, mapped to typed extension errors by
@@ -274,10 +346,170 @@ impl HandleRegistry {
                 extension_index: HashMap::new(),
                 tombstones: VecDeque::new(),
                 idempotency: HashMap::new(),
+                publications: HashMap::new(),
+                publications_fenced: false,
                 next_agent_id: 0,
                 next_extension_order: 0,
             }),
         }
+    }
+
+    /// Reserve a connection-scoped request before any framework mutation.
+    /// Entries are never evicted: a lost replay/tombstone must not recreate work.
+    pub(crate) fn reserve_publication(
+        &self,
+        owner: &WireHandle,
+        operation: &'static str,
+        key: &str,
+        fingerprint: serde_json::Value,
+    ) -> Result<(Arc<PublicationRecord>, bool), EchoSdkError> {
+        let mut inner = self.lock();
+        if inner.publications_fenced {
+            return Err(sdk_error(
+                ExtensionErrorCode::HostShuttingDown,
+                "request publication admission is closed",
+                Retryability::Never,
+                operation,
+            ));
+        }
+        let key = PublicationKey {
+            generation: inner.generation,
+            operation,
+            owner: owner.id.clone(),
+            key: key.to_string(),
+        };
+        if let Some(record) = inner.publications.get(&key) {
+            let observation = record
+                .observation
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            if let Some(Ok(value)) = &observation.result {
+                let retired = match value {
+                    PublicationValue::Session(response) => inner
+                        .sessions
+                        .get(&response.session.id)
+                        .is_none_or(|session| {
+                            session.closing.load(std::sync::atomic::Ordering::Acquire)
+                        }),
+                    PublicationValue::Run(response) => {
+                        !inner.runs.contains_key(&response.run.id)
+                            || !inner.streams.contains_key(&response.stream.id)
+                    }
+                };
+                if retired {
+                    return Err(handle_error(
+                        ExtensionErrorCode::ClosedHandle,
+                        "idempotent publication refers to a closed resource",
+                        operation,
+                        owner,
+                    ));
+                }
+            }
+            drop(observation);
+            if record.fingerprint != fingerprint {
+                return Err(handle_error(
+                    ExtensionErrorCode::InvalidRequest,
+                    "idempotency id was already used with a different payload",
+                    operation,
+                    owner,
+                ));
+            }
+            return Ok((record.clone(), false));
+        }
+        if inner.publications.len() >= inner.max_handles {
+            return Err(sdk_error(
+                ExtensionErrorCode::PayloadTooLarge,
+                "request publication receipt quota is full",
+                Retryability::AfterDelay,
+                operation,
+            ));
+        }
+        let record = Arc::new(PublicationRecord {
+            key: key.clone(),
+            fingerprint,
+            observation: Mutex::new(PublicationObservation {
+                effects_started: false,
+                caller_cancelled: false,
+                result: None,
+            }),
+            changed: tokio::sync::Notify::new(),
+            before_effect_cancel: tokio_util::sync::CancellationToken::new(),
+        });
+        inner.publications.insert(key, record.clone());
+        Ok((record, true))
+    }
+
+    /// This marker is immediately before the original effect admission.
+    /// It only governs reservation release; framework owns the effect itself.
+    pub(crate) fn begin_publication_effects(
+        &self,
+        record: &PublicationRecord,
+    ) -> Result<(), agent_client_protocol::Error> {
+        self.admit_publication_effects(record, || Ok(()))
+    }
+
+    /// Cancellation/fencing and the original synchronous admission share this
+    /// lock. Only successful admission marks effects; busy/validation errors
+    /// still release the reservation and wake its original waiters.
+    pub(crate) fn admit_publication_effects<T>(
+        &self,
+        record: &PublicationRecord,
+        admit: impl FnOnce() -> Result<T, agent_client_protocol::Error>,
+    ) -> Result<T, agent_client_protocol::Error> {
+        let inner = self.lock();
+        let mut observation = record.observation.lock().unwrap_or_else(|e| e.into_inner());
+        if inner.publications_fenced {
+            return Err(crate::core_profile::wire::into_jsonrpc_error(sdk_error(
+                ExtensionErrorCode::HostShuttingDown,
+                "request publication admission is closed",
+                Retryability::Never,
+                record.key.operation,
+            )));
+        }
+        if observation.caller_cancelled {
+            return Err(record.cancellation_error());
+        }
+        let result = admit()?;
+        observation.effects_started = true;
+        Ok(result)
+    }
+
+    pub(crate) fn finish_publication(
+        &self,
+        record: &Arc<PublicationRecord>,
+        result: Result<PublicationValue, agent_client_protocol::Error>,
+    ) {
+        let mut inner = self.lock();
+        let mut observation = record.observation.lock().unwrap_or_else(|e| e.into_inner());
+        observation.result = Some(result);
+        if !observation.effects_started {
+            // Existing waiters keep this exact record; a later retry may reserve anew.
+            if inner
+                .publications
+                .get(&record.key)
+                .is_some_and(|current| Arc::ptr_eq(current, record))
+            {
+                inner.publications.remove(&record.key);
+            }
+        }
+        drop(observation);
+        drop(inner);
+        record.changed.notify_waiters();
+    }
+
+    pub(crate) fn fence_publications(&self) {
+        let mut inner = self.lock();
+        inner.publications_fenced = true;
+        for record in inner.publications.values() {
+            // Closing can withdraw only work that has not entered the original
+            // effect admission. Started effects keep their settlement owner.
+            record.cancel_waiter_before_effects();
+        }
+    }
+
+    /// Called only after the existing close owner has settled original jobs.
+    pub(crate) fn discard_publications_after_settlement(&self) {
+        self.lock().publications.clear();
     }
 
     pub fn generation(&self) -> u64 {

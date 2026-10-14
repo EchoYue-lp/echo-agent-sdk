@@ -1,0 +1,12 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 1m 04s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-deb50fbc4d526ffc)
+
+running 2 tests
+actual cancellation test server outcome: Ok(())
+actual cancellation test server outcome: Ok(())
+test core_profile::handler::recovered_identity_tests::publication_public_rpc_cancel_after_factory_keeps_one_original_job_and_receipt ... ok
+test core_profile::handler::recovered_identity_tests::publication_public_rpc_cancel_before_factory_releases_key_and_keeps_connection_usable ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 184 filtered out; finished in 0.40s
+

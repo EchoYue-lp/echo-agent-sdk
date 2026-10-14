@@ -378,6 +378,29 @@ impl CoreProfileState {
     /// Reserve actual asynchronous completion work in the existing Host close
     /// drain. Used by Run projection collectors and blocking facade lifecycle
     /// collectors; a dropped RPC waiter does not finish this reservation.
+    /// The original publication job survives an RPC waiter being dropped.
+    /// Existing close/drain owns its lifetime through the settlement count.
+    pub(crate) fn spawn_publication(
+        self: &Arc<Self>,
+        record: Arc<super::handles::PublicationRecord>,
+        work: futures::future::BoxFuture<
+            'static,
+            std::result::Result<super::handles::PublicationValue, agent_client_protocol::Error>,
+        >,
+    ) {
+        self.begin_settlement();
+        let state = self.clone();
+        tokio::spawn(async move {
+            let result = tokio::select! {
+                biased;
+                () = record.cancelled_before_effects() => Err(record.cancellation_error()),
+                result = work => result,
+            };
+            state.handles.finish_publication(&record, result);
+            state.finish_settlement(Ok(()));
+        });
+    }
+
     pub fn begin_settlement(&self) {
         self.pending_settlements.fetch_add(1, Ordering::AcqRel);
     }

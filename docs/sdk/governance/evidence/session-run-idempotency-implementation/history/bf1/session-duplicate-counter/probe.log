@@ -1,0 +1,81 @@
+2026-10-14T08:08:58.143480Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(4) method=_echo_agent/session/create error=Error { code: -32050: Unknown error, message: "ACP Session already-registered-session is already registered", data: Some(Object {"code": String("framework_error"), "message": String("ACP Session already-registered-session is already registered"), "retryable": String("never"), "operation": String("_echo_agent/session/create"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("other")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("other")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+2026-10-14T08:08:58.146663Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(6) method=_echo_agent/session/create error=Error { code: -32050: Unknown error, message: "ACP Session already-registered-session is already registered", data: Some(Object {"code": String("framework_error"), "message": String("ACP Session already-registered-session is already registered"), "retryable": String("never"), "operation": String("_echo_agent/session/create"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("other")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("other")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+{
+  "exitCode": 0,
+  "caseCount": 1,
+  "cases": [
+    {
+      "id": "framework-session-admission-duplicate-identity-before-factory",
+      "occupied": {
+        "session": {
+          "id": "session-51c8666a-fb65-4c69-bb14-d90335565ff5",
+          "generation": "1",
+          "kind": "session"
+        },
+        "task_run": {
+          "id": "task_run-17f61677-2a4f-41c5-8d35-3a2a649b51d3",
+          "generation": "1",
+          "kind": "task_run"
+        },
+        "acp_session_id": "already-registered-session"
+      },
+      "full": {
+        "error": {
+          "code": "framework_error",
+          "message": "ACP Session already-registered-session is already registered",
+          "operation": "_echo_agent/session/create",
+          "retryable": "never",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "other"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "other"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      },
+      "retry": {
+        "error": {
+          "code": "framework_error",
+          "message": "ACP Session already-registered-session is already registered",
+          "operation": "_echo_agent/session/create",
+          "retryable": "never",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "other"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "other"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "providerCallCount": 0
+}
