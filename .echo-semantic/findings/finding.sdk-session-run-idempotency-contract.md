@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-session-run-idempotency-contract
 kind: finding
 type: intent_gap
-status: open
+status: resolved
 severity: high
 primary_focus: contract_evidence
 focus:
@@ -16,12 +16,17 @@ behavior_refs:
 - behavior.sdk-agent-session-run
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
-audit_refs: []
+evidence_refs:
+- evidence.sdk-acp-agent-run-finite-observation
+audit_refs:
+- audit.sdk-acp-agent-run-finite-time-lifecycle
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-acp-agent-run-finite-observation
+verification_evidence_refs:
+- evidence.sdk-acp-agent-run-finite-observation
+rereview_audit_refs:
+- audit.sdk-acp-agent-run-finite-time-lifecycle
 discovered_at: 76601b242d7c354352f3b5c7d4bf099873746b14
 ---
 
@@ -46,3 +51,7 @@ SessionCreateRequest 与 RunStartRequest 接受并校验 idempotency_id，而 ha
 裁决材料：`docs/sdk/governance/session-run-idempotency-proposal.md`，用户已明确选择 A，状态 Approved；正式权威见 ADR0037。批准保留既有参数，在当前连接/generation/操作/原 owner scope 内 same key+canonical payload 重放原 publication、changed payload typed conflict、真正关闭后 typed closed_handle 不复活；备选明确延期并副作用前拒绝参数。跨连接/重启 durable 幂等不在推荐承诺内；框架仍唯一执行/终态权威，Host 仅 publication mapping。
 
 本 Finding 保持 open。用户已批准 A 的期望，当前原 Host Registry/结算 owner 实现候选与直接反例验证进行中；尚需独立源码复审、三语言同场景证据和交付对账，不把 collector exit0 当行为修复通过。12source 迁移及5秒物理结算属于其它未决单元，此项不替代或催促其裁决。
+
+## 已批准A的具体本地闭合
+
+原忽略idempotency_id的intentgap及批准记录保历史。Aimplementation28f/6source/true8763取证、newda873 native3×5/13inputs与原publicRPC cancellation twofacts/pub9/busyduplicate retry，frameworkFinal实际source+consumer独审PASS三链齐，故这个specificintentgap局部resolved。sharedEvidence包含批准期望、修复、before/after失败分类和完整响应副作用验证，同时作repair/verification role不复制镜像对象；rereview原事实回收不假未记录执行。Connection/generation/key/operation/owner scope严格，跨restartdurable未承诺；其它新协商bugs和12/5sB/fullproducer/main不由此关闭。

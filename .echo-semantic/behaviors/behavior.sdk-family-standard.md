@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-acp
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 8763c67bcfd6d98fe57449c88bb93f28f32bf78f
 code_refs:
 - echo-sdk-host/src/lib.rs
 - echo-sdk-host/src/factory.rs
@@ -25,6 +25,7 @@ rule_refs:
 evidence_refs:
 - evidence.sdk-candidate-behavior-verification
 - evidence.sdk-parent-driver-candidate-verification
+- evidence.sdk-acp-agent-run-finite-observation
 finding_refs: []
 ---
 
@@ -68,7 +69,7 @@ extended standard session/prompt 的 end_turn、session/update 与 Session ident
 
 实际来源：`echo-sdk-host/tests/core_profile_e2e.rs#extended_standard_prompt_bridges_shared_core_handles`；`sdks/typescript/test/host.test.js`。
 
-仍缺：无 profile 的独立 stdio_e2e suite 不在此 Host136/31/34/12 收据内；unsupported version/startup cleanup 与 plain ACP cancel/EOF 最终运行仍缺。 published framework pin、最后变更后的独立复审和精确main验收
+原阶段缺口（历史，当前有界范围见下）：无 profile 的独立 stdio_e2e suite 不在此 Host136/31/34/12 收据内；unsupported version/startup cleanup 与 plain ACP cancel/EOF 最终运行仍缺。 published framework pin、最后变更后的独立复审和精确main验收
 仍待；本证据不证明未列出的生命周期、字段或错误组合，也不自动扩大accepted合同。
 
 ## 裁决记录
@@ -92,3 +93,11 @@ Candidate assertion evidence is now preserved as original receipt/source fingerp
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前ACP/AgentSessionRun与A有界收口
+
+本对象恢复真实8763源码/资料，frameworkFinal本session独立8lens源审与实际native反例/修复来源通过后准确回收，Hosthandlerac5/handles8b89/state8e3/modc766/factoryda354保一authority。old193e790、Steer原eb兼容前证明与newdaA三native13input/五组及2officialRPC取消、pub9等各保原cut；不是模型writer新审或allgoalmain通过。A同key完整publication响应/owner+gen+payloadfingerprint、失败前effects释放retry、成功后原job保持/closed不复活具局部三链，A具体Finding可resolved，framework仍唯一execution/terminal，不新idempo scheduler。
+
+菜单校准：CoreProfile扩展Session只有create/load/close；officialsession_list是协议inventory而非已advertise运行入口，save为自动state/journal/receiptprojection不新Session.save。Runget是snapshot，start返回streamhandle/eventfeed并replay/ACK；RunHandle.close用canonical cancel/wait后关闭本地订阅（TS仅非终态，PY/Java尝试取消并等）；没有Hostrunclose且不直接退役原HostRun。原waitshortsettledfalse不cancel、ACK仅initiation不是physicalcompleted。
+
+本组Behavior保持needs_review，scene仅mapped/8Auditexamined。新Javaversion溢出、malformedarray/limits shape的协商缺陷是另具体openFinding，不被本Hostsource审PASS吞并，完整旧whole在其client变更后为历史；12sourcekind/5sB/平台/fullgeneration/main独立。B宽真实physicalfalse仍open，合作close/EOF不反证它；当前有限场景不是全部未定义组合全测。

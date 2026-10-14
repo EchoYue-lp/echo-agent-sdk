@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-agent-session-run
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 8763c67bcfd6d98fe57449c88bb93f28f32bf78f
 code_refs:
 - echo-sdk-host/src/core_profile/handler.rs
 - echo-sdk-host/src/core_profile/handles.rs
@@ -24,7 +24,8 @@ code_refs:
 - sdks/python/tests/test_parallel_sessions_host.py
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
+evidence_refs:
+- evidence.sdk-acp-agent-run-finite-observation
 finding_refs:
 - finding.sdk-agent-close-cascade
 - finding.sdk-cleanup-retry-owner
@@ -52,7 +53,7 @@ Agent/Session/Run handler复用framework规范执行、receipt与取消。Handle
 
 Agent/Session/Run handler复用framework规范执行、receipt与取消。HandleRegistry唯一管理owner/generation/idempotency/配额；创建及关闭admission、durable receipt slot、失败写入重试和Agent cascade已有候选反例。Session create/load读取持久原生身份并调用framework reserve_recovered_turn_ids，turn7后分配turn8；禁用同一调用得到turn1的两路径红证据已取得。活Run关闭保持同一个官方actor，不以watcher替代join/receipt。真实kill恢复Interrupted；并行Session取消A不改变B。
 
-仍缺：所有资源种类的并发publication/close I/O故障与多Session state隔离尚未逐种证明；framework父future drop的pre-join/driver准入新反例正在修复，旧Task23命令绿色或局部prejoin绿色不是当前最终权威证明。
+原阶段缺口（历史，当前有界范围见下）：所有资源种类的并发publication/close I/O故障与多Session state隔离尚未逐种证明；framework父future drop的pre-join/driver准入新反例正在修复，旧Task23命令绿色或局部prejoin绿色不是当前最终权威证明。
 
 ## 证据
 
@@ -75,3 +76,11 @@ Agent/Session/Run handler复用framework规范执行、receipt与取消。Handle
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前ACP/AgentSessionRun与A有界收口
+
+本对象恢复真实8763源码/资料，frameworkFinal本session独立8lens源审与实际native反例/修复来源通过后准确回收，Hosthandlerac5/handles8b89/state8e3/modc766/factoryda354保一authority。old193e790、Steer原eb兼容前证明与newdaA三native13input/五组及2officialRPC取消、pub9等各保原cut；不是模型writer新审或allgoalmain通过。A同key完整publication响应/owner+gen+payloadfingerprint、失败前effects释放retry、成功后原job保持/closed不复活具局部三链，A具体Finding可resolved，framework仍唯一execution/terminal，不新idempo scheduler。
+
+菜单校准：CoreProfile扩展Session只有create/load/close；officialsession_list是协议inventory而非已advertise运行入口，save为自动state/journal/receiptprojection不新Session.save。Runget是snapshot，start返回streamhandle/eventfeed并replay/ACK；RunHandle.close用canonical cancel/wait后关闭本地订阅（TS仅非终态，PY/Java尝试取消并等）；没有Hostrunclose且不直接退役原HostRun。原waitshortsettledfalse不cancel、ACK仅initiation不是physicalcompleted。
+
+本组Behavior保持needs_review，scene仅mapped/8Auditexamined。新Javaversion溢出、malformedarray/limits shape的协商缺陷是另具体openFinding，不被本Hostsource审PASS吞并，完整旧whole在其client变更后为历史；12sourcekind/5sB/平台/fullgeneration/main独立。B宽真实physicalfalse仍open，合作close/EOF不反证它；当前有限场景不是全部未定义组合全测。

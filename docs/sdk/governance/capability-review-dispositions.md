@@ -85,3 +85,7 @@ SDK Host 已精确依赖已发布框架 `be5f0a84`，八个框架包来自同一
 ## Integration与supporting角色有限收口
 
 原独立reviewer的MCP/LSP/channels/EvalImproveTopology/Permission/StateTraceDelivery/Testing范围绑定bd8恢复的69b运行源，790原case按实际assertions支持；A2A原consumer缺口后由三语各24steps/9ops/8HTTP与明确typederrors/stream/owner/noeffect另epoch补齐。registry/skill只归现source_operation/intrinsic支持角色，不自动所有methodverified。具体Mapscene仅mapped/8lensAuditexamined，Behaviorneeds_review保。Statecheckpoint7/Trace17字段区别、Deliverymemory无跨process、Testingpurevalue非Mock、网络时点/5sB/12/currentA/main边界全部保。
+
+## ACP与Agent/Session/Run有界收口
+
+原frameworkFinal实际8lens和approvedA修复/native证据按真实8763/da切点回收，标准/plainhello、typedmethods/runtimecreate/load/close/get/wait/steer/replay、oneauthority/close-debt/recovery界限有限mapped/examined。Sessionlist官方inventory不advertise/save自动投影，不新义务；localRunclose调用canonicalcancel/wait再关订阅，不直接退役Hostrecord。A同连接generation publication幂等具体gap已本地resolved，新Java协商/shape缺陷保持open；Bphysical/12sourcekind/fullgenerator/platform/main独立，Behavior仍needs_review，不把运行门禁count反推全capcovered。

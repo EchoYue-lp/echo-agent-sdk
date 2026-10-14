@@ -4,7 +4,7 @@ id: map.sdk-agent-session-run
 kind: capability_map
 title: Agent、Session、Run
 risk: high
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 8763c67bcfd6d98fe57449c88bb93f28f32bf78f
 boundary_refs:
 - boundary.sdk-agent-session-run
 behavior_refs:
@@ -14,11 +14,20 @@ behavior_refs:
 - behavior.sdk-family-run
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
+evidence_refs:
+- evidence.sdk-acp-agent-run-finite-observation
 finding_refs:
 - finding.sdk-agent-close-cascade
 - finding.sdk-cleanup-retry-owner
-audit_refs: []
+audit_refs:
+- audit.sdk-acp-agent-run-finite-trigger-input
+- audit.sdk-acp-agent-run-finite-result-side-effect
+- audit.sdk-acp-agent-run-finite-state-authority
+- audit.sdk-acp-agent-run-finite-data-durability
+- audit.sdk-acp-agent-run-finite-time-lifecycle
+- audit.sdk-acp-agent-run-finite-failure-concurrency
+- audit.sdk-acp-agent-run-finite-permission-external
+- audit.sdk-acp-agent-run-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -42,7 +51,7 @@ scenarios:
       have been inspected and linked. Mapped records the model, not bug-free/runtime/main
       closure; open Findings remain explicit.
   family-agent-lifecycle:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/handler.rs
     - echo-sdk-host/src/core_profile/handles.rs
@@ -51,13 +60,14 @@ scenarios:
     - echo-sdk-host/src/factory.rs
     behavior_refs:
     - behavior.sdk-family-agent-lifecycle
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-acp-agent-run-finite-observation
+    review_scope: Accepted runtime menu/authority/lifecycle/failure finite source
+      examined; new negotiation shape bug,physicalB/12/finalgenerator/main explicitoutsidecorrectslice.
   family-session:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/handler.rs
     - echo-sdk-host/src/core_profile/handles.rs
@@ -66,13 +76,14 @@ scenarios:
     - echo-sdk-host/src/factory.rs
     behavior_refs:
     - behavior.sdk-family-session
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-acp-agent-run-finite-observation
+    review_scope: Accepted runtime menu/authority/lifecycle/failure finite source
+      examined; new negotiation shape bug,physicalB/12/finalgenerator/main explicitoutsidecorrectslice.
   family-run:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/handler.rs
     - echo-sdk-host/src/core_profile/handles.rs
@@ -81,11 +92,220 @@ scenarios:
     - echo-sdk-host/src/factory.rs
     behavior_refs:
     - behavior.sdk-family-run
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-acp-agent-run-finite-observation
+    review_scope: Accepted runtime menu/authority/lifecycle/failure finite source
+      examined; new negotiation shape bug,physicalB/12/finalgenerator/main explicitoutsidecorrectslice.
+  acp-agent-run-finite-trigger-input:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-trigger-input
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
+  acp-agent-run-finite-result-side-effect:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-result-side-effect
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
+  acp-agent-run-finite-state-authority:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-state-authority
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
+  acp-agent-run-finite-data-durability:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-data-durability
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
+  acp-agent-run-finite-time-lifecycle:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-time-lifecycle
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
+  acp-agent-run-finite-failure-concurrency:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-failure-concurrency
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
+  acp-agent-run-finite-permission-external:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-permission-external
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
+  acp-agent-run-finite-contract-evidence:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/stdio_e2e.rs
+    behavior_refs:
+    - behavior.sdk-agent-session-run
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    audit_refs:
+    - audit.sdk-acp-agent-run-finite-contract-evidence
+    review_scope: ActualframeworkFinal eight-lens finite source review, original193e
+      and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
+      no sessionlist/save/runclose API invention.
 ---
 
 # Agent、Session、Run
@@ -114,7 +334,7 @@ Framework 拥有 Run/Task/Store 的事实与终态；Host 只拥有寻址、可�
 
 Agent/Session/Run handler复用framework规范执行、receipt与取消。HandleRegistry唯一管理owner/generation/idempotency/配额；创建及关闭admission、durable receipt slot、失败写入重试和Agent cascade已有候选反例。Session create/load读取持久原生身份并调用framework reserve_recovered_turn_ids，turn7后分配turn8；禁用同一调用得到turn1的两路径红证据已取得。活Run关闭保持同一个官方actor，不以watcher替代join/receipt。真实kill恢复Interrupted；并行Session取消A不改变B。
 
-仍缺：Agent cascade/cleanup retry仍由具名Finding承接；Session closing读取准入与owned Channel回调新窗口须各自最终反例/复审。framework parent-drop修复使用自己的后继证据，旧23项通过不替后继。
+原阶段缺口（历史）：Agent cascade/cleanup retry仍由具名Finding承接；Session closing读取准入与owned Channel回调新窗口须各自最终反例/复审。framework parent-drop修复使用自己的后继证据，旧23项通过不替后继。
 
 ## 权限与敏感信息
 
@@ -147,3 +367,7 @@ Agent cascade/cleanup retry仍由具名Finding承接；Session closing读取准�
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前有限ACP/SessionRun范围
+
+sharedEvidence/8Audit指真实8763代码和准确菜单：Sessioncreate/load/close、Runget/snapshot、eventfeedreplayACK/localobserverclose，官方list库存不advertise自动save非publicRPC。Hostcreationgate/turn/RunEntry/ledger/receipt权威保，publicationA同连接generation不restartdurable；原source8lens仅具名examined，协商newJava/limitsbug原Findingopen、physicalB/12/currentnewclientwhole/platform/main独立。
