@@ -1,0 +1,1409 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host",
+  "host_sha256": "da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444",
+  "rows": [
+    {
+      "id": "same-name-switch",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        null,
+        null,
+        "sdk-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Delete branch 'sdk-proof':\nDeleted branch sdk-proof (was ed6b976).",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "switch-main",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        null,
+        null,
+        "main"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: error: cannot delete branch 'main' used by worktree at '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo'",
+        "operation": "git_branch",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "status-dirty",
+      "operation": "git_status",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Git status:\nM sdk-proof",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "diff-dirty",
+      "operation": "git_diff",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "```diff\ndiff --git a/sdk-proof b/sdk-proof\nindex 49e5f7a..99e38cd 100644\n--- a/sdk-proof\n+++ b/sdk-proof\n@@ -1 +1 @@\n-base 中文🙂\n+dirty same-name 中文🙂\n```",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "log-base",
+      "operation": "git_log",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Commit history:\ned6b976 fixture base 中文🙂",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "blame-base",
+      "operation": "git_blame",
+      "arguments": [
+        null,
+        null,
+        "tracked.txt"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'git_blame': \"file_path\" is a required property",
+        "operation": "git_blame",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "branch-list",
+      "operation": "git_branch",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "List all branches:\n* main",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "branch-create",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        "unicode-中文"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Create branch 'unicode-中文':\n",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "branch-delete",
+      "operation": "git_branch",
+      "arguments": [
+        "unicode-中文"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: repo_path does not exist or is not a directory: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo/unicode-中文",
+        "operation": "git_branch",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "invalid-branch",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        "invalid branch"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: fatal: 'invalid branch' is not a valid branch name\nhint: See `man git check-ref-format`\nhint: Disable this message with \"git config set advice.refSyntax false\"",
+        "operation": "git_branch",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "missing-switch",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        null,
+        null,
+        "missing-ref"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: error: branch 'missing-ref' not found",
+        "operation": "git_branch",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "non-repo",
+      "operation": "git_status",
+      "arguments": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/not-a-repo"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Git status:\nM ../../../../../../../../.echo-semantic/behaviors/behavior.sdk-family-git.md\n M ../../../../../../../../.echo-semantic/maps/map.sdk-integrations.md\n?? ../../../../../../../../.echo-semantic/audits/audit.sdk-llm-workflow-stream-rereview.md\n?? ../../../../../../../../.echo-semantic/evidence/evidence.sdk-artifact-count-authority.md\n?? ../../../../../../../../.echo-semantic/evidence/evidence.sdk-framework-main-77de-milestone.md\n?? ../../../../../../../../.echo-semantic/evidence/evidence.sdk-framework-main-b909-milestone.md\n?? ../../../../../../../../.echo-semantic/evidence/evidence.sdk-framework-physical-settlement-open-boundary.md\n?? ../../../../../../../../.echo-semantic/evidence/evidence.sdk-java-test-logging-classpath.md\n?? ../../../../../../../../.echo-semantic/findings/finding.sdk-git-branch-switch-dirty-path-overwrite.md\n?? ../../../../../../../MASTER-PLAN.md\n?? ../../../../../../../sdk-java-host-early-exit/\n?? ../../../../../computation-evidence.md\n?? ../../../../../current-closeout.md\n?? ../../../../channel-bridge-callback-settlement/\n?? ../../../../channel-handler-forward-candidate/\n?? ../../../../eval-improve-topology/\n?? ../../../../factory-child-settlement/\n?? ../../../../file-authority-identity-replacement/README.md\n?? ../../../../file-authority-identity-replacement/SHA256SUMS.json\n?? ../../../../file-authority-identity-replacement/prepared-source/\n?? ../../../../file-authority-identity-replacement/python-final.log\n?? ../../../../file-authority-identity-replacement/python-final/\n?? ../../../../file-authority-identity-replacement/python-first.log\n?? ../../../../file-authority-identity-replacement/python/\n?? ../../../../file-authority-identity-replacement/source-manifest.json\n?? ../../../../file-authority-identity-replacement/typescript-final.log\n?? ../../../../file-authority-identity-replacement/typescript-final/\n?? ../../../../file-authority-identity-replacement/typescript-first.log\n?? ../../../../file-authority-identity-replacement/typescript-second.log\n?? ../../../../file-authority-identity-replacement/typescript/\n?? ../../../\n?? ../../../../host-fixture-isolation/\n?? ../../../../llm-workflow-stream/\n?? ../../../../managed-retirement-evidence/\n?? ../../../../rag-project-rules-scalar-delta/\n?? ../../../../rag-project-rules/\n?? ../../../../run-steer-native/accepted-false-attempt/\n?? ../../../../run-steer-native/current-test-source-freeze.json\n?? ../../../../run-steer-native/diagnostic-fixed-host/\n?? ../../../../run-steer-native/final-test-source-original-host-red/\n?? ../../../../run-steer-native/first-fixture-config-attempt/\n?? ../../../../run-steer-native/python-actual-red/\n?? ../../../../run-steer-native/python-focused.log\n?? ../../../../run-steer-native/python-run.json\n?? ../../../../run-steer-native/python-runner.log\n?? ../../../../run-steer-native/typescript-actual-red/\n?? ../../../../run-steer-native/typescript-focused.log\n?? ../../../../run-steer-native/typescript-run.json\n?? ../../../../run-steer-native/typescript-runner.log\n?? ../../../../sandbox-natural-eof/\n?? ../../../../sdk-ack-recovery-windows/\n?? ../../../../sdk-channel-forward-protocol/\n?? ../../../../sdk-channel-handler-forward-native/\n?? ../../../../sdk-computation-20261013/\n?? ../../../../sdk-computation-45-candidate/\n?? ../../../../sdk-current-dependency-policy-after-feature-wiring/\n?? ../../../../sdk-dependency-be5-current/\n?? ../../../../sdk-document-example-sync.json\n?? ../../../../sdk-external-timeout-oracle/\n?? ../../../../sdk-family-route-20261013/\n?? ../../../../sdk-fc63-historical-20261013/\n?? ../../../../sdk-gap-watermark-host-red/\n?? ../../../../sdk-gap-watermark-independent-review/\n?? ../../../../sdk-java-default-root-repair/\n?? ../../../../sdk-java-host-early-exit/\n?? ../../../../sdk-java-test-logging-provider/\n?? ../../../../sdk-language-be5-reviewed-final/\n?? ../../../../sdk-language-current-complete/\n?? ../../../../sdk-language-current-first-gate/\n?? ../../../../sdk-language-factory-final/\n?? ../../../../sdk-language-import-format/\n?? ../../../../sdk-language-test-nop-complete/\n?? ../../../../sdk-mcp-channel-20261013/\n?? ../../../../sdk-memory-permission-20261013/\n?? ../../../../sdk-parent-driver-20261013/\n?? ../../../../sdk-python-test-entry/\n?? ../../../../sdk-real-permission-ttl/\n?? ../../../../sdk-state-trace-delivery-20261013/\n?? ../../../../sdk-stream-cancellation-routing/\n?? ../../../../sdk-stream-local-closure/\n?? ../../../../sdk-successor-model-reviews/\n?? ../../../../sdk-task-subagent-candidate-20261013/\n?? ../../../../sdk-tool-artifact-context/\n?? ../../../../sdk-tool-testing-20261013/\n?? ../../../../sdk-tool-validator-20261013/\n?? ../../../../sdk-workflow-checkpoint-20261013/\n?? ../../../../session-rules-prompt/\n?? ../../../../task-context-consumption/\n?? ../../../../task-resume-early-ack-cancellation-root-cause/\n?? ../../../../tool-value-effects/\n?? ../../../../typescript-stdio-close/README.md\n?? ../../../../typescript-stdio-close/SHA256SUMS.json\n?? ../../../../typescript-stdio-close/after-final.log\n?? ../../../../typescript-stdio-close/after.log\n?? ../../../../typescript-stdio-close/before.log\n?? ../../../../typescript-stdio-close/build-after.log\n?? ../../../../typescript-stdio-close/build-final.log\n?? ../../../../typescript-stdio-close/build.log\n?? ../../../../typescript-stdio-close/client.after.ts\n?? ../../../../typescript-stdio-close/client.before.ts\n?? ../../../../typescript-stdio-close/close-only.patch\n?? ../../../../typescript-stdio-close/dist.client.after.js\n?? ../../../../typescript-stdio-close/manifest.json\n?? ../../../../typescript-stdio-close/native-process-observations.json\n?? ../../../../typescript-stdio-close/reentrant-final/\n?? ../../../../typescript-stdio-close/test.after.js\n?? ../../../../typescript-stdio-close/test.before.js\n?? ../../../../../generator-acceptance.md\n?? ../../../../../mcp-channel-evidence.md\n?? ../../../../../memory-permission-evidence.md\n?? ../../../../../state-trace-delivery-evidence.md\n?? ../../../../../workflow-evidence.md\n?? ../../../../../../../supreme/specs/2026-10-13T1800-channel-handler-forward/plans/\n?? ../../../../../../../../sdks/java/src/test/java/com/echoagent/sdk/GitToolHostTest.java\n?? ../../../../../../../../sdks/python/tests/test_git_tool_host.py\n?? ../../../../../../../../sdks/shared/testing/__pycache__/\n?? ../../../../../../../../sdks/shared/testing/compare_channel_forward_results.py\n?? ../../../../../../../../sdks/shared/testing/git_tool_host_fixture.py\n?? ../../../../../../../../sdks/typescript/test/git-tool-host.test.js",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "commit-add-fails",
+      "operation": "git_commit",
+      "arguments": [
+        [
+          "new.txt",
+          "missing.txt"
+        ],
+        "must fail"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'git_commit': [\"new.txt\",\"missing.txt\"] is not of type \"string\"",
+        "operation": "git_commit",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "commit-staged",
+      "operation": "git_commit",
+      "arguments": [
+        null,
+        "SDK commit 中文🙂"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: ",
+        "operation": "git_commit",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "log-commit",
+      "operation": "git_log",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Commit history:\ned6b976 fixture base 中文🙂",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "blame-commit",
+      "operation": "git_blame",
+      "arguments": [
+        null,
+        null,
+        "new.txt"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'git_blame': \"file_path\" is a required property",
+        "operation": "git_blame",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "managed-enter",
+      "operation": "enter_worktree",
+      "arguments": [
+        null,
+        "managed-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "?? new.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'enter_worktree': \"branch\" is a required property",
+        "operation": "enter_worktree",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "?? new.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "managed-list",
+      "operation": "list_worktrees",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "?? new.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Worktrees (1):\n  /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo (branch: main)",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "?? new.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "managed-explicit-cwd",
+      "operation": "git_status",
+      "arguments": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo/.worktrees/managed-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "?? new.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: repo_path does not exist or is not a directory: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo/.worktrees/managed-proof",
+        "operation": "git_status",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "status": "?? new.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-myk9zj/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    }
+  ]
+}

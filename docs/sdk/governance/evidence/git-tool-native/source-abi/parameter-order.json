@@ -1,0 +1,111 @@
+{
+  "framework_revision": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "schema_order_source": "tool.parameters declaration; retained properties insertion order in Host",
+  "operations": [
+    {
+      "operation": "git_status",
+      "framework_path": "echo-tools/src/git.rs",
+      "parameters_line": 38,
+      "source_sha256": "82cf6591ad8b55438db4ea07482c5bfe06a27dc6766d10d0203639bc37499098",
+      "positional_order": [
+        "repo_path"
+      ]
+    },
+    {
+      "operation": "git_diff",
+      "framework_path": "echo-tools/src/git.rs",
+      "parameters_line": 100,
+      "source_sha256": "82cf6591ad8b55438db4ea07482c5bfe06a27dc6766d10d0203639bc37499098",
+      "positional_order": [
+        "repo_path",
+        "staged",
+        "target",
+        "file_path",
+        "limit",
+        "cursor"
+      ]
+    },
+    {
+      "operation": "git_log",
+      "framework_path": "echo-tools/src/git.rs",
+      "parameters_line": 220,
+      "source_sha256": "82cf6591ad8b55438db4ea07482c5bfe06a27dc6766d10d0203639bc37499098",
+      "positional_order": [
+        "repo_path",
+        "count",
+        "oneline",
+        "author",
+        "since"
+      ]
+    },
+    {
+      "operation": "git_blame",
+      "framework_path": "echo-tools/src/git.rs",
+      "parameters_line": 321,
+      "source_sha256": "82cf6591ad8b55438db4ea07482c5bfe06a27dc6766d10d0203639bc37499098",
+      "positional_order": [
+        "file_path",
+        "repo_path",
+        "start_line",
+        "end_line",
+        "limit",
+        "cursor"
+      ]
+    },
+    {
+      "operation": "git_branch",
+      "framework_path": "echo-tools/src/git.rs",
+      "parameters_line": 432,
+      "source_sha256": "82cf6591ad8b55438db4ea07482c5bfe06a27dc6766d10d0203639bc37499098",
+      "positional_order": [
+        "repo_path",
+        "name",
+        "switch",
+        "delete"
+      ]
+    },
+    {
+      "operation": "git_commit",
+      "framework_path": "echo-tools/src/git.rs",
+      "parameters_line": 519,
+      "source_sha256": "82cf6591ad8b55438db4ea07482c5bfe06a27dc6766d10d0203639bc37499098",
+      "positional_order": [
+        "repo_path",
+        "message",
+        "files"
+      ]
+    },
+    {
+      "operation": "enter_worktree",
+      "framework_path": "echo-tools/src/worktree_tool.rs",
+      "parameters_line": 53,
+      "source_sha256": "e1833e86fe66e665d8de12506f5d8e94a976b0f1db607312477035d47e2bac3d",
+      "positional_order": [
+        "branch",
+        "base",
+        "path_suffix",
+        "repo_path"
+      ]
+    },
+    {
+      "operation": "exit_worktree",
+      "framework_path": "echo-tools/src/worktree_tool.rs",
+      "parameters_line": 156,
+      "source_sha256": "e1833e86fe66e665d8de12506f5d8e94a976b0f1db607312477035d47e2bac3d",
+      "positional_order": [
+        "worktree_path",
+        "merge_to",
+        "repo_path"
+      ]
+    },
+    {
+      "operation": "list_worktrees",
+      "framework_path": "echo-tools/src/worktree_tool.rs",
+      "parameters_line": 266,
+      "source_sha256": "e1833e86fe66e665d8de12506f5d8e94a976b0f1db607312477035d47e2bac3d",
+      "positional_order": [
+        "repo_path"
+      ]
+    }
+  ]
+}

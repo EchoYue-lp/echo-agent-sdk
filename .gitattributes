@@ -202,3 +202,6 @@ docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/th
 docs/sdk/governance/evidence/sdk-published-00782-pin/raw/deny.log -diff
 docs/sdk/governance/evidence/sdk-published-00782-pin/raw/lock.after-tempfile-once.patch -diff
 docs/sdk/governance/evidence/sdk-published-00782-pin/raw/selected-deny.log -diff
+
+# Original Git consumer command output, preserved byte for byte.
+docs/sdk/governance/evidence/git-tool-native/before-a634/typescript.log -diff

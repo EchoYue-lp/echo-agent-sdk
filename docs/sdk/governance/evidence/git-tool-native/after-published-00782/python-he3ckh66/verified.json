@@ -1,0 +1,33 @@
+{
+  "tool_operations": [
+    "enter_worktree",
+    "exit_worktree",
+    "git_blame",
+    "git_branch",
+    "git_commit",
+    "git_diff",
+    "git_log",
+    "git_status",
+    "list_worktrees"
+  ],
+  "source_operations": [
+    "echo_tools::git_worktree::create_worktree",
+    "echo_tools::git_worktree::list_worktrees",
+    "echo_tools::git_worktree::merge_worktree",
+    "echo_tools::git_worktree::remove_worktree"
+  ],
+  "native_calls": 28,
+  "groups": [
+    "branch-and-read-safety",
+    "commit-and-partial-stage",
+    "managed-worktree-and-source-merge"
+  ],
+  "host_sha256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "model_run_started_by_test": false,
+  "limitations": [
+    "no claim of index rollback after a partial stage failure",
+    "no remote push",
+    "no concurrent branch mutation",
+    "merge-conflict recovery covered by framework tests, not this native corpus"
+  ]
+}

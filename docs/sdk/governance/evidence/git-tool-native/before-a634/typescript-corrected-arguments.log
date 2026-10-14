@@ -1,0 +1,30 @@
+TAP version 13
+# Git evidence retained /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-eaExGf
+# Subtest: accepted Git tools and worktree source operations preserve exact local effects
+not ok 1 - accepted Git tools and worktree source operations preserve exact local effects
+  ---
+  duration_ms: 19566.937375
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/git-tool-host.test.js:13:1'
+  failureType: 'testCodeFailure'
+  error: 'ACP connection closed'
+  code: 'transport_error'
+  name: 'EchoAgentError'
+  stack: |-
+    EchoAgentError.fromUnknown (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/dist/errors.js:29:16)
+    EchoAgentClient.request (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/dist/client.js:524:34)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async SessionHandle.close (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/dist/client.js:1096:9)
+    async TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/git-tool-host.test.js:25:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19750.59975

@@ -1,0 +1,29 @@
+{
+  "status": "failed-first-candidate; no retries or weakened oracle",
+  "framework": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "host_sha256": "efcd306518b8c00c44e31e428cda08b550efce05e41f8c9dd8169b008563faff",
+  "candidate_source_sha256": "333253ca571376640f9790edd080048e3e29325d675a0aedd6e7c579279dd50d",
+  "source_calls_planned": 7,
+  "source_calls_observed_each": 3,
+  "typescript_exit_code": 1,
+  "python_exit_code": 1,
+  "fault": "source-dirty-remove still aborts Host with Tokio stack overflow; transport_error rather than the expected framework_error",
+  "final_sdk_acceptance": false,
+  "scripts": {
+    "diagnostic-source-only/typescript.mjs": "8960fe69ced9b9c5ab25721ac0e8add8deda48561007fe60751c3f05d8abd67d",
+    "diagnostic-source-only/python.py": "57d43b855f4bcc0fc4d9ec3def4ce0261ba18be1ff1a56a0abdbf6077911643d"
+  },
+  "artifacts": {
+    "typescript.log": "128668a96fe8291841e386f26569d29929a9b7f8bc4fcb1346b15345b152dc14",
+    "python.log": "1cab721ab2fb09ef76b5d014bde7842b66992ab9272a6d9083b02334b12fc890",
+    "python-t48majyb/host.json": "512d2d36bd4ecc6eb61a487ea50239b2571ec6084d47884ea07c7252a59359ba",
+    "python-t48majyb/results.json": "ebc334fab3be7a6c355b88b681a7aa2815807dd7dd034e69db86af2a0342420a",
+    "python-t48majyb/baseline.json": "3dacd85ac7302410f5be2679be5d9ff59df36035a36f22f5fb33a15f65afff26",
+    "python-t48majyb/scenario.json": "083d166da63fb68c41a278bf0d914c6f1c1f1af39c8be045ec6975aa8fec248d",
+    "typescript-E8QTnp/host.json": "58a944c1b4aa28ec99fac70d33a60110f96aa4d5e61c396080a5b9c7be9591d0",
+    "typescript-E8QTnp/host.stderr": "c298205f6a82dfb02237b61a720c3bad85703029fe60457411b1291cd3b89de1",
+    "typescript-E8QTnp/results.json": "ca8e1eea7bd58c481954b70fbdbf40a206948f4a475e98794e9ddf424c9b1339",
+    "typescript-E8QTnp/baseline.json": "11d6e64e3ead01600d85e584410a9b640df5d1a2b0d9a36439e4e1b37b60cfc7",
+    "typescript-E8QTnp/scenario.json": "ae164ab474f37664b522f21bc52154abe676cd6eb1e444485e05ea2c9e22c01a"
+  }
+}

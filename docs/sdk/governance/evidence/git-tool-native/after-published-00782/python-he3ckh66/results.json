@@ -1,0 +1,2387 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+  "host_sha256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "rows": [
+    {
+      "id": "same-name-switch",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        null,
+        "sdk-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Switch to branch 'sdk-proof':\nM\tsdk-proof",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "sdk-proof",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/sdk-proof"
+      }
+    },
+    {
+      "id": "switch-main",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        null,
+        "main"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "sdk-proof",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/sdk-proof"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Switch to branch 'main':\nM\tsdk-proof",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "status-dirty",
+      "operation": "git_status",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Git status:\nM sdk-proof",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "diff-dirty",
+      "operation": "git_diff",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "```diff\ndiff --git a/sdk-proof b/sdk-proof\nindex 49e5f7a..99e38cd 100644\n--- a/sdk-proof\n+++ b/sdk-proof\n@@ -1 +1 @@\n-base 中文🙂\n+dirty same-name 中文🙂\n```",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "log-base",
+      "operation": "git_log",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Commit history:\ned6b976 fixture base 中文🙂",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "blame-base",
+      "operation": "git_blame",
+      "arguments": [
+        "tracked.txt"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "^ed6b976 (SDK Git Fixture 2026-10-15 00:00:00 +0000 1) base 中文🙂",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "branch-list",
+      "operation": "git_branch",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "List all branches:\n* main\n  sdk-proof",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "branch-create",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        "unicode-中文"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Create branch 'unicode-中文':\n",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "branch-delete",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        null,
+        null,
+        "unicode-中文"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/unicode-中文 ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Delete branch 'unicode-中文':\nDeleted branch unicode-中文 (was ed6b976).",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "invalid-branch",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        "invalid branch"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: fatal: 'invalid branch' is not a valid branch name\nhint: See `man git check-ref-format`\nhint: Disable this message with \"git config set advice.refSyntax false\"",
+        "operation": "git_branch",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "missing-switch",
+      "operation": "git_branch",
+      "arguments": [
+        null,
+        null,
+        "missing-ref"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: fatal: invalid reference: missing-ref",
+        "operation": "git_branch",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "non-repo",
+      "operation": "git_status",
+      "arguments": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/not-a-repo"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: fatal: not a git repository (or any of the parent directories): .git",
+        "operation": "git_status",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": null,
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "commit-add-fails",
+      "operation": "git_commit",
+      "arguments": [
+        null,
+        "must fail",
+        [
+          "new.txt",
+          "missing.txt"
+        ]
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof\n?? new.txt",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'git' execution failed: fatal: pathspec 'missing.txt' did not match any files",
+        "operation": "git_commit",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "A  new.txt\n M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "commit-staged",
+      "operation": "git_commit",
+      "arguments": [
+        null,
+        "SDK commit 中文🙂"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "branch": "main",
+          "refs": "refs/heads/main ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "A  new.txt\n M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD ed6b976b309ebb14a81168412a7a2e6cabfe216c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Commit succeeded:\n[main bc41d3a] SDK commit 中文🙂\n 1 file changed, 1 insertion(+)\n create mode 100644 new.txt",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "log-commit",
+      "operation": "git_log",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Commit history:\nbc41d3a SDK commit 中文🙂\ned6b976 fixture base 中文🙂",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "blame-commit",
+      "operation": "git_blame",
+      "arguments": [
+        "new.txt"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "bc41d3a6 (SDK Git Fixture 2026-10-15 00:00:00 +0000 1) commit payload 中文🙂",
+        "truncated": false,
+        "metadata": {
+          "page.returned": "1",
+          "page.total": "1",
+          "page.total_known": "true",
+          "page.truncated": "false"
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M sdk-proof",
+          "files": {
+            "sdk-proof": "a9f1f325a0261d5bfa105c60f4fd56ac204bd9d485d5d1ab1b7e8797c6c75b06",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "managed-enter",
+      "operation": "enter_worktree",
+      "arguments": [
+        "managed-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Created worktree at '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof' on branch 'managed-proof'. Use this directory as the working root for the subagent. When done, call exit_worktree to clean up.",
+        "truncated": false,
+        "metadata": {
+          "branch": "managed-proof",
+          "worktree_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof"
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      }
+    },
+    {
+      "id": "managed-list",
+      "operation": "list_worktrees",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Worktrees (2):\n  /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo (branch: main)\n  /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof (branch: managed-proof)",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      }
+    },
+    {
+      "id": "managed-explicit-cwd",
+      "operation": "git_status",
+      "arguments": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Working directory clean, no changes",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      }
+    },
+    {
+      "id": "managed-dirty-exit",
+      "operation": "exit_worktree",
+      "arguments": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M tracked.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'exit_worktree' execution failed: Refusing to remove a worktree with uncommitted changes",
+        "operation": "exit_worktree",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M tracked.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      }
+    },
+    {
+      "id": "managed-clean-exit",
+      "operation": "exit_worktree",
+      "arguments": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "managed-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/managed-proof"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Worktree at '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/managed-proof' removed; branch 'managed-proof' was preserved.",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "managed-after-list",
+      "operation": "list_worktrees",
+      "arguments": [],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "Worktrees (1):\n  /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo (branch: main)",
+        "truncated": false
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "source-create",
+      "operation": "echo_tools::git_worktree::create_worktree",
+      "arguments": [
+        {
+          "kind": "path",
+          "value": {
+            "encoding": "utf8",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+          }
+        },
+        {
+          "branch": "source-proof",
+          "base": "main",
+          "path_suffix": "source-proof"
+        }
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main"
+      },
+      "result": {
+        "kind": "record",
+        "value": {
+          "type_id": "echo_tools::git_worktree::ManagedWorktree",
+          "fields": [
+            {
+              "name": "path",
+              "value": {
+                "kind": "path",
+                "value": {
+                  "encoding": "utf8",
+                  "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof"
+                }
+              }
+            },
+            {
+              "name": "branch",
+              "value": {
+                "kind": "string",
+                "value": "source-proof"
+              }
+            },
+            {
+              "name": "managed",
+              "value": {
+                "kind": "bool",
+                "value": true
+              }
+            }
+          ]
+        }
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "source-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/source-proof"
+      }
+    },
+    {
+      "id": "source-list",
+      "operation": "echo_tools::git_worktree::list_worktrees",
+      "arguments": [
+        {
+          "kind": "path",
+          "value": {
+            "encoding": "utf8",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+          }
+        }
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "source-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/source-proof"
+      },
+      "result": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_tools::git_worktree::ManagedWorktree",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+                  }
+                }
+              },
+              {
+                "name": "branch",
+                "value": {
+                  "kind": "string",
+                  "value": "main"
+                }
+              },
+              {
+                "name": "managed",
+                "value": {
+                  "kind": "bool",
+                  "value": false
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_tools::git_worktree::ManagedWorktree",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof"
+                  }
+                }
+              },
+              {
+                "name": "branch",
+                "value": {
+                  "kind": "string",
+                  "value": "source-proof"
+                }
+              },
+              {
+                "name": "managed",
+                "value": {
+                  "kind": "bool",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "source-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/source-proof"
+      }
+    },
+    {
+      "id": "source-dirty-remove",
+      "operation": "echo_tools::git_worktree::remove_worktree",
+      "arguments": [
+        {
+          "kind": "path",
+          "value": {
+            "encoding": "utf8",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_tools::git_worktree::ManagedWorktree",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof"
+                  }
+                }
+              },
+              {
+                "name": "branch",
+                "value": {
+                  "kind": "string",
+                  "value": "source-proof"
+                }
+              },
+              {
+                "name": "managed",
+                "value": {
+                  "kind": "bool",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "source-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M tracked.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/source-proof"
+      },
+      "error": {
+        "code": "framework_error",
+        "message": "Refusing to remove a worktree with uncommitted changes",
+        "operation": "echo_tools::git_worktree::remove_worktree",
+        "retryable": "never",
+        "handle": null,
+        "details": null
+      },
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "source-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof bc41d3a64853223fa835cef411aed49124b88f9c",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "M tracked.txt",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/source-proof"
+      }
+    },
+    {
+      "id": "source-merge",
+      "operation": "echo_tools::git_worktree::merge_worktree",
+      "arguments": [
+        {
+          "kind": "path",
+          "value": {
+            "encoding": "utf8",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_tools::git_worktree::ManagedWorktree",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof"
+                  }
+                }
+              },
+              {
+                "name": "branch",
+                "value": {
+                  "kind": "string",
+                  "value": "source-proof"
+                }
+              },
+              {
+                "name": "managed",
+                "value": {
+                  "kind": "bool",
+                  "value": true
+                }
+              }
+            ]
+          }
+        },
+        "main"
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "bc41d3a64853223fa835cef411aed49124b88f9c",
+          "branch": "main",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "source-proof",
+          "refs": "refs/heads/main bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD bc41d3a64853223fa835cef411aed49124b88f9c\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/source-proof"
+      },
+      "result": "Merged source-proof into main",
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "main",
+          "refs": "refs/heads/main 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "source-proof",
+          "refs": "refs/heads/main 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/source-proof"
+      }
+    },
+    {
+      "id": "source-remove",
+      "operation": "echo_tools::git_worktree::remove_worktree",
+      "arguments": [
+        {
+          "kind": "path",
+          "value": {
+            "encoding": "utf8",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+          }
+        },
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_tools::git_worktree::ManagedWorktree",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof"
+                  }
+                }
+              },
+              {
+                "name": "branch",
+                "value": {
+                  "kind": "string",
+                  "value": "source-proof"
+                }
+              },
+              {
+                "name": "managed",
+                "value": {
+                  "kind": "bool",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "main",
+          "refs": "refs/heads/main 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "source-proof",
+          "refs": "refs/heads/main 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/main\n\nworktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo/.worktrees/source-proof\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/source-proof"
+      },
+      "result": null,
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "main",
+          "refs": "refs/heads/main 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/main"
+      }
+    },
+    {
+      "id": "source-after-list",
+      "operation": "echo_tools::git_worktree::list_worktrees",
+      "arguments": [
+        {
+          "kind": "path",
+          "value": {
+            "encoding": "utf8",
+            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+          }
+        }
+      ],
+      "before": {
+        "repo": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "main",
+          "refs": "refs/heads/main 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/main"
+      },
+      "result": [
+        {
+          "kind": "record",
+          "value": {
+            "type_id": "echo_tools::git_worktree::ManagedWorktree",
+            "fields": [
+              {
+                "name": "path",
+                "value": {
+                  "kind": "path",
+                  "value": {
+                    "encoding": "utf8",
+                    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo"
+                  }
+                }
+              },
+              {
+                "name": "branch",
+                "value": {
+                  "kind": "string",
+                  "value": "main"
+                }
+              },
+              {
+                "name": "managed",
+                "value": {
+                  "kind": "bool",
+                  "value": false
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "after": {
+        "repo": {
+          "exists": true,
+          "head": "129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "branch": "main",
+          "refs": "refs/heads/main 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nrefs/heads/managed-proof bc41d3a64853223fa835cef411aed49124b88f9c\nrefs/heads/sdk-proof ed6b976b309ebb14a81168412a7a2e6cabfe216c\nrefs/heads/source-proof 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e",
+          "index_entries": "100644 e458ed577c40ff01d754a646e69a78396bd67edd 0\t.gitignore\n100644 1beb250fb1837c878cd60290bc644d7761286f2b 0\tnew.txt\n100644 49e5f7a0c33d218360456a9e8d270bf425bf87ad 0\tsdk-proof\n100644 64612622c4f8c9ada64ba8f6fd13abe42e46e297 0\ttracked.txt",
+          "tree_entries": "100644 blob e458ed577c40ff01d754a646e69a78396bd67edd\t.gitignore\n100644 blob 1beb250fb1837c878cd60290bc644d7761286f2b\tnew.txt\n100644 blob 49e5f7a0c33d218360456a9e8d270bf425bf87ad\tsdk-proof\n100644 blob 64612622c4f8c9ada64ba8f6fd13abe42e46e297\ttracked.txt",
+          "status": "",
+          "files": {
+            "sdk-proof": "999d22e3073895d98b41727be453bb357043731e254c4c465baedaa4100e8cff",
+            "tracked.txt": "c5ea3ad33bdabc0b8fd0b499d6532545f3261b05cd030d71e68cce35c7459375",
+            "new.txt": "1466df996e0bb90e15dcaf5be344025947c567bac1ce9b38782c03d8fe87d20c",
+            ".gitignore": "b18aa601c08deae4db2a084f8747ad4e15bb0a47eec456d90df2aa99ad00d239"
+          },
+          "merge_active": false
+        },
+        "managed": {
+          "exists": false
+        },
+        "source": {
+          "exists": false
+        },
+        "registered_worktrees": "worktree /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-git-native/python-he3ckh66/repo\nHEAD 129b1d4d57e3fbbf4c0bd4715a8a4f03f7b5d21e\nbranch refs/heads/main"
+      }
+    }
+  ]
+}

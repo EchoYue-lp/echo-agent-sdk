@@ -1,0 +1,17 @@
+{
+  "label": "git-source-diagnostic-typescript",
+  "command": [
+    "node",
+    "docs/sdk/governance/evidence/git-tool-native/diagnostic-source-only/typescript.mjs"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-heap333-native/typescript.log",
+  "exitCode": 1,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 1349,
+  "bytesWritten": 1349,
+  "startedAt": "2026-10-14T16:52:52.044Z",
+  "finishedAt": "2026-10-14T16:52:56.308Z"
+}

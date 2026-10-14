@@ -1,0 +1,61 @@
+{
+  "status": "finite_native_pass",
+  "source_execution_commit": "f7999ef8adf6069dfd693dabc3f568386a6a2578",
+  "packet_freeze_commit": "c1213de0e76589070322ad8137b68b7a84435a24",
+  "framework_revision": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "cargo_lock_sha256": "88d99f3880f75315f60c8eca48035eb6151a1a055aeda7f621e689b354d411b3",
+  "host_sha256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "sdk_source_dispatch_sha256": "2df1bbe8ff3221c690d016379030dee6f76afa8f1893f8ccadb1791d14769649",
+  "source_before_after_sha256": {
+    "sdks/shared/testing/git_tool_host_fixture.py": "56b241f6f4ba6820cfa3aa53a855e61fd0ee6bd475fb927d6d99d8a1c94daab8",
+    "sdks/typescript/test/git-tool-host.test.js": "480a601890f3d57607dda72f282b72224ca606d50518e3e87e52c0e58dbf9d55",
+    "sdks/python/tests/test_git_tool_host.py": "65b702caca7ce550652c0c44f8ba19eb93395cb0dc36be1348bdf1fd4a53b8e2",
+    "sdks/java/src/test/java/com/echoagent/sdk/GitToolHostTest.java": "a2024ffc944d1ee08bdaa5cff5cc238c79ec909586e11996a8cd0bd7e8991d28"
+  },
+  "source_before_after_unchanged": true,
+  "native_languages": 3,
+  "native_calls_each": 28,
+  "total_native_calls": 84,
+  "tool_operations": 9,
+  "source_operations": 4,
+  "error_cases_each": 6,
+  "scenario_groups": 3,
+  "command_exit_codes": {
+    "typescript": 0,
+    "python": 0,
+    "java": 0,
+    "compare": 0
+  },
+  "test_counts": {
+    "typescript": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "python": {
+      "passed": 1,
+      "failed": 0
+    },
+    "java": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "independent_review": {
+    "agent": "/root/current_tool_boundary_review",
+    "scope": "four frozen consumer sources and complete published-00782 native proof",
+    "conclusion": "PASS",
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "machine_signature": false
+  },
+  "scope_limits": [
+    "official whole-language gate pending",
+    "semantic task-scope report has 483 unresolved material errors",
+    "SDK main delivery not yet accepted",
+    "no remote Git push or concurrent branch mutation claim"
+  ]
+}
