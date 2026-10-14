@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-tools-bridge-finite-observation
 kind: evidence
-observed_at: 5bcbad2437e5c19f61101883044c4f67944cb97c
+observed_at: 622d7931e01556161441d22de0697f6f35f24f17
 source_refs:
 - echo-sdk-host/src/core_profile/facade/tools.rs
 - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -20,6 +20,14 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
 - docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/regression-review-manifest.json
+- echo-sdk-host/src/core_profile/facade/memory.rs#unsupported_store_operation_keeps_memory_cause_without_mutation
+- echo-sdk-host/src/core_profile/facade/source_operations.rs#factory_failure_retains_canonical_cause_in_real_eval_result
+- echo-sdk-host/src/core_profile/facade/workflow.rs
+- echo-sdk-host/tests/facade_feature_adapters_e2e.rs#workflow_cancel_preserves_canonical_failure_in_rpc_and_stream_terminal
+- echo-sdk-host/src/core_profile/wire.rs
+- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
 supports:
 - behavior.sdk-family-files
 - behavior.sdk-family-shell
@@ -33,11 +41,18 @@ supports:
 - behavior.sdk-family-research
 - behavior.sdk-extension-bridge
 - behavior.sdk-family-bridge
+- behavior.sdk-family-workflow
+- behavior.sdk-family-memory
+- behavior.sdk-family-eval
 limitations:
-- Ten builtin families and six reverse integration roles are named finite scopes, not all Rust identities or new APIs.
-- Earlier whole790 language input is before the remotecause patch;3same-test genuine registered proxy results are postpatch, not a fabricated new fullnative gate.
-- Network/provider proof is a timestamped response, not future availability; volatile Rag/checkpoint backends do not add crossprocessdurability.
-- Five-second physicalTask B,12sourcekind, new SessionRunA and final whole/source/main remain separate.
+- Ten builtin families and six reverse integration roles are named finite scopes,
+  not all Rust identities or new APIs.
+- Earlier whole790 language input is before the remotecause patch;3same-test genuine
+  registered proxy results are postpatch, not a fabricated new fullnative gate.
+- Network/provider proof is a timestamped response, not future availability; volatile
+  Rag/checkpoint backends do not add crossprocessdurability.
+- Five-second physicalTask B,12sourcekind, new SessionRunA and final whole/source/main
+  remain separate.
 ---
 
 # 内置工具与反向桥有限观察
@@ -90,3 +105,7 @@ Reverse已接受角色：
 - docs/sdk/governance/evidence/file-authority-identity-replacement/three-language-final/receipt.json：original scoped receipt is not yet committed; do not pretend source_ref Git。仅保原具名运行来源，不冒5bcb包含这些原件。
 
 FileAuthority当前three-language-final包尚未进入此Git，故具体source_refs以已提交tools/FileAuthority调用及原790完整执行字段为限；这份作者审查可记examined，但该原补充包的正式交付需要另列实际版本，不伪fullpublished验证。
+
+## 后继原三域错误原因精确独立复审与闭合
+
+后继frameworkFinal独立有限源码审真实PASS C0/I0/M0明确补齐原Workflow/Memory/Eval三个错误域：Memory1532的liveStore.search_with→framework_error/semanticunsupported测试396，category=memory/terminalfailed/code=memory/retryfalse/原operation，旧namespacevalue/len1保无mutation；Eval91bd原run_all factoryErr由FailedEvalAgent第一次取Mutex<Option<originalReactError>>而非displaytext重造，真实EvalRunner对Cancelled/Timeout/Llm429 FailedResult保原violation/清空workspace（不伪每项RPCthrow或三native全部错误域已执行）；Workflow f631 graph.run和startup/stream每eventErr原canonicalconverter，实际Host2190取消RPC完整Cancelled/Never/operation/causequartet，stream failed variant仍Cancelledcause非Complete。Memory/Eval/wire当前和622d相同；workflow当前90e6仅cfgtest LLMA→B新增，生产prefix/原错误路径不变，未在这次审/未终态测试不借成果。原最新finalRust05/13日志逐具名实际ok。 本段是补到旧remoteTool/Llm专用scope之后的实际新有限复核，不改原scope当时仍未决的历史句子；合原remote3真红绿，本Finding原所有具名原因丢失root义务三链足够可局部闭合，非全桥资源或physicalB/12/main。
