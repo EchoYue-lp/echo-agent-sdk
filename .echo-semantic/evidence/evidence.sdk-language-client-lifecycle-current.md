@@ -53,6 +53,7 @@ source_refs:
 - sdks/python/tests/test_protocol_integrity.py
 - sdks/java/src/test/java/com/echoagent/sdk/ProtocolIntegrityTest.java
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/executed-source/sdks/python/src/echo_agent_sdk/client.py
 supports:
 - behavior.sdk-language-clients
 limitations:
@@ -131,3 +132,14 @@ docs/sdk/governance/evidence/sdk-stream-cancellation-routing/final-source-manife
 ## 本次五缺陷观察的版本性质
 
 observed ad358是这次明确五defect复核与已保存历史收据的定位，不声称旧整语言命令在ad新commit时重新执行。闭合wire13非法corpus的Java实际decoder是JsonSupport，构造codecWireValues不单独替解析；官方AcpError tuple的直接consumer为ProtocolIntegrityTest，三语言fixtures/测试与原XML9具体refs追加，原76601主challenge字节不变。
+
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at ad35887c5ceb66865a714f3f2d1da86a9c35c903、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/executed-source/sdks/python/src/echo_agent_sdk/client.py|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e|
+|sdks/python/tests/test_execution_usage_values.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|f2265b12c574ee104c502de3e66f24a0898b535f003bb8dbeba118454f568b96|
+
+本owner表中runtime test/fixture共1项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。

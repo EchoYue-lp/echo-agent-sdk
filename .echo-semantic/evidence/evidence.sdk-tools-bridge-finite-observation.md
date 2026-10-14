@@ -38,6 +38,9 @@ source_refs:
 - echo-sdk-host/src/core_profile/wire.rs#managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds
 - echo-sdk-host/src/core_profile/facade/tools.rs#direct_tool_validation_precedes_custom_rules_and_execution
 - echo-sdk-host/src/core_profile/facade/tools.rs#validate_tool_input
+- docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.after.rs
+- docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.before.rs
+- docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.valid-counterexample.rs
 supports:
 - behavior.sdk-family-files
 - behavior.sdk-family-shell
@@ -139,3 +142,17 @@ FileAuthority当前three-language-final包尚未进入此Git，故具体source_r
 原 adapter 跳过唯一 framework schema/custom validator 的具体 bug 已改为同一 validate_tool_input，参数绑定拒 excess arity（含 null），没有第二 validator。真实 prototype not_a_chart_type→假 line 的原成功和修后 typed InvalidParameter 保在旧专属 Evidence；正式 spy 强断言 missing/type/enum/excessNull/customBad 全 executes0、valid 精确 executes1，最新原05真实通过。后继 Chart 整数义务独立已有61原生/独审闭合，不以旧非法 enum 修复替整数证明，不把 helper 自动接受为三语言 API。
 
 原 managed-retirement 与 supporting-operation-boundary 的各自 supports/limits 全保；pending owner 不宣任意外部 producer 物理强停。Sandbox/Task/cleanup 关联同 B 未决，12 身份/平台/main 独立，未升整个 family verified。
+
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at 622d7931e01556161441d22de0697f6f35f24f17、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.after.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|c8dc3f1263ae7a84190080211fbde2eb6e6d93dade6f7b9d24da85026355f9ac|
+|docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.before.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|8e7aad2896687394a507f339fb20cba2dbacb93fd42ab38b417534570204e8e9|
+|docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.valid-counterexample.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|1653a22e81c1b2c62fb10de02fa77978e6d062f9e1bda6f530290a8a7b0bb2cc|
+|sdks/python/tests/test_file_authority_identity_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|6cc4b94dcd2717ef343763e2e3ec37cb33028777afea7284fae29b51d7f74eb1|
+|sdks/shared/testing/file_authority_identity_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|c9a5d5d00fdfaeff9e1572467c470c075950013e19b31b3e6e30eb7fed5242c3|
+
+本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。

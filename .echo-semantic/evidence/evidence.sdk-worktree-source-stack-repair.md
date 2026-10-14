@@ -34,6 +34,12 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/executed-source/echo-sdk-host/src/core_profile/facade/source_operations.rs
 - docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/executed-consumer-source/typescript.mjs
 - docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/executed-consumer-source/python.py
+- docs/sdk/governance/evidence/sdk-worktree-source-stack/candidate/source_operations.after.rs
+- docs/sdk/governance/evidence/sdk-worktree-source-stack/candidate/source_operations.before.rs
+- docs/sdk/governance/evidence/sdk-worktree-source-stack/per-operation-candidate/source_operations.after.rs
+- docs/sdk/governance/evidence/sdk-worktree-source-stack/per-operation-candidate/source_operations.aggregate-before.rs
+- docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-candidate/source_operations.after.rs
+- docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-candidate/source_operations.per-operation-before.rs
 supports:
 - behavior.sdk-family-git
 limitations:
@@ -68,3 +74,17 @@ Java尚未执行，三语言完整28语料、新发布00782/.46 pin、完整Rust
 ## 已知缺口
 
 以上scope限度均保；branch switch/rootGit业务及新pin完整消费者未由这7个source调用结账。
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at 3958f5482c38749ec65cd20ab145917e918452a2、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|docs/sdk/governance/evidence/sdk-worktree-source-stack/candidate/source_operations.after.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|333253ca571376640f9790edd080048e3e29325d675a0aedd6e7c579279dd50d|
+|docs/sdk/governance/evidence/sdk-worktree-source-stack/candidate/source_operations.before.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|91bd8f84f3a05b272b52911c7ba52d7cc54537d9f88790cfbb11578a57817a94|
+|docs/sdk/governance/evidence/sdk-worktree-source-stack/per-operation-candidate/source_operations.after.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32|
+|docs/sdk/governance/evidence/sdk-worktree-source-stack/per-operation-candidate/source_operations.aggregate-before.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|333253ca571376640f9790edd080048e3e29325d675a0aedd6e7c579279dd50d|
+|docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-candidate/source_operations.after.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|2df1bbe8ff3221c690d016379030dee6f76afa8f1893f8ccadb1791d14769649|
+|docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-candidate/source_operations.per-operation-before.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32|
+
+本owner表中runtime test/fixture共0项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。

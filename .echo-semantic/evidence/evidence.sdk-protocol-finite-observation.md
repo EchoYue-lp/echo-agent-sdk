@@ -44,6 +44,10 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
 - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/08-ci-default-protocol.log
 - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+- docs/sdk/governance/evidence/negotiation-response-validation/before/source/sdks/python/src/echo_agent_sdk/client.py
+- docs/sdk/governance/evidence/negotiation-response-validation/contract-basis/echo-sdk-protocol/src/capability.rs
+- docs/sdk/governance/evidence/negotiation-response-validation/contract-basis/echo-sdk-protocol/src/scalar.rs
+- docs/sdk/governance/evidence/negotiation-response-validation/source/sdks/python/src/echo_agent_sdk/client.py
 supports:
 - behavior.sdk-acp
 - behavior.sdk-family-standard
@@ -94,3 +98,18 @@ core_rpc_contract与stdio4、plain/mismatchedhello实测试、negotiate_hello/re
 facade_inventory 八个具名真实 fixture 覆盖新可路由项不接受、alias/signature 漂移不改变既有 source/kind、missing atomic/精确退役、新 Task result 不接受兄弟字段、RustHost recovery authority 不暗升语言 API、seed 精确重现、invalid delta 原子拒绝、收集全部 missing 且 partial retire 不掩余项；inventory/new public invoke 与 export 三个反例断言也实际在正式05/08通过。没有原旧产品执行红日志就不写 executed RED；meaningful postfix 场景与本次真实源码独审支持原自动扩大身份的具体逻辑缺陷本地 resolved。
 
 seed 未在此改动，完整28 profiles 的12 missing source 按原明确合同正确阻写，旧身份是否迁移/退役仍待用户。该正确阻断不是旧自动接受 bug 仍未修，也不是 full generator 已通过。库存量不成为能力完成分母，不自动接受 API、关闭全部模型或宣称 SDK main 完成。
+
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at 622d7931e01556161441d22de0697f6f35f24f17、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|docs/sdk/governance/evidence/negotiation-response-validation/before/source/sdks/python/src/echo_agent_sdk/client.py|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e|
+|docs/sdk/governance/evidence/negotiation-response-validation/contract-basis/echo-sdk-protocol/src/capability.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|c683f51728c241be24d1d3e4bc0d4448b7dd3fd10541f63a50238d753c8ce995|
+|docs/sdk/governance/evidence/negotiation-response-validation/contract-basis/echo-sdk-protocol/src/scalar.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|8332f6ccc7be4a2ce1a0143c31bfcf9df4b89e015dc8cf64cc2f1927bca9b92b|
+|docs/sdk/governance/evidence/negotiation-response-validation/source/sdks/python/src/echo_agent_sdk/client.py|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|fc843caf105c9e755f8976c4307533a560da98607965f63a3c5d5d21446924a9|
+|sdks/python/tests/test_secret_scan_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|e2d5fbfc63bcc2efeb18832805b35d0f24bca86c232a9c036d9efc29a1d45f45|
+|sdks/shared/testing/secret_scan_host_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|02487272d9fbd4eac4983aaa75917d6a2b24ca7da1358c119fbc013f1208d37b|
+
+本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。

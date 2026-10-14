@@ -41,3 +41,14 @@ Dcharcount2field fix newnativeHost not covered by0435；InstructionResolver dire
 原保存artifact中的具名元数据（完整值仍见原JSON，不改变）：`host_sha256=0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802`；`source_contract=3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6`；`sources/sdks/shared/contract-digests.json=2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7`。
 
 本次只附加观察说明；原正文/supports/limitations保留，原rawReceipt/ArchiveChecksum/运行时间未写入，任何未决unknown/失败仍不自动resolved。源码业务Audit不是此收据观察，另队列保持原revision与复审义务，不能偷换类型或scope。
+
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at 56929154c1851473e9e4837901b610cecf001b2d、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|sdks/python/tests/test_session_rules_prompt_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|528cce245a4d6ededfe264a92dfadc81ac04c221cc9c81bdc52595390e13bb07|
+|sdks/shared/testing/session_rules_prompt_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|215299949ed4f427b1895cfaf7c038b803f6e1ba0956c256b7e1c23e563162d7|
+
+本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。

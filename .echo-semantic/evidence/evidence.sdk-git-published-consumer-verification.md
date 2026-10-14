@@ -54,3 +54,13 @@ CurrentTool本会话实际源码/84记录/所有字段与Java1/0/0/0 XML独审PA
 ## 已知缺口
 
 以上限定范围保留。源791/793最新whole不能仅由此84局部代替，newfieldAPI/第二Git模型/权限门槛均未接受或新增。
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at fe8451d8f6190ad80405a7717efbd9d505cd74ed、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|sdks/python/tests/test_git_tool_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|65b702caca7ce550652c0c44f8ba19eb93395cb0dc36be1348bdf1fd4a53b8e2|
+|sdks/shared/testing/git_tool_host_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|56b241f6f4ba6820cfa3aa53a855e61fd0ee6bd475fb927d6d99d8a1c94daab8|
+
+本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。

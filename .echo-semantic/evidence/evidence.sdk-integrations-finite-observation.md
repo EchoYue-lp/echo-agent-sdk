@@ -42,6 +42,9 @@ source_refs:
 - echo-sdk-host/src/core_profile/facade/telemetry.rs
 - echo-sdk-host/src/core_profile/state.rs
 - echo-sdk-host/src/core_profile/facade/observability.rs#failed_trace_open_does_not_consume_the_only_resource_slot
+- docs/sdk/governance/evidence/a2a-native-consumption/executed-source/sdks/python/src/echo_agent_sdk/client.py
+- docs/sdk/governance/evidence/telemetry-host/after/source/framework/docs/en/27-tracing.md.txt
+- docs/sdk/governance/evidence/telemetry-host/after/source/sdk/echo-sdk-host/src/core_profile/state.rs.txt
 supports:
 - behavior.sdk-integrations
 - behavior.sdk-family-mcp
@@ -164,3 +167,23 @@ Runsteer的真正修复源属于framework已发布Git a6346643bda47679a96760f56f
 Telemetry根修复同framework a634的src/telemetry.rs：稳定委托layer/marker filter单runtime/初始化rollback，SDK本次main/facade/state持有原blockingjob/settlement。原3native挂起与OSstack原件、后after/nativecollector、公用close held→release原PIDdead、当前归档source14与publishedpin，各保原epoch。无假‘returned FrameworkError’（原init未返回），无不经过Host真实flush的信号替代。新shared supports明确包含telemetry/run，避免借原integration不含该roleAudit关闭；对应两个准确Audit新challenge为该真实读者已审scope回收，不是新engine执行。
 
 这两项observer/repair引用原framework真实Git并以公开源码链接复核：[ACP runtime](https://github.com/EchoYue-lp/echo-agent/blob/a6346643bda47679a96760f56f45e41fd73b61b0/src/acp/runtime.rs)、[Agent fallback](https://github.com/EchoYue-lp/echo-agent/blob/a6346643bda47679a96760f56f45e41fd73b61b0/echo-core/src/agent/mod.rs)、[Telemetry](https://github.com/EchoYue-lp/echo-agent/blob/a6346643bda47679a96760f56f45e41fd73b61b0/src/telemetry.rs)。SDKsource_refs只SDK真实adGit文件，不假跨仓filename。widecleanup/sandboxphysicalB/12identity和SDKmain分别保，不因这十closed全部关闭。
+
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at ad35887c5ceb66865a714f3f2d1da86a9c35c903、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|docs/sdk/governance/evidence/a2a-native-consumption/executed-source/sdks/python/src/echo_agent_sdk/client.py|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e|
+|docs/sdk/governance/evidence/telemetry-host/after/source/framework/docs/en/27-tracing.md.txt|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|197e191b6bc2e5275919bf22e0fa023055bd26ad7a6e2a0a08b58779801b009b|
+|docs/sdk/governance/evidence/telemetry-host/after/source/sdk/echo-sdk-host/src/core_profile/state.rs.txt|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|beaacc87a18188d89681b6ff2712dcb890f2eed93273071eb244fd0d6f178bbf|
+|sdks/python/tests/test_a2a_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|d526d3348482cf5ea9db36b715bd752b3642897e348408611d89f85b870e4dbc|
+|sdks/python/tests/test_telemetry_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|304a4bb09a5c5e0b88667bde8d2c66c45a0b37cc4471096ab2dc756103b0909f|
+|sdks/shared/testing/a2a_host_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|128d81008b104e3ab6e5c25da77af3d5f6b38f8a017acb587ada0319ba1ef8e3|
+|sdks/shared/testing/telemetry_host_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|d4516646cb4ad760f99632ceb769f9182eb374a40f14267316f763fa95bf8bb9|
+
+本owner表中runtime test/fixture共4项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
+
+## 当前Channel comparison helper的单独有限观察
+
+sdks/shared/testing/compare_channel_forward_results.py 当前字节SHA 0a687973e1e5d5db74fcf01ea2b96afa75bb5b65a69e75f0a8023ec8cbe7293f，Root已对原三语言core+12invalidcode/callback原收据重新比较实际exit0且SDKcap有限源码复审PASS0，正式whole包保存此helper原字节。原d08helper及它执行的旧epoch不被改写成当前0a687版本；Ruff只说明格式/静态检查，不单独证明comparison业务。此项不是新native运行、额外API或原forward全部组合通过。当前保存源在db34a76226732d50892be5718cd48836576aea9c，原本Evidence观察与原raw/limitations仍保持。

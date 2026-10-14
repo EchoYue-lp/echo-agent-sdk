@@ -32,6 +32,8 @@ source_refs:
 - docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json
 - docs/sdk/governance/evidence/run-steer-native/java-original/receipt.json
 - docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json
+- docs/sdk/governance/evidence/session-run-idempotency-implementation/current/source/echo-sdk-host/src/core_profile/handles.rs
+- docs/sdk/governance/evidence/session-run-idempotency-implementation/current/source/echo-sdk-host/src/core_profile/state.rs
 supports:
 - behavior.sdk-acp
 - behavior.sdk-agent-session-run
@@ -82,3 +84,18 @@ docs/sdk/governance/evidence/session-run-idempotency-counterexample/facts.json, 
 ## 原始反例的真实提交来源补齐
 
 前文三个未Git资料只是原8763观察时事实；后Root将原A11facts/script/log/输入与Steer19sourceclassreceipts于真实b10f提交，当前observed_b10f和新增8refs精确读取原字节。原Arepair源码8763、da13inputs/native及old193e/ebDiag行不改运行time或三链支持，不称该档案commit产生新执行。FrameworkSteer根修复用公开已发布a634仓库取证/ADR0084，不把Fsource伪放SDKtree。
+
+## 本任务全目标差异的精确路径依据补齐
+
+此段只给本owner对应实际证据/consumer的可复核输入性质，不定义新runtime authority、不新增接受API、不用路径数量证明行为。原observed_at b10f40e21bc73e50d891f41d00e96f5f3a18384a、原命令时间/Host/数据/限制全部不变；可直接列入source_refs的历史取证副本已在该原观察Git逐blob读取存在，其余当前test输入另由真实db34a76226732d50892be5718cd48836576aea9c和当前完整官方语言包保存，不冒旧运行时刻。
+
+|准确路径|输入角色与范围|当前保存的原字节SHA|
+|---|---|---|
+|docs/sdk/governance/evidence/session-run-idempotency-implementation/current/source/echo-sdk-host/src/core_profile/handles.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|8b89f6d86577e7cd4dc22b0ca20a7642e2e1e6b57ce50b3d4a8c7ce0d8948106|
+|docs/sdk/governance/evidence/session-run-idempotency-implementation/current/source/echo-sdk-host/src/core_profile/state.rs|原before/after/contract-basis源码取证副本；只解释此owner原故障/输入，不执行/注册/拥有新状态|8e3eb3592334cef9dae9bcc6787820528fc706c8b1276387e1e973d727f0eb80|
+|sdks/python/tests/test_run_steer_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|56d0e766e8bc2d2692a36fa04745dfcc81d808f3b2e8d41ae528ea0a808db843|
+|sdks/python/tests/test_session_run_idempotency_host.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|e23e77a3869a9c491decf3fa29f2a4adaefc58856489e5fa1e8bda869abb6d3e|
+|sdks/shared/testing/run_steer_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|03d72904a470ba7db0f2f58edea9ffae5e08737b8857e47e36e8cd1e5b405fc4|
+|sdks/shared/testing/session_run_idempotency_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|510a82945254307a22eb19a5c0b5ced3dc667c2f29e14038f73d91c6d1f70294|
+
+本owner表中runtime test/fixture共4项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
