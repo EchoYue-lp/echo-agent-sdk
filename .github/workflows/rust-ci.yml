@@ -152,6 +152,10 @@ jobs:
   language-sdk:
     name: source language SDKs
     runs-on: ubuntu-latest
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4

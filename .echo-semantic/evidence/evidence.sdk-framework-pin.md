@@ -145,3 +145,12 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 原eebd本地官方全项目strict退出0、source473与Git一致及308正式语义文件对账仍只属于eebd保存切点。此次文稿及baseline摘要c75是后继候选，须按真实当前任务基准重新执行完整strict；先前因缺少同次语义对象依据的exit1保留为真实失败。库存建模closed/行为open、52resolved4open/B3共享物理B与12连续性、人类例外边界、SDK main/Windows native限制均没有改变；不新增能力/接受身份/状态权威。
 
 后继CI设计和固定工具版本尚待实现及实跑，现有工程CI成功不证明执行语义校验。本文只是这些既有维护文稿的精确变更依据，不充当新runtime行为证明或未来CI结果。
+
+
+## 语言CI编译资源配置同期依据
+
+本次差异只在 `.github/workflows/rust-ci.yml` 的 `language-sdk` job新增三个Cargo环境值：`CARGO_BUILD_JOBS=1`、`CARGO_PROFILE_DEV_DEBUG=0`、`CARGO_PROFILE_TEST_DEBUG=0`。原SDK Git `6d0c73aac1e181b125392f126e9659676eae5219` 中workflow SHA为 `cc519d0da616dcced4fab5984e2efc2a9519a53436aa39aea360770c04e132e3`；本候选当前workflow SHA为 `c42a5197da5bb7b46c9af98fa57b78dc612e4e717a23f781bf9a273a6cdce78c`。这是当前候选文体定位，Evidence主观察91c50与原source_refs/command_results保持历史，不冒旧Git包含新env，也不把配置核对当新执行。
+
+原入口 `scripts/check-language-sdks.sh` 的Host `cargo build` 与 `scripts/build-telemetry-test-collector.sh` 中framework collector `cargo test --no-run`继承job环境。jobs限制的是Cargo编译并发，未设置测试运行threads。dev/test profile debug=0只关闭编译调试信息；本差异不设置strip、debug_assertions、overflow-checks、优化等级或测试线程参数。四行增量没有修改任何原命令、target、feature、locked、timeout、错误/失败规则或其它job。CurrentTool已完成设计及该实现差异有限审查，C0/I0/M0；YAML重复键与其余AST同原的focused静态检查通过，actionlint未安装，不伪其结果。
+
+原793执行输入中workflow这一项现在发生改变，不能再称整个当前793与旧执行逐字节相同；61份Rust/Cargo/config输入与运行代码、锁、生成物、测试和原门禁日志没有因此改变。本slice只验证编译资源配置及语义候选材料；不重写或重跑原14Rust/完整三语言证明。旧eebd运行中的CI没有被取消，本候选CI尚未运行，未声称修复已运行job或新remote0；预算设置不构成新的语义snapshot CI job，不证明远端执行了官方语义工具。52resolved4open、inventoryclosed/behavioropen、B与12连续性/完整生成exit1/13、Windows native与SDK main边界均保持。
