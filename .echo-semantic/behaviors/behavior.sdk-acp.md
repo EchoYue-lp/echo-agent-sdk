@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-acp
-observed_at: 8763c67bcfd6d98fe57449c88bb93f28f32bf78f
+observed_at: 622d7931e01556161441d22de0697f6f35f24f17
 code_refs:
 - echo-sdk-host/src/lib.rs
 - echo-sdk-host/src/factory.rs
@@ -27,6 +27,7 @@ rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
 - evidence.sdk-acp-agent-run-finite-observation
+- evidence.sdk-protocol-finite-observation
 finding_refs:
 - finding.sdk-negotiation-response-validation
 ---
@@ -84,3 +85,9 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 菜单校准：CoreProfile扩展Session只有create/load/close；officialsession_list是协议inventory而非已advertise运行入口，save为自动state/journal/receiptprojection不新Session.save。Runget是snapshot，start返回streamhandle/eventfeed并replay/ACK；RunHandle.close用canonical cancel/wait后关闭本地订阅（TS仅非终态，PY/Java尝试取消并等）；没有Hostrunclose且不直接退役原HostRun。原waitshortsettledfalse不cancel、ACK仅initiation不是physicalcompleted。
 
 本组Behavior保持needs_review，scene仅mapped/8Auditexamined。新Javaversion溢出、malformedarray/limits shape的协商缺陷是另具体openFinding，不被本Hostsource审PASS吞并，完整旧whole在其client变更后为历史；12sourcekind/5sB/平台/fullgeneration/main独立。B宽真实physicalfalse仍open，合作close/EOF不反证它；当前有限场景不是全部未定义组合全测。
+
+## Protocol与广告shape后继有界闭合
+
+原SDKcap独立Protocol8lens source审BLOCK的specificshape现经合法Hostproxy真before修复/newinitowner增量及实际源/材料独审PASS，source622d与原gate取证同。JBigIntegerexactversion/capfeatures全member拒/17canonicalpositiveu64/positivecallbacku32/2duration/nonemptydistinctcaps、Unicodecodepointsortedfeatures；Python officialValidationError仅initialize typed，TSfailedinithelper实际EOF/childexit持有原owner，原primaryerrorcleanupcause保。六genuineJava前误接受、TS/PY两shape/PYtypedoverflow与七afterOnly负例不混；TS37/PYintegrity31/原J21/PY25按freeze各切点，不旧782whole复用为新source完整通过。
+
+具体negotiationFinding修复/反例/verification/actualrereview三链已齐可localresolved，Behaviour仍needs_review/8lensexamined不全familyverified。core_rpc_contract/stdstdio4/plain/mismatchedhello和require_extended/negotiate_hello直接引用真实，旧运行time不因观察622d被重标；Windowsnative、fullgenerator12/B5physical平台/main独立。协议类编译catalog不是全部Rustinventorylanguageparity，无新接口/字段/错误taxonomy。

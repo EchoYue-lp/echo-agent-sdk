@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-language-clients
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 622d7931e01556161441d22de0697f6f35f24f17
 code_refs:
 - echo-sdk-protocol/src/scalar.rs
 rule_refs:
@@ -20,6 +20,7 @@ rule_refs:
 evidence_refs:
 - evidence.sdk-candidate-behavior-verification
 - evidence.sdk-parent-driver-candidate-verification
+- evidence.sdk-protocol-finite-observation
 finding_refs:
 - finding.sdk-accepted-source-continuity
 - finding.sdk-chart-dimension-integer-loss
@@ -90,3 +91,9 @@ Candidate assertion evidence is now preserved as original receipt/source fingerp
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## Protocol与广告shape后继有界闭合
+
+原SDKcap独立Protocol8lens source审BLOCK的specificshape现经合法Hostproxy真before修复/newinitowner增量及实际源/材料独审PASS，source622d与原gate取证同。JBigIntegerexactversion/capfeatures全member拒/17canonicalpositiveu64/positivecallbacku32/2duration/nonemptydistinctcaps、Unicodecodepointsortedfeatures；Python officialValidationError仅initialize typed，TSfailedinithelper实际EOF/childexit持有原owner，原primaryerrorcleanupcause保。六genuineJava前误接受、TS/PY两shape/PYtypedoverflow与七afterOnly负例不混；TS37/PYintegrity31/原J21/PY25按freeze各切点，不旧782whole复用为新source完整通过。
+
+具体negotiationFinding修复/反例/verification/actualrereview三链已齐可localresolved，Behaviour仍needs_review/8lensexamined不全familyverified。core_rpc_contract/stdstdio4/plain/mismatchedhello和require_extended/negotiate_hello直接引用真实，旧运行time不因观察622d被重标；Windowsnative、fullgenerator12/B5physical平台/main独立。协议类编译catalog不是全部Rustinventorylanguageparity，无新接口/字段/错误taxonomy。

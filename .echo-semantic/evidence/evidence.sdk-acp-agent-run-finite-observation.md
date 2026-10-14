@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-acp-agent-run-finite-observation
 kind: evidence
-observed_at: 8763c67bcfd6d98fe57449c88bb93f28f32bf78f
+observed_at: b10f40e21bc73e50d891f41d00e96f5f3a18384a
 source_refs:
 - echo-sdk-host/src/core_profile/handler.rs
 - echo-sdk-host/src/core_profile/handles.rs
@@ -24,6 +24,14 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
 - docs/sdk/governance/evidence/sdk-a634-rust-gates/05-workspace-tests.log
 - docs/sdk/governance/evidence/sdk-a634-rust-gates/10-ci-core-profile.log
+- docs/sdk/governance/evidence/session-run-idempotency-counterexample/facts.json
+- docs/sdk/governance/evidence/session-run-idempotency-counterexample/summary.json
+- docs/sdk/governance/evidence/session-run-idempotency-counterexample/probe.mjs
+- docs/sdk/governance/evidence/session-run-idempotency-counterexample/probe.log
+- docs/sdk/governance/evidence/session-run-idempotency-counterexample/manifest.json
+- docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json
+- docs/sdk/governance/evidence/run-steer-native/java-original/receipt.json
+- docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json
 supports:
 - behavior.sdk-acp
 - behavior.sdk-agent-session-run
@@ -32,12 +40,19 @@ supports:
 - behavior.sdk-family-session
 - behavior.sdk-family-run
 limitations:
-- Original a634/193e790 evidence and finalA/da873 native13input are separate source epochs; no old whole result is relabelled as newer source.
-- Session extension only create/load/close; list is official protocolinventory without accepted runtime advertisement, save is automatic projection not public new operation.
-- RunHandle.close uses canonical cancel/wait before closing the local subscription (TS only if nonterminal; PY/Java always attempt); it is not a Hostrun/close wire or Host record retirement. get is snapshot; events/replay/ACK are stream observation.
-- A samekey mapping is connection/generation scoped, not restartdurable idempotency or a second execution/terminal authority.
-- New Java negotiation/frame bugs are independent defects outside this Hostslice; old complete language result becomes historical after client changes.
-- Five-second physicalB,12sourcekind,fullgenerator/platform/main remain separate; cooperativeclosing not a proof of physicalstop.
+- Original a634/193e790 evidence and finalA/da873 native13input are separate source
+  epochs; no old whole result is relabelled as newer source.
+- Session extension only create/load/close; list is official protocolinventory without
+  accepted runtime advertisement, save is automatic projection not public new operation.
+- RunHandle.close uses canonical cancel/wait before closing the local subscription
+  (TS only if nonterminal; PY/Java always attempt); it is not a Hostrun/close wire
+  or Host record retirement. get is snapshot; events/replay/ACK are stream observation.
+- A samekey mapping is connection/generation scoped, not restartdurable idempotency
+  or a second execution/terminal authority.
+- New Java negotiation/frame bugs are independent defects outside this Hostslice;
+  old complete language result becomes historical after client changes.
+- Five-second physicalB,12sourcekind,fullgenerator/platform/main remain separate;
+  cooperativeclosing not a proof of physicalstop.
 ---
 
 # ACP、Agent/Session/Run与A幂等有限观察
@@ -63,3 +78,7 @@ B5秒实际物理工作未停而claim清理原宽TaskFinding依旧open；12sourc
 ## 尚未提交的原始反例资料
 
 docs/sdk/governance/evidence/session-run-idempotency-counterexample/facts.json, docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json, docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json 属实际原before/diagnostic资料，尚未入本次8763，故不伪该Git source_refs。原发现/反例epoch及业务义务保留，模型跨已提交实现与native来源不杜撰旧raw到新commit。
+
+## 原始反例的真实提交来源补齐
+
+前文三个未Git资料只是原8763观察时事实；后Root将原A11facts/script/log/输入与Steer19sourceclassreceipts于真实b10f提交，当前observed_b10f和新增8refs精确读取原字节。原Arepair源码8763、da13inputs/native及old193e/ebDiag行不改运行time或三链支持，不称该档案commit产生新执行。FrameworkSteer根修复用公开已发布a634仓库取证/ADR0084，不把Fsource伪放SDKtree。

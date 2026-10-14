@@ -23,6 +23,7 @@ evidence_refs:
 - evidence.sdk-java-host-early-exit-verification
 - evidence.sdk-official-current-language-gate
 - evidence.sdk-official-factory-final-language-gate
+- evidence.sdk-protocol-finite-observation
 finding_refs:
 - finding.sdk-ack-submission-consumption
 - finding.sdk-inventory-acceptance-authority
@@ -46,6 +47,14 @@ audit_refs:
 - audit.sdk-java-stdio-close-specific-rereview
 - audit.sdk-ack-recovery-rereview
 - audit.sdk-java-host-early-exit-rereview
+- audit.sdk-protocol-finite-trigger-input
+- audit.sdk-protocol-finite-result-side-effect
+- audit.sdk-protocol-finite-state-authority
+- audit.sdk-protocol-finite-data-durability
+- audit.sdk-protocol-finite-time-lifecycle
+- audit.sdk-protocol-finite-failure-concurrency
+- audit.sdk-protocol-finite-permission-external
+- audit.sdk-protocol-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -64,7 +73,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-trigger-input
-    review_scope: Named trigger_input source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named trigger_input source obligations actually examined, C0/I0/M0;
+      mapped is not all-family verified or SDK main acceptance.
   client-lifecycle-result-side-effect:
     status: mapped
     source_refs:
@@ -80,7 +90,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-result-side-effect
-    review_scope: Named result_side_effect source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named result_side_effect source obligations actually examined, C0/I0/M0;
+      mapped is not all-family verified or SDK main acceptance.
   client-lifecycle-state-authority:
     status: mapped
     source_refs:
@@ -96,7 +107,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-state-authority
-    review_scope: Named state_authority source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named state_authority source obligations actually examined, C0/I0/M0;
+      mapped is not all-family verified or SDK main acceptance.
   client-lifecycle-data-durability:
     status: mapped
     source_refs:
@@ -112,7 +124,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-data-durability
-    review_scope: Named data_durability source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named data_durability source obligations actually examined, C0/I0/M0;
+      mapped is not all-family verified or SDK main acceptance.
   client-lifecycle-time-lifecycle:
     status: mapped
     source_refs:
@@ -128,7 +141,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-time-lifecycle
-    review_scope: Named time_lifecycle source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named time_lifecycle source obligations actually examined, C0/I0/M0;
+      mapped is not all-family verified or SDK main acceptance.
   client-lifecycle-failure-concurrency:
     status: mapped
     source_refs:
@@ -144,7 +158,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-failure-concurrency
-    review_scope: Named failure_concurrency source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named failure_concurrency source obligations actually examined,
+      C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
   client-lifecycle-permission-external:
     status: mapped
     source_refs:
@@ -160,7 +175,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-permission-external
-    review_scope: Named permission_external source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named permission_external source obligations actually examined,
+      C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
   client-lifecycle-contract-evidence:
     status: mapped
     source_refs:
@@ -176,7 +192,8 @@ scenarios:
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-contract-evidence
-    review_scope: Named contract_evidence source obligations actually examined, C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+    review_scope: Named contract_evidence source obligations actually examined, C0/I0/M0;
+      mapped is not all-family verified or SDK main acceptance.
   behavior-lifecycle-failure:
     status: mapped
     source_refs:
@@ -205,16 +222,17 @@ scenarios:
       have been inspected and linked. Mapped records the model, not bug-free/runtime/main
       closure; open Findings remain explicit.
   family-value:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-protocol/src/scalar.rs
     behavior_refs:
     - behavior.sdk-family-value
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-protocol-finite-observation
+    review_scope: Closed wire/typedvalue namedlossless and invalid inputs examined;Windowsnative/fullacceptedidentity12gen
+      boundary remains, noAllRustinventory promise.
   family-intrinsic:
     status: needs_review
     source_refs:
@@ -234,6 +252,137 @@ scenarios:
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+  protocol-finite-trigger-input:
+    status: mapped
+    source_refs: &id001
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-protocol/src/scalar.rs
+    - echo-sdk-protocol/src/error.rs
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-trigger-input
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-result-side-effect:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-result-side-effect
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-state-authority:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-state-authority
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-data-durability:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-data-durability
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-time-lifecycle:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-time-lifecycle
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-failure-concurrency:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-failure-concurrency
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-permission-external:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-permission-external
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-contract-evidence:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-contract-evidence
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
 ---
 
 # 三语言与无损值
@@ -303,3 +452,7 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## 原已保存源码出处 (569 historical)
 
 56929154c1851473e9e4837901b610cecf001b2d : sdks/typescript/test/lsp-host.test.js, sdks/python/tests/test_lsp_diagnostics_host.py. 这两份测试在原SDKSnapshot可恢复，不在本次76601中；原LSP行为与断言义务保留，不伪装为新提交测试源，不宣称8lens审查替代全LSP契约生成验收。
+
+## Protocol源切点的后继关系
+
+旧Mapobservation/其它族原场景不盲改新版。新8protocolfinite scenes用原已有kernel路径定位，相应622d Evidence/Audit明确newvalidators与initfailureowner truebefore/after，不能catalog/count推allcap或latestwhole。特定广告缺陷局部resolved，statusmapped为具名审查模型不是全globalverified。

@@ -89,3 +89,7 @@ SDK Host 已精确依赖已发布框架 `be5f0a84`，八个框架包来自同一
 ## ACP与Agent/Session/Run有界收口
 
 原frameworkFinal实际8lens和approvedA修复/native证据按真实8763/da切点回收，标准/plainhello、typedmethods/runtimecreate/load/close/get/wait/steer/replay、oneauthority/close-debt/recovery界限有限mapped/examined。Sessionlist官方inventory不advertise/save自动投影，不新义务；localRunclose调用canonicalcancel/wait再关订阅，不直接退役Hostrecord。A同连接generation publication幂等具体gap已本地resolved，新Java协商/shape缺陷保持open；Bphysical/12sourcekind/fullgenerator/platform/main独立，Behavior仍needs_review，不把运行门禁count反推全capcovered。
+
+## Protocol后继有限收口
+
+现有ACP/standard/value与客户端kernel角色经SDKcap实际8lens source审/新广告shape+initowner原强验证及有限artifactreview具名examined，观察真实622d。原Javaoverflow/member过滤/limits与capsshape缺陷、失败initialize原stdio漏owner具体三链已closed，NegFindinglocalresolved。源码/真实6before与7afterOnly/TS37PY31J21PY25 cuts原样保，旧782whole不新验收；Windowsnative/fullproducer12/Bphysical/新currentwhole及SDKmain仍独立，不扩Rust全部identity/新字段权限。

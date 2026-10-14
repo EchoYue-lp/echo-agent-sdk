@@ -14,6 +14,7 @@ rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
 - evidence.sdk-acp-agent-run-finite-observation
+- evidence.sdk-protocol-finite-observation
 finding_refs:
 - finding.sdk-negotiation-response-validation
 audit_refs:
@@ -25,6 +26,14 @@ audit_refs:
 - audit.sdk-acp-agent-run-finite-failure-concurrency
 - audit.sdk-acp-agent-run-finite-permission-external
 - audit.sdk-acp-agent-run-finite-contract-evidence
+- audit.sdk-protocol-finite-trigger-input
+- audit.sdk-protocol-finite-result-side-effect
+- audit.sdk-protocol-finite-state-authority
+- audit.sdk-protocol-finite-data-durability
+- audit.sdk-protocol-finite-time-lifecycle
+- audit.sdk-protocol-finite-failure-concurrency
+- audit.sdk-protocol-finite-permission-external
+- audit.sdk-protocol-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -272,6 +281,137 @@ scenarios:
     review_scope: ActualframeworkFinal eight-lens finite source review, original193e
       and newdaA distinct; invalid hello/error shape newclient finding notpretendclosed;
       no sessionlist/save/runclose API invention.
+  protocol-finite-trigger-input:
+    status: mapped
+    source_refs: &id001
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-protocol/src/scalar.rs
+    - echo-sdk-protocol/src/error.rs
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-trigger-input
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-result-side-effect:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-result-side-effect
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-state-authority:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-state-authority
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-data-durability:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-data-durability
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-time-lifecycle:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-time-lifecycle
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-failure-concurrency:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-failure-concurrency
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-permission-external:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-permission-external
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
+  protocol-finite-contract-evidence:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-acp
+    - behavior.sdk-family-standard
+    - behavior.sdk-family-value
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
+    audit_refs:
+    - audit.sdk-protocol-finite-contract-evidence
+    review_scope: Existing mapkernel observation preserved; successor622d validator/initowner
+      source and proofs in exactlinkedEvidence/Audit; old782whole historical;Windows/B12/gen/main
+      explicit.
 ---
 
 # ACP 与协商
@@ -337,3 +477,7 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## 当前有限ACP/SessionRun范围
 
 sharedEvidence/8Audit指真实8763代码和准确菜单：Sessioncreate/load/close、Runget/snapshot、eventfeedreplayACK/localobserverclose，官方list库存不advertise自动save非publicRPC。Hostcreationgate/turn/RunEntry/ledger/receipt权威保，publicationA同连接generation不restartdurable；原source8lens仅具名examined，协商newJava/limitsbug原Findingopen、physicalB/12/currentnewclientwhole/platform/main独立。
+
+## Protocol源切点的后继关系
+
+旧Mapobservation/其它族原场景不盲改新版。新8protocolfinite scenes用原已有kernel路径定位，相应622d Evidence/Audit明确newvalidators与initfailureowner truebefore/after，不能catalog/count推allcap或latestwhole。特定广告缺陷局部resolved，statusmapped为具名审查模型不是全globalverified。
