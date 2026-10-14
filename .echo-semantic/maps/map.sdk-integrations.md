@@ -68,6 +68,7 @@ finding_refs:
 - finding.sdk-tool-artifact-context-propagation
 - finding.sdk-clinical-trials-total-count-request
 - finding.sdk-chart-dimension-integer-loss
+- finding.sdk-git-branch-switch-dirty-path-overwrite
 audit_refs:
 - audit.sdk-computation-50-rereview
 - audit.sdk-task-memory-workflow-finite-trigger-input
@@ -503,12 +504,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-git
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
+    unknown: 已实际Git有限8lens源码审发现a634 branch switch将分支名作路径恢复，可能覆盖同名dirty tracked文件；具体Finding
+      open。原status/diff具名证据不覆盖此窗口，log/blame/commit/worktree更多消费补证仍限原接受范围。
+    next_step: 沿同一framework GitTool修switch并在临时fixture验证分支/文件/refs副作用，精确published pin后SDK三语言消费；不靠SDK重写Git权威。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
+    finding_refs:
+    - finding.sdk-git-branch-switch-dirty-path-overwrite
   family-database:
     status: mapped
     source_refs:
@@ -1027,3 +1030,7 @@ sdks/typescript/test/lsp-diagnostics-host.test.js, sdks/python/tests/test_lsp_di
 ## 当前Integration八视角范围
 
 原12family与2support角色scope按bd8真实Git观察，8审计具名examined、Map入口mapped；先前Task/Tool组后继Audit各自版本不改，原family其余范围/unknown/开放Finding继续保。memoryvolatile/Delivery8opsnonDurable、State7/Trace17、A2Afuturegen非restart/localSSE非remotephysical/Testingvalue非Mock必须按具体表，不以count或Catalog闭合。
+
+## 后继 Git 分支切换实际源码审结果
+
+framework_final_review 新有界八视角原source审 C0/I1/M0；具体 finding.sdk-git-branch-switch-dirty-path-overwrite 保open。a634 checkout -- target 被解释为路径恢复，不是分支切换，真实反例尚待执行，不能把静态确定反例写成executed RED。原Git已采status/diff/branch指定refs证据及旧审限制保持，当前缺口由此具名实现义务承接，不再用whole/main待验解释全部未知。SDK仍原薄adapter；新框架修复尚未发布或消费验证，不引用其它builtin10审作本族通过。
