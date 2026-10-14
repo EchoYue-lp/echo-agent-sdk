@@ -1,0 +1,80 @@
+2026-10-14T07:02:34.092927Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(14) method=_echo_agent/run/close error=Error { code: -32601: Method not found, message: "Method not found", data: Some(String("_echo_agent/run/close")) }
+{
+  "exitCode": 1,
+  "caseCount": 2,
+  "cases": [
+    {
+      "id": "session-same-key-and-changed-payload",
+      "first": {
+        "session": {
+          "id": "session-8f530aad-d1d9-47e6-b686-3d38920f751d",
+          "generation": "1",
+          "kind": "session"
+        },
+        "task_run": {
+          "id": "task_run-9ea9baf8-9788-49b1-9e51-facd0e53d349",
+          "generation": "1",
+          "kind": "task_run"
+        },
+        "acp_session_id": "sess_28e5c764-5ab9-4368-b626-e5f16f3e18b2"
+      },
+      "repeat": {
+        "session": {
+          "id": "session-feca1fc6-10c9-4bef-bc92-a83fba1f5a22",
+          "generation": "1",
+          "kind": "session"
+        },
+        "task_run": {
+          "id": "task_run-58796f8a-5ab5-437e-9b51-e0793eb2a3d7",
+          "generation": "1",
+          "kind": "task_run"
+        },
+        "acp_session_id": "sess_5a10998f-2836-4f26-8de7-1445b2fbccfd"
+      },
+      "changedPayload": {
+        "session": {
+          "id": "session-cbd0e9d3-47b3-409a-89f5-aac22fe9e1da",
+          "generation": "1",
+          "kind": "session"
+        },
+        "task_run": {
+          "id": "task_run-85c9eec2-e0cb-4ef0-8bbb-03aabf93dd01",
+          "generation": "1",
+          "kind": "task_run"
+        },
+        "acp_session_id": "sess_48819a38-b5c2-459e-802d-1ddb2ba4f04f"
+      },
+      "sameHandle": false,
+      "sameACP": false
+    },
+    {
+      "id": "session-key-after-session-close",
+      "closed": {
+        "id": "session-8f530aad-d1d9-47e6-b686-3d38920f751d",
+        "generation": "1",
+        "kind": "session"
+      },
+      "retry": {
+        "session": {
+          "id": "session-a803e13c-7500-45e4-922c-a49672f6652f",
+          "generation": "1",
+          "kind": "session"
+        },
+        "task_run": {
+          "id": "task_run-6d22654b-747a-4835-a28b-49a8d186145b",
+          "generation": "1",
+          "kind": "task_run"
+        },
+        "acp_session_id": "sess_67a6b252-f966-4b33-9f88-d410b6c1c787"
+      }
+    }
+  ],
+  "providerCallCount": 3,
+  "fatal": {
+    "code": "transport_error",
+    "message": "Method not found",
+    "operation": "_echo_agent/run/close",
+    "retryable": "never",
+    "details": null
+  }
+}

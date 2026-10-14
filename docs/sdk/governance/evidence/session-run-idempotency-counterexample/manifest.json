@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "archiveKind": "minimal exact selection of original Admin counterexample",
+  "originalAdminManifestSHA256": "2d9855f88c04e43ae6a08bfd7d6eba6d49eb16327b8bd616abac7b920e7241fd",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2055,
+      "sha256": "ea88a5afef854f30f79edc9f462cd0f5487ef461a891baa79cbd78de5ad518ec"
+    },
+    {
+      "path": "admin-original-manifest.json",
+      "bytes": 9406,
+      "sha256": "2d9855f88c04e43ae6a08bfd7d6eba6d49eb16327b8bd616abac7b920e7241fd"
+    },
+    {
+      "path": "facts.json",
+      "bytes": 3195843,
+      "sha256": "d1658d4c77694b7f160d2c51874a72a4570cdf649e16a9c212de71d1bb2c0a8e"
+    },
+    {
+      "path": "first-attempt/facts.json",
+      "bytes": 1915779,
+      "sha256": "99545e923e07d1e502feeaf73e88a412ce313ff12e7080d6d876282ac775f473"
+    },
+    {
+      "path": "first-attempt/probe.log",
+      "bytes": 2468,
+      "sha256": "7e94412e4ddbf52831612af111485dcd142a7d9f34eefc28a9fe1050f9df1558"
+    },
+    {
+      "path": "first-attempt/probe.mjs",
+      "bytes": 5987,
+      "sha256": "367edeaf58bf7be86071b653b2ac84f8635c54c71abbc69e25218c3050742c0c"
+    },
+    {
+      "path": "official-reference-provenance.json",
+      "bytes": 791,
+      "sha256": "13343ed105eec5b1d83c8d38a5116870aa3f92f6b5f38aadf0039cd32cbaead6"
+    },
+    {
+      "path": "probe.log",
+      "bytes": 8146,
+      "sha256": "7bf353d0f72943801b3794a671c1de8d394da0cf23cbf5b83c9183a7bdc1457b"
+    },
+    {
+      "path": "probe.mjs",
+      "bytes": 6173,
+      "sha256": "825677ad5fffe4f5aa13f41437de363a28187eb44c01d7ecd1d70f20985f592d"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 2727,
+      "sha256": "c8b9a96001874d78a4b86b4446219c82e3ead0d7281154ffbbf42702f10b6cac"
+    }
+  ]
+}

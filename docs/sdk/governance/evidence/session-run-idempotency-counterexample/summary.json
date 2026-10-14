@@ -1,0 +1,42 @@
+{
+  "status": "four bounded public-request observations completed; no SDK production patch",
+  "exitCode": 0,
+  "hostSHA256": "193e49b8557db9b746a1cc8c6f5cf30bb6d3154a630562f7ef8551b949e878d1",
+  "cases": [
+    {
+      "id": "session-same-key-and-changed-payload",
+      "scope": "same Agent for Session key; exact same Session for Run key",
+      "observations": "same key identical payload -> different handle and ACP identities; changed cwd -> different Session, no conflict"
+    },
+    {
+      "id": "session-key-after-session-close",
+      "scope": "same Agent for Session key; exact same Session for Run key",
+      "observations": "original Session close -> same key creates new Session"
+    },
+    {
+      "id": "run-key-after-completion-change-and-close",
+      "scope": "same Agent for Session key; exact same Session for Run key",
+      "observations": "same key and same input -> new Run after completion with second physical LLM callback; changed input -> new Run, no key conflict; public RunHandle.close is local and retry -> new turn; four physical callbacks"
+    },
+    {
+      "id": "run-key-concurrent-original-model-held",
+      "scope": "same Agent for Session key; exact same Session for Run key",
+      "observations": "duplicate same key while original model held -> invalid_request after_delay active Prompt Turn, no receipt replay; only one new model callback"
+    }
+  ],
+  "firstAttempt": "preserved first-attempt source/log/facts/work: script mistakenly sent unsupported run/close; transport_error Method not found exit1, not classified as product idempotency defect",
+  "productionInputs": {
+    "echo-sdk-protocol/src/methods.rs": "9e9deb481eb7850a039fc930971a2f9363db6e7905490165121dd28a57641000",
+    "echo-sdk-host/src/core_profile/handler.rs": "fa6a744e6300c3be3c509b6cfaf88b40301e40a8f8746122c6e0109d074ff2cd",
+    "sdks/typescript/dist/index.js": "a3dad4e0d6d489af7d14c427d1e8b0b6e7e5a18a0e13b1db491ee6a13e771404",
+    "sdks/typescript/dist/client.js": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+    "sdks/shared/testing/memory_permission_fixture.py": "60004dc5e0febe2d81c5ec870e413a3c4dbd6e3b66c76b67996e5718e1e73f58"
+  },
+  "limitations": [
+    "Same-key replay/fingerprint/tombstone policy not assumed or implemented",
+    "Model callback records are actual registered LlmClient provider effects, not downstream business tool side effects",
+    "Fresh Session factory instances are established by distinct ACP/session handles and persisted session-index entries; no synthetic factory callback counter",
+    "No closed Agent cross-generation test or product persistence guarantee inferred",
+    "Four bounded cases; no Cargo/Maven or production code changes"
+  ]
+}

@@ -141,3 +141,6 @@ docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/07-worksp
 docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/08-ci-default-protocol.log -diff
 docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/09-ci-default-host.log -diff
 docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log -diff
+
+# Original Maven failure output retains its exact whitespace.
+docs/sdk/governance/evidence/run-steer-native/java-original/focused.log -diff
