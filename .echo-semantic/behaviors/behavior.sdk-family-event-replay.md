@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-events-recovery
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: cd5b78467f77ac28919cf9dda6877662bed744f4
 code_refs:
 - echo-sdk-host/src/core_profile/events.rs
 - echo-sdk-host/src/core_profile/handler.rs
@@ -25,6 +25,7 @@ evidence_refs:
 - evidence.sdk-parent-driver-candidate-verification
 - evidence.sdk-ack-recovery-verification
 - evidence.sdk-gap-watermark-host-verification
+- evidence.sdk-events-resources-finite-observation
 finding_refs: []
 ---
 
@@ -71,7 +72,7 @@ snapshot ACK 与 page cursor ACK 后只续发已覆盖水位之后事件；三�
 
 实际来源：`echo-sdk-host/src/core_profile/events.rs#real_journal_retention_page_authorizes_only_its_returned_watermark`；`echo-sdk-host/src/core_profile/events.rs#replay_publication_failure_and_empty_future_page_grant_no_ack_coverage`；`echo-sdk-host/tests/core_profile_e2e.rs#ack_window_snapshot_ack_resumes_strictly_after_watermark`；`echo-sdk-host/tests/core_profile_e2e.rs#consumed_single_replay_page_ack_resumes_live_after_page_cursor`；`echo-sdk-host/tests/core_profile_e2e.rs#consumed_multiple_replay_page_ack_resumes_live_after_page_cursor`；`sdks/typescript/test/gap-ack-host.test.js`；`sdks/python/tests/test_gap_ack_host.py`；`sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java`。
 
-仍缺：journal identity替换/错generation的明确故障场景，以及正式pin重启回放和已识别风险的独立复审仍待；原生prune及指定enqueue失败边界已有候选断言，不列为未验证。 published framework pin、最后变更后的独立复审和精确main验收
+原569阶段缺口（历史，当前见后继有限审查）：journal identity替换/错generation的明确故障场景，以及正式pin重启回放和已识别风险的独立复审仍待；原生prune及指定enqueue失败边界已有候选断言，不列为未验证。 published framework pin、最后变更后的独立复审和精确main验收
 仍待；本证据不证明未列出的生命周期、字段或错误组合，也不自动扩大accepted合同。
 
 ## 裁决记录
@@ -95,3 +96,11 @@ Candidate assertion evidence is now preserved as original receipt/source fingerp
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前有界审查与明确剩余
+
+本对象观察绑定真实cd5，所列原运行源码69b在cd5逐Gitblob相同；新Session/RunA实施已变handler/handles/state，不能以本观察宣称最新mutable行为已验证。八份audit.sdk-events-resources-finite-*记录ACK原作者实际只读审查；作者身份不冒独立review，Host events/stream/client各原独立scope和新liveJournal当前Tool独审范围明确保留。
+
+原#120、ACK消费与stream具体缺陷三链resolved继续有效，不重复造关闭对象或操作外部Issue。新增liveJournal场景证明settledRun且Host/connection仍活时目录换代两次明确replay_unavailable/after_delay、原Runreceipt/peerSession完整page不变，restore同inode/原两fileSHA后完整page相同；三语言12/12/9零skip。它是既有正确失败路径补证，不是生产redgreen；不扩为activewritepartialcrash或任意网络故障。
+
+已接受event-replay及共享资源stream的入口、单一authority、正常生命周期/具名错误和恢复已有finiteexamined闭包；映射仅boundedmodel，Behavior保持needs_review，八个全局风险和baseline不因此全covered。宽cleanup与5秒B保持原Finding理由，12身份/完整生成/平台/main独立；其它resourcefamily/sourceoperation未审方法不从这条共享owner路径泛推全部无损。

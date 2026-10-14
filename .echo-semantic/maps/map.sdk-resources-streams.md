@@ -4,7 +4,7 @@ id: map.sdk-resources-streams
 kind: capability_map
 title: 资源、流、bounded transport
 risk: high
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: cd5b78467f77ac28919cf9dda6877662bed744f4
 boundary_refs:
 - boundary.sdk-resources-streams
 behavior_refs:
@@ -15,6 +15,7 @@ evidence_refs:
 - evidence.sdk-stream-producer-verification
 - evidence.sdk-channel-resource-admission
 - evidence.sdk-sandbox-natural-eof-verification
+- evidence.sdk-events-resources-finite-observation
 finding_refs:
 - finding.sdk-cleanup-retry-owner
 - finding.sdk-family-handle-argument-projection
@@ -25,6 +26,14 @@ finding_refs:
 audit_refs:
 - audit.sdk-stream-producer-settlement-rereview
 - audit.sdk-channel-resource-admission-rereview
+- audit.sdk-events-resources-finite-trigger-input
+- audit.sdk-events-resources-finite-result-side-effect
+- audit.sdk-events-resources-finite-state-authority
+- audit.sdk-events-resources-finite-data-durability
+- audit.sdk-events-resources-finite-time-lifecycle
+- audit.sdk-events-resources-finite-failure-concurrency
+- audit.sdk-events-resources-finite-permission-external
+- audit.sdk-events-resources-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 - map.sdk-events-recovery
@@ -42,7 +51,6 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/stream.rs#accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled
     - echo-sdk-host/src/core_profile/facade/stream.rs#cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence
     - echo-sdk-host/src/core_profile/facade/mod.rs#family_handle_argument_retains_opaque_resource_address
-    - sdks/typescript/test/lsp-host.test.js
     behavior_refs:
     - behavior.sdk-resources-streams
     finding_refs:
@@ -52,6 +60,129 @@ scenarios:
     review_scope: Entry, unique authority, normal lifecycle and named failure obligations
       have been inspected and linked. Mapped records the model, not bug-free/runtime/main
       closure; open Findings remain explicit.
+  finite-events-resources-trigger-input:
+    status: mapped
+    source_refs: &id001
+    - echo-sdk-host/src/core_profile/events.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/wire.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/bounded_stdio.rs
+    - echo-sdk-host/src/config.rs
+    - echo-sdk-protocol/src/event.rs
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-trigger-input
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
+  finite-events-resources-result-side-effect:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-result-side-effect
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
+  finite-events-resources-state-authority:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-state-authority
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
+  finite-events-resources-data-durability:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-data-durability
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
+  finite-events-resources-time-lifecycle:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-time-lifecycle
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
+  finite-events-resources-failure-concurrency:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-failure-concurrency
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
+  finite-events-resources-permission-external:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-permission-external
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
+  finite-events-resources-contract-evidence:
+    status: mapped
+    source_refs: *id001
+    behavior_refs:
+    - behavior.sdk-resources-streams
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+    audit_refs:
+    - audit.sdk-events-resources-finite-contract-evidence
+    review_scope: Actual original69b source audit; unchanged source restored in cd5;
+      finite livejournal native errors/isolation/restore added. Known physicalB and
+      current mutableA excluded.
 ---
 
 # 资源、流、bounded transport
@@ -80,7 +211,7 @@ Framework 拥有 Run/Task/Store 的事实与终态；Host 只拥有寻址、可�
 
 统一Registry验证资源kind/owner/generation并保留可重试cleanup owner；typed Handle参数仅投影完整DTO后回到原resource parser/Registry，不转换任意process-local值。stream唯一collector记录真实producer成功/错误，panic/abort/EOF不伪Complete；初次recv感知cancel，未交付terminal不提前消费sequence。accepted cancel与terminal commit在Registry锁下原子决定先后；failed cleanup/caller abort保留owner。quota/pending reservation、MCP同名exact Arc、manager关闭派生LSPclient不复活已有候选units/真实Host证据。
 
-仍缺：producer/next/cancel/terminal原子scope已局部resolved且独立复审；cleanup retry与typed handle argument具名Finding保留。Agent cascade、资源发布回滚及最终组合owner审查按现有明确合同分别处理，不能借stream局部通过宣称全资源无缺陷。
+原569阶段缺口（历史，当前见后继有限审查）：producer/next/cancel/terminal原子scope已局部resolved且独立复审；cleanup retry与typed handle argument具名Finding保留。Agent cascade、资源发布回滚及最终组合owner审查按现有明确合同分别处理，不能借stream局部通过宣称全资源无缺陷。
 
 ## 权限与敏感信息
 
@@ -113,3 +244,15 @@ producer/next/cancel/terminal原子scope已局部resolved且独立复审；clean
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 原历史测试出处
+
+56929154c1851473e9e4837901b610cecf001b2d 中保留 sdks/typescript/test/lsp-host.test.js。这些原测试和具名义务仍属于其已保存源码/收据，不伪装成cd5包含的源码；本次group审查由真实runtime69b、正式cd5证明和各原slice审查支持。
+
+## 当前有界审查与明确剩余
+
+本对象观察绑定真实cd5，所列原运行源码69b在cd5逐Gitblob相同；新Session/RunA实施已变handler/handles/state，不能以本观察宣称最新mutable行为已验证。八份audit.sdk-events-resources-finite-*记录ACK原作者实际只读审查；作者身份不冒独立review，Host events/stream/client各原独立scope和新liveJournal当前Tool独审范围明确保留。
+
+原#120、ACK消费与stream具体缺陷三链resolved继续有效，不重复造关闭对象或操作外部Issue。新增liveJournal场景证明settledRun且Host/connection仍活时目录换代两次明确replay_unavailable/after_delay、原Runreceipt/peerSession完整page不变，restore同inode/原两fileSHA后完整page相同；三语言12/12/9零skip。它是既有正确失败路径补证，不是生产redgreen；不扩为activewritepartialcrash或任意网络故障。
+
+已接受event-replay及共享资源stream的入口、单一authority、正常生命周期/具名错误和恢复已有finiteexamined闭包；映射仅boundedmodel，Behavior保持needs_review，八个全局风险和baseline不因此全covered。宽cleanup与5秒B保持原Finding理由，12身份/完整生成/平台/main独立；其它resourcefamily/sourceoperation未审方法不从这条共享owner路径泛推全部无损。

@@ -69,3 +69,7 @@ SDK Host 已精确依赖已发布框架 `be5f0a84`，八个框架包来自同一
 ## 三语言客户端生命周期横切收口（不是第42个accepted family）
 
 复用behavior.sdk-language-clients与map.sdk-language-clients，源码/正式材料绑定真实Git76601；8个具名客户端风险视角经独立实际source review均examined、C/I/M0。四客户端source精确SHA、790输入前后同及新官方a634完整语言退出0（TS308/PY375+18/J332/71XML/3quickstarts）相互对账；原failed98d714与TaskHTTP受控Connectionclose反例保留，不能拿后继成功抹原失败。TS/Java两个具体stdio owner问题按各repair/verification/rereview链局部resolved，不宣SDK main。family value/intrinsic或其它39族不因这个横切单元自动verified；剩余12身份/5秒B、完整生成与平台/main验收继续独立。
+
+## Events / resource streams 具名有界收口
+
+两原Map和三原Behavior继续唯一拥有此模型；event-replay为accepted family，resource stream是共享权威而非第42族。69b原运行source在cd5相同、8lens作者实际sourceaudit与原独立slices具名examined；live-journal三语言12/12/9补两次typed错误/peer隔离/同inode两文件SHA恢复。#120和stream既有具体resolved链不重开，原externalIssue/main与5秒B、宽cleanup、12source选择继续独立。最新SessionRunA代码变更没有借此旧Git观测称已验，未接受sourceoperation不扩承诺。
