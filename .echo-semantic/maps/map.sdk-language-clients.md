@@ -24,6 +24,7 @@ evidence_refs:
 - evidence.sdk-official-current-language-gate
 - evidence.sdk-official-factory-final-language-gate
 - evidence.sdk-protocol-finite-observation
+- evidence.sdk-integrations-finite-observation
 finding_refs:
 - finding.sdk-ack-submission-consumption
 - finding.sdk-inventory-acceptance-authority
@@ -55,6 +56,7 @@ audit_refs:
 - audit.sdk-protocol-finite-failure-concurrency
 - audit.sdk-protocol-finite-permission-external
 - audit.sdk-protocol-finite-contract-evidence
+- audit.sdk-integrations-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -234,7 +236,7 @@ scenarios:
     review_scope: Closed wire/typedvalue namedlossless and invalid inputs examined;Windowsnative/fullacceptedidentity12gen
       boundary remains, noAllRustinventory promise.
   family-intrinsic:
-    status: needs_review
+    status: mapped
     source_refs:
     - sdks/typescript/src/client.ts
     - sdks/typescript/src/wire.ts
@@ -247,11 +249,16 @@ scenarios:
     - contracts/sdk/accepted-external-contract.json
     behavior_refs:
     - behavior.sdk-family-intrinsic
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    - evidence.sdk-language-client-lifecycle-current
+    audit_refs:
+    - audit.sdk-integrations-finite-contract-evidence
+    - audit.sdk-language-client-lifecycle-contract-evidence
+    review_scope: 现accepted helper纯值codec与三语言具名构造/校验/完整payload读取是supporting角色，原Testing14
+      controltransport/purecodec明确，非inventory count=全部helper或Mock运行服务。
   protocol-finite-trigger-input:
     status: mapped
     source_refs: &id001
@@ -456,3 +463,9 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## Protocol源切点的后继关系
 
 旧Mapobservation/其它族原场景不盲改新版。新8protocolfinite scenes用原已有kernel路径定位，相应622d Evidence/Audit明确newvalidators与initfailureowner truebefore/after，不能catalog/count推allcap或latestwhole。特定广告缺陷局部resolved，statusmapped为具名审查模型不是全globalverified。
+
+## 已具真实有限源码审的当前模型入口
+
+- family-intrinsic：现accepted helper纯值codec与三语言具名构造/校验/完整payload读取是supporting角色，原Testing14 controltransport/purecodec明确，非inventory count=全部helper或Mock运行服务。
+
+本次将原“候选/whole/main待”通用模板收敛到具名原审范围mapped，并不升级Behavior verified。当前Map主observed保原版本；后继Evidence/Audit分别保存自己的真实源码审/执行切点。Git另新Important保needs_review具体Finding，B/12/Windows与最终交付独立。

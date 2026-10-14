@@ -30,6 +30,7 @@ evidence_refs:
 - evidence.sdk-tool-behavior-candidate
 finding_refs:
 - finding.sdk-git-branch-switch-dirty-path-overwrite
+- finding.sdk-git-worktree-source-poll-stack-overflow
 ---
 
 # SDK family git
@@ -106,3 +107,7 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## 后继 Git 分支切换实际源码审结果
 
 framework_final_review 新有界八视角原source审 C0/I1/M0；具体 finding.sdk-git-branch-switch-dirty-path-overwrite 保open。a634 checkout -- target 被解释为路径恢复，不是分支切换，真实反例尚待执行，不能把静态确定反例写成executed RED。原Git已采status/diff/branch指定refs证据及旧审限制保持，当前缺口由此具名实现义务承接，不再用whole/main待验解释全部未知。SDK仍原薄adapter；新框架修复尚未发布或消费验证，不引用其它builtin10审作本族通过。
+
+## 后继 worktree adapter 实际崩溃
+
+真实Host da873的worktree removal发生栈溢出，原OS栈及同binary反汇编指向SDK巨大async dispatch poll，非递归/新框架Gitauthority。具体 finding.sdk-git-worktree-source-poll-stack-overflow 保open；只私有future分区修复候选尚未执行新Host验证，不能用旧whole通过掩已发现fatal窗口。

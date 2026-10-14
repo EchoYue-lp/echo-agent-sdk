@@ -51,6 +51,8 @@ evidence_refs:
 - evidence.sdk-task-memory-workflow-finite-observation
 - evidence.sdk-tools-bridge-finite-observation
 - evidence.sdk-integrations-finite-observation
+- evidence.sdk-workflow-successor-candidate
+- evidence.sdk-rag-project-rules
 finding_refs:
 - finding.sdk-adapter-invalid-input
 - finding.sdk-delivery-exact-claim
@@ -69,6 +71,7 @@ finding_refs:
 - finding.sdk-clinical-trials-total-count-request
 - finding.sdk-chart-dimension-integer-loss
 - finding.sdk-git-branch-switch-dirty-path-overwrite
+- finding.sdk-git-worktree-source-poll-stack-overflow
 audit_refs:
 - audit.sdk-computation-50-rereview
 - audit.sdk-task-memory-workflow-finite-trigger-input
@@ -95,6 +98,7 @@ audit_refs:
 - audit.sdk-integrations-finite-failure-concurrency
 - audit.sdk-integrations-finite-permission-external
 - audit.sdk-integrations-finite-contract-evidence
+- audit.sdk-rag-scalar-rereview
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -126,7 +130,7 @@ scenarios:
       have been inspected and linked. Mapped records the model, not bug-free/runtime/main
       closure; open Findings remain explicit.
   family-memory:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -139,19 +143,16 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-memory
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-memory-permission-candidate
     - evidence.sdk-task-memory-workflow-finite-observation
-    review_scope: Task/Memory/Workflow finite material observes its actual02059 runtime
-      via linked Evidence/Audit; this map retains original observation for unrelated
-      families; memory/checkpoint volatile, contextnative gap andphysicalB remain.
+    review_scope: 真实Store A→B、Memory59具名操作/权限/typedfailure、同Agent当前服务已实际审；可定位accepted行为/唯一服务/有限失败。内存无额外跨进程durability承诺，不泛全部backend。
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-state-authority
   family-workflow:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -164,16 +165,13 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-workflow
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-workflow-successor-candidate
     - evidence.sdk-task-memory-workflow-finite-observation
-    review_scope: Task/Memory/Workflow finite material observes its actual02059 runtime
-      via linked Evidence/Audit; this map retains original observation for unrelated
-      families; memory/checkpoint volatile, contextnative gap andphysicalB remain.
+    review_scope: 原48/后继7accepted操作、checkpoint/type/claim、真实新graph LLM A→B已有限审；原pureRouter与新AgentNode分别定位，不承诺已建graph热换。物理B/12保独立。
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-state-authority
   family-delivery:
     status: mapped
     source_refs:
@@ -390,7 +388,7 @@ scenarios:
       examined, original790source restoredbd8 and later A2A native scope separately
       proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-telemetry:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -403,12 +401,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-telemetry
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-time-lifecycle
+    - audit.sdk-integrations-finite-result-side-effect
+    review_scope: 原稳定subscriber根修与SDK blocking-work原owner、真实export/flush/公开关闭具名spec复审三链已闭；不推所有未知secret/endpoint，原case/source各epoch保。
   family-topology:
     status: mapped
     source_refs:
@@ -505,13 +505,15 @@ scenarios:
     behavior_refs:
     - behavior.sdk-family-git
     unknown: 已实际Git有限8lens源码审发现a634 branch switch将分支名作路径恢复，可能覆盖同名dirty tracked文件；具体Finding
-      open。原status/diff具名证据不覆盖此窗口，log/blame/commit/worktree更多消费补证仍限原接受范围。
+      open。原status/diff具名证据不覆盖此窗口，log/blame/commit/worktree更多消费补证仍限原接受范围。 同时实际SDK大source
+      dispatcher poll导致worktree removal栈溢出，具体新Finding open，修复后必须同原RPC证明框架错误/活性。
     next_step: 沿同一framework GitTool修switch并在临时fixture验证分支/文件/refs副作用，精确published pin后SDK三语言消费；不靠SDK重写Git权威。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
     finding_refs:
     - finding.sdk-git-branch-switch-dirty-path-overwrite
+    - finding.sdk-git-worktree-source-poll-stack-overflow
   family-database:
     status: mapped
     source_refs:
@@ -659,7 +661,7 @@ scenarios:
       examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
       for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-content-guard:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -672,13 +674,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-content-guard
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-computation-50
+    audit_refs:
+    - audit.sdk-computation-50-rereview
+    review_scope: 原dispatch_content_guard调用唯一framework Guard，Unicode span/redact与保护文件实际oracle
+      source审；仅已接受动作/原pattern场景，无全secret策略或Agentrepair新配置。
   family-project-rules:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -691,11 +695,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-project-rules
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-rag-project-rules
+    - evidence.sdk-rag-scalar-verification
+    audit_refs:
+    - audit.sdk-rag-scalar-rereview
+    review_scope: 原RAG/ProjectRules32calls/13embeddingPOST、rank/Unicode/200/201及503坏JSON零indexmutation已具体审；不扩durable
+      restart或全部工程发现组合。
   family-testing:
     status: mapped
     source_refs:
@@ -717,7 +724,7 @@ scenarios:
       examined, original790source restoredbd8 and later A2A native scope separately
       proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-structured-output:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -730,12 +737,13 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-structured-output
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-computation-50
+    audit_refs:
+    - audit.sdk-computation-50-rereview
+    review_scope: 仅accepted validate、optional/完整结果/typedfailure原compute50真实源审。运行时repair未accepted，不把无APIconsumer变缺口。
   family-source-operation:
     status: mapped
     source_refs:
@@ -758,7 +766,7 @@ scenarios:
       examined, original790source restoredbd8 and later A2A native scope separately
       proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-invoke:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -771,12 +779,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-invoke
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-computation-50
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-trigger-input
+    review_scope: 只具名工具/Guard普通Session.invoke、位置绑定、canonical cause与完整值/19typederror及无effect。是这些consumer入口，不声称所有source
+      operations已审。
   integration-finite-trigger-input:
     status: mapped
     source_refs:
@@ -1034,3 +1045,19 @@ sdks/typescript/test/lsp-diagnostics-host.test.js, sdks/python/tests/test_lsp_di
 ## 后继 Git 分支切换实际源码审结果
 
 framework_final_review 新有界八视角原source审 C0/I1/M0；具体 finding.sdk-git-branch-switch-dirty-path-overwrite 保open。a634 checkout -- target 被解释为路径恢复，不是分支切换，真实反例尚待执行，不能把静态确定反例写成executed RED。原Git已采status/diff/branch指定refs证据及旧审限制保持，当前缺口由此具名实现义务承接，不再用whole/main待验解释全部未知。SDK仍原薄adapter；新框架修复尚未发布或消费验证，不引用其它builtin10审作本族通过。
+
+## 已具真实有限源码审的当前模型入口
+
+- family-memory：真实Store A→B、Memory59具名操作/权限/typedfailure、同Agent当前服务已实际审；可定位accepted行为/唯一服务/有限失败。内存无额外跨进程durability承诺，不泛全部backend。
+- family-workflow：原48/后继7accepted操作、checkpoint/type/claim、真实新graph LLM A→B已有限审；原pureRouter与新AgentNode分别定位，不承诺已建graph热换。物理B/12保独立。
+- family-telemetry：原稳定subscriber根修与SDK blocking-work原owner、真实export/flush/公开关闭具名spec复审三链已闭；不推所有未知secret/endpoint，原case/source各epoch保。
+- family-content-guard：原dispatch_content_guard调用唯一framework Guard，Unicode span/redact与保护文件实际oracle source审；仅已接受动作/原pattern场景，无全secret策略或Agentrepair新配置。
+- family-structured-output：仅accepted validate、optional/完整结果/typedfailure原compute50真实源审。运行时repair未accepted，不把无APIconsumer变缺口。
+- family-invoke：只具名工具/Guard普通Session.invoke、位置绑定、canonical cause与完整值/19typederror及无effect。是这些consumer入口，不声称所有source operations已审。
+- family-project-rules：原RAG/ProjectRules32calls/13embeddingPOST、rank/Unicode/200/201及503坏JSON零indexmutation已具体审；不扩durable restart或全部工程发现组合。
+
+本次将原“候选/whole/main待”通用模板收敛到具名原审范围mapped，并不升级Behavior verified。当前Map主observed保原版本；后继Evidence/Audit分别保存自己的真实源码审/执行切点。Git另新Important保needs_review具体Finding，B/12/Windows与最终交付独立。
+
+## 后继 worktree adapter 实际崩溃
+
+真实Host da873的worktree removal发生栈溢出，原OS栈及同binary反汇编指向SDK巨大async dispatch poll，非递归/新框架Gitauthority。具体 finding.sdk-git-worktree-source-poll-stack-overflow 保open；只私有future分区修复候选尚未执行新Host验证，不能用旧whole通过掩已发现fatal窗口。
