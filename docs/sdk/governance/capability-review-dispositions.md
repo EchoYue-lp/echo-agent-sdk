@@ -73,3 +73,7 @@ SDK Host 已精确依赖已发布框架 `be5f0a84`，八个框架包来自同一
 ## Events / resource streams 具名有界收口
 
 两原Map和三原Behavior继续唯一拥有此模型；event-replay为accepted family，resource stream是共享权威而非第42族。69b原运行source在cd5相同、8lens作者实际sourceaudit与原独立slices具名examined；live-journal三语言12/12/9补两次typed错误/peer隔离/同inode两文件SHA恢复。#120和stream既有具体resolved链不重开，原externalIssue/main与5秒B、宽cleanup、12source选择继续独立。最新SessionRunA代码变更没有借此旧Git观测称已验，未接受sourceoperation不扩承诺。
+
+## Task/Subagent、Memory、Workflow有限收口
+
+四现family的入口/唯一authority/生命周期/具名失败由02059源码观察和原790三native/四getter消费对应8lens作者审查支持，材料独审单列，不新contextfamily。TaskContext只nativecallbackrunid+四Hostgetter具体case；ContextInheritance纯值不称三nativehistorymemoryE2E、compressor消费不泛推所有hook。这一具体补证边界、内存无crossprocess承诺、5秒B、12字段身份和新A最终consumer/main保持分离。Task/Subagent场景mapped不提升全部Behaviorverified，既有历史例不删。

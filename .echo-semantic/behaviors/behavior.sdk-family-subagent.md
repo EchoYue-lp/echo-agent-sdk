@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-task-subagent
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 02059dd3014633a23c188e30e73b0634a8c5621d
 code_refs:
 - echo-sdk-host/src/core_profile/facade/task.rs
 - echo-sdk-host/src/core_profile/facade/task_runtime.rs
@@ -26,6 +26,7 @@ evidence_refs:
 - evidence.sdk-parent-driver-candidate-verification
 - evidence.sdk-task-subagent-candidate
 - evidence.sdk-stream-cancellation-routing-verification
+- evidence.sdk-task-memory-workflow-finite-observation
 finding_refs:
 - finding.sdk-task-resume-extension-invocation-conflict
 ---
@@ -70,7 +71,7 @@ short await 后再次 await 仍得到完整结果与 dispatch receipt；真实 d
 
 实际来源：`echo-sdk-host/tests/core_profile_e2e.rs#subagent_short_await_preserves_result_and_dispatch_receipt`；`echo-sdk-host/tests/core_profile_e2e.rs#subagent_family_dispatches_and_controls_live_attempts`；`echo-sdk-host/tests/extension_bridge_e2e.rs#same_factory_constructs_independent_instances_across_concurrent_sessions`。
 
-仍缺：全部 context DTO 三语言字段级 round-trip、quota rollback 与 exact attempt 竞争反例仍缺。 published framework pin、最后变更后的独立复审和精确main验收
+原569阶段缺口（历史，当前有限范围见后继段）：全部 context DTO 三语言字段级 round-trip、quota rollback 与 exact attempt 竞争反例仍缺。 published framework pin、最后变更后的独立复审和精确main验收
 仍待；本证据不证明未列出的生命周期、字段或错误组合，也不自动扩大accepted合同。
 
 ## 裁决记录
@@ -96,3 +97,11 @@ Four temporary shared true-Host scenarios per language are prepared/executed aga
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前Task/Memory/Workflow具名审查
+
+当前观测恢复真实02059，所选TaskRuntime/Subagent/memory/workflow/selector/sourceoperations等10文件与原审69b逐blob一致；currentfactory/coretests因意图A变化，原源定位不冒新A被审。CLI原实际8lens作者sourceaudit有限examined、无新增已证实缺陷，后经本材料独立质控；作者身份与独立review角色不混同。新sharedEvidence和8窄Audit按四acceptedfamily与原唯一authority明确scope，没有near-synonym contextfamily。
+
+原正式a634/790whole TaskJ4/WFcheckpointJ1/MemoryJ1/LLMWFJ3及三语强断言支持exactCAS、canonicaldeps、短await不耗结果、liveStore、checkpoint/claimack与streamcancel具名路径。Taskcontext四Host getter消费为runid/waiver/nonwaivedmissingresult/nondefaultpolicy；三nativeCallback仅runid来自SessionACP，不宣完整3fieldreverseDTO。ContextInheritance纯值不是livehistory/memory继承E2E；compressor真实注册消费不推全部三nativehook重入取消，这一具体支持性缺口保留。
+
+Behavior保持needs_review/场景mapped只表有限审查闭包。内存Store/checkpoint无额外crossprocessdurability保证，5秒physicalB/wideTaskFinding仍open、12sourceidentity仍待人，当前A已有批准但其实现后原生/全gate另切点。scope外未接受sourceoperation/构造器不纳新增义务，也不以‘所有组合未穷尽’否定已审能力路径。

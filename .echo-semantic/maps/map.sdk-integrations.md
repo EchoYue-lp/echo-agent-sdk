@@ -48,6 +48,7 @@ evidence_refs:
 - evidence.sdk-computation-50
 - evidence.sdk-managed-supporting-operation-boundary
 - evidence.sdk-rag-scalar-verification
+- evidence.sdk-task-memory-workflow-finite-observation
 finding_refs:
 - finding.sdk-adapter-invalid-input
 - finding.sdk-delivery-exact-claim
@@ -67,6 +68,14 @@ finding_refs:
 - finding.sdk-chart-dimension-integer-loss
 audit_refs:
 - audit.sdk-computation-50-rereview
+- audit.sdk-task-memory-workflow-finite-trigger-input
+- audit.sdk-task-memory-workflow-finite-result-side-effect
+- audit.sdk-task-memory-workflow-finite-state-authority
+- audit.sdk-task-memory-workflow-finite-data-durability
+- audit.sdk-task-memory-workflow-finite-time-lifecycle
+- audit.sdk-task-memory-workflow-finite-failure-concurrency
+- audit.sdk-task-memory-workflow-finite-permission-external
+- audit.sdk-task-memory-workflow-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -121,6 +130,10 @@ scenarios:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-memory-permission-candidate
+    - evidence.sdk-task-memory-workflow-finite-observation
+    review_scope: Task/Memory/Workflow finite material observes its actual02059 runtime
+      via linked Evidence/Audit; this map retains original observation for unrelated
+      families; memory/checkpoint volatile, contextnative gap andphysicalB remain.
   family-workflow:
     status: needs_review
     source_refs:
@@ -141,6 +154,10 @@ scenarios:
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-workflow-successor-candidate
+    - evidence.sdk-task-memory-workflow-finite-observation
+    review_scope: Task/Memory/Workflow finite material observes its actual02059 runtime
+      via linked Evidence/Audit; this map retains original observation for unrelated
+      families; memory/checkpoint volatile, contextnative gap andphysicalB remain.
   family-delivery:
     status: needs_review
     source_refs:
@@ -780,3 +797,7 @@ Workflow48行覆盖17/24已接受操作，原剩7项已有0744后继真实消费
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## Task/Memory/Workflow后继有限关系
+
+本Map仅新增memory/workflow两family的02059具名Evidence/Audit关系，其它integration族的原观察版本、未知与状态不变；不把本次作者源审扩大成全部MCP/LSP/Channel已验证。

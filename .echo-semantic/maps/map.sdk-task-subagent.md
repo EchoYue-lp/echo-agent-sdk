@@ -4,7 +4,7 @@ id: map.sdk-task-subagent
 kind: capability_map
 title: Task 与 Subagent
 risk: high
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 02059dd3014633a23c188e30e73b0634a8c5621d
 boundary_refs:
 - boundary.sdk-task-subagent
 behavior_refs:
@@ -15,12 +15,21 @@ rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
 - evidence.sdk-stream-cancellation-routing-verification
+- evidence.sdk-task-memory-workflow-finite-observation
 finding_refs:
 - finding.sdk-subagent-await-result
 - finding.sdk-task-control-locality
 - finding.sdk-task-runtime-store-authority
 - finding.sdk-task-resume-extension-invocation-conflict
-audit_refs: []
+audit_refs:
+- audit.sdk-task-memory-workflow-finite-trigger-input
+- audit.sdk-task-memory-workflow-finite-result-side-effect
+- audit.sdk-task-memory-workflow-finite-state-authority
+- audit.sdk-task-memory-workflow-finite-data-durability
+- audit.sdk-task-memory-workflow-finite-time-lifecycle
+- audit.sdk-task-memory-workflow-finite-failure-concurrency
+- audit.sdk-task-memory-workflow-finite-permission-external
+- audit.sdk-task-memory-workflow-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -45,7 +54,7 @@ scenarios:
       have been inspected and linked. Mapped records the model, not bug-free/runtime/main
       closure; open Findings remain explicit.
   family-task:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/task.rs
     - echo-sdk-host/src/core_profile/facade/task_runtime.rs
@@ -54,14 +63,15 @@ scenarios:
     - echo-sdk-protocol/src/methods.rs
     behavior_refs:
     - behavior.sdk-family-task
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-task-subagent-candidate
+    - evidence.sdk-task-memory-workflow-finite-observation
+    review_scope: Accepted family lifecycle, exact CAS/claim/result and named failures
+      examined; knownphysicalB and12sourceidentity migration remain explicit.
   family-subagent:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/task.rs
     - echo-sdk-host/src/core_profile/facade/task_runtime.rs
@@ -70,12 +80,213 @@ scenarios:
     - echo-sdk-protocol/src/methods.rs
     behavior_refs:
     - behavior.sdk-family-subagent
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-task-subagent-candidate
+    - evidence.sdk-task-memory-workflow-finite-observation
+    review_scope: Accepted family lifecycle, exact CAS/claim/result and named failures
+      examined; knownphysicalB and12sourceidentity migration remain explicit.
+  task-memory-workflow-finite-trigger-input:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-trigger-input
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
+  task-memory-workflow-finite-result-side-effect:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-result-side-effect
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
+  task-memory-workflow-finite-state-authority:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-state-authority
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
+  task-memory-workflow-finite-data-durability:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-data-durability
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
+  task-memory-workflow-finite-time-lifecycle:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-time-lifecycle
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
+  task-memory-workflow-finite-failure-concurrency:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-failure-concurrency
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
+  task-memory-workflow-finite-permission-external:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-permission-external
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
+  task-memory-workflow-finite-contract-evidence:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-task-subagent
+    - behavior.sdk-family-task
+    - behavior.sdk-family-subagent
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-contract-evidence
+    review_scope: Original69b taskauthority source restored02059; actual author finite8lens,
+      currentA excluded; original790 consumerproof and4getter scope retained.
 ---
 
 # Task 与 Subagent
@@ -104,7 +315,7 @@ Framework 拥有 Run/Task/Store 的事实与终态；Host 只拥有寻址、可�
 
 factory中的同一个TaskRevisionService供应CRUD及FacadeTaskController；controller仅转换metadata、claim/dispatch并调用framework服务，不拥有frontier或第二DAG validator。execution CAS preflight在副作用前拒CRUD-only后端；exact pause/cancel绑定canonical attempt，独立sibling继续，Completed result含absent/null区别。Subagent单collector保留join结果，短await超时后可再次await，不提前耗尽句柄；runtime失败经task/list保留origin_operation/cause。Hostcore31/bridge34中这些具名场景已执行。
 
-仍缺：正式三语言各四项DAG/control/短await场景已有证据；canonical result/执行次数增强与callback结算后继源独立归档。剩余已接受claim/context字段和framework parent-drop修复按各自具名义务对账，不扩大Task API。
+原569阶段缺口（历史，当前有限范围见后继段）：正式三语言各四项DAG/control/短await场景已有证据；canonical result/执行次数增强与callback结算后继源独立归档。剩余已接受claim/context字段和framework parent-drop修复按各自具名义务对账，不扩大Task API。
 
 ## 权限与敏感信息
 
@@ -137,3 +348,11 @@ TypeScript/Python/Java 对已接受能力暴露惯用接口，handle/error/value
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前Task/Memory/Workflow具名审查
+
+当前观测恢复真实02059，所选TaskRuntime/Subagent/memory/workflow/selector/sourceoperations等10文件与原审69b逐blob一致；currentfactory/coretests因意图A变化，原源定位不冒新A被审。CLI原实际8lens作者sourceaudit有限examined、无新增已证实缺陷，后经本材料独立质控；作者身份与独立review角色不混同。新sharedEvidence和8窄Audit按四acceptedfamily与原唯一authority明确scope，没有near-synonym contextfamily。
+
+原正式a634/790whole TaskJ4/WFcheckpointJ1/MemoryJ1/LLMWFJ3及三语强断言支持exactCAS、canonicaldeps、短await不耗结果、liveStore、checkpoint/claimack与streamcancel具名路径。Taskcontext四Host getter消费为runid/waiver/nonwaivedmissingresult/nondefaultpolicy；三nativeCallback仅runid来自SessionACP，不宣完整3fieldreverseDTO。ContextInheritance纯值不是livehistory/memory继承E2E；compressor真实注册消费不推全部三nativehook重入取消，这一具体支持性缺口保留。
+
+Behavior保持needs_review/场景mapped只表有限审查闭包。内存Store/checkpoint无额外crossprocessdurability保证，5秒physicalB/wideTaskFinding仍open、12sourceidentity仍待人，当前A已有批准但其实现后原生/全gate另切点。scope外未接受sourceoperation/构造器不纳新增义务，也不以‘所有组合未穷尽’否定已审能力路径。
