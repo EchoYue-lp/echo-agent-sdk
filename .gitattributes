@@ -1,0 +1,3 @@
+# Preserve archived diagnostic bytes; source and prose retain normal diff checks.
+docs/sdk/governance/evidence/task-fixture-explicit-close/**/*.log -diff
+docs/sdk/governance/evidence/task-fixture-explicit-close/fixture-explicit-close.patch -diff
