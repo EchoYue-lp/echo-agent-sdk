@@ -1,0 +1,3 @@
+FileAuthority identity: {'native_calls': 10, 'same_length_replacement_rejections': 2, 'both_files_unchanged_on_each_rejection': True, 'new_guard_can_append': True, 'authority': 'original framework file descriptor identity, not content snapshot', 'platform_scope': 'actual native filesystem identity observed on current host'} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/python-o0k9w9tp
+.
+1 passed in 2.22s

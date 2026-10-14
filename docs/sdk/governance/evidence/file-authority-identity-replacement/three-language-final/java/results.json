@@ -1,0 +1,489 @@
+{
+  "host" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-be5-chart-dimension-host",
+  "host_sha256" : "bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345",
+  "work" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643",
+  "closed" : true,
+  "rows" : [ {
+    "id" : "open-original",
+    "operation" : "echo_core::utils::fs::open_existing_regular_guard",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "e1e7a36c1cafefe19a9337ef4e0a8c9cb603e38cfb0e6e11e0635816aa9a69f6",
+        "base64" : "b25l8J+Zggo=",
+        "byte_length" : 8,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    } ],
+    "value" : {
+      "id" : "facade_resource-e0408547-fa6e-49df-a1b4-e76752f724bb",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    },
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "e1e7a36c1cafefe19a9337ef4e0a8c9cb603e38cfb0e6e11e0635816aa9a69f6",
+        "base64" : "b25l8J+Zggo=",
+        "byte_length" : 8,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    }
+  }, {
+    "id" : "length-original",
+    "operation" : "echo_core::utils::fs::matching_existing_regular_len",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "e1e7a36c1cafefe19a9337ef4e0a8c9cb603e38cfb0e6e11e0635816aa9a69f6",
+        "base64" : "b25l8J+Zggo=",
+        "byte_length" : 8,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    }, {
+      "id" : "facade_resource-e0408547-fa6e-49df-a1b4-e76752f724bb",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    } ],
+    "value" : "8",
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "e1e7a36c1cafefe19a9337ef4e0a8c9cb603e38cfb0e6e11e0635816aa9a69f6",
+        "base64" : "b25l8J+Zggo=",
+        "byte_length" : 8,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    }
+  }, {
+    "id" : "append-original",
+    "operation" : "echo_core::utils::fs::append_existing_matching",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "e1e7a36c1cafefe19a9337ef4e0a8c9cb603e38cfb0e6e11e0635816aa9a69f6",
+        "base64" : "b25l8J+Zggo=",
+        "byte_length" : 8,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    }, {
+      "id" : "facade_resource-e0408547-fa6e-49df-a1b4-e76752f724bb",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }, {
+      "kind" : "u64",
+      "value" : "8"
+    }, {
+      "kind" : "bytes",
+      "value" : {
+        "base64" : "eA"
+      }
+    }, "sync_data" ],
+    "value" : null,
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    }
+  }, {
+    "id" : "length-appended",
+    "operation" : "echo_core::utils::fs::matching_existing_regular_len",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    }, {
+      "id" : "facade_resource-e0408547-fa6e-49df-a1b4-e76752f724bb",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    } ],
+    "value" : "9",
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    }
+  }, {
+    "id" : "replace-same-length",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      },
+      "original-backup.txt" : null
+    },
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    }
+  }, {
+    "id" : "stale-length",
+    "operation" : "echo_core::utils::fs::matching_existing_regular_len",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    }, {
+      "id" : "facade_resource-e0408547-fa6e-49df-a1b4-e76752f724bb",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    } ],
+    "error" : {
+      "code" : "framework_error",
+      "message" : "filesystem operation failed: existing regular file identity changed; verified reopen required: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt",
+      "operation" : "echo_core::utils::fs::matching_existing_regular_len",
+      "retryable" : "never",
+      "handle" : null,
+      "details" : null
+    },
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    }
+  }, {
+    "id" : "stale-append",
+    "operation" : "echo_core::utils::fs::append_existing_matching",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    }, {
+      "id" : "facade_resource-e0408547-fa6e-49df-a1b4-e76752f724bb",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }, {
+      "kind" : "u64",
+      "value" : "9"
+    }, {
+      "kind" : "bytes",
+      "value" : {
+        "base64" : "YmFk"
+      }
+    }, "sync_data" ],
+    "error" : {
+      "code" : "framework_error",
+      "message" : "filesystem operation failed: existing regular file identity changed; verified reopen required: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt",
+      "operation" : "echo_core::utils::fs::append_existing_matching",
+      "retryable" : "never",
+      "handle" : null,
+      "details" : null
+    },
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    }
+  }, {
+    "id" : "old-descriptor-length",
+    "operation" : "echo_core::utils::fs::ExistingRegularFileGuard::len",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    },
+    "arguments" : [ {
+      "id" : "facade_resource-e0408547-fa6e-49df-a1b4-e76752f724bb",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    } ],
+    "value" : "9",
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    }
+  }, {
+    "id" : "open-replacement",
+    "operation" : "echo_core::utils::fs::open_existing_regular_guard",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    } ],
+    "value" : {
+      "id" : "facade_resource-527b7504-1878-4cf8-8abd-e4abf4a4d4fe",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    },
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    }
+  }, {
+    "id" : "length-replacement",
+    "operation" : "echo_core::utils::fs::matching_existing_regular_len",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    }, {
+      "id" : "facade_resource-527b7504-1878-4cf8-8abd-e4abf4a4d4fe",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    } ],
+    "value" : "9",
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    }
+  }, {
+    "id" : "append-replacement",
+    "operation" : "echo_core::utils::fs::append_existing_matching",
+    "before" : {
+      "guarded.txt" : {
+        "sha256" : "decfc0c23fdc69c90b521495673e20743fedf66c86413bbcaa3e97f27703baf3",
+        "base64" : "dHdv8J+Zggoh",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    },
+    "arguments" : [ {
+      "kind" : "path",
+      "value" : {
+        "encoding" : "utf8",
+        "path" : "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-7232900435035779643/guarded.txt"
+      }
+    }, {
+      "id" : "facade_resource-527b7504-1878-4cf8-8abd-e4abf4a4d4fe",
+      "generation" : "1",
+      "kind" : "facade_resource"
+    }, {
+      "kind" : "u64",
+      "value" : "9"
+    }, {
+      "kind" : "bytes",
+      "value" : {
+        "base64" : "eg"
+      }
+    }, "sync_data" ],
+    "value" : null,
+    "after" : {
+      "guarded.txt" : {
+        "sha256" : "de8fdc8ebf0181fe43535310d489f1f215cea31a0acba0c3cd0820ae391ec594",
+        "base64" : "dHdv8J+Zggoheg==",
+        "byte_length" : 10,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788103)"
+      },
+      "original-backup.txt" : {
+        "sha256" : "721922173c523f510ede2398d664137861835a213897042b7b863d60d5e7122b",
+        "base64" : "b25l8J+Zggp4",
+        "byte_length" : 9,
+        "device" : "java-basic-file-key",
+        "inode" : "(dev=1000010,ino=269788090)"
+      }
+    }
+  } ]
+}
