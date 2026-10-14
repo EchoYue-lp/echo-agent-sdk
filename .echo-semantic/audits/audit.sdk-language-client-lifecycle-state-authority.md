@@ -6,7 +6,8 @@ boundary_ref: boundary.sdk-language-clients
 lens: state_authority
 freshness: examined
 revision: 76601b242d7c354352f3b5c7d4bf099873746b14
-finding_refs: []
+finding_refs:
+- finding.sdk-factory-instance-routing
 challenges:
   named-current-client-obligation:
     revision: 76601b242d7c354352f3b5c7d4bf099873746b14
@@ -19,6 +20,17 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/manifest.json
+    evidence_refs:
+    - evidence.sdk-language-client-lifecycle-current
+  specific-factory-instance-routing:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - sdks/typescript/test/factory-host.test.js
+    - sdks/python/tests/test_factory_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/FactoryHostTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryHostTest.xml
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml
     evidence_refs:
     - evidence.sdk-language-client-lifecycle-current
 ---
@@ -48,3 +60,7 @@ ACK/Factory阶段完成/取消投影和 retained original owner 源已实际独�
 ## 未检查项
 
 上述限定scope之外的 framework Task物理结算/Store HTTP根因和所有未接受Rust identity；不新增审查分母。
+
+## factory-instance-routing具名复审范围
+
+原scope独立reviewer本session逐源码/实际native断言核对：三native5 distinct child/same descriptor、parallel closeA/B live/parent再构造、PY invalid factoryorigin stalegeneration零handler effect。Hostfactory_origin exactrouting与真实callback匹配，不用managedstore/LlmGraph代。 本条是原业务审查真实性回收，不另造engine执行。对应故障项可局部闭；主revision与原challenge仍保原76601观察，新challenge以ad实际提交源码/原运行收据定位，不把旧时间重标。

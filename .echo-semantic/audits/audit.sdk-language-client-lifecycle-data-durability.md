@@ -6,7 +6,8 @@ boundary_ref: boundary.sdk-language-clients
 lens: data_durability
 freshness: examined
 revision: 76601b242d7c354352f3b5c7d4bf099873746b14
-finding_refs: []
+finding_refs:
+- finding.sdk-language-consumption-ack
 challenges:
   named-current-client-obligation:
     revision: 76601b242d7c354352f3b5c7d4bf099873746b14
@@ -23,6 +24,17 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/manifest.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.GapAckHostTest.xml
+    evidence_refs:
+    - evidence.sdk-language-client-lifecycle-current
+  specific-language-consumption-ack:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - sdks/typescript/test/ack-submission.test.js
+    - sdks/python/tests/test_ack_submission.py
+    - sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.AckSubmissionTest.xml
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ExternalAckHostTest.xml
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml
     evidence_refs:
     - evidence.sdk-language-client-lifecycle-current
 ---
@@ -56,3 +68,7 @@ original-surefire AckSubmissionTest18、GapAckHostTest8，terminal replay/manage
 ## 原测试来源定位限制
 
 以下辅助测试源码未在76601提交，故不列为该Git的source_refs；其原运行/断言名与精确hash由790执行输入和原XML保留，未删除故障义务：sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java。原测试并未因缺blob而被宣称在该Git完整恢复。
+
+## language-consumption-ack具名复审范围
+
+原scope独立reviewer本session逐源码/实际native断言核对：原officialwriter completion提交消费而非fetch/nextpending就消费；gap不autoACK、显式snapshot/replaycoverage，failed/cancelledpending不commit、terminalcoverage自然EOF。ACKv4原独review+18/4/1强assert不是counts单证。 本条是原业务审查真实性回收，不另造engine执行。对应故障项可局部闭；主revision与原challenge仍保原76601观察，新challenge以ad实际提交源码/原运行收据定位，不把旧时间重标。

@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-language-client-lifecycle-current
 kind: evidence
-observed_at: 76601b242d7c354352f3b5c7d4bf099873746b14
+observed_at: ad35887c5ceb66865a714f3f2d1da86a9c35c903
 source_refs:
 - sdks/typescript/src/client.ts
 - sdks/python/src/echo_agent_sdk/client.py
@@ -21,14 +21,52 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
+- sdks/typescript/test/factory-host.test.js
+- sdks/python/tests/test_factory_host.py
+- sdks/java/src/test/java/com/echoagent/sdk/FactoryHostTest.java
+- sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryHostTest.xml
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml
+- sdks/java/src/main/java/com/echoagent/sdk/SessionHandle.java
+- sdks/java/src/main/java/com/echoagent/sdk/ExtensionRegistration.java
+- sdks/typescript/test/protocol-host.test.js
+- sdks/python/tests/test_protocol_host.py
+- sdks/python/tests/test_client_close_callbacks.py
+- sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolHostTest.xml
+- sdks/typescript/test/ack-submission.test.js
+- sdks/python/tests/test_ack_submission.py
+- sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.AckSubmissionTest.xml
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ExternalAckHostTest.xml
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml
+- sdks/typescript/src/errors.ts
+- sdks/java/src/main/java/com/echoagent/sdk/EchoAgentException.java
+- sdks/typescript/src/wire.ts
+- sdks/python/src/echo_agent_sdk/wire.py
+- sdks/java/src/main/java/com/echoagent/sdk/WireValues.java
+- sdks/typescript/test/wire.test.js
+- sdks/python/tests/test_wire.py
+- sdks/java/src/main/java/com/echoagent/sdk/JsonSupport.java
+- sdks/shared/fixtures/native-projection-invalid.json
+- sdks/typescript/test/protocol-integrity.test.js
+- sdks/python/tests/test_protocol_integrity.py
+- sdks/java/src/test/java/com/echoagent/sdk/ProtocolIntegrityTest.java
+- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml
 supports:
 - behavior.sdk-language-clients
 limitations:
-- Client wire error fidelity does not prove Host reverse Tool/LlmClient preserves Rust cancellation/timeout variants or Session/Run idempotency-key semantics; those separate adapter defects remain outside this closure.
-- Eight named client review lenses examined do not mean a successful whole-language gate or full SDK completion.
-- The original a634 whole command exited1 with a Task pause reverse Store HTTP error; its original71 XML and790 identical inputs are preserved.
-- Prior b89/3aa and earlier569/be5 proofs retain their epochs; no old execution is relabelled as this revision.
-- Accepted12 identity migration, five-second physical settlement, full generator, platform CI and SDK main remain separate.
+- Client wire error fidelity does not prove Host reverse Tool/LlmClient preserves
+  Rust cancellation/timeout variants or Session/Run idempotency-key semantics; those
+  separate adapter defects remain outside this closure.
+- Eight named client review lenses examined do not mean a successful whole-language
+  gate or full SDK completion.
+- The original a634 whole command exited1 with a Task pause reverse Store HTTP error;
+  its original71 XML and790 identical inputs are preserved.
+- Prior b89/3aa and earlier569/be5 proofs retain their epochs; no old execution is
+  relabelled as this revision.
+- Accepted12 identity migration, five-second physical settlement, full generator,
+  platform CI and SDK main remain separate.
 ---
 
 # 三语言客户端具名生命周期审查
@@ -54,3 +92,42 @@ limitations:
 ## 原取消路由证据出处 (historical)
 
 docs/sdk/governance/evidence/sdk-stream-cancellation-routing/final-source-manifest.json : 原早ACK消费源和取消地址断言保留其原证据SHA及切点，此文件尚未入本次76601，不冒充该Git的blob。
+
+## 五项旧客户端逻辑缺陷的精确闭合范围
+
+本次SDK capability独立reviewer逐原defect/refscope核实际业务修复、原namedconsumer断言和已完成source审，不只靠whole0或单一lifecycleAudit。现正文三链可同一个共享Evidence含repair/verification，但每项引用对应精确Audit视角；原failedrun及新negotiation/TS initcleanup独slice保持。
+
+### factory-instance-routing
+
+三native5 distinct child/same descriptor、parallel closeA/B live/parent再构造、PY invalid factoryorigin stalegeneration零handler effect。Hostfactory_origin exactrouting与真实callback匹配，不用managedstore/LlmGraph代。
+
+对应原运行/fixture引用：sdks/typescript/test/factory-host.test.js, sdks/python/tests/test_factory_host.py, sdks/java/src/test/java/com/echoagent/sdk/FactoryHostTest.java, sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java, docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryHostTest.xml, docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml。相关review视角：state-authority, failure-concurrency。原/sourcepatch执行切点和原缺陷cause保持，不声称语义观察ad提交时重新运行命令。
+
+### language-close-retry
+
+真实session/agent close以及registration/run失败重试后原callback继续live，不是仅nativeprocess closeFuture。保原owner直到确认、同ownerretry/coalescedwait；新TS initFailureCatch漏child另scope不被此局部闭合覆盖。
+
+对应原运行/fixture引用：sdks/java/src/main/java/com/echoagent/sdk/SessionHandle.java, sdks/java/src/main/java/com/echoagent/sdk/ExtensionRegistration.java, sdks/typescript/test/protocol-host.test.js, sdks/python/tests/test_protocol_host.py, sdks/python/tests/test_client_close_callbacks.py, sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java, docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolHostTest.xml。相关review视角：time-lifecycle, failure-concurrency。原/sourcepatch执行切点和原缺陷cause保持，不声称语义观察ad提交时重新运行命令。
+
+### language-consumption-ack
+
+原officialwriter completion提交消费而非fetch/nextpending就消费；gap不autoACK、显式snapshot/replaycoverage，failed/cancelledpending不commit、terminalcoverage自然EOF。ACKv4原独review+18/4/1强assert不是counts单证。
+
+对应原运行/fixture引用：sdks/typescript/test/ack-submission.test.js, sdks/python/tests/test_ack_submission.py, sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java, docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.AckSubmissionTest.xml, docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ExternalAckHostTest.xml, docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml。相关review视角：data-durability, failure-concurrency。原/sourcepatch执行切点和原缺陷cause保持，不声称语义观察ad提交时重新运行命令。
+
+### language-error-fidelity
+
+三actualHost stale_handle opaque完整handle与code/retryable/op/details保；ProtocolIntegrity从官方ACPerror解完整tuple。这里只客户端errorprojection，不原Rust远端Tool/LLM原因分类或新negotiation广告缺陷。
+
+对应原运行/fixture引用：sdks/typescript/src/errors.ts, sdks/python/src/echo_agent_sdk/client.py, sdks/java/src/main/java/com/echoagent/sdk/EchoAgentException.java, sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java, docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolHostTest.xml。相关review视角：result-side-effect。原/sourcepatch执行切点和原缺陷cause保持，不声称语义观察ad提交时重新运行命令。
+
+### wire-data-fidelity
+
+原13sharedinvalidcorpus三语严格拒nonstring/duplicate/missing/unknownmalformed；actualHost memory特殊__proto__/constructor+中文emoji原值exact不defaultempty。wire封闭代数与prototype安全，不把Java新advertarray静默drop当该closedwire已修。
+
+对应原运行/fixture引用：sdks/typescript/src/wire.ts, sdks/python/src/echo_agent_sdk/wire.py, sdks/java/src/main/java/com/echoagent/sdk/WireValues.java, sdks/typescript/test/wire.test.js, sdks/python/tests/test_wire.py, sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java。相关review视角：contract-evidence, result-side-effect。原/sourcepatch执行切点和原缺陷cause保持，不声称语义观察ad提交时重新运行命令。
+
+
+## 本次五缺陷观察的版本性质
+
+observed ad358是这次明确五defect复核与已保存历史收据的定位，不声称旧整语言命令在ad新commit时重新执行。闭合wire13非法corpus的Java实际decoder是JsonSupport，构造codecWireValues不单独替解析；官方AcpError tuple的直接consumer为ProtocolIntegrityTest，三语言fixtures/测试与原XML9具体refs追加，原76601主challenge字节不变。
