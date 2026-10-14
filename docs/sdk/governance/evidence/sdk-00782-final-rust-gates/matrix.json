@@ -1,0 +1,316 @@
+{
+  "scope": "published00782 SDK Rust14 exact source cut; contract and language/main separate",
+  "environment": {
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "steps": [
+    {
+      "label": "01-fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "01-fmt-run.json",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false,
+      "bytes": 0,
+      "diskAvailableBytes": 12018442240,
+      "sourceChanged": []
+    },
+    {
+      "label": "02-fmt-check",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "02-fmt-check-run.json",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false,
+      "bytes": 0,
+      "diskAvailableBytes": 12018630656,
+      "sourceChanged": []
+    },
+    {
+      "label": "03-workspace-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "03-workspace-clippy-run.json",
+      "logSha256": "d3ec10cae0391d06a222b462435530c4bd9c8e4941d788b2f6ea9580a09cab8c",
+      "truncated": false,
+      "bytes": 2226,
+      "diskAvailableBytes": 11909021696,
+      "sourceChanged": []
+    },
+    {
+      "label": "04-production-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--lib",
+        "--bins",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "clippy::unwrap_used",
+        "-D",
+        "clippy::expect_used",
+        "-D",
+        "clippy::panic",
+        "-D",
+        "clippy::unreachable"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "04-production-clippy-run.json",
+      "logSha256": "145ef64fe04c89bd948eb1362b7763f3a6fcff193f7479786cd86b307517ef7c",
+      "truncated": false,
+      "bytes": 383,
+      "diskAvailableBytes": 11627945984,
+      "sourceChanged": []
+    },
+    {
+      "label": "05-workspace-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "05-workspace-tests-run.json",
+      "logSha256": "c11fbbde856555f21bd1e10d6da8764a5cb48d386b0128db355c333a0ed1d2e9",
+      "truncated": false,
+      "bytes": 54155,
+      "diskAvailableBytes": 9490989056,
+      "sourceChanged": []
+    },
+    {
+      "label": "06-featureless-check",
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--lib",
+        "--no-default-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "06-featureless-check-run.json",
+      "logSha256": "ceda010463ef85fb861dacb7ae8c30bd2da58773998dcbcfd3d58a8c2f5b3c21",
+      "truncated": false,
+      "bytes": 1219,
+      "diskAvailableBytes": 9456984064,
+      "sourceChanged": []
+    },
+    {
+      "label": "07-workspace-doctests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--all-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "07-workspace-doctests-run.json",
+      "logSha256": "df15a82c4da732e8d829453ebdd0c91a8af87181647bb3dc4b9042cf52b222be",
+      "truncated": false,
+      "bytes": 345,
+      "diskAvailableBytes": 9455923200,
+      "sourceChanged": []
+    },
+    {
+      "label": "08-ci-default-protocol",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-protocol",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "08-ci-default-protocol-run.json",
+      "logSha256": "2ee116b3ef5d13925d43855e819cbf2f491886b50ab9c00ee0081b2d22d5c85b",
+      "truncated": false,
+      "bytes": 16155,
+      "diskAvailableBytes": 9348190208,
+      "sourceChanged": []
+    },
+    {
+      "label": "09-ci-default-host",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "09-ci-default-host-run.json",
+      "logSha256": "4f1d6a56579f30c38b51270e22a1bbc7336714a96abfab3960d24d1ecda18403",
+      "truncated": false,
+      "bytes": 6500,
+      "diskAvailableBytes": 8913936384,
+      "sourceChanged": []
+    },
+    {
+      "label": "10-ci-core-profile",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-core-profile",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "10-ci-core-profile-run.json",
+      "logSha256": "acfa8e14009b5fd8880b115df7aed0154a00869bfe3042bea0541e070d1a20d4",
+      "truncated": false,
+      "bytes": 12819,
+      "diskAvailableBytes": 8639733760,
+      "sourceChanged": []
+    },
+    {
+      "label": "11-ci-bridge-no-run",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-extension-bridge",
+        "--tests",
+        "--no-run",
+        "--locked"
+      ],
+      "environmentOverrides": {
+        "RUSTFLAGS": "-A linker_messages -D warnings"
+      },
+      "exitCode": 0,
+      "stepReceipt": "11-ci-bridge-no-run-run.json",
+      "logSha256": "fd3f3753801c0c9355e53c7d106a98365413496e4b6a7722b5b7fd3195604992",
+      "truncated": false,
+      "bytes": 2955,
+      "diskAvailableBytes": 7768571904,
+      "sourceChanged": []
+    },
+    {
+      "label": "12-ci-bridge-e2e",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-extension-bridge",
+        "--locked",
+        "--test",
+        "extension_bridge_e2e"
+      ],
+      "environmentOverrides": {
+        "RUSTFLAGS": "-A linker_messages -D warnings"
+      },
+      "exitCode": 0,
+      "stepReceipt": "12-ci-bridge-e2e-run.json",
+      "logSha256": "0f7b62087fc26f35f46288d5c433b0644388e94ce4c44669ae0f0bcc4a251d34",
+      "truncated": false,
+      "bytes": 2297,
+      "diskAvailableBytes": 7652540416,
+      "sourceChanged": []
+    },
+    {
+      "label": "13-ci-facade-e2e",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-facade-all",
+        "--locked",
+        "--test",
+        "facade_feature_adapters_e2e",
+        "--test",
+        "core_profile_e2e"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "13-ci-facade-e2e-run.json",
+      "logSha256": "97a210bc425c422b453a7f87aee172cc5920acd743ba840c756049830547b290",
+      "truncated": false,
+      "bytes": 3774,
+      "diskAvailableBytes": 7647330304,
+      "sourceChanged": []
+    },
+    {
+      "label": "14-ci-no-bridge-source-admission",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--no-default-features",
+        "--features",
+        "sdk-facade-adapters,framework-eval,framework-improve,framework-sqlite",
+        "--locked",
+        "--test",
+        "core_profile_e2e",
+        "every_canonical_source_operation_reaches_a_host_adapter"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "stepReceipt": "14-ci-no-bridge-source-admission-run.json",
+      "logSha256": "488f2001f7b3e6ade1a9238fc0976f02f400ebd4830122ba81dfd1e163f0bc2f",
+      "truncated": false,
+      "bytes": 1278,
+      "diskAvailableBytes": 7150006272,
+      "sourceChanged": []
+    }
+  ],
+  "complete": true,
+  "allExitZero": true
+}

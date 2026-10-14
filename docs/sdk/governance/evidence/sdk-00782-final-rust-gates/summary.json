@@ -1,0 +1,303 @@
+{
+  "framework": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "all14Exit0": true,
+  "all14RawUntruncated": true,
+  "61InputsBeforeAfterIdentical": true,
+  "per_gate_counts": {
+    "01-fmt": {
+      "groups": [],
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    "02-fmt-check": {
+      "groups": [],
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    "03-workspace-clippy": {
+      "groups": [],
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    "04-production-clippy": {
+      "groups": [],
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    "05-workspace-tests": {
+      "groups": [
+        [
+          187,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          32,
+          0,
+          0
+        ],
+        [
+          34,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          42,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          22,
+          0,
+          0
+        ],
+        [
+          39,
+          0,
+          0
+        ],
+        [
+          88,
+          0,
+          0
+        ]
+      ],
+      "passed": 474,
+      "failed": 0,
+      "ignored": 0
+    },
+    "06-featureless-check": {
+      "groups": [],
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    "07-workspace-doctests": {
+      "groups": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    "08-ci-default-protocol": {
+      "groups": [
+        [
+          42,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          22,
+          0,
+          0
+        ],
+        [
+          39,
+          0,
+          0
+        ],
+        [
+          88,
+          0,
+          0
+        ]
+      ],
+      "passed": 204,
+      "failed": 0,
+      "ignored": 0
+    },
+    "09-ci-default-host": {
+      "groups": [
+        [
+          31,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "passed": 35,
+      "failed": 0,
+      "ignored": 0
+    },
+    "10-ci-core-profile": {
+      "groups": [
+        [
+          93,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          14,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "passed": 111,
+      "failed": 0,
+      "ignored": 0
+    },
+    "11-ci-bridge-no-run": {
+      "groups": [],
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    "12-ci-bridge-e2e": {
+      "groups": [
+        [
+          28,
+          0,
+          0
+        ]
+      ],
+      "passed": 28,
+      "failed": 0,
+      "ignored": 0
+    },
+    "13-ci-facade-e2e": {
+      "groups": [
+        [
+          32,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          0
+        ]
+      ],
+      "passed": 44,
+      "failed": 0,
+      "ignored": 0
+    },
+    "14-ci-no-bridge-source-admission": {
+      "groups": [
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "workspace_primary_pass": 474,
+  "compiler_diagnostic_warnings": 0,
+  "runtime_RPC_WARN_count": 10,
+  "warning_steps": [
+    "05-workspace-tests"
+  ],
+  "actual_minimum_available_bytes_duringmatrix": 7150006272,
+  "scope": "single newpin61source14actualruns, not cumulativeunique testcase sum/contract/language/main"
+}

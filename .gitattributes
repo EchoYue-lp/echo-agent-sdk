@@ -205,3 +205,13 @@ docs/sdk/governance/evidence/sdk-published-00782-pin/raw/selected-deny.log -diff
 
 # Original Git consumer command output, preserved byte for byte.
 docs/sdk/governance/evidence/git-tool-native/before-a634/typescript.log -diff
+
+# Immutable final SDK Rust command output.
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/05-workspace-tests.log -diff
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/07-workspace-doctests.log -diff
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/08-ci-default-protocol.log -diff
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/09-ci-default-host.log -diff
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/10-ci-core-profile.log -diff
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/12-ci-bridge-e2e.log -diff
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/13-ci-facade-e2e.log -diff
+docs/sdk/governance/evidence/sdk-00782-final-rust-gates/14-ci-no-bridge-source-admission.log -diff
