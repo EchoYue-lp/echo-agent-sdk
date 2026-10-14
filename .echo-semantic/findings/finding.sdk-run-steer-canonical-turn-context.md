@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-run-steer-canonical-turn-context
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: state_authority
 focus:
@@ -15,12 +15,19 @@ behavior_refs:
 - behavior.sdk-family-run
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
-audit_refs: []
+evidence_refs:
+- evidence.sdk-integrations-finite-observation
+audit_refs:
+- audit.sdk-integrations-finite-contract-evidence
+- audit.sdk-integrations-finite-state-authority
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+verification_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+rereview_audit_refs:
+- audit.sdk-integrations-finite-contract-evidence
+- audit.sdk-integrations-finite-state-authority
 discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 ---
 
@@ -43,3 +50,7 @@ Host 按 canonical sess:turn:1 校验，实际 ReactAgent stream 却因未传 in
 ## 处理记录
 
 通用 turn context 由框架传递、SDK 保留薄调用与唯一身份校验。框架候选修复及三语言诊断红绿已取得；legacy 兼容补丁仍待完整前后验证，尚未正式交付，故本项保持 open。当前正文链接为直接可复核来源，正式 Evidence/Audit 版本待受控源码冻结后绑定；空 evidence_refs 不代表没有原始反例。没有创建 source:pending 或假历史 Git，也不把诊断 Host 当成当前正式 pin 的通过。
+
+## 具体原缺陷本地闭合
+
+根修复frameworka634 echo-core/src/agent/mod.rs + src/acp/runtime.rs reservedcanonicalturn/fallback；Hostconsumer严格identity不放宽，3nativeHTTPsecondrequestUnicode/accepted/lateempty/2wait真实证明；oldbefore/diagcompat限制保。 原修复/准确postfixstrongcase及本session原source+closure复核三链齐，具体Bug局部resolved；旧正文待测/待main文字保作历史。当前共享Evidence包含本rootrepair与verification，Audit按具体视角/role不是泛用PASS。无需等待SDKmain才承认原Bug已解决，但平台/fullgenerator/12/5秒B/widecleanup仍独立，不外部Issueclose；未承诺网络/全物理工作保证不扩。

@@ -6,7 +6,9 @@ boundary_ref: boundary.sdk-integrations
 lens: result_side_effect
 freshness: examined
 revision: bd8e42e732588181b7a2589d91e9ffdce02d23e1
-finding_refs: []
+finding_refs:
+- finding.sdk-delivery-exact-claim
+- finding.sdk-trace-publication-quota
 challenges:
   named-integrations-and-supporting-role:
     revision: bd8e42e732588181b7a2589d91e9ffdce02d23e1
@@ -28,6 +30,28 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+  specific-delivery-exact-claim:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs#exact_claim_roundtrip_rejects_delayed_attempt_and_id_only
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+  specific-trace-publication-quota:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/observability.rs#failed_trace_open_does_not_consume_the_only_resource_slot
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     evidence_refs:
     - evidence.sdk-integrations-finite-observation
 ---
@@ -57,3 +81,11 @@ Delivery内存不crossprocessdurable；checkpoint7/Trace17区别；configuredsan
 ## 未检查项
 
 任意未接受constructor/sourceoperation/codec/backend和远端物理finally，非这个finite菜单义务。原A2Afuturegen不是重启证明。
+
+## delivery-exact-claim具体旧缺陷复核
+
+原独立frameworkFinal本session三链artifactreview确匹配：fullcallerclaim_of不重建latestattempt，oldattemptsettle/defer/transition/idonly明确拒且原整snapshot不变，supersessionbeforeeffect/aftereffectclaimNextNone。内存nonDurable不是该claimBug残余。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。
+
+## trace-publication-quota具体旧缺陷复核
+
+原独立frameworkFinal本session三链artifactreview确匹配：maxresources1 unknownmode/jsonlmissingpath/typedwrongpath拒后真正memoryopen成功storeslen1(Registry)，原constructor在register前故不占slot；原05log78ok。不伪IOpermissionfault红测。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。

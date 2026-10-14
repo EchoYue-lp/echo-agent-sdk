@@ -6,7 +6,9 @@ boundary_ref: boundary.sdk-integrations
 lens: failure_concurrency
 freshness: examined
 revision: bd8e42e732588181b7a2589d91e9ffdce02d23e1
-finding_refs: []
+finding_refs:
+- finding.sdk-mcp-batch-publication
+- finding.sdk-telemetry-host-init-rollback-block
 challenges:
   named-integrations-and-supporting-role:
     revision: bd8e42e732588181b7a2589d91e9ffdce02d23e1
@@ -28,6 +30,32 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+  specific-mcp-batch-publication:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs#register_mcp_client_resources
+    - echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_config_batch_quota_failure_does_not_publish_unreturned_prefix
+    - echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_file_batch_quota_failure_does_not_publish_unreturned_prefix
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+  specific-telemetry-host-init-rollback-block:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - echo-sdk-host/src/main.rs
+    - echo-sdk-host/src/core_profile/facade/telemetry.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     evidence_refs:
     - evidence.sdk-integrations-finite-observation
 ---
@@ -57,3 +85,11 @@ Delivery内存不crossprocessdurable；checkpoint7/Trace17区别；configuredsan
 ## 未检查项
 
 任意未接受constructor/sourceoperation/codec/backend和远端物理finally，非这个finite菜单义务。原A2Afuturegen不是重启证明。
+
+## mcp-batch-publication具体旧缺陷复核
+
+原独立frameworkFinal本session三链artifactreview确匹配：两真实server/quota1的config/file批发布，sharedreservation无未返前缀、原bestEffort不改、aliasrollback/PIDdeath/slotreuse；sameowner不误关peer。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。
+
+## telemetry-host-init-rollback-block具体旧缺陷复核
+
+原独立frameworkFinal本session三链artifactreview确匹配：根修复frameworka634 src/telemetry.rs稳定OTEL/filtermarker/原runtimeoneowner；Hostmain/facade/state blockingcollector先settlement、RPCcancel/EOF不释放原job；原3hangOSsample→realcollectorflush/publiccloseheldreleasePIDs完整source审，noarbitrarynetwork。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。

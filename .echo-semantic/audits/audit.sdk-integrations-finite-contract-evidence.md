@@ -6,7 +6,10 @@ boundary_ref: boundary.sdk-integrations
 lens: contract_evidence
 freshness: examined
 revision: bd8e42e732588181b7a2589d91e9ffdce02d23e1
-finding_refs: []
+finding_refs:
+- finding.sdk-family-handle-argument-projection
+- finding.sdk-lsp-response-fidelity
+- finding.sdk-run-steer-canonical-turn-context
 challenges:
   named-integrations-and-supporting-role:
     revision: bd8e42e732588181b7a2589d91e9ffdce02d23e1
@@ -28,6 +31,44 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+  specific-family-handle-argument-projection:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs#family_handle_argument_retains_opaque_resource_address
+    - echo-sdk-host/src/core_profile/facade/mod.rs#family_argument_json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+  specific-lsp-response-fidelity:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/tests/facade_feature_adapters_e2e.rs
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+  specific-run-steer-canonical-turn-context:
+    revision: ad35887c5ceb66865a714f3f2d1da86a9c35c903
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json
+    - docs/sdk/governance/evidence/run-steer-native/java-original/receipt.json
+    - docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     evidence_refs:
     - evidence.sdk-integrations-finite-observation
 ---
@@ -57,3 +98,15 @@ Delivery内存不crossprocessdurable；checkpoint7/Trace17区别；configuredsan
 ## 未检查项
 
 任意未接受constructor/sourceoperation/codec/backend和远端物理finally，非这个finite菜单义务。原A2Afuturegen不是重启证明。
+
+## family-handle-argument-projection具体旧缺陷复核
+
+原独立frameworkFinal本session三链artifactreview确匹配：完整opaqueWireHandleUnicode/u64MAXDTO回原resourceparser/Registry，三native returnedHandle正常API回传，不genericrawmap绕过。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。
+
+## lsp-response-fidelity具体旧缺陷复核
+
+原独立frameworkFinal本session三链artifactreview确匹配：frameworkonlynullable/hoverrange/Optionkind/codeunion/objectshape解析与SDKthin、native29request/42diagnostic完整字段/nextvalid/PIDclosed复核；12sourcefieldmigration另intent。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。
+
+## run-steer-canonical-turn-context具体旧缺陷复核
+
+原独立frameworkFinal本session三链artifactreview确匹配：根修复frameworka634 echo-core/src/agent/mod.rs + src/acp/runtime.rs reservedcanonicalturn/fallback；Hostconsumer严格identity不放宽，3nativeHTTPsecondrequestUnicode/accepted/lateempty/2wait真实证明；oldbefore/diagcompat限制保。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。

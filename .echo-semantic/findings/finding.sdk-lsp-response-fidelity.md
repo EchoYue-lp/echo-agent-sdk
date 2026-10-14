@@ -1,32 +1,32 @@
 ---
-{
-  "schema_version": 1,
-  "id": "finding.sdk-lsp-response-fidelity",
-  "kind": "finding",
-  "type": "implementation_bug",
-  "status": "open",
-  "severity": "high",
-  "primary_focus": "contract_evidence",
-  "focus": [
-    "state_authority",
-    "failure_concurrency",
-    "time_lifecycle"
-  ],
-  "boundary_ref": "boundary.sdk-integrations",
-  "behavior_refs": [
-    "behavior.sdk-integrations"
-  ],
-  "rule_refs": [
-    "rule.framework-runtime-authority"
-  ],
-  "evidence_refs": [],
-  "audit_refs": [],
-  "decision_refs": [],
-  "repair_evidence_refs": [],
-  "verification_evidence_refs": [],
-  "rereview_audit_refs": [],
-  "discovered_at": "30d7e219cc7d3aef0f75a19217c82898c363f50d"
-}
+schema_version: 1
+id: finding.sdk-lsp-response-fidelity
+kind: finding
+type: implementation_bug
+status: resolved
+severity: high
+primary_focus: contract_evidence
+focus:
+- state_authority
+- failure_concurrency
+- time_lifecycle
+boundary_ref: boundary.sdk-integrations
+behavior_refs:
+- behavior.sdk-integrations
+rule_refs:
+- rule.framework-runtime-authority
+evidence_refs:
+- evidence.sdk-integrations-finite-observation
+audit_refs:
+- audit.sdk-integrations-finite-contract-evidence
+decision_refs: []
+repair_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+verification_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+rereview_audit_refs:
+- audit.sdk-integrations-finite-contract-evidence
+discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 ---
 
 # 上游 LSP 响应投影丢字段或默空
@@ -46,3 +46,7 @@ framework hover range、合法 nullable result、Completion optional kind 和 ma
 ## 处理记录
 
 本 Finding 保持 open。最终 repair、verification、rereview 与 consumer 证据闭合后再变更状态；不影响历史外部 Issue 状态。
+
+## 具体原缺陷本地闭合
+
+frameworkonlynullable/hoverrange/Optionkind/codeunion/objectshape解析与SDKthin、native29request/42diagnostic完整字段/nextvalid/PIDclosed复核；12sourcefieldmigration另intent。 原修复/准确postfixstrongcase及本session原source+closure复核三链齐，具体Bug局部resolved；旧正文待测/待main文字保作历史。当前共享Evidence包含本rootrepair与verification，Audit按具体视角/role不是泛用PASS。无需等待SDKmain才承认原Bug已解决，但平台/fullgenerator/12/5秒B/widecleanup仍独立，不外部Issueclose；未承诺网络/全物理工作保证不扩。

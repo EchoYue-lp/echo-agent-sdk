@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-telemetry-host-init-rollback-block
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: failure_concurrency
 focus:
@@ -15,12 +15,19 @@ behavior_refs:
 - behavior.sdk-family-telemetry
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
-audit_refs: []
+evidence_refs:
+- evidence.sdk-integrations-finite-observation
+audit_refs:
+- audit.sdk-integrations-finite-time-lifecycle
+- audit.sdk-integrations-finite-failure-concurrency
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+verification_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+rereview_audit_refs:
+- audit.sdk-integrations-finite-time-lifecycle
+- audit.sdk-integrations-finite-failure-concurrency
 discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 ---
 
@@ -41,3 +48,7 @@ Host 原有全局 stderr subscriber 与 framework init 再安装全局 subscribe
 ## 处理记录
 
 [ADR 0036](../../docs/adr/0036-telemetry-host-composition.md) 的技术修复设计已独立审查通过，framework/Host 正在实现：保留框架唯一 runtime/exporter/metrics 权威，Host 组合既有 subscriber，并由原结算链持有 blocking 工作。尚无交付或最终修复、验证、复审三链，本项保持 open。collector/export/flush 及取消/EOF/关闭后的真实结算按设计待验证，不能借原其他语言门禁通过。正式 Evidence/Audit 待最终冻结绑定，当前仅直接链接真实源与原始收据，不造 source:pending。
+
+## 具体原缺陷本地闭合
+
+根修复frameworka634 src/telemetry.rs稳定OTEL/filtermarker/原runtimeoneowner；Hostmain/facade/state blockingcollector先settlement、RPCcancel/EOF不释放原job；原3hangOSsample→realcollectorflush/publiccloseheldreleasePIDs完整source审，noarbitrarynetwork。 原修复/准确postfixstrongcase及本session原source+closure复核三链齐，具体Bug局部resolved；旧正文待测/待main文字保作历史。当前共享Evidence包含本rootrepair与verification，Audit按具体视角/role不是泛用PASS。无需等待SDKmain才承认原Bug已解决，但平台/fullgenerator/12/5秒B/widecleanup仍独立，不外部Issueclose；未承诺网络/全物理工作保证不扩。

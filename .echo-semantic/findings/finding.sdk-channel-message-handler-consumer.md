@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-channel-message-handler-consumer
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: contract_evidence
 focus:
@@ -19,11 +19,18 @@ rule_refs:
 evidence_refs:
 - evidence.sdk-channel-message-handler-consumer-audit
 - evidence.sdk-channel-forward-human-scope
-audit_refs: []
+- evidence.sdk-integrations-finite-observation
+audit_refs:
+- audit.sdk-integrations-finite-trigger-input
+- audit.sdk-integrations-finite-time-lifecycle
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+verification_evidence_refs:
+- evidence.sdk-integrations-finite-observation
+rereview_audit_refs:
+- audit.sdk-integrations-finite-trigger-input
+- audit.sdk-integrations-finite-time-lifecycle
 discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 ---
 
@@ -60,3 +67,7 @@ preserved within their original scope. No external Issue is created/closed here.
 ## 已批准的处置
 
 用户选择保留原承诺并批准三个forward操作及流控制范围；ADR0035设计/实现进行中。原缺口保持open至真实消费、取消/owner/stream结算、最终生成与复审完成，不再等待产品选择。semantic0.5无Decision对象类型，使用人的原答复Evidence定位，不造decisionRef或riskAccepted。
+
+## 具体原缺陷本地闭合
+
+批准6forward/streamcontrol真实registeredconsumer/handlerinvoke/reply/originalowner/fullgen、两factcallbacklease/取消native，原start仅存handler的missingconsumer义务已补；不全physicsB。 原修复/准确postfixstrongcase及本session原source+closure复核三链齐，具体Bug局部resolved；旧正文待测/待main文字保作历史。当前共享Evidence包含本rootrepair与verification，Audit按具体视角/role不是泛用PASS。无需等待SDKmain才承认原Bug已解决，但平台/fullgenerator/12/5秒B/widecleanup仍独立，不外部Issueclose；未承诺网络/全物理工作保证不扩。
