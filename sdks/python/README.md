@@ -243,3 +243,115 @@ the Rust Host still owns timeout, cancellation and Session teardown.
 `register_agent_component` exposes the closed component/operation contract for
 Host-consumed conversation, run/runtime-state, audit, context-projector and
 memory-trigger implementations without moving Agent lifecycle state into Python.
+
+## Governance and failure boundaries
+
+The compatibility promise is the explicitly accepted external contract and
+accepted facade catalog. Complete Rust public inventory/intrinsic membership
+is non-blocking telemetry; it is not a requirement to expose every Rust
+identity in all languages. The current governance candidate awaits final
+contract, real-Host three-language and exact-main acceptance. The
+[capability/evidence matrix](../../docs/sdk/governance/behavior-evidence-matrix.md)
+records behavior evidence and remaining scope; catalog `done` labels alone do
+not prove a failure path.
+
+A failed Agent/Session/Run close retains its local cleanup state so the caller
+can retry; only successful cleanup ends the stream/releases the owner.
+Client close retains one asynchronous cleanup owner. Cancelling a waiting caller
+leaves that operation available to a second `close()` waiter; `_closed` becomes
+true only after connection cleanup and actual child-process exit. The official
+async context is exited once: its generator may be exhausted after a failure.
+Retries retain the same raw connection and process owner, close stdin, wait
+for graceful exit, then terminate/kill as needed, with each wait bounded to
+two seconds. A remaining shutdown error leaves the client available for retry;
+no empty context exit or signal submission proves that the process exited.
+During connection
+shutdown, cancelled reverse callbacks propagate cancellation instead of queuing
+responses to the stopped official sender. Normal invocation cancellation still
+returns the typed cancellation outcome on the live connection.
+
+Duplicate successful close is idempotent. Timeout, cancellation, EOF and Host
+exit must not be treated as a successful terminal. Facade resources validate
+owner plus complete generation-fenced handles; failed publication rolls back
+construction rather than returning an unusable handle.
+
+Factory callbacks echo the Host-reserved instance handle. Child invocations
+carry `factory_origin`, binding that instance to its parent registration.
+Concurrent same-name factory instances remain independent; no name-based
+fallback routes an unknown child. A construction timeout/cancellation retains
+cleanup ownership until construction really finishes, including cleanup of a
+late-created child.
+
+Managed ConversationStore/RuntimeStateStore callbacks retain declared
+capabilities, atomic receipts, revisions/generations and exact commit
+deadlines. Unsupported calls fail explicitly; `OutcomeUnknown` is unresolved
+until backend evidence establishes the outcome. RevisionedTaskStore is
+CRUD-only unless its descriptor opts into `execution_cas_v1` (default false).
+Execution without this capability fails before work starts; implementations
+that opt in must atomically preserve expected executions, exact claims,
+results and Cancelled/Paused disposition. SDK callbacks transport these facts;
+the framework alone schedules tasks and owns terminal state.
+
+`set_memory_store` connects approved-memory recall/search. Automatic memory
+writing/promotion requires the framework MemoryLayerManager. Explicit
+`set_store` and accepted raw KV `memory.put/get` calls do not promote their
+values into Active memory.
+
+Live `RunHandle.events` is bounded. Its async iterator ACKs at its consumption
+boundary when iteration resumes after yielding an event, including iterator
+close. This does not prove arbitrary business work launched asynchronously
+has finished; callers must coordinate that work with iteration. Merely
+buffering a notification does not ACK it. A live terminal event drains its
+stream mailbox and ends iteration naturally; other Session feeds continue.
+`await run.replay(after_sequence, max_events)` validates and records the page
+without ACKing. After applying any required snapshot and consuming the page,
+ACK explicitly through `await sdk.notify("echo_agent/event/ack", {"ack": {
+"stream": run.stream.to_dict(), "last_processed_sequence":
+page["next_cursor"]["last_processed_sequence"]}})`. A gap/snapshot ACK
+establishes the monotonic continuation floor; future live facts must be above
+it. Python passes extension names without the leading underscore to the
+official transport, which supplies the ACP extension wire name.
+If replay includes the journal's terminal event, a successfully submitted
+explicit ACK covering that event also ends the local event feed naturally.
+Fetching the page or sending an uncovered future cursor does not end it;
+this delivery projection does not change the authoritative Run state.
+
+Each successful transport submission advances the local consumed cursor
+monotonically. Pending, failed or cancelled submissions do not retire queue
+facts or establish replay-terminal EOF; transport failure reports
+`ack_submission: outcome_unknown` in error details, because a notification
+has no peer acceptance receipt. Another concurrent ACK cannot borrow a
+pending submission's cursor. The framework journal remains authoritative.
+Cancelling an awaiting Python caller leaves its already-started submission
+owned by the client until the official transport actually completes. A late
+success commits its own cursor; a late failure is reported to the event loop
+exception handler with unknown outcome details. Client close cancels and
+settles pending submission jobs instead of leaving detached send tasks.
+
+Typed Host ACP `error.data` becomes `EchoAgentError` with `code`, `retryable`,
+`operation`, `handle` and `details` preserved. Ordinary ACP messages are not
+parsed into domain failure codes. Python cancellation remains asynchronous;
+use `await handle.close()` and observe failures before discarding the handle.
+Integers retain the full wire range/canonical decimal text, paths retain their
+declared encoding, and Unicode is never byte-truncated. Unknown tagged values
+round-trip; malformed known values or missing nested discriminators fail.
+Map keys such as `kind` remain domain data rather than an implicit wire tag.
+
+
+### Channel handler consumption examples
+
+The real Host examples for the six canonical Channel operations and Sandbox
+cooperative close are described in
+[Channel consumption](../../docs/sdk/channel-handler-consumption.md). The
+existing native Channel forward tests are executable examples and are included
+in `scripts/check-language-sdks.sh`; they register real callbacks, consume the
+original handler, and verify typed results and cleanup. MessageHandler callbacks
+retain their awaited work/cleanup lifetime. An asynchronous producer using the
+existing early Stream setup ACK may return immediately; cancellation continues
+to reach its original signal until the matching terminal is successfully sent.
+The producer must finish cleanup before declaring that terminal. Cancellation
+before ACK and terminal before ACK preserve their original stream identity;
+wrong-generation or failed terminal sends and failed close retain the route
+for retry on the same stream. Neither ACK nor notification delivery lets the
+SDK infer physical cleanup. Full inventory and intrinsic membership remain
+non-blocking telemetry.
