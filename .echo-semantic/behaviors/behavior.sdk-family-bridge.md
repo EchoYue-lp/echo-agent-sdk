@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-extension-bridge
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 5bcbad2437e5c19f61101883044c4f67944cb97c
 code_refs:
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - echo-sdk-host/src/core_profile/handler.rs
@@ -33,6 +33,7 @@ evidence_refs:
 - evidence.sdk-extension-teardown-prefix-verification
 - evidence.sdk-stream-cancellation-routing-verification
 - evidence.sdk-factory-child-settlement-verification
+- evidence.sdk-tools-bridge-finite-observation
 finding_refs:
 - finding.sdk-python-agent-component-stream-projection
 - finding.sdk-sandbox-canonical-stream-routing
@@ -87,7 +88,7 @@ finding_refs:
 
 实际来源：`echo-sdk-host/tests/extension_bridge_e2e.rs#tool_bridge_round_trip_with_callbacks_intervention_and_hook`；`echo-sdk-host/tests/extension_bridge_e2e.rs#managed_persistence_deadline_and_lost_ack_preserve_commit_authority`；`echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt`；`echo-sdk-host/tests/extension_bridge_e2e.rs#cancelled_initial_stream_response_releases_session_callback_owner`。
 
-仍缺：接受的每个 component operation 的合法消费/异常结算尚未逐项覆盖；11 DTO corpus 不等于11实际持久化动作。 published framework pin、最后变更后的独立复审和精确main验收
+原阶段缺口（历史，后继finite范围见下）：接受的每个 component operation 的合法消费/异常结算尚未逐项覆盖；11 DTO corpus 不等于11实际持久化动作。 published framework pin、最后变更后的独立复审和精确main验收
 仍待；本证据不证明未列出的生命周期、字段或错误组合，也不自动扩大accepted合同。
 
 ## 裁决记录
@@ -111,3 +112,11 @@ Candidate assertion evidence is now preserved as original receipt/source fingerp
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前内置工具与反向桥有限审查
+
+本对象归入builtin10families或原bridge角色，原currentTool实际source8lens与远端3合法注册consumer原因修复独立PASS记录于sharedEvidence及8Audits。runtime69b与真实5bcb所选source相同，原tool/typedvalue/FieldEffect/PID/error具名scope沿原family表保存，author只回收原业务审查，不把catalogdone/原whole计数当证据。新A独切片不在本scope，old原阶段待办保历史不会冒新runtime缺陷。
+
+入口工具经唯一frameworkschema/customvalidator/ToolManager；FileAuthority/Polars/Pivot/provider各原authority不复制。Bridge descriptor/kind/gen注册后实际注入Session，ToolContext/artifact、Llm messages/usage/finish、Store namespace/commit、Hook/callback/intervention保持原owner/失败策略。remoteTool Cancelled/extension_timeout经ToolFailure::from_error按risk保分类与副作用，LLM Cancelled经AgentCancelled，合法旧3fail→samebody3pass callerTokenfalse/lease0，初坏descriptor是fixture错误不生产反例。
+
+本对象needs_review不提升verified；八lens只具名examined。network原时点/内存Rag非crossprocess/未acceptcodec或constructor具体不承诺、5sphysicalB/12sourcekind/最终新源wholemain保独立。原ToolValue/Rag取证source保4feb taggedGit；FileAuthority补包若当前尚未commit其实际原件不假5bcbsourceRef，finite审scope不变，正式交付另逐包绑定。宽feature-failure-cause仅Tool/LLM子scope已修复，原Workflow/Memory/Eval其它义务未自动关。

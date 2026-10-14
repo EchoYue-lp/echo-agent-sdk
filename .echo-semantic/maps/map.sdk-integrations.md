@@ -49,6 +49,7 @@ evidence_refs:
 - evidence.sdk-managed-supporting-operation-boundary
 - evidence.sdk-rag-scalar-verification
 - evidence.sdk-task-memory-workflow-finite-observation
+- evidence.sdk-tools-bridge-finite-observation
 finding_refs:
 - finding.sdk-adapter-invalid-input
 - finding.sdk-delivery-exact-claim
@@ -76,6 +77,14 @@ audit_refs:
 - audit.sdk-task-memory-workflow-finite-failure-concurrency
 - audit.sdk-task-memory-workflow-finite-permission-external
 - audit.sdk-task-memory-workflow-finite-contract-evidence
+- audit.sdk-tools-bridge-finite-trigger-input
+- audit.sdk-tools-bridge-finite-result-side-effect
+- audit.sdk-tools-bridge-finite-state-authority
+- audit.sdk-tools-bridge-finite-data-durability
+- audit.sdk-tools-bridge-finite-time-lifecycle
+- audit.sdk-tools-bridge-finite-failure-concurrency
+- audit.sdk-tools-bridge-finite-permission-external
+- audit.sdk-tools-bridge-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -404,7 +413,7 @@ scenarios:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
   family-web:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -417,13 +426,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-web
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-files:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -436,13 +446,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-files
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-shell:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -455,11 +466,12 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-shell
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-git:
     status: needs_review
     source_refs:
@@ -481,7 +493,7 @@ scenarios:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
   family-database:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -494,14 +506,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-database
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-rag:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -514,13 +527,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-rag
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-chart:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -533,15 +547,16 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-chart
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
     - evidence.sdk-tool-input-validation-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-media:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -554,14 +569,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-media
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-data:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -574,14 +590,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-data
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-statistics:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -594,13 +611,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-statistics
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-research:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -613,12 +631,13 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-research
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
   family-content-guard:
     status: needs_review
     source_refs:
@@ -801,3 +820,7 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## Task/Memory/Workflow后继有限关系
 
 本Map仅新增memory/workflow两family的02059具名Evidence/Audit关系，其它integration族的原观察版本、未知与状态不变；不把本次作者源审扩大成全部MCP/LSP/Channel已验证。
+
+## 内置十工具族后继有限关系
+
+只对files/shell/web/database/rag/chart/media/data/statistics/research十targetscene追加5bcb共享Evidence/8lensAudit与mapped范围；此Map其它能力的原observation、不确定性与状态不变。schema/parser/Store等唯一frameworkauthority不重复，任意未接受sourceoperation不自动进入菜单。

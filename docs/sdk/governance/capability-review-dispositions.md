@@ -77,3 +77,7 @@ SDK Host 已精确依赖已发布框架 `be5f0a84`，八个框架包来自同一
 ## Task/Subagent、Memory、Workflow有限收口
 
 四现family的入口/唯一authority/生命周期/具名失败由02059源码观察和原790三native/四getter消费对应8lens作者审查支持，材料独审单列，不新contextfamily。TaskContext只nativecallbackrunid+四Hostgetter具体case；ContextInheritance纯值不称三nativehistorymemoryE2E、compressor消费不泛推所有hook。这一具体补证边界、内存无crossprocess承诺、5秒B、12字段身份和新A最终consumer/main保持分离。Task/Subagent场景mapped不提升全部Behaviorverified，既有历史例不删。
+
+## 内置十工具与反向桥有限收口
+
+沿原currentTool实际8lens审查，files/shell/web/database/rag/chart/media/data/statistics/research十族及Tool/LLM/Store/Hook/AgentCallback/Intervention六角色按原authority/字段/effect/lifecycle/typederror具名mapped/examined，行为仍needs_review。观察5bcb runtime69b source同；remoteTool/LLM原因3合法真红绿及独review补原whole前scope，Feature宽Finding仅两remote子根因局部闭，其它cause不自动关闭。provider时点、内存无crossprocess、未接受codec/构造器、5秒B/12/新A最终全gate/main明确独立，原4feb取证与未提交FileAuthority附包来源不伪当前Git。

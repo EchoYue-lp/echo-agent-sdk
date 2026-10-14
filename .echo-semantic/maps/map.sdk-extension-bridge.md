@@ -4,7 +4,7 @@ id: map.sdk-extension-bridge
 kind: capability_map
 title: 扩展桥
 risk: high
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 5bcbad2437e5c19f61101883044c4f67944cb97c
 boundary_refs:
 - boundary.sdk-extension-bridge
 behavior_refs:
@@ -18,6 +18,7 @@ evidence_refs:
 - evidence.sdk-managed-supporting-operation-boundary
 - evidence.sdk-extension-teardown-prefix-verification
 - evidence.sdk-factory-child-settlement-verification
+- evidence.sdk-tools-bridge-finite-observation
 finding_refs:
 - finding.sdk-extension-pending-stream-owner
 - finding.sdk-factory-instance-routing
@@ -32,6 +33,14 @@ finding_refs:
 - finding.sdk-factory-terminal-close-settlement
 audit_refs:
 - audit.sdk-managed-retirement-rereview
+- audit.sdk-tools-bridge-finite-trigger-input
+- audit.sdk-tools-bridge-finite-result-side-effect
+- audit.sdk-tools-bridge-finite-state-authority
+- audit.sdk-tools-bridge-finite-data-durability
+- audit.sdk-tools-bridge-finite-time-lifecycle
+- audit.sdk-tools-bridge-finite-failure-concurrency
+- audit.sdk-tools-bridge-finite-permission-external
+- audit.sdk-tools-bridge-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -57,7 +66,7 @@ scenarios:
       have been inspected and linked. Mapped records the model, not bug-free/runtime/main
       closure; open Findings remain explicit.
   family-bridge:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/extension_bridge.rs
     - echo-sdk-host/src/core_profile/handler.rs
@@ -65,11 +74,180 @@ scenarios:
     - echo-sdk-protocol/src/methods.rs
     behavior_refs:
     - behavior.sdk-family-bridge
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing仅声明库存无运行supports。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Six existing reverse roles finiteexamined, with knownphysicalB and
+      widefeatureCauseFinding explicit; not full genericextensionverified.
+  tools-reverse-finite-trigger-input:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-trigger-input
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
+  tools-reverse-finite-result-side-effect:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-result-side-effect
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
+  tools-reverse-finite-state-authority:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-state-authority
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
+  tools-reverse-finite-data-durability:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-data-durability
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
+  tools-reverse-finite-time-lifecycle:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-time-lifecycle
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
+  tools-reverse-finite-failure-concurrency:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-failure-concurrency
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
+  tools-reverse-finite-permission-external:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-permission-external
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
+  tools-reverse-finite-contract-evidence:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    - behavior.sdk-family-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-contract-evidence
+    review_scope: finite originalcurrentTool builtin10/reverse6 sourceaudit; remote
+      cause3validredgreen independentPASS; no new protocol or allmethodsfamilyclosure
 ---
 
 # 扩展桥
@@ -98,7 +276,7 @@ Framework 拥有 Run/Task/Store 的事实与终态；Host 只拥有寻址、可�
 
 extension register/unregister经descriptor/capability准入，反向call复用官方connection lease/deadline；Tool/LLM/Store/hook/callback由framework消费并决定terminal/commit。initial response前RAII stream reservation避免超时泄漏；cleanup/interrupted/terminal callback使用connection作用域，不因Run取消丢清理。Factory先reserve官方child handle及factory_origin，再publish/rollback，同Factory可创建独立Session实例。managed11 typed DTO/TaskStore execution-CAS显式opt-in，真实deadline-before-work、lost ACK/断连重启同receipt保留commit权威。Bridge34候选通过，只证明具名调用；Java2bad cleanup/failed-future owner有自身264项与独立复审记录，但当前能力未列场景仍不算闭合。
 
-仍缺：managed Store的11个DTO与deadline/结果恢复已有有界证据，剩余真实caller/operation审计仍明确open；Channel MessageHandler原缺口已用户批准保承诺与forward范围；当前设计/实现未完。reverse mailbox/child factory/取消重入按具名Finding审查，不用任意组合扩大门槛。
+原阶段缺口（历史）：managed Store的11个DTO与deadline/结果恢复已有有界证据，剩余真实caller/operation审计仍明确open；Channel MessageHandler原缺口已用户批准保承诺与forward范围；当前设计/实现未完。reverse mailbox/child factory/取消重入按具名Finding审查，不用任意组合扩大门槛。
 
 ## 权限与敏感信息
 
@@ -131,3 +309,7 @@ managed Store的11个DTO与deadline/结果恢复已有有界证据，剩余真�
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## 当前有界Tools与reverse角色
+
+sharedEvidence/8Audit对应真实5bcb与原runtime69b；原failurecause两个remote子scope已sourceconsumer修复，不推全Workflow/Memory/Eval。框架仍唯一schema/ToolFailure/LLMterminal authority，Hostthin。各旧原packet与after3focused本体保持，原whole790不冒afterpatch新whole；状态mapped仅建模examined。
