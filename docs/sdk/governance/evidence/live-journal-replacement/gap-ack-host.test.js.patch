@@ -1,0 +1,58 @@
+--- before/sdks/typescript/test/gap-ack-host.test.js
++++ sdks/typescript/test/gap-ack-host.test.js
+@@ -1,6 +1,7 @@
+ import test from "node:test";
+ import assert from "node:assert/strict";
+-import { spawn } from "node:child_process";
++import { spawn, execFile } from "node:child_process";
++import { promisify } from "node:util";
+ import { mkdtemp, access, readFile, writeFile, rm } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+@@ -288,3 +289,46 @@
+   await session.close();await agent.close();
+  }finally{if(sdk)await sdk.close();model.kill();await new Promise(resolve=>model.exitCode===null?model.once('exit',resolve):resolve());await rm(work,{recursive:true,force:true});}
+ });
++
++
++test("live journal directory replacement returns typed error and isolates the other Session", {skip: !realHost, timeout: 30000}, async () => {
++  const python = process.env.PYTHON ?? "python3";
++  const work = await mkdtemp(join(process.env.ECHO_AGENT_SDK_JOURNAL_EVIDENCE ?? tmpdir(), "journal-ts-"));
++  const model = spawn(python, [fixture, "--work", work, "--mode", "window"]);
++  let sdk, run, replaced = false;
++  const command = async args => JSON.parse((await promisify(execFile)(python, [fixture, "--work", work, "--mode", "window", ...args], {timeout:5000})).stdout);
++  const action = kind => command(["--journal-action", kind, "--stream-id", run.stream.id]);
++  const samePage = async (before, after, name) => {
++    const paths = [join(work, `${name}-before.json`), join(work, `${name}-after.json`)];
++    await writeFile(paths[0], JSON.stringify(before)); await writeFile(paths[1], JSON.stringify(after));
++    assert.equal((await command(["--compare-pages", ...paths])).same_complete_page, true);
++  };
++  try {
++    await waitFor(() => exists(join(work, "ready")));
++    sdk = await EchoAgentClient.spawn({hostCommand:python,args:[proxy,realHost,join(work,"host.json")],env:{...process.env,NO_PROXY:"127.0.0.1,localhost",no_proxy:"127.0.0.1,localhost"}});
++    const agent = await sdk.createAgent(), session = await agent.createSession();
++    run = await session.startRun({text:"original journal 中文🌊"});
++    await waitFor(() => exists(join(work,"parked"))); await writeFile(join(work,"release"),"");
++    const settled = await run.wait(); assert.equal(settled.settled,true); assert.equal(settled.terminal.status,"completed");
++    const before = await run.replay("0",64), snapshot = await run.get(); assert.ok(before.events.length>0); assert.ok(snapshot.receipt);
++    const otherAgent = await sdk.createAgent(), otherSession = await otherAgent.createSession();
++    const other = await otherSession.startRun({text:"independent journal 中文🌊"}); assert.equal((await other.wait()).settled,true);
++    const otherBefore = await other.replay("0",64); assert.notEqual(other.stream.id,run.stream.id); assert.ok(otherBefore.events.length>0);
++    const fact = await action("replace"); replaced = true; const errors = []; let restored;
++    try {
++      for (let count=0;count<2;count++) await assert.rejects(run.replay("0",64), error => {
++        assert.equal(error.code,"replay_unavailable"); assert.equal(error.retryable,"after_delay"); assert.equal(error.operation,"_echo_agent/run/replay"); assert.ok(error.message.includes("directory identity changed")); assert.equal(error.details??null,null); assert.equal(error.handle??null,null);
++        errors.push({code:error.code,retryable:error.retryable,operation:error.operation,details:error.details??null,handle:error.handle??null,message:error.message}); return true;
++      });
++      assert.deepEqual(await run.get(),snapshot,"failed replay cannot replace a terminal or receipt");
++      await samePage(otherBefore,await other.replay("0",64),"other");
++    } finally { restored=await action("restore"); replaced=false; }
++    await samePage(before,await run.replay("0",64),"restored");
++    if(process.env.ECHO_AGENT_SDK_JOURNAL_EVIDENCE) await writeFile(join(process.env.ECHO_AGENT_SDK_JOURNAL_EVIDENCE,"typescript.json"),JSON.stringify({stream:run.stream,other_stream:other.stream,errors,directory:fact,restored,receipt_unchanged:true,other_journal_unchanged:true,replay_restored:true,page:before},null,2));
++    await otherSession.close(); await otherAgent.close(); await session.close(); await agent.close();
++  } finally {
++    if(replaced) await action("restore");
++    if(sdk) await sdk.close(); model.kill(); await new Promise(resolve=>model.exitCode===null?model.once("exit",resolve):resolve());
++    await rm(work,{recursive:true,force:true});
++  }
++});

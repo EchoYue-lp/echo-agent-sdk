@@ -1,0 +1,76 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_live_journal_directory_replacement_is_typed_and_session_isolated _____
+
+tmp_path = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-journal-replacement-native/python-first-runtime/test_live_journal_directory_re0')
+
+    @pytest.mark.skipif(not HOST, reason="real Host is required")
+    @pytest.mark.asyncio
+    async def test_live_journal_directory_replacement_is_typed_and_session_isolated(tmp_path: Path) -> None:
+        async def action(stream, kind):
+            child = await asyncio.create_subprocess_exec(
+                "python3", str(TESTING / "gap_ack_fixture.py"), "--work", str(tmp_path),
+                "--mode", "window", "--journal-action", kind, "--stream-id", stream.id,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            out, err = await asyncio.wait_for(child.communicate(), 5)
+            assert child.returncode == 0, err.decode()
+            return json.loads(out)
+    
+        model = await asyncio.create_subprocess_exec("python3", str(TESTING / "gap_ack_fixture.py"), "--work", str(tmp_path), "--mode", "window")
+        replaced = False
+        run = None
+        try:
+            await wait_for(lambda: (tmp_path / "ready").exists())
+            async with await EchoAgentClient.spawn(
+                "python3", str(TESTING / "gap_ack_host_proxy.py"), HOST, str(tmp_path / "host.json"),
+                env={**os.environ, "NO_PROXY": "127.0.0.1,localhost", "no_proxy": "127.0.0.1,localhost"},
+            ) as sdk:
+                agent = await sdk.create_agent()
+                session = await agent.create_session()
+                run = await session.start_run("original journal 中文🌊")
+                await wait_for(lambda: (tmp_path / "parked").exists())
+                (tmp_path / "release").touch()
+                settled = await run.wait()
+                assert settled["settled"] and settled["terminal"]["status"] == "completed"
+                before = await run.replay("0", 64)
+                snapshot = await run.get()
+                assert before["events"] and snapshot["receipt"]
+                other_agent = await sdk.create_agent()
+                other_session = await other_agent.create_session()
+                other = await other_session.start_run("independent journal 中文🌊")
+                assert (await other.wait())["settled"]
+                other_before = await other.replay("0", 64)
+                assert other.stream != run.stream and other_before["events"]
+                fact = await action(run.stream, "replace")
+                replaced = True
+                errors = []
+                try:
+                    for _ in range(2):
+                        with pytest.raises(EchoAgentError) as caught:
+                            await run.replay("0", 64)
+                        error = caught.value
+                        assert error.code == "replay_unavailable"
+                        assert error.retryable == "after_delay"
+                        assert error.operation == "_echo_agent/run/replay"
+                        assert "directory identity changed" in error.message
+                        errors.append({"code": error.code, "retryable": error.retryable, "operation": error.operation, "details": error.details, "handle": error.handle, "message": error.message})
+                    assert await run.get() == snapshot, "failed replay cannot fabricate a new terminal or receipt"
+                    assert await other.replay("0", 64) == other_before, "one journal replacement must not poison another Session"
+                finally:
+                    restored = await action(run.stream, "restore")
+                    replaced = False
+                assert restored["restored"] and restored["files_unchanged"]
+>               assert await run.replay("0", 64) == before, "restored original inode must retain the full committed page"
+E               AssertionError: restored original inode must retain the full committed page
+E               assert {'requested_a...quence': '8'}} == {'requested_a...quence': '8'}}
+E                 
+E                 Omitting 2 identical items, use -vv to show
+E                 Differing items:
+E                 {'events': [{'schema_version': 5, 'event_id': 'evt_c3dfe43a975e794c7add28f7fda0933a65ed77bb1c3f2c7038006190db40fb96', ...'content_hash': 'sha256:0502b16adc6ddc47bea5f5f5ee6c8d915e6c9403af83ef9a8c2e82d9a892328a', 'sequence': '6', ...}, ...]} != {'events': [{'schema_version': 5, 'event_id': 'evt_c3dfe43a975e794c7add28f7fda0933a65ed77bb1c3f2c7038006190db40fb96', ...'content_hash': 'sha256:0502b16adc6ddc47bea5f5f5ee6c8d915e6c9403af83ef9a8c2e82d9a892328a', 'sequence': '6', ...}, ...]}
+E                 Use -v to get more diff
+
+tests/test_gap_ack_host.py:648: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_gap_ack_host.py::test_live_journal_directory_replacement_is_typed_and_session_isolated
+1 failed, 11 deselected in 1.50s

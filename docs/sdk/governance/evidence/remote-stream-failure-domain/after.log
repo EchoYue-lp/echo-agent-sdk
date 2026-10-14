@@ -1,0 +1,18 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 31.43s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-517dfb55455fb261)
+
+running 3 tests
+remote Llm terminal: Some(Cancelled); caller_cancelled=false
+test core_profile::extension_bridge::tests::remote_stream_terminal_llm_cancelled_retains_agent_domain ... ok
+remote Tool read_only timeout=true: {"kind":{"kind_type":"structured_error","error_code":"tool_error"},"success":false,"output":"","error":"remote producer deadline","failure":{"category":"timeout","recovery":"retry","side_effect":"none"},"truncated":false,"metadata":{}}; caller_cancelled=false
+remote Tool read_only timeout=false: {"kind":{"kind_type":"structured_error","error_code":"tool_error"},"success":false,"output":"","error":"stream was cancelled","failure":{"category":"cancelled","recovery":"stop","side_effect":"none"},"truncated":false,"metadata":{}}; caller_cancelled=false
+remote Tool standard timeout=false: {"kind":{"kind_type":"structured_error","error_code":"tool_error"},"success":false,"output":"","error":"stream was cancelled","failure":{"category":"cancelled","recovery":"verify_then_retry","side_effect":"possible"},"truncated":false,"metadata":{}}; caller_cancelled=false
+remote Tool standard timeout=true: {"kind":{"kind_type":"structured_error","error_code":"tool_error"},"success":false,"output":"","error":"remote producer deadline","failure":{"category":"timeout","recovery":"verify_then_retry","side_effect":"possible"},"truncated":false,"metadata":{}}; caller_cancelled=false
+remote Tool dangerous timeout=false: {"kind":{"kind_type":"structured_error","error_code":"tool_error"},"success":false,"output":"","error":"stream was cancelled","failure":{"category":"cancelled","recovery":"verify_then_retry","side_effect":"possible"},"truncated":false,"metadata":{}}; caller_cancelled=false
+remote Tool dangerous timeout=true: {"kind":{"kind_type":"structured_error","error_code":"tool_error"},"success":false,"output":"","error":"remote producer deadline","failure":{"category":"timeout","recovery":"verify_then_retry","side_effect":"possible"},"truncated":false,"metadata":{}}; caller_cancelled=false
+test core_profile::extension_bridge::tests::remote_stream_terminal_tool_timeout_retains_framework_failure ... ok
+test core_profile::extension_bridge::tests::remote_stream_terminal_tool_cancelled_retains_framework_failure ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 147 filtered out; finished in 0.24s
+

@@ -38,3 +38,8 @@ docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/close-onl
 docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/important-counterexamples-old61f.log -diff
 docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/review-counterexamples-before.log -diff
 docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/tests.log -diff
+docs/sdk/governance/evidence/live-journal-replacement/GapAckHostTest.java.patch -diff
+docs/sdk/governance/evidence/live-journal-replacement/gap_ack_fixture.py.patch -diff
+docs/sdk/governance/evidence/live-journal-replacement/python-first-order.log -diff
+docs/sdk/governance/evidence/remote-stream-failure-domain/after.log -diff
+docs/sdk/governance/evidence/remote-stream-failure-domain/production-only.patch -diff

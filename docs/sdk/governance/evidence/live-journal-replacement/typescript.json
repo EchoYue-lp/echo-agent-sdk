@@ -1,0 +1,706 @@
+{
+  "stream": {
+    "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+    "generation": "1",
+    "kind": "stream"
+  },
+  "other_stream": {
+    "id": "4d5cd0df-cf29-4116-b7b1-1be1dd80d4b2",
+    "generation": "1",
+    "kind": "stream"
+  },
+  "errors": [
+    {
+      "code": "replay_unavailable",
+      "retryable": "after_delay",
+      "operation": "_echo_agent/run/replay",
+      "details": null,
+      "handle": null,
+      "message": "journal replay failed: segmented journal replay /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-journal-replacement-native/journal-ts-ZGhLgv/state/journals/sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9_turn_1: existing directory identity changed; verified reopen required: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-journal-replacement-native/journal-ts-ZGhLgv/state/journals/sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9_turn_1"
+    },
+    {
+      "code": "replay_unavailable",
+      "retryable": "after_delay",
+      "operation": "_echo_agent/run/replay",
+      "details": null,
+      "handle": null,
+      "message": "journal replay failed: segmented journal replay /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-journal-replacement-native/journal-ts-ZGhLgv/state/journals/sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9_turn_1: existing directory identity changed; verified reopen required: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-journal-replacement-native/journal-ts-ZGhLgv/state/journals/sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9_turn_1"
+    }
+  ],
+  "directory": {
+    "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+    "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+    "directory": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-journal-replacement-native/journal-ts-ZGhLgv/state/journals/sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9_turn_1",
+    "retained": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-journal-replacement-native/journal-ts-ZGhLgv/state/journals/sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9_turn_1.retained-test-original",
+    "original_inode": 269958068,
+    "replacement_inode": 269958149,
+    "files": {
+      ".segmented-event-journal.lease": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "00000000000000000001.jsonl": "a8eebf4b985557d54e0e6997dc6ae6255a17229cf7db5067c9f1b3b46ea26e5d"
+    }
+  },
+  "restored": {
+    "restored": true,
+    "files_unchanged": true,
+    "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2"
+  },
+  "receipt_unchanged": true,
+  "other_journal_unchanged": true,
+  "replay_restored": true,
+  "page": {
+    "requested_after_sequence": "0",
+    "events": [
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_83bc8b50fad5a8409fd3f4ceb08f03dcb865752266e9f8e87bbcd7c888937a62",
+          "content_hash": "sha256:0502b16adc6ddc47bea5f5f5ee6c8d915e6c9403af83ef9a8c2e82d9a892328a",
+          "sequence": "1",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 669210000,
+            "rfc3339": "2026-10-14T07:10:30.669210+00:00"
+          },
+          "payload": {
+            "event_type": "llm_usage",
+            "data": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "model"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "fixture-model"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "prompt_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "completion_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "total_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "cached_prompt_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "cache_creation_prompt_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "usage_reported"
+                  },
+                  "value": {
+                    "kind": "bool",
+                    "value": false
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_c326abd8c448f25ac1eb5a359e408659c93d98a313c8dabbe021792c810b2246",
+          "content_hash": "sha256:760577a9fba3699fdecf78d2b8db5066da5614d0623a8553c35b832600f8ca4e",
+          "sequence": "2",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 670266000,
+            "rfc3339": "2026-10-14T07:10:30.670266+00:00"
+          },
+          "payload": {
+            "event_type": "tool_batch_start",
+            "data": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "tool_count"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "1"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_714bc30b519f20ad445892eafbbf4468d1db6d8fe5b7c9dad4e5a5b827911b93",
+          "content_hash": "sha256:68efab256d3c98af777b037873b3b66a0355e0fd244aee28fae63ee635a181b2",
+          "sequence": "3",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 671582000,
+            "rfc3339": "2026-10-14T07:10:30.671582+00:00"
+          },
+          "payload": {
+            "event_type": "tool_call",
+            "data": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "call_id"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "call-gap"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "invocation"
+                  },
+                  "value": {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "requested_name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "missing_fixture_tool"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "requested_args"
+                        },
+                        "value": {
+                          "kind": "map",
+                          "value": []
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "missing_fixture_tool"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "args"
+                        },
+                        "value": {
+                          "kind": "map",
+                          "value": []
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_a44b9b689e206211ca4436d1cfb05fecb739b142cf4d45bd960b9a8cf6fd6039",
+          "content_hash": "sha256:f09fb3d0e89547d3cf0c7d545417586b62ae29e93b66b75b9ae2ac89fb06f5c7",
+          "sequence": "4",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "parent_event_id": "evt_714bc30b519f20ad445892eafbbf4468d1db6d8fe5b7c9dad4e5a5b827911b93",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 675723000,
+            "rfc3339": "2026-10-14T07:10:30.675723+00:00"
+          },
+          "payload": {
+            "event_type": "tool_result",
+            "data": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "call_id"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "call-gap"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "name"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "missing_fixture_tool"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "result"
+                  },
+                  "value": {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "kind"
+                        },
+                        "value": {
+                          "kind": "map",
+                          "value": [
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "kind_type"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "structured_error"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "error_code"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "tool_execution_failed"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "success"
+                        },
+                        "value": {
+                          "kind": "bool",
+                          "value": false
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "output"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": ""
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "error"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "Tool Error: Tool 'missing_fixture_tool' not found"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "failure"
+                        },
+                        "value": {
+                          "kind": "map",
+                          "value": [
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "category"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "partial_side_effect"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "recovery"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "verify_then_retry"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "side_effect"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "possible"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "truncated"
+                        },
+                        "value": {
+                          "kind": "bool",
+                          "value": false
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "metadata"
+                        },
+                        "value": {
+                          "kind": "map",
+                          "value": [
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "original_bytes"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "0"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "estimated_tokens"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "0"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "returned_bytes"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "0"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "output_handling"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "inline"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_05c52278bb8207034869d512b5704bf76c592295f195e6981cfe3396ff4315e9",
+          "content_hash": "sha256:e9f11920fdcdac14e3989f494ede9500cce8acba522bf94a11977143143d2b05",
+          "sequence": "5",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 744061000,
+            "rfc3339": "2026-10-14T07:10:30.744061+00:00"
+          },
+          "payload": {
+            "event_type": "tool_batch_end"
+          }
+        }
+      },
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_5f95f34d0368c8f03c3ba2ab3b68f3ae2f295abb3a8966249ce998c2eb35b3e7",
+          "content_hash": "sha256:0502b16adc6ddc47bea5f5f5ee6c8d915e6c9403af83ef9a8c2e82d9a892328a",
+          "sequence": "6",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 852887000,
+            "rfc3339": "2026-10-14T07:10:30.852887+00:00"
+          },
+          "payload": {
+            "event_type": "llm_usage",
+            "data": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "model"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "fixture-model"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "prompt_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "completion_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "total_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "cached_prompt_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "cache_creation_prompt_tokens"
+                  },
+                  "value": {
+                    "kind": "u64",
+                    "value": "0"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "usage_reported"
+                  },
+                  "value": {
+                    "kind": "bool",
+                    "value": false
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_68cb7fa18f2512b2def695a9c14f0a969081c3a055f49ed5406b26bf2a579192",
+          "content_hash": "sha256:281e3f30c7a37c2083d2c33c8e1d04f37f0019c2dd4a954cfce3d4f3c3546ff1",
+          "sequence": "7",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 919582000,
+            "rfc3339": "2026-10-14T07:10:30.919582+00:00"
+          },
+          "payload": {
+            "event_type": "token",
+            "data": {
+              "kind": "string",
+              "value": "continued 中文🌊"
+            }
+          }
+        }
+      },
+      {
+        "stream": {
+          "id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "generation": "1",
+          "kind": "stream"
+        },
+        "envelope": {
+          "schema_version": 5,
+          "event_id": "evt_e3be68f75685604f900caaebbc8023ade78dbaebd9e381301163468a5b783e58",
+          "content_hash": "sha256:98e38d9b0f7f60d1d005da2305d3b63503efa3c45647528962235b006d9c7626",
+          "sequence": "8",
+          "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+          "conversation_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9",
+          "run_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "turn_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1",
+          "message_id": "sess_f2468ae4-e2c0-49fc-aeac-7433c4627ae9:turn:1:message",
+          "timestamp": {
+            "unix_seconds": "1791961830",
+            "nanos": 922655000,
+            "rfc3339": "2026-10-14T07:10:30.922655+00:00"
+          },
+          "payload": {
+            "event_type": "final_answer",
+            "data": {
+              "kind": "string",
+              "value": "continued 中文🌊"
+            }
+          }
+        }
+      }
+    ],
+    "next_cursor": {
+      "stream_id": "a4a87ab6-27a3-47f8-b340-d47cc9aeb0f2",
+      "last_processed_sequence": "8"
+    }
+  }
+}

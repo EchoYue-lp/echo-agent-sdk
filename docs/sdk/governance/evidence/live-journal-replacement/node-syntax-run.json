@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+  "steps": [
+    {
+      "label": "journal-node-syntax",
+      "command": [
+        "node",
+        "--check",
+        "test/gap-ack-host.test.js"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/live-journal-replacement/node-syntax.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 0,
+      "bytesWritten": 0,
+      "startedAt": "2026-10-14T07:16:17.359Z",
+      "finishedAt": "2026-10-14T07:16:17.418Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T07:16:17.418Z"
+}

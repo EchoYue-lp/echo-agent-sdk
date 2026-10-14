@@ -1,0 +1,30 @@
+   Compiling echo_orchestration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+   Compiling echo_agent v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 52.46s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-517dfb55455fb261)
+
+running 3 tests
+Error: "invalid type: string \"type\", expected adjacently tagged enum WireValue"
+Error: "invalid type: string \"type\", expected adjacently tagged enum WireValue"
+test core_profile::extension_bridge::tests::remote_stream_terminal_tool_cancelled_retains_framework_failure ... FAILED
+test core_profile::extension_bridge::tests::remote_stream_terminal_tool_timeout_retains_framework_failure ... FAILED
+remote Llm terminal: Some(Failed); caller_cancelled=false
+
+thread 'core_profile::extension_bridge::tests::remote_stream_terminal_llm_cancelled_retains_agent_domain' (132623382) panicked at echo-sdk-host/src/core_profile/extension_bridge.rs:10687:9:
+assertion `left == right` failed
+  left: Some(Failed)
+ right: Some(Cancelled)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test core_profile::extension_bridge::tests::remote_stream_terminal_llm_cancelled_retains_agent_domain ... FAILED
+
+failures:
+
+failures:
+    core_profile::extension_bridge::tests::remote_stream_terminal_llm_cancelled_retains_agent_domain
+    core_profile::extension_bridge::tests::remote_stream_terminal_tool_cancelled_retains_framework_failure
+    core_profile::extension_bridge::tests::remote_stream_terminal_tool_timeout_retains_framework_failure
+
+test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 147 filtered out; finished in 0.45s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`
