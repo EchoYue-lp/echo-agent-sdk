@@ -1,0 +1,58 @@
+   Compiling echo_core v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-core)
+   Compiling echo_state v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-state)
+   Compiling echo_tools v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools)
+   Compiling echo_orchestration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-orchestration)
+   Compiling echo_execution v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-execution)
+   Compiling echo_integration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-integration)
+   Compiling echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+error[E0433]: cannot find `MessageContent` in `llm`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:7934:34
+     |
+7934 |                 echo_agent::llm::MessageContent::Text(text) => text,
+     |                                  ^^^^^^^^^^^^^^ could not find `MessageContent` in `llm`
+
+error[E0433]: cannot find `MessageContent` in `llm`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:7985:34
+     |
+7985 |                 echo_agent::llm::MessageContent::Text(text) => text,
+     |                                  ^^^^^^^^^^^^^^ could not find `MessageContent` in `llm`
+
+error[E0425]: cannot find type `Message` in module `echo_agent::llm`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:7906:35
+     |
+7906 |         message: echo_agent::llm::Message,
+     |                                   ^^^^^^^ not found in `echo_agent::llm`
+
+error[E0425]: cannot find type `Message` in module `echo_agent::llm`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:7923:35
+     |
+7923 |         message: echo_agent::llm::Message,
+     |                                   ^^^^^^^ not found in `echo_agent::llm`
+
+error[E0425]: cannot find type `Message` in module `echo_agent::llm`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:7957:35
+     |
+7957 |         message: echo_agent::llm::Message,
+     |                                   ^^^^^^^ not found in `echo_agent::llm`
+
+error[E0425]: cannot find type `Message` in module `echo_agent::llm`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:7974:35
+     |
+7974 |         message: echo_agent::llm::Message,
+     |                                   ^^^^^^^ not found in `echo_agent::llm`
+
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:682:92
+    |
+682 |         tokio::time::timeout(std::time::Duration::from_secs(2), runtime.close_all()).await??;
+    |         -----------------------------------------------------------------------------------^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    |         |
+    |         this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+Some errors have detailed explanations: E0277, E0425, E0433.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `echo-sdk-host` (lib test) due to 7 previous errors

@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: official serialized writer: low successful ACK cannot commit pending terminal ACK
+ok 1 - official serialized writer: low successful ACK cannot commit pending terminal ACK
+  ---
+  duration_ms: 13.737375
+  type: 'test'
+  ...
+# Subtest: official writer 2 success then other ACK failure retains exact successful floor
+ok 2 - official writer 2 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 1.068375
+  type: 'test'
+  ...
+# Subtest: official writer 10 success then other ACK failure retains exact successful floor
+ok 3 - official writer 10 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 0.860625
+  type: 'test'
+  ...
+# Subtest: official failed send preserves queue prefix and does not accept a future ACK
+ok 4 - official failed send preserves queue prefix and does not accept a future ACK
+  ---
+  duration_ms: 1.543209
+  type: 'test'
+  ...
+# Subtest: official writer sends the same immutable stream identity that it commits
+ok 5 - official writer sends the same immutable stream identity that it commits
+  ---
+  duration_ms: 4.404167
+  type: 'test'
+  ...
+# Subtest: official replay retention bridge commits only a successful returned cursor
+ok 6 - official replay retention bridge commits only a successful returned cursor
+  ---
+  duration_ms: 2.645
+  type: 'test'
+  ...
+# Subtest: gap plus empty after-gap page never grants an absent ACK cursor
+ok 7 - gap plus empty after-gap page never grants an absent ACK cursor
+  ---
+  duration_ms: 16.086041
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage empty_gap_tail
+ok 8 - public replay connected coverage empty_gap_tail
+  ---
+  duration_ms: 3.684334
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_gap
+ok 9 - public replay connected coverage reverse_gap
+  ---
+  duration_ms: 2.306417
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_plain
+ok 10 - public replay connected coverage reverse_plain
+  ---
+  duration_ms: 4.746583
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage disconnected
+ok 11 - public replay connected coverage disconnected
+  ---
+  duration_ms: 2.428875
+  type: 'test'
+  ...
+# Subtest: successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+ok 12 - successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+  ---
+  duration_ms: 2.2375
+  type: 'test'
+  ...
+# Subtest: real Host cancellation after setup ACK reaches retained native stream producer
+ok 13 - real Host cancellation after setup ACK reaches retained native stream producer
+  ---
+  duration_ms: 5475.652625
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5779.358916

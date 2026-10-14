@@ -1,0 +1,138 @@
+{
+  "scope": "3 native SearchProvider real Agent success/error and Sandbox complete/pendingcancel/pendingclose; no post-answer cancellation claim",
+  "result": "pass",
+  "sandbox_producer_count": 9,
+  "actual_physical_exits": 9,
+  "signal_representations": "Python/Node -15 and Java143 retained with Unix SIGTERM meaning; no value overwritten with 0",
+  "facts": [
+    {
+      "language": "python",
+      "normal_sequence": [
+        "1",
+        "2",
+        "3"
+      ],
+      "producer_exit_facts": [
+        {
+          "mode": "success",
+          "pid": 30536,
+          "exit_code": 0,
+          "meaning": "normal exit0",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": false,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": true
+        },
+        {
+          "mode": "cancel",
+          "pid": 30537,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM (Unix signal status encoding)",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": false
+        },
+        {
+          "mode": "close",
+          "pid": 30538,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM (Unix signal status encoding)",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": true
+        }
+      ]
+    },
+    {
+      "language": "typescript",
+      "normal_sequence": [
+        "1",
+        "2",
+        "3"
+      ],
+      "producer_exit_facts": [
+        {
+          "mode": "success",
+          "pid": 30661,
+          "exit_code": 0,
+          "meaning": "normal exit0",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": false,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": true
+        },
+        {
+          "mode": "cancel",
+          "pid": 30667,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM (Unix signal status encoding)",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": false
+        },
+        {
+          "mode": "close",
+          "pid": 30675,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM (Unix signal status encoding)",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": true
+        }
+      ]
+    },
+    {
+      "language": "java",
+      "normal_sequence": [
+        "1",
+        "2",
+        "3"
+      ],
+      "producer_exit_facts": [
+        {
+          "mode": "success",
+          "pid": 30579,
+          "exit_code": 0,
+          "meaning": "normal exit0",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": false,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": true
+        },
+        {
+          "mode": "cancel",
+          "pid": 30580,
+          "exit_code": 143,
+          "meaning": "terminated by SIGTERM (Unix signal status encoding)",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": false
+        },
+        {
+          "mode": "close",
+          "pid": 30581,
+          "exit_code": 143,
+          "meaning": "terminated by SIGTERM (Unix signal status encoding)",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "close_or_terminal_returned_after_cleanup": true
+        }
+      ]
+    }
+  ]
+}

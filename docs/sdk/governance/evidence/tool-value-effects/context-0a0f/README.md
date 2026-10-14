@@ -1,0 +1,1 @@
+0a0f 候选：Web artifact 和 native shell signal/timeout 已有真实结果；DB describe/Clinical total 仍待框架修复。Sandbox 正常输出+terminal+EOF 完成，但 pending cancel/close 没收到语言取消信号，5秒 fixture watchdog 后执行本地 finally；这不证明 Host 取消成功。Java finally=2 是已记录的 fixture cleanup callback 误计数，下一冻结源已修，三语言 cancel_observed=false 是实际共同失败。

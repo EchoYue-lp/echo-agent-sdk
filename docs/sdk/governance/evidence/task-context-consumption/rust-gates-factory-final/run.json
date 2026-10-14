@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "steps": [
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/fmt.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 0,
+      "bytesWritten": 0,
+      "startedAt": "2026-10-13T21:49:22.614Z",
+      "finishedAt": "2026-10-13T21:49:24.051Z"
+    },
+    {
+      "label": "fmt-check",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/fmt-check.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 0,
+      "bytesWritten": 0,
+      "startedAt": "2026-10-13T21:49:24.122Z",
+      "finishedAt": "2026-10-13T21:49:25.367Z"
+    },
+    {
+      "label": "workspace-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/workspace-clippy.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 383,
+      "bytesWritten": 383,
+      "startedAt": "2026-10-13T21:49:25.439Z",
+      "finishedAt": "2026-10-13T21:49:51.596Z"
+    },
+    {
+      "label": "production-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--lib",
+        "--bins",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "clippy::unwrap_used",
+        "-D",
+        "clippy::expect_used",
+        "-D",
+        "clippy::panic",
+        "-D",
+        "clippy::unreachable"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/production-clippy.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 383,
+      "bytesWritten": 383,
+      "startedAt": "2026-10-13T21:49:51.674Z",
+      "finishedAt": "2026-10-13T21:50:12.113Z"
+    },
+    {
+      "label": "workspace-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/workspace-tests.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 51854,
+      "bytesWritten": 51854,
+      "startedAt": "2026-10-13T21:50:12.189Z",
+      "finishedAt": "2026-10-13T21:51:22.506Z"
+    },
+    {
+      "label": "featureless-check",
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--lib",
+        "--no-default-features",
+        "--locked"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/featureless-check.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 1515,
+      "bytesWritten": 1515,
+      "startedAt": "2026-10-13T21:51:22.587Z",
+      "finishedAt": "2026-10-13T21:51:38.716Z"
+    },
+    {
+      "label": "workspace-doctests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--all-features",
+        "--locked"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/workspace-doctests.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 345,
+      "bytesWritten": 345,
+      "startedAt": "2026-10-13T21:51:38.801Z",
+      "finishedAt": "2026-10-13T21:51:41.707Z"
+    },
+    {
+      "label": "ci-default-protocol",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-protocol",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/ci-default-protocol.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 16125,
+      "bytesWritten": 16125,
+      "startedAt": "2026-10-13T21:51:41.779Z",
+      "finishedAt": "2026-10-13T21:52:12.248Z"
+    },
+    {
+      "label": "ci-default-host",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/ci-default-host.log",
+      "exitCode": 101,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 4312,
+      "bytesWritten": 4312,
+      "startedAt": "2026-10-13T21:52:12.325Z",
+      "finishedAt": "2026-10-13T21:52:41.439Z"
+    }
+  ],
+  "updatedAt": "2026-10-13T21:52:41.439Z"
+}

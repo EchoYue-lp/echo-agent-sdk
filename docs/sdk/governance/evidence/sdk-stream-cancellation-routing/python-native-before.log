@@ -1,0 +1,170 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_setup_ack_retains_real_host_cancel_route _________________
+
+fut = <coroutine object Event.wait at 0x1053574c0>, timeout = 2
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+/opt/anaconda3/lib/python3.12/asyncio/tasks.py:520: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <asyncio.locks.Event object at 0x10547a780 [unset]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+    
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another coroutine calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+    
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+/opt/anaconda3/lib/python3.12/asyncio/locks.py:212: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/pytest-of-ls/pytest-956/test_setup_ack_retains_real_ho0')
+
+    @pytest.mark.skipif(not HOST, reason="real Host required")
+    @pytest.mark.asyncio
+    async def test_setup_ack_retains_real_host_cancel_route(tmp_path):
+        config = await asyncio.create_subprocess_exec(sys.executable, str(CONFIG), str(tmp_path))
+        assert await config.wait() == 0
+        sdk = await EchoAgentClient.spawn(HOST, "--config", str(tmp_path / "host.json"))
+        entered, cancelled, release, shutdown = (asyncio.Event() for _ in range(4))
+        jobs, facts = [], []
+    
+        async def handler(call, cancellation):
+            operation = call["invocation"]["operation"]
+            if operation == "agent_close":
+                return {"outcome": "result", "result": {"operation": operation, "value": None}}
+            assert operation == "agent_execute_stream"
+    
+            async def produce():
+                waits = [asyncio.create_task(cancellation.wait()), asyncio.create_task(shutdown.wait())]
+                try:
+                    await asyncio.wait(waits, return_when=asyncio.FIRST_COMPLETED)
+                    if not cancellation.is_set():
+                        return
+                    facts.append("signal")
+                    cancelled.set()
+                    await release.wait()
+                    await sdk.stream_writer(__import__("echo_agent_sdk").WireHandle.from_dict(call["stream"])).complete(
+                        {"kind": "agent", "value": {"event": "cancelled"}})
+                    facts.append("terminal-success")
+                finally:
+                    for task in waits:
+                        task.cancel()
+                    await asyncio.gather(*waits, return_exceptions=True)
+                    facts.append("finally")
+    
+            jobs.append(asyncio.create_task(produce()))
+            entered.set()
+            facts.append("setup-ack")
+            return {"outcome": "stream", "stream": call["stream"]}
+    
+        try:
+            reg = await sdk.register_extension("custom_agent", "route-target", {
+                "kind": "custom_agent", "descriptor_version": 1, "name": "route-target",
+                "model_name": "fixture", "system_prompt": "fixture", "tool_names": []}, handler)
+            agent = await sdk.create_agent()
+            session = await agent.create_session()
+            dispatch = await sdk.request("echo_agent/subagent/dispatch", {
+                "session": session.wire.to_dict(), "request": to_wire({"agent_name": "route-target",
+                "task": "retain cancel after setup 中文🌊", "mode_override": "sync"}), "idempotency_id": "cancel-route"})
+            await asyncio.wait_for(entered.wait(), 2)
+            await sdk.request("echo_agent/subagent/control", {"subagent": dispatch["subagent"], "action": "cancel"})
+>           await asyncio.wait_for(cancelled.wait(), 2)
+
+tests/test_stream_cancellation_route_host.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/anaconda3/lib/python3.12/asyncio/tasks.py:519: in wait_for
+    async with timeouts.timeout(timeout):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x1054a8400>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+    
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+    
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+    
+            if self._task.uncancel() <= self._cancelling and exc_type is exceptions.CancelledError:
+                # Since there are no new cancel requests, we're
+                # handling this.
+>               raise TimeoutError from exc_val
+E               TimeoutError
+
+/opt/anaconda3/lib/python3.12/asyncio/timeouts.py:115: TimeoutError
+=========================== short test summary info ============================
+FAILED tests/test_stream_cancellation_route_host.py::test_setup_ack_retains_real_host_cancel_route
+1 failed in 3.80s

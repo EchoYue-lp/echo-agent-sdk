@@ -1,0 +1,10 @@
+{
+  "classification": "upstreamproposed humancompatibilitychoice, notapprovedSDKpolicy",
+  "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/database-describe-fidelity/docs/supreme/specs/2026-10-14-subagent-physical-settlement/design.md",
+  "sha256": "4a50a1b4aa6a5242b349724c265a0ad41a6a94756694c0a1d6c33c896f731616",
+  "upstream_history_findings": [
+    "finding.subagent-factory-cancellation",
+    "finding.task-subagent-attempt-link"
+  ],
+  "not_claimed": "currentfullframeFindingphysicalclosure or userchoice"
+}

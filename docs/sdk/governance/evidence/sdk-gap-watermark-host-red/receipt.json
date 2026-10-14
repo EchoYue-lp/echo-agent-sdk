@@ -1,0 +1,44 @@
+{
+  "classification": "single-variable historical Host ACK watermark mechanism regression on fixed current SDK snapshot",
+  "isFullHistoricalSdkReproduction": false,
+  "supportsThreeLanguageHistoricalHostResult": false,
+  "case": "ack_window_snapshot_ack_resumes_strictly_after_watermark",
+  "red": {
+    "exitCode": 101,
+    "passed": 0,
+    "failed": 1,
+    "ignored": 0,
+    "snapshotWatermark": 2,
+    "resumedLiveSequence": 2
+  },
+  "green": {
+    "exitCode": 0,
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0,
+    "snapshotWatermark": 2,
+    "resumedLiveSequence": 3,
+    "resumedGapFrom": 4
+  },
+  "sdkBaselineHead": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "frameworkBaselineHead": "803535017c879edc65814e0f98a346ed3e16a068",
+  "fixedEventsSha256": "e4ae808abb8f916a7318faec3643c5a56cd1bbd143e9e88cb447e0cf7127f7de",
+  "regressedEventsSha256": "2b372ce338a031cdd39723e98f1716b25a2986ccfb205709b787ad534ea04218",
+  "observedFixtureSha256": "2e29cbe4e5257b79171adf35b60073566d99e810b375271d10586f13a1bb2d81",
+  "sameFixtureInRedAndGreen": true,
+  "sdkInputs": 216,
+  "frameworkBuildInputs": 552,
+  "allBuildInputsCheckedBeforeAndAfter": true,
+  "productionSdkEventsUnchanged": true,
+  "copyEventsRestoredAfterTests": true,
+  "nonBehaviorAttempts": [
+    {
+      "receipt": "attempt-zero-tests-red-host-receipt.json",
+      "reason": "sdk-core-profile not enabled; zero tests executed"
+    },
+    {
+      "receipt": "attempt-observation-compile-error-red-host-receipt.json",
+      "reason": "observer println used nonexistent WireNonZeroU64.as_str; compiler error before runtime"
+    }
+  ]
+}

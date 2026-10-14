@@ -1,0 +1,29 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 41.65s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-e1cde4efcace38ae)
+
+running 7 tests
+test core_profile::facade::stream::cleanup_tests::cancelled_stream_close_retains_producer_until_collector_settles ... ok
+test core_profile::facade::stream::cleanup_tests::close_deadline_aborts_producer_and_collector_retains_abort_fact ... ok
+test core_profile::facade::stream::cleanup_tests::producer_abort_yields_failed_terminal_not_complete ... ok
+
+thread 'core_profile::facade::stream::cleanup_tests::cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence' (126201328) panicked at echo-sdk-host/src/core_profile/facade/stream.rs:976:9:
+assertion `left == right` failed: undelivered terminal cannot consume a registry sequence
+  left: (1, false)
+ right: (0, false)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test core_profile::facade::stream::cleanup_tests::eof_waits_for_producer_failure_and_cancelled_pull_retries_same_cause ... ok
+test core_profile::facade::stream::cleanup_tests::producer_unwind_yields_failed_terminal_not_complete ... ok
+test core_profile::facade::stream::cleanup_tests::cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence ... FAILED
+Error: Elapsed(())
+test core_profile::facade::stream::cleanup_tests::cancellation_wakes_initial_receive_while_external_source_keeps_sender ... FAILED
+
+failures:
+
+failures:
+    core_profile::facade::stream::cleanup_tests::cancellation_wakes_initial_receive_while_external_source_keeps_sender
+    core_profile::facade::stream::cleanup_tests::cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence
+
+test result: FAILED. 5 passed; 2 failed; 0 ignored; 0 measured; 123 filtered out; finished in 1.08s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

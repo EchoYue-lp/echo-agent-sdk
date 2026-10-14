@@ -1,0 +1,19 @@
+{
+  "label": "sdk-feature-wiring-audit",
+  "command": [
+    "cargo",
+    "audit",
+    "--deny",
+    "warnings"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-current-dependency-policy-after-feature-wiring/audit.log",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 253,
+  "bytesWritten": 253,
+  "startedAt": "2026-10-13T22:27:21.205Z",
+  "finishedAt": "2026-10-13T22:27:23.971Z"
+}

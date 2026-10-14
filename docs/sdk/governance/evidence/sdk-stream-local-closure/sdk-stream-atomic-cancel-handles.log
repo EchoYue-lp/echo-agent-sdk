@@ -1,0 +1,20 @@
+    Finished `test` profile [unoptimized] target(s) in 1.20s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-e1cde4efcace38ae)
+
+running 13 tests
+test core_profile::handles::tests::empty_ids_fail_shape_first ... ok
+test core_profile::handles::tests::config_fingerprint_redacts_inline_credentials ... ok
+test core_profile::handles::tests::stale_generation_is_reported_before_unknown_ids ... ok
+test core_profile::handles::tests::task_handle_ladder_checks_generation_before_lookup ... ok
+test core_profile::handles::tests::resource_close_preserves_stale_generation_classification_for_old_streams ... ok
+test core_profile::handles::tests::wrong_kind_is_a_typed_invalid_value ... ok
+test core_profile::handles::tests::closing_facade_resource_atomically_closes_associated_streams ... ok
+test core_profile::handles::tests::facade_stream_resource_cascade_does_not_touch_other_resources ... ok
+test core_profile::handles::tests::unknown_current_generation_ids_are_invalid_not_stale ... ok
+test core_profile::handles::tests::facade_stream_uses_registry_generation_owner_and_sequence_ladder ... ok
+test core_profile::handles::tests::failed_factory_commit_preserves_pending_close_address ... ok
+test core_profile::handles::tests::factory_reservation_is_quota_bound_and_commits_same_owned_identity ... ok
+test core_profile::handles::tests::semantic_extension_identities_are_unique ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 120 filtered out; finished in 0.02s
+

@@ -1,0 +1,1200 @@
+[
+  {
+    "id": "build",
+    "outcome": "result",
+    "value": {
+      "edges": "4",
+      "name": "shared-workflow-中文🙂",
+      "nodes": "5",
+      "resource": {
+        "generation": "1",
+        "id": "facade_resource-opaque-1",
+        "kind": "facade_resource"
+      }
+    }
+  },
+  {
+    "id": "yes-direct",
+    "outcome": "result",
+    "value": {
+      "outcome": "completed",
+      "path": [
+        "start",
+        "gate",
+        "yes",
+        "end"
+      ],
+      "state": {
+        "current_node": "end",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "steps": "4"
+    }
+  },
+  {
+    "id": "no-direct",
+    "outcome": "result",
+    "value": {
+      "outcome": "completed",
+      "path": [
+        "start",
+        "gate",
+        "no",
+        "end"
+      ],
+      "state": {
+        "current_node": "end",
+        "messages": [],
+        "values": {
+          "approved": false,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "steps": "4"
+    }
+  },
+  {
+    "id": "first",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-1",
+        "current_node": "gate",
+        "generation": "0",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-2",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": null,
+        "path": [
+          "start"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "start",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "1",
+        "tags": [],
+        "workflow_run_id": "opaque-3"
+      },
+      "outcome": "interrupted",
+      "pending_node": "gate",
+      "prompt": "Node 'gate' requires confirmation before execution"
+    }
+  },
+  {
+    "id": "load-first",
+    "outcome": "result",
+    "value": {
+      "branch": null,
+      "continuation": {
+        "kind": "node"
+      },
+      "created_at": "timestamp-1",
+      "current_node": "gate",
+      "generation": "0",
+      "graph_name": "shared-workflow-中文🙂",
+      "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+      "id": "opaque-2",
+      "interrupt_type": "beforenode",
+      "label": null,
+      "parent_checkpoint_id": null,
+      "path": [
+        "start"
+      ],
+      "resume_attempt_id": null,
+      "state_snapshot": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "step_count": "1",
+      "tags": [],
+      "workflow_run_id": "opaque-3"
+    }
+  },
+  {
+    "id": "restore-first",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-1",
+        "current_node": "gate",
+        "generation": "0",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-2",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": null,
+        "path": [
+          "start"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "start",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "1",
+        "tags": [],
+        "workflow_run_id": "opaque-3"
+      },
+      "state": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      }
+    }
+  },
+  {
+    "id": "tag-first",
+    "outcome": "result",
+    "value": {
+      "ok": true
+    }
+  },
+  {
+    "id": "load-tagged",
+    "outcome": "result",
+    "value": {
+      "branch": null,
+      "continuation": {
+        "kind": "node"
+      },
+      "created_at": "timestamp-1",
+      "current_node": "gate",
+      "generation": "1",
+      "graph_name": "shared-workflow-中文🙂",
+      "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+      "id": "opaque-2",
+      "interrupt_type": "beforenode",
+      "label": "审查🙂",
+      "parent_checkpoint_id": null,
+      "path": [
+        "start"
+      ],
+      "resume_attempt_id": null,
+      "state_snapshot": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "step_count": "1",
+      "tags": [
+        "approved",
+        "中文"
+      ],
+      "workflow_run_id": "opaque-3"
+    }
+  },
+  {
+    "id": "defer",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-1",
+        "current_node": "gate",
+        "generation": "1",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-2",
+        "interrupt_type": "beforenode",
+        "label": "审查🙂",
+        "parent_checkpoint_id": null,
+        "path": [
+          "start"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "start",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "1",
+        "tags": [
+          "approved",
+          "中文"
+        ],
+        "workflow_run_id": "opaque-3"
+      },
+      "outcome": "deferred",
+      "pending_node": "gate"
+    }
+  },
+  {
+    "id": "load-after-defer",
+    "outcome": "result",
+    "value": {
+      "branch": null,
+      "continuation": {
+        "kind": "node"
+      },
+      "created_at": "timestamp-1",
+      "current_node": "gate",
+      "generation": "1",
+      "graph_name": "shared-workflow-中文🙂",
+      "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+      "id": "opaque-2",
+      "interrupt_type": "beforenode",
+      "label": "审查🙂",
+      "parent_checkpoint_id": null,
+      "path": [
+        "start"
+      ],
+      "resume_attempt_id": null,
+      "state_snapshot": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "step_count": "1",
+      "tags": [
+        "approved",
+        "中文"
+      ],
+      "workflow_run_id": "opaque-3"
+    }
+  },
+  {
+    "id": "resume-exact",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-2",
+        "current_node": "end",
+        "generation": "2",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-4",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": "opaque-2",
+        "path": [
+          "start",
+          "gate",
+          "yes"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "yes",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "3",
+        "tags": [],
+        "workflow_run_id": "opaque-3"
+      },
+      "outcome": "interrupted",
+      "pending_node": "end",
+      "prompt": "Node 'end' requires confirmation before execution"
+    }
+  },
+  {
+    "id": "load-consumed",
+    "outcome": "result",
+    "value": null
+  },
+  {
+    "code": "framework_error",
+    "details": {
+      "fields": [
+        {
+          "key": "framework_failure_category",
+          "value": "other"
+        },
+        {
+          "key": "framework_terminal_kind",
+          "value": "failed"
+        },
+        {
+          "key": "framework_failure_code",
+          "value": "other"
+        },
+        {
+          "key": "framework_retryable",
+          "value": "false"
+        }
+      ]
+    },
+    "id": "duplicate-exact",
+    "message": "Checkpoint is missing or consumed",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "id": "resume-finish",
+    "outcome": "result",
+    "value": {
+      "outcome": "completed",
+      "path": [
+        "start",
+        "gate",
+        "yes",
+        "end"
+      ],
+      "state": {
+        "current_node": "end",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "steps": "4"
+    }
+  },
+  {
+    "code": "invalid_value",
+    "details": null,
+    "id": "duplicate-id",
+    "message": "unknown checkpoint opaque-4",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "id": "branch-parent",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-3",
+        "current_node": "gate",
+        "generation": "0",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-5",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": null,
+        "path": [
+          "start"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "start",
+          "messages": [],
+          "values": {
+            "approved": false,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "1",
+        "tags": [],
+        "workflow_run_id": "opaque-6"
+      },
+      "outcome": "interrupted",
+      "pending_node": "gate",
+      "prompt": "Node 'gate' requires confirmation before execution"
+    }
+  },
+  {
+    "id": "branch",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-4",
+        "current_node": "end",
+        "generation": "1",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-7",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": "opaque-8",
+        "path": [
+          "start",
+          "gate",
+          "yes"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "yes",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "branch_note": "支线🙂",
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "3",
+        "tags": [],
+        "workflow_run_id": "opaque-9"
+      },
+      "outcome": "interrupted",
+      "pending_node": "end",
+      "prompt": "Node 'end' requires confirmation before execution"
+    }
+  },
+  {
+    "id": "parent-after-branch",
+    "outcome": "result",
+    "value": {
+      "branch": null,
+      "continuation": {
+        "kind": "node"
+      },
+      "created_at": "timestamp-3",
+      "current_node": "gate",
+      "generation": "0",
+      "graph_name": "shared-workflow-中文🙂",
+      "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+      "id": "opaque-5",
+      "interrupt_type": "beforenode",
+      "label": null,
+      "parent_checkpoint_id": null,
+      "path": [
+        "start"
+      ],
+      "resume_attempt_id": null,
+      "state_snapshot": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": false,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "step_count": "1",
+      "tags": [],
+      "workflow_run_id": "opaque-6"
+    }
+  },
+  {
+    "id": "branch-load",
+    "outcome": "result",
+    "value": {
+      "branch": null,
+      "continuation": {
+        "kind": "node"
+      },
+      "created_at": "timestamp-4",
+      "current_node": "end",
+      "generation": "1",
+      "graph_name": "shared-workflow-中文🙂",
+      "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+      "id": "opaque-7",
+      "interrupt_type": "beforenode",
+      "label": null,
+      "parent_checkpoint_id": "opaque-8",
+      "path": [
+        "start",
+        "gate",
+        "yes"
+      ],
+      "resume_attempt_id": null,
+      "state_snapshot": {
+        "current_node": "yes",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "branch_note": "支线🙂",
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "step_count": "3",
+      "tags": [],
+      "workflow_run_id": "opaque-9"
+    }
+  },
+  {
+    "id": "branch-finish",
+    "outcome": "result",
+    "value": {
+      "outcome": "completed",
+      "path": [
+        "start",
+        "gate",
+        "yes",
+        "end"
+      ],
+      "state": {
+        "current_node": "end",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "branch_note": "支线🙂",
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "steps": "4"
+    }
+  },
+  {
+    "id": "parent-updates",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-5",
+        "current_node": "end",
+        "generation": "1",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-10",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": "opaque-5",
+        "path": [
+          "start",
+          "gate",
+          "no"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "no",
+          "messages": [],
+          "values": {
+            "approved": false,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂",
+            "updated": "无损🙂"
+          }
+        },
+        "step_count": "3",
+        "tags": [],
+        "workflow_run_id": "opaque-6"
+      },
+      "outcome": "interrupted",
+      "pending_node": "end",
+      "prompt": "Node 'end' requires confirmation before execution"
+    }
+  },
+  {
+    "id": "parent-finish",
+    "outcome": "result",
+    "value": {
+      "outcome": "completed",
+      "path": [
+        "start",
+        "gate",
+        "no",
+        "end"
+      ],
+      "state": {
+        "current_node": "end",
+        "messages": [],
+        "values": {
+          "approved": false,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂",
+          "updated": "无损🙂"
+        }
+      },
+      "steps": "4"
+    }
+  },
+  {
+    "id": "reject-parent",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-6",
+        "current_node": "gate",
+        "generation": "0",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-11",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": null,
+        "path": [
+          "start"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "start",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "1",
+        "tags": [],
+        "workflow_run_id": "opaque-12"
+      },
+      "outcome": "interrupted",
+      "pending_node": "gate",
+      "prompt": "Node 'gate' requires confirmation before execution"
+    }
+  },
+  {
+    "id": "reject",
+    "outcome": "result",
+    "value": {
+      "outcome": "rejected",
+      "path": [
+        "start"
+      ],
+      "reason": "不执行🙂",
+      "state": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "steps": "1"
+    }
+  },
+  {
+    "id": "load-rejected",
+    "outcome": "result",
+    "value": null
+  },
+  {
+    "code": "invalid_value",
+    "details": null,
+    "id": "reject-duplicate",
+    "message": "unknown checkpoint opaque-11",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "id": "list-remaining",
+    "outcome": "result",
+    "value": {
+      "checkpoints": [],
+      "truncated": false
+    }
+  },
+  {
+    "id": "list-by-graph",
+    "outcome": "result",
+    "value": []
+  },
+  {
+    "code": "invalid_value",
+    "details": null,
+    "id": "cross-owner",
+    "message": "facade resource belongs to another session",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "id": "state-new",
+    "outcome": "result",
+    "value": {
+      "resource": {
+        "generation": "1",
+        "id": "facade_resource-opaque-13",
+        "kind": "facade_resource"
+      }
+    }
+  },
+  {
+    "id": "state-get",
+    "outcome": "result",
+    "value": {
+      "value": "状态🙂"
+    }
+  },
+  {
+    "id": "state-set",
+    "outcome": "result",
+    "value": {
+      "ok": true
+    }
+  },
+  {
+    "id": "state-snapshot",
+    "outcome": "result",
+    "value": {
+      "current_node": null,
+      "messages": [],
+      "values": {
+        "nested": {
+          "flag": false,
+          "labels": [
+            "a",
+            "中文"
+          ]
+        },
+        "optional": null,
+        "unicode": "状态🙂"
+      }
+    }
+  },
+  {
+    "id": "state-keys",
+    "outcome": "result",
+    "value": {
+      "keys": [
+        "nested",
+        "optional",
+        "unicode"
+      ]
+    }
+  },
+  {
+    "code": "invalid_value",
+    "details": null,
+    "id": "state-cross-owner",
+    "message": "facade resource belongs to another session",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "code": "payload_too_large",
+    "details": null,
+    "id": "quota",
+    "message": "open facade resource limit 2 reached",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "after_delay"
+  },
+  {
+    "id": "shape-parent",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-7",
+        "current_node": "gate",
+        "generation": "0",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-14",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": null,
+        "path": [
+          "start"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "start",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "1",
+        "tags": [],
+        "workflow_run_id": "opaque-15"
+      },
+      "outcome": "interrupted",
+      "pending_node": "gate",
+      "prompt": "Node 'gate' requires confirmation before execution"
+    }
+  },
+  {
+    "code": "invalid_value",
+    "details": null,
+    "id": "tuple-resume",
+    "message": "workflow checkpoint at argument 1 must be an object",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "id": "shape-parent-after",
+    "outcome": "result",
+    "value": {
+      "branch": null,
+      "continuation": {
+        "kind": "node"
+      },
+      "created_at": "timestamp-7",
+      "current_node": "gate",
+      "generation": "0",
+      "graph_name": "shared-workflow-中文🙂",
+      "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+      "id": "opaque-14",
+      "interrupt_type": "beforenode",
+      "label": null,
+      "parent_checkpoint_id": null,
+      "path": [
+        "start"
+      ],
+      "resume_attempt_id": null,
+      "state_snapshot": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "step_count": "1",
+      "tags": [],
+      "workflow_run_id": "opaque-15"
+    }
+  },
+  {
+    "id": "shape-updates-parent",
+    "outcome": "result",
+    "value": {
+      "checkpoint": {
+        "branch": null,
+        "continuation": {
+          "kind": "node"
+        },
+        "created_at": "timestamp-8",
+        "current_node": "gate",
+        "generation": "0",
+        "graph_name": "shared-workflow-中文🙂",
+        "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+        "id": "opaque-16",
+        "interrupt_type": "beforenode",
+        "label": null,
+        "parent_checkpoint_id": null,
+        "path": [
+          "start"
+        ],
+        "resume_attempt_id": null,
+        "state_snapshot": {
+          "current_node": "start",
+          "messages": [],
+          "values": {
+            "approved": true,
+            "context": {
+              "list": [
+                "a",
+                "b"
+              ],
+              "optional": null
+            },
+            "memo": "checkpoint 中文🙂"
+          }
+        },
+        "step_count": "1",
+        "tags": [],
+        "workflow_run_id": "opaque-17"
+      },
+      "outcome": "interrupted",
+      "pending_node": "gate",
+      "prompt": "Node 'gate' requires confirmation before execution"
+    }
+  },
+  {
+    "code": "invalid_value",
+    "details": null,
+    "id": "tuple-with-state",
+    "message": "workflow checkpoint at argument 1 must be an object",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "id": "shape-updates-after",
+    "outcome": "result",
+    "value": {
+      "branch": null,
+      "continuation": {
+        "kind": "node"
+      },
+      "created_at": "timestamp-8",
+      "current_node": "gate",
+      "generation": "0",
+      "graph_name": "shared-workflow-中文🙂",
+      "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa",
+      "id": "opaque-16",
+      "interrupt_type": "beforenode",
+      "label": null,
+      "parent_checkpoint_id": null,
+      "path": [
+        "start"
+      ],
+      "resume_attempt_id": null,
+      "state_snapshot": {
+        "current_node": "start",
+        "messages": [],
+        "values": {
+          "approved": true,
+          "context": {
+            "list": [
+              "a",
+              "b"
+            ],
+            "optional": null
+          },
+          "memo": "checkpoint 中文🙂"
+        }
+      },
+      "step_count": "1",
+      "tags": [],
+      "workflow_run_id": "opaque-17"
+    }
+  },
+  {
+    "id": "close-a",
+    "outcome": "closed"
+  },
+  {
+    "code": "closed_handle",
+    "details": null,
+    "id": "closed-graph",
+    "message": "handle was already released by this Host generation",
+    "operation": "_echo_agent/session",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "code": "closed_handle",
+    "details": null,
+    "id": "closed-state",
+    "message": "handle was already released by this Host generation",
+    "operation": "_echo_agent/session",
+    "outcome": "error",
+    "retryable": "never"
+  },
+  {
+    "id": "replacement-graph",
+    "outcome": "result",
+    "value": {
+      "edges": "4",
+      "name": "shared-workflow-中文🙂",
+      "nodes": "5",
+      "resource": {
+        "generation": "1",
+        "id": "facade_resource-opaque-18",
+        "kind": "facade_resource"
+      }
+    }
+  },
+  {
+    "id": "replacement-state",
+    "outcome": "result",
+    "value": {
+      "resource": {
+        "generation": "1",
+        "id": "facade_resource-opaque-19",
+        "kind": "facade_resource"
+      }
+    }
+  },
+  {
+    "code": "payload_too_large",
+    "details": null,
+    "id": "replacement-quota",
+    "message": "open facade resource limit 2 reached",
+    "operation": "_echo_agent/workflow/op",
+    "outcome": "error",
+    "retryable": "after_delay"
+  }
+]

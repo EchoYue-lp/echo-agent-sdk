@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, replace
 from typing import Any, Literal, TypeAlias
 
@@ -134,6 +134,7 @@ class ToolResult:
     metadata: Mapping[str, str] | None = None
     mime_type: str | None = None
     model_content: tuple[Mapping[str, Any], ...] = ()
+    effects: tuple[ToolEffect, ...] = ()
 
     @classmethod
     def success_result(cls, output: str) -> ToolResult:
@@ -230,6 +231,12 @@ class ToolResult:
     def with_model_content(self, content: Mapping[str, Any]) -> ToolResult:
         return replace(self, model_content=(*self.model_content, dict(content)))
 
+    def with_effects(self, effects: Iterable[ToolEffect]) -> ToolResult:
+        values = tuple(effects)
+        for effect in values:
+            effect.to_wire()
+        return replace(self, effects=values)
+
     def to_wire(self) -> dict[str, Any]:
         return {
             "kind": self.kind,
@@ -243,6 +250,7 @@ class ToolResult:
             "metadata": dict(self.metadata or {}),
             "mime_type": self.mime_type,
             "model_content": list(self.model_content),
+            "effects": [effect.to_wire() for effect in self.effects],
         }
 
 
@@ -317,3 +325,65 @@ def _json_to_wire(value: JsonValue) -> dict[str, Any]:
             ],
         }
     return to_wire(value)
+
+
+@dataclass(frozen=True, slots=True)
+class ToolEffect:
+    effect: str
+    path: str | None = None
+    command: str | None = None
+    passed: bool | None = None
+    failure_count: int | None = None
+    agent_name: str | None = None
+    task: str | None = None
+    outcome: str | None = None
+
+    @classmethod
+    def file_read(cls, path: str):
+        return cls("file_read", path=path)
+
+    @classmethod
+    def file_edit(cls, path: str):
+        return cls("file_edit", path=path)
+
+    @classmethod
+    def test_run(cls, command: str, passed: bool, failure_count: int | None = None):
+        return cls(
+            "test_run", command=command, passed=passed, failure_count=failure_count
+        )
+
+    @classmethod
+    def subagent_run(cls, agent_name: str, task: str, outcome: str):
+        return cls("subagent_run", agent_name=agent_name, task=task, outcome=outcome)
+
+    def to_wire(self):
+        if self.effect in {"file_read", "file_edit"} and isinstance(self.path, str):
+            return {"effect": self.effect, "path": self.path}
+        if (
+            self.effect == "test_run"
+            and isinstance(self.command, str)
+            and type(self.passed) is bool
+        ):
+            from .wire import wire_u64
+
+            count = (
+                {}
+                if self.failure_count is None
+                else {"failure_count": wire_u64(self.failure_count)["value"]}
+            )
+            return {
+                "effect": self.effect,
+                "command": self.command,
+                "passed": self.passed,
+                **count,
+            }
+        if self.effect == "subagent_run" and all(
+            isinstance(item, str) for item in (self.agent_name, self.task, self.outcome)
+        ):
+            return {
+                "effect": self.effect,
+                "agent_name": self.agent_name,
+                "task": self.task,
+                "outcome": self.outcome,
+            }
+        raise ValueError("unknown or malformed tool effect")

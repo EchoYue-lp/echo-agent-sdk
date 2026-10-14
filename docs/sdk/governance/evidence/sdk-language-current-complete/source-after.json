@@ -1,0 +1,9 @@
+{
+  "same_source": false,
+  "changed": [
+    "sdks/java/README.md"
+  ],
+  "source_file_count": 632,
+  "host_sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10",
+  "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6"
+}

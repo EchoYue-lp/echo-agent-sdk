@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "steps": [
+    {
+      "label": "core-profile-feature-wiring-repaired",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-core-profile",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/core-profile-feature-wiring-repaired.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 12072,
+      "bytesWritten": 12072,
+      "startedAt": "2026-10-13T21:59:27.924Z",
+      "finishedAt": "2026-10-13T21:59:48.534Z"
+    }
+  ],
+  "updatedAt": "2026-10-13T21:59:48.534Z"
+}

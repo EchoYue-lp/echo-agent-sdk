@@ -1,0 +1,1506 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-search-_bhpbcbm",
+  "calls": [
+    {
+      "operation": "agent_component_call",
+      "request": {
+        "operation": "search_provider_search",
+        "query": "success 中文🙂",
+        "max_results": 10
+      },
+      "invocation_id": "invocation-a889dd07cfca4a1b90835f4205c494b9-0",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "cancelled": false,
+      "sent": [
+        {
+          "title": "标题中文🙂",
+          "url": "https://example.invalid/paper",
+          "snippet": "摘要 β🙂"
+        },
+        {
+          "title": "Second",
+          "url": "https://example.invalid/other",
+          "snippet": ""
+        }
+      ]
+    },
+    {
+      "operation": "agent_component_call",
+      "request": {
+        "operation": "search_provider_search",
+        "query": "failure 中文🙂",
+        "max_results": 10
+      },
+      "invocation_id": "invocation-a889dd07cfca4a1b90835f4205c494b9-1",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "cancelled": false
+    },
+    {
+      "operation": "agent_component_call",
+      "request": {
+        "operation": "search_provider_search",
+        "query": "failure 中文🙂",
+        "max_results": 10
+      },
+      "invocation_id": "invocation-a889dd07cfca4a1b90835f4205c494b9-2",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "cancelled": false
+    },
+    {
+      "operation": "agent_component_call",
+      "request": {
+        "operation": "search_provider_search",
+        "query": "failure 中文🙂",
+        "max_results": 10
+      },
+      "invocation_id": "invocation-a889dd07cfca4a1b90835f4205c494b9-3",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "cancelled": false
+    }
+  ],
+  "rows": [
+    {
+      "prompt": "search-success",
+      "settled": {
+        "settled": true,
+        "terminal": {
+          "status": "completed",
+          "final_answer": "search-result-consumed 中文🙂"
+        },
+        "receipt": {
+          "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+          "outcome": "completed",
+          "delivery": "delivered",
+          "final_answer": "search-result-consumed 中文🙂",
+          "final_message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+          "prompt_tokens": "2",
+          "completion_tokens": "2",
+          "llm_calls": "2",
+          "compaction_count": "0",
+          "last_event_sequence": "8",
+          "elapsed_ms": "315"
+        }
+      },
+      "replay": {
+        "requested_after_sequence": "0",
+        "events": [
+          {
+            "schema_version": 5,
+            "event_id": "evt_810ea528e170b66897fd9929118593d04980b35169c383d2caca610ff1370bc6",
+            "content_hash": "sha256:527116fe7452f34957733c992869b1a38f8a74cda33f6f36098a0cff0b05ce33",
+            "sequence": "1",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 296282000,
+              "rfc3339": "2026-10-13T16:49:33.296282+00:00"
+            },
+            "payload": {
+              "event_type": "llm_usage",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "model"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "fixture-model"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "completion_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "total_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "2"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cached_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cache_creation_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "usage_reported"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_be23adddf2d80669637c2c1cfaf2483cf8260322f553320fe21b22a21ccf292b",
+            "content_hash": "sha256:760577a9fba3699fdecf78d2b8db5066da5614d0623a8553c35b832600f8ca4e",
+            "sequence": "2",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 300082000,
+              "rfc3339": "2026-10-13T16:49:33.300082+00:00"
+            },
+            "payload": {
+              "event_type": "tool_batch_start",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "tool_count"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_84c52ac155869de97f7c4609ab05c74065ad743223ecf3d5cd85ab7fd16aabcb",
+            "content_hash": "sha256:8e4f4ce55c1574aa6414473d476dab560134693ed342400bd4136d6877cce371",
+            "sequence": "3",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 300765000,
+              "rfc3339": "2026-10-13T16:49:33.300765+00:00"
+            },
+            "payload": {
+              "event_type": "tool_call",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "call_id"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "search-proof"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "invocation"
+                    },
+                    "value": {
+                      "kind": "map",
+                      "value": [
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "requested_name"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "web_search"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "requested_args"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "query"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "success 中文🙂"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "limit"
+                                },
+                                "value": {
+                                  "kind": "u64",
+                                  "value": "2"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "name"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "web_search"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "args"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "query"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "success 中文🙂"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "limit"
+                                },
+                                "value": {
+                                  "kind": "u64",
+                                  "value": "2"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_1b12862c5fb11730ecc0ac1a6926bfdfa3abebd19efdf292bb8c8e75f006ba01",
+            "content_hash": "sha256:1b36eab1f58a4c2657c5b7b5bcb06f63c9d3c649c3cbec1baadfa1886de1c09a",
+            "sequence": "4",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "parent_event_id": "evt_84c52ac155869de97f7c4609ab05c74065ad743223ecf3d5cd85ab7fd16aabcb",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 315354000,
+              "rfc3339": "2026-10-13T16:49:33.315354+00:00"
+            },
+            "payload": {
+              "event_type": "tool_result",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "call_id"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "search-proof"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "name"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "web_search"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "result"
+                    },
+                    "value": {
+                      "kind": "map",
+                      "value": [
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "kind"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "kind_type"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "json"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "success"
+                          },
+                          "value": {
+                            "kind": "bool",
+                            "value": true
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "output"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "[{\"title\":\"标题中文🙂\",\"url\":\"https://example.invalid/paper\",\"snippet\":\"摘要 β🙂\"},{\"title\":\"Second\",\"url\":\"https://example.invalid/other\",\"snippet\":\"\"}]"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "error"
+                          },
+                          "value": {
+                            "kind": "null"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "data"
+                          },
+                          "value": {
+                            "kind": "list",
+                            "value": [
+                              {
+                                "kind": "map",
+                                "value": [
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "title"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": "标题中文🙂"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "url"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": "https://example.invalid/paper"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "snippet"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": "摘要 β🙂"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "map",
+                                "value": [
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "title"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": "Second"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "url"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": "https://example.invalid/other"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "snippet"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": ""
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "truncated"
+                          },
+                          "value": {
+                            "kind": "bool",
+                            "value": false
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "metadata"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "estimated_tokens"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "38"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "page.truncated"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "false"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "output_handling"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "inline"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "page.total"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "2"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "returned_bytes"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "164"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "original_bytes"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "164"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "page.total_known"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "true"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "page.returned"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "2"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_2fdead2abf792872a1d2e57bfc4db4b2c23fb9e20d737d00b5b4508afa5d470f",
+            "content_hash": "sha256:e9f11920fdcdac14e3989f494ede9500cce8acba522bf94a11977143143d2b05",
+            "sequence": "5",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 356026000,
+              "rfc3339": "2026-10-13T16:49:33.356026+00:00"
+            },
+            "payload": {
+              "event_type": "tool_batch_end"
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_48822ccfacbacd2bc49291d9ec7726876ae800fc5bf44d84a08a8da820ce905a",
+            "content_hash": "sha256:527116fe7452f34957733c992869b1a38f8a74cda33f6f36098a0cff0b05ce33",
+            "sequence": "6",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 428018000,
+              "rfc3339": "2026-10-13T16:49:33.428018+00:00"
+            },
+            "payload": {
+              "event_type": "llm_usage",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "model"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "fixture-model"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "completion_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "total_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "2"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cached_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cache_creation_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "usage_reported"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_d437292c7f0456a735e3bdd383b5f6332f19b9a85be1391dfb902ca992651230",
+            "content_hash": "sha256:613c16bc2cc68235a4a216c1198509acd2ed7190b2549b32cf80173e7ab78ae1",
+            "sequence": "7",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 466451000,
+              "rfc3339": "2026-10-13T16:49:33.466451+00:00"
+            },
+            "payload": {
+              "event_type": "token",
+              "data": {
+                "kind": "string",
+                "value": "search-result-consumed 中文🙂"
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_ec7c8474546a3d0e281c5cf81b500661d215145579de4f5d3599678103ba6f73",
+            "content_hash": "sha256:2e81a7e68cb6f5e8794a742ae6f7b51e6350deb9c8594f8627622263802f6830",
+            "sequence": "8",
+            "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:1:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 467540000,
+              "rfc3339": "2026-10-13T16:49:33.467540+00:00"
+            },
+            "payload": {
+              "event_type": "final_answer",
+              "data": {
+                "kind": "string",
+                "value": "search-result-consumed 中文🙂"
+              }
+            }
+          }
+        ],
+        "next_cursor": {
+          "stream_id": "c5c51c0b-fae9-40cc-9b6c-af0b728c2737",
+          "last_processed_sequence": "8"
+        }
+      },
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      }
+    },
+    {
+      "prompt": "search-error",
+      "settled": {
+        "settled": true,
+        "terminal": {
+          "status": "completed",
+          "final_answer": "search-result-consumed 中文🙂"
+        },
+        "receipt": {
+          "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+          "outcome": "completed",
+          "delivery": "delivered",
+          "final_answer": "search-result-consumed 中文🙂",
+          "final_message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+          "prompt_tokens": "2",
+          "completion_tokens": "2",
+          "llm_calls": "2",
+          "compaction_count": "0",
+          "last_event_sequence": "8",
+          "elapsed_ms": "2549"
+        }
+      },
+      "replay": {
+        "requested_after_sequence": "0",
+        "events": [
+          {
+            "schema_version": 5,
+            "event_id": "evt_f3d94685e8851b27d20b619d38ad38bc52d14a51a9dafac44044843740f10320",
+            "content_hash": "sha256:527116fe7452f34957733c992869b1a38f8a74cda33f6f36098a0cff0b05ce33",
+            "sequence": "1",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 596541000,
+              "rfc3339": "2026-10-13T16:49:33.596541+00:00"
+            },
+            "payload": {
+              "event_type": "llm_usage",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "model"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "fixture-model"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "completion_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "total_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "2"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cached_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cache_creation_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "usage_reported"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_ba4e467513a39a83a661b306d03adfdb4d29e332f18bc0efc31760566eb0e297",
+            "content_hash": "sha256:760577a9fba3699fdecf78d2b8db5066da5614d0623a8553c35b832600f8ca4e",
+            "sequence": "2",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 597451000,
+              "rfc3339": "2026-10-13T16:49:33.597451+00:00"
+            },
+            "payload": {
+              "event_type": "tool_batch_start",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "tool_count"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_5de708361d0411444ef2fc3b60c70ec7dae89c122e4ce4a882c3c76e44b47037",
+            "content_hash": "sha256:57221266e7daede9eb6f135e829e0f22f5a9313fb52c56e0486af4045c800c11",
+            "sequence": "3",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "timestamp": {
+              "unix_seconds": "1791910173",
+              "nanos": 598075000,
+              "rfc3339": "2026-10-13T16:49:33.598075+00:00"
+            },
+            "payload": {
+              "event_type": "tool_call",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "call_id"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "search-proof"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "invocation"
+                    },
+                    "value": {
+                      "kind": "map",
+                      "value": [
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "requested_name"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "web_search"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "requested_args"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "query"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "failure 中文🙂"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "limit"
+                                },
+                                "value": {
+                                  "kind": "u64",
+                                  "value": "2"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "name"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "web_search"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "args"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "query"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "failure 中文🙂"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "limit"
+                                },
+                                "value": {
+                                  "kind": "u64",
+                                  "value": "2"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_5fc10f08b7d51195693990cd5118c767b3af3d8f1c73b9e79a4577947fadb4e2",
+            "content_hash": "sha256:5d5fa6a4a5755da88914f944ebebb6265c603ceb34fd6f165d318c43b465d709",
+            "sequence": "4",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "parent_event_id": "evt_5de708361d0411444ef2fc3b60c70ec7dae89c122e4ce4a882c3c76e44b47037",
+            "timestamp": {
+              "unix_seconds": "1791910175",
+              "nanos": 911424000,
+              "rfc3339": "2026-10-13T16:49:35.911424+00:00"
+            },
+            "payload": {
+              "event_type": "tool_result",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "call_id"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "search-proof"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "name"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "web_search"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "result"
+                    },
+                    "value": {
+                      "kind": "map",
+                      "value": [
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "kind"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "kind_type"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "structured_error"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "error_code"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "tool_error"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "success"
+                          },
+                          "value": {
+                            "kind": "bool",
+                            "value": false
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "output"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": ""
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "error"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "Search provider 'controlled-search' failed: extension bridge failure extension_failed: provider failed 中文🙂"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "failure"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "category"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "transient"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "recovery"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "retry"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "side_effect"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "none"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "retry_after_ms"
+                                },
+                                "value": {
+                                  "kind": "u64",
+                                  "value": "1000"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "truncated"
+                          },
+                          "value": {
+                            "kind": "bool",
+                            "value": false
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "metadata"
+                          },
+                          "value": {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "estimated_tokens"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "0"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "returned_bytes"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "0"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "original_bytes"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "0"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "output_handling"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "inline"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_a6157664ebc1e3b9a460c73a99f743cafa1540715091d3f193926d2227301bb8",
+            "content_hash": "sha256:e9f11920fdcdac14e3989f494ede9500cce8acba522bf94a11977143143d2b05",
+            "sequence": "5",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "timestamp": {
+              "unix_seconds": "1791910175",
+              "nanos": 970645000,
+              "rfc3339": "2026-10-13T16:49:35.970645+00:00"
+            },
+            "payload": {
+              "event_type": "tool_batch_end"
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_8ea887b06eb4ef3f9aa330294849a0d6e4b8135e768bde8c6c4997122388c86a",
+            "content_hash": "sha256:527116fe7452f34957733c992869b1a38f8a74cda33f6f36098a0cff0b05ce33",
+            "sequence": "6",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "timestamp": {
+              "unix_seconds": "1791910176",
+              "nanos": 39341000,
+              "rfc3339": "2026-10-13T16:49:36.039341+00:00"
+            },
+            "payload": {
+              "event_type": "llm_usage",
+              "data": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "model"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "fixture-model"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "completion_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "total_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "2"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cached_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cache_creation_prompt_tokens"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "usage_reported"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_2f3868e521dbc8659b1cc3e0da396a46e7b7b5e12036e1a26f4a1442081adb0e",
+            "content_hash": "sha256:613c16bc2cc68235a4a216c1198509acd2ed7190b2549b32cf80173e7ab78ae1",
+            "sequence": "7",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "timestamp": {
+              "unix_seconds": "1791910176",
+              "nanos": 66232000,
+              "rfc3339": "2026-10-13T16:49:36.066232+00:00"
+            },
+            "payload": {
+              "event_type": "token",
+              "data": {
+                "kind": "string",
+                "value": "search-result-consumed 中文🙂"
+              }
+            }
+          },
+          {
+            "schema_version": 5,
+            "event_id": "evt_5289669fdbc7b20b2a1113c9edca875574897b4aabac924022e8b04a7b491da6",
+            "content_hash": "sha256:2e81a7e68cb6f5e8794a742ae6f7b51e6350deb9c8594f8627622263802f6830",
+            "sequence": "8",
+            "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+            "conversation_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034",
+            "run_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "turn_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2",
+            "message_id": "sess_f438181d-4d4e-43cb-8b68-865a813b3034:turn:2:message",
+            "timestamp": {
+              "unix_seconds": "1791910176",
+              "nanos": 67029000,
+              "rfc3339": "2026-10-13T16:49:36.067029+00:00"
+            },
+            "payload": {
+              "event_type": "final_answer",
+              "data": {
+                "kind": "string",
+                "value": "search-result-consumed 中文🙂"
+              }
+            }
+          }
+        ],
+        "next_cursor": {
+          "stream_id": "31dd5d3a-ed9f-461c-9f33-a1ad7a9adc62",
+          "last_processed_sequence": "8"
+        }
+      },
+      "protected_before": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "protected_after": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      }
+    }
+  ],
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-channel-forward-candidate-host",
+  "host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802"
+}

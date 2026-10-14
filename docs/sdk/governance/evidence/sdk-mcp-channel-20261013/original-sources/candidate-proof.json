@@ -1,0 +1,119 @@
+{
+  "host": "/tmp/echo-sdk-governance-workflow-shape-host",
+  "host_sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2",
+  "sdk_integration_current_source_before_fix": {
+    "path": "/tmp/sdk-channel-reentry-before-integrations.rs",
+    "sha256": "0175774dce4d6eadc7ac7f640da6da6711f53880f9ebaa8940ef85b416ddce85",
+    "production_unmodified": true
+  },
+  "source": [
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/channel-reentry.test.js",
+      "sha256": "8ad1c83a5f50a0a9c7c96296729a4e8891ba056385c6b5be1f1de39ac3c2dc45"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/config.py",
+      "sha256": "cada0a07799ca36971e0460b8eaa80d6c999ce378af6d9ad7f057dafed92fd95"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/mcp_stdio_fixture.py",
+      "sha256": "f38fbeb5a12efa08282c31fc0d376c29193d67e4fe925f567cf4cb2528c2b4db"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/mcp-channel-host.test.js",
+      "sha256": "882dc7c3995e9ea0a3dc1891d7eeffde7ae016a896c09abbc560e9bb3e8c4423"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/scenario-plan.md",
+      "sha256": "2f0ffe656e1e9818ebc65eb3883a410097efd8159d910093be21e25d5aae28fd"
+    }
+  ],
+  "actual_runs": [
+    {
+      "log": "/tmp/sdk-mcp-channel-native-owned-processes.log",
+      "sha256": "0cc65ac890cf980fc55b37aa4e3673f84ddfa43bd12ff586f3d568c488db9d26",
+      "exit_code": 0,
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-stdio-gU0Qo2",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-transport-retry-Qjonou",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-normal-xrZoiL",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-retry-CRe6H5"
+      ],
+      "raw": [
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-stdio-gU0Qo2/b.pid",
+          "sha256": "f96bc3b20239f56562a20c7094c14880ab233b04dc254001062a42b04ecd27b6"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-stdio-gU0Qo2/a.pid",
+          "sha256": "b47abeef9fafcc583d91b75138dd18d746068961422a9d547ab8c21d9d69de78"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-stdio-gU0Qo2/a.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-stdio-gU0Qo2/a-requests.jsonl",
+          "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-stdio-gU0Qo2/b.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-stdio-gU0Qo2/b-requests.jsonl",
+          "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-stdio-gU0Qo2/observed.json",
+          "sha256": "5ac9fd08aac3280fbafe90e73fdad67815ee0d6d8a28253acac161cd551ee87c"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-mcp-transport-retry-Qjonou/observed.json",
+          "sha256": "eb874825966eb7759d414d4e559db5bd3a31199194198544b0d2eee13f181a06"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-channels-normal-xrZoiL/b.pid",
+          "sha256": "442c4e0bf53acc36d2f77a59f88bc6621ca9189b6dc066cb0555863ce16eda66"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-channels-normal-xrZoiL/a.pid",
+          "sha256": "a66be9f926fee2d49219af98d96ae8446c2eb39856d7bf85199d0b2957e59c4e"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-channels-normal-xrZoiL/observed.json",
+          "sha256": "d953612a33093af9d8d827ffef55924274681c0f6bb6c97718f7683f4f065474"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-channels-retry-CRe6H5/b.pid",
+          "sha256": "aa2c7dd07f39f02fc59d4527ffffe9fb8b3fc40e2b1fd7d723001f6ea332189c"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-channels-retry-CRe6H5/a.pid",
+          "sha256": "9a94bf19f4ff9658ab6075299f215ab0f392571aa20f4c189e174bd9b12cbacf"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-mcp-channel-native-owned-processes/sdk-ts-channels-retry-CRe6H5/observed.json",
+          "sha256": "92e023e3c5cc2f98ecffb0eb91758330296e6fd63128f3091adcceaea00e7e4c"
+        }
+      ]
+    },
+    {
+      "log": "/tmp/sdk-channel-manager-read-reentry.log",
+      "sha256": "4d6c3c4689ae3244c2323dd0ffad09543d7025eaaf6bbf8907ad2d7da92679b7",
+      "exit_code": 1,
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-channel-reentry-xLFWAr"
+      ],
+      "raw": [
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/evidence/sdk-channel-manager-read-reentry/sdk-channel-reentry-xLFWAr/observed.json",
+          "sha256": "b34b155f1dd640859a497927a18208759689ccb60b88ffa2a8558aa77929b482"
+        }
+      ]
+    }
+  ],
+  "runtime_summary": "4 MCP/plugin native cases green, one genuine ChannelHealth\u2192manager.ids reverse-callback circular-wait red",
+  "no_inbound_claim": "Registered MessageHandler is not exercised by fabricated input; accepted real inbound consumer remains missing",
+  "task_lane_reviewdelta": "Separate formal Task Node callback jobs4 c52 green proof archived; does not modify MCP/channel production"
+}

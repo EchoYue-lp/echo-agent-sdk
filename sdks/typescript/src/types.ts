@@ -1,3 +1,4 @@
+import type { ManagedComponentCall, ManagedComponentResult, TaskGraphCommit, TaskExecutionCommit, RevisionedTaskGraph } from "./managed.js";
 export type JsonValue =
   | null
   | boolean
@@ -207,6 +208,7 @@ export interface ToolResultData {
   readonly metadata?: Readonly<Record<string, string>>;
   readonly mime_type?: string | null;
   readonly model_content?: readonly ToolResultContent[];
+  readonly effects?: readonly ToolEffect[];
 }
 
 /** Structural ToolResult type; the runtime factory is exported from helpers. */
@@ -379,7 +381,7 @@ export type AgentComponentKind =
   | "intent_classifier"
   | "skill_load_policy";
 
-export type AgentComponentOperation =
+export type AgentComponentOperation = ManagedComponentCall["operation"]
   | "conversation_create"
   | "conversation_get"
   | "conversation_list"
@@ -423,6 +425,7 @@ export type AgentComponentOperation =
   | "workflow_checkpoint_clear"
   | "revisioned_task_load"
   | "revisioned_task_compare_and_commit"
+  | "revisioned_task_compare_and_commit_execution"
   | "sandbox_is_available"
   | "sandbox_execute"
   | "sandbox_execute_stream"
@@ -463,6 +466,10 @@ export interface AgentComponentDescriptor {
   readonly component: AgentComponentKind;
   readonly name: string;
   readonly capabilities?: {
+    readonly conversation_projection?: "unsupported" | "atomic_v1";
+    readonly runtime_state?: "unsupported" | "revisioned_v1";
+    readonly persistence_call?: "unsupported" | "absolute_deadline_v1";
+    readonly execution_cas_v1?: boolean;
     readonly isolation_level?: "none" | "process" | "os-sandbox" | "container" | "orchestrated" | null;
     readonly supports_streaming?: boolean;
     readonly supports_notifications?: boolean;
@@ -470,7 +477,7 @@ export interface AgentComponentDescriptor {
   };
 }
 
-export type AgentComponentCall =
+export type AgentComponentCall = ManagedComponentCall
   | { readonly operation: "conversation_create"; readonly input: { readonly conversation: WireValue } }
   | { readonly operation: "conversation_get"; readonly input: { readonly conversation_id: string } }
   | { readonly operation: "conversation_list"; readonly input: { readonly user_id?: string | null; readonly agent_type?: string | null; readonly limit?: WireU64 | null; readonly offset?: WireU64 | null } }
@@ -508,7 +515,8 @@ export type AgentComponentCall =
   | { readonly operation: "workflow_checkpoint_list_by_graph"; readonly input: { readonly graph_name: string } }
   | { readonly operation: "workflow_checkpoint_list_filtered"; readonly input: { readonly filter: WireValue } }
   | { readonly operation: "revisioned_task_load"; readonly input: { readonly scope_id: string } }
-  | { readonly operation: "revisioned_task_compare_and_commit"; readonly input: { readonly scope_id: string; readonly commit: WireValue } }
+  | { readonly operation: "revisioned_task_compare_and_commit"; readonly input: { readonly scope_id: string; readonly commit: TaskGraphCommit } }
+  | { readonly operation: "revisioned_task_compare_and_commit_execution"; readonly input: { readonly scope_id: string; readonly commit: TaskExecutionCommit } }
   | { readonly operation: "sandbox_is_available" | "sandbox_cleanup" | "mcp_transport_close" | "mcp_transport_try_notification"; readonly input: Record<string, never> }
   | { readonly operation: "sandbox_execute"; readonly input: { readonly command: WireValue } }
   | { readonly operation: "sandbox_execute_stream"; readonly input: { readonly command: WireValue } }
@@ -523,7 +531,7 @@ export type AgentComponentCall =
   | { readonly operation: "intent_classify"; readonly input: { readonly user_input: string; readonly context: readonly LlmMessage[] } }
   | { readonly operation: "skill_load_allows"; readonly input: { readonly descriptor: SkillDescriptorPolicy } };
 
-export type AgentComponentCallResult =
+export type AgentComponentCallResult = ManagedComponentResult
   | { readonly operation: "conversation_create"; readonly value: { readonly conversation: WireValue } }
   | { readonly operation: "conversation_get"; readonly value: { readonly conversation?: WireValue | null } }
   | { readonly operation: "conversation_list"; readonly value: { readonly conversations: readonly WireValue[] } }
@@ -558,8 +566,8 @@ export type AgentComponentCallResult =
   | { readonly operation: "workflow_checkpoint_save_if_generation"; readonly value: { readonly committed: boolean } }
   | { readonly operation: "workflow_checkpoint_load" | "workflow_checkpoint_claim"; readonly value: { readonly checkpoint?: WireValue | null } }
   | { readonly operation: "workflow_checkpoint_list" | "workflow_checkpoint_list_by_graph" | "workflow_checkpoint_list_filtered"; readonly value: { readonly checkpoints: readonly WireValue[] } }
-  | { readonly operation: "revisioned_task_load"; readonly value: { readonly graph?: WireValue | null } }
-  | { readonly operation: "revisioned_task_compare_and_commit"; readonly value: { readonly graph: WireValue } }
+  | { readonly operation: "revisioned_task_load"; readonly value: { readonly graph?: RevisionedTaskGraph | null } }
+  | { readonly operation: "revisioned_task_compare_and_commit" | "revisioned_task_compare_and_commit_execution"; readonly value: { readonly graph: RevisionedTaskGraph } }
   | { readonly operation: "sandbox_is_available"; readonly value: { readonly available: boolean } }
   | { readonly operation: "sandbox_execute" | "sandbox_execute_with_limits"; readonly value: { readonly result: WireValue } }
   | { readonly operation: "sandbox_execute_with_limits_and_cancel"; readonly value: { readonly result: WireValue } }
@@ -623,7 +631,7 @@ export type ContextCompressorInvocation = {
   readonly input: CompressionInput;
 };
 
-export type ExtensionInvocation = ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
+export type ExtensionInvocation = AgentCallbackInvocation | ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
 
 export interface ExtensionInvocationContext {
   readonly call_id?: string | null;
@@ -636,6 +644,8 @@ export interface ExtensionInvocationContext {
 }
 
 export interface ExtensionInvokeCall<I extends ExtensionInvocation = ExtensionInvocation> {
+  /** Explicit routing origin; extension remains the unique factory instance handle. */
+  readonly factory_origin?: WireHandle | null;
   readonly context?: ExtensionInvocationContext | null;
   readonly deadline: { readonly seconds: string; readonly nanos: number };
   readonly extension: WireHandle;
@@ -686,7 +696,7 @@ export type AgentComponentExtensionResult = {
   };
 };
 
-export type ExtensionResult = ToolExtensionResult | LlmExtensionResult | StoreExtensionResult | CriticExtensionResult | ContextCompressorExtensionResult | AgentComponentExtensionResult;
+export type ExtensionResult = AgentCallbackResult | ToolExtensionResult | LlmExtensionResult | StoreExtensionResult | CriticExtensionResult | ContextCompressorExtensionResult | AgentComponentExtensionResult;
 
 export type ExtensionOutcome<R = unknown> =
   | { readonly outcome: "result"; readonly result: R }
@@ -698,6 +708,7 @@ export type ExtensionOutcome<R = unknown> =
         readonly message: string;
         readonly retryable: string;
         readonly operation?: string;
+        readonly handle?: WireHandle;
         readonly details?: unknown;
       };
     };
@@ -820,3 +831,17 @@ export function isFacadeEvent(item: FacadeStreamItem): item is FacadeEvent {
 export function isFacadeGap(item: FacadeStreamItem): item is FacadeGap {
   return "gap" in item;
 }
+
+export type ToolEffect = {readonly effect:"file_read" | "file_edit"; readonly path:string}
+  | {readonly effect:"test_run"; readonly command:string; readonly passed:boolean; readonly failure_count?: WireU64|null}
+  | {readonly effect:"subagent_run"; readonly agent_name:string;readonly task:string;readonly outcome:string};
+export type AgentCallbackInvocation =
+  | {readonly operation:"callback_on_think_start";readonly input:{readonly agent:string;readonly messages:readonly LlmMessage[]}}
+  | {readonly operation:"callback_on_think_end";readonly input:{readonly agent:string;readonly steps:readonly ({readonly kind:"thought";readonly text:string}|{readonly kind:"call";readonly tool_call_id:string;readonly function_name:string;readonly arguments:WireValue})[];readonly prompt_tokens:WireU64;readonly completion_tokens:WireU64}}
+  | {readonly operation:"callback_on_tool_start";readonly input:{readonly agent:string;readonly call_id?:string|null;readonly tool:string;readonly args:WireValue}}
+  | {readonly operation:"callback_on_tool_end";readonly input:{readonly agent:string;readonly call_id?:string|null;readonly tool:string;readonly result:string}}
+  | {readonly operation:"callback_on_tool_error";readonly input:{readonly agent:string;readonly call_id?:string|null;readonly tool:string;readonly error:string}}
+  | {readonly operation:"callback_on_tool_interrupted";readonly input:{readonly agent:string;readonly call_id:string;readonly tool:string;readonly input:WireValue;readonly error:string}}
+  | {readonly operation:"callback_on_final_answer";readonly input:{readonly agent:string;readonly answer:string}}
+  | {readonly operation:"callback_on_iteration";readonly input:{readonly agent:string;readonly iteration:WireU64}};
+export type AgentCallbackResult = {readonly operation:AgentCallbackInvocation["operation"];readonly value:null};

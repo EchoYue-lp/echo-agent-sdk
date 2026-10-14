@@ -1,0 +1,5 @@
+tests/test_channel_handler_forward_host.py::test_channel_single_stream_reply_typed_fidelity_and_validation
+tests/test_channel_handler_forward_host.py::test_channel_owner_complete_binding_start_states_and_digest
+tests/test_channel_handler_forward_host.py::test_channel_cancel_keeps_peer_full_buffer_close_and_late_finally
+
+3 tests collected in 0.54s

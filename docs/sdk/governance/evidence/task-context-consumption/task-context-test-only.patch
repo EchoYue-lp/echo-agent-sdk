@@ -1,0 +1,439 @@
+--- before/task_runtime.rs
++++ after/task_runtime.rs
+@@ -633,3 +633,436 @@
+         status: wire_status(&status),
+     })
+ }
++
++#[cfg(test)]
++mod task_context_consumption_tests {
++    use super::*;
++    use echo_agent::agent::subagent::{
++        SubagentDefinition, SubagentExecutorConfig, SubagentRegistry,
++    };
++    use echo_agent::agent::{Agent, AgentEvent, AgentInvocationContext};
++    use echo_agent::tasks::{
++        DefaultTaskToolPolicy, InMemoryRevisionedTaskStore, NestedDelegationPolicy,
++        RevisionedTaskGraph, RevisionedTaskStore, RuntimeDagOutcome, RuntimePlanSnapshot,
++        TaskExecution, TaskGraphCommit, TaskGraphContext, TaskGraphExecutionMode, TaskPatchEffects,
++        TaskSpec,
++    };
++    use futures::future::BoxFuture;
++    use futures::stream::BoxStream;
++    use std::sync::Mutex;
++    use tokio_util::sync::CancellationToken;
++
++    type TestResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
++
++    struct CapturedInvocation {
++        prompt: String,
++        context: AgentInvocationContext,
++        original_claim: TaskClaim,
++    }
++
++    struct NativeContextAgent {
++        captured: Arc<Mutex<Vec<CapturedInvocation>>>,
++        revision: Arc<TaskRevisionService>,
++    }
++
++    impl Agent for NativeContextAgent {
++        fn name(&self) -> &str {
++            "context-consumer"
++        }
++        fn model_name(&self) -> &str {
++            "fixture"
++        }
++        fn system_prompt(&self) -> &str {
++            ""
++        }
++        fn execute<'a>(&'a self, _task: &'a str) -> BoxFuture<'a, Result<String>> {
++            Box::pin(async {
++                Err(ReactError::Other(
++                    "the actual invocation-context stream must be used".to_string(),
++                ))
++            })
++        }
++        fn execute_stream<'a>(
++            &'a self,
++            _task: &'a str,
++        ) -> BoxFuture<'a, Result<BoxStream<'a, Result<AgentEvent>>>> {
++            Box::pin(async {
++                Err(ReactError::Other(
++                    "the actual invocation-context stream must be used".to_string(),
++                ))
++            })
++        }
++        fn execute_stream_with_invocation_context<'a>(
++            &'a self,
++            task: &'a str,
++            _cancel: CancellationToken,
++            context: AgentInvocationContext,
++        ) -> BoxFuture<'a, Result<BoxStream<'a, Result<AgentEvent>>>> {
++            Box::pin(async move {
++                let runtime = context.runtime.as_ref().ok_or_else(|| {
++                    ReactError::Other("dispatch context lost runtime".to_string())
++                })?;
++                let run_id = runtime
++                    .run_id
++                    .as_deref()
++                    .ok_or_else(|| ReactError::Other("dispatch context lost run id".to_string()))?;
++                let task_id = runtime
++                    .subagent_lineage
++                    .as_ref()
++                    .and_then(|lineage| lineage.task_id.as_deref())
++                    .ok_or_else(|| {
++                        ReactError::Other("dispatch context lost task id".to_string())
++                    })?;
++                let graph = self
++                    .revision
++                    .load(run_id)
++                    .await
++                    .map_err(|error| ReactError::Other(error.to_string()))?
++                    .ok_or_else(|| ReactError::Other("claimed graph missing".to_string()))?;
++                let original_claim = graph
++                    .snapshot
++                    .tasks
++                    .iter()
++                    .find(|task| task.spec.id == task_id)
++                    .and_then(|task| task.execution.claim.clone())
++                    .ok_or_else(|| {
++                        ReactError::Other(
++                            "original durable claim missing during actual invocation".to_string(),
++                        )
++                    })?;
++                self.captured
++                    .lock()
++                    .map_err(|_| ReactError::Other("capture lock poisoned".to_string()))?
++                    .push(CapturedInvocation {
++                        prompt: task.to_string(),
++                        context,
++                        original_claim,
++                    });
++                Ok(Box::pin(futures::stream::iter([Ok(AgentEvent::FinalAnswer(
++                    "native canonical result 中文🌊".to_string(),
++                ))])) as BoxStream<'a, Result<AgentEvent>>)
++            })
++        }
++    }
++
++    struct Fixture {
++        storage: Arc<InMemoryRevisionedTaskStore>,
++        revision: Arc<TaskRevisionService>,
++        controller: Arc<FacadeTaskController>,
++        captured: Arc<Mutex<Vec<CapturedInvocation>>>,
++    }
++
++    async fn fixture() -> TestResult<Fixture> {
++        let storage = Arc::new(InMemoryRevisionedTaskStore::new());
++        let revision = Arc::new(TaskRevisionService::new(
++            storage.clone(),
++            Arc::new(DefaultTaskToolPolicy::new("default-scope")),
++        ));
++        let registry = Arc::new(SubagentRegistry::new());
++        let captured = Arc::new(Mutex::new(Vec::new()));
++        registry
++            .register(
++                SubagentDefinition::new("context-consumer", "capture original context"),
++                Box::new(NativeContextAgent {
++                    captured: captured.clone(),
++                    revision: revision.clone(),
++                }),
++            )
++            .await;
++        let executor = Arc::new(SubagentExecutor::new(
++            registry,
++            SubagentExecutorConfig::default(),
++        ));
++        let controller = Arc::new(FacadeTaskController::new(revision.clone(), executor)?);
++        Ok(Fixture {
++            storage,
++            revision,
++            controller,
++            captured,
++        })
++    }
++
++    fn task(id: &str, status: TaskStatus, dependencies: &[&str], output: Option<&str>) -> Task {
++        let mut execution = TaskExecution::pending(id);
++        execution.status = status;
++        execution.result = output.map(|value| serde_json::json!({"output":value}));
++        Task {
++            spec: TaskSpec {
++                id: id.to_string(),
++                title: id.to_string(),
++                description: format!("consume {id}"),
++                depends_on: dependencies.iter().map(|value| value.to_string()).collect(),
++                max_retries: 0,
++                extension: serde_json::json!({"subagent":"context-consumer"}),
++            },
++            execution,
++        }
++    }
++
++    async fn seed(fixture: &Fixture, run_id: &str, tasks: Vec<Task>) -> TestResult {
++        fixture
++            .storage
++            .compare_and_commit(
++                run_id,
++                TaskGraphCommit {
++                    expected_revision: None,
++                    expected_executions: None,
++                    next: RevisionedTaskGraph {
++                        snapshot: RuntimePlanSnapshot { revision: 1, tasks },
++                        context: TaskGraphContext {
++                            goal: run_id.to_string(),
++                            assumptions: Vec::new(),
++                            risks: Vec::new(),
++                            execution_mode: TaskGraphExecutionMode::Parallel,
++                            metadata: serde_json::Value::Null,
++                        },
++                    },
++                    reason: "exact existing backend fixture".to_string(),
++                    effects: TaskPatchEffects::default(),
++                },
++            )
++            .await?;
++        Ok(())
++    }
++
++    async fn execute(
++        fixture: &Fixture,
++        run_id: &str,
++        policy: NestedDelegationPolicy,
++    ) -> TestResult<RuntimeDagOutcome> {
++        // The public runtime derives the private context from the real Store claim.
++        let runtime = RuntimeTaskService::new(
++            fixture.controller.clone(),
++            RuntimeTaskServiceConfig {
++                delegation_policy: policy,
++                ..RuntimeTaskServiceConfig::default()
++            },
++        );
++        Ok(runtime.execute(run_id, CancellationToken::new()).await?)
++    }
++
++    #[tokio::test]
++    async fn task_context_run_id_selects_the_original_graph_and_exact_claim_lineage() -> TestResult
++    {
++        let fixture = fixture().await?;
++        seed(
++            &fixture,
++            "run-A",
++            vec![
++                task(
++                    "dependency",
++                    TaskStatus::Completed,
++                    &[],
++                    Some("A-only canonical result"),
++                ),
++                task("same-task", TaskStatus::Pending, &["dependency"], None),
++            ],
++        )
++        .await?;
++        seed(
++            &fixture,
++            "run-B",
++            vec![
++                task(
++                    "dependency",
++                    TaskStatus::Completed,
++                    &[],
++                    Some("B-only canonical result"),
++                ),
++                task("same-task", TaskStatus::Pending, &["dependency"], None),
++            ],
++        )
++        .await?;
++        let policy = RuntimeTaskServiceConfig::default().delegation_policy;
++        assert_eq!(
++            execute(&fixture, "run-A", policy).await?,
++            RuntimeDagOutcome::Completed
++        );
++        assert_eq!(
++            execute(&fixture, "run-B", policy).await?,
++            RuntimeDagOutcome::Completed
++        );
++        let captured = fixture
++            .captured
++            .lock()
++            .map_err(|_| "capture lock poisoned")?;
++        assert_eq!(captured.len(), 2);
++        for (run_id, marker, other) in [
++            (
++                "run-A",
++                "A-only canonical result",
++                "B-only canonical result",
++            ),
++            (
++                "run-B",
++                "B-only canonical result",
++                "A-only canonical result",
++            ),
++        ] {
++            let value = captured
++                .iter()
++                .find(|value| {
++                    value
++                        .context
++                        .runtime
++                        .as_ref()
++                        .and_then(|runtime| runtime.run_id.as_deref())
++                        == Some(run_id)
++                })
++                .ok_or("original graph context was lost")?;
++            assert!(value.prompt.contains(marker));
++            assert!(!value.prompt.contains(other));
++            let runtime = value
++                .context
++                .runtime
++                .as_ref()
++                .ok_or("missing actual runtime context")?;
++            let lineage = runtime
++                .subagent_lineage
++                .as_ref()
++                .ok_or("missing original claim lineage")?;
++            assert_eq!(lineage.run_id.as_deref(), Some(run_id));
++            assert_eq!(lineage.task_id.as_deref(), Some("same-task"));
++            assert_eq!(lineage.plan_revision, Some(1));
++            assert_eq!(lineage.attempt, Some(1));
++            assert_eq!(
++                runtime.execution_id.as_deref(),
++                Some(
++                    value
++                        .original_claim
++                        .execution_id(run_id, "same-task")
++                        .as_str()
++                )
++            );
++            assert_eq!(lineage.execution_id, runtime.execution_id);
++        }
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn task_context_waived_skipped_dependency_and_completed_output_reach_actual_prompt()
++    -> TestResult {
++        let fixture = fixture().await?;
++        seed(
++            &fixture,
++            "waived-run",
++            vec![
++                task("skipped", TaskStatus::Skipped, &[], None),
++                task(
++                    "completed",
++                    TaskStatus::Completed,
++                    &[],
++                    Some("preserved completed output"),
++                ),
++                task(
++                    "target",
++                    TaskStatus::Pending,
++                    &["skipped", "completed"],
++                    None,
++                ),
++            ],
++        )
++        .await?;
++        assert_eq!(
++            execute(
++                &fixture,
++                "waived-run",
++                RuntimeTaskServiceConfig::default().delegation_policy
++            )
++            .await?,
++            RuntimeDagOutcome::Completed
++        );
++        let captured = fixture
++            .captured
++            .lock()
++            .map_err(|_| "capture lock poisoned")?;
++        let value = captured
++            .first()
++            .ok_or("waived dependency blocked the original dispatch")?;
++        assert_eq!(captured.len(), 1);
++        assert!(value.prompt.contains(
++            "Dependency 'skipped' was explicitly skipped; no reusable output is available."
++        ));
++        assert!(value.prompt.contains("Completed dependency completed"));
++        assert!(value.prompt.contains("preserved completed output"));
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn task_context_nonwaived_completed_dependency_without_result_rejects_before_agent()
++    -> TestResult {
++        let fixture = fixture().await?;
++        seed(
++            &fixture,
++            "missing-result",
++            vec![
++                task("completed", TaskStatus::Completed, &[], None),
++                task("target", TaskStatus::Pending, &["completed"], None),
++            ],
++        )
++        .await?;
++        let _outcome = execute(
++            &fixture,
++            "missing-result",
++            RuntimeTaskServiceConfig::default().delegation_policy,
++        )
++        .await?;
++        assert!(
++            fixture
++                .captured
++                .lock()
++                .map_err(|_| "capture lock poisoned")?
++                .is_empty()
++        );
++        let graph = fixture
++            .revision
++            .load("missing-result")
++            .await?
++            .ok_or("graph disappeared")?;
++        let status = &graph
++            .snapshot
++            .tasks
++            .iter()
++            .find(|task| task.spec.id == "target")
++            .ok_or("target disappeared")?
++            .execution
++            .status;
++        assert!(
++            matches!(status,TaskStatus::Failed(message) if message.contains("completed dependency 'completed' has no reusable output"))
++        );
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn task_context_nondefault_delegation_policy_survives_actual_dispatch_binding()
++    -> TestResult {
++        let fixture = fixture().await?;
++        seed(
++            &fixture,
++            "policy-run",
++            vec![task("target", TaskStatus::Pending, &[], None)],
++        )
++        .await?;
++        let policy = NestedDelegationPolicy {
++            can_spawn_subagents: true,
++            delegate_depth: 1,
++            max_delegate_depth: 3,
++        };
++        assert_eq!(
++            execute(&fixture, "policy-run", policy).await?,
++            RuntimeDagOutcome::Completed
++        );
++        let captured = fixture
++            .captured
++            .lock()
++            .map_err(|_| "capture lock poisoned")?;
++        assert_eq!(captured.len(), 1);
++        let runtime = captured
++            .first()
++            .and_then(|value| value.context.runtime.as_ref())
++            .ok_or("missing actual dispatch runtime")?;
++        assert_eq!(runtime.delegation_policy, Some(policy));
++        assert_eq!(runtime.run_id.as_deref(), Some("policy-run"));
++        Ok(())
++    }
++}

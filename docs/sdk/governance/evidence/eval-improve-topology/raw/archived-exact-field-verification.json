@@ -1,0 +1,26 @@
+[
+  {
+    "language": "python",
+    "grader_complete_results": 3,
+    "workspace_getter_exact": true,
+    "trace_run_identity_preserved": true,
+    "trajectory_typed_vs_disk_all_fields": true,
+    "native_cancel_runtime_triplets": 3
+  },
+  {
+    "language": "typescript",
+    "grader_complete_results": 3,
+    "workspace_getter_exact": true,
+    "trace_run_identity_preserved": true,
+    "trajectory_typed_vs_disk_all_fields": true,
+    "native_cancel_runtime_triplets": 3
+  },
+  {
+    "language": "java",
+    "grader_complete_results": 3,
+    "workspace_getter_exact": true,
+    "trace_run_identity_preserved": true,
+    "trajectory_typed_vs_disk_all_fields": true,
+    "native_cancel_runtime_triplets": 3
+  }
+]

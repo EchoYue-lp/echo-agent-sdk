@@ -1,0 +1,26 @@
+{
+  "sdk_source_files": {
+    "sdks/shared/testing/tool_value_effect_fixture.py": "dee7bbcaedb96e4030c7c9dd922063f47ea1753824693dd26f5df52313f72b14",
+    "sdks/typescript/test/tool-value-effect-host.test.js": "60a6037409fd2644d6019238c6f15b94555b49c8f3a959a63086b3048756e9cb",
+    "sdks/python/tests/test_tool_value_effect_host.py": "c9ce121b3aa6a3fe1ad502ee292091b5e1346a635df2530f8889c179f5cb2d5d",
+    "sdks/java/src/test/java/com/echoagent/sdk/ToolValueEffectHostTest.java": "0aade4f5a1901223328372b8ec0b17c77ba2f327c2ed70e1f4591cd114ca016a",
+    "sdks/shared/facade-operation-catalog.json": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+    "sdks/shared/contract-digests.json": "2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7",
+    "echo-sdk-host/src/core_profile/facade/tools.rs": "77c1d305a55e8320692929efca4f48a6d6dc7a4370cd33c9b403da996dcc15c3",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "273a1868bed3f7d3119c55319937330f0a8f7cb9e1ec4dfc88e8a9db2b1ee587"
+  },
+  "framework_source_files": {
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/files/files.rs": "73fab3c9e0f949afe461323af49652ca5a433d63a8f26704edcc09d19a51015a",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/files/artifact.rs": "2cabfe89011f78343ef3fd4012f1e82d4405b2f9aa393a0f19ab2ba820923308",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/shell.rs": "238201aeb3aa39f39b3e612ee3833c7918fc53534d1d803790a8e717771c5ae1",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/database.rs": "2598644109bf362bb31323d530c7cce719bc1c8847b6c61e1a2887c0c288a8c7",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/web/fetch.rs": "f422936e9a0ebfa53e038ecfb6a326038f393f51aff763dfd9cd9c7500a38a89",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/web/search.rs": "93382fe2f9e5ee6ef9d39f6f25a5f982dc15469a55f3e8a44de6e1ac2790a3ca",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/web/extract.rs": "aa9e61bcd1c68bd70649fd5a583df70afc1b1b04f8fd52c3b78868c486ce7c4a",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/research/arxiv.rs": "9db0146bd015b5712e2ce8d64867e13fb70201a44eab263dad0d0c6bbb47d53d",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/research/semantic_scholar.rs": "f900b95863648bb7699f2dc2c8628ff3f22ad0e687491fdccb19feaf05aff419",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/research/pubmed.rs": "d72a42a0de7b6ad0d31bc7a7175fdc4d8039711eb29265daa689fef60d02c909",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools/src/research/clinical_trials.rs": "788d2f3d22c846173a49fad11ca4ee49ff5e1ba00811f588173a69e6b82828a8"
+  },
+  "warning": "Current source read is not reconstructed 0435 binary source proof; body provenance frozen by coordinator. Test-source current freeze has not run final after production repair."
+}

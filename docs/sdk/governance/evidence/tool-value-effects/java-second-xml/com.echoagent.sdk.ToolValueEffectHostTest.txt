@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------------
+Test set: com.echoagent.sdk.ToolValueEffectHostTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 10.25 s <<< FAILURE! -- in com.echoagent.sdk.ToolValueEffectHostTest
+com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects -- Time elapsed: 6.162 s <<< FAILURE!
+java.lang.AssertionError: tool oracle failed: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-2276595591623802473
+	at com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects(ToolValueEffectHostTest.java:39)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+com.echoagent.sdk.ToolValueEffectHostTest.sandboxStreamRealProcessCompletionCancelAndClose -- Time elapsed: 0.257 s <<< ERROR!
+java.util.concurrent.ExecutionException: com.echoagent.sdk.EchoAgentException: argument 0 is not a lossless wire value: wire value exceeds limit: typed wire value has no implicit JSON projection
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at com.echoagent.sdk.ToolValueEffectHostTest.await(ToolValueEffectHostTest.java:14)
+	at com.echoagent.sdk.ToolValueEffectHostTest.sandboxStreamRealProcessCompletionCancelAndClose(ToolValueEffectHostTest.java:74)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: com.echoagent.sdk.EchoAgentException: argument 0 is not a lossless wire value: wire value exceeds limit: typed wire value has no implicit JSON projection
+	at com.echoagent.sdk.EchoAgentException.from(EchoAgentException.java:41)
+	at com.echoagent.sdk.EchoAgentException.from(EchoAgentException.java:50)
+	at com.echoagent.sdk.EchoAgentClient.lambda$request$27(EchoAgentClient.java:524)
+	at java.base/java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:934)
+	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:911)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2194)
+	at reactor.core.publisher.MonoToCompletableFuture.onError(MonoToCompletableFuture.java:78)
+	at reactor.core.publisher.FluxHandle$HandleSubscriber.onError(FluxHandle.java:216)
+	at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:138)
+	at reactor.core.publisher.SerializedSubscriber.onNext(SerializedSubscriber.java:100)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.onNext(FluxTimeout.java:182)
+	at reactor.core.publisher.MonoCreate$DefaultMonoSink.success(MonoCreate.java:177)
+	at com.agentclientprotocol.sdk.spec.AcpClientSession.handle(AcpClientSession.java:195)
+	at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.onNext(FluxPeekFuseable.java:197)
+	at reactor.core.publisher.Operators$ScalarSubscription.request(Operators.java:2564)
+	at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.request(FluxPeekFuseable.java:144)
+	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onSubscribe(MonoIgnoreThen.java:135)
+	at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.onSubscribe(FluxPeekFuseable.java:178)
+	at reactor.core.publisher.MonoJust.subscribe(MonoJust.java:56)
+	at reactor.core.publisher.Mono.subscribe(Mono.java:4569)
+	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:268)
+	at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51)
+	at reactor.core.publisher.Mono.subscribe(Mono.java:4569)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onNext(FluxFlatMap.java:431)
+	at reactor.core.publisher.SinkManyUnicast.drainRegular(SinkManyUnicast.java:288)
+	at reactor.core.publisher.SinkManyUnicast.drain(SinkManyUnicast.java:370)
+	at reactor.core.publisher.SinkManyUnicast.tryEmitNext(SinkManyUnicast.java:243)
+	at reactor.core.publisher.SinkManySerialized.tryEmitNext(SinkManySerialized.java:100)
+	at com.agentclientprotocol.sdk.client.transport.StdioAcpClientTransport.lambda$startInboundProcessing$9(StdioAcpClientTransport.java:280)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:72)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+

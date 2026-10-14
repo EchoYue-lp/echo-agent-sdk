@@ -1,0 +1,12 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-topology-6146524423324526573
+{"group": "topology", "verified": true, "factory_created": 0, "factory_closed": 0, "rows": 18}
+
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-eval-14585562270104610207
+{"group": "eval", "verified": true, "factory_created": 3, "factory_closed": 3, "rows": 23}
+
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-improve-3052354552780185023
+{"group": "improve", "verified": true, "factory_created": 12, "factory_closed": 12, "rows": 27}
+

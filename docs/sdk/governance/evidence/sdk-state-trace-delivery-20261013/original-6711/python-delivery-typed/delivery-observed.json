@@ -1,0 +1,114 @@
+{
+  "errors": [
+    {
+      "code": "framework_error",
+      "operation": "_echo_agent/delivery/op",
+      "message": "invalid delivery event: stale delivery claim for message message-中文🙂"
+    },
+    {
+      "code": "framework_error",
+      "operation": "_echo_agent/delivery/op",
+      "message": "invalid delivery event: stale delivery claim for message message-中文🙂"
+    },
+    {
+      "code": "framework_error",
+      "operation": "_echo_agent/delivery/op",
+      "message": "invalid delivery event: stale delivery claim for message message-中文🙂"
+    },
+    {
+      "code": "framework_error",
+      "operation": "_echo_agent/delivery/op",
+      "message": "invalid delivery event: stale delivery claim for message message-中文🙂"
+    }
+  ],
+  "durability": "in-memory same-instance only",
+  "concurrent_claims": [
+    {
+      "payload": {
+        "text": "待投递🧭",
+        "nullable": null
+      },
+      "message_id": "message-中文🙂",
+      "route": "channel/local",
+      "attempt_id": "8abcf034-91c8-4cec-9062-8b3235b2f20b",
+      "attempt": "1",
+      "claimed_at": "2026-10-13T05:40:59.176172Z"
+    },
+    {
+      "payload": {
+        "text": "待投递🧭",
+        "nullable": null
+      },
+      "message_id": "message-中文🙂",
+      "route": "channel/local",
+      "attempt_id": "53e075bd-2b5b-47a5-8f64-590826f8345a",
+      "attempt": "2",
+      "claimed_at": "2026-10-13T05:40:59.176740Z"
+    }
+  ],
+  "effect_started_no_reclaim": [
+    {
+      "claim": null
+    },
+    {
+      "claim": null
+    }
+  ],
+  "claim1": {
+    "payload": {
+      "text": "待投递🧭",
+      "nullable": null
+    },
+    "message_id": "message-中文🙂",
+    "route": "channel/local",
+    "attempt_id": "8abcf034-91c8-4cec-9062-8b3235b2f20b",
+    "attempt": "1",
+    "claimed_at": "2026-10-13T05:40:59.176172Z"
+  },
+  "claim2": {
+    "payload": {
+      "text": "待投递🧭",
+      "nullable": null
+    },
+    "message_id": "message-中文🙂",
+    "route": "channel/local",
+    "attempt_id": "d90df47c-3b20-4308-8118-d19a1269c2c9",
+    "attempt": "3",
+    "claimed_at": "2026-10-13T05:40:59.186597Z"
+  },
+  "snapshot": {
+    "records": [
+      {
+        "message_id": "message-中文🙂",
+        "route": "channel/local",
+        "payload": {
+          "text": "待投递🧭",
+          "nullable": null
+        },
+        "metadata": {},
+        "correlation_id": null,
+        "causation_id": null,
+        "persisted_at": "2026-10-13T05:40:59.170998Z",
+        "phase": "turn_settled",
+        "outcome": "completed",
+        "drained": false,
+        "reason": null,
+        "attempt_id": "d90df47c-3b20-4308-8118-d19a1269c2c9",
+        "attempt": "3",
+        "claimed_at": "2026-10-13T05:40:59.186597Z",
+        "effect_started_at": "2026-10-13T05:40:59.195695Z",
+        "mailbox_accepted_at": null,
+        "drained_at": null,
+        "turn_settled_at": "2026-10-13T05:40:59.196767Z",
+        "turn_id": "turn-新",
+        "reply_message_id": null,
+        "next_attempt_at": null,
+        "terminal": true,
+        "retained_bytes": "166"
+      }
+    ]
+  },
+  "recovery": {
+    "last_applied_sequence": "8"
+  }
+}

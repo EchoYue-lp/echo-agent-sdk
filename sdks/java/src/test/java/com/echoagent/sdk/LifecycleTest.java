@@ -209,6 +209,96 @@ class LifecycleTest {
         assertEquals("handle_mismatch", ((EchoAgentException) subscriber.error.get()).code());
     }
 
+    @Test void fullDataWindowStillRetainsOneCoalescedGapControl() throws Exception {
+        var publisher = new BoundedPublisher(2);
+        var stream = new WireHandle("stream-1", "1", "stream");
+        publisher.publishEvent(event(stream, "1"), stream.id());
+        publisher.publishEvent(event(stream, "2"), stream.id());
+        publisher.publishGap(gap(stream, "3", "3", "3"), stream.id());
+        publisher.publishGap(gap(stream, "4", "4", "4"), stream.id());
+        assertFalse(publisher.isClosed(), "gap controls must fit beyond the full data window");
+        var subscriber = new RecordingSubscriber(3); publisher.subscribe(subscriber);
+        assertTrue(subscriber.values.await(2, TimeUnit.SECONDS));
+        assertEquals(3, subscriber.valuesSnapshot().size());
+        var control = subscriber.valuesSnapshot().get(2).path("gap");
+        assertEquals("3", control.path("from_sequence").textValue());
+        assertEquals("4", control.path("snapshot_watermark").textValue());
+        publisher.close(); assertTrue(subscriber.terminated.await(2, TimeUnit.SECONDS));
+    }
+    @Test void successfulTerminalBeforeSubscriptionDrainsPrefixThenCompletes() throws Exception {
+        var publisher = new BoundedPublisher(2);
+        var stream = new WireHandle("stream-1", "1", "stream");
+        publisher.publishEvent(event(stream, "1"), stream.id());
+        var terminal = event(stream, "2");
+        ((com.fasterxml.jackson.databind.node.ObjectNode) terminal.path("envelope").path("payload")).put("event_type", "final_answer");
+        publisher.publishEvent(terminal, stream.id()); publisher.close();
+        var subscriber = new RecordingSubscriber(2); publisher.subscribe(subscriber);
+        assertTrue(subscriber.values.await(2, TimeUnit.SECONDS), "late subscriber lost pre-terminal prefix");
+        assertTrue(subscriber.terminated.await(2, TimeUnit.SECONDS));
+        assertEquals(List.of("1", "2"), subscriber.valuesSnapshot().stream().map(value -> value.path("envelope").path("sequence").textValue()).toList());
+        assertEquals("final_answer", subscriber.valuesSnapshot().get(1).path("envelope").path("payload").path("event_type").textValue());
+        assertEquals(null, subscriber.error.get());
+    }
+    @Test void subscribedWithoutDemandStillHasOnlyOneGapSlotAndOriginalDataBound() throws Exception {
+        var publisher = new BoundedPublisher(2);
+        var stream = new WireHandle("stream-1", "1", "stream");
+        var demand = new AtomicReference<Flow.Subscription>();
+        var values = new CopyOnWriteArrayList<JsonNode>();
+        var complete = new CountDownLatch(1);
+        publisher.subscribe(new Flow.Subscriber<>() {
+            @Override public void onSubscribe(Flow.Subscription value) { demand.set(value); }
+            @Override public void onNext(JsonNode value) { values.add(value); }
+            @Override public void onError(Throwable error) { complete.countDown(); }
+            @Override public void onComplete() { complete.countDown(); }
+        });
+        publisher.publishEvent(event(stream, "1"), stream.id()); publisher.publishEvent(event(stream, "2"), stream.id());
+        for (int sequence = 3; sequence <= 100; sequence++) publisher.publishGap(gap(stream, Integer.toString(sequence), Integer.toString(sequence), Integer.toString(sequence)), stream.id());
+        assertFalse(publisher.isClosed()); publisher.close(); demand.get().request(Long.MAX_VALUE);
+        assertTrue(complete.await(2, TimeUnit.SECONDS)); assertEquals(3, values.size());
+        assertEquals("3", values.get(2).path("gap").path("from_sequence").textValue());
+        assertEquals("100", values.get(2).path("gap").path("snapshot_watermark").textValue());
+        var overflow = new BoundedPublisher(2);
+        overflow.publishEvent(event(stream, "1"), stream.id()); overflow.publishEvent(event(stream, "2"), stream.id());
+        overflow.publishGap(gap(stream, "3", "3", "3"), stream.id()); overflow.publishEvent(event(stream, "4"), stream.id());
+        assertTrue(overflow.isClosed(), "control slot must not expand data capacity");
+    }
+    @Test void failureDiscardsUndeliveredPrefixWithoutConsumptionAcknowledgements() throws Exception {
+        var acknowledgements = new java.util.concurrent.atomic.AtomicInteger();
+        var publisher = new BoundedPublisher(2, ignored -> acknowledgements.incrementAndGet());
+        publisher.publish(JsonSupport.MAPPER.createObjectNode().put("value", 1));
+        publisher.fail(new EchoAgentException("host_exited", "disconnected", "never", null, null));
+        var subscriber = new RecordingSubscriber(0); publisher.subscribe(subscriber);
+        assertTrue(subscriber.terminated.await(2, TimeUnit.SECONDS));
+        assertTrue(subscriber.valuesSnapshot().isEmpty()); assertEquals(0, acknowledgements.get());
+        assertEquals("host_exited", assertInstanceOf(EchoAgentException.class, subscriber.error.get()).code());
+    }
+    @Test void coalescedGapExplicitlyCoversReplacedPendingDataWithoutAcknowledgingIt() throws Exception {
+        var acknowledged = new CopyOnWriteArrayList<String>();
+        var publisher = new BoundedPublisher(2, value -> {
+            if (value.has("envelope")) acknowledged.add(value.path("envelope").path("sequence").textValue());
+        });
+        var stream = new WireHandle("stream-1", "1", "stream");
+        publisher.publishEvent(event(stream, "1"), stream.id()); publisher.publishGap(gap(stream, "2", "2", "2"), stream.id());
+        publisher.publishEvent(event(stream, "3"), stream.id()); publisher.publishGap(gap(stream, "4", "4", "4"), stream.id());
+        publisher.close(); var subscriber = new RecordingSubscriber(2); publisher.subscribe(subscriber);
+        assertTrue(subscriber.terminated.await(2, TimeUnit.SECONDS));
+        assertEquals(2, subscriber.valuesSnapshot().size()); assertEquals(List.of("1"), acknowledged);
+        assertEquals("2", subscriber.valuesSnapshot().get(1).path("gap").path("from_sequence").textValue());
+        assertEquals("4", subscriber.valuesSnapshot().get(1).path("gap").path("snapshot_watermark").textValue());
+    }
+    @Test void consumerMutationCannotChangeTheAcknowledgedSequence() throws Exception {
+        var acknowledged = new AtomicReference<String>(); var consumed = new CountDownLatch(1);
+        var publisher = new BoundedPublisher(2, value -> { acknowledged.set(value.path("envelope").path("sequence").textValue()); consumed.countDown(); });
+        var stream = new WireHandle("stream-1", "1", "stream");
+        publisher.subscribe(new Flow.Subscriber<>() {
+            @Override public void onSubscribe(Flow.Subscription subscription) { subscription.request(Long.MAX_VALUE); }
+            @Override public void onNext(JsonNode value) { ((com.fasterxml.jackson.databind.node.ObjectNode) value.path("envelope")).put("sequence", "18446744073709551615"); }
+            @Override public void onError(Throwable error) { }
+            @Override public void onComplete() { }
+        });
+        publisher.publishEvent(event(stream, "1"), stream.id());
+        assertTrue(consumed.await(2, TimeUnit.SECONDS)); assertEquals("1", acknowledged.get()); publisher.close();
+    }
     private static JsonNode event(WireHandle stream, String sequence) {
         var envelope = JsonSupport.MAPPER.createObjectNode();
         envelope.put("stream_id", stream.id());

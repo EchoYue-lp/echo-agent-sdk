@@ -1,0 +1,5 @@
+/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-real-permission-ttl-runtime/PermissionTtl.java:10: 错误: toJson()在WireHandle中不是公共的; 无法从外部程序包中对其进行访问
+ static JsonNode call(SessionHandle session,String operation,List<?> args)throws Exception{long before=System.nanoTime();var value=await(session.invoke(operation,args));var o=ROWS.addObject().put("operation",operation).put("elapsed_ms",nowMs()).put("call_duration_ms",(System.nanoTime()-before)/1_000_000.0);o.set("session",session.wire().toJson());o.set("arguments",JSON.valueToTree(args));o.set("value",value);return value;}
+                                                                                                                                                                                                                                                                                                                                                  ^
+1 个错误
+错误: 编译失败

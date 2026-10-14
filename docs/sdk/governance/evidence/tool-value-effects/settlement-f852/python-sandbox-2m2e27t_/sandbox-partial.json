@@ -1,0 +1,431 @@
+[
+  {
+    "mode": "success",
+    "started": true,
+    "cancel_observed": false,
+    "finally": 1,
+    "pid": 45337,
+    "exit_code": 0,
+    "sent": [
+      {
+        "channel": "stdout",
+        "chunk": "sandbox 中文🙂\n"
+      }
+    ],
+    "stream": {
+      "id": "stream-d6746c69-c1ef-4068-bf95-71c0f2bf3791",
+      "generation": "1",
+      "kind": "stream"
+    },
+    "command": {
+      "kind": {
+        "Shell": "printf 'sandbox 中文🙂\\n'"
+      },
+      "minimum_isolation": null,
+      "working_dir": null,
+      "env": {},
+      "timeout": {
+        "secs": "30",
+        "nanos": "0"
+      },
+      "stdin": null
+    },
+    "invocation_id": "invocation-90f16d3a7e3c41248c2f4f28036fe925-0",
+    "events": [
+      {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_sdk::FacadeStreamEvent",
+          "variant": "item",
+          "fields": [
+            {
+              "name": "stream",
+              "value": {
+                "kind": "handle",
+                "value": {
+                  "id": "stream-d6746c69-c1ef-4068-bf95-71c0f2bf3791",
+                  "generation": "1",
+                  "kind": "stream"
+                }
+              }
+            },
+            {
+              "name": "sequence",
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "event_type"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "output"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "channel"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "stdout"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "chunk"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "sandbox 中文🙂\n"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_sdk::FacadeStreamEvent",
+          "variant": "item",
+          "fields": [
+            {
+              "name": "stream",
+              "value": {
+                "kind": "handle",
+                "value": {
+                  "id": "stream-d6746c69-c1ef-4068-bf95-71c0f2bf3791",
+                  "generation": "1",
+                  "kind": "stream"
+                }
+              }
+            },
+            {
+              "name": "sequence",
+              "value": {
+                "kind": "u64",
+                "value": "2"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "event_type"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "complete"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "exit_code"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "stdout"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "sandbox 中文🙂\n"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "stderr"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": ""
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "duration"
+                    },
+                    "value": {
+                      "kind": "map",
+                      "value": [
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "secs"
+                          },
+                          "value": {
+                            "kind": "u64",
+                            "value": "0"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "nanos"
+                          },
+                          "value": {
+                            "kind": "u64",
+                            "value": "1"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "sandbox_type"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "owned-native-fixture"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "timed_out"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "cancelled"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "output_truncated"
+                    },
+                    "value": {
+                      "kind": "bool",
+                      "value": false
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "stdout_bytes"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "19"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "stderr_bytes"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_sdk::FacadeStreamEvent",
+          "variant": "failed",
+          "fields": [
+            {
+              "name": "stream",
+              "value": {
+                "kind": "handle",
+                "value": {
+                  "id": "stream-d6746c69-c1ef-4068-bf95-71c0f2bf3791",
+                  "generation": "1",
+                  "kind": "stream"
+                }
+              }
+            },
+            {
+              "name": "sequence",
+              "value": {
+                "kind": "u64",
+                "value": "3"
+              }
+            },
+            {
+              "name": "value",
+              "value": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "code"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "framework_error"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "message"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "facade stream producer failed: task 25 panicked with message \"Unfold must not be polled after it returned `Poll::Ready(None)`\""
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "retryable"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "never"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "operation"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "sandbox.stream.next"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "handle"
+                    },
+                    "value": {
+                      "kind": "map",
+                      "value": [
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "id"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "stream-d6746c69-c1ef-4068-bf95-71c0f2bf3791"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "generation"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "1"
+                          }
+                        },
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "kind"
+                          },
+                          "value": {
+                            "kind": "string",
+                            "value": "stream"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "details"
+                    },
+                    "value": {
+                      "kind": "map",
+                      "value": [
+                        {
+                          "key": {
+                            "kind": "string",
+                            "value": "fields"
+                          },
+                          "value": {
+                            "kind": "list",
+                            "value": [
+                              {
+                                "kind": "map",
+                                "value": [
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "key"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": "producer_exit"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "kind": "string",
+                                      "value": "value"
+                                    },
+                                    "value": {
+                                      "kind": "string",
+                                      "value": "panic"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

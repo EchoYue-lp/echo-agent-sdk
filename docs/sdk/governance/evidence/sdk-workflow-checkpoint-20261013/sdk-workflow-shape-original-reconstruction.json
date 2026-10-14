@@ -1,0 +1,7 @@
+{
+  "classification": "exact reconstruction by inverse of root shape patch; matched frozen original source hash, not claimed prior backup",
+  "path": "/tmp/sdk-workflow-shape-reconstructed-original.rs",
+  "sha256": "8a9fa9dbff4a00ca1e4f7234e22f5192f5449d025acff161868241a5fcd1c4a5",
+  "expected_manifest": "/tmp/sdk-parent-driver-local-gates/manifest.json",
+  "counterexample_binary_sha256": "6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5"
+}

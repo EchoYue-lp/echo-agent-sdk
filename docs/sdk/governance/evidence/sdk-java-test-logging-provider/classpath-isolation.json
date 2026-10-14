@@ -1,0 +1,26 @@
+{
+  "correct_maven_user_property": "includeScope",
+  "facts": {
+    "actual-compile.cp": {
+      "slf4j_paths": [
+        "/Users/ls/MyWork/mvn_pros/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar"
+      ],
+      "includes_nop": false
+    },
+    "actual-test.cp": {
+      "slf4j_paths": [
+        "/Users/ls/MyWork/mvn_pros/org/slf4j/slf4j-nop/2.0.18/slf4j-nop-2.0.18.jar",
+        "/Users/ls/MyWork/mvn_pros/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar"
+      ],
+      "includes_nop": true
+    },
+    "default-example.cp": {
+      "slf4j_paths": [
+        "/Users/ls/MyWork/mvn_pros/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar",
+        "/Users/ls/MyWork/mvn_pros/org/slf4j/slf4j-nop/2.0.18/slf4j-nop-2.0.18.jar"
+      ],
+      "includes_nop": true
+    }
+  },
+  "earlier_probe": "mdep.includeScope was not a recognized plugin parameter and yielded default all-scope classpath; retained old cp files as failed probe, not SDK scope leak"
+}

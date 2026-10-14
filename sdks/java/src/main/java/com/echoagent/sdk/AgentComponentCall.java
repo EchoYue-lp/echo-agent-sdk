@@ -31,7 +31,12 @@ public final class AgentComponentCall implements ExtensionCall {
         if (!input.path("component").isTextual() || !input.path("call").isObject()) {
             throw new IllegalArgumentException("AgentComponent invocation input is malformed");
         }
+        ManagedPersistence.fields(invocation, "operation", "input");
+        ManagedPersistence.fields(input, "component", "call");
         var request = AgentComponentRequest.from(input.path("call"));
+        if (!request.component().equals(input.path("component").textValue())) {
+            throw new IllegalArgumentException("AgentComponent input component does not match operation");
+        }
         return new AgentComponentCall(operation, input, request,
                 ToolCall.nullable(call, "context"), call.deepCopy());
     }

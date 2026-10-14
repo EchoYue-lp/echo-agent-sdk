@@ -1,0 +1,20 @@
+TAP version 13
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/sdk-ts-task-pause-JNLTXJ
+# Subtest: exact Task pause preserves independent B/C
+not ok 1 - exact Task pause preserves independent B/C
+  ---
+  duration_ms: 113.352833
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/task-pause-route-trace.mjs:81:40'
+  failureType: 'testCodeFailure'
+  error: "ENOENT: no such file or directory, open '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/shared/facade-operation-catalog.json'"
+  code: 'ENOENT'
+  stack: |-
+    readFileSync (node:fs:440:20)
+    new FacadeCatalog (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/sdk-client/dist/catalog.js:14:36)
+    EchoAgentClient.spawn (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/sdk-client/dist/client.js:199:25)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async scenario (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/task-pause-route-trace.mjs:20:7)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...

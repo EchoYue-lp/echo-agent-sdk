@@ -1,0 +1,156 @@
+{
+  "status": "actual-public-two-counterexamples-closed-new-scope-not-whole-consumer",
+  "old_host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802",
+  "before_public_cases": {
+    "held_close": {
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "callback_finally_count": 0,
+      "returned_close_true_while_callback_held": true
+    },
+    "bad_chunk": {
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "callback_finally_count": 0,
+      "returned_failed_terminal_before_callback_finished": true
+    }
+  },
+  "fixture_correction": "initialshutdown_timeout_secs=0 rejected config before handshake; legitimate config1second obtained actual same public behavior red; first failure is not behavior proof",
+  "source_fix": "internal Channel producer disposition cannot use local abort as external completion; timeout preserves original stream address/collector and pending error, returns after_delay; every source exit cancels exact invocation child and drains to actual EOF",
+  "sources": {
+    "echo-sdk-host/src/core_profile/facade/integrations.rs": "c54a17d83b6ee7e148576deef18f45fac13acb0c47c01d5e9daac15f676ce070",
+    "echo-sdk-host/src/core_profile/facade/stream.rs": "718528d734f1a53413057c209c163d3ea5e39513a12ee564ef3f380828ce47eb",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "273a1868bed3f7d3119c55319937330f0a8f7cb9e1ec4dfc88e8a9db2b1ee587",
+    "echo-sdk-host/src/core_profile/facade/tools.rs": "77c1d305a55e8320692929efca4f48a6d6dc7a4370cd33c9b403da996dcc15c3",
+    "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py": "fa3a017bbd0d6917c9f7b5b5946d2ee0e4a2c310df1163ca11682d2cffba41cb"
+  },
+  "host_library": {
+    "passed": 158,
+    "failed": 0,
+    "ignored": 0
+  },
+  "clippy_all_targets_all_features": 0,
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-callback-context-candidate-host",
+    "sha256": "0a0fe4bd910fd0995b1b4cc30f4ccaa79ddc4c194116397127bec12ba6e89a17"
+  },
+  "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6",
+  "after_public_cases": {
+    "tests": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "same_original_callback_fixture": true,
+    "first_call_returns_after_delay_while_finally_held": true,
+    "after_release_original_close_address_retries_successfully": true,
+    "bad_chunk_base64_cause_retained_until_actual_finally_count_one": true
+  },
+  "gates": {
+    "clippy_all_targets_all_features": 0,
+    "clippy_production_panic_four": 0,
+    "fmt_check": 0,
+    "all_feature_host_build": 0
+  },
+  "compiled_bridge_sha256": "93de426a08832e74edde789dda596644c0fa95bf7140e4659582251a433c51ac",
+  "known_open_followup": [
+    "late Custom stream setup acknowledgement after cancellation requires retained remote producer owner (bridge owner)",
+    "Host teardown must admit only canonical terminal of the original issued extension stream; original sink owns remote contiguous sequence facts (handler and bridge owners)",
+    "Sandbox setup must receive exact caller cancellation before waiting for reverse setup ACK; published cancel true is not callback cleanup proof (mod and bridge owners)"
+  ],
+  "raw_files": [
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-hostlib-all.log",
+      "sha256": "95eba08f8f0339c4d538783e3cf43404153d80e861e3499e2c2cdc77092f1f8a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-bad-chunk-before.log",
+      "sha256": "a50b02e4a7d1c6d30a851bfa5e1d49fd34747a043e18315f2a3a31d2d5bd4936"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-close-before.log",
+      "sha256": "339a0e145449a8f86b377425f3f909b70f4c726978a846e158d8f44139aa3d7a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/bad-chunk-before-observed.json",
+      "sha256": "61b130aba44908a39b1efb61737ccb4372c2dd08dea18548adfc1e11dbdad4e8"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py",
+      "sha256": "fa3a017bbd0d6917c9f7b5b5946d2ee0e4a2c310df1163ca11682d2cffba41cb"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-close-after.log",
+      "sha256": "3822811ba12df1936cbdc8d5ad8b9ca7527293cc745234a16402aadb3fdf1c87"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-clippy-all.log",
+      "sha256": "29d443fbb3573eea87440258f2a13b3c2dfe45eb5e3cf5cd58bb95b29d9cabc7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-close-before-v2.log",
+      "sha256": "5ee6507df91089bb7e331fe4675e6c10091eba62ada372f68c537400223bda9a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/close-before-observed.json",
+      "sha256": "578b33643c06f41bfcf3acacec7823d658ff13ac61a76c8828c58c154aee94d3"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-build.log",
+      "sha256": "26dd370b1d8f5409af922eccbf59908ad8ac7293727a2bbac240e8ce48212d2d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-clippy-prod.log",
+      "sha256": "95f028b3f22e9f66e0ad6de26b84a738c242f11952ae96b9cfbaa083a4d8026e"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/channel-cooperative-hostlib-all-v2.log",
+      "sha256": "d57cbc4b3bab7dda3a2dfd48f2251322b12958023e66d943c48c71f67d783be7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/host.json",
+      "sha256": "e4bca0923d1c36faf594550051fb169f77b1e9608b28ad6a01cb3093b60de79a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/observed.json",
+      "sha256": "fdf02a0e56e362ed8c3214af1b270e7c79356fc1e2fb99e58b50af9d06ba2025"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/state/host/session-index.json",
+      "sha256": "6c06bfd9a2b9800834cb5a459027071adefc1ba30812832490d22eacdb19644e"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/bad-chunk/host.json",
+      "sha256": "687530467ef9364d7f1ccb830a0164268fc175dd9ece9450cdcfede1d81b811e"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/bad-chunk/observed.json",
+      "sha256": "70c2da6d4b5107f33ba457611d63f8faf94eb9df8c3e383fea8b790ea00bb3a0"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/bad-chunk/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/bad-chunk/state/host/session-index.json",
+      "sha256": "e5712406b3537a497781a5bce4c7ab3141977d567f51aa3a0ba32d05a51a606d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/actual-after/bad-chunk/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/__pycache__/test_cooperative_close.cpython-312-pytest-9.1.1.pyc",
+      "sha256": "50a9bc006fd0e6f5ddf73fa43e51676a259dd18994d315d3a7ace7a8496356f2"
+    }
+  ]
+}

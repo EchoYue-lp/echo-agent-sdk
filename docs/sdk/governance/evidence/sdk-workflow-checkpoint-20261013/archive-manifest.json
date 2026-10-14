@@ -1,0 +1,995 @@
+{
+  "original_files": [
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/workflow-original-inverse-reconstructed.rs",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/workflow-original-inverse-reconstructed.rs",
+      "sha256": "8a9fa9dbff4a00ca1e4f7234e22f5192f5449d025acff161868241a5fcd1c4a5"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/workflow-original-reconstruction.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/workflow-original-reconstruction.json",
+      "sha256": "291dd98838825940a36959f2ca135e8c223425c6a28776ddffb437731ea2c0a0"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/run.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/python/run.log",
+      "sha256": "0e7d7ecf4affda2790fc913fb0c2cc12ae37b322101544911e72ebc06f628ec1"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/results.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/python/results.json",
+      "sha256": "0f670ce2ef8194c28e4bfd9e883b5b4ec940860d599b08559eb0f3a516fbe4e0"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/call-tuple-resume.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/python/call-tuple-resume.json",
+      "sha256": "2894d4c2fa156f9f799637df636efd92f1ecdd502526c963dcf104986499c9bf"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/scenario.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/python/scenario.json",
+      "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/call-resume-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/python/call-resume-exact.json",
+      "sha256": "61b273b9bd06125343b144142084936506d2f51b4ab88f378c931b3607e2c9f2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/python/call-tuple-with-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/python/call-tuple-with-state.json",
+      "sha256": "0fed67e63eb09454cd2a9340de5939867558234e4dcd3aaaa87ea127b78574e1"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/run.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/typescript/run.log",
+      "sha256": "5cca2e8a5bfae570f896134fe802eb21375e65ebcaba60daf03bd61210fbcd4d"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/results.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/typescript/results.json",
+      "sha256": "f1f611e30d079f9e6ded7069f628eb89a062f9d692c4edc5050132c8a6a31e1d"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/call-tuple-resume.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/typescript/call-tuple-resume.json",
+      "sha256": "49a0f45b55851bc6e775c4e2dce910722d4310046065790cad8ee837e8010c9c"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/scenario.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/typescript/scenario.json",
+      "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/call-resume-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/typescript/call-resume-exact.json",
+      "sha256": "38f211c01f0f5edc6013284c7945dec6231d51cb977afef22a67eec2b0613aaf"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/typescript/call-tuple-with-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/typescript/call-tuple-with-state.json",
+      "sha256": "73bc1cbe9f4836b38970b011ccf7f4221a09fcd5fb511386797d51bd9da9473a"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/run.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/java/run.log",
+      "sha256": "f86bafc69cc982a102e9cc221359226d2cd3be311d6d4a832b1eb3a9ace8de80"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/results.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/java/results.json",
+      "sha256": "91840ff9180951b234ee4fc4cec6e2432676698d28f43ce299d06a96ab6bdc7b"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/call-tuple-resume.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/java/call-tuple-resume.json",
+      "sha256": "60c86a61b30e8122663982627d61d2ac66bdd45add7ef94e54826730f5677447"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/scenario.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/java/scenario.json",
+      "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/call-resume-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/java/call-resume-exact.json",
+      "sha256": "c0f27a3a4fb19593addda9b19292a8b1fab445f39ee27d55906b4db57ccb4b7e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/java/call-tuple-with-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/java/call-tuple-with-state.json",
+      "sha256": "d75a8df82245088a66c36d8ab35b446766f1bef77772df58201018af55f370f4"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/runner-source-reconstructed/workflow-host.test.js",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/runner-source-reconstructed/workflow-host.test.js",
+      "sha256": "a483ae8e1b4ce6e997c806976a200251b60bc50fbbcd4b8256b1e7663951e7b1"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/runner-source-reconstructed/WorkflowHostTest.java",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/runner-source-reconstructed/WorkflowHostTest.java",
+      "sha256": "8a46138f008f6f9347cd1673e1d9b2de4699131ec61de5d3e54c67bb25ce350d"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/runner-source-reconstructed/workflow_fixture.py",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/runner-source-reconstructed/workflow_fixture.py",
+      "sha256": "aa6a3c4e0e1beb79d5820651cf638faceffd6dec10a89826e6631ff21f29fba6"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/runner-source-reconstructed/WorkflowProbeRunner.java",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/runner-source-reconstructed/WorkflowProbeRunner.java",
+      "sha256": "5f289bcccd3d605e6bcd4fd89c78ccb7dcc766a85aa8284aef591e480da77200"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence/runner-source-reconstructed/test_workflow_host.py",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence/runner-source-reconstructed/test_workflow_host.py",
+      "sha256": "4c89d8cf7e33a08411acfc071863009cc375d34279fbc529b1ec82437cc72376"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java-normalized.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java-normalized.json",
+      "sha256": "c56868829603d87170255e40bcd3a71a44555207d3bbf84c8f332cb709ca0ab7"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript-normalized.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript-normalized.json",
+      "sha256": "c56868829603d87170255e40bcd3a71a44555207d3bbf84c8f332cb709ca0ab7"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/workflow-host.test.js",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/workflow-host.test.js",
+      "sha256": "263a593a6f17fee0fe148fc2f89b902fa228f9db804ee896ecf18855ca284c36"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/WorkflowHostTest.java",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/WorkflowHostTest.java",
+      "sha256": "838672ebcfae4565390414c544bca828db069c83f66d528c05fc782a7bf97840"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python-normalized.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python-normalized.json",
+      "sha256": "c56868829603d87170255e40bcd3a71a44555207d3bbf84c8f332cb709ca0ab7"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/workflow_fixture.py",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/workflow_fixture.py",
+      "sha256": "aa6a3c4e0e1beb79d5820651cf638faceffd6dec10a89826e6631ff21f29fba6"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/test_workflow_host.py.delta.patch",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/test_workflow_host.py.delta.patch",
+      "sha256": "8cb071a34bb0991703abc1d44d280fbd520670774d0aacbf1eed1e7ab0352b38"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/WorkflowProbeRunner.java",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/WorkflowProbeRunner.java",
+      "sha256": "5f289bcccd3d605e6bcd4fd89c78ccb7dcc766a85aa8284aef591e480da77200"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/workflow-host.test.js.delta.patch",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/workflow-host.test.js.delta.patch",
+      "sha256": "c1e1139d1b32ab2215174ddb1d1413ef435e42e6cbaab95fea9b49bf7cfaf1eb"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/WorkflowHostTest.java.delta.patch",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/WorkflowHostTest.java.delta.patch",
+      "sha256": "6cde77ba0d92cf1d716ef0e8a5eb9622daaefa7f45203c4d21681f13341e6d5c"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/test_workflow_host.py",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/test_workflow_host.py",
+      "sha256": "af074c217a7b476e69754a5b99866d5ac9d989ce983e0150873a9f8f4339db0a"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-reject-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-reject-parent.json",
+      "sha256": "e640a1df3c2543f69b3ab053b82755c68de8d2368746788b03d9d77a58827693"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-closed-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-closed-state.json",
+      "sha256": "fa7d02b62233fbc7ec731e9f599987f35dc26581913cf94cfd75591c0691abb5"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-shape-updates-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-shape-updates-parent.json",
+      "sha256": "e640a1df3c2543f69b3ab053b82755c68de8d2368746788b03d9d77a58827693"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-build.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-build.json",
+      "sha256": "6d09c269c4c346b92546e0db124ce6cc5689066856c172637f96107f13fe7db0"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-load-consumed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-load-consumed.json",
+      "sha256": "e803319b22401d13348eb5c4f4485e640d7d28ae799c0d9dca29b7c76882e361"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-replacement-quota.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-replacement-quota.json",
+      "sha256": "75978eab1ce27eb1874e722b9585361bf3995b9620f55e9d616348bd4682d86b"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-duplicate-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-duplicate-exact.json",
+      "sha256": "8a5141982f942173e9233dde6f376c19c7f53617404635809ed374496752b0d2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-shape-updates-after.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-shape-updates-after.json",
+      "sha256": "ce514310a2129be3ec94e0821b328c05800be7bc449e14025af43fea1cce3808"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-tag-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-tag-first.json",
+      "sha256": "89ce8cde50ad84d17c693109625596dd26a766075533409df0d0b42fd18a4e91"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-branch-load.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-branch-load.json",
+      "sha256": "ef495a97565cb545deac6819f9b2f291cd59856fead662c41c0f9d60e25822c3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-no-direct.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-no-direct.json",
+      "sha256": "9e43f2cb5142db345268196af057c974a01d8994525122712cc814f78b94d546"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-parent-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-parent-finish.json",
+      "sha256": "335c9680b0135535d0fba41a2fe6423cf1dd97af6fc117b5fd0f06e270ecef7e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-replacement-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-replacement-state.json",
+      "sha256": "90c5dc73f326b93932f608392f7e248487042fc525e80fa592339e77f06d2c03"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/run.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/run.log",
+      "sha256": "0e9171f6243a56417615ce69c98e518c9e044bf1284bfc82c9298d8422924b00"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-defer.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-defer.json",
+      "sha256": "53797b9df1f41299c29abc9ce9a8959f0257dde62c5b4309f00221a2beddd8af"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-branch-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-branch-parent.json",
+      "sha256": "655613e83e51fa8a694415c0735720d2236f08c417ac1721d2c7c112513e0c93"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/results.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/results.json",
+      "sha256": "59525679cf34842043d91975c0164d7f149b47fc92af6d81275f67675cb41ba2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-load-rejected.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-load-rejected.json",
+      "sha256": "a0e89b1db816965596c4ea4cd1f91f4e75075b45805a864fc4c6bfe372a1a305"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-list-remaining.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-list-remaining.json",
+      "sha256": "c72b705ce6306d067f202cdd778a7a1f26677268c5a4c8d5dd6049df48904b49"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-tuple-resume.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-tuple-resume.json",
+      "sha256": "01b0df1bdb27cb746db69618675da495ed40913916dd25c8b8b51c23a2524e91"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-state-keys.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-state-keys.json",
+      "sha256": "2cc1abf1f71384741a8f3097e123684980aa8f351f1fa405975136de44e68620"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-closed-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-closed-graph.json",
+      "sha256": "81bdc734b12ebba10ae94675325e669e52c0a5ce96905430f69b3480e08db0fa"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-reject-duplicate.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-reject-duplicate.json",
+      "sha256": "9d940d2e8bfdb4753cbdb23652325bf85f4184328437489bdbdc65560642dce9"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-shape-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-shape-parent.json",
+      "sha256": "e640a1df3c2543f69b3ab053b82755c68de8d2368746788b03d9d77a58827693"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-branch.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-branch.json",
+      "sha256": "92305e150da6d447817fb3e5226d3c740e1043a7a1b6f1b0409a0508530020e3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-shape-parent-after.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-shape-parent-after.json",
+      "sha256": "9333e99097ac6d9ee22e18e76a91edac771e57d0b22456a932ac53d686a341f3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-duplicate-id.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-duplicate-id.json",
+      "sha256": "d9728249de2b23ff8071f6af19dd24bc745b3bf6ef1924736793727e7447bef5"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-cross-owner.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-cross-owner.json",
+      "sha256": "81bdc734b12ebba10ae94675325e669e52c0a5ce96905430f69b3480e08db0fa"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-restore-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-restore-first.json",
+      "sha256": "4a1b28663253705debc9c5c13d3c9dc0e4a9975856fb631392ce675373298fb6"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-load-after-defer.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-load-after-defer.json",
+      "sha256": "e803319b22401d13348eb5c4f4485e640d7d28ae799c0d9dca29b7c76882e361"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-replacement-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-replacement-graph.json",
+      "sha256": "6d09c269c4c346b92546e0db124ce6cc5689066856c172637f96107f13fe7db0"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/scenario.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/scenario.json",
+      "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-branch-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-branch-finish.json",
+      "sha256": "3612b8df3f9f1bdc74b405e8d8920141a31bf23e9c9ab6cdfa6c1f7c1a51553f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-resume-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-resume-exact.json",
+      "sha256": "8a5141982f942173e9233dde6f376c19c7f53617404635809ed374496752b0d2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-list-by-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-list-by-graph.json",
+      "sha256": "9ff8b7a1d48e31fc483a2131b2f47c80d648a5ea0c4070be5bdb4070a7927218"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-state-new.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-state-new.json",
+      "sha256": "c2730eb1eebb719b6997a1a26164fda8a25a123a09191f3299d9e16e381e7b4c"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-load-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-load-first.json",
+      "sha256": "e803319b22401d13348eb5c4f4485e640d7d28ae799c0d9dca29b7c76882e361"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-state-get.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-state-get.json",
+      "sha256": "fa7d02b62233fbc7ec731e9f599987f35dc26581913cf94cfd75591c0691abb5"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-parent-after-branch.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-parent-after-branch.json",
+      "sha256": "739fe425c1ca2ef819a8e49590ea781e73510a2732b2160f185768de9b24c0d9"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-state-set.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-state-set.json",
+      "sha256": "4e85e01a88b208d8dae169864b4a8aaf3a6449bdeec7c38425f1997722ac4116"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-resume-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-resume-finish.json",
+      "sha256": "d9728249de2b23ff8071f6af19dd24bc745b3bf6ef1924736793727e7447bef5"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-yes-direct.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-yes-direct.json",
+      "sha256": "81bdc734b12ebba10ae94675325e669e52c0a5ce96905430f69b3480e08db0fa"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-state-snapshot.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-state-snapshot.json",
+      "sha256": "7b96274ee86f31fd66373909d16d9b5d318b4d19ac25c36664fc0e92090fbe7e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-parent-updates.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-parent-updates.json",
+      "sha256": "79e87d67391f6cac75937782572730d18e77529d4a4bc429e7d2bcc3040acfe4"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-tuple-with-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-tuple-with-state.json",
+      "sha256": "ead8316d535cbdaee4b72645f5f5e21eee539f0c19a2d4de14d3acea9e997694"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-reject.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-reject.json",
+      "sha256": "f70ec82dfa8e2eb3622de9bbecb760af1bd0adb3ef53618a6c398ef4ed6ea8a7"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-quota.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-quota.json",
+      "sha256": "6d09c269c4c346b92546e0db124ce6cc5689066856c172637f96107f13fe7db0"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-state-cross-owner.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-state-cross-owner.json",
+      "sha256": "fa7d02b62233fbc7ec731e9f599987f35dc26581913cf94cfd75591c0691abb5"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-load-tagged.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-load-tagged.json",
+      "sha256": "e803319b22401d13348eb5c4f4485e640d7d28ae799c0d9dca29b7c76882e361"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/python/call-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/python/call-first.json",
+      "sha256": "e640a1df3c2543f69b3ab053b82755c68de8d2368746788b03d9d77a58827693"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-reject-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-reject-parent.json",
+      "sha256": "0033de3fb5d7124b1728b49307e0f86dd4c8aa7d83516efe476cb3182f5a00cc"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-closed-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-closed-state.json",
+      "sha256": "4c7e053a3c9dc713d5d758190ae90838d183c58f0f8ba19d1397d99a382fe791"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-shape-updates-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-shape-updates-parent.json",
+      "sha256": "0033de3fb5d7124b1728b49307e0f86dd4c8aa7d83516efe476cb3182f5a00cc"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-build.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-build.json",
+      "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-load-consumed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-load-consumed.json",
+      "sha256": "dd8abff5f614b4aab3a419a7d010a5cbe002cd960abd2faf82f747f8843b4c94"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-replacement-quota.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-replacement-quota.json",
+      "sha256": "7fcd174230aa5958f0f06b46bfabf9e63fe6220eb64110d9d46c043dfee08e4e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-duplicate-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-duplicate-exact.json",
+      "sha256": "fb9c3061cfa37d70701d7dd2058f575782c1ad24bb8e40e5c093167673d7b140"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-shape-updates-after.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-shape-updates-after.json",
+      "sha256": "26c4d6508512b3f338bdc267ff0e515c2486598e13714da72493030a9e60d572"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-tag-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-tag-first.json",
+      "sha256": "3e9381c2ce174408d135b588617c9142053913d9376444328683862139a84a24"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-branch-load.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-branch-load.json",
+      "sha256": "76c8ba6ef2bfef553948e52e1d54e9901e5edd7b4c14b9ca391be29abc5ede51"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-no-direct.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-no-direct.json",
+      "sha256": "ef07e18cb0d20f779fd499070453c863bd1f34c6b397ab4f54e62361093be611"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-parent-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-parent-finish.json",
+      "sha256": "dc4482ff1feb5f0744d7a402401da487f7dd66e9a67c119375bc6183bb6f8452"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-replacement-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-replacement-state.json",
+      "sha256": "5fd64db683b86806ba308ff179fa25275b7da59f1a9ad9702597d95ad468572f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/run.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/run.log",
+      "sha256": "4caaadbfe2878b74ac22dda80d72ec455f2a07a9909dd62478ddac97e1830a56"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-defer.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-defer.json",
+      "sha256": "4ff2946ba13750484e08f9ba415465f70303d428953531a77d98902d141d272d"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-branch-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-branch-parent.json",
+      "sha256": "5f42272fd5c66c7f3975f3f758fa5c1f082edad819a831d21d4c5301a193b045"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/results.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/results.json",
+      "sha256": "caa3558f145b7fb4c2471b649d90a312f04542f628cfae25ab53f14eb6719aa3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-load-rejected.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-load-rejected.json",
+      "sha256": "d40c0efa63d876f1d69b3224ebb891a9f0b095b72141100c33290a8982eb13fd"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-list-remaining.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-list-remaining.json",
+      "sha256": "cfaa50e8619d40d870a7cb0d986d839ff8bed374f96d1d8d0f9ba4ed929ae405"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-tuple-resume.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-tuple-resume.json",
+      "sha256": "54a4e635bc0dcd460b3937dffab31a30b06b4605d224abbd9ba03c10c5ba14cd"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-state-keys.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-state-keys.json",
+      "sha256": "c96a376a52e15cd578da33ce9e446fc5558070cd258b2dc7f17f888e6b24bcdd"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-closed-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-closed-graph.json",
+      "sha256": "b7a0a509da2413f1ad2308a4a5e358aa136722abd3d949eb852818e955b88d46"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-reject-duplicate.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-reject-duplicate.json",
+      "sha256": "4a80921eebe5a0f2040de2740d49f2ef4d88d3d27f3196c768ca3972a0f4c374"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-shape-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-shape-parent.json",
+      "sha256": "0033de3fb5d7124b1728b49307e0f86dd4c8aa7d83516efe476cb3182f5a00cc"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-branch.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-branch.json",
+      "sha256": "c4b955a3ad2812f84d0fe42752e532e806383942e39eac9cf899692643f13336"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-shape-parent-after.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-shape-parent-after.json",
+      "sha256": "68ede20f9a301b8c4d54831ebd59722ebfe5cf04352c75063172d64d79a0d7ed"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-duplicate-id.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-duplicate-id.json",
+      "sha256": "77c805b5403d7c3552713919ffa5a7beb6b0367dc30fac176b6128fd95bb5260"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-cross-owner.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-cross-owner.json",
+      "sha256": "b7a0a509da2413f1ad2308a4a5e358aa136722abd3d949eb852818e955b88d46"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-restore-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-restore-first.json",
+      "sha256": "8b2d604ccf778f8f00e114710c2c903de4afaf53eabce3e670ebd5284dc68d82"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-load-after-defer.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-load-after-defer.json",
+      "sha256": "dd8abff5f614b4aab3a419a7d010a5cbe002cd960abd2faf82f747f8843b4c94"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-replacement-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-replacement-graph.json",
+      "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/scenario.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/scenario.json",
+      "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-branch-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-branch-finish.json",
+      "sha256": "df8e930a266f01403c37eeddcea4fe8f41fb5e4419344db101150f152236fc8b"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-resume-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-resume-exact.json",
+      "sha256": "fb9c3061cfa37d70701d7dd2058f575782c1ad24bb8e40e5c093167673d7b140"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-list-by-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-list-by-graph.json",
+      "sha256": "66c2221cd082464e663d5b71764befc22c1193d5f9f939d7e0616cb25921da9f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-state-new.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-state-new.json",
+      "sha256": "152d5a28494e99875692a0f04f13cf6d47a5f3041898dcf0d92bba1bd4a09a4e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-load-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-load-first.json",
+      "sha256": "dd8abff5f614b4aab3a419a7d010a5cbe002cd960abd2faf82f747f8843b4c94"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-state-get.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-state-get.json",
+      "sha256": "4c7e053a3c9dc713d5d758190ae90838d183c58f0f8ba19d1397d99a382fe791"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-parent-after-branch.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-parent-after-branch.json",
+      "sha256": "4b6f3552da5f22e20d7d0a9dc902a3d006c5111a342f384c677fc66cb727d4fa"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-state-set.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-state-set.json",
+      "sha256": "94ead0bd29a60ef75752d561c078dfe4c76dd682cba70815201dd54035806170"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-resume-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-resume-finish.json",
+      "sha256": "77c805b5403d7c3552713919ffa5a7beb6b0367dc30fac176b6128fd95bb5260"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-yes-direct.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-yes-direct.json",
+      "sha256": "b7a0a509da2413f1ad2308a4a5e358aa136722abd3d949eb852818e955b88d46"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-state-snapshot.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-state-snapshot.json",
+      "sha256": "f0b5ead6d43c8a25198941dc6699966cdb9ab867f92215c46d1774b9b2947156"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-parent-updates.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-parent-updates.json",
+      "sha256": "acbcff30a79970d6547127f8d35934ea39221c03105fc5534bf1b9fbff32a128"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-tuple-with-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-tuple-with-state.json",
+      "sha256": "600be04b90332f1015dd9e00075d257753667bdd8766a987714a651eec329cbf"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-reject.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-reject.json",
+      "sha256": "e5cb71a85cced16334ac24f30bd1fbf4062c2c69e6f75d6e01c4e7019da3e857"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-quota.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-quota.json",
+      "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-state-cross-owner.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-state-cross-owner.json",
+      "sha256": "4c7e053a3c9dc713d5d758190ae90838d183c58f0f8ba19d1397d99a382fe791"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-load-tagged.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-load-tagged.json",
+      "sha256": "dd8abff5f614b4aab3a419a7d010a5cbe002cd960abd2faf82f747f8843b4c94"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/typescript/call-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/typescript/call-first.json",
+      "sha256": "0033de3fb5d7124b1728b49307e0f86dd4c8aa7d83516efe476cb3182f5a00cc"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-reject-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-reject-parent.json",
+      "sha256": "67a33a3db2cac276b1ea4a11c4786c71c84ebdb5d66271790bb961b39c0f109a"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-closed-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-closed-state.json",
+      "sha256": "c0cbf2c4594beb155b657acbfcedf5c60de9ab53ed2c97c69641d48ad7f2f4d3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-shape-updates-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-shape-updates-parent.json",
+      "sha256": "67a33a3db2cac276b1ea4a11c4786c71c84ebdb5d66271790bb961b39c0f109a"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-build.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-build.json",
+      "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-load-consumed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-load-consumed.json",
+      "sha256": "afc7bcbeffe0e01d7727f146b87a51e2805cfc11fb9d3dc34245c39421ff9055"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-replacement-quota.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-replacement-quota.json",
+      "sha256": "7fcd174230aa5958f0f06b46bfabf9e63fe6220eb64110d9d46c043dfee08e4e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-duplicate-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-duplicate-exact.json",
+      "sha256": "f2d79ef7e5f51031956795a5442e1316b234b26fdbce4daeef90b4d8ea4e82f2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-shape-updates-after.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-shape-updates-after.json",
+      "sha256": "f8ab5179b5a778287f028302dfefade445f97e894d311decfe7137b70a4bc316"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-tag-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-tag-first.json",
+      "sha256": "d4a92d81b50e92734becaf8d0122e676ed8b2d938f233afe64c34d24ee7855ff"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-branch-load.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-branch-load.json",
+      "sha256": "abbcc4ce8bd16918e10420bd1106b544258943845c16c488d21c44cd83b13a9a"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-no-direct.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-no-direct.json",
+      "sha256": "06c602e8521d1b9654971acb1156a1eb75e6c80d713c05d5606f8dcb6308a825"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-parent-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-parent-finish.json",
+      "sha256": "848729333a59b6e153a389ab209e4fbe1cea64a4da49f5e770d99412229cbf82"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-replacement-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-replacement-state.json",
+      "sha256": "5fd64db683b86806ba308ff179fa25275b7da59f1a9ad9702597d95ad468572f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/run.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/run.log",
+      "sha256": "a42a182a1d3e9d2d6ddbddcd698255e1aafc3c21af78b0e9055b0bb7201b08db"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-defer.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-defer.json",
+      "sha256": "12c2d10ba99b94b48cfd5b56e5610f6916c67e73f6fb0c54bee131a85c1c81ef"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-branch-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-branch-parent.json",
+      "sha256": "a6184d7e777df9a7ae602959a988457da79d44e3a6996799d9edb92f90b78f1d"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/results.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/results.json",
+      "sha256": "4000e559f463213ddf29eeee424f98511bbeb8d2a423a80046cfbe43101d5975"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-load-rejected.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-load-rejected.json",
+      "sha256": "f41107c8671a81b19f0092d1254887e379320f031430b3dd12d24110e3505c75"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-list-remaining.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-list-remaining.json",
+      "sha256": "714fc56b4be883a225a280cfc2dfb0fd0a16dceeb30b7b4fc81cb815431a0b76"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-tuple-resume.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-tuple-resume.json",
+      "sha256": "a3420fd61651c8e976785ffdc5084ecf0bbe69ad10daf0f6cbdf3ccfb8557365"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-state-keys.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-state-keys.json",
+      "sha256": "15e284889e8586c94bd120cf32ac0f2b41132a3da93d9f0caa48127bf9dbf82e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-closed-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-closed-graph.json",
+      "sha256": "3924b687d7b3c44986892241e05c1a24a1cf500cf8825e60fe9e49a9d16531e7"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-reject-duplicate.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-reject-duplicate.json",
+      "sha256": "3c8eff27d8495b8959c4583df732967977f774887e5edd3e4c9f8d1d771afefb"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-shape-parent.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-shape-parent.json",
+      "sha256": "67a33a3db2cac276b1ea4a11c4786c71c84ebdb5d66271790bb961b39c0f109a"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-branch.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-branch.json",
+      "sha256": "08364fcc214a23a1b752f65c3cfcf02715eaa76034fbf08cfb1d657dcedcf10f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-shape-parent-after.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-shape-parent-after.json",
+      "sha256": "94af48ebc795cf86eb2b237048e4a9f1e0b6a7dc145c9dc0007a7c77ef43fb5e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-duplicate-id.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-duplicate-id.json",
+      "sha256": "1d3f679a1981d14e628063e57371850135b8b46368b593a325f61510f577309b"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-cross-owner.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-cross-owner.json",
+      "sha256": "3924b687d7b3c44986892241e05c1a24a1cf500cf8825e60fe9e49a9d16531e7"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-restore-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-restore-first.json",
+      "sha256": "c926ebf8580e08ba8e37e58a8ea5938d9a1b723eb8d1fd070f224d13ce38396e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-load-after-defer.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-load-after-defer.json",
+      "sha256": "afc7bcbeffe0e01d7727f146b87a51e2805cfc11fb9d3dc34245c39421ff9055"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-replacement-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-replacement-graph.json",
+      "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/scenario.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/scenario.json",
+      "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-branch-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-branch-finish.json",
+      "sha256": "5bae630ae256775368ad3e89f3939fd4bd6b96481325ec8df08e5c4cafa05a3e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-resume-exact.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-resume-exact.json",
+      "sha256": "f2d79ef7e5f51031956795a5442e1316b234b26fdbce4daeef90b4d8ea4e82f2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-list-by-graph.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-list-by-graph.json",
+      "sha256": "181ecce0b89e5e14a70a8cc82dca00871fc6953a51d4342d446e3525755232d6"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-state-new.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-state-new.json",
+      "sha256": "152d5a28494e99875692a0f04f13cf6d47a5f3041898dcf0d92bba1bd4a09a4e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-load-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-load-first.json",
+      "sha256": "afc7bcbeffe0e01d7727f146b87a51e2805cfc11fb9d3dc34245c39421ff9055"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-state-get.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-state-get.json",
+      "sha256": "c0cbf2c4594beb155b657acbfcedf5c60de9ab53ed2c97c69641d48ad7f2f4d3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-parent-after-branch.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-parent-after-branch.json",
+      "sha256": "ac8a22d72cf09fed159783548ef2a23bdc7d4cec210a61876a3ef40bf7d2bfc0"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-state-set.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-state-set.json",
+      "sha256": "b42e7a081d5c499c488a738d6187bfd80ffea14c914110c98a0a3c8d938a18c8"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-resume-finish.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-resume-finish.json",
+      "sha256": "1d3f679a1981d14e628063e57371850135b8b46368b593a325f61510f577309b"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-yes-direct.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-yes-direct.json",
+      "sha256": "3924b687d7b3c44986892241e05c1a24a1cf500cf8825e60fe9e49a9d16531e7"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-state-snapshot.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-state-snapshot.json",
+      "sha256": "8a9bb497771725b14ee4447aff894f86b15bbb4998dd819bcd75a5bd34fdc2d2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-parent-updates.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-parent-updates.json",
+      "sha256": "5cbd12502d2b30c70c3e22198eb563aa31c31e13b3b7dec29d5e7d02c6447941"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-tuple-with-state.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-tuple-with-state.json",
+      "sha256": "16fd39a2eb9c47bc07257e3509445ea3f150ffb8677d766a057c30d789b5911e"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-reject.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-reject.json",
+      "sha256": "45ad3fdbd0a3090665becc7f7d896bca2493a25febae51d68b2e802c2fb4bee5"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-quota.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-quota.json",
+      "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-state-cross-owner.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-state-cross-owner.json",
+      "sha256": "c0cbf2c4594beb155b657acbfcedf5c60de9ab53ed2c97c69641d48ad7f2f4d3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-load-tagged.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-load-tagged.json",
+      "sha256": "afc7bcbeffe0e01d7727f146b87a51e2805cfc11fb9d3dc34245c39421ff9055"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/green-evidence/java/call-first.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/green-evidence/java/call-first.json",
+      "sha256": "67a33a3db2cac276b1ea4a11c4786c71c84ebdb5d66271790bb961b39c0f109a"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/red-evidence.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/red-evidence.json",
+      "sha256": "8197e3490b4eac0a2a8ab8bbecb5e6845da3a790e0d25a86b64b06f50aa4c4ac"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/workflow-red-green-proof.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/workflow-red-green-proof.json",
+      "sha256": "9c092c49c7ca823e9dfc6835ea7911b83891c2dce61b3a4e8111edc0b6615359"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/execution-evidence.md",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/execution-evidence.md",
+      "sha256": "1ab800b406dd8e135405dfd70100ff4734a7bfbe33d2325b856657a8289a2d85"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/execution-summary.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/execution-summary.json",
+      "sha256": "e73d4378dadda9b78604ceb4c5836f1be9d44623717b137c81470a984957b6e2"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/candidate-frozen-manifest.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/candidate-frozen-manifest.json",
+      "sha256": "5f87a1af88d323dfb5c4f9860f460e8e60d43bbd21eef8d3e9dbcca8a65813b3"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/draft-manifest.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/draft-manifest.json",
+      "sha256": "af35860921fb97de38efa787be05ac3e3869c339c14cfb5f3aaeff8547285c51"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/archive_and_compare.py",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/archive_and_compare.py",
+      "sha256": "97550e94a5f315682dfbc719ee77cc2e493cfb00470f61e478b6999c228b7514"
+    },
+    {
+      "original": "/tmp/sdk-workflow-candidate-fixture/README.md",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/README.md",
+      "sha256": "215867aa4912de95e9b3cecdd53644ff89ad07b53a19c2271686e34d5fb4f4b9"
+    },
+    {
+      "original": "/tmp/sdk-workflow-shape-host-proof.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/sdk-workflow-shape-host-proof.json",
+      "sha256": "8607f514259244bdfc8c81333d1fd57c01b641986b48b07633a1b9e0a212559d"
+    },
+    {
+      "original": "/tmp/sdk-workflow-shape-original-reconstruction.json",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/sdk-workflow-shape-original-reconstruction.json",
+      "sha256": "291dd98838825940a36959f2ca135e8c223425c6a28776ddffb437731ea2c0a0"
+    },
+    {
+      "original": "/tmp/sdk-workflow-typescript-red.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/sdk-workflow-typescript-red.log",
+      "sha256": "299b0146e4efe35ce4fe5f7f561535d9bb0fe6a9ad018e34f41504135f731d67"
+    },
+    {
+      "original": "/tmp/sdk-workflow-python-red.log",
+      "archived": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/sdk-workflow-python-red.log",
+      "sha256": "a219d9a66b3e08635fde5b08f0121a09695ce60f8f16e2cb7e9c4c0e9d0b4b87"
+    }
+  ],
+  "meaning": "Immutable copies of actual red/green epochs. Frozen manifests and raw receipts retain original fields and source paths, with explicit inverse reconstruction classification. No rebinding to latest whole-source SHA."
+}

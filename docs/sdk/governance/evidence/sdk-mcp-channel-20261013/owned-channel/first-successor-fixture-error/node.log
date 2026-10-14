@@ -1,0 +1,60 @@
+TAP version 13
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-mcp-stdio-yQFBDy
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-mcp-transport-retry-jRPMTT
+# Subtest: MCP real stdio metadata/resources/prompts and same-name owner cleanup
+ok 1 - MCP real stdio metadata/resources/prompts and same-name owner cleanup
+  ---
+  duration_ms: 5530.531542
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-channels-normal-YMzrjf
+# Subtest: MCP registered transport failed close retains exact client/quota for retry
+ok 2 - MCP registered transport failed close retains exact client/quota for retry
+  ---
+  duration_ms: 5251.314333
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-channels-retry-BJiaIb
+# Subtest: Channels attachments/exact stop normal
+ok 3 - Channels attachments/exact stop normal
+  ---
+  duration_ms: 5290.114334
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-channels-owned-reentry-e2ZRM7
+# Subtest: Channels attachments/exact stop retry
+ok 4 - Channels attachments/exact stop retry
+  ---
+  duration_ms: 5277.000208
+  type: 'test'
+  ...
+# Subtest: Channel owned callbacks reenter metadata and preserve exact close owner
+not ok 5 - Channel owned callbacks reenter metadata and preserve exact close owner
+  ---
+  duration_ms: 5305.61325
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/mcp-channel-host.test.js:98:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: operation is absent from the canonical catalog: facade.resource.close
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/mcp-channel-host.test.js:130:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26847.211833

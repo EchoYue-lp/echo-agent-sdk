@@ -1,0 +1,6 @@
+{
+  "provenance": "framework_final_review actualsource+24pack8a0dbboundedPASS0C0I0M relayed byparent;3strictterminalrecordsadded rootread nofakeindependent rerun",
+  "scope": "bridge8e7aad/e2e7e231/doc36c730;Factory5old3pass2fail→new5pass;twofactterminalunitoldinflight1fail→newimmediatecloseallowed;heldRPC/heldRemote/wronggennegativehold;closefailedOnceCellErrcachetrueold→newonlysuccessparallelretry2ndsuccess/noextraRPC/unregister",
+  "validation": "171Hostlib/34bridge0;strictwarning+fourpanic/fmtterminal0",
+  "limits": "oldofficiallanguage81cut bridge43ec,b9098d819 notnew8e7whole; frameworkgeneric5secondphysicalwork notproven;12source/proposeddependency/Bpoliciesnotapproved"
+}

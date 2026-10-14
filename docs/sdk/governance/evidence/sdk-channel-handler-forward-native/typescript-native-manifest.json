@@ -1,0 +1,17 @@
+{
+  "phase": "typescript-native-passed-awaiting-three-language-comparison",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-channel-forward-candidate-host",
+    "sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802"
+  },
+  "files": {
+    "sdks/shared/testing/channel_forward_scenarios.json": "9920c8b8ae82c3cda7d156c8971579b6ed52ec1e704ec24f09da381d596fdcd7",
+    "sdks/shared/testing/compare_channel_forward_results.py": "d08a8170cf3220e7a6c077423d6013d418daa16f8cd45dab7cbf6d10dc7451c4",
+    "sdks/typescript/test/channel-handler-forward-host.test.js": "cf35bb797e9b57129f24b17e1b3d1b3eb88247e9a80fe6e0531acd56b97a5be5"
+  },
+  "tests": {
+    "typescript": 10,
+    "skips": 0
+  }
+}

@@ -1,0 +1,291 @@
+{
+  "original_epoch_host_sha256": "6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5",
+  "files": [
+    {
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/task-subagent-host.test.js",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-sources/task-subagent-host.test.js",
+      "sha256": "d216108adda823b93604aad5646960e905413c5d0ef2689f7ab30e88f8f36a4f"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/README.md",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-sources/README.md",
+      "sha256": "51d91e90e3d3d6796cb6342fb6ca13e7e89198d2ca3f1637828dea02e65a39ca"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/task_subagent_fixture.py",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-sources/task_subagent_fixture.py",
+      "sha256": "381503435c515b7609008809f9d7f98d0e00fee6a0f5c2700472ee7a6c6b8e16"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/java-classpath.txt",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-sources/java-classpath.txt",
+      "sha256": "218c07c8d80189da774127f3c5c3b8609768fee8d94d7c1b4894a3a0f68746db"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/TaskSubagentCandidate.java",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-sources/TaskSubagentCandidate.java",
+      "sha256": "6f680de1db27db451259d94594bc7a1650757344b5984ca717bdcd6c6848d833"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/scenario-plan.md",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-sources/scenario-plan.md",
+      "sha256": "45ce26a5a04d9e4bb0bb76d7b4253c347a38085cf0253420571ca461f4d4c546"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/test_task_subagent_host.py",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-sources/test_task_subagent_host.py",
+      "sha256": "4f1c4d4be47727863644698eb10977e744c8e550a60893bd14afbe0e2c8be837"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-tmp-typescript-final-four.log",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/sdk-task-subagent-tmp-typescript-final-four.log",
+      "sha256": "1f4cc04ebca572df3d382a2155f3cca6304bedd9726497faf6d64c3880bcc763"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-tmp-python-four.log",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/sdk-task-subagent-tmp-python-four.log",
+      "sha256": "ad70f8c422eea72a100660fc6a22534ebc4e58d06f7eaf57a58319b8b6d83215"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-tmp-java-four.log",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/sdk-task-subagent-tmp-java-four.log",
+      "sha256": "bafca7a350b7dbdc01a76b95bd8ac1879618d4535bd424cc915e3c34fea3d46e"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-tmp-three-language-proof.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/sdk-task-subagent-tmp-three-language-proof.json",
+      "sha256": "765c4c97f57aa224e9771591a6dbb8ec54759d89669a2934f2b8b6341a0b56fc"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-pause-O51UBG/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/pause/fixture.json",
+      "sha256": "8f28148e18ffbf9c87956db34ace7be5d7654d5339ab2d20389bed4d6beca350"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-pause-O51UBG/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/pause/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-pause-O51UBG/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/pause/task-store.json",
+      "sha256": "e746645f38f491fb5328f00ef9ea57f059984c05316195600d3735eb086a1da7"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-pause-O51UBG/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/pause/observed.json",
+      "sha256": "388ff5a8cb5b94733e22dd40fd04d473b9e582ab9fffb0dc34652556c21a22e6"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-cancel-lC09Qt/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/cancel/fixture.json",
+      "sha256": "4312f204995b07f6ada74894e9520e289852050857e9843d3ed3ee54a09dc90d"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-cancel-lC09Qt/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/cancel/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-cancel-lC09Qt/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/cancel/task-store.json",
+      "sha256": "a455bcb7528c7a4767a39525e90ce8b50d5356e7ff1895185b2174cecbfc6792"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-cancel-lC09Qt/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/cancel/observed.json",
+      "sha256": "7368864087fd97c161fcc9fc47295a14b8466c22997815bf73747fdebed01e9a"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-subagent-await-G62PnX/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/subagent-await/fixture.json",
+      "sha256": "a680b28c32820f1fa734ab2adac388a9b3202adb0caefa72fd42047fe448e0e8"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-subagent-await-G62PnX/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/subagent-await/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-subagent-await-G62PnX/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/subagent-await/observed.json",
+      "sha256": "953e0764691f7a04eb3e9856d49307456e79e7bb0d1a88bb76459297ede33f97"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-crud-only-UTDD0a/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/crud-only/fixture.json",
+      "sha256": "22f61177df951f1b23b8400bd82f35e53738758e4175c1c91a5a95a258da0314"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-crud-only-UTDD0a/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/crud-only/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-crud-only-UTDD0a/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/crud-only/task-store.json",
+      "sha256": "78d8185c8ee3852a31cb58703e6a6aa077f3ac635d84112d708fdd4c6a6e501f"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-crud-only-UTDD0a/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/typescript/crud-only/observed.json",
+      "sha256": "1545bc28ce6ee00a130a5f9e1edc23c9aa4633a536e64f9c42455ea3cd413dab"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-pause-14arp2ai/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/pause/fixture.json",
+      "sha256": "2ddf898e2d6b19d488d8fb145ff853808c0a9035f85249aee7d7e3de8cbab990"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-pause-14arp2ai/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/pause/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-pause-14arp2ai/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/pause/task-store.json",
+      "sha256": "9f6d7956aad06352e41a884430c2b035a1d7bc16cd67fe0b2374cb4b4ce76291"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-pause-14arp2ai/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/pause/observed.json",
+      "sha256": "771ab204bf21601ca1521ed2fd5247ffc142441b9b1991cc110d0fca2263affe"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-cancel-az7prdnl/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/cancel/fixture.json",
+      "sha256": "4971faa507162f5c8ff8602c52edc5e84e2000624187a27a4c9951887c0a4be3"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-cancel-az7prdnl/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/cancel/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-cancel-az7prdnl/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/cancel/task-store.json",
+      "sha256": "f00029ebfbb5dfede829f83a6f567dcf74ed48cda3482e2a7ebcc847d067be39"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-cancel-az7prdnl/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/cancel/observed.json",
+      "sha256": "b62b1e6d2891bb6585deb0b2e72af4675848204e1fb419f1eecff6cab2d3f3dd"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-subagent-await-_xiyrvls/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/subagent-await/fixture.json",
+      "sha256": "000842f58f35999a7de75851d841fdb16579303aed7c200d139638b0469174da"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-subagent-await-_xiyrvls/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/subagent-await/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-subagent-await-_xiyrvls/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/subagent-await/observed.json",
+      "sha256": "d52441e490e1ccc0442cb5a61e6b43b38944a02bcd64a2c042137d1377fc0415"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-crud-only-0v01ns1i/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/crud-only/fixture.json",
+      "sha256": "5ed9da1db87ae90b6a54ac4c1c2a3f88afa316444bface4a8304e9cb6b5dd9ab"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-crud-only-0v01ns1i/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/crud-only/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-crud-only-0v01ns1i/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/crud-only/task-store.json",
+      "sha256": "e9c77093eb9d36f125c6a0c8dbc2a6fc8a5dac058bb9cbf585c8a92c32833dfc"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-task-crud-only-0v01ns1i/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/python/crud-only/observed.json",
+      "sha256": "e01dc4ef3ffe7044b5eeeb8dc18c64ced3d5641b2c214bd1a7e4959e5240e783"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-pause-13705897874840822014/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/pause/fixture.json",
+      "sha256": "6bf7ebf569cdfea9a2f0178892bbeafe93c44f7a5f5781ccaf3bffdd564a28c2"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-pause-13705897874840822014/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/pause/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-pause-13705897874840822014/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/pause/task-store.json",
+      "sha256": "dd23dfe36390c19227ca884d60b4874c453e29cf3a0e122d271c9f78b9f35bb9"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-pause-13705897874840822014/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/pause/observed.json",
+      "sha256": "62d488298d88d3da427fc5a6e58843db9f88a2f275cc88fa98c840c652400c30"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-cancel-5987820652193897340/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/cancel/fixture.json",
+      "sha256": "7dbfacf3fcaef291651987f8ba702505d181e917b839cb63fe9035702a761eb1"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-cancel-5987820652193897340/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/cancel/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-cancel-5987820652193897340/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/cancel/task-store.json",
+      "sha256": "2838a438e65bb0fad8f2e9e509704f84d2b0aafd92ba5448a65f3dba5658dbf0"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-cancel-5987820652193897340/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/cancel/observed.json",
+      "sha256": "042dc6767331434e71c0f9b997bbf6347f887dbd2087dc4641202c7179db3749"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-subagent-await-11064766922283161031/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/subagent-await/fixture.json",
+      "sha256": "c79aeceee4f3f3aa9505d1aac2f1bd5403a7b95d2f30232ae2a07d42973dec9a"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-subagent-await-11064766922283161031/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/subagent-await/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-subagent-await-11064766922283161031/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/subagent-await/observed.json",
+      "sha256": "bf8056c744f69b510a93e2bc768429b94db071cdf9b95a1072cc789d84198bdf"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-crud-only-4247300378755843040/fixture.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/crud-only/fixture.json",
+      "sha256": "528c9c9108bc21aa0e39ffcfac8770c073472fb9375c4c27e60ad405f145e56b"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-crud-only-4247300378755843040/ready",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/crud-only/ready",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-crud-only-4247300378755843040/task-store.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/crud-only/task-store.json",
+      "sha256": "1d303b0ae94b67e469c72d5b93ab28e4a3b4c687904efad9282b4815647b23ea"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-crud-only-4247300378755843040/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/original-raw/java/crud-only/observed.json",
+      "sha256": "8266ee572c3dcf948ba1a36f37c99827b71fd650e7c4b23ee1757922a0bab734"
+    },
+    {
+      "original": "/tmp/sdk-task-subagent-tmp-typescript-four.log",
+      "archived": "docs/sdk/governance/evidence/sdk-task-subagent-20261013/sdk-task-subagent-tmp-typescript-four.log",
+      "sha256": "ba351da8d5cf4979583d611704d37d34b87ac5ae2f0d2cd5a3bcf6df1ad60c08"
+    }
+  ],
+  "warning": "Original tmp exact frame/source/proof retained, not rebound to current formal tests or whole repo source."
+}

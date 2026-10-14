@@ -1,0 +1,15 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-workflow-4488589041146760073
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-workflow-4488589041146760073
+{"group": "workflow", "verified": true}
+
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-llm-16957111555728525351
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-llm-16957111555728525351
+{"group": "llm", "verified": true}
+
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-graph-4614840810580549706
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-graph-4614840810580549706
+{"group": "graph", "verified": true}
+

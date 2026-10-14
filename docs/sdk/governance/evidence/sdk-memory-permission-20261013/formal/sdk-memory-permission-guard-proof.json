@@ -1,0 +1,34 @@
+{
+  "classification": "negative admission proof, intentional nonzero exits not failed product gates",
+  "cases": [
+    {
+      "language": "python",
+      "input": "missing",
+      "exit_code": 2,
+      "expected_failure": "required Host guard",
+      "log": "/tmp/sdk-memory-permission-guard-python-missing.log"
+    },
+    {
+      "language": "python",
+      "input": "blank",
+      "exit_code": 2,
+      "expected_failure": "required Host guard",
+      "log": "/tmp/sdk-memory-permission-guard-python-blank.log"
+    },
+    {
+      "language": "typescript",
+      "input": "missing",
+      "exit_code": 1,
+      "expected_failure": "required Host guard",
+      "log": "/tmp/sdk-memory-permission-guard-typescript-missing.log"
+    },
+    {
+      "language": "typescript",
+      "input": "blank",
+      "exit_code": 1,
+      "expected_failure": "required Host guard",
+      "log": "/tmp/sdk-memory-permission-guard-typescript-blank.log"
+    }
+  ],
+  "java": "sourceisBlank guard plus normalcb9JUnitpass; negative Maven not run concurrently"
+}

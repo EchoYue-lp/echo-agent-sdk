@@ -1,0 +1,22 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Workflow evidence retained: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-workflow-6453864302468165499
+Exception in thread "main" org.opentest4j.AssertionFailedError: Workflow shape observations: {"tuple-resume": {"outcome": "result", "code": null, "after": null}, "tuple-with-state": {"outcome": "result", "code": null, "after": null}}
+Traceback (most recent call last):
+  File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 239, in <module>
+    if __name__ == "__main__": main()
+  File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 236, in main
+    print(json.dumps(verify(args.work, json.loads(args.verify.read_text()))))
+  File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 215, in verify
+    assert tuple_result["outcome"] == "error" and tuple_result["code"] == "invalid_value", ("tuple shape accepted; positive routing/checkpoint/state assertions above all passed", tuple_result)
+AssertionError: ('tuple shape accepted; positive routing/checkpoint/state assertions above all passed', {'id': 'tuple-resume', 'outcome': 'result', 'value': {'outcome': 'interrupted', 'pending_node': 'end', 'prompt': "Node 'end' requires confirmation before execution", 'checkpoint': {'id': '2c00b1a9-e86f-4afb-b64f-f269e75798b3', 'graph_name': 'shared-workflow-中文🙂', 'workflow_run_id': 'ac568d1f-a9b3-4ae5-b918-54d4e191d03c', 'graph_revision': 'e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa', 'generation': '1', 'resume_attempt_id': None, 'current_node': 'end', 'state_snapshot': {'values': {'context': {'optional': None, 'list': ['a', 'b']}, 'memo': 'checkpoint 中文🙂', 'approved': True}, 'messages': [], 'current_node': 'yes'}, 'path': ['start', 'gate', 'yes'], 'step_count': '3', 'created_at': '2026-10-13T13:38:02.894176+08:00', 'continuation': {'kind': 'node'}, 'interrupt_type': 'beforenode', 'parent_checkpoint_id': 'c092b479-91a3-4be0-ab2d-f7a8bfc50dff', 'label': None, 'tags': [], 'branch': None}}})
+ ==> expected: <0> but was: <1>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:563)
+	at com.echoagent.sdk.WorkflowHostTest.helper(WorkflowHostTest.java:21)
+	at com.echoagent.sdk.WorkflowHostTest.routingCheckpointClaimsBranchOwnerAndShapeBoundary(WorkflowHostTest.java:40)
+	at com.echoagent.sdk.WorkflowProbeRunner.main(WorkflowProbeRunner.java:1)

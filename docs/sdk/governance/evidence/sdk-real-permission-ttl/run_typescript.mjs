@@ -1,0 +1,19 @@
+import {EchoAgentClient} from '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/dist/index.js';
+import {readFileSync,writeFileSync} from 'node:fs';import {createHash} from 'node:crypto';import assert from 'node:assert/strict';
+const root=new URL('.',import.meta.url).pathname,work=root+'typescript/',spec=JSON.parse(readFileSync(root+'scenario.json','utf8')),host=JSON.parse(readFileSync(root+'source-provenance.json','utf8')).host,start=performance.now(),rows=[];
+function save(phase,extra={}){writeFileSync(work+'status.json',JSON.stringify({language:'typescript',runner_pid:process.pid,phase,elapsed_ms:performance.now()-start,wall_time_ms:Date.now(),rows,...extra},(_,v)=>typeof v==='bigint'?v.toString():v,2));}
+let sdk;try{
+ sdk=await EchoAgentClient.spawn({hostCommand:host,args:['--config',work+'host.json']});const agent=await sdk.createAgent(),a=await agent.createSession(work),b=await agent.createSession(work);save('connected',{host_pid:sdk.process?.pid,agent:agent.wire,session:a.wire,peer:b.wire});
+ async function call(session,operation,args=[]){const before=performance.now(),value=await session.invoke(operation,args);rows.push({operation,session:session.wire,arguments:args,value,elapsed_ms:performance.now()-start,call_duration_ms:performance.now()-before});return value;}
+ let stats=await call(a,'permission.stats');assert.equal(Number(stats.ttl_ms),spec.ttl_expected_ms);assert.equal(Number(stats.per_tool_entries),0);assert.equal(Number(stats.global_entries),0);
+ for(const entry of spec.entries)await call(a,'permission.record_approval',entry);const recorded=performance.now();
+ for(const [scope,tool,args] of spec.entries)assert.equal(await call(a,'permission.is_approved',[scope,tool,args]),true);
+ assert.equal(await call(a,'permission.is_approved',['scope 中文🙂','parameter-tool',{x:99}]),false);assert.equal(await call(b,'permission.is_approved',spec.entries[0].slice(0,3)),false);assert.equal(await call(a,'permission.is_approved',['scope-β','global-tool',{different:true}]),true);
+ await call(a,'permission.record_approval',spec.once);assert.equal(await call(a,'permission.is_approved',spec.once.slice(0,3)),false);assert.equal(Number(await call(a,'permission.cleanup_expired')),0);
+ stats=await call(a,'permission.stats');assert.equal(Number(stats.per_tool_entries),2);assert.equal(Number(stats.global_entries),2);const deadline=recorded+spec.ttl_expected_ms+spec.real_wait_safety_ms;
+ while(performance.now()<deadline){save('waiting_real_default_ttl',{host_pid:sdk.process?.pid,ttl_ms:stats.ttl_ms,remaining_ms:Math.max(0,deadline-performance.now()),recorded_monotonic_ms:recorded});await new Promise(r=>setTimeout(r,Math.min(5000,Math.max(1,deadline-performance.now()))));}
+ const elapsed=performance.now()-recorded;assert.ok(elapsed>=spec.ttl_expected_ms+spec.real_wait_safety_ms);
+ for(const [scope,tool,args] of spec.entries)assert.equal(await call(a,'permission.is_approved',[scope,tool,args]),false);stats=await call(a,'permission.stats');assert.equal(Number(stats.per_tool_entries),2);assert.equal(Number(stats.global_entries),2);
+ assert.equal(Number(await call(a,'permission.cleanup_expired')),4);assert.equal(Number(await call(a,'permission.cleanup_expired')),0);stats=await call(a,'permission.stats');assert.equal(Number(stats.per_tool_entries),0);assert.equal(Number(stats.global_entries),0);
+ await call(a,'permission.record_approval',spec.entries[0]);assert.equal(await call(a,'permission.is_approved',spec.entries[0].slice(0,3)),true);await b.close();await a.close();await agent.close();const pid=sdk.process?.pid;await sdk.close();save('passed',{actual_wait_ms:elapsed,ttl_ms:spec.ttl_expected_ms,host_pid:pid,host_exit_code:sdk.process?.exitCode,host_sha256:createHash('sha256').update(readFileSync(host)).digest('hex')});
+}catch(error){save('failed',{error:error.stack??String(error)});throw error;}finally{await sdk?.close();}

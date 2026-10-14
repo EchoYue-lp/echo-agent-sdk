@@ -1,0 +1,282 @@
+{
+  "classification": "actual officialwholelanguagegate failed; rootcausepending notfixturetimeout presumed",
+  "gate": {
+    "typescript": {
+      "tests": 287,
+      "passed": 285,
+      "failed": 2,
+      "skipped": 0
+    },
+    "python": "not run",
+    "java": "not run",
+    "exit_code": 1
+  },
+  "host_sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10",
+  "source_sha256": {
+    "echo-sdk-host/src/core_profile/extension_bridge.rs": "43ecf356e4deb1004158540708b664e6e022ddf4afc9f545d240903c4758fefe",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "7f1ccb061ac1f2b937f0f12a94a51da13757cc31c96f1ee3dd86c5db0456184c",
+    "sdks/typescript/test/task-subagent-host.test.js": "29a2a9cf0c356d4ef9a4de16d83b4df039502d7f927ae80039f048c72ef0c3a5"
+  },
+  "task_store_commits": 12,
+  "task_execution_observations": [
+    {
+      "task_states": {
+        "a": {
+          "status": "pending"
+        },
+        "b": {
+          "status": "pending"
+        },
+        "c": {
+          "status": "pending"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "pending"
+        },
+        "b": {
+          "status": "pending"
+        },
+        "c": {
+          "status": "pending"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "running"
+        },
+        "b": {
+          "status": "pending"
+        },
+        "c": {
+          "status": "pending"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "running"
+        },
+        "b": {
+          "status": "running"
+        },
+        "c": {
+          "status": "pending"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "running"
+        },
+        "b": {
+          "status": "running"
+        },
+        "c": {
+          "status": "pending"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "paused",
+          "reason": "paused by rpc task control"
+        },
+        "b": {
+          "status": "running"
+        },
+        "c": {
+          "status": "pending"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "paused",
+          "reason": "paused by rpc task control"
+        },
+        "b": {
+          "status": "completed"
+        },
+        "c": {
+          "status": "pending"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "paused",
+          "reason": "paused by rpc task control"
+        },
+        "b": {
+          "status": "completed"
+        },
+        "c": {
+          "status": "running"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "paused",
+          "reason": "paused by rpc task control"
+        },
+        "b": {
+          "status": "completed"
+        },
+        "c": {
+          "status": "completed"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "pending"
+        },
+        "b": {
+          "status": "completed"
+        },
+        "c": {
+          "status": "completed"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "running"
+        },
+        "b": {
+          "status": "completed"
+        },
+        "c": {
+          "status": "completed"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "task_states": {
+        "a": {
+          "status": "failed",
+          "error": "extension bridge failure extension_conflict: extension is already executing an exclusive invocation"
+        },
+        "b": {
+          "status": "completed"
+        },
+        "c": {
+          "status": "completed"
+        },
+        "d": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "agent_calls": [
+    {
+      "lane": "a",
+      "attempt": 1,
+      "task": "controlled A",
+      "extension": {
+        "id": "extension-dda35f36-7fd1-4fdb-aacc-cd0721763409",
+        "generation": "1",
+        "kind": "extension"
+      }
+    },
+    {
+      "lane": "b",
+      "attempt": 1,
+      "task": "independent B",
+      "extension": {
+        "id": "extension-84dd2ccb-91f8-416a-84d7-6f05f7aabcf0",
+        "generation": "1",
+        "kind": "extension"
+      }
+    },
+    {
+      "lane": "c",
+      "attempt": 1,
+      "task": "after B\n\nCompleted dependency b:\nB-canonical-result 中文🧪",
+      "extension": {
+        "id": "extension-a0883de6-8956-459b-bb7f-34a1b7f78e62",
+        "generation": "1",
+        "kind": "extension"
+      }
+    }
+  ],
+  "rootcause": "exclusiveinvocation conflict beforeA2; SDK/framework responsibility not determined, productionowner debugging",
+  "other_failure": "host.test/familyroute sharedOSstate_root lock error35; fixtureowner assigned; onegatefactnotsecondhighriskglobalFinding",
+  "oldlocalclosure": "EOFspecific163/ninefinite after proof stays exactscope resolved, doesnotproveTaskresume",
+  "rawfiles": [
+    {
+      "path": "docs/sdk/governance/evidence/sdk-language-current-first-gate/full-language.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight/full-language.log",
+      "sha256": "7b95dac6b5968fe99fb4d51505eca940425068da96a6f3cfa729e50b0aadafa5"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-language-current-first-gate/receipt.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight/receipt.json",
+      "sha256": "6b34da6e068b6a8d3829237c3df8ccdce86c228a7d176405556a64509f189482"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-language-current-first-gate/task-store.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight-tmp/sdk-ts-task-pause-pGi5ko/task-store.json",
+      "sha256": "ec9d02dba464115cfdede2bcbca4ec108246e12b2a2cc3794c166040aca29898"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-language-current-first-gate/task-host.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight-tmp/sdk-ts-task-pause-pGi5ko/host.json",
+      "sha256": "cad0b0801af06434db84b521caf98183b99ee1193c00f60ba54a3a2b8ef34d9c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-language-current-first-gate/task-fixture.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight-tmp/sdk-ts-task-pause-pGi5ko/fixture.json",
+      "sha256": "76c3fba61f303c6ccb6f5c74a2bd27f8f859ba4db991dcf2feb94bd1c3d9c577"
+    }
+  ]
+}

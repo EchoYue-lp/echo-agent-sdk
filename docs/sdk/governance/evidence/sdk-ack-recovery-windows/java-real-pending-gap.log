@@ -1,0 +1,18 @@
+[ERROR] COMPILATION ERROR : 
+[ERROR] /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java:[252,34] 无法将类 com.echoagent.sdk.SessionHandle中的方法 startRun应用到给定类型;
+  需要: java.lang.String,boolean
+  找到:    java.lang.String
+  原因: 实际参数列表和形式参数列表长度不同
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:testCompile (default-testCompile) on project echo-agent-sdk-source: Compilation failure
+[ERROR] /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java:[252,34] 无法将类 com.echoagent.sdk.SessionHandle中的方法 startRun应用到给定类型;
+[ERROR]   需要: java.lang.String,boolean
+[ERROR]   找到:    java.lang.String
+[ERROR]   原因: 实际参数列表和形式参数列表长度不同
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

@@ -1,0 +1,16 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/gap-watermark-red-evidence/source/echo-sdk-host)
+error[E0599]: no method named `as_str` found for struct `WireNonZeroU64` in the current scope
+   --> echo-sdk-host/tests/core_profile_e2e.rs:964:125
+    |
+964 |                 println!("[gap-watermark] resumed_live_sequence={} snapshot_watermark={watermark}", event.envelope.sequence.as_str());
+    |                                                                                                                             ^^^^^^ method not found in `WireNonZeroU64`
+
+error[E0599]: no method named `as_str` found for struct `WireNonZeroU64` in the current scope
+   --> echo-sdk-host/tests/core_profile_e2e.rs:974:122
+    |
+974 |                 println!("[gap-watermark] resumed_gap_from={} snapshot_watermark={watermark}", resumed.gap.from_sequence.as_str());
+    |                                                                                                                          ^^^^^^ method not found in `WireNonZeroU64`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `echo-sdk-host` (test "core_profile_e2e") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

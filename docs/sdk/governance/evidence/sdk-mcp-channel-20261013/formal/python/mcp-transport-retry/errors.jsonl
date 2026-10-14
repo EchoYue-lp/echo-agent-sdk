@@ -1,0 +1,3 @@
+{"code": "framework_error", "operation": "_echo_agent/integration/op", "message": "extension bridge failure extension_conflict: controlled transport close failure", "retryable": "after_delay", "details": null}
+{"code": "closed_handle", "operation": "_echo_agent/integration/op", "message": "handle was already released by this Host generation", "retryable": "never", "details": null}
+{"code": "payload_too_large", "operation": "_echo_agent/integration/op", "message": "open facade resource limit 4 reached", "retryable": "after_delay", "details": null}

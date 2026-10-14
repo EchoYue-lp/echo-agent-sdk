@@ -1,0 +1,118 @@
+[
+  {
+    "language": "python",
+    "command": [
+      "env",
+      "PYTHONPATH=/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src",
+      "uv",
+      "run",
+      "--with",
+      "agent-client-protocol==0.12.1",
+      "python",
+      "/tmp/sdk-state-trace-delivery-candidate-fixture/python_public_driver_draft.py",
+      "--host",
+      "/tmp/echo-sdk-governance-parent-driver-host",
+      "--work",
+      "/tmp/sdk-state-trace-delivery-candidate-fixture/python-delivery-exact-cause",
+      "--scene",
+      "delivery"
+    ],
+    "exit_code": 0,
+    "runner": {
+      "label": "sdk-delivery-python-exact-cause",
+      "command": [
+        "env",
+        "PYTHONPATH=/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src",
+        "uv",
+        "run",
+        "--with",
+        "agent-client-protocol==0.12.1",
+        "python",
+        "/tmp/sdk-state-trace-delivery-candidate-fixture/python_public_driver_draft.py",
+        "--host",
+        "/tmp/echo-sdk-governance-parent-driver-host",
+        "--work",
+        "/tmp/sdk-state-trace-delivery-candidate-fixture/python-delivery-exact-cause",
+        "--scene",
+        "delivery"
+      ],
+      "cwd": "/tmp/sdk-state-trace-delivery-candidate-fixture",
+      "logPath": "/tmp/sdk-state-trace-delivery-candidate-fixture/python-delivery-exact-cause.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 0,
+      "bytesWritten": 0,
+      "startedAt": "2026-10-13T05:44:53.173Z",
+      "finishedAt": "2026-10-13T05:44:54.271Z"
+    },
+    "work": "/tmp/sdk-state-trace-delivery-candidate-fixture/python-delivery-exact-cause"
+  },
+  {
+    "language": "typescript",
+    "command": [
+      "node",
+      "/tmp/sdk-state-trace-delivery-candidate-fixture/typescript_delivery.mjs",
+      "/tmp/echo-sdk-governance-parent-driver-host",
+      "/tmp/sdk-state-trace-delivery-candidate-fixture/typescript-delivery-exact-cause"
+    ],
+    "exit_code": 0,
+    "runner": {
+      "label": "sdk-delivery-typescript-exact-cause",
+      "command": [
+        "node",
+        "/tmp/sdk-state-trace-delivery-candidate-fixture/typescript_delivery.mjs",
+        "/tmp/echo-sdk-governance-parent-driver-host",
+        "/tmp/sdk-state-trace-delivery-candidate-fixture/typescript-delivery-exact-cause"
+      ],
+      "cwd": "/tmp/sdk-state-trace-delivery-candidate-fixture",
+      "logPath": "/tmp/sdk-state-trace-delivery-candidate-fixture/typescript-delivery-exact-cause.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 0,
+      "bytesWritten": 0,
+      "startedAt": "2026-10-13T05:44:54.371Z",
+      "finishedAt": "2026-10-13T05:44:59.727Z"
+    },
+    "work": "/tmp/sdk-state-trace-delivery-candidate-fixture/typescript-delivery-exact-cause"
+  },
+  {
+    "language": "java",
+    "command": [
+      "java",
+      "-cp",
+      "/tmp/sdk-state-trace-delivery-candidate-fixture/java-classes:/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/classes:/Users/ls/MyWork/mvn_pros/com/agentclientprotocol/acp-core/0.17.0/acp-core-0.17.0.jar:/Users/ls/MyWork/mvn_pros/com/agentclientprotocol/acp-annotations/0.17.0/acp-annotations-0.17.0.jar:/Users/ls/MyWork/mvn_pros/io/projectreactor/reactor-core/3.8.7/reactor-core-3.8.7.jar:/Users/ls/MyWork/mvn_pros/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar:/Users/ls/MyWork/mvn_pros/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar:/Users/ls/MyWork/mvn_pros/com/fasterxml/jackson/core/jackson-core/2.22.2/jackson-core-2.22.2.jar:/Users/ls/MyWork/mvn_pros/com/fasterxml/jackson/core/jackson-annotations/2.22/jackson-annotations-2.22.jar:/Users/ls/MyWork/mvn_pros/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar:/Users/ls/MyWork/mvn_pros/com/fasterxml/jackson/core/jackson-databind/2.18.3/jackson-databind-2.18.3.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/ls/MyWork/mvn_pros/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar:/Users/ls/MyWork/mvn_pros/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/junit/platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.jar",
+      "StateTraceDeliveryProbe",
+      "/tmp/echo-sdk-governance-parent-driver-host",
+      "/tmp/sdk-state-trace-delivery-candidate-fixture/java-delivery-exact-cause",
+      "delivery"
+    ],
+    "exit_code": 0,
+    "runner": {
+      "label": "sdk-delivery-java-exact-cause",
+      "command": [
+        "java",
+        "-cp",
+        "/tmp/sdk-state-trace-delivery-candidate-fixture/java-classes:/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/classes:/Users/ls/MyWork/mvn_pros/com/agentclientprotocol/acp-core/0.17.0/acp-core-0.17.0.jar:/Users/ls/MyWork/mvn_pros/com/agentclientprotocol/acp-annotations/0.17.0/acp-annotations-0.17.0.jar:/Users/ls/MyWork/mvn_pros/io/projectreactor/reactor-core/3.8.7/reactor-core-3.8.7.jar:/Users/ls/MyWork/mvn_pros/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar:/Users/ls/MyWork/mvn_pros/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar:/Users/ls/MyWork/mvn_pros/com/fasterxml/jackson/core/jackson-core/2.22.2/jackson-core-2.22.2.jar:/Users/ls/MyWork/mvn_pros/com/fasterxml/jackson/core/jackson-annotations/2.22/jackson-annotations-2.22.jar:/Users/ls/MyWork/mvn_pros/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar:/Users/ls/MyWork/mvn_pros/com/fasterxml/jackson/core/jackson-databind/2.18.3/jackson-databind-2.18.3.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/ls/MyWork/mvn_pros/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar:/Users/ls/MyWork/mvn_pros/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/junit/jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.jar:/Users/ls/MyWork/mvn_pros/org/junit/platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.jar",
+        "StateTraceDeliveryProbe",
+        "/tmp/echo-sdk-governance-parent-driver-host",
+        "/tmp/sdk-state-trace-delivery-candidate-fixture/java-delivery-exact-cause",
+        "delivery"
+      ],
+      "cwd": "/tmp/sdk-state-trace-delivery-candidate-fixture",
+      "logPath": "/tmp/sdk-state-trace-delivery-candidate-fixture/java-delivery-exact-cause.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 186,
+      "bytesWritten": 186,
+      "startedAt": "2026-10-13T05:44:59.847Z",
+      "finishedAt": "2026-10-13T05:45:00.383Z"
+    },
+    "work": "/tmp/sdk-state-trace-delivery-candidate-fixture/java-delivery-exact-cause"
+  }
+]

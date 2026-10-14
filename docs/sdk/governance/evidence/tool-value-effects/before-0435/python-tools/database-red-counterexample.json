@@ -1,0 +1,91 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-s9mx5k2c",
+  "operation": "describe_table",
+  "arguments": [
+    "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-s9mx5k2c/fixture.db",
+    "records"
+  ],
+  "actual": {
+    "columns": [
+      "cid",
+      "name",
+      "type",
+      "notnull",
+      "dflt_value",
+      "pk"
+    ],
+    "rows": [
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    ],
+    "total_rows": 4
+  },
+  "sqlite_authority_rows": [
+    [
+      0,
+      "id",
+      "INTEGER",
+      0,
+      null,
+      1
+    ],
+    [
+      1,
+      "label",
+      "TEXT",
+      1,
+      null,
+      0
+    ],
+    [
+      2,
+      "quantity",
+      "INTEGER",
+      0,
+      "7",
+      0
+    ],
+    [
+      3,
+      "note",
+      "TEXT",
+      0,
+      null,
+      0
+    ]
+  ],
+  "database_sha256": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+  "before": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+  "after": "2ff7ee021c20605310e054b9e0e11e3141d6ecd762e0b9a7c56691728653e5dd",
+  "lossless": false
+}

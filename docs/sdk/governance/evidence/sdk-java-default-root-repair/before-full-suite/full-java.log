@@ -1,0 +1,228 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Managed retirement evidence: ../../target/managed-retirement/java-retirement-true-7081701329610469393
+Managed retirement evidence: ../../target/managed-retirement/java-retirement-false-3552118688546897132
+LSP diagnostics evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-diagnostics-3252043619632870546
+State/Trace/Delivery evidence delivery: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-delivery-17467884645013547323
+State/Trace/Delivery evidence state: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-state-16589179589583752484
+State/Trace/Delivery evidence trace: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-trace-9050103309648361617
+Workflow evidence: Workflow shape observations: {"tuple-resume": {"outcome": "error", "code": "invalid_value", "after": {"id": "578672c8-bcab-473f-871e-ce858d9351cd", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "c0cb16b2-03fb-4d9f-86bd-122166b026ab", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"memo": "checkpoint 中文🙂", "context": {"optional": null, "list": ["a", "b"]}, "approved": true}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T04:31:35.071697+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}, "tuple-with-state": {"outcome": "error", "code": "invalid_value", "after": {"id": "3364216b-10f0-43da-a780-4342ce9e37cc", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "99620b0e-67ce-4409-a52a-08af33d9c600", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"approved": true, "context": {"optional": null, "list": ["a", "b"]}, "memo": "checkpoint 中文🙂"}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T04:31:35.236439+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}}
+{"rows": 48, "scope": "routing/checkpoint/decision/branch/state/owner/close/quota", "not_proved": ["cross-process MemoryStore persistence", "all 24 accepted workflow operations", "extension workflow callbacks and stream cancellation"]}
+
+Java actual memory/permission evidence rows 59 work /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-memory-permission-java-5707916868632855285
+Channel forward Java receipt: ../../target/channel-forward/java-channel-forward-13159893255568799659/receipt.json
+[ERROR] Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 45.70 s <<< FAILURE! -- in com.echoagent.sdk.ChannelHandlerForwardHostTest
+[ERROR] com.echoagent.sdk.ChannelHandlerForwardHostTest.completeOwnerBindingStartRollbackAndClosedFamilyDigestFence -- Time elapsed: 15.07 s <<< ERROR!
+java.util.concurrent.TimeoutException
+	at java.base/java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1960)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2095)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.await(ChannelHandlerForwardHostTest.java:42)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest$Native.<init>(ChannelHandlerForwardHostTest.java:74)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.completeOwnerBindingStartRollbackAndClosedFamilyDigestFence(ChannelHandlerForwardHostTest.java:166)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.echoagent.sdk.ChannelHandlerForwardHostTest.singleStreamReplyTypedFidelityRejectsInvalidInputBeforeNativeCallback -- Time elapsed: 15.08 s <<< ERROR!
+java.util.concurrent.TimeoutException
+	at java.base/java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1960)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2095)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.await(ChannelHandlerForwardHostTest.java:42)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest$Native.<init>(ChannelHandlerForwardHostTest.java:74)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.singleStreamReplyTypedFidelityRejectsInvalidInputBeforeNativeCallback(ChannelHandlerForwardHostTest.java:133)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.echoagent.sdk.ChannelHandlerForwardHostTest.nativeCancelKeepsPeerAndCloseWaitsFullBufferCallbackFinally -- Time elapsed: 15.08 s <<< ERROR!
+java.util.concurrent.TimeoutException
+	at java.base/java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:1960)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2095)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.await(ChannelHandlerForwardHostTest.java:42)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest$Native.<init>(ChannelHandlerForwardHostTest.java:74)
+	at com.echoagent.sdk.ChannelHandlerForwardHostTest.nativeCancelKeepsPeerAndCloseWaitsFullBufferCallbackFinally(ChannelHandlerForwardHostTest.java:204)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+late factory lifecycle evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-late-factory-17406736124314121796
+late factory lifecycle evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-late-factory-1873091399962171025
+Tool behavior verified: {"capability_families":6,"native_calls":29,"failure_paths":10,"reported_effects":"empty","actual_file_and_ref_effects_checked":true,"uncovered":["fixed-official-endpoint scholarly search providers","other accepted media parsers/data transforms","runtime effect-ledger interpretation"]}
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-pause-7025505278702888067
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-cancel-12476438687044906034
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-subagent-await-516114905612595951
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-crud-only-16860552708925484184
+Analysis native evidence: ../../target/analysis-native/java-topology-13617596606981721123
+{"group": "topology", "verified": true, "factory_created": 0, "factory_closed": 0, "rows": 18}
+
+Analysis native evidence: ../../target/analysis-native/java-eval-8043355619019807134
+Analysis native evidence: ../../target/analysis-native/java-improve-14055258571101210760
+[ERROR] Tests run: 3, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.901 s <<< FAILURE! -- in com.echoagent.sdk.EvalImproveTopologyHostTest
+[ERROR] com.echoagent.sdk.EvalImproveTopologyHostTest.evalNativeFactoryTimeoutGraderAndConstraints -- Time elapsed: 0.231 s <<< ERROR!
+java.lang.IllegalArgumentException: wire UTF-8 path must be absolute and NUL-free
+	at com.echoagent.sdk.WireValues.utf8Path(WireValues.java:63)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.resolve(EvalImproveTopologyHostTest.java:30)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.resolve(EvalImproveTopologyHostTest.java:27)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.scenario(EvalImproveTopologyHostTest.java:78)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.evalNativeFactoryTimeoutGraderAndConstraints(EvalImproveTopologyHostTest.java:41)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] com.echoagent.sdk.EvalImproveTopologyHostTest.improvementEarlyMaximumTrajectoryReopenAndFailedWrite -- Time elapsed: 0.343 s <<< ERROR!
+java.lang.IllegalArgumentException: wire UTF-8 path must be absolute and NUL-free
+	at com.echoagent.sdk.WireValues.utf8Path(WireValues.java:63)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.resolve(EvalImproveTopologyHostTest.java:30)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.resolve(EvalImproveTopologyHostTest.java:27)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.scenario(EvalImproveTopologyHostTest.java:78)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.improvementEarlyMaximumTrajectoryReopenAndFailedWrite(EvalImproveTopologyHostTest.java:42)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 90.41 s <<< FAILURE! -- in com.echoagent.sdk.ToolValueEffectHostTest
+[ERROR] com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects -- Time elapsed: 30.11 s <<< ERROR!
+java.util.concurrent.ExecutionException: java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at com.echoagent.sdk.ToolValueEffectHostTest.await(ToolValueEffectHostTest.java:14)
+	at com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects(ToolValueEffectHostTest.java:27)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.handleTimeout(FluxTimeout.java:297)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.doTimeout(FluxTimeout.java:282)
+	at reactor.core.publisher.FluxTimeout$TimeoutTimeoutSubscriber.onNext(FluxTimeout.java:423)
+	at reactor.core.publisher.FluxOnErrorReturn$ReturnSubscriber.onNext(FluxOnErrorReturn.java:159)
+	at reactor.core.publisher.MonoDelay$MonoDelayRunnable.propagateDelay(MonoDelay.java:269)
+	at reactor.core.publisher.MonoDelay$MonoDelayRunnable.run(MonoDelay.java:284)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:72)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+[ERROR] com.echoagent.sdk.ToolValueEffectHostTest.searchProviderRealAgentValuesAndFailure -- Time elapsed: 30.15 s <<< ERROR!
+java.util.concurrent.ExecutionException: java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at com.echoagent.sdk.ToolValueEffectHostTest.await(ToolValueEffectHostTest.java:14)
+	at com.echoagent.sdk.ToolValueEffectHostTest.searchProviderRealAgentValuesAndFailure(ToolValueEffectHostTest.java:46)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.handleTimeout(FluxTimeout.java:297)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.doTimeout(FluxTimeout.java:282)
+	at reactor.core.publisher.FluxTimeout$TimeoutTimeoutSubscriber.onNext(FluxTimeout.java:423)
+	at reactor.core.publisher.FluxOnErrorReturn$ReturnSubscriber.onNext(FluxOnErrorReturn.java:159)
+	at reactor.core.publisher.MonoDelay$MonoDelayRunnable.propagateDelay(MonoDelay.java:269)
+	at reactor.core.publisher.MonoDelay$MonoDelayRunnable.run(MonoDelay.java:284)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:72)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+[ERROR] com.echoagent.sdk.ToolValueEffectHostTest.sandboxStreamRealProcessCompletionCancelAndClose -- Time elapsed: 30.15 s <<< ERROR!
+java.util.concurrent.ExecutionException: java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at com.echoagent.sdk.ToolValueEffectHostTest.await(ToolValueEffectHostTest.java:14)
+	at com.echoagent.sdk.ToolValueEffectHostTest.sandboxStreamRealProcessCompletionCancelAndClose(ToolValueEffectHostTest.java:64)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.handleTimeout(FluxTimeout.java:297)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.doTimeout(FluxTimeout.java:282)
+	at reactor.core.publisher.FluxTimeout$TimeoutTimeoutSubscriber.onNext(FluxTimeout.java:423)
+	at reactor.core.publisher.FluxOnErrorReturn$ReturnSubscriber.onNext(FluxOnErrorReturn.java:159)
+	at reactor.core.publisher.MonoDelay$MonoDelayRunnable.propagateDelay(MonoDelay.java:269)
+	at reactor.core.publisher.MonoDelay$MonoDelayRunnable.run(MonoDelay.java:284)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:72)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+LLM/Workflow evidence: ../../target/llm-workflow-stream/java-workflow-7178066071643038582
+LLM/Workflow evidence: ../../target/llm-workflow-stream/java-workflow-7178066071643038582
+{"group": "workflow", "verified": true}
+
+LLM/Workflow evidence: ../../target/llm-workflow-stream/java-llm-13148037163552519748
+LLM/Workflow evidence: ../../target/llm-workflow-stream/java-llm-13148037163552519748
+{"group": "llm", "verified": true}
+
+LLM/Workflow evidence: ../../target/llm-workflow-stream/java-graph-10212361548229047481
+LLM/Workflow evidence: ../../target/llm-workflow-stream/java-graph-10212361548229047481
+{"group": "graph", "verified": true}
+
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-stdio-1698760057662439656
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-owned-reentry-3522649764293763280
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-normal-15169230004558266775
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-retry-16505750322300009440
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-transport-retry-17297080717083109704
+LSP evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-17609334694574787776
+RAG/project-rules retained: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../../target/rag-project-rules/java-6833084822381791111
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.467 s <<< FAILURE! -- in com.echoagent.sdk.RagProjectRulesHostTest
+[ERROR] com.echoagent.sdk.RagProjectRulesHostTest.ragProjectRulesRetainAuthorityFailuresAndOriginalFiles -- Time elapsed: 2.465 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/rag_project_rules_fixture.py", line 460, in <module>
+    print(json.dumps(verify(args.work, json.loads(args.verify.read_text()))))
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/rag_project_rules_fixture.py", line 354, in verify
+    assert actual["content"] == expected["content"], (identity, actual)
+AssertionError: ('resolved-all', {'content': '<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/CLAUDE.md -->\nnested claude 中文\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/leaf/AGENTS.override.md -->\nleaf override 😀\n<!-- END PROJECT INSTRUCTIONS -->', 'sources': [{'path': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/AGENTS.md', 'kind': 'agents', 'precedence': '0'}, {'path': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/CLAUDE.md', 'kind': 'claude', 'precedence': '1'}, {'path': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/leaf/AGENTS.override.md', 'kind': 'agents_override', 'precedence': '2'}], 'project_root': {'variant': 'some', 'fields': {'value': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo'}}})
+ ==> expected: <0> but was: <1>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:563)
+	at com.echoagent.sdk.RagProjectRulesHostTest.helper(RagProjectRulesHostTest.java:31)
+	at com.echoagent.sdk.RagProjectRulesHostTest.ragProjectRulesRetainAuthorityFailuresAndOriginalFiles(RagProjectRulesHostTest.java:131)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+Computation verified: {"native_calls": 50, "typed_errors": 19, "oracle_groups": 9, "final_pivot_boundaries": 5, "protected_files": 8, "host_sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10"}
+
+Java native public corpus 50 work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight-tmp/sdk-computation-native-java-15991907005287550218
+[ERROR] Failures: 
+[ERROR]   RagProjectRulesHostTest.ragProjectRulesRetainAuthorityFailuresAndOriginalFiles:131->helper:31 Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/rag_project_rules_fixture.py", line 460, in <module>
+    print(json.dumps(verify(args.work, json.loads(args.verify.read_text()))))
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/rag_project_rules_fixture.py", line 354, in verify
+    assert actual["content"] == expected["content"], (identity, actual)
+AssertionError: ('resolved-all', {'content': '<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/CLAUDE.md -->\nnested claude 中文\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/leaf/AGENTS.override.md -->\nleaf override 😀\n<!-- END PROJECT INSTRUCTIONS -->', 'sources': [{'path': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/AGENTS.md', 'kind': 'agents', 'precedence': '0'}, {'path': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/CLAUDE.md', 'kind': 'claude', 'precedence': '1'}, {'path': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo/nested/leaf/AGENTS.override.md', 'kind': 'agents_override', 'precedence': '2'}], 'project_root': {'variant': 'some', 'fields': {'value': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-6833084822381791111/repo'}}})
+ ==> expected: <0> but was: <1>
+[ERROR] Errors: 
+[ERROR]   ChannelHandlerForwardHostTest.completeOwnerBindingStartRollbackAndClosedFamilyDigestFence:166->await:42 » Timeout
+[ERROR]   ChannelHandlerForwardHostTest.nativeCancelKeepsPeerAndCloseWaitsFullBufferCallbackFinally:204->await:42 » Timeout
+[ERROR]   ChannelHandlerForwardHostTest.singleStreamReplyTypedFidelityRejectsInvalidInputBeforeNativeCallback:133->await:42 » Timeout
+[ERROR]   EvalImproveTopologyHostTest.evalNativeFactoryTimeoutGraderAndConstraints:41->scenario:78->resolve:27->resolve:30 » IllegalArgument wire UTF-8 path must be absolute and NUL-free
+[ERROR]   EvalImproveTopologyHostTest.improvementEarlyMaximumTrajectoryReopenAndFailedWrite:42->scenario:78->resolve:27->resolve:30 » IllegalArgument wire UTF-8 path must be absolute and NUL-free
+[ERROR]   ToolValueEffectHostTest.acceptedToolValuesAndActualEffects:27->await:14 » Execution java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+[ERROR]   ToolValueEffectHostTest.sandboxStreamRealProcessCompletionCancelAndClose:64->await:14 » Execution java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+[ERROR]   ToolValueEffectHostTest.searchProviderRealAgentValuesAndFailure:46->await:14 » Execution java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 30000ms in 'source(MonoDeferContextual)' (and no fallback has been configured)
+[ERROR] Tests run: 311, Failures: 1, Errors: 8, Skipped: 0
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project echo-agent-sdk-source: There are test failures.
+[ERROR] 
+[ERROR] See /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

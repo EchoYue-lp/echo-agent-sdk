@@ -1,0 +1,9 @@
+--- red/workflow-host.test.js
++++ green/workflow-host.test.js
+@@ -33,5 +33,5 @@
+   await sessions.b.close();await agent.close();await sdk.close();sdk=undefined;
+   const resultPath=join(work,"results.json");writeFileSync(resultPath,JSON.stringify(rows));
+   const verification=helper(work,["--verify",resultPath]);process.stdout.write(`Workflow evidence: ${verification}`);passed=true;
+- }finally{await sdk?.close();if(passed)rmSync(work,{recursive:true,force:true});else process.stderr.write(`Workflow evidence retained: ${work}\n`);}
++ }finally{await sdk?.close();if(passed&&!process.env.ECHO_AGENT_SDK_RETAIN_EVIDENCE)rmSync(work,{recursive:true,force:true});else process.stderr.write(`Workflow evidence retained: ${work}\n`);}
+ });

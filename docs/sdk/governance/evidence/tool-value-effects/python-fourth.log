@@ -1,0 +1,120 @@
+F
+=================================== FAILURES ===================================
+______________________ test_tool_value_effect_native_host ______________________
+
+    async def test_tool_value_effect_native_host():
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT))
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, str(Path(fixture.__file__)), "--work", str(work)
+        )
+        sdk = None
+        rows = []
+        byid = {}
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert proc.returncode is None, "fixture exited before ready"
+                    await asyncio.sleep(0.01)
+            sdk = await EchoAgentClient.spawn(
+                HOST,
+                "--config",
+                str(work / "host.json"),
+                env={**os.environ, "TMPDIR": str(work / "artifact-temp")},
+            )
+            agent = await sdk.create_agent()
+            session = await agent.create_session(str(work))
+            identity = {
+                "agent": agent.wire.to_dict(),
+                "session": session.wire.to_dict(),
+                "capability": sdk.capability,
+            }
+            for step in json.loads((work / "scenario.json").read_text())["rows"]:
+                row = copy.deepcopy(step)
+                row["protected_before"] = fixture.snapshot(work)
+                row["files_before"] = files(work)
+                if step.get("action") == "mutate_artifact":
+                    artifact = fixture.unrecord(byid[step["ref"]]["result"])
+                    fixture.decode_path(artifact["path"]).write_text(
+                        "mutated 中文🙂\n", encoding="utf8"
+                    )
+                else:
+                    arguments = fixture.resolve(step["arguments"], byid)
+                    row["arguments"] = arguments
+                    try:
+                        if step.get("watch_process"):
+                            task = asyncio.create_task(
+                                session.invoke(step["operation"], arguments)
+                            )
+                            pids = []
+                            for _ in range(50):
+                                pids = processes(work)
+                                if pids or task.done():
+                                    break
+                                await asyncio.sleep(0.01)
+                            row["process_before"] = pids
+                            row["result"] = await task
+                            row["process_after"] = processes(work)
+                        else:
+                            row["result"] = await session.invoke(
+                                step["operation"], arguments
+                            )
+                    except EchoAgentError as error:
+                        row["error"] = {
+                            "code": error.code,
+                            "message": str(error),
+                            "operation": error.operation,
+                            "retryable": error.retryable,
+                            "handle": error.handle.to_dict() if error.handle else None,
+                            "details": error.details,
+                        }
+                row["protected_after"] = fixture.snapshot(work)
+                row["files_after"] = files(work)
+                rows.append(row)
+                byid[row["id"]] = row
+            await session.close()
+            await agent.close()
+            data = {
+                "work": str(work),
+                "host": HOST,
+                "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+                "raw_identity": identity,
+                "rows": rows,
+            }
+            (work / "results.json").write_text(
+                json.dumps(data, ensure_ascii=False, indent=2), encoding="utf8"
+            )
+            print(
+                "Tool value/effects:",
+>               json.dumps(fixture.verify(work, data), ensure_ascii=False),
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                "evidence:",
+                work,
+            )
+
+sdks/python/tests/test_tool_value_effect_host.py:139: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-b7vrzt4w')
+data = {'work': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-b7vrzt4w', 'host':...aa50ba7e5f0f2d2d2f500ed9a6', 'features': ['a2a', 'acp', 'channels', 'chart', 'content-guard', 'data', ...], ...}}, ...}
+
+    def verify(work, data):
+        rows = data["rows"]
+        expected = json.loads((work / "scenario.json").read_text())["rows"]
+        assert [r["id"] for r in rows] == [r["id"] for r in expected]
+        baseline = json.loads((work / "baseline.json").read_text())
+        byid = {r["id"]: r for r in rows}
+        for row, step in zip(rows, expected):
+            assert row["protected_before"] == row["protected_after"] == baseline, row["id"]
+            if step.get("action"):
+                continue
+            expectation = step["expected"]
+            if expectation == "rpc_error":
+>               e = row["error"]
+                    ^^^^^^^^^^^^
+E               KeyError: 'error'
+
+sdks/shared/testing/tool_value_effect_fixture.py:350: KeyError
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_tool_value_effect_host.py::test_tool_value_effect_native_host
+1 failed in 7.95s

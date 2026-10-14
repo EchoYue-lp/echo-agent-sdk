@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------------
+Test set: com.echoagent.sdk.ToolValueEffectHostTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 23.62 s <<< FAILURE! -- in com.echoagent.sdk.ToolValueEffectHostTest
+com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects -- Time elapsed: 7.915 s <<< FAILURE!
+java.lang.AssertionError: tool oracle failed: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-14747849129025904774
+	at com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects(ToolValueEffectHostTest.java:39)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+com.echoagent.sdk.ToolValueEffectHostTest.sandboxStreamRealProcessCompletionCancelAndClose -- Time elapsed: 11.21 s <<< FAILURE!
+java.lang.AssertionError: sandbox oracle failed: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-sandbox-9677924905275280060
+	at com.echoagent.sdk.ToolValueEffectHostTest.sandboxStreamRealProcessCompletionCancelAndClose(ToolValueEffectHostTest.java:79)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

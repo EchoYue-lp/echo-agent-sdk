@@ -1,0 +1,24 @@
+{
+  "label": "ci-bridge-no-run",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--features",
+    "sdk-extension-bridge",
+    "--tests",
+    "--no-run",
+    "--locked"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/feature-combinations-preflight/ci-bridge-no-run.log",
+  "exitCode": 101,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 11498,
+  "bytesWritten": 11498,
+  "startedAt": "2026-10-13T22:00:31.364Z",
+  "finishedAt": "2026-10-13T22:02:00.604Z"
+}

@@ -1,0 +1,13 @@
+{
+  "files": {
+    "sdks/shared/testing/tool_value_effect_fixture.py": "91b5d3ce43a231a26ef85302dd54ce48383cada956d00873df0e4a6a3b006c11",
+    "sdks/typescript/test/tool-value-effect-host.test.js": "6fba108b234799fd9f55c1bfdc581a9adba6c7287a89a9dcbd34c93ffb688479",
+    "sdks/python/tests/test_tool_value_effect_host.py": "130e47d725d276e93b420a02b38ba5db0546be19e079c7f88aebe5cbf49a6b39",
+    "sdks/java/src/test/java/com/echoagent/sdk/ToolValueEffectHostTest.java": "da75ee81df5afc5ae911e04bfe297bbbcf9ca58bd49b5f1c02b29f0d4b8a9785"
+  },
+  "rows": 49,
+  "native_calls": 48,
+  "cases_per_language": 3,
+  "status": "prepared awaiting source.next after None correction, Sandbox cancellation and framework tool-value fixes; whole native9 not green",
+  "producer_scope": "real native printf/tail owned by language callbacks, pending invocation cancellation, EOF physical completion; no post-answer cancellation claim"
+}

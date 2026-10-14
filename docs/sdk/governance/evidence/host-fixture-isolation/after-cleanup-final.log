@@ -1,0 +1,28 @@
+TAP version 13
+# Subtest: native family calls use the catalog's hyphenated wire method
+ok 1 - native family calls use the catalog's hyphenated wire method
+  ---
+  duration_ms: 5443.023083
+  type: 'test'
+  ...
+# Subtest: source SDK reaches a real Host when configured
+ok 2 - source SDK reaches a real Host when configured
+  ---
+  duration_ms: 5753.918041
+  type: 'test'
+  ...
+# Subtest: parallel Agent feeds isolate cancellation and preserve B natural terminal
+ok 3 - parallel Agent feeds isolate cancellation and preserve B natural terminal
+  ---
+  duration_ms: 5624.349541
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11556.108875

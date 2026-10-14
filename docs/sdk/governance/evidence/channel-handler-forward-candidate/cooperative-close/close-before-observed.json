@@ -1,0 +1,7 @@
+{
+  "close_result": true,
+  "error_code": null,
+  "callback_finally_before": 0,
+  "callback_finally_after_close": 0,
+  "original_callback_still_held": true
+}

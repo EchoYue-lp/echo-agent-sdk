@@ -1,0 +1,10 @@
+{
+  "provenance": "actual completed host_actor_delta_review original sourcepass plus new readonlyarchiveverification message in current goal; not fabricated tool report",
+  "conclusion": "PASS/action0 local exactbug",
+  "implementation_source": "e4ae808abb8f916a7318faec3643c5a56cd1bbd143e9e88cb447e0cf7127f7de",
+  "implementation_scope": "complete960lineevents + directReplayACKhandler/standardextendedobserver/frameworkledgercommit/recoveredgeneration; maxACKmonotonic/pausedgap/noauthorizationemptyfuture/publishafterenqueue/failurebudget",
+  "original_actual_log_sha256": "97d6f4d05a35f06dc3d7185e752713b786c758f4ae8e55237d9557d6081807cc",
+  "original_actual_scope": "12eventsunits+4Hostcount/oversized/page+restart/killactive passed",
+  "new_archive_review": "27files SHAexact, SDK216/F552tar member hashes, gitshow30dbytes exact, fixed minusmaxACKoneLine=regressed; fixture2e29 identical/redSnapshot2live2fail1exit101/green2live3gap4pass1exit0",
+  "limits": "not full30dSDK build, no three-language historicalHost red, no finalnewpin/main delivery or externalIssueclose"
+}

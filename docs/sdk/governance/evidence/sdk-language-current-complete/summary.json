@@ -1,0 +1,33 @@
+{
+  "command": "bash ./scripts/check-language-sdks.sh",
+  "exit_code": 0,
+  "log_truncated": false,
+  "log_bytes": 91253,
+  "typescript": {
+    "passed": 290,
+    "failed": 0,
+    "skipped": 0,
+    "quickstart": "passed"
+  },
+  "python": {
+    "passed": 357,
+    "subtests_passed": 18,
+    "failed": 0,
+    "quickstart": "passed"
+  },
+  "java": {
+    "suites": 67,
+    "passed": 320,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "quickstart": "passed"
+  },
+  "ruff": {
+    "check": "passed",
+    "format_files": 175
+  },
+  "framework_revision": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6",
+  "scope": "Current candidate full official language gate only; full generated accepted-source continuity, next framework driver revision and SDKmain gates remain separate"
+}

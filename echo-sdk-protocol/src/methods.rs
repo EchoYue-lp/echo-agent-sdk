@@ -18,9 +18,11 @@ use serde::{Deserialize, Serialize};
 use crate::error::{AgentFailureWire, EchoSdkError};
 use crate::event::WireEventEnvelope;
 use crate::handle::{HandleKind, WireHandle};
+pub use crate::managed::*;
 use crate::scalar::{
     WireDuration, WireField, WireI64, WireNonZeroU64, WirePath, WireU64, WireValue,
 };
+pub use crate::task_store::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(rename_all = "snake_case")]
@@ -973,7 +975,13 @@ pub struct TaskControlResponse {
 #[request(method = "_echo_agent/subagent/dispatch", response = SubagentDispatchResponse)]
 pub struct SubagentDispatchRequest {
     pub session: WireHandle,
-    /// DispatchRequest payload for the session's SubagentExecutor.
+    /// Lossless projection for this session's SubagentExecutor. Accepted
+    /// fields are agent_name/task/mode_override/parent_agent/delegation_policy,
+    /// runtime_context, message, prompt_payload/prompt_context, constraints
+    /// and background. This RPC starts a background attempt: an explicit
+    /// `background: false`, unknown fields and process-local parent_context
+    /// are rejected. The Host supplies cancellation and execution identity;
+    /// caller runtime_context cannot substitute another owner Session.
     pub request: WireValue,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(length(min = 1, max = 256))]
@@ -1016,7 +1024,8 @@ pub struct SubagentAwaitResponse {
 pub enum SubagentControlAction {
     /// Deliver one tracked message into the running attempt.
     Message,
-    /// Queue guidance for the attempt's next planning step.
+    /// Deliver guidance through the current attempt's tracked message safe
+    /// point. It never promises a nonexistent next attempt or planning loop.
     Guidance,
     /// Interrupt the running attempt (cooperative, settles as interrupted).
     Interrupt,
@@ -1252,6 +1261,30 @@ pub enum ToolResultContentWire {
     },
 }
 
+/// Execution facts emitted by the framework tool implementation; they are not
+/// inferred from display output. Unknown facts fail decoding instead of disappearing.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(tag = "effect", rename_all = "snake_case", deny_unknown_fields)]
+pub enum ToolEffectWire {
+    FileRead {
+        path: String,
+    },
+    FileEdit {
+        path: String,
+    },
+    TestRun {
+        command: String,
+        passed: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        failure_count: Option<WireU64>,
+    },
+    SubagentRun {
+        agent_name: String,
+        task: String,
+        outcome: String,
+    },
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ToolResultWire {
@@ -1273,6 +1306,8 @@ pub struct ToolResultWire {
     pub metadata: std::collections::BTreeMap<String, String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub model_content: Vec<ToolResultContentWire>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub effects: Vec<ToolEffectWire>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
@@ -1627,6 +1662,8 @@ pub enum StepTypeWire {
 #[serde(deny_unknown_fields)]
 pub struct CallbackToolStartInput {
     pub agent: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub call_id: Option<String>,
     pub tool: String,
     pub args: WireValue,
 }
@@ -1634,6 +1671,8 @@ pub struct CallbackToolStartInput {
 #[serde(deny_unknown_fields)]
 pub struct CallbackToolEndInput {
     pub agent: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub call_id: Option<String>,
     pub tool: String,
     pub result: String,
 }
@@ -1641,9 +1680,23 @@ pub struct CallbackToolEndInput {
 #[serde(deny_unknown_fields)]
 pub struct CallbackToolErrorInput {
     pub agent: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub call_id: Option<String>,
     pub tool: String,
     pub error: String,
 }
+/// An admitted tool invocation interrupted before a captured result exists.
+/// Its canonical identity and full input survive even if the start callback did not run.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct CallbackToolInterruptedInput {
+    pub agent: String,
+    pub call_id: String,
+    pub tool: String,
+    pub input: WireValue,
+    pub error: String,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct CallbackFinalAnswerInput {
@@ -1671,6 +1724,10 @@ pub struct InterventionResultWire {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AgentFactoryConfigWire {
+    /// Host-reserved child identity provided before construction so the SDK
+    /// can bind the exact created object. It is published only after the
+    /// descriptor commits; create/publish failure closes this same identity.
+    pub instance: WireHandle,
     pub model: String,
     pub name: String,
     pub system_prompt: String,
@@ -1844,6 +1901,17 @@ pub enum AgentComponentKindWire {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum AgentComponentOperationWire {
+    ConversationEnsureProjectionEpochWithContext,
+    ConversationGetProjectionAuthorityWithContext,
+    ConversationApplyTranscriptProjectionWithContext,
+    ConversationDeleteManagedWithContext,
+    RuntimeLoadManagedStateWithContext,
+    RuntimeLoadScopeAuthorityWithContext,
+    RuntimeCompareAndSaveCheckpointWithContext,
+    RuntimeAcknowledgeTranscriptProjectionWithContext,
+    RuntimeRetireGenerationWithContext,
+    RuntimeBeginScopeRetirementWithContext,
+    RuntimeContinueScopeRetirementWithContext,
     ConversationCreate,
     ConversationGet,
     ConversationList,
@@ -1887,6 +1955,7 @@ pub enum AgentComponentOperationWire {
     WorkflowCheckpointClear,
     RevisionedTaskLoad,
     RevisionedTaskCompareAndCommit,
+    RevisionedTaskCompareAndCommitExecution,
     SandboxIsAvailable,
     SandboxExecute,
     SandboxExecuteStream,
@@ -1908,6 +1977,31 @@ pub enum AgentComponentOperationWire {
 impl AgentComponentOperationWire {
     pub fn component(self) -> AgentComponentKindWire {
         match self {
+            Self::ConversationEnsureProjectionEpochWithContext => {
+                AgentComponentKindWire::ConversationStore
+            }
+            Self::ConversationGetProjectionAuthorityWithContext => {
+                AgentComponentKindWire::ConversationStore
+            }
+            Self::ConversationApplyTranscriptProjectionWithContext => {
+                AgentComponentKindWire::ConversationStore
+            }
+            Self::ConversationDeleteManagedWithContext => AgentComponentKindWire::ConversationStore,
+            Self::RuntimeLoadManagedStateWithContext => AgentComponentKindWire::RuntimeStateStore,
+            Self::RuntimeLoadScopeAuthorityWithContext => AgentComponentKindWire::RuntimeStateStore,
+            Self::RuntimeCompareAndSaveCheckpointWithContext => {
+                AgentComponentKindWire::RuntimeStateStore
+            }
+            Self::RuntimeAcknowledgeTranscriptProjectionWithContext => {
+                AgentComponentKindWire::RuntimeStateStore
+            }
+            Self::RuntimeRetireGenerationWithContext => AgentComponentKindWire::RuntimeStateStore,
+            Self::RuntimeBeginScopeRetirementWithContext => {
+                AgentComponentKindWire::RuntimeStateStore
+            }
+            Self::RuntimeContinueScopeRetirementWithContext => {
+                AgentComponentKindWire::RuntimeStateStore
+            }
             Self::ConversationCreate
             | Self::ConversationGet
             | Self::ConversationList
@@ -1948,7 +2042,9 @@ impl AgentComponentOperationWire {
             | Self::WorkflowCheckpointListFiltered
             | Self::WorkflowCheckpointDelete
             | Self::WorkflowCheckpointClear => AgentComponentKindWire::WorkflowCheckpointStore,
-            Self::RevisionedTaskLoad | Self::RevisionedTaskCompareAndCommit => {
+            Self::RevisionedTaskLoad
+            | Self::RevisionedTaskCompareAndCommit
+            | Self::RevisionedTaskCompareAndCommitExecution => {
                 AgentComponentKindWire::RevisionedTaskStore
             }
             Self::SandboxIsAvailable
@@ -2000,6 +2096,54 @@ pub struct SkillDescriptorPolicyWire {
     deny_unknown_fields
 )]
 pub enum AgentComponentCallInputWire {
+    ConversationEnsureProjectionEpochWithContext {
+        request: EnsureConversationProjectionRequestWire,
+        context: PersistenceCallContextWire,
+    },
+    ConversationGetProjectionAuthorityWithContext {
+        conversation_id: String,
+        context: PersistenceCallContextWire,
+    },
+    ConversationApplyTranscriptProjectionWithContext {
+        batch: TranscriptProjectionBatchWire,
+        context: PersistenceCallContextWire,
+    },
+    ConversationDeleteManagedWithContext {
+        request: ManagedConversationDeleteWire,
+        context: PersistenceCallContextWire,
+    },
+    RuntimeLoadManagedStateWithContext {
+        scope_id: String,
+        runtime_state_id: String,
+        context: PersistenceCallContextWire,
+    },
+    RuntimeLoadScopeAuthorityWithContext {
+        scope_id: String,
+        context: PersistenceCallContextWire,
+    },
+    RuntimeCompareAndSaveCheckpointWithContext {
+        request: RuntimeCheckpointCasRequestWire,
+        context: PersistenceCallContextWire,
+    },
+    RuntimeAcknowledgeTranscriptProjectionWithContext {
+        request: RuntimeTranscriptAckRequestWire,
+        context: PersistenceCallContextWire,
+    },
+    RuntimeRetireGenerationWithContext {
+        request: RuntimeGenerationRetireRequestWire,
+        context: PersistenceCallContextWire,
+    },
+    RuntimeBeginScopeRetirementWithContext {
+        request: ScopeRetirementRequestWire,
+        context: PersistenceCallContextWire,
+    },
+    RuntimeContinueScopeRetirementWithContext {
+        scope_id: String,
+        delete_operation_id: String,
+        expected_scope_revision: WireU64,
+        advance: ScopeRetirementAdvanceWire,
+        context: PersistenceCallContextWire,
+    },
     ConversationCreate {
         conversation: WireValue,
     },
@@ -2150,7 +2294,11 @@ pub enum AgentComponentCallInputWire {
     },
     RevisionedTaskCompareAndCommit {
         scope_id: String,
-        commit: WireValue,
+        commit: TaskGraphCommitWire,
+    },
+    RevisionedTaskCompareAndCommitExecution {
+        scope_id: String,
+        commit: TaskExecutionCommitWire,
     },
     SandboxIsAvailable,
     SandboxExecute {
@@ -2200,6 +2348,39 @@ pub enum AgentComponentCallInputWire {
 impl AgentComponentCallInputWire {
     pub fn operation(&self) -> AgentComponentOperationWire {
         match self {
+            Self::ConversationEnsureProjectionEpochWithContext { .. } => {
+                AgentComponentOperationWire::ConversationEnsureProjectionEpochWithContext
+            }
+            Self::ConversationGetProjectionAuthorityWithContext { .. } => {
+                AgentComponentOperationWire::ConversationGetProjectionAuthorityWithContext
+            }
+            Self::ConversationApplyTranscriptProjectionWithContext { .. } => {
+                AgentComponentOperationWire::ConversationApplyTranscriptProjectionWithContext
+            }
+            Self::ConversationDeleteManagedWithContext { .. } => {
+                AgentComponentOperationWire::ConversationDeleteManagedWithContext
+            }
+            Self::RuntimeLoadManagedStateWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeLoadManagedStateWithContext
+            }
+            Self::RuntimeLoadScopeAuthorityWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeLoadScopeAuthorityWithContext
+            }
+            Self::RuntimeCompareAndSaveCheckpointWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeCompareAndSaveCheckpointWithContext
+            }
+            Self::RuntimeAcknowledgeTranscriptProjectionWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeAcknowledgeTranscriptProjectionWithContext
+            }
+            Self::RuntimeRetireGenerationWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeRetireGenerationWithContext
+            }
+            Self::RuntimeBeginScopeRetirementWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeBeginScopeRetirementWithContext
+            }
+            Self::RuntimeContinueScopeRetirementWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeContinueScopeRetirementWithContext
+            }
             Self::ConversationCreate { .. } => AgentComponentOperationWire::ConversationCreate,
             Self::ConversationGet { .. } => AgentComponentOperationWire::ConversationGet,
             Self::ConversationList { .. } => AgentComponentOperationWire::ConversationList,
@@ -2277,6 +2458,9 @@ impl AgentComponentCallInputWire {
             Self::RevisionedTaskCompareAndCommit { .. } => {
                 AgentComponentOperationWire::RevisionedTaskCompareAndCommit
             }
+            Self::RevisionedTaskCompareAndCommitExecution { .. } => {
+                AgentComponentOperationWire::RevisionedTaskCompareAndCommitExecution
+            }
             Self::SandboxIsAvailable => AgentComponentOperationWire::SandboxIsAvailable,
             Self::SandboxExecute { .. } => AgentComponentOperationWire::SandboxExecute,
             Self::SandboxExecuteStream { .. } => AgentComponentOperationWire::SandboxExecuteStream,
@@ -2313,6 +2497,39 @@ impl AgentComponentCallInputWire {
     deny_unknown_fields
 )]
 pub enum AgentComponentCallResultWire {
+    ConversationEnsureProjectionEpochWithContext {
+        receipt: ConversationProjectionEpochReceiptWire,
+    },
+    ConversationGetProjectionAuthorityWithContext {
+        authority: Option<ConversationProjectionAuthorityWire>,
+    },
+    ConversationApplyTranscriptProjectionWithContext {
+        receipt: TranscriptProjectionApplyReceiptWire,
+    },
+    ConversationDeleteManagedWithContext {
+        receipt: ManagedConversationDeleteReceiptWire,
+    },
+    RuntimeLoadManagedStateWithContext {
+        snapshot: Option<ManagedRuntimeStateSnapshotWire>,
+    },
+    RuntimeLoadScopeAuthorityWithContext {
+        authority: Option<RuntimeScopeAuthorityWire>,
+    },
+    RuntimeCompareAndSaveCheckpointWithContext {
+        receipt: RuntimeCheckpointCasReceiptWire,
+    },
+    RuntimeAcknowledgeTranscriptProjectionWithContext {
+        receipt: RuntimeCheckpointCasReceiptWire,
+    },
+    RuntimeRetireGenerationWithContext {
+        receipt: RuntimeGenerationRetireReceiptWire,
+    },
+    RuntimeBeginScopeRetirementWithContext {
+        receipt: ScopeRetirementReceiptWire,
+    },
+    RuntimeContinueScopeRetirementWithContext {
+        receipt: ScopeRetirementReceiptWire,
+    },
     ConversationCreate {
         conversation: WireValue,
     },
@@ -2407,10 +2624,13 @@ pub enum AgentComponentCallResultWire {
     WorkflowCheckpointDelete,
     WorkflowCheckpointClear,
     RevisionedTaskLoad {
-        graph: Option<WireValue>,
+        graph: Option<RevisionedTaskGraphWire>,
     },
     RevisionedTaskCompareAndCommit {
-        graph: WireValue,
+        graph: RevisionedTaskGraphWire,
+    },
+    RevisionedTaskCompareAndCommitExecution {
+        graph: RevisionedTaskGraphWire,
     },
     SandboxIsAvailable {
         available: bool,
@@ -2455,6 +2675,39 @@ pub enum AgentComponentCallResultWire {
 impl AgentComponentCallResultWire {
     pub fn operation(&self) -> AgentComponentOperationWire {
         match self {
+            Self::ConversationEnsureProjectionEpochWithContext { .. } => {
+                AgentComponentOperationWire::ConversationEnsureProjectionEpochWithContext
+            }
+            Self::ConversationGetProjectionAuthorityWithContext { .. } => {
+                AgentComponentOperationWire::ConversationGetProjectionAuthorityWithContext
+            }
+            Self::ConversationApplyTranscriptProjectionWithContext { .. } => {
+                AgentComponentOperationWire::ConversationApplyTranscriptProjectionWithContext
+            }
+            Self::ConversationDeleteManagedWithContext { .. } => {
+                AgentComponentOperationWire::ConversationDeleteManagedWithContext
+            }
+            Self::RuntimeLoadManagedStateWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeLoadManagedStateWithContext
+            }
+            Self::RuntimeLoadScopeAuthorityWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeLoadScopeAuthorityWithContext
+            }
+            Self::RuntimeCompareAndSaveCheckpointWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeCompareAndSaveCheckpointWithContext
+            }
+            Self::RuntimeAcknowledgeTranscriptProjectionWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeAcknowledgeTranscriptProjectionWithContext
+            }
+            Self::RuntimeRetireGenerationWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeRetireGenerationWithContext
+            }
+            Self::RuntimeBeginScopeRetirementWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeBeginScopeRetirementWithContext
+            }
+            Self::RuntimeContinueScopeRetirementWithContext { .. } => {
+                AgentComponentOperationWire::RuntimeContinueScopeRetirementWithContext
+            }
             Self::ConversationCreate { .. } => AgentComponentOperationWire::ConversationCreate,
             Self::ConversationGet { .. } => AgentComponentOperationWire::ConversationGet,
             Self::ConversationList { .. } => AgentComponentOperationWire::ConversationList,
@@ -2524,6 +2777,9 @@ impl AgentComponentCallResultWire {
             Self::RevisionedTaskCompareAndCommit { .. } => {
                 AgentComponentOperationWire::RevisionedTaskCompareAndCommit
             }
+            Self::RevisionedTaskCompareAndCommitExecution { .. } => {
+                AgentComponentOperationWire::RevisionedTaskCompareAndCommitExecution
+            }
             Self::SandboxIsAvailable { .. } => AgentComponentOperationWire::SandboxIsAvailable,
             Self::SandboxExecute { .. } => AgentComponentOperationWire::SandboxExecute,
             Self::SandboxExecuteWithLimits { .. } => {
@@ -2567,6 +2823,16 @@ pub struct AgentComponentResultWire {
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AgentComponentCapabilitiesWire {
+    /// Explicit promise that this revisioned task store supports atomic
+    /// execution CAS. CRUD registration alone does not authorize dispatch.
+    #[serde(default)]
+    pub execution_cas_v1: bool,
+    #[serde(default)]
+    pub conversation_projection: ConversationProjectionCapabilityWire,
+    #[serde(default)]
+    pub runtime_state: RuntimeStateCapabilityWire,
+    #[serde(default)]
+    pub persistence_call: PersistenceCallCapabilityWire,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub isolation_level: Option<String>,
     #[serde(default)]
@@ -2858,6 +3124,31 @@ impl ExtensionDescriptor {
             ..
         } = self
         {
+            if capabilities.execution_cas_v1
+                && *component != AgentComponentKindWire::RevisionedTaskStore
+            {
+                return Err("execution CAS capability requires a revisioned task store");
+            }
+            if capabilities.conversation_projection
+                != ConversationProjectionCapabilityWire::Unsupported
+                && *component != AgentComponentKindWire::ConversationStore
+            {
+                return Err("conversation projection capability requires a conversation store");
+            }
+            if capabilities.runtime_state != RuntimeStateCapabilityWire::Unsupported
+                && *component != AgentComponentKindWire::RuntimeStateStore
+            {
+                return Err("runtime state capability requires a runtime state store");
+            }
+            if capabilities.persistence_call != PersistenceCallCapabilityWire::Unsupported
+                && !matches!(
+                    component,
+                    AgentComponentKindWire::ConversationStore
+                        | AgentComponentKindWire::RuntimeStateStore
+                )
+            {
+                return Err("persistence deadline capability requires a managed store component");
+            }
             if capabilities
                 .isolation_level
                 .as_deref()
@@ -3036,6 +3327,7 @@ pub enum ExtensionOperation {
     CallbackOnToolStart,
     CallbackOnToolEnd,
     CallbackOnToolError,
+    CallbackOnToolInterrupted,
     CallbackOnFinalAnswer,
     CallbackOnIteration,
     // InterventionCallback
@@ -3089,6 +3381,7 @@ impl ExtensionOperation {
             ExtensionOperation::CallbackOnToolStart => "callback_on_tool_start",
             ExtensionOperation::CallbackOnToolEnd => "callback_on_tool_end",
             ExtensionOperation::CallbackOnToolError => "callback_on_tool_error",
+            ExtensionOperation::CallbackOnToolInterrupted => "callback_on_tool_interrupted",
             ExtensionOperation::CallbackOnFinalAnswer => "callback_on_final_answer",
             ExtensionOperation::CallbackOnIteration => "callback_on_iteration",
             ExtensionOperation::InterventionOnToolCall => "intervention_on_tool_call",
@@ -3138,6 +3431,7 @@ impl ExtensionOperation {
             | ExtensionOperation::CallbackOnToolStart
             | ExtensionOperation::CallbackOnToolEnd
             | ExtensionOperation::CallbackOnToolError
+            | ExtensionOperation::CallbackOnToolInterrupted
             | ExtensionOperation::CallbackOnFinalAnswer
             | ExtensionOperation::CallbackOnIteration => ExtensionKind::AgentCallback,
             ExtensionOperation::InterventionOnToolCall
@@ -3209,6 +3503,7 @@ pub enum ExtensionInvocation {
     CallbackOnToolStart(CallbackToolStartInput),
     CallbackOnToolEnd(CallbackToolEndInput),
     CallbackOnToolError(CallbackToolErrorInput),
+    CallbackOnToolInterrupted(CallbackToolInterruptedInput),
     CallbackOnFinalAnswer(CallbackFinalAnswerInput),
     CallbackOnIteration(CallbackIterationInput),
     InterventionOnToolCall(CallbackToolStartInput),
@@ -3257,6 +3552,7 @@ impl ExtensionInvocation {
             Self::CallbackOnToolStart(_) => ExtensionOperation::CallbackOnToolStart,
             Self::CallbackOnToolEnd(_) => ExtensionOperation::CallbackOnToolEnd,
             Self::CallbackOnToolError(_) => ExtensionOperation::CallbackOnToolError,
+            Self::CallbackOnToolInterrupted(_) => ExtensionOperation::CallbackOnToolInterrupted,
             Self::CallbackOnFinalAnswer(_) => ExtensionOperation::CallbackOnFinalAnswer,
             Self::CallbackOnIteration(_) => ExtensionOperation::CallbackOnIteration,
             Self::InterventionOnToolCall(_) => ExtensionOperation::InterventionOnToolCall,
@@ -3310,6 +3606,7 @@ pub enum ExtensionResult {
     CallbackOnToolStart(ExtensionUnit),
     CallbackOnToolEnd(ExtensionUnit),
     CallbackOnToolError(ExtensionUnit),
+    CallbackOnToolInterrupted(ExtensionUnit),
     CallbackOnFinalAnswer(ExtensionUnit),
     CallbackOnIteration(ExtensionUnit),
     InterventionOnToolCall(InterventionResultWire),
@@ -3352,6 +3649,7 @@ impl ExtensionResult {
             Self::CallbackOnToolStart(_) => ExtensionOperation::CallbackOnToolStart,
             Self::CallbackOnToolEnd(_) => ExtensionOperation::CallbackOnToolEnd,
             Self::CallbackOnToolError(_) => ExtensionOperation::CallbackOnToolError,
+            Self::CallbackOnToolInterrupted(_) => ExtensionOperation::CallbackOnToolInterrupted,
             Self::CallbackOnFinalAnswer(_) => ExtensionOperation::CallbackOnFinalAnswer,
             Self::CallbackOnIteration(_) => ExtensionOperation::CallbackOnIteration,
             Self::InterventionOnToolCall(_) => ExtensionOperation::InterventionOnToolCall,
@@ -3576,6 +3874,9 @@ pub struct LlmStreamCompleteWire {
 )]
 #[allow(clippy::large_enum_variant)]
 pub enum AgentEventWire {
+    TranscriptProjectionSettlement {
+        settlement: TranscriptProjectionSettlementWire,
+    },
     Token {
         text: String,
     },
@@ -3746,6 +4047,7 @@ impl AgentEventWire {
                 | "guard_triggered"
                 | "memory_recalled"
                 | "context_compressed"
+                | "transcript_projection_settlement"
                 | "chart"
                 | "error"
                 | "safety_notice"
@@ -3816,6 +4118,7 @@ fn payload_fields<'a>(variant: &str, fields: &'a [WireField]) -> Result<&'a [Wir
             "before_tokens",
             "after_tokens",
         ][..],
+        "transcript_projection_settlement" => &["settlement"][..],
         "chart" => &["spec"][..],
         "error" => &["source", "message", "failure"][..],
         "safety_notice" => &["action", "reason", "risk", "permission"][..],
@@ -3941,6 +4244,9 @@ fn wire_value_to_json(value: &WireValue) -> Result<serde_json::Value, String> {
 )]
 #[allow(clippy::large_enum_variant)]
 pub enum AgentStreamChunkWire {
+    TranscriptProjectionSettlement {
+        settlement: TranscriptProjectionSettlementWire,
+    },
     Token {
         text: String,
     },
@@ -4181,6 +4487,10 @@ pub struct ExtensionUnregisterResponse {
 #[request(method = "_echo_agent/extension/invoke", response = ExtensionInvokeOutcome)]
 #[serde(deny_unknown_fields)]
 pub struct ExtensionInvokeCall {
+    /// Present only for a Host-minted custom Agent instance. This identifies
+    /// its original registered factory; `extension` remains the instance target.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub factory_origin: Option<WireHandle>,
     pub extension: WireHandle,
     /// Invocation identity; unique per call, used for cancellation. It is a
     /// domain identity independent from any JSON-RPC request id.
@@ -4219,6 +4529,37 @@ impl ExtensionInvokeCall {
             context.validate()?;
         }
         let operation = self.invocation.operation();
+        if let ExtensionInvocation::FactoryCreateAgent(config) = &self.invocation {
+            config
+                .instance
+                .validate()
+                .map_err(|_| "invalid factory instance handle")?;
+            if config.instance.kind != HandleKind::Extension
+                || config.instance.generation != self.extension.generation
+                || config.instance.id == self.extension.id
+            {
+                return Err("factory create requires a reserved distinct same-generation instance");
+            }
+        }
+        if let Some(origin) = &self.factory_origin {
+            origin
+                .validate()
+                .map_err(|_| "invalid factory origin handle")?;
+            if origin.kind != HandleKind::Extension
+                || origin.generation != self.extension.generation
+                || origin.id == self.extension.id
+                || !matches!(
+                    operation,
+                    ExtensionOperation::AgentExecute
+                        | ExtensionOperation::AgentExecuteStream
+                        | ExtensionOperation::AgentChat
+                        | ExtensionOperation::AgentChatStream
+                        | ExtensionOperation::AgentClose
+                )
+            {
+                return Err("factory origin requires a distinct same-generation Agent instance");
+            }
+        }
         if !operation.is_streaming() && self.stream.is_some() {
             return Err("non-streaming operations must not carry a stream handle");
         }
@@ -4535,3 +4876,64 @@ mod agent_event_wire_tests {
         assert!(AgentEventWire::from_wire_value(&unknown_field).is_err());
     }
 }
+
+/// JSON-domain claim returned by the delivery family, before the surrounding
+/// `WireValue` projection. Route and payload are caller-owned: this adapter
+/// accepts JSON payloads and rejects non-JSON wire values. The framework owns
+/// attempt identity, validation and transitions.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct DeliveryClaimWire {
+    pub message_id: String,
+    pub route: String,
+    pub payload: serde_json::Value,
+    pub attempt_id: String,
+    pub attempt: u32,
+    #[schemars(schema_with = "delivery_timestamp_schema")]
+    pub claimed_at: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct DeliveryClaimNextResultWire {
+    pub claim: Option<DeliveryClaimWire>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct DeliveryMutationResultWire {
+    pub ok: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum DeliveryTransitionKindWire {
+    EffectStarted,
+    MailboxAccepted,
+    Drained,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum DeliveryOutcomeWire {
+    Completed,
+    Failed,
+    Cancelled,
+    Dropped,
+    OutcomeUnknown,
+}
+
+fn delivery_timestamp_schema(_: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+    use schemars::schema::{InstanceType, SchemaObject};
+    SchemaObject {
+        instance_type: Some(InstanceType::String.into()),
+        format: Some("date-time".to_string()),
+        ..SchemaObject::default()
+    }
+    .into()
+}
+
+/// Exact RFC3339 string at a decoded delivery deadline boundary.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(transparent)]
+pub struct DeliveryDeadlineWire(#[schemars(schema_with = "delivery_timestamp_schema")] pub String);

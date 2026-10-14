@@ -1,0 +1,9 @@
+--- red/test_workflow_host.py
++++ green/test_workflow_host.py
+@@ -48,5 +48,5 @@
+         print("Workflow evidence: "+(await helper(work,"--verify",str(path))).decode());passed=True
+     finally:
+         if sdk is not None:await sdk.close()
+-        if passed:shutil.rmtree(work)
++        if passed and not os.environ.get("ECHO_AGENT_SDK_RETAIN_EVIDENCE"):shutil.rmtree(work)
+         else:print(f"Workflow evidence retained: {work}",file=sys.stderr)

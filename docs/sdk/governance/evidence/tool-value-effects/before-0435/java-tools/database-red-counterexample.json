@@ -1,0 +1,91 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-2276595591623802473",
+  "operation": "describe_table",
+  "arguments": [
+    "sqlite:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-2276595591623802473/fixture.db",
+    "records"
+  ],
+  "actual": {
+    "columns": [
+      "cid",
+      "name",
+      "type",
+      "notnull",
+      "dflt_value",
+      "pk"
+    ],
+    "rows": [
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    ],
+    "total_rows": 4
+  },
+  "sqlite_authority_rows": [
+    [
+      0,
+      "id",
+      "INTEGER",
+      0,
+      null,
+      1
+    ],
+    [
+      1,
+      "label",
+      "TEXT",
+      1,
+      null,
+      0
+    ],
+    [
+      2,
+      "quantity",
+      "INTEGER",
+      0,
+      "7",
+      0
+    ],
+    [
+      3,
+      "note",
+      "TEXT",
+      0,
+      null,
+      0
+    ]
+  ],
+  "database_sha256": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+  "before": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+  "after": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+  "lossless": false
+}

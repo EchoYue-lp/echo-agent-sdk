@@ -1,0 +1,14 @@
+{
+  "sdks/shared/testing/computation_fixture.py": "79eb76927e571ce91689e2f1c67171da495cf09bccfed793c07fc196573c308b",
+  "sdks/python/tests/test_computation_host.py": "5da7f5b379a84eee7844e42b22535c6f675220c880a9c54bdd64eacfa47b87d7",
+  "sdks/typescript/test/computation-host.test.js": "74367227be526ddcfb7b7f95c60db30bf43194a62bea219a696e26b75ab57da0",
+  "sdks/java/src/test/java/com/echoagent/sdk/ComputationHostTest.java": "1bbed5eab178b0f911c60bee3221102a6dd2640f34c76bdfa447aac7b2e2a5f0",
+  "sdks/python/src/echo_agent_sdk/client.py": "b5f5029e587bcee3a88d853d101e6e92766f5cb28c5d623552d5d00e6a015579",
+  "sdks/python/src/echo_agent_sdk/wire.py": "50d132ec93ebc09110ed52e549335ff6c789bf198a1cfc94253023d75966c374",
+  "sdks/typescript/dist/client.js": "a31145bd7b000dea56c741f3ae5e12c64bce4868e5d4d3e2f89b0a18abfc80fc",
+  "sdks/typescript/dist/wire.js": "f5566cc584a59e158fb47cccf86deaddb43d5a3079cdf80569847a08dc2afc66",
+  "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "866aa24fbd95a2cf7a8ddbfe19329ca954048a3d1353890205cae7b7e9018599",
+  "sdks/java/src/main/java/com/echoagent/sdk/WireValues.java": "57305f5f276a266dd1d5e016db4179c4c7bda5fb9b2c6acbe77dfbb2aee0e545",
+  "sdks/shared/facade-operation-catalog.json": "2e31b8227f3c3224667b0a75fae8b913e4144dec6d43afc30dce7e252612e627",
+  "sdks/shared/contract-digests.json": "e4b3d2548b360c0fc20cbaa959dd61b53961a263a2c6712dfdd7a6c48635fd31"
+}

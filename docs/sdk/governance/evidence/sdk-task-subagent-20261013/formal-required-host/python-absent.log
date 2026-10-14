@@ -1,0 +1,10 @@
+
+==================================== ERRORS ====================================
+______________ ERROR collecting tests/test_task_subagent_host.py _______________
+tests/test_task_subagent_host.py:21: in <module>
+    raise RuntimeError("required real Task/Subagent Host binary missing")
+E   RuntimeError: required real Task/Subagent Host binary missing
+=========================== short test summary info ============================
+ERROR tests/test_task_subagent_host.py - RuntimeError: required real Task/Sub...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.59s

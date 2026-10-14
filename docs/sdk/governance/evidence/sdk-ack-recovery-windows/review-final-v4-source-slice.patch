@@ -1,0 +1,328 @@
+--- review-before-v3/sdks/typescript/src/client.ts
++++ review-final-v4/sdks/typescript/src/client.ts
+@@ -175,6 +175,7 @@
+   replayRanges?: Array<{base: bigint; end: bigint; recoveryBase?: bigint}>;
+   acknowledgedSequence?: bigint;
+   lastLiveSequence?: bigint;
++  liveRanges?: Array<{base: bigint; end: bigint}>;
+   lastGapWatermark?: bigint;
+   replayTerminalSequence?: bigint;
+ }
+@@ -195,6 +196,33 @@
+     }
+   }
+   return DEFAULT_QUEUE_CAPACITY;
++}
++
++// These intervals prove only received transport facts, not journal consumption.
++function recordLiveSequence(feed: StreamFeed, sequence: bigint): void {
++  const ranges = feed.liveRanges ??= [];
++  const previous = ranges.at(-1);
++  if (previous && previous.end + 1n === sequence) previous.end = sequence;
++  else ranges.push({base: sequence, end: sequence});
++  if (ranges.length > 512) ranges.shift();
++}
++
++function replayCoversCursor(feed: StreamFeed, sequence: bigint): boolean {
++  const ranges = feed.replayRanges ?? [];
++  let frontier = feed.lastEventSequence;
++  // Resolve the reachable closure independently of response arrival order.
++  // Only returned events or an exact retention snapshot can authorize a cursor.
++  for (let pass = 0; pass <= ranges.length; pass++) {
++    const before = frontier;
++    for (const range of ranges) {
++      const connected = range.base <= frontier || (range.recoveryBase !== undefined && range.recoveryBase <= frontier);
++      if (!connected) continue;
++      if (sequence <= range.end && (sequence > range.base || (range.recoveryBase !== undefined && sequence === range.base))) return true;
++      if (range.end > frontier) frontier = range.end;
++    }
++    if (frontier === before) break;
++  }
++  return false;
+ }
+ 
+ export class EchoAgentClient {
+@@ -320,6 +348,7 @@
+       }
+       feed.lastEventSequence = sequence;
+       feed.lastLiveSequence = sequence;
++      recordLiveSequence(feed, sequence);
+       feed.queue.push(event);
+       if (["final_answer", "cancelled", "error"].includes(event.envelope.payload.event_type)) {
+         // The terminal event remains available to the consumer before the
+@@ -810,6 +839,7 @@
+     feed.handle = { ...stream };
+     feed.lastEventSequence = sequence;
+     feed.lastLiveSequence = sequence;
++    recordLiveSequence(feed, sequence);
+     feed.queue.push(event);
+   }
+ 
+@@ -828,9 +858,10 @@
+     const parsed = parsePositiveSequence(sequence);
+     const feed = this.events.get(stream.id);
+     const owned = feed?.handle && sameHandle(feed.handle, stream);
+-    const covered = feed?.replayRanges?.some(range => range.end >= parsed && (range.base <= feed.lastEventSequence && parsed > range.base
+-      || (range.recoveryBase !== undefined && range.recoveryBase <= feed.lastEventSequence && parsed >= range.base)));
+-    const observed = owned && (covered || parsed === feed.lastGapWatermark || parsed <= (feed.lastLiveSequence ?? 0n));
++    const covered = feed && replayCoversCursor(feed, parsed);
++    const observed = owned && (covered || parsed === feed.lastGapWatermark
++      || parsed <= (feed.acknowledgedSequence ?? 0n)
++      || feed.liveRanges?.some(range => range.base <= parsed && parsed <= range.end));
+     try {
+       await this.notify("_echo_agent/event/ack", {
+         ack: { stream, last_processed_sequence: parsed.toString() },
+@@ -860,12 +891,28 @@
+       if(["final_answer","cancelled","error"].includes(event.envelope.payload.event_type))feed.replayTerminalSequence=BigInt(event.envelope.sequence);
+     }
+     const ranges = feed.replayRanges ??= [];
+-    // A validated retention gap connects the request cursor to its snapshot.
+-    // Only snapshot-or-later cursors are covered; absent interior events are not.
+-    // Fold consecutive fetched pages; fetching does not mark any event consumed.
+-    const previous = result.gap ? undefined : ranges.find(range => range.end === base);
+-    if (previous) previous.end = end;
+-    else ranges.push({base,end,...(result.gap ? {recoveryBase: BigInt(result.requested_after_sequence)} : {})});
++    // Empty pages have no event coverage and must not intercept a later chain.
++    if (!result.gap && base === end) return;
++    if (result.gap) {
++      ranges.push({base,end,recoveryBase: BigInt(result.requested_after_sequence)});
++    } else {
++      // Merge all overlapping ordinary pages, preserving every gap's own bridge.
++      let mergedBase = base;
++      let mergedEnd = end;
++      let changed = true;
++      while (changed) {
++        changed = false;
++        for (let index = ranges.length - 1; index >= 0; index--) {
++          const range = ranges[index];
++          if (!range || range.recoveryBase !== undefined || range.base > mergedEnd || range.end < mergedBase) continue;
++          mergedBase = range.base < mergedBase ? range.base : mergedBase;
++          mergedEnd = range.end > mergedEnd ? range.end : mergedEnd;
++          ranges.splice(index, 1);
++          changed = true;
++        }
++      }
++      ranges.push({base:mergedBase,end:mergedEnd});
++    }
+     if (ranges.length > 512) ranges.shift();
+   }
+ 
+--- review-before-v3/sdks/python/src/echo_agent_sdk/client.py
++++ review-final-v4/sdks/python/src/echo_agent_sdk/client.py
+@@ -2726,6 +2726,7 @@
+     last_gap_watermark: int = 0
+     replay_terminal_sequence: int | None = None
+     pending_ack_sequences: dict[object, int] = field(default_factory=dict)
++    live_ranges: list[tuple[int, int]] = field(default_factory=list)
+ 
+     def bind(self, handle: WireHandle) -> None:
+         if handle.kind != "stream":
+@@ -2770,6 +2771,12 @@
+             )
+         self.last_sequence = sequence
+         self.last_live_sequence = sequence
++        if self.live_ranges and self.live_ranges[-1][1] + 1 == sequence:
++            self.live_ranges[-1] = (self.live_ranges[-1][0], sequence)
++        else:
++            self.live_ranges.append((sequence, sequence))
++        if len(self.live_ranges) > 512:
++            self.live_ranges.pop(0)
+         return True
+ 
+     def accept_gap(self, value: Mapping[str, Any]) -> bool:
+@@ -2817,6 +2824,27 @@
+         self.last_sequence = watermark
+         self.last_gap_watermark = watermark
+         return True
++
++
++def _replay_covers_cursor(
++    ranges: list[tuple[int, int] | tuple[int, int, int]], observed: int, sequence: int
++) -> bool:
++    """Reachable transport facts, independent of replay response arrival order."""
++    frontier = observed
++    for _ in range(len(ranges) + 1):
++        before = frontier
++        for entry in ranges:
++            base, end = entry[:2]
++            if base > frontier and (len(entry) != 3 or entry[2] > frontier):
++                continue
++            if sequence <= end and (
++                sequence > base or (len(entry) == 3 and sequence == base)
++            ):
++                return True
++            frontier = max(frontier, end)
++        if frontier == before:
++            break
++    return False
+ 
+ 
+ def _parse_positive_sequence(value: Any, name: str) -> int:
+@@ -3404,23 +3432,14 @@
+             )
+             feed = self._events.get(stream.id)
+             if feed is not None and feed.handle == stream:
+-                covered = any(
+-                    entry[1] >= sequence
+-                    and (
+-                        entry[0] <= feed.last_sequence
+-                        and sequence > entry[0]
+-                        or (
+-                            len(entry) == 3
+-                            and entry[2] <= feed.last_sequence
+-                            and sequence >= entry[0]
+-                        )
+-                    )
+-                    for entry in self._replay_ranges.get(stream, [])
++                covered = _replay_covers_cursor(
++                    self._replay_ranges.get(stream, []), feed.last_sequence, sequence
+                 )
+                 observed = (
+                     covered
+                     or sequence == feed.last_gap_watermark
+-                    or sequence <= feed.last_live_sequence
++                    or sequence <= self._event_cursors.get(stream, 0)
++                    or any(base <= sequence <= end for base, end in feed.live_ranges)
+                 )
+                 if covered and sequence > feed.last_sequence:
+                     # The peer can resume immediately after the write. A pending
+@@ -4420,21 +4439,31 @@
+                 }:
+                     feed.replay_terminal_sequence = int(event["sequence"])
+         ranges = self.client._replay_ranges.setdefault(self.stream, [])
+-        adjacent = next(
+-            (
+-                index
+-                for index, entry in enumerate(ranges)
+-                if entry[1] == base and not response.get("gap")
+-            ),
+-            None,
+-        )
+-        if adjacent is not None:
+-            ranges[adjacent] = (ranges[adjacent][0], end, *ranges[adjacent][2:])
++        # No-gap empty pages contain no coverage, not even their requested cursor.
++        if not response.get("gap") and base == end:
++            return response
++        if response.get("gap"):
++            # Preserve each snapshot's exact bridge; do not fill its absent interior.
++            ranges.append((base, end, int(after_sequence)))
+         else:
+-            # Keep the validated gap bridge, without granting absent interior cursors.
+-            ranges.append(
+-                (base, end, int(after_sequence)) if response.get("gap") else (base, end)
+-            )
++            merged_base, merged_end = base, end
++            changed = True
++            while changed:
++                changed = False
++                retained = []
++                for entry in ranges:
++                    if (
++                        len(entry) == 2
++                        and entry[0] <= merged_end
++                        and entry[1] >= merged_base
++                    ):
++                        merged_base = min(merged_base, entry[0])
++                        merged_end = max(merged_end, entry[1])
++                        changed = True
++                    else:
++                        retained.append(entry)
++                ranges[:] = retained
++            ranges.append((merged_base, merged_end))
+         if len(ranges) > 512:
+             ranges.pop(0)
+         return response
+--- review-before-v3/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
++++ review-final-v4/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+@@ -539,14 +539,39 @@
+         var end=new java.math.BigInteger(response.path("next_cursor").path("last_processed_sequence").asText());
+         var ranges=replayRanges.computeIfAbsent(stream,ignored->new java.util.ArrayList<>());
+         synchronized(ranges){
+-            var previous=ranges.stream().filter(range->!response.hasNonNull("gap") && range.end().equals(base)).findFirst();
+-            if(previous.isPresent()){ranges.remove(previous.get());ranges.add(new ReplayRange(previous.get().base(),end,previous.get().recoveryBase()));}
+-            // The validated retention gap connects only snapshot-or-later ACKs.
+-            // Missing interior events never acquire consumption permission.
+-            else ranges.add(new ReplayRange(base,end,response.hasNonNull("gap")
+-                    ? new java.math.BigInteger(response.path("requested_after_sequence").textValue()) : null));
++            // Empty pages have no coverage and cannot intercept later connections.
++            if(!response.hasNonNull("gap") && base.equals(end))return;
++            if(response.hasNonNull("gap")) {
++                ranges.add(new ReplayRange(base,end,new java.math.BigInteger(response.path("requested_after_sequence").textValue())));
++            } else {
++                var mergedBase=base;var mergedEnd=end;boolean changed=true;
++                while(changed) {
++                    changed=false;
++                    for(int index=ranges.size()-1;index>=0;index--) {
++                        var range=ranges.get(index);
++                        if(range.recoveryBase()!=null || range.base().compareTo(mergedEnd)>0 || range.end().compareTo(mergedBase)<0)continue;
++                        mergedBase=mergedBase.min(range.base());mergedEnd=mergedEnd.max(range.end());ranges.remove(index);changed=true;
++                    }
++                }
++                ranges.add(new ReplayRange(mergedBase,mergedEnd,null));
++            }
+             if(ranges.size()>512)ranges.remove(0);
+         }
++    }
++
++    /** A connected closure of received facts; no ordering of replay responses is authoritative. */
++    private static boolean replayCoversCursor(List<ReplayRange> ranges,java.math.BigInteger observed,java.math.BigInteger sequence) {
++        var frontier=observed;
++        for(int pass=0;pass<=ranges.size();pass++) {
++            var before=frontier;
++            for(var range:ranges) {
++                if(range.base().compareTo(frontier)>0 && (range.recoveryBase()==null || range.recoveryBase().compareTo(frontier)>0))continue;
++                if(sequence.compareTo(range.end())<=0 && (sequence.compareTo(range.base())>0 || (range.recoveryBase()!=null && sequence.equals(range.base()))))return true;
++                frontier=frontier.max(range.end());
++            }
++            if(frontier.equals(before))break;
++        }
++        return false;
+     }
+ 
+     public CompletionStage<Void> notify(String method, JsonNode params) {
+@@ -569,10 +594,7 @@
+                 boolean covered=false;
+                 if(ranges!=null){synchronized(ranges){
+                     var current=publisher.lastSequence();
+-                    covered=ranges.stream().anyMatch(range->range.end().compareTo(sequence)>=0
+-                            && (range.base().compareTo(current)<=0 && sequence.compareTo(range.base())>0
+-                                || (range.recoveryBase()!=null && range.recoveryBase().compareTo(current)<=0
+-                                    && sequence.compareTo(range.base())>=0)));
++                    covered=replayCoversCursor(ranges,current,sequence);
+                 }}
+                 if(covered||publisher.canAcknowledgeObserved(sequence)){
+                     observedPublisher=publisher;ackStream=stream;ackSequence=sequence;
+--- review-before-v3/sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java
++++ review-final-v4/sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java
+@@ -28,7 +28,9 @@
+     // These are bounded-delivery projections, not framework replay authority.
+     // The client verifies external replay coverage before advancing consumption.
+     private BigInteger consumedSequence = BigInteger.ZERO;
+-    private BigInteger lastLiveSequence = BigInteger.ZERO;
++    private record LiveRange(BigInteger base,BigInteger end) {}
++    // Inclusive intervals of actual live facts; a pending ACK jump cannot fill holes.
++    private final java.util.List<LiveRange> liveRanges = new java.util.ArrayList<>();
+     private BigInteger lastGapWatermark = BigInteger.ZERO;
+     private final java.util.Map<Object, BigInteger> pendingAcknowledgements = new java.util.IdentityHashMap<>();
+     private boolean closed;
+@@ -157,7 +159,7 @@
+     synchronized boolean canAcknowledgeObserved(BigInteger sequence) {
+         return sequence != null && sequence.signum() > 0
+                 && (sequence.compareTo(consumedSequence) <= 0
+-                    || sequence.compareTo(lastLiveSequence) <= 0
++                    || liveRanges.stream().anyMatch(range -> range.base().compareTo(sequence)<=0 && range.end().compareTo(sequence)>=0)
+                     || sequence.equals(lastGapWatermark));
+     }
+ 
+@@ -323,7 +325,10 @@
+             }
+         }
+         lastSequence = sequence;
+-        lastLiveSequence = sequence;
++        if(!liveRanges.isEmpty() && liveRanges.get(liveRanges.size()-1).end().add(BigInteger.ONE).equals(sequence)) {
++            var previous=liveRanges.remove(liveRanges.size()-1);liveRanges.add(new LiveRange(previous.base(),sequence));
++        } else liveRanges.add(new LiveRange(sequence,sequence));
++        if(liveRanges.size()>512)liveRanges.remove(0);
+         publish(value);
+     }
+ 

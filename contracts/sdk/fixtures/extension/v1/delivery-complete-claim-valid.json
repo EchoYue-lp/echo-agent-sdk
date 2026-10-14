@@ -1,0 +1,16 @@
+{
+  "name": "delivery-complete-claim-valid",
+  "kind": "valid",
+  "target": "DeliveryClaimWire",
+  "description": "Delivery continuation carries the exact claim returned by the framework ledger.",
+  "payload": {
+    "message_id": "消息",
+    "route": "inbox",
+    "payload": {
+      "text": "数据"
+    },
+    "attempt_id": "attempt-1",
+    "attempt": 1,
+    "claimed_at": "2026-10-12T00:00:00Z"
+  }
+}

@@ -1,0 +1,533 @@
+FSearchProvider true Agent exact title/url/snippet/failure: evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-search-s8ecrhzk
+.F
+=================================== FAILURES ===================================
+______________________ test_tool_value_effect_native_host ______________________
+
+    async def test_tool_value_effect_native_host():
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT))
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, str(Path(fixture.__file__)), "--work", str(work)
+        )
+        sdk = None
+        rows = []
+        byid = {}
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert proc.returncode is None, "fixture exited before ready"
+                    await asyncio.sleep(0.01)
+            sdk = await EchoAgentClient.spawn(
+                HOST,
+                "--config",
+                str(work / "host.json"),
+                env={**os.environ, "TMPDIR": str(work / "artifact-temp")},
+            )
+            agent = await sdk.create_agent()
+            session = await agent.create_session(str(work))
+            identity = {
+                "agent": agent.wire.to_dict(),
+                "session": session.wire.to_dict(),
+                "capability": sdk.capability,
+            }
+            for step in json.loads((work / "scenario.json").read_text())["rows"]:
+                row = copy.deepcopy(step)
+                row["protected_before"] = fixture.snapshot(work)
+                row["files_before"] = files(work)
+                if step.get("action") == "mutate_artifact":
+                    artifact = fixture.unrecord(byid[step["ref"]]["result"])
+                    fixture.decode_path(artifact["path"]).write_text(
+                        "mutated 中文🙂\n", encoding="utf8"
+                    )
+                else:
+                    arguments = fixture.resolve(step["arguments"], byid)
+                    row["arguments"] = arguments
+                    try:
+                        if step.get("watch_process"):
+                            task = asyncio.create_task(
+                                session.invoke(step["operation"], arguments)
+                            )
+                            pids = []
+                            for _ in range(50):
+                                pids = processes(work)
+                                if pids or task.done():
+                                    break
+                                await asyncio.sleep(0.01)
+                            row["process_before"] = pids
+                            if step.get("terminate_observed"):
+                                import signal
+    
+                                assert len(pids) == 1, pids
+                                assert processes(work) == pids, (
+                                    "own tail identity changed before signal"
+                                )
+                                os.kill(pids[0]["pid"], signal.SIGTERM)
+                            row["result"] = await task
+                            row["process_after"] = processes(work)
+                        else:
+                            row["result"] = await session.invoke(
+                                step["operation"], arguments
+                            )
+                    except EchoAgentError as error:
+                        row["error"] = {
+                            "code": error.code,
+                            "message": str(error),
+                            "operation": error.operation,
+                            "retryable": error.retryable,
+                            "handle": error.handle.to_dict() if error.handle else None,
+                            "details": error.details,
+                        }
+                row["protected_after"] = fixture.snapshot(work)
+                row["files_after"] = files(work)
+                rows.append(row)
+                byid[row["id"]] = row
+            await session.close()
+            await agent.close()
+            data = {
+                "work": str(work),
+                "host": HOST,
+                "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+                "raw_identity": identity,
+                "rows": rows,
+            }
+            (work / "results.json").write_text(
+                json.dumps(data, ensure_ascii=False, indent=2), encoding="utf8"
+            )
+            print(
+                "Tool value/effects:",
+>               json.dumps(fixture.verify(work, data), ensure_ascii=False),
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                "evidence:",
+                work,
+            )
+
+sdks/python/tests/test_tool_value_effect_host.py:147: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-0f9nvdkh')
+data = {'work': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-0f9nvdkh', 'host':...aa50ba7e5f0f2d2d2f500ed9a6', 'features': ['a2a', 'acp', 'channels', 'chart', 'content-guard', 'data', ...], ...}}, ...}
+
+    def verify(work, data):
+        rows = data["rows"]
+        expected = json.loads((work / "scenario.json").read_text())["rows"]
+        assert [r["id"] for r in rows] == [r["id"] for r in expected]
+        baseline = json.loads((work / "baseline.json").read_text())
+        byid = {r["id"]: r for r in rows}
+        for row, step in zip(rows, expected):
+            assert row["protected_before"] == row["protected_after"] == baseline, row["id"]
+            if step.get("action"):
+                continue
+            expectation = step["expected"]
+            if expectation == "rpc_error":
+                e = row["error"]
+                assert (
+                    e["code"] == "framework_error"
+                    and e["message"]
+                    and e["retryable"] == "never"
+                ), row
+            elif expectation == "external":
+                if "error" in row:
+                    assert (
+                        row["error"]["message"]
+                        and row["error"]["code"] == "framework_error"
+                    ), row
+                else:
+                    assert isinstance(row["result"]["output"], str) and isinstance(
+                        row["result"]["success"], bool
+                    ), row
+            else:
+                assert "error" not in row, row
+                if expectation != "value":
+                    assert row["result"]["success"] == (expectation == "success"), row
+    
+        def out(name):
+            return byid[name]["result"]["output"]
+    
+        def parsed(name):
+            return json.JSONDecoder().raw_decode(out(name))[0]
+    
+        assert (
+            not (work / "中文🙂/note.txt").exists()
+            and not (work / "中文🙂/moved.txt").exists()
+        )
+        assert "three 中文🙂" in out("file-read")
+        assert "-three 中文🙂" in out("file-diff") and "+four 中文🙂" in out("file-diff")
+        for name in ["file-list", "file-grep", "file-glob", "file-map", "file-search"]:
+            assert "main.py" in out(name), (name, out(name))
+        assert "target_symbol" in out("file-search") and "中文🙂" in out("file-grep")
+        states = {
+            "file-create": {"中文🙂/note.txt": "", "中文🙂/moved.txt": None},
+            "file-append": {"中文🙂/note.txt": "one 中文🙂\n", "中文🙂/moved.txt": None},
+            "file-update": {"中文🙂/note.txt": "two 中文🙂\n", "中文🙂/moved.txt": None},
+            "file-move": {"中文🙂/note.txt": None, "中文🙂/moved.txt": "two 中文🙂\n"},
+            "file-patch": {"中文🙂/note.txt": None, "中文🙂/moved.txt": "three 中文🙂\n"},
+            "file-delete": {"中文🙂/note.txt": None, "中文🙂/moved.txt": None},
+        }
+        for name, state in states.items():
+            assert byid[name]["files_after"] == state, (name, byid[name])
+            effects = byid[name]["result"].get("effects", [])
+            assert effects and all(e["effect"] == "file_edit" for e in effects), (
+                name,
+                effects,
+            )
+            assert all(
+                Path(e["path"]).resolve().is_relative_to(work.resolve()) for e in effects
+            )
+        for name in [
+            "file-update-missing",
+            "file-create-existing",
+            "file-write-stale",
+            "file-patch-rollback",
+            "file-missing",
+            "file-delete-missing",
+        ]:
+            row = byid[name]
+            assert row["files_before"] == row["files_after"], row
+            assert row["result"]["failure"]["side_effect"] == "none" and not row[
+                "result"
+            ].get("effects"), row
+        assert len(byid["file-move"]["result"]["effects"]) == 2
+        pages = [unrecord(byid[f"artifact-page-{n}"]["result"]) for n in range(4)]
+        assert "".join(p["content"] for p in pages) == PAYLOAD, pages
+        assert [int(p["start_byte"]) for p in pages] == [
+            0,
+            int(pages[0]["end_byte"]),
+            int(pages[1]["end_byte"]),
+            int(pages[2]["end_byte"]),
+        ]
+        assert all(
+            p["sha256"] == digest(PAYLOAD.encode())
+            and int(p["total_bytes"]) == len(PAYLOAD.encode())
+            for p in pages
+        )
+        assert (
+            not pages[0]["complete"]
+            and not pages[1]["complete"]
+            and not pages[2]["complete"]
+            and pages[3]["complete"]
+            and pages[3]["next_cursor"] is None
+        )
+        assert int(pages[-1]["end_byte"]) == len(PAYLOAD.encode())
+        shell = byid["shell-unicode"]["result"]
+        assert shell["kind"] == {
+            "kind": "command_output",
+            "exit_code": "0",
+        }, shell
+        assert out("shell-unicode") == "中文🙂\n", shell
+        assert byid["shell-stderr"]["result"]["kind"]["exit_code"] != "0"
+        timeout = byid["shell-timeout"]
+        assert (
+            timeout["result"]["failure"]["category"] == "timeout"
+            and timeout["process_before"]
+            and timeout["process_after"] == []
+        ), timeout
+        signal = byid["shell-signal"]
+        assert (
+            signal["process_before"]
+            and signal["process_after"] == []
+            and signal["result"]["kind"]["kind"] == "command_output"
+            and signal["result"]["kind"]["exit_code"] == "-1"
+        ), signal
+        assert (
+            signal["result"]["failure"]["category"] == "permanent"
+            and "timeout" not in signal["result"].get("error", "").lower()
+        ), signal
+        extract = parsed("web-extract")
+        assert extract == {
+            "headings": [{"tag": "h1", "text": "中文🙂 Heading"}],
+            "links": [{"text": "链接🙂", "href": "/target"}],
+            "paragraphs": ["段落 beta🙂"],
+            "table_count": 1,
+        }, extract
+        assert (
+            "中文🙂 Heading" in out("web-fetch")
+            and byid["web-truncated"]["result"]["truncated"] is True
+        )
+        webartifact = byid["web-truncated"]["result"]["artifact"]
+        b = decode_path(webartifact["path"]).read_bytes()
+        assert digest(b) == webartifact["sha256"] and "large 中文🙂" in b.decode()
+        assert parsed("db-tables") == {
+            "columns": ["table_name"],
+            "rows": [["records"]],
+            "total_rows": 1,
+        }
+        describe = parsed("db-describe")
+        assert describe["columns"] == [
+            "cid",
+            "name",
+            "type",
+            "notnull",
+            "dflt_value",
+            "pk",
+        ], describe
+>       assert describe["rows"] == [
+            [0, "id", "INTEGER", 0, None, 1],
+            [1, "label", "TEXT", 1, None, 0],
+            [2, "quantity", "INTEGER", 0, "7", 0],
+            [3, "note", "TEXT", 0, None, 0],
+        ], describe
+E       AssertionError: {'columns': ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], 'rows': [[None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None]], 'total_rows': 4}
+
+sdks/shared/testing/tool_value_effect_fixture.py:499: AssertionError
+_________ test_sandbox_stream_real_process_completion_cancel_and_close _________
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x10440da90>
+method = 'echo_agent/session/close'
+params = {'session': {'id': 'session-ec79b18e-0613-431b-ad81-aa808e337136', 'generation': '1', 'kind': 'session'}}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+>           return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+
+sdks/python/src/echo_agent_sdk/client.py:3387: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/.venv/lib/python3.12/site-packages/acp/client/connection.py:340: in ext_method
+    return await self._conn.send_request(f"_{method}", params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <acp.connection.Connection object at 0x10440f0b0>
+method = '_echo_agent/session/close'
+params = {'session': {'id': 'session-ec79b18e-0613-431b-ad81-aa808e337136', 'generation': '1', 'kind': 'session'}}
+
+    async def send_request(self, method: str, params: JsonValue | None = None) -> Any:
+        self._raise_if_unavailable()
+        request_id = self._next_request_id
+        self._next_request_id += 1
+        future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
+        self._pending[request_id] = future
+        payload = {"jsonrpc": "2.0", "id": request_id, "method": method, "params": params}
+        try:
+            await self._transport.send(payload)
+        except BaseException:
+            self._pending.pop(request_id, None)
+            future.cancel()
+            raise
+        self._notify_observers(StreamDirection.OUTGOING, payload)
+        try:
+>           return await future
+                   ^^^^^^^^^^^^
+E           acp.exceptions.RequestError: ACP Session sess_aa088d5f-d28e-48a6-81d8-392d1b64defb close did not settle: extension bridge failure extension_failed: assert 'sandbox_cleanup' == 'sandbox_execute_stream'
+E             
+E             - sandbox_execute_stream
+E             + sandbox_cleanup
+
+sdks/python/.venv/lib/python3.12/site-packages/acp/connection.py:126: RequestError
+
+The above exception was the direct cause of the following exception:
+
+    async def test_sandbox_stream_real_process_completion_cancel_and_close():
+        import shlex
+        import signal
+    
+        from echo_agent_sdk import AgentComponentDescriptor, WireHandle, from_wire, to_wire
+    
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-sandbox-", dir=ROOT))
+        fixture_process = await asyncio.create_subprocess_exec(
+            sys.executable, str(Path(fixture.__file__)), "--work", str(work)
+        )
+        sdk = None
+        facts = []
+        tasks = []
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert fixture_process.returncode is None
+                    await asyncio.sleep(0.01)
+            sdk = await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json"))
+            for mode in ["success", "cancel", "close"]:
+                fact = {
+                    "mode": mode,
+                    "started": False,
+                    "cancel_observed": False,
+                    "finally": 0,
+                    "pid": None,
+                    "exit_code": None,
+                    "sent": [],
+                }
+                facts.append(fact)
+                started = asyncio.Event()
+                settled = asyncio.Event()
+    
+                async def handler(
+                    payload,
+                    cancellation,
+                    *,
+                    fact=fact,
+                    started=started,
+                    settled=settled,
+                    mode=mode,
+                ):
+                    request = payload["invocation"]["input"]["call"]
+                    assert request["operation"] == "sandbox_execute_stream"
+                    command = from_wire(request["input"]["command"])
+                    fact["command"] = command
+                    fact["invocation_id"] = payload["invocation_id"]
+                    stream = WireHandle.from_dict(payload["stream"])
+                    writer = sdk.stream_writer(stream)
+                    child = None
+                    try:
+                        child = await asyncio.create_subprocess_exec(
+                            *shlex.split(command["kind"]["Shell"]),
+                            stdout=asyncio.subprocess.PIPE,
+                            stderr=asyncio.subprocess.PIPE,
+                            start_new_session=True,
+                        )
+                        fact["pid"] = child.pid
+                        fact["started"] = True
+                        started.set()
+                        if mode == "success":
+                            stdout, stderr = await child.communicate()
+                            fact["exit_code"] = child.returncode
+                            for channel, data in [("stdout", stdout), ("stderr", stderr)]:
+                                if data:
+                                    text = data.decode("utf8")
+                                    fact["sent"].append({"channel": channel, "chunk": text})
+                                    await writer.agent_component_chunk(
+                                        {
+                                            "component": "sandbox",
+                                            "event": {
+                                                "event": "output",
+                                                "channel": channel,
+                                                "chunk": text,
+                                            },
+                                        }
+                                    )
+                            result = {
+                                "exit_code": child.returncode,
+                                "stdout": stdout.decode(),
+                                "stderr": stderr.decode(),
+                                "duration": {"secs": 0, "nanos": 1},
+                                "sandbox_type": "owned-native-fixture",
+                                "timed_out": False,
+                                "cancelled": False,
+                                "output_truncated": False,
+                                "stdout_bytes": len(stdout),
+                                "stderr_bytes": len(stderr),
+                            }
+                            await writer.agent_component_complete(
+                                {
+                                    "component": "sandbox",
+                                    "terminal": {
+                                        "terminal": "complete",
+                                        "result": to_wire(result),
+                                    },
+                                }
+                            )
+                            return {"outcome": "stream", "stream": stream.to_dict()}
+                        await asyncio.wait_for(cancellation.wait(), 5)
+                        fact["cancel_observed"] = cancellation.is_set()
+                        os.killpg(child.pid, signal.SIGTERM)
+                        await child.wait()
+                        fact["exit_code"] = child.returncode
+                        return {"outcome": "cancelled"}
+                    finally:
+                        if child and child.returncode is None:
+                            os.killpg(child.pid, signal.SIGTERM)
+                            await child.wait()
+                            fact["exit_code"] = child.returncode
+                        fact["finally"] += 1
+                        settled.set()
+    
+                registration = await sdk.register_extension(
+                    "agent_component",
+                    "sandbox-" + mode,
+                    AgentComponentDescriptor(
+                        "sandbox_executor",
+                        "native-sandbox",
+                        isolation_level="process",
+                        supports_streaming=True,
+                    ).to_wire(),
+                    handler,
+                )
+                agent = await sdk.create_agent()
+                session = await agent.create_session(str(work))
+                shell = (
+                    "printf 'sandbox 中文🙂\\n'"
+                    if mode == "success"
+                    else "tail -f " + str(work / "tail.txt")
+                )
+                command = {
+                    "kind": {"Shell": shell},
+                    "minimum_isolation": None,
+                    "working_dir": None,
+                    "env": {},
+                    "timeout": {"secs": 30, "nanos": 0},
+                    "stdin": None,
+                }
+                stream = await session.invoke(
+                    "sandbox.extension.run_stream", [registration.wire, command]
+                )
+                fact["stream"] = stream.to_dict()
+                await asyncio.wait_for(started.wait(), 5)
+                if mode == "success":
+                    fact["events"] = []
+                    for _ in range(5):
+                        event = await asyncio.wait_for(
+                            session.invoke("sandbox.stream.next", [stream]), 5
+                        )
+                        fact["events"].append(event)
+                        if event["value"]["variant"] == "complete":
+                            break
+                else:
+                    op = (
+                        "sandbox.stream.cancel"
+                        if mode == "cancel"
+                        else "sandbox.stream.close"
+                    )
+                    fact["close_result"] = await asyncio.wait_for(
+                        session.invoke(op, [stream]), 5
+                    )
+                await asyncio.wait_for(settled.wait(), 6)
+                fact["pid_alive"] = False
+                try:
+                    os.kill(fact["pid"], 0)
+                    fact["pid_alive"] = True
+                except ProcessLookupError:
+                    pass
+                fact["repeated_close"] = await session.invoke(
+                    "sandbox.stream.close", [stream]
+                )
+                fact["protected"] = fixture.snapshot(work)
+>               await session.close()
+
+sdks/python/tests/test_tool_value_effect_host.py:469: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/src/echo_agent_sdk/client.py:4329: in close
+    await self.client.request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x10440da90>
+method = 'echo_agent/session/close'
+params = {'session': {'id': 'session-ec79b18e-0613-431b-ad81-aa808e337136', 'generation': '1', 'kind': 'session'}}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+            return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+>           raise EchoAgentError.from_exception(error, method) from error
+E           echo_agent_sdk.errors.EchoAgentError: ACP Session sess_aa088d5f-d28e-48a6-81d8-392d1b64defb close did not settle: extension bridge failure extension_failed: assert 'sandbox_cleanup' == 'sandbox_execute_stream'
+E             
+E             - sandbox_execute_stream
+E             + sandbox_cleanup
+
+sdks/python/src/echo_agent_sdk/client.py:3393: EchoAgentError
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_tool_value_effect_host.py::test_tool_value_effect_native_host
+FAILED sdks/python/tests/test_tool_value_effect_host.py::test_sandbox_stream_real_process_completion_cancel_and_close
+2 failed, 1 passed in 9.79s

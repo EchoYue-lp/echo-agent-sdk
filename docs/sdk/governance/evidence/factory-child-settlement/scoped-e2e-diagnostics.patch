@@ -1,0 +1,11 @@
+--- before-e2e.rs
++++ after-e2e.rs
+@@ -4631,7 +4631,7 @@
+             let (first, second) = tokio::join!(invoke_source_operation(&connection, first.0, "echo_agent::eval::runner::EvalRunner::run_all", first.1), invoke_source_operation(&connection, second.0, "echo_agent::eval::runner::EvalRunner::run_all", second.1));
+             for result in [first?, second?] {
+                 let data = result.value.into_json().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+-                assert!(!data.to_string().contains("extension_conflict"), "independent factory creations must not share the child execution lock");
++                assert!(!data.to_string().contains("extension_conflict"), "independent factory creations must not share the child execution lock; actual result: {data}");
+             }
+             let created = created.lock().unwrap_or_else(|error| error.into_inner()).clone();
+             let closed = closed.lock().unwrap_or_else(|error| error.into_inner()).clone();

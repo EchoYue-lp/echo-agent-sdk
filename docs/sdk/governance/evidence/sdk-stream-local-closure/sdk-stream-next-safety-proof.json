@@ -1,0 +1,89 @@
+{
+  "scope": "facade stream next cancellation and undelivered terminal preservation; HandleRegistry remains only sequence/terminal authority",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "source_sha256": "538a92c8ded24f121a650486e2d1f5fae8ac6963c3b8058286e3d8d195258a04",
+  "results": {
+    "red": {
+      "exit_code": 101,
+      "passed": 5,
+      "failed": 2,
+      "ignored": 0,
+      "failures": [
+        "cancel true leaves initial receiver waiting; Elapsed",
+        "dropped failed cleanup waiter consumed sequence1 before terminal returned"
+      ]
+    },
+    "intervening_compile": {
+      "exit_code": 101,
+      "cause": "new handler test wrong Option<String> comparison; owning agent fixed, stream unchanged"
+    },
+    "green": {
+      "exit_code": 0,
+      "passed": 15,
+      "failed": 0,
+      "ignored": 0,
+      "warnings": 0
+    },
+    "facade_real_host_streams": {
+      "exit_code": 0,
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "warnings": 0,
+      "tests": [
+        "workflow_stream_uses_unified_handle_backpressure_and_close",
+        "connection_teardown_settles_a_blocked_facade_stream",
+        "workflow_cancel_preserves_canonical_failure_in_rpc_and_stream_terminal",
+        "a2a_sse_stream_delivers_items_then_terminal"
+      ]
+    },
+    "fmt_check": {
+      "exit_code": 0
+    },
+    "diff_check": {
+      "exit_code": 0
+    }
+  },
+  "framework_provenance": {
+    "kind": "temporary combined local ACP + Task patch; not standalone published-revision proof",
+    "root": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity",
+    "base": "95ec66c6083a8feb17a1c28de0d01e1a24ca8a28",
+    "tracked_diff_sha256": "36e3c8c43428fd557c1e04c17bb44dddd73df6cec79c3ec825855e7b23392d67"
+  },
+  "handler_source_sha256": "0c20bdb092e0498e0ab6a88cb2ac7fad367f5f0f5933daed8ebd8d573a2bf7bf",
+  "files": {
+    "before": {
+      "path": "/tmp/sdk-stream-next-safety-before.rs",
+      "sha256": "42d0ed5c6aaf4b2605a77976d856cd4b90243437bb2f740266addeec2d26b5d1"
+    },
+    "red_source": {
+      "path": "/tmp/sdk-stream-next-safety-red.rs",
+      "sha256": "8517df1278911a73e015c89ffd9bee6d875d27f8d7e924acd9a8e9c9934a69d4"
+    },
+    "green_source": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/stream.rs",
+      "sha256": "538a92c8ded24f121a650486e2d1f5fae8ac6963c3b8058286e3d8d195258a04"
+    },
+    "red_log": {
+      "path": "/tmp/sdk-stream-next-safety-red.log",
+      "sha256": "0f347e408ece868aa0fe8a7b5dded1397826db47dc80bdbc8fbc2d8ba01db8a6"
+    },
+    "blocked_compile_log": {
+      "path": "/tmp/sdk-stream-next-safety-green.log",
+      "sha256": "7cb5f6e01d7a415bd28f79ee4f53a70695a1578054a3f34a0a6b8be006d3bd73"
+    },
+    "green_log": {
+      "path": "/tmp/sdk-stream-next-safety-green-behavior.log",
+      "sha256": "bfd79f6c723c523ee4905ff57a0a51856b6dd7970aa12edbc7f8e18cf31a1220"
+    },
+    "facade_e2e_log": {
+      "path": "/tmp/sdk-stream-next-safety-facade-e2e.log",
+      "sha256": "abb4ac73b16997b43bd6f014bce726719853765a58162d1f562de9106d14944d"
+    },
+    "fmt_log": {
+      "path": "/tmp/sdk-stream-next-safety-fmt-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "limits": "Only focused stream gates ran; full Host suite and independent final source review remain coordinator work."
+}

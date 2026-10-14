@@ -1,0 +1,1 @@
+{"code": "payload_too_large", "operation": "_echo_agent/integration/op", "message": "open facade resource limit 4 reached", "retryable": "after_delay", "details": null}

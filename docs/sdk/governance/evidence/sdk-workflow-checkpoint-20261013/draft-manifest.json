@@ -1,0 +1,58 @@
+{
+  "kind": "draft_only_no_runtime_proof",
+  "directory": "/tmp/sdk-workflow-candidate-fixture",
+  "scope": "accepted Workflow checkpoint/routing/state/owner lifecycle; no new API",
+  "files": [
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py",
+      "sha256": "cc5c74e766e4b544c40f8a379b2c42282c392c4972efe53a31e3bec92a2f8fef"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js",
+      "sha256": "1843d8e769be8907ee347cb4b46aa8a6300c1529805647bc3b57569214ba28e7"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/test_workflow_host.py",
+      "sha256": "3328344cc9a42cff8bac153da1f4092f38bbc7ff3fec280de9b8c41abe179477"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/WorkflowHostTest.java",
+      "sha256": "516198ff02384ecad72be4ecae90e1161a49c57229834a5a30dfa725866c6d2c"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/README.md",
+      "sha256": "05923bc01bbc9a31f6dcf68602eda437d25b9eb0c33589a0489a4dd7f5108e01"
+    }
+  ],
+  "scenario_rows": 45,
+  "operations": [
+    "workflow.graph.branch",
+    "workflow.graph.build",
+    "workflow.graph.list_checkpoints",
+    "workflow.graph.list_checkpoints_by_graph",
+    "workflow.graph.load_checkpoint",
+    "workflow.graph.restore",
+    "workflow.graph.resume",
+    "workflow.graph.resume_exact",
+    "workflow.graph.resume_with_state",
+    "workflow.graph.run",
+    "workflow.graph.run_until_interrupt",
+    "workflow.graph.tag_checkpoint",
+    "workflow.state.get",
+    "workflow.state.keys",
+    "workflow.state.new",
+    "workflow.state.set",
+    "workflow.state.snapshot"
+  ],
+  "critical_counterexample": "real object Checkpoint -> exact 17-field serde sequence -> resume_exact approve; expected invalid_value and canonical checkpoint unchanged, current source likely accepts",
+  "checks_executed": [
+    "fixture prepare only",
+    "Python syntax compile only"
+  ],
+  "not_executed": [
+    "real Host",
+    "native language client scenarios",
+    "Cargo",
+    "SDK source writes"
+  ]
+}

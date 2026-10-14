@@ -1,0 +1,97 @@
+{
+  "worktree": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "branch": "refactor/Echoyue/sdk-semantic-governance",
+  "base": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "source": [
+    {
+      "path": "echo-sdk-host/src/lib.rs",
+      "sha256": "639bc453a2e90945d8d6ade79268ccccce2815c0742e4bbd4f335738ffa315df"
+    },
+    {
+      "path": "docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md",
+      "sha256": "87431368082a019bcab321c505621df7cfbbb85149851506284a385a6e70dad3"
+    }
+  ],
+  "original_lib_sha256": "70089116563119e7ac99cabad439f391236abe188d7d7482045b7fe0d9b52320",
+  "red_counterexample": "framework Cancelled receipt exists, agent_closed=false, owner_retained=true, client_finished=false after first actual close deadline failure and subsequent cooperative cleanup release",
+  "repair": "Same retained framework owner cleanup continuation with 100ms to 1s capped asynchronous backoff, actual close until success/runtime termination; no Run/tool retry or fabricated receipt; first/changed/exponential-sampled failure diagnostics",
+  "results": [
+    {
+      "log": "/tmp/sdk-convenience-retry-red.log",
+      "sha256": "861fe33e04cd8d09509ac7852edb31b04ecdb155d73fdbebbf519808542b932f",
+      "exit_code": 101,
+      "counts": {
+        "passed": 0,
+        "failed": 1,
+        "ignored": 0
+      },
+      "compiler_warnings": 0
+    },
+    {
+      "log": "/tmp/sdk-convenience-retry-red-receipt.log",
+      "sha256": "6d8d5374d5e693b73750bb99e1835cd9d680fd8b87054d0a9e142725a2f3ffae",
+      "exit_code": 101,
+      "counts": {
+        "passed": 0,
+        "failed": 1,
+        "ignored": 0
+      },
+      "compiler_warnings": 0
+    },
+    {
+      "log": "/tmp/sdk-convenience-retry-green.log",
+      "sha256": "beffb71e3fa1e166f487ae31599e1cec23bed1e58b66f3f524cb4b5346ddac0f",
+      "exit_code": 0,
+      "counts": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      "compiler_warnings": 0
+    },
+    {
+      "log": "/tmp/sdk-convenience-retry-full-lib.log",
+      "sha256": "1474220fff2558c655df918196a3daa0f90c7f3bad6116d668365fe0c24c2b8c",
+      "exit_code": 0,
+      "counts": {
+        "passed": 122,
+        "failed": 0,
+        "ignored": 0
+      },
+      "compiler_warnings": 0
+    },
+    {
+      "log": "/tmp/sdk-convenience-retry-full-facade.log",
+      "sha256": "19397018e00b9eb5108707f0fe6be165cd6dcdc224eec3ee2111777458985be2",
+      "exit_code": 0,
+      "counts": {
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0
+      },
+      "compiler_warnings": 0
+    },
+    {
+      "log": "/tmp/sdk-convenience-retry-default-check.log",
+      "sha256": "6b9d2fefaf8a3b7f317274daad1ae11a8fde064a8e0a04294340fb11a3470fb2",
+      "exit_code": 0,
+      "counts": null,
+      "compiler_warnings": 0
+    },
+    {
+      "log": "/tmp/sdk-convenience-retry-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "counts": null,
+      "compiler_warnings": 0
+    },
+    {
+      "log": "/tmp/sdk-convenience-retry-format-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "counts": null,
+      "compiler_warnings": 0
+    }
+  ],
+  "delivery": "not staged, committed or pushed; local framework path override remains, not final published-pin acceptance"
+}

@@ -1,0 +1,54 @@
+WARN `--no-project` was provided, but no project was found
+WARN Retry attempt #0. Sleeping 907.293734ms before the next attempt
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3348, in request
+    return await self.connection.ext_method(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/.cache/uv/archive-v0/CmdZk7sK3q-3dXZmqbroC/lib/python3.12/site-packages/acp/client/connection.py", line 340, in ext_method
+    return await self._conn.send_request(f"_{method}", params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/.cache/uv/archive-v0/CmdZk7sK3q-3dXZmqbroC/lib/python3.12/site-packages/acp/connection.py", line 126, in send_request
+    return await future
+           ^^^^^^^^^^^^
+acp.exceptions.RequestError: Tool Error: Invalid path: value (Path must be absolute)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/private/tmp/sdk-computation-candidate-fixture/corpus.py", line 29, in call
+    result=await session.invoke(operation,args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 4268, in invoke
+    return await self.client.call(operation, self.wire, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3528, in call
+    return await self.family(resolved.family, operation, handle, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3538, in family
+    response = await self.request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3354, in request
+    raise EchoAgentError.from_exception(error, method) from error
+echo_agent_sdk.errors.EchoAgentError: Tool Error: Invalid path: value (Path must be absolute)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/private/tmp/sdk-computation-candidate-fixture/corpus.py", line 99, in <module>
+    asyncio.run(main())
+  File "/opt/anaconda3/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/private/tmp/sdk-computation-candidate-fixture/corpus.py", line 40, in main
+    stats=await call('stats-exact','exploratory_statistics',[str(work/'stats.csv'),'value'])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/sdk-computation-candidate-fixture/corpus.py", line 36, in call
+    assert expect is not None,(identifier,row)
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: ('stats-exact', {'id': 'stats-exact', 'operation': 'exploratory_statistics', 'arguments': ['/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-9zklesfe/stats.csv', 'value'], 'error': {'code': 'framework_error', 'message': 'Tool Error: Invalid path: value (Path must be absolute)', 'retryable': 'never', 'operation': 'exploratory_statistics', 'handle': None, 'details': {'fields': [{'key': 'framework_failure_category', 'value': 'tool'}, {'key': 'framework_terminal_kind', 'value': 'failed'}, {'key': 'framework_failure_code', 'value': 'tool'}, {'key': 'framework_retryable', 'value': 'false'}]}}})

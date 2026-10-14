@@ -1,0 +1,618 @@
+{
+  "group": "eval",
+  "steps": [
+    {
+      "id": "runner",
+      "operation": "echo_agent::eval::runner::EvalRunner::new",
+      "arguments": [
+        {
+          "$path": "eval-root"
+        }
+      ]
+    },
+    {
+      "id": "default-timeout",
+      "operation": "echo_agent::eval::runner::EvalRunner::timeout_secs",
+      "arguments": [
+        {
+          "$ref": "runner",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "workspace",
+      "operation": "echo_agent::eval::runner::EvalRunner::workspace_root",
+      "arguments": [
+        {
+          "$ref": "runner",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "configured-root",
+      "operation": "echo_agent::eval::runner::EvalRunner::workspace_root",
+      "arguments": [
+        {
+          "$ref": "runner",
+          "path": []
+        },
+        {
+          "$path": "eval-configured"
+        }
+      ]
+    },
+    {
+      "id": "timeout-runner",
+      "operation": "echo_agent::eval::runner::EvalRunner::timeout_secs",
+      "arguments": [
+        {
+          "$ref": "configured-root",
+          "path": []
+        },
+        {
+          "$u64": "1"
+        }
+      ]
+    },
+    {
+      "id": "configured-timeout",
+      "operation": "echo_agent::eval::runner::EvalRunner::timeout_secs",
+      "arguments": [
+        {
+          "$ref": "timeout-runner",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "operation": "trace.store.open",
+      "arguments": [
+        "jsonl",
+        {
+          "$string_path": "traces"
+        }
+      ]
+    },
+    {
+      "id": "save-run",
+      "operation": "trace.run.save",
+      "arguments": [
+        {
+          "$ref": "store",
+          "path": [
+            "resource"
+          ]
+        },
+        {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": 11
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": 11,
+              "original_bytes": 9,
+              "returned_bytes": 9,
+              "estimated_tokens": 3,
+              "output_handling": null,
+              "artifact": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 5,
+            "total_tokens": 22,
+            "cached_prompt_tokens": 3,
+            "cache_creation_prompt_tokens": 0,
+            "usage_reported_calls": 1,
+            "usage_missing_calls": 0
+          },
+          "timings": {
+            "total_duration_ms": 123,
+            "llm_duration_ms": 112,
+            "tool_duration_ms": 11
+          },
+          "started_at": "2026-10-13T00:00:00.123456789Z",
+          "finished_at": "2026-10-13T00:00:00.246456789Z"
+        }
+      ]
+    },
+    {
+      "id": "stored-runner",
+      "operation": "echo_agent::eval::runner::EvalRunner::with_run_store",
+      "arguments": [
+        {
+          "$ref": "timeout-runner",
+          "path": []
+        },
+        {
+          "$ref": "store",
+          "path": [
+            "resource"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "run-all",
+      "operation": "echo_agent::eval::runner::EvalRunner::run_all",
+      "arguments": [
+        {
+          "$ref": "stored-runner",
+          "path": []
+        },
+        [
+          {
+            "id": "pass",
+            "name": "pass",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          },
+          {
+            "id": "bad",
+            "name": "bad",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "bad",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          }
+        ],
+        {
+          "$factory": true
+        }
+      ]
+    },
+    {
+      "id": "timeout",
+      "operation": "echo_agent::eval::runner::EvalRunner::run_all_async",
+      "arguments": [
+        {
+          "$ref": "timeout-runner",
+          "path": []
+        },
+        [
+          {
+            "id": "timeout",
+            "name": "timeout",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "hang",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          }
+        ],
+        {
+          "$factory": true
+        }
+      ]
+    },
+    {
+      "id": "direct",
+      "operation": "echo_agent::eval::runner::EvalRunner::run",
+      "arguments": [
+        {
+          "$ref": "timeout-runner",
+          "path": []
+        },
+        {
+          "id": "direct",
+          "name": "direct",
+          "description": "native bounded case 中文🙂",
+          "domain": null,
+          "task": "good",
+          "project_fixture": null,
+          "success_criteria": {
+            "type": "output_contains",
+            "substring": "OK 中文🙂"
+          },
+          "constraints": {}
+        },
+        {
+          "$custom": true
+        }
+      ]
+    },
+    {
+      "id": "constraints",
+      "operation": "echo_agent::eval::runner::EvalRunner::evaluate_run_constraints",
+      "arguments": [
+        {
+          "$ref": "runner",
+          "path": []
+        },
+        {
+          "max_files_changed": 0,
+          "max_tool_calls": 0,
+          "forbidden_paths": [
+            "file🙂"
+          ],
+          "required_read_before_edit": true
+        },
+        {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": 11
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": 11,
+              "original_bytes": 9,
+              "returned_bytes": 9,
+              "estimated_tokens": 3,
+              "output_handling": null,
+              "artifact": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 5,
+            "total_tokens": 22,
+            "cached_prompt_tokens": 3,
+            "cache_creation_prompt_tokens": 0,
+            "usage_reported_calls": 1,
+            "usage_missing_calls": 0
+          },
+          "timings": {
+            "total_duration_ms": 123,
+            "llm_duration_ms": 112,
+            "tool_duration_ms": 11
+          },
+          "started_at": "2026-10-13T00:00:00.123456789Z",
+          "finished_at": "2026-10-13T00:00:00.246456789Z"
+        }
+      ]
+    },
+    {
+      "id": "grader",
+      "operation": "echo_agent::eval::grader::LlmGrader::new",
+      "arguments": []
+    },
+    {
+      "id": "grader-config",
+      "operation": "echo_agent::eval::runner::EvalRunner::with_grader",
+      "arguments": [
+        {
+          "$ref": "runner",
+          "path": []
+        },
+        {
+          "$ref": "grader",
+          "path": []
+        },
+        {
+          "$custom": true
+        }
+      ]
+    },
+    {
+      "id": "mode-grade",
+      "action": "custom_mode",
+      "mode": "grade"
+    },
+    {
+      "id": "graded-run",
+      "operation": "echo_agent::eval::runner::EvalRunner::run",
+      "arguments": [
+        {
+          "$ref": "grader-config",
+          "path": []
+        },
+        {
+          "id": "graded",
+          "name": "graded",
+          "description": "native bounded case 中文🙂",
+          "domain": null,
+          "task": "good",
+          "project_fixture": null,
+          "success_criteria": {
+            "type": "llm_graded",
+            "assertions": [
+              {
+                "id": "a1",
+                "check": "contains OK",
+                "expected": "OK"
+              },
+              {
+                "id": "a2",
+                "check": "contains 中文",
+                "expected": "中文"
+              }
+            ]
+          },
+          "constraints": {}
+        },
+        {
+          "$custom": true
+        }
+      ]
+    },
+    {
+      "id": "grade",
+      "operation": "echo_agent::eval::grader::LlmGrader::grade",
+      "arguments": [
+        {
+          "$ref": "grader",
+          "path": []
+        },
+        "grade-task",
+        "OK",
+        [
+          {
+            "id": "a1",
+            "check": "contains OK",
+            "expected": "OK"
+          },
+          {
+            "id": "a2",
+            "check": "contains 中文",
+            "expected": "中文"
+          }
+        ],
+        {
+          "$custom": true
+        }
+      ]
+    },
+    {
+      "id": "grade-null",
+      "operation": "echo_agent::eval::grader::LlmGrader::grade_with_trajectory",
+      "arguments": [
+        {
+          "$ref": "grader",
+          "path": []
+        },
+        "grade-task",
+        "OK",
+        [
+          {
+            "id": "a1",
+            "check": "contains OK",
+            "expected": "OK"
+          },
+          {
+            "id": "a2",
+            "check": "contains 中文",
+            "expected": "中文"
+          }
+        ],
+        null,
+        {
+          "$custom": true
+        }
+      ]
+    },
+    {
+      "id": "grade-trajectory",
+      "operation": "echo_agent::eval::grader::LlmGrader::grade_with_trajectory",
+      "arguments": [
+        {
+          "$ref": "grader",
+          "path": []
+        },
+        "grade-task",
+        "OK",
+        [
+          {
+            "id": "a1",
+            "check": "contains OK",
+            "expected": "OK"
+          },
+          {
+            "id": "a2",
+            "check": "contains 中文",
+            "expected": "中文"
+          }
+        ],
+        "工具轨迹🙂",
+        {
+          "$custom": true
+        }
+      ]
+    },
+    {
+      "id": "mode-bad-grade",
+      "action": "custom_mode",
+      "mode": "invalid_grade"
+    },
+    {
+      "id": "grade-bad",
+      "operation": "echo_agent::eval::grader::LlmGrader::grade",
+      "arguments": [
+        {
+          "$ref": "grader",
+          "path": []
+        },
+        "grade-task",
+        "OK",
+        [
+          {
+            "id": "a1",
+            "check": "contains OK",
+            "expected": "OK"
+          },
+          {
+            "id": "a2",
+            "check": "contains 中文",
+            "expected": "中文"
+          }
+        ],
+        {
+          "$custom": true
+        }
+      ]
+    },
+    {
+      "id": "foreign-runner",
+      "operation": "echo_agent::eval::runner::EvalRunner::timeout_secs",
+      "arguments": [
+        {
+          "$ref": "runner",
+          "path": []
+        }
+      ],
+      "session": "b",
+      "error": "invalid_value"
+    }
+  ],
+  "run": {
+    "run_id": "trajectory-中文🙂",
+    "parent_run_id": "parent🙂",
+    "agent_name": "native-agent🙂",
+    "model": "fixed-model",
+    "provider": null,
+    "turn_id": "turn🙂",
+    "execution_id": "execute🙂",
+    "session_id": "session🙂",
+    "status": "completed",
+    "input": "读写中文🙂",
+    "events": [
+      {
+        "type": "tool_call",
+        "call_id": "call🙂",
+        "name": "write_file",
+        "args": {
+          "path": "file🙂",
+          "content": "written🙂"
+        },
+        "risk": "write",
+        "duration_ms": 11
+      },
+      {
+        "type": "file_edit",
+        "tool": "write_file",
+        "path": "file🙂"
+      },
+      {
+        "type": "tool_result",
+        "call_id": "call🙂",
+        "name": "write_file",
+        "success": true,
+        "output_preview": "写入🙂",
+        "output_truncated": false,
+        "duration_ms": 11,
+        "original_bytes": 9,
+        "returned_bytes": 9,
+        "estimated_tokens": 3,
+        "output_handling": null,
+        "artifact": null
+      }
+    ],
+    "final_output": "完成🙂",
+    "error": null,
+    "token_usage": {
+      "prompt_tokens": 17,
+      "completion_tokens": 5,
+      "total_tokens": 22,
+      "cached_prompt_tokens": 3,
+      "cache_creation_prompt_tokens": 0,
+      "usage_reported_calls": 1,
+      "usage_missing_calls": 0
+    },
+    "timings": {
+      "total_duration_ms": 123,
+      "llm_duration_ms": 112,
+      "tool_duration_ms": 11
+    },
+    "started_at": "2026-10-13T00:00:00.123456789Z",
+    "finished_at": "2026-10-13T00:00:00.246456789Z"
+  },
+  "grade_good": {
+    "results": [
+      {
+        "assertion_id": "a1",
+        "passed": true,
+        "confidence": 0.875,
+        "evidence": "OK",
+        "reasoning": "fixed one🙂"
+      },
+      {
+        "assertion_id": "a2",
+        "passed": false,
+        "confidence": 0.625,
+        "evidence": "none",
+        "reasoning": "fixed two🙂"
+      }
+    ],
+    "overall_assessment": "fixed grade🙂"
+  },
+  "factory_answer": "OK 中文🙂"
+}

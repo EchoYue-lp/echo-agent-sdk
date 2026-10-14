@@ -1,0 +1,151 @@
+{
+  "status": "limited-scope-runtime-native-and-review-passed-metadata-minor-resolved",
+  "original_sha256": "ea4ecd447745701d27beb5f0ad194b1a04f383583771911b94e497662c36355f",
+  "baseline_sha256": "4af0594bdb4609dfce75ef49e22edce90a7ff2446b71db742b5d37e449a25447",
+  "test": "sandbox_natural_eof_preserves_queued_complete_without_cleanup_cancellation",
+  "before_fact": "actual TypeScript normal Sandbox lost its queued Complete payload on a prior immutable Host; this test deterministically probes the same cleanup signal before consumer scheduling",
+  "after_sha256": "7f1ccb061ac1f2b937f0f12a94a51da13757cc31c96f1ee3dd86c5db0456184c",
+  "before": {
+    "exit_code": 101,
+    "passed": 0,
+    "failed": 1,
+    "ignored": 0,
+    "observed": "natural EOF cancelled cleanup while Complete remained queued"
+  },
+  "after": {
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "minimal_semantic_change": "natural EOF returns without signalling cleanup; cancellation/send failure retains existing signal and original fused-source drain",
+  "host_library": {
+    "passed": 163,
+    "failed": 0,
+    "ignored": 0
+  },
+  "gates": {
+    "clippy_all_targets_all_features": 0,
+    "clippy_production_panic_four": 0,
+    "fmt_check": 0,
+    "host_all_features_build": 0
+  },
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-b909-natural-eof-host",
+    "sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10"
+  },
+  "framework_revision": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "local_framework_patch": false,
+  "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6",
+  "build_inputs": {
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "7f1ccb061ac1f2b937f0f12a94a51da13757cc31c96f1ee3dd86c5db0456184c",
+    "echo-sdk-host/src/core_profile/facade/stream.rs": "1defec3e27aade8fdb906841280a5a7a62dc85b8d2770eceffcbbc3ea2fcdfa6",
+    "echo-sdk-host/src/core_profile/handler.rs": "fa6a744e6300c3be3c509b6cfaf88b40301e40a8f8746122c6e0109d074ff2cd",
+    "echo-sdk-host/src/core_profile/extension_bridge.rs": "43ecf356e4deb1004158540708b664e6e022ddf4afc9f545d240903c4758fefe",
+    "echo-sdk-host/Cargo.toml": "e1ee65763c18fd754bacfec922ba22d68180f3bea3114a25146f7d5bc1651a0e",
+    "Cargo.lock": "a42cfbc993a3eabb714a6b221472600d424fa411226659458b7286d490f7e837",
+    ".cargo/config.toml": "493c87fc3ef8111f097808dd20ba21984d574e90758c49f0134d55580fdc3c20",
+    "contracts/sdk/source-contract.json": "e689bb8fee5e8aabbf517264bb608f47a0bd19e6ef665b54b5d26ea2c248d394",
+    "contracts/sdk/facade-operation-catalog.json": "87fe186ea7812b82b064e999969837bd83edf6fede8a756725c819ce1c657bb6"
+  },
+  "raw_files": [
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/sandbox-natural-eof-clippy-prod.log",
+      "sha256": "c8252d538c8c40c5b5d3bf0b995d9d8eef75871ba70327047d9562fa978453f1"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/actual-before.log",
+      "sha256": "b26afbdf9163de470268d5bc13179fba348e198a87e7c656a4880e08d5498cb1"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/mod-after.rs",
+      "sha256": "7f1ccb061ac1f2b937f0f12a94a51da13757cc31c96f1ee3dd86c5db0456184c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/sandbox-natural-eof-before.log",
+      "sha256": "b26afbdf9163de470268d5bc13179fba348e198a87e7c656a4880e08d5498cb1"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/sandbox-natural-eof-after.log",
+      "sha256": "a93f8696fb78a89041a02b4cbba612d1cffaa3373ba9816e2c5ccf77eaa27783"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/sandbox-natural-eof-build.log",
+      "sha256": "29615e17b8c9a542347706d29a8cc9def9202f14db8178c450fcd68d003e1b90"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/sandbox-natural-eof-hostlib-all.log",
+      "sha256": "c63189870395891a9a229755a3c17e4e5e9687edd65dd508969fd9a9e9edad9c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/mod-baseline-with-regression.rs",
+      "sha256": "4af0594bdb4609dfce75ef49e22edce90a7ff2446b71db742b5d37e449a25447"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/sandbox-natural-eof-clippy-all.log",
+      "sha256": "57bafde6ee65749956197bd0418559a881c469e36e3dc09881123fa54ae9cc9d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sandbox-natural-eof/mod-original.rs",
+      "sha256": "ea4ecd447745701d27beb5f0ad194b1a04f383583771911b94e497662c36355f"
+    }
+  ],
+  "native_validation": {
+    "path": "docs/sdk/governance/evidence/tool-value-effects/b909-natural-eof-after/manifest.json",
+    "language_runs": [
+      {
+        "language": "typescript",
+        "tests": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "language": "python",
+        "tests": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "language": "java",
+        "tests": 3,
+        "failed": 0,
+        "skipped": 0
+      }
+    ],
+    "same_host_sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10",
+    "scope": "each language executes ordinary tool fields/effects, real Agent SearchProvider, and three Sandbox producers for normal output/Complete/EOF, pending cancellation and pending close; normal Sandbox sequence1/2/3 and actual process/finally/cleanup settlement preserved",
+    "source_oracles_not_relaxed": true,
+    "residual": "Sandbox post-answer cancellation, descendant process trees and complete contract/main acceptance are not established by this limited consumer suite"
+  },
+  "historical_preparation": {
+    "status": "historical-mechanical-extraction-before-regression-execution",
+    "extraction_tokens_equal_ignoring_whitespace": true,
+    "production_behavior_unchanged": true,
+    "cargo": "not run; CLI exclusive producer",
+    "source_sha256": "4af0594bdb4609dfce75ef49e22edce90a7ff2446b71db742b5d37e449a25447",
+    "scope": "only the mechanical extraction of the original loop before the actual bug fix; these preparation statements do not describe the final source"
+  },
+  "verified_on_utc": "2026-10-13",
+  "reviewed_on_local": "2026-10-14",
+  "production_behavior_changed": true,
+  "cargo_validation": "executed on the final source: focused before1fail/after1pass, full Host library163pass, two strict Clippy commands, fmt check and all-feature Host build exit0",
+  "independent_review": {
+    "reviewer": "framework_final_review",
+    "result": "pass for the limited natural EOF fix and nine native consumer tests",
+    "critical": 0,
+    "important": 0,
+    "minor_at_review": 1,
+    "minor": "top-level historical preparation metadata contradicted executed final validation",
+    "metadata_fix": "historical preparation moved to an explicitly historical object; current source behavior change and executed validation declared separately",
+    "metadata_recheck": "root read and passed the metadata-only correction on 2026-10-14; original reviewer minor_at_review remains1, no claim of reviewer re-review",
+    "scope_excludes": [
+      "complete accepted contract migration",
+      "SDK main acceptance",
+      "publication"
+    ],
+    "review_source_sha256": "7f1ccb061ac1f2b937f0f12a94a51da13757cc31c96f1ee3dd86c5db0456184c",
+    "native_after_package_sha256": "2415f6c17c7ba7de8efd76a56d5443b34a346fd5503832e45647d83fca278648",
+    "metadata_minor_resolved_by": "root",
+    "metadata_minor_remaining_after_root_check": 0
+  }
+}

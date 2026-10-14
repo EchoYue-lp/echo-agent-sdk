@@ -1,0 +1,65 @@
+{
+  "scope": "same two public Channel close counterexamples after handler teardown notification and Sandbox scoped setup wiring; only this epoch, old0a0f receipts unchanged",
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-stream-settlement-candidate-host",
+    "sha256": "f852a9970f5f772cda57484724e9fa7550ef9fb5610a1dc4e0bc08f2122385a9"
+  },
+  "actual_result": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "source_hashes": {
+    "echo-sdk-host/src/core_profile/facade/integrations.rs": "c54a17d83b6ee7e148576deef18f45fac13acb0c47c01d5e9daac15f676ce070",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "165bf922ef433c1bf80c36f6c782eb6600acb0d874bc416f167aa90e405e270d",
+    "echo-sdk-host/src/core_profile/facade/stream.rs": "1defec3e27aade8fdb906841280a5a7a62dc85b8d2770eceffcbbc3ea2fcdfa6",
+    "echo-sdk-host/src/core_profile/handler.rs": "cca0f365a12d9d7bea2dce82a57e71386803f2cfb123077b0d8423fee7052562"
+  },
+  "raw_files": [
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/run.log",
+      "sha256": "5b6991753de2b14478c847a53c818cea01a0bfa1aae0330d593445ea8cb5496a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/host.json",
+      "sha256": "6c233a5dfe9edd10a8d1e608ab0be620a652bc82db7e8a5c4a6422c171f95dd4"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/observed.json",
+      "sha256": "fdf02a0e56e362ed8c3214af1b270e7c79356fc1e2fb99e58b50af9d06ba2025"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/state/host/session-index.json",
+      "sha256": "691cde0ec26afa9e00d3cda0847ee2c9f8fce2b52bd3130efb4ab00d71fbb961"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/bad-chunk/host.json",
+      "sha256": "03e34424191e695b99de0f8f2f9e5aff042ecade41810a54e339cb784ceeb9f6"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/bad-chunk/observed.json",
+      "sha256": "70c2da6d4b5107f33ba457611d63f8faf94eb9df8c3e383fea8b790ea00bb3a0"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/bad-chunk/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/bad-chunk/state/host/session-index.json",
+      "sha256": "585a2fd1eecc3586bf33a04fa0926108c8c9ea690c67fbb5c03c4a4d5e94207e"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/f852-validation/actual/bad-chunk/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    }
+  ]
+}

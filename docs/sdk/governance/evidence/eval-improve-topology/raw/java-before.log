@@ -1,0 +1,56 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-topology-14832881907067477763
+{"group": "topology", "verified": true, "factory_created": 0, "factory_closed": 0, "rows": 18}
+
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-eval-11430014632588067552
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-improve-14730115763540107544
+{"group": "improve", "verified": true, "factory_created": 12, "factory_closed": 12, "rows": 25}
+
+[ERROR] Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 14.53 s <<< FAILURE! -- in com.echoagent.sdk.EvalImproveTopologyHostTest
+[ERROR] com.echoagent.sdk.EvalImproveTopologyHostTest.evalNativeFactoryTimeoutGraderAndConstraints -- Time elapsed: 13.44 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/eval_improve_topology_fixture.py", line 473, in <module>
+    main()
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/eval_improve_topology_fixture.py", line 469, in main
+    verify(args.work)
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/eval_improve_topology_fixture.py", line 367, in verify
+    assert any(
+AssertionError: {'case_id': 'timeout', 'success': False, 'score': 0.0, 'metrics': [], 'violations': ['Timeout', 'Turn did not settle within 12000 ms cancellation grace', 'Workspace retained after timeout: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-eval-11430014632588067552/eval-configured/eval-JfpITC'], 'run_id': None, 'duration_ms': '13008', 'tool_calls': '0', 'tokens_in': '0', 'tokens_out': '0', 'cached_tokens_in': '0', 'cache_creation_tokens_in': '0', 'cache_hit_rate': None, 'tool_errors': '0', 'max_protected_context_tokens': '0', 'file_changes': '0', 'compile_ok': None, 'tests_pass': None}
+ ==> expected: <0> but was: <1>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:563)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.helper(EvalImproveTopologyHostTest.java:23)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.scenario(EvalImproveTopologyHostTest.java:99)
+	at com.echoagent.sdk.EvalImproveTopologyHostTest.evalNativeFactoryTimeoutGraderAndConstraints(EvalImproveTopologyHostTest.java:41)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[ERROR] Failures: 
+[ERROR]   EvalImproveTopologyHostTest.evalNativeFactoryTimeoutGraderAndConstraints:41->scenario:99->helper:23 Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/eval_improve_topology_fixture.py", line 473, in <module>
+    main()
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/eval_improve_topology_fixture.py", line 469, in main
+    verify(args.work)
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/eval_improve_topology_fixture.py", line 367, in verify
+    assert any(
+AssertionError: {'case_id': 'timeout', 'success': False, 'score': 0.0, 'metrics': [], 'violations': ['Timeout', 'Turn did not settle within 12000 ms cancellation grace', 'Workspace retained after timeout: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/java-eval-11430014632588067552/eval-configured/eval-JfpITC'], 'run_id': None, 'duration_ms': '13008', 'tool_calls': '0', 'tokens_in': '0', 'tokens_out': '0', 'cached_tokens_in': '0', 'cache_creation_tokens_in': '0', 'cache_hit_rate': None, 'tool_errors': '0', 'max_protected_context_tokens': '0', 'file_changes': '0', 'compile_ok': None, 'tests_pass': None}
+ ==> expected: <0> but was: <1>
+[ERROR] Tests run: 3, Failures: 1, Errors: 0, Skipped: 0
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project echo-agent-sdk-source: There are test failures.
+[ERROR] 
+[ERROR] See /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

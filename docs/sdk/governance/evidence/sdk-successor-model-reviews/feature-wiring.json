@@ -1,0 +1,6 @@
+{
+  "provenance": "actual completed independentframework_final_review finitePASS0 relayed byparent",
+  "scope": "6exactfiles devtestdeps+5Rustcfg/import only; allbefore/currentpairs/rawreceipts/patch64237644manifest read; bridge8e7/taskruntimee46/Cargo.locka42 unchanged; no runtimebodies/assertions weakened/testdisabled/allow/fullfeatureforced",
+  "validation": "default8E0433→31lib4stdio0warning;coreimport/privatefnwarn→85lib13core4stdio0warning;bridgeunusedWdenied→noRun28e2e0;facade31core12facade/noBridge1admissionfinal0warning",
+  "limits": "successivefocusedfeatureepochs exact; finalreviewed14matrix startedbutnotterminal; nofullSDKRustverified/source12 approval"
+}

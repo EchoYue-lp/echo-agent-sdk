@@ -1,0 +1,112 @@
+{
+  "scope": "Factory-created CustomAgent stream completion and same-owner cleanup retry only",
+  "baseBridgeSha256": "43ecf356e4deb1004158540708b664e6e022ddf4afc9f545d240903c4758fefe",
+  "currentBridgeSha256": "8e7aad2896687394a507f339fb20cba2dbacb93fd42ab38b417534570204e8e9",
+  "currentE2eSha256": "7e2312d1fec10663fbde463d989a008a566dd75723a61ce2f26423dfd7dfa2ba",
+  "ordering": {
+    "beforeE2e": {
+      "passed": 3,
+      "failed": 2,
+      "ignored": 0,
+      "exitCode": 101,
+      "log": "before-factory-e2e.log"
+    },
+    "afterE2e": {
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0,
+      "log": "after-factory-e2e.log"
+    },
+    "unitBefore": {
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "exitCode": 101,
+      "log": "before-terminal-release-unit.log",
+      "actual": "consumer received terminal while original exclusive invocation remained in_flight=1"
+    },
+    "unitAfter": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0,
+      "log": "after-terminal-release-unit.log"
+    },
+    "cause": "The actual RPC answer and validated remote terminal were known, but original exclusive lease release depended on a separate connection task. The terminal consumer immediately called same-child AgentClose and could conflict with its own completed invocation.",
+    "fix": "Within the already-existing two-fact terminal gate, synchronously drop the same retained invocation lease before exposing terminal. Existing collector retains responsibility for caller-drop and true connection EOF.",
+    "negativeCoverage": [
+      "Pending actual RPC answer still holds the original child exclusive lease",
+      "Missing valid remote terminal holds the original child exclusive lease",
+      "A wrong-generation terminal cannot release the original lease"
+    ]
+  },
+  "retryOwner": {
+    "before": {
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "exitCode": 101,
+      "log": "before-close-retry-unit.log",
+      "actual": "same original owner returned its first failed AgentClose acknowledgement forever; later retry callers made no new RPC, physical calls remained 1"
+    },
+    "after": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0,
+      "log": "after-close-retry-unit.log"
+    },
+    "fix": "Use the same once-only cleanup owner to cache successful cleanup only. A failed acknowledgement remains an error and preserves the child address; explicit retry invokes cleanup, concurrent successful callers coalesce, and repeats after success perform no extra RPC."
+  },
+  "validation": {
+    "Hostlib": {
+      "passed": 171,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0,
+      "log": "final-hostlib-all.log"
+    },
+    "BridgeE2e": {
+      "passed": 34,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0,
+      "log": "final-extension-bridge-all.log"
+    },
+    "clippyAllTargetsWarnings": {
+      "exitCode": 0,
+      "log": "clippy-all.log"
+    },
+    "clippyProductionPanicFour": {
+      "exitCode": 0,
+      "log": "clippy-production-panic.log"
+    },
+    "formatter": {
+      "exitCode": 0,
+      "log": "fmt-check.log"
+    }
+  },
+  "authority": "Original framework ExtensionInvocationAuthority and SDK HandleRegistry/factory origin remain the sole invocation/identity authorities. No new public API, wire schema, scheduler, timeout or language contract.",
+  "documentation": "Existing SDK Factory cleanup/retry statement clarified; no API examples or branding website changes are needed. Existing native Factory examples and scenarios remain final full-language gate inputs.",
+  "limits": [
+    "Independent bounded review passed with zero findings; full 14-command SDK gate and final current binary/language validation remain parent-task gates",
+    "Full 14-command SDK gate and final current binary/language validation remain parent-task gates",
+    "A prior green 170-test epoch is separately archived; it does not substitute for the final 171-test source"
+  ],
+  "independentReview": {
+    "reviewer": "framework_final_review",
+    "result": "pass",
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "scope": "the two exact Factory/CustomAgent lifecycle fixes and their bounded source/test/doc evidence",
+    "reviewedSource": {
+      "bridge": "8e7aad2896687394a507f339fb20cba2dbacb93fd42ab38b417534570204e8e9",
+      "e2e": "7e2312d1fec10663fbde463d989a008a566dd75723a61ce2f26423dfd7dfa2ba",
+      "sdkDocumentation": "36c73045983aa3a645274aed6b9ef4a7af80b5ae5f7cbe09dd2b230e38178ebc"
+    },
+    "reviewedEvidence": "Original 24-file source/counterexample bundle plus actual final Hostlib171/bridge34 and the later three strict/fmt logs; adding their receipts changes only archive metadata.",
+    "limits": "No blanket SDK semantic closure, full contract parity, published-main acceptance or package release."
+  }
+}

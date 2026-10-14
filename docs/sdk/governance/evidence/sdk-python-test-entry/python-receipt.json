@@ -1,0 +1,18 @@
+{
+  "label": "full-python-entry-after",
+  "command": [
+    "bash",
+    "-c",
+    "PYTHONPATH=src uv run --no-project --with pytest --with pytest-asyncio --with agent-client-protocol==0.12.1 python -m pytest -q tests ../shared/testing && PYTHONPATH=src uv run python examples/quickstart.py"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python-entry-repair/full-python.log",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 516,
+  "bytesWritten": 516,
+  "startedAt": "2026-10-13T20:29:38.509Z",
+  "finishedAt": "2026-10-13T20:31:02.864Z"
+}

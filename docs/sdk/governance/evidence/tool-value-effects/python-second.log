@@ -1,0 +1,67 @@
+F
+=================================== FAILURES ===================================
+______________________ test_tool_value_effect_native_host ______________________
+
+    async def test_tool_value_effect_native_host():
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT))
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, str(Path(fixture.__file__)), "--work", str(work)
+        )
+        sdk = None
+        rows = []
+        byid = {}
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert proc.returncode is None, "fixture exited before ready"
+                    await asyncio.sleep(0.01)
+            sdk = await EchoAgentClient.spawn(
+                HOST,
+                "--config",
+                str(work / "host.json"),
+                env={**os.environ, "TMPDIR": str(work / "artifact-temp")},
+            )
+            agent = await sdk.create_agent()
+            session = await agent.create_session(str(work))
+            identity = {
+                "agent": agent.wire.to_dict(),
+                "session": session.wire.to_dict(),
+                "capability": sdk.capability,
+            }
+            for step in json.loads((work / "scenario.json").read_text())["rows"]:
+                row = copy.deepcopy(step)
+                row["protected_before"] = fixture.snapshot(work)
+                row["files_before"] = files(work)
+                if step.get("action") == "mutate_artifact":
+                    artifact = fixture.unrecord(byid[step["ref"]]["result"])
+                    fixture.decode_path(artifact["path"]).write_text(
+                        "mutated 中文🙂\n", encoding="utf8"
+                    )
+                else:
+>                   arguments = fixture.resolve(step["arguments"], byid)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+sdks/python/tests/test_tool_value_effect_host.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/shared/testing/tool_value_effect_fixture.py:316: in resolve
+    return [resolve(v, results) for v in value]
+            ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'$artifact': 'artifact-persist'}
+results = {'file-create': {'id': 'file-create', 'operation': 'create_file', 'arguments': ['中文🙂/note.txt'], 'expected': 'success'...ng', 'operation': 'update_file', 'arguments': ['中文🙂/note.txt', 'absent', 'bad'], 'expected': 'tool_failure', ...}, ...}
+
+    def resolve(value, results):
+        if isinstance(value, list):
+            return [resolve(v, results) for v in value]
+        if isinstance(value, dict):
+            if "$artifact" in value:
+>               return artifact_wire(results[value["$artifact"]]["result"])
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               KeyError: 'result'
+
+sdks/shared/testing/tool_value_effect_fixture.py:319: KeyError
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_tool_value_effect_host.py::test_tool_value_effect_native_host
+1 failed in 1.05s

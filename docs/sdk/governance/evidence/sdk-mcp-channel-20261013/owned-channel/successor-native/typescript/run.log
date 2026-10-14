@@ -1,0 +1,45 @@
+TAP version 13
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-mcp-stdio-rOIN1V
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-mcp-transport-retry-58xLOf
+# Subtest: MCP real stdio metadata/resources/prompts and same-name owner cleanup
+ok 1 - MCP real stdio metadata/resources/prompts and same-name owner cleanup
+  ---
+  duration_ms: 5666.039916
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-channels-normal-4q5V4R
+# Subtest: MCP registered transport failed close retains exact client/quota for retry
+ok 2 - MCP registered transport failed close retains exact client/quota for retry
+  ---
+  duration_ms: 5224.610042
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-channels-retry-jyzXh8
+# Subtest: Channels attachments/exact stop normal
+ok 3 - Channels attachments/exact stop normal
+  ---
+  duration_ms: 5257.016
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-ts-channels-owned-reentry-MiE5Nd
+# Subtest: Channels attachments/exact stop retry
+ok 4 - Channels attachments/exact stop retry
+  ---
+  duration_ms: 5294.487125
+  type: 'test'
+  ...
+# Subtest: Channel owned callbacks reenter metadata and preserve exact close owner
+ok 5 - Channel owned callbacks reenter metadata and preserve exact close owner
+  ---
+  duration_ms: 5307.279958
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26955.241959

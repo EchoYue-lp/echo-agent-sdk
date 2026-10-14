@@ -1,0 +1,27 @@
+[ {
+  "layer" : "official-ACP",
+  "child_exited" : true,
+  "stderr" : [ "controlled child exit before initialize response" ],
+  "child_exit" : 7,
+  "mode" : "before-initialize",
+  "child_pid" : 98381,
+  "initialize_done" : false,
+  "outcome" : "pending-after-real-child-exit",
+  "child_alive" : false
+}, {
+  "layer" : "official-ACP",
+  "child_exited" : true,
+  "stderr" : [ "controlled child exit before initialize response" ],
+  "child_exit" : 7,
+  "mode" : "during-initialize",
+  "child_pid" : 98413,
+  "initialize_done" : false,
+  "outcome" : "pending-after-real-child-exit",
+  "child_alive" : false
+}, {
+  "child_alive" : false,
+  "child_pid" : 98453,
+  "layer" : "public-SDK",
+  "outcome" : "pending-after-real-child-exit",
+  "initialize_done" : false
+} ]

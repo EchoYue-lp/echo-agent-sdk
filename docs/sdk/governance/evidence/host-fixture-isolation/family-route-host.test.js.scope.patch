@@ -1,0 +1,36 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-fixture-isolation/before-source/family-route-host.test.js	2026-10-13 14:36:04
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-fixture-isolation/after-source/family-route-host.test.js	2026-10-14 03:51:59
+@@ -1,3 +1,6 @@
++import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
+ import test from "node:test";
+ import assert from "node:assert/strict";
+ import { EchoAgentClient } from "../dist/index.js";
+@@ -8,8 +11,16 @@
+ }
+ 
+ test("native family calls use the catalog's hyphenated wire method", { skip: !host }, async () => {
+-  const sdk = await EchoAgentClient.spawn({ hostCommand: host, args: ["--config", process.env.ECHO_AGENT_SDK_CONFIG] });
++  const work = await mkdtemp(join(tmpdir(), "sdk-ts-family-route-"));
++  let sdk;
+   try {
++    const config = JSON.parse(await readFile(process.env.ECHO_AGENT_SDK_CONFIG, "utf8"));
++    // Parallel smoke tests must not share the native file-authority lease.
++    config.sdk_profile.state_root = join(work, "state");
++    if (config.default_agent.agent.memory_path !== undefined) config.default_agent.agent.memory_path = join(work, "memory.jsonl");
++    const configPath = join(work, "host.json");
++    await writeFile(configPath, JSON.stringify(config));
++    sdk = await EchoAgentClient.spawn({ hostCommand: host, args: ["--config", configPath] });
+     const agent = await sdk.createAgent();
+     const session = await agent.createSession();
+     const text = "中😀 alice@example.com 尾";
+@@ -19,6 +30,7 @@
+     await session.close();
+     await agent.close();
+   } finally {
+-    await sdk.close();
++    await sdk?.close();
++    await rm(work, { recursive: true, force: true });
+   }
+ });

@@ -1,0 +1,13 @@
+{
+  "same_inputs": true,
+  "input_count": 7,
+  "inputs": {
+    "Cargo.lock": "a42cfbc993a3eabb714a6b221472600d424fa411226659458b7286d490f7e837",
+    "Cargo.toml": "5965a85e0e2ef738381ab8b65f9cf9d1ee43694dfdd41f93b0e847af759cbd00",
+    "echo-sdk-host/Cargo.toml": "7ab7770de3757e304dc6e65175c8cba8abc61c229afd015dad78653ff8afd3a6",
+    ".cargo/audit.toml": "492c8acc68663b2252daafa1a44d4a977b43d1f8461851dd92229d83a50dbd70",
+    "deny.toml": "b18307d3e0afa05d0c1ad32004b59cb0a7fe62136e90037bec17738545b3013f",
+    ".cargo/config.toml": "493c87fc3ef8111f097808dd20ba21984d574e90758c49f0134d55580fdc3c20",
+    ".github/workflows/rust-ci.yml": "cc519d0da616dcced4fab5984e2efc2a9519a53436aa39aea360770c04e132e3"
+  }
+}

@@ -1,0 +1,10 @@
+--- red/WorkflowHostTest.java
++++ green/WorkflowHostTest.java
+@@ -38,6 +38,6 @@
+     rows.add(row);results.set(step.path("id").textValue(),row);Files.writeString(work.resolve("results.json"),rows.toString());
+    }
+    sessions.get("b").close();agent.close();sdk.close();sdk=null;var path=work.resolve("results.json");Files.writeString(path,rows.toString());System.out.println("Workflow evidence: "+helper(fixture,work,"--verify",path.toString()));passed=true;
+-  }finally{if(sdk!=null)sdk.close();if(passed){try(var files=Files.walk(work)){for(var path:files.sorted(java.util.Comparator.reverseOrder()).toList())Files.deleteIfExists(path);}}else System.err.println("Workflow evidence retained: "+work);}
++  }finally{if(sdk!=null)sdk.close();if(passed&&System.getenv("ECHO_AGENT_SDK_RETAIN_EVIDENCE")==null){try(var files=Files.walk(work)){for(var path:files.sorted(java.util.Comparator.reverseOrder()).toList())Files.deleteIfExists(path);}}else System.err.println("Workflow evidence retained: "+work);}
+  }
+ }

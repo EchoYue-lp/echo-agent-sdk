@@ -1,0 +1,8 @@
+{
+  "name": "delivery-id-only-claim-invalid",
+  "kind": "invalid",
+  "target": "DeliveryClaimWire",
+  "description": "Message identity alone cannot authorize a later delivery attempt.",
+  "payload": "消息",
+  "expect_error": "invalid_value"
+}

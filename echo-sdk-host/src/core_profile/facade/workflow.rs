@@ -40,12 +40,7 @@ fn invalid(message: impl Into<String>) -> EchoSdkError {
 }
 
 fn framework(error: echo_agent::error::ReactError) -> EchoSdkError {
-    wire::sdk_error(
-        ExtensionErrorCode::FrameworkError,
-        wire::bounded_framework_message(&error.to_string()),
-        Retryability::Never,
-        METHOD,
-    )
+    wire::framework_error(&error, METHOD)
 }
 
 /// One compiled graph resource: the graph itself, its cooperative cancel
@@ -62,8 +57,35 @@ pub(crate) struct WorkflowStateRecord {
     pub state: echo_agent::workflow::SharedState,
 }
 
+fn optional_string_at<'a>(
+    arguments: &'a [serde_json::Value],
+    position: usize,
+    name: &str,
+) -> Result<Option<&'a str>, EchoSdkError> {
+    match arguments.get(position) {
+        None | Some(serde_json::Value::Null) => Ok(None),
+        Some(serde_json::Value::String(value)) => Ok(Some(value)),
+        Some(_) => Err(invalid(format!("workflow {name} must be a string or null"))),
+    }
+}
+
+fn tags_at(arguments: &[serde_json::Value], position: usize) -> Result<Vec<String>, EchoSdkError> {
+    match arguments.get(position) {
+        None | Some(serde_json::Value::Null) => Ok(Vec::new()),
+        Some(serde_json::Value::Array(items)) => items
+            .iter()
+            .map(|item| {
+                item.as_str()
+                    .map(str::to_string)
+                    .ok_or_else(|| invalid("every workflow tag must be a string"))
+            })
+            .collect(),
+        Some(_) => Err(invalid("workflow tags must be a string array or null")),
+    }
+}
+
 fn json_of(value: &WireValue, position: usize) -> Result<serde_json::Value, EchoSdkError> {
-    value.clone().into_json().map_err(|error| {
+    super::family_argument_json(value).map_err(|error| {
         invalid(format!(
             "workflow argument {position} is not a lossless wire value: {error}"
         ))
@@ -100,6 +122,24 @@ fn object_at(
             "workflow argument {position} must be an object"
         ))),
     }
+}
+
+/// The protocol checkpoint is an object. Serde's struct sequence support must
+/// not let a positional array reach the framework's checkpoint claim authority.
+fn checkpoint_at(
+    arguments: &[serde_json::Value],
+    position: usize,
+) -> Result<echo_agent::workflow::Checkpoint, EchoSdkError> {
+    let value = arguments
+        .get(position)
+        .filter(|value| value.is_object())
+        .ok_or_else(|| {
+            invalid(format!(
+                "workflow checkpoint at argument {position} must be an object"
+            ))
+        })?;
+    serde_json::from_value(value.clone())
+        .map_err(|error| invalid(format!("checkpoint is malformed: {error}")))
 }
 
 fn state_json(
@@ -293,14 +333,17 @@ pub(crate) async fn dispatch(
             // Agent nodes reuse the Session Agent's own provider: the
             // explicit client first (how the Host injects providers), the
             // LLM config as fallback for config-only agents.
-            let client = authorities.llm_client.clone();
+            let (client, llm_config) = authorities
+                .agent_handle
+                .read(|agent| (agent.llm_client().cloned(), agent.llm_config().cloned()))
+                .await;
             let graph = if client.is_some() {
                 definition
                     .build_graph_with_client(client)
                     .map_err(framework)?
             } else {
                 definition
-                    .build_graph_with_llm_config(authorities.llm_config.as_ref())
+                    .build_graph_with_llm_config(llm_config.as_ref())
                     .map_err(framework)?
             };
             let graph = match checkpoint_store.clone() {
@@ -358,7 +401,7 @@ pub(crate) async fn dispatch(
             let record = graph_record(handles, graphs, &resource, owner)?;
             let producer = streams.open(handles, &resource, owner, &request.operation)?;
             let sender = producer.sender.clone();
-            let cancel = producer.cancel.clone();
+            let cancel = producer.cleanup.clone();
             let graph = record.graph.clone();
             let state = shared_state_of(values);
             let background = tokio::spawn(async move {
@@ -407,7 +450,7 @@ pub(crate) async fn dispatch(
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
             let checkpoint_id = string_at(&arguments, 1, "a checkpoint id")?;
             let decision = string_at(&arguments, 2, "a decision (approve|reject|defer)")?;
-            let reason = arguments.get(3).and_then(serde_json::Value::as_str);
+            let reason = optional_string_at(&arguments, 3, "reason")?;
             let decision = match decision.as_str() {
                 "approve" => echo_agent::workflow::ApprovalDecision::Approved,
                 "reject" => echo_agent::workflow::ApprovalDecision::Rejected {
@@ -437,15 +480,9 @@ pub(crate) async fn dispatch(
         "workflow.graph.resume_exact" => {
             let resource =
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
-            let checkpoint = arguments
-                .get(1)
-                .cloned()
-                .ok_or_else(|| invalid("workflow.graph.resume_exact requires a checkpoint"))?;
-            let checkpoint: echo_agent::workflow::Checkpoint =
-                serde_json::from_value(checkpoint)
-                    .map_err(|error| invalid(format!("checkpoint is malformed: {error}")))?;
+            let checkpoint = checkpoint_at(&arguments, 1)?;
             let decision = string_at(&arguments, 2, "a decision (approve|reject|defer)")?;
-            let reason = arguments.get(3).and_then(serde_json::Value::as_str);
+            let reason = optional_string_at(&arguments, 3, "reason")?;
             let decision = match decision.as_str() {
                 "approve" => echo_agent::workflow::ApprovalDecision::Approved,
                 "reject" => echo_agent::workflow::ApprovalDecision::Rejected {
@@ -469,13 +506,7 @@ pub(crate) async fn dispatch(
         "workflow.graph.resume_with_state" => {
             let resource =
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
-            let checkpoint = arguments
-                .get(1)
-                .cloned()
-                .ok_or_else(|| invalid("workflow.graph.resume_with_state requires a checkpoint"))?;
-            let checkpoint: echo_agent::workflow::Checkpoint =
-                serde_json::from_value(checkpoint)
-                    .map_err(|error| invalid(format!("checkpoint is malformed: {error}")))?;
+            let checkpoint = checkpoint_at(&arguments, 1)?;
             let updates = object_at(&arguments, 2)?;
             let record = graph_record(handles, graphs, &resource, owner)?;
             let result = record
@@ -490,7 +521,7 @@ pub(crate) async fn dispatch(
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
             let checkpoint_id = string_at(&arguments, 1, "a checkpoint id")?;
             let updates = object_at(&arguments, 2)?;
-            let branch_name = arguments.get(3).and_then(serde_json::Value::as_str);
+            let branch_name = optional_string_at(&arguments, 3, "branch name")?;
             let record = graph_record(handles, graphs, &resource, owner)?;
             let result = record
                 .graph
@@ -503,19 +534,10 @@ pub(crate) async fn dispatch(
             let resource =
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
             let checkpoint_id = string_at(&arguments, 1, "a checkpoint id")?;
-            let label = arguments.get(2).and_then(serde_json::Value::as_str);
-            let tags: Vec<String> = arguments
-                .get(3)
-                .and_then(serde_json::Value::as_array)
-                .map(|items| {
-                    items
-                        .iter()
-                        .filter_map(|item| item.as_str().map(str::to_string))
-                        .collect()
-                })
-                .unwrap_or_default();
-            let record = graph_record(handles, graphs, &resource, owner)?;
+            let label = optional_string_at(&arguments, 2, "label")?;
+            let tags = tags_at(&arguments, 3)?;
             let tag_refs: Vec<&str> = tags.iter().map(String::as_str).collect();
+            let record = graph_record(handles, graphs, &resource, owner)?;
             record
                 .graph
                 .tag_checkpoint(&checkpoint_id, label, tag_refs)
@@ -531,8 +553,11 @@ pub(crate) async fn dispatch(
             let page: Vec<serde_json::Value> = infos
                 .iter()
                 .take(limits.page)
-                .map(|info| serde_json::to_value(info).unwrap_or_else(|_| serde_json::Value::Null))
-                .collect();
+                .map(|info| {
+                    serde_json::to_value(info)
+                        .map_err(|error| invalid(format!("checkpoint encoding failed: {error}")))
+                })
+                .collect::<Result<_, _>>()?;
             wire(serde_json::json!({
                 "checkpoints": page,
                 "truncated": infos.len() > limits.page,
@@ -688,4 +713,25 @@ pub(crate) fn drop_session_resources(
         .lock()
         .unwrap_or_else(|error| error.into_inner())
         .retain(|id, _| !closed.iter().any(|closed_id| closed_id == id));
+}
+
+#[cfg(test)]
+mod adapter_regression_tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn optional_workflow_fields_reject_malformed_values() {
+        assert!(tags_at(&[json!(["valid", 7])], 0).is_err());
+        assert!(tags_at(&[json!("one")], 0).is_err());
+        assert_eq!(
+            tags_at(&[json!(["中文🌳", "review"])], 0).ok(),
+            Some(vec!["中文🌳".to_string(), "review".to_string()])
+        );
+        assert!(optional_string_at(&[json!(7)], 0, "reason").is_err());
+        assert_eq!(
+            optional_string_at(&[json!(null)], 0, "reason").ok(),
+            Some(None)
+        );
+    }
 }

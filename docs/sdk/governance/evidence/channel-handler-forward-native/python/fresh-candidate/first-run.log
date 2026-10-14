@@ -1,0 +1,413 @@
+.FFChannel forward Python receipt: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-native/python-channel-forward-1b_81cmt/receipt.json
+
+=================================== FAILURES ===================================
+_________ test_channel_owner_complete_binding_start_states_and_digest __________
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x106095e20>
+method = 'echo_agent/extension/register'
+params = {'kind': 'channel_plugin', 'implementation_id': 'plugin-forward-中文-2', 'descriptor': {'kind': 'channel_plugin', 'descriptor_version': 1, 'channel_id': 'forward-中文', 'label': 'native 中文🙂', ...}, 'timeout': None}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+>           return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+
+sdks/python/src/echo_agent_sdk/client.py:3387: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/.venv/lib/python3.12/site-packages/acp/client/connection.py:340: in ext_method
+    return await self._conn.send_request(f"_{method}", params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <acp.connection.Connection object at 0x106094da0>
+method = '_echo_agent/extension/register'
+params = {'kind': 'channel_plugin', 'implementation_id': 'plugin-forward-中文-2', 'descriptor': {'kind': 'channel_plugin', 'descriptor_version': 1, 'channel_id': 'forward-中文', 'label': 'native 中文🙂', ...}, 'timeout': None}
+
+    async def send_request(self, method: str, params: JsonValue | None = None) -> Any:
+        self._raise_if_unavailable()
+        request_id = self._next_request_id
+        self._next_request_id += 1
+        future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
+        self._pending[request_id] = future
+        payload = {"jsonrpc": "2.0", "id": request_id, "method": method, "params": params}
+        try:
+            await self._transport.send(payload)
+        except BaseException:
+            self._pending.pop(request_id, None)
+            future.cancel()
+            raise
+        self._notify_observers(StreamDirection.OUTGOING, payload)
+        try:
+>           return await future
+                   ^^^^^^^^^^^^
+E           acp.exceptions.RequestError: extension semantic identity is already owned by channel_plugin/plugin-forward-中文-1
+
+sdks/python/.venv/lib/python3.12/site-packages/acp/connection.py:126: RequestError
+
+The above exception was the direct cause of the following exception:
+
+evidence = (PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-native/python-channel-forw...echo_agent/integration/op', 'details': None}, 'error_code': 'invalid_value', 'callback_delta_expected': 0, ...}, ...]})
+
+    async def test_channel_owner_complete_binding_start_states_and_digest(evidence):
+        native, owner, receipt = await setup(evidence, "owner-binding")
+        rows = []
+        try:
+            before = len(native.calls)
+            inactive = await native.row_error(
+                native.call(owner, "channels.handler.handle", SPEC["inbound"])
+            )
+            rows.append(
+                {
+                    "scenario": "unstarted",
+                    "error": inactive,
+                    "callback_delta_expected": 0,
+                    "callback_delta": len(native.calls) - before,
+                }
+            )
+            wrong = await native.sdk.register_channel_message_handler(
+                "other-handler",
+                {
+                    "kind": "channel_message_handler",
+                    "descriptor_version": 1,
+                    "handler_id": "other-handler",
+                },
+                lambda *_: result("channel_reply"),
+            )
+            before_start = len(native.plugin_calls)
+            await native.row_error(
+                native.sdk.call(
+                    "channels.manager.start",
+                    owner["session"].wire,
+                    [owner["manager"], wrong.wire],
+                )
+            )
+            assert len(native.plugin_calls) == before_start
+            changed_handler = WireHandle(
+                owner["handler"].wire.id, "18446744073709551615", "extension"
+            )
+            await native.row_error(
+                native.sdk.call(
+                    "channels.manager.start",
+                    owner["session"].wire,
+                    [owner["manager"], changed_handler],
+                )
+            )
+            assert len(native.plugin_calls) == before_start
+            batch = (
+                await native.sdk.call("channels.manager.open", owner["session"].wire, [])
+            )["resource"]
+            batch_starts = []
+    
+            async def batch_plugin(call, _cancel):
+                if call["invocation"]["operation"] == "channel_start":
+                    batch_starts.append(call["invocation"])
+                return result(call["invocation"]["operation"])
+    
+            for name, bound in (("batch-a", owner["handler"]), ("batch-b", wrong)):
+                registration = await native.sdk.register_channel_plugin(
+                    name,
+                    {
+                        "kind": "channel_plugin",
+                        "descriptor_version": 1,
+                        "channel_id": name,
+                        "label": name,
+                        "handler_id": SPEC["handler_id"]
+                        if bound is owner["handler"]
+                        else "other-handler",
+                        "capabilities": {
+                            "chat_types": ["direct"],
+                            "supports_media": False,
+                            "supports_threads": False,
+                        },
+                    },
+                    batch_plugin,
+                )
+                await native.sdk.call(
+                    "channels.plugin.register",
+                    owner["session"].wire,
+                    [batch, registration.wire, bound.wire],
+                )
+            await native.row_error(
+                native.sdk.call(
+                    "channels.manager.start",
+                    owner["session"].wire,
+                    [batch, owner["handler"].wire],
+                )
+            )
+            assert batch_starts == []
+            rows.append(
+                {
+                    "scenario": "batch-original-binding-before-all-effects",
+                    "plugin_start_effects": 0,
+                }
+            )
+            native.start_probe = True
+            native.start_fail = True
+            assert (await native.start(owner))["failures"] == "1"
+            await native.row_error(
+                native.call(owner, "channels.handler.handle", SPEC["inbound"])
+            )
+            assert (await native.start(owner))["failures"] == "0"
+            native.start_probe = False
+            await native.row_error(
+                native.sdk.call(
+                    "channels.handler.handle",
+                    native.sessions[1].wire,
+                    [owner["manager"], owner["channel"], business_wire(SPEC["inbound"])],
+                )
+            )
+            manager_b = (
+                await native.sdk.call("channels.manager.open", native.sessions[1].wire, [])
+            )["resource"]
+>           second = await native.register(
+                native.sessions[1], manager_b, handler_id="second-forward-handler"
+            )
+
+sdks/python/tests/test_channel_handler_forward_host.py:565: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/tests/test_channel_handler_forward_host.py:269: in register
+    plugin_registration = await self.sdk.register_channel_plugin(
+sdks/python/src/echo_agent_sdk/client.py:3913: in register_channel_plugin
+    return await self._register_kind(
+sdks/python/src/echo_agent_sdk/client.py:3808: in _register_kind
+    return await self.register_typed_extension(
+sdks/python/src/echo_agent_sdk/client.py:3775: in register_typed_extension
+    return await self.register_extension(
+sdks/python/src/echo_agent_sdk/client.py:3727: in register_extension
+    response = await self.request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x106095e20>
+method = 'echo_agent/extension/register'
+params = {'kind': 'channel_plugin', 'implementation_id': 'plugin-forward-中文-2', 'descriptor': {'kind': 'channel_plugin', 'descriptor_version': 1, 'channel_id': 'forward-中文', 'label': 'native 中文🙂', ...}, 'timeout': None}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+            return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+>           raise EchoAgentError.from_exception(error, method) from error
+E           echo_agent_sdk.errors.EchoAgentError: extension semantic identity is already owned by channel_plugin/plugin-forward-中文-1
+
+sdks/python/src/echo_agent_sdk/client.py:3393: EchoAgentError
+______ test_channel_cancel_keeps_peer_full_buffer_close_and_late_finally _______
+
+fut = <coroutine object Event.wait at 0x1060a3ae0>, timeout = 5
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+/opt/anaconda3/lib/python3.12/asyncio/tasks.py:520: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <asyncio.locks.Event object at 0x1064712b0 [set]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+    
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another coroutine calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+    
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+/opt/anaconda3/lib/python3.12/asyncio/locks.py:212: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+evidence = (PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-native/python-channel-forw...echo_agent/integration/op', 'details': None}, 'error_code': 'invalid_value', 'callback_delta_expected': 0, ...}, ...]})
+
+    async def test_channel_cancel_keeps_peer_full_buffer_close_and_late_finally(evidence):
+        native, owner, receipt = await setup(evidence, "lifecycle")
+        rows = []
+        try:
+            await native.start(owner)
+            stream_a = await native.call(
+                owner, "channels.handler.handle_stream", native.park("park")
+            )
+            await asyncio.wait_for(native.started["park"].wait(), 5)
+            assert (
+                await native.sdk.call(
+                    "channels.stream.cancel", owner["session"].wire, [stream_a]
+                )
+                is True
+            )
+            terminal = asyncio.create_task(
+                native.sdk.call("channels.stream.next", owner["session"].wire, [stream_a])
+            )
+            await asyncio.wait_for(native.cancelled["park"].wait(), 5)
+            assert not terminal.done()
+            assert (
+                normalize(
+                    await native.call(owner, "channels.handler.handle", SPEC["inbound"])
+                )
+                == SPEC["outbound"]
+            )
+            native.release["park"].set()
+            assert event_parts(await terminal)[0] == "cancelled"
+            stream = await native.call(
+                owner, "channels.handler.handle_stream", native.park("full")
+            )
+            await asyncio.wait_for(native.started["full"].wait(), 5)
+            closing = asyncio.create_task(
+                native.sdk.call("channels.stream.close", owner["session"].wire, [stream])
+            )
+            await asyncio.wait_for(native.cancelled["full"].wait(), 5)
+            assert not closing.done()
+            native.release["full"].set()
+            await closing
+            await native.row_error(
+                native.sdk.call("channels.stream.next", owner["session"].wire, [stream]),
+                "closed_handle",
+            )
+            message = native.park("caller")
+            pending = asyncio.create_task(
+                native.call(owner, "channels.handler.handle", message)
+            )
+            await asyncio.wait_for(native.started["caller"].wait(), 5)
+            pending.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await pending
+            stop = asyncio.create_task(native.stop(owner))
+            await asyncio.wait_for(native.cancelled["caller"].wait(), 5)
+            assert not stop.done()
+            native.release["caller"].set()
+            await stop
+            assert (await native.start(owner))["failures"] == "0"
+            native.modes["error"] = "error"
+            failure = await native.row_error(
+                native.call(
+                    owner, "channels.handler.reply", {**SPEC["outbound"], "text": "error"}
+                ),
+                "framework_error",
+            )
+            assert (
+                SPEC["callback_behaviors"]["fail-reply"]["error"]["message"]
+                in failure["message"]
+            )
+            stream = await native.call(
+                owner, "channels.handler.handle_stream", native.park("resource")
+            )
+            await asyncio.wait_for(native.started["resource"].wait(), 5)
+            closing = asyncio.create_task(
+                native.sdk.call(
+                    "facade.resource.close", owner["session"].wire, [owner["manager"]]
+                )
+            )
+>           await asyncio.wait_for(native.cancelled["resource"].wait(), 5)
+
+sdks/python/tests/test_channel_handler_forward_host.py:741: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/anaconda3/lib/python3.12/asyncio/tasks.py:519: in wait_for
+    async with timeouts.timeout(timeout):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x1064a1e40>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+    
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+    
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+    
+            if self._task.uncancel() <= self._cancelling and exc_type is exceptions.CancelledError:
+                # Since there are no new cancel requests, we're
+                # handling this.
+>               raise TimeoutError from exc_val
+E               TimeoutError
+
+/opt/anaconda3/lib/python3.12/asyncio/timeouts.py:115: TimeoutError
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_channel_handler_forward_host.py::test_channel_owner_complete_binding_start_states_and_digest
+FAILED sdks/python/tests/test_channel_handler_forward_host.py::test_channel_cancel_keeps_peer_full_buffer_close_and_late_finally
+2 failed, 1 passed in 7.11s
+Task exception was never retrieved
+future: <Task finished name='Task-626' coro=<EchoAgentClient.call() done, defined at /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py:3561> exception=KeyError('operation is absent from canonical catalog: facade.resource.close')>
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3566, in call
+    return await self.invoke(operation, handle, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3526, in invoke
+    "signature_digest": self.catalog.signature(operation),
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/catalog.py", line 184, in signature
+    raise KeyError(f"operation is absent from canonical catalog: {operation}")
+KeyError: 'operation is absent from canonical catalog: facade.resource.close'

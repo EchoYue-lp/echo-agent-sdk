@@ -1,0 +1,9 @@
+# 当前候选完整三语言门禁（test NOP provider之后）
+
+同一个官方scripts/check-language-sdks.sh完整entry实际exit0，249.7秒、90900字节未截断：export候选catalog检查、lockedHostbuild、npmci/build/examples/all290tests/quickstart、Ruffwholecheck与175fmt、UVmodulepytest所有357tests+18subtests/quickstart、Maven67suites320tests/classpath/quickstart均执行并通过。各无filter/skip/强串行、额外ROOT覆盖；JavaSLF4J(W)为0，不设置日志抑制。
+
+执行前后632个源码文件摘要全相同，无metadata漂移，source-before/after证明精确该cut。原完整log、officialrun-command receipt/run、67原XML、sourcecut与POM/catalog源码归档；summary固定实测counts，非将分段绿拼whole0。负例Host outgoing_actor错误响应WARN原文保留，分类不混Rust编译警告或Javaprovider警告。
+
+真实framework仍gitb9099558620f5f9693c736c85c214db14f62a8cb，HostSHA8d819004...、无localpathpatch；full accepted identity生成及新driver治理目标revision/currentmain验收仍由主线程闭合。当前sourcecontract仍受控候选，不以全Rustinventory自动扩三语言API。本包不宣称SDK最终main或发布完成。
+
+上一次官方whole同counts0但缺Javaprovider6条warning，证据sdk-language-current-complete仍原字节保留；testscopeNOP只改变验证classpath，actualcompileCP不含provider、librarydownstream有日志选择。POM及classpath增量已由 sdk_capability_acceptance_audit 在本次官方whole运行前独立复审 PASS（0 Critical / Important / Minor，行动0），绑定POM摘要b0d92517、实际compile/testclasspaths与320项Maven证据。主线程在本次会话核实该final报告；本包门禁0是其后完整入口执行证据，不扩写为全Snapshot审查通过。

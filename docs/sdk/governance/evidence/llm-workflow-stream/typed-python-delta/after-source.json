@@ -1,0 +1,7 @@
+{
+  "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py",
+  "sha256": "d1589b1c05b1642a9f8c2160d419c27ea85c87a92f9dc4669d33c8894b7a2c31",
+  "class_sha256": "f3baff2945a6d9d3e8250265cf313ddd11f2bafdce110da23640458d9d819c4e",
+  "test_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_llm_workflow_stream_host.py",
+  "test_sha256": "c956e934588a8db99a94cf95886f7be1321766af870abb9fc14ba58b53778590"
+}

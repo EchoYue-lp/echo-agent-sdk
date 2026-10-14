@@ -1,0 +1,43 @@
+TAP version 13
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/sdk-ts-task-pause-ge8YmJ
+# TRACE {"at":1791921189776,"label":"reverse_entry","lane":"a","operation":"agent_execute_stream","invocation_id":"invocation-803d1b1299fa4e9b9d9fefd557637577-12"}
+# TRACE {"at":1791921189780,"label":"return_setup_ack","lane":"a","attempt":1,"stream":{"id":"stream-b9294efc-1fab-4bc6-a7bb-43c19037b554","generation":"1","kind":"stream"}}
+# TRACE {"at":1791921189786,"label":"reverse_entry","lane":"b","operation":"agent_execute_stream","invocation_id":"invocation-803d1b1299fa4e9b9d9fefd557637577-14"}
+# TRACE {"at":1791921189787,"label":"return_setup_ack","lane":"b","attempt":1,"stream":{"id":"stream-f7d3fc54-8f47-439c-850f-5ccee11cdd05","generation":"1","kind":"stream"}}
+# TRACE {"at":1791921189795,"label":"before_control"}
+# TRACE {"at":1791921189815,"label":"after_control"}
+# TRACE {"at":1791921189821,"label":"observed_paused"}
+# TRACE {"at":1791921189862,"label":"reverse_entry","lane":"c","operation":"agent_execute_stream","invocation_id":"invocation-803d1b1299fa4e9b9d9fefd557637577-35"}
+# TRACE {"at":1791921189863,"label":"return_setup_ack","lane":"c","attempt":1,"stream":{"id":"stream-abade3e9-4989-4151-89be-5f100f0ea678","generation":"1","kind":"stream"}}
+# TRACE {"at":1791921189882,"label":"observed_bc_completed"}
+# TRACE {"at":1791921189882,"label":"before_resume"}
+# TRACE {"at":1791921189911,"label":"after_resume"}
+# Subtest: exact Task pause preserves independent B/C
+not ok 1 - exact Task pause preserves independent B/C
+  ---
+  duration_ms: 20583.386625
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/task-pause-trace.mjs:81:40'
+  failureType: 'testCodeFailure'
+  error: 'observed framework condition did not occur'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    until (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/task-pause-trace.mjs:13:92)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async scenario (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-diagnostic/task-pause-trace.mjs:64:4)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 20767.002709
