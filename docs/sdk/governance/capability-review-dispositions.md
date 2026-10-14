@@ -1,5 +1,15 @@
 # 41项SDK能力的有限审查处置
 
+## 当前有限验收（2026-10-15）
+
+SDK精确pin为已发布框架a634、无path patch。[最新完整语言包](evidence/sdk-language-negotiation-reviewed-final/README.md)真实退出0：TS328、PY393加18、Java350/74XML及3quickstarts，787输入前后同。原14Rust与cfg-only真实LLM替换补证各保执行切点；TTL已实测，50组依赖例外已批准并复审。
+
+当前机器读取50项Finding本地resolved、5项open。新Git switch覆盖同名dirty路径的I1尚未修；B物理结算和12source迁移仍待人，完整生成正确阻写。具体开放对象与三链见[当前Finding账本](finding-ledger.md)。有限examined/mapped不升41族verified；Windows、最终strict、CI和SDK main分列，不靠测试总数完成治理。
+
+## 前一阶段文字与证据（历史，原正文保留）
+
+以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。
+
 本表是行为模型审查索引，不是运行时状态权威。主路径mapped表示入口/authority/lifecycle/failure已展开；Behavior的needs_review、openFinding与正式交付独立。接受范围只来自明确合同，完整Rustinventory只遥测。
 
 ## 当前验收状态（2026-10-14）

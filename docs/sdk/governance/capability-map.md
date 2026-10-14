@@ -1,5 +1,15 @@
 # SDK 全能力治理能力图
 
+## 当前有限验收（2026-10-15）
+
+SDK精确pin为已发布框架a634、无path patch。[最新完整语言包](evidence/sdk-language-negotiation-reviewed-final/README.md)真实退出0：TS328、PY393加18、Java350/74XML及3quickstarts，787输入前后同。原14Rust与cfg-only真实LLM替换补证各保执行切点；TTL已实测，50组依赖例外已批准并复审。
+
+当前机器读取50项Finding本地resolved、5项open。新Git switch覆盖同名dirty路径的I1尚未修；B物理结算和12source迁移仍待人，完整生成正确阻写。具体开放对象与三链见[当前Finding账本](finding-ledger.md)。有限examined/mapped不升41族verified；Windows、最终strict、CI和SDK main分列，不靠测试总数完成治理。
+
+## 前一阶段文字与证据（历史，原正文保留）
+
+以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。
+
 SDK 从30d7开始治理，当前已精确依赖已发布框架 `a6346643`，没有本地 path patch。此前 `76601` 正式证据切点的14条Rust及官方完整语言入口均已通过并独审：790项输入前后同，TS308、PY375+18、Java332/71XML和3quickstarts；原失败链保留。该结果不覆盖随后 Session/Run 意图A的实施、远端流原因修复、live journal 与A2A新增测试后的最终组合门禁，最新整体验收仍待。已具名审查按各组有限 `examined/mapped` 记录，41个Behavior与全局风险视角不自动verified，inventory/behavior闭合仍open；12项合同迁移和5秒B仍待决定，A已批准实施不再列成待选择。
 
 ## 当前与历史证据 (2026-10-14)

@@ -1,5 +1,27 @@
 # SDK Finding 承接账本
 
+## 当前有限验收（2026-10-15）
+
+SDK精确依赖已发布框架a634，八个包同一Git来源、无本地path patch。最新同一官方语言入口真实退出0：[正式完整语言包](evidence/sdk-language-negotiation-reviewed-final/README.md)记录TypeScript328、Python393加18子测试、Java350/74份XML与三个quickstart；787项输入与真实执行Git b7e6前后完全相同，实际Host da873。编译、Ruff与SLF4J告警为0，22条预期错误响应运行时WARN原字节保留。旧790/782、be5及原失败链仍属于原切点，不改写为本次运行。
+
+原正式14条Rust门禁与其源码切点已有真实命令/独审；后继cfg-only Workflow补证另有真实Host AgentNode A→B消费、Host lib187、严格Clippy及fmt/check，[增量证据](evidence/live-service-llm-proof/README.md)保持自己的执行时间，不将旧命令伪写成新运行。默认30分钟TTL三语言已实测，精确50组duplicate提示例外已由用户接受、实施并复审；其范围不扩其它警告。
+
+各组实际有界风险审查与具体bug闭合已记入语义对象；局部resolved不表示远端Issue或SDK main已关闭。41项Behavior仍保needs_review，有限examined/mapped不等于全族verified。新Git分支切换缺陷已由真实源码审发现并登记open，当前a634尚未修；同名dirty tracked路径可能被路径恢复覆盖。不能用上述完整语言通过否定这个尚未有具名consumer反例的窗口。
+
+两项待人的选择仍是12项accepted source/kind迁移与5秒物理结算B。cleanup、Sandbox和Task resume三个宽Finding的物理残余关联同一B，不建立三套authority。完整28-profile生成按12连续性义务正确阻写，与已修的库存自动接受旧bug分开。Windows原生consumer、最终源码摘要/全项目strict、适用远端CI与精确SDK main独立；CLI/官网外部写入及registry发布不从SDK授权扩张。
+
+机器读取本地Finding当前状态：50项resolved、5项open。开放对象如下：
+
+- [finding.sdk-accepted-source-continuity](../../../.echo-semantic/findings/finding.sdk-accepted-source-continuity.md)
+- [finding.sdk-cleanup-retry-owner](../../../.echo-semantic/findings/finding.sdk-cleanup-retry-owner.md)
+- [finding.sdk-git-branch-switch-dirty-path-overwrite](../../../.echo-semantic/findings/finding.sdk-git-branch-switch-dirty-path-overwrite.md)
+- [finding.sdk-sandbox-cleanup-order](../../../.echo-semantic/findings/finding.sdk-sandbox-cleanup-order.md)
+- [finding.sdk-task-resume-extension-invocation-conflict](../../../.echo-semantic/findings/finding.sdk-task-resume-extension-invocation-conflict.md)
+
+## 前一阶段文字与证据（历史，原正文保留）
+
+以下原文中“当前be5”“仍待回归”“保持open”等只描述该段原阶段；当前状态以前述事实与对应Finding对象为准。原失败、日志、方法菜单、sourcecut、计数和限制保留，不抹历史。
+
 ## 当前验收状态（2026-10-14）
 
 本轮客户端小里程碑已形成真实 Git：Java `59fde9d3`、TypeScript `cf6a042e`、Python `1ca513a1`，正式证据随后提交为 `76601b24`。三语言客户端八个具名风险视角均经实际独立源码审查记为有界 `examined`，C/I/M0；TS/Java 两项具体 stdio 关闭缺陷具完整修复、同源验证与具体复审链，已本地 resolved。当前 a634 的14条Rust门禁实际全0，依赖 audit/deny 和精确50组基线独审通过；官方完整语言同入口重跑退出0（TS308、PY375+18、Java332/71XML、3quickstarts），790项输入前后同。原退出1/98d714/TaskHTTP连接夹具证据保留，后继只证明受控Connection close机制，未声称原socket直接因果。完整生成、12项source/kind与5秒B选择、当前最终结构/平台/SDK main仍独立，不把客户端局部闭合扩为41族或八个全局视角verified。
