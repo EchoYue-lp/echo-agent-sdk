@@ -266,3 +266,7 @@ docs/sdk/governance/evidence/host-sha-python-launcher-compat/history/full-langua
 # Exact gap-oracle counterexample command output.
 docs/sdk/governance/evidence/gap-paused-consumer-oracle/terminal-barrier.log -diff
 docs/sdk/governance/evidence/gap-paused-consumer-oracle/whole-before/full-language.log -diff
+
+# Immutable Python 3.10 callback timeout counterexamples.
+docs/sdk/governance/evidence/python310-factory-timeout/history/whole-retry2-failed.log -diff
+docs/sdk/governance/evidence/python310-factory-timeout/python310-original.log -diff

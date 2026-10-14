@@ -1,0 +1,27 @@
+{
+  "source": "actual tool-call outputs from two original exception-type probes, not fabricated run-command receipts",
+  "python310": {
+    "python": "3.10.19 (main, Dec  9 2025, 19:17:38) [Clang 21.1.4 ]",
+    "executable": "/Users/ls/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/bin/python3.10",
+    "asyncio_timeout_is_builtin": false,
+    "raised_type": "asyncio.exceptions.TimeoutError",
+    "matches_builtin": false,
+    "matches_asyncio": true,
+    "shielded_future_cancelled": false,
+    "shielded_future_done": false,
+    "same_future_can_settle_after_timeout": true
+  },
+  "python312": {
+    "python": "3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 10:07:17) [Clang 14.0.6 ]",
+    "executable": "/opt/anaconda3/bin/python3",
+    "asyncio_timeout_is_builtin": true,
+    "raised_type": "builtins.TimeoutError",
+    "matches_builtin": true,
+    "matches_asyncio": true,
+    "shielded_future_cancelled": false,
+    "shielded_future_done": false,
+    "same_future_can_settle_after_timeout": true
+  },
+  "probeStderrBoth": "WARN `--no-project` was provided, but no project was found\n",
+  "probeExitBoth": 0
+}

@@ -1,0 +1,58 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_cleanup_waits_for_same_pending_construction_and_retries _________
+
+    @pytest.mark.asyncio
+    async def test_cleanup_waits_for_same_pending_construction_and_retries():
+        import asyncio
+    
+        from echo_agent_sdk.client import _Callbacks
+    
+        callbacks = _Callbacks({}, 8)
+        factory = WireHandle("factory", "1", "extension")
+        child = WireHandle("reserved", "1", "extension")
+        constructing = asyncio.Event()
+        release = asyncio.Event()
+        closed = []
+    
+        async def handler(payload, _cancel):
+            operation = payload["invocation"]["operation"]
+            if operation == "factory_create_agent":
+                constructing.set()
+                await release.wait()
+            if operation == "agent_close":
+                closed.append(payload["extension"]["id"])
+            return {"outcome": "result", "result": {"operation": operation, "value": None}}
+    
+        callbacks.extensions[factory.id] = handler
+        callbacks.extension_registrations[factory.id] = (factory, "agent_factory")
+        create = {
+            "extension": factory.to_dict(),
+            "invocation_id": "create",
+            "invocation": {
+                "operation": "factory_create_agent",
+                "input": {"instance": child.to_dict()},
+            },
+        }
+        pending = asyncio.create_task(
+            callbacks.ext_method("echo_agent/extension/invoke", create)
+        )
+        await constructing.wait()
+        close = {
+            "extension": child.to_dict(),
+            "factory_origin": factory.to_dict(),
+            "invocation_id": "close",
+            "deadline": {"seconds": "0", "nanos": 1_000_000},
+            "invocation": {"operation": "agent_close", "input": None},
+        }
+        timed = await callbacks.ext_method("echo_agent/extension/invoke", close)
+>       assert timed["error"]["code"] == "extension_timeout"
+E       AssertionError: assert 'extension_failed' == 'extension_timeout'
+E         
+E         - extension_timeout
+E         + extension_failed
+
+tests/test_protocol_integrity.py:236: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_integrity.py::test_cleanup_waits_for_same_pending_construction_and_retries
+1 failed in 0.59s

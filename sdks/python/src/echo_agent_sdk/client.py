@@ -3050,7 +3050,7 @@ class _Callbacks:
                         asyncio.shield(self.pending_factory_construction[child]),
                         timeout=max(0.001, seconds),
                     )
-                except TimeoutError as error:
+                except asyncio.TimeoutError as error:
                     raise EchoAgentError(
                         "extension_timeout",
                         "factory construction has not settled before cleanup deadline",

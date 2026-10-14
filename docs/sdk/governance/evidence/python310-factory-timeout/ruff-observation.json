@@ -1,0 +1,31 @@
+[
+  {
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "--with",
+      "ruff",
+      "ruff",
+      "check",
+      "src/echo_agent_sdk/client.py"
+    ],
+    "exitCode": 0,
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python"
+  },
+  {
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "--with",
+      "ruff",
+      "ruff",
+      "format",
+      "--check",
+      "src/echo_agent_sdk/client.py"
+    ],
+    "exitCode": 0,
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python"
+  }
+]

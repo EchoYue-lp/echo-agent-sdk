@@ -1,0 +1,60 @@
+[
+  {
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "--python",
+      "3.10",
+      "--with",
+      "pytest",
+      "--with",
+      "pytest-asyncio",
+      "--with",
+      "agent-client-protocol==0.12.1",
+      "python",
+      "-c",
+      "import asyncio,sys,json,importlib.metadata as m; print(json.dumps({\"python\":sys.version,\"executable\":sys.executable,\"ACP\":m.version(\"agent-client-protocol\"),\"pytest\":m.version(\"pytest\"),\"pytest_asyncio\":m.version(\"pytest-asyncio\"),\"asyncioTimeoutErrorIsBuiltin\":asyncio.TimeoutError is TimeoutError}))"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+    "exitCode": 0,
+    "stdout": {
+      "python": "3.10.19 (main, Dec  9 2025, 19:17:38) [Clang 21.1.4 ]",
+      "executable": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/bin/python3",
+      "ACP": "0.12.1",
+      "pytest": "9.1.1",
+      "pytest_asyncio": "1.4.0",
+      "asyncioTimeoutErrorIsBuiltin": false
+    },
+    "stderr": ""
+  },
+  {
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "--python",
+      "3.12",
+      "--with",
+      "pytest",
+      "--with",
+      "pytest-asyncio",
+      "--with",
+      "agent-client-protocol==0.12.1",
+      "python",
+      "-c",
+      "import asyncio,sys,json,importlib.metadata as m; print(json.dumps({\"python\":sys.version,\"executable\":sys.executable,\"ACP\":m.version(\"agent-client-protocol\"),\"pytest\":m.version(\"pytest\"),\"pytest_asyncio\":m.version(\"pytest-asyncio\"),\"asyncioTimeoutErrorIsBuiltin\":asyncio.TimeoutError is TimeoutError}))"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+    "exitCode": 0,
+    "stdout": {
+      "python": "3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 10:07:17) [Clang 14.0.6 ]",
+      "executable": "/Users/ls/.cache/uv/builds-v0/.tmpF2s2LQ/bin/python",
+      "ACP": "0.12.1",
+      "pytest": "9.1.1",
+      "pytest_asyncio": "1.4.0",
+      "asyncioTimeoutErrorIsBuiltin": true
+    },
+    "stderr": ""
+  }
+]

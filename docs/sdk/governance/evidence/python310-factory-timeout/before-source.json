@@ -1,0 +1,11 @@
+{
+  "sourceGit": "054d6515b2c08946803475c573766f2221646b56",
+  "clientSHA256": "fc843caf105c9e755f8976c4307533a560da98607965f63a3c5d5d21446924a9",
+  "testSHA256": "6de7f5e8f9fdbad783b652c362de97e261c687bca21c5eb2fda9a87a5b160e60",
+  "sourceMutated": false,
+  "failedWholeLogSHA256": "5954cd5dac9e461ed5de095cb8f2b214b22d39b03762bf9fd5fdf552f1a2c309",
+  "failedWholeLogBytes": 95086,
+  "failedWholeInputCount": 800,
+  "failedWholeInputUnchanged": true,
+  "scope": "Read-only phase1-3. No production/test mutation; original expected extension_timeout and shield/reservation retained."
+}
