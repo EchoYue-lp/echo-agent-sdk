@@ -1,0 +1,13 @@
+   Compiling echo_execution v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-execution)
+   Compiling echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+error[E0433]: cannot find `manager` in `tools`
+   --> echo-sdk-host/src/core_profile/facade/tools.rs:434:24
+    |
+434 |     echo_agent::tools::manager::validate_tool_input(tool.as_ref(), &parameters)
+    |                        ^^^^^^^ could not find `manager` in `tools`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `echo-sdk-host` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `echo-sdk-host` (lib test) due to 1 previous error

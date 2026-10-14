@@ -1,0 +1,11 @@
+test_authority_and_unicode_roundtrip (test_fixture.BackendTests) ... ok
+test_failure_no_write_and_retry_same_backend (test_fixture.BackendTests) ... ok
+test_prune_dedup_fixture_only_not_framework_proof (test_fixture.BackendTests) ... ok
+test_error_outcome_is_preserved_not_default_success (test_adapter.AdapterTests) ... ok
+test_item_unsigned_timestamps_and_native_value_boundary (test_adapter.AdapterTests) ... ok
+test_wire_decode_then_native_backend_is_single_conversion (test_adapter.AdapterTests) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.000s
+
+OK

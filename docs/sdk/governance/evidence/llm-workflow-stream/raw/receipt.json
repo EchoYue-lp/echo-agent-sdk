@@ -1,0 +1,652 @@
+{
+  "recorded_at_utc": "2026-10-13T15:24:23.578185+00:00",
+  "scope": "LLM and Workflow accepted native consumers on immutable binary; focused evidence only",
+  "tests": {
+    "typescript": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "python": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "java": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "runtime_roots": {
+    "typescript": [
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typescript-llm-0bDxul",
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typescript-workflow-23iPCf",
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typescript-graph-kKTWMF"
+    ],
+    "python": [
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/python-llm-02gmjgvi",
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/python-workflow-plsdh_ke",
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/python-graph-z7x3ci31"
+    ],
+    "java": [
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-workflow-4488589041146760073",
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-llm-16957111555728525351",
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/java-graph-4614840810580549706"
+    ]
+  },
+  "scenarios": [
+    {
+      "language": "typescript",
+      "group": "llm",
+      "proof": "typescript-llm-observed.json",
+      "callbacks": 6,
+      "modes": [
+        "nonstream",
+        "stream",
+        "missing_finish",
+        "error",
+        "cancel"
+      ],
+      "handler_finally_count": 6,
+      "stream_notification_sequences": [
+        {
+          "event": "chunk",
+          "sequence": "1",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "role": "assistant",
+              "content": "回答"
+            }
+          }
+        },
+        {
+          "event": "chunk",
+          "sequence": "2",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "content": "中文🙂"
+            }
+          }
+        },
+        {
+          "event": "complete",
+          "sequence": "3",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "finish_reason": "stop",
+              "usage": {
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "prompt_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "17"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "completion_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "22"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "prompt_tokens_details"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "cached_tokens"
+                            },
+                            "value": {
+                              "kind": "u64",
+                              "value": "3"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "terminal_statuses": [
+        "completed",
+        "completed",
+        "failed",
+        "failed",
+        "cancelled"
+      ],
+      "cancel_observed": true
+    },
+    {
+      "language": "typescript",
+      "group": "workflow",
+      "proof": "typescript-workflow-observed.json",
+      "callbacks": 5,
+      "producer_finally_count": 2,
+      "callbacks_completed": 5,
+      "callback_count_before_wrong_owner": 2,
+      "callback_count_after_wrong_owner": 2,
+      "close": false,
+      "close_again": false,
+      "after_close_error": "closed_handle"
+    },
+    {
+      "language": "typescript",
+      "group": "graph",
+      "proof": "typescript-graph-observed.json",
+      "callbacks": 0,
+      "wrong_owner_error": "invalid_value",
+      "wrong_cancel_error": "invalid_value",
+      "graph_cancel": {
+        "cancelled": true
+      }
+    },
+    {
+      "language": "python",
+      "group": "llm",
+      "proof": "python-llm-observed.json",
+      "callbacks": 6,
+      "modes": [
+        "nonstream",
+        "stream",
+        "missing_finish",
+        "error",
+        "cancel"
+      ],
+      "handler_finally_count": 6,
+      "stream_notification_sequences": [
+        {
+          "event": "chunk",
+          "sequence": "1",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "role": "assistant",
+              "content": "回答"
+            }
+          }
+        },
+        {
+          "event": "chunk",
+          "sequence": "2",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "content": "中文🙂"
+            }
+          }
+        },
+        {
+          "event": "complete",
+          "sequence": "3",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "finish_reason": "stop",
+              "usage": {
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "prompt_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "17"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "completion_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "22"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "prompt_tokens_details"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "cached_tokens"
+                            },
+                            "value": {
+                              "kind": "u64",
+                              "value": "3"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "terminal_statuses": [
+        "completed",
+        "completed",
+        "failed",
+        "failed",
+        "cancelled"
+      ],
+      "cancel_observed": true
+    },
+    {
+      "language": "python",
+      "group": "workflow",
+      "proof": "python-workflow-observed.json",
+      "callbacks": 5,
+      "producer_finally_count": 2,
+      "callbacks_completed": 5,
+      "callback_count_before_wrong_owner": 2,
+      "callback_count_after_wrong_owner": 2,
+      "close": false,
+      "close_again": false,
+      "after_close_error": "closed_handle"
+    },
+    {
+      "language": "python",
+      "group": "graph",
+      "proof": "python-graph-observed.json",
+      "callbacks": 0,
+      "wrong_owner_error": "invalid_value",
+      "wrong_cancel_error": "invalid_value",
+      "graph_cancel": {
+        "cancelled": true
+      }
+    },
+    {
+      "language": "java",
+      "group": "workflow",
+      "proof": "java-workflow-observed.json",
+      "callbacks": 5,
+      "producer_finally_count": 2,
+      "callbacks_completed": 5,
+      "callback_count_before_wrong_owner": 2,
+      "callback_count_after_wrong_owner": 2,
+      "close": false,
+      "close_again": false,
+      "after_close_error": "closed_handle"
+    },
+    {
+      "language": "java",
+      "group": "llm",
+      "proof": "java-llm-observed.json",
+      "callbacks": 6,
+      "modes": [
+        "nonstream",
+        "stream",
+        "missing_finish",
+        "error",
+        "cancel"
+      ],
+      "handler_finally_count": 6,
+      "stream_notification_sequences": [
+        {
+          "event": "chunk",
+          "sequence": "1",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "role": "assistant",
+              "content": "回答"
+            }
+          }
+        },
+        {
+          "event": "chunk",
+          "sequence": "2",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "content": "中文🙂"
+            }
+          }
+        },
+        {
+          "event": "complete",
+          "sequence": "3",
+          "value": {
+            "kind": "llm",
+            "value": {
+              "finish_reason": "stop",
+              "usage": {
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "prompt_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "17"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "completion_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_tokens"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "22"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "prompt_tokens_details"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "cached_tokens"
+                            },
+                            "value": {
+                              "kind": "u64",
+                              "value": "3"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "terminal_statuses": [
+        "completed",
+        "completed",
+        "failed",
+        "failed",
+        "cancelled"
+      ],
+      "cancel_observed": true
+    },
+    {
+      "language": "java",
+      "group": "graph",
+      "proof": "java-graph-observed.json",
+      "callbacks": 0,
+      "wrong_owner_error": "invalid_value",
+      "wrong_cancel_error": "invalid_value",
+      "graph_cancel": {
+        "cancelled": true
+      }
+    }
+  ],
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-channel-resource-admission-host",
+    "sha256": "07442919df0108592f93585a76f6a9cbc429f279a81876a70b56b959f53c6c2b"
+  },
+  "source_context": {
+    "sdk_root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+    "sdk_head": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+    "framework_root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control",
+    "framework_head": "4eb005c15b9c0036b73e409026c668c02f0a9575",
+    "binding": "source reference digests at evidence recording, not claim that current full dirty tree equals binary or later final contract"
+  },
+  "sources": [
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/llm_workflow_stream_fixture.py",
+      "sha256": "f5610feb70db26394d94e05492ad41ff32fe44842cbc1ddfe9ad904eae745df3"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/llm-workflow-stream-host.test.js",
+      "sha256": "d74a5899f61989d3d6f4b160a495291336a6ebbedc4c29f14d9e6ff2bb25ac21"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_llm_workflow_stream_host.py",
+      "sha256": "fcc1e0a026873b372b71a481dda9e444acf83a158dd6126369b551673ce2d5cf"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java",
+      "sha256": "468e8de51ed7fa5d18b909d3a44af44479957b66e503e425327e58c2e8652f59"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py",
+      "sha256": "b5f5029e587bcee3a88d853d101e6e92766f5cb28c5d623552d5d00e6a015579"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/src/client.ts",
+      "sha256": "ded47f340ee3de942442e93ae45aa7909ee5e70d2da914825b01002840333ca4"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "sha256": "866aa24fbd95a2cf7a8ddbfe19329ca954048a3d1353890205cae7b7e9018599"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/main/java/com/echoagent/sdk/LlmChatCall.java",
+      "sha256": "0a21cab6a2b22f42158acf1c5b5746eb909b4e3561b9b48f4a96d12aedd3ddac"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/main/java/com/echoagent/sdk/AgentComponentCall.java",
+      "sha256": "c4cba8016d54c1a3a8dbbbe0891ce95560e4b34789b093fa8c66c9345b51e32a"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/extension_bridge.rs",
+      "sha256": "5ac10f2474e628501f6c86320b18944b62e0d7efd7576043f3d7a91ca75a4ffc"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/workflow.rs",
+      "sha256": "f5c72f5e132d0de1e2fd6b9a17fb892201026838cff72db4b5a802bed02e7701"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/stream.rs",
+      "sha256": "0b660a6a0a5a12e5fdc29f6bb52048ece12a038934a4850cc30f331e327dc885"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "sha256": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/handles.rs",
+      "sha256": "32373298b489cf569c06ed7bc20d4a9584c1ab8669e89f751ab189cd13382153"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-protocol/src/methods.rs",
+      "sha256": "9e9deb481eb7850a039fc930971a2f9363db6e7905490165121dd28a57641000"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/contracts/sdk/accepted-facade-operation-catalog.json",
+      "sha256": "ecca20dc7eb2921b76bb9db23c45fbc4dab27eb510f2d80f4fdd6d76ab321cc0"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/workflow/loader.rs",
+      "sha256": "4534b21e1bb3e7508be9e7aba3617a424f1e944caddca60e3d02ea20b7a39739"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-orchestration/src/workflow/mod.rs",
+      "sha256": "790bc947270ed9e9eeed6350409e7b0f73fb7b186789e7b0a30a1c2b402e4fb9"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-core/src/llm/types.rs",
+      "sha256": "372027104aff0807abf5ab7f1a9b792c7beb832fef84b2be7c9c44be28b435f5"
+    }
+  ],
+  "raw_files": [
+    {
+      "path": "TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml",
+      "sha256": "dd62e2c6148be0b47834aa21c022ad4e97f8edae5c722491bb9ca962ee10a887"
+    },
+    {
+      "path": "java-final.log",
+      "sha256": "3895e980e3611d3698997374d3174176f8d43c5463f53d0a5513a3082853bc57"
+    },
+    {
+      "path": "java-first.log",
+      "sha256": "3895e980e3611d3698997374d3174176f8d43c5463f53d0a5513a3082853bc57"
+    },
+    {
+      "path": "java-graph-observed.json",
+      "sha256": "83c752a164f817674fe0d7d182057c53f2ce44e2e4a72920039326e199b5d09e"
+    },
+    {
+      "path": "java-graph-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "java-llm-observed.json",
+      "sha256": "984646ec8a208cd85a62136060036b0bbb5ffd0619547572c5c75ed410b9ed6f"
+    },
+    {
+      "path": "java-llm-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "java-workflow-observed.json",
+      "sha256": "815657a61bb8fe8c72bd22f871caf8c93cfb8cf0d02887e9f8ade4e5a3a35de1"
+    },
+    {
+      "path": "java-workflow-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "python-candidate.log",
+      "sha256": "681ae6e4c57c9547067294ef5310f27f3f97ed4a1af7aba7fee31c5a9d988be4"
+    },
+    {
+      "path": "python-final.log",
+      "sha256": "3000a55f5a19c9254d65314e7175ca2f9c29206f3552ce8a621819e07838894d"
+    },
+    {
+      "path": "python-graph-observed.json",
+      "sha256": "9584154810d395d9f365a33e91320b166cc0dab62ec048bd3703d0634996208d"
+    },
+    {
+      "path": "python-graph-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "python-llm-observed.json",
+      "sha256": "ce4656957200fd55d50f3f98ce1663241957064d17741a2f5dc43d290ad81ec2"
+    },
+    {
+      "path": "python-llm-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "python-workflow-observed.json",
+      "sha256": "4d63d9dd730783c00c414519a777e08758dc2fab23f2d449c1b7920ee4062a4c"
+    },
+    {
+      "path": "python-workflow-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "style.log",
+      "sha256": "afa20b27dacc9bf0aba3c1d265964c21e04ab42f6e39e2dd4769718ceded003a"
+    },
+    {
+      "path": "typescript-candidate.log",
+      "sha256": "0fda33b28dae061006e4b3bca02ce121793b50e02b8c764a2c46d7ea816a4083"
+    },
+    {
+      "path": "typescript-final.log",
+      "sha256": "a666bc31a16ddea1bde2e3698885d6ef649d2d491191bca65dbf0bdb73c351e4"
+    },
+    {
+      "path": "typescript-graph-observed.json",
+      "sha256": "759b5f85e8b82fd1858fdb6b4de524144ac55a33cd22b68c4413b426126c7f12"
+    },
+    {
+      "path": "typescript-graph-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "typescript-llm-observed.json",
+      "sha256": "9b5ed10c7f37be74daa75c805adb9c572e17e7831f59ff69a7508a244857a88a"
+    },
+    {
+      "path": "typescript-llm-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    },
+    {
+      "path": "typescript-workflow-observed.json",
+      "sha256": "5bb1b1e747d2fb711e9743c239de2e838d83bdb1f71f8abdd2ee4e79e0c21397"
+    },
+    {
+      "path": "typescript-workflow-scenario.json",
+      "sha256": "22de63b0db4b2cc2d3a03edad814e72face2a57fffa64929ad591c268107b48f"
+    }
+  ]
+}

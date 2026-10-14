@@ -1,0 +1,88 @@
+{
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "environment": {
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "steps": [
+    {
+      "label": "ci-bridge-no-run",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-extension-bridge",
+        "--tests",
+        "--no-run",
+        "--locked"
+      ],
+      "environmentOverrides": {
+        "RUSTFLAGS": "-A linker_messages -D warnings"
+      },
+      "exitCode": 0,
+      "logSha256": "b935ebff02d8d46eb8ee6c8ba924b52110278010da37aeedb3c46efef65d0ddb"
+    },
+    {
+      "label": "ci-bridge-e2e",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-extension-bridge",
+        "--locked",
+        "--test",
+        "extension_bridge_e2e"
+      ],
+      "environmentOverrides": {
+        "RUSTFLAGS": "-A linker_messages -D warnings"
+      },
+      "exitCode": 0,
+      "logSha256": "03595644e56762eb81a55b4c7b2aaec3dafde44b5e3f439213ae21a5c4c0b496"
+    },
+    {
+      "label": "ci-facade-e2e",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-facade-all",
+        "--locked",
+        "--test",
+        "facade_feature_adapters_e2e",
+        "--test",
+        "core_profile_e2e"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "6b97969b46d3051757fb10bd01b2d6cc0b7501918547f99f62d1b1e43692f940"
+    },
+    {
+      "label": "ci-no-bridge-source-admission",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--no-default-features",
+        "--features",
+        "sdk-facade-adapters,framework-eval,framework-improve,framework-sqlite",
+        "--locked",
+        "--test",
+        "core_profile_e2e",
+        "every_canonical_source_operation_reaches_a_host_adapter"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "5e912fde5fd401d77baddda2e169f8e9a4186ac00eae0bf5a0b83911ac5ec66f"
+    }
+  ]
+}

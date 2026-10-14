@@ -1,0 +1,25 @@
+{
+  "scope": "cfg-test-only-original-Host-Task-context-consumer-no-acceptance-decision",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "frameworkGitRevision": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "productionPrefixUnchanged": true,
+  "beforeSourceSha256": "87102f582db182bbd0ac2d29ba9f91f1ba8f6262d71c664bf272bac323a45bac",
+  "currentSourceSha256": "e46e619a603b599db1749e785f3460d27dec74f6ee7df6ef0209d86ab0f3b105",
+  "source": "echo-sdk-host/src/core_profile/facade/task_runtime.rs",
+  "focusedCommand": "cargo test -p echo-sdk-host --features sdk-facade-all --lib task_context_ --locked",
+  "focusedLog": "focused-active-claim.log",
+  "focusedLogSha256": "4bb8082aa73bf785954586eeb4407dbb02edaff195429ca070fef5c9662942e9",
+  "tests": 4,
+  "failures": 0,
+  "ignored": 0,
+  "actualPath": [
+    "RuntimeTaskService::execute",
+    "canonical TaskRevisionService Store claim",
+    "private TaskSubagentContext::from_claim",
+    "FacadeTaskController::dispatch_task",
+    "SubagentAttemptControlHandle::dispatch",
+    "real SubagentExecutor",
+    "NativeContextAgent::execute_stream_with_invocation_context",
+    "original Store read while claim is active"
+  ]
+}

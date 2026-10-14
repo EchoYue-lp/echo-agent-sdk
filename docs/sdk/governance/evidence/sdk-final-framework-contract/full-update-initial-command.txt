@@ -1,0 +1,6 @@
+working_directory=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance
+CARGO_TARGET_DIR=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target
+CARGO_BUILD_JOBS=2
+CARGO_PROFILE_DEV_DEBUG=0
+CARGO_PROFILE_TEST_DEBUG=0
+cargo run -q -p echo-sdk-protocol --bin export_schema --locked -- --update --accept-source struct_field echo_orchestration::tasks::runtime::TaskExecution::result docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md#accept-task-result-field --accept-source struct_field echo_orchestration::tasks::runtime::TaskExecution::interruption_requested docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md#accept-task-interruption-field --retire-source method echo_agent::evolution::curator::CuratorState::save docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md#retire-private-curator-snapshot-save

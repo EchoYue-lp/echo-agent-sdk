@@ -1,0 +1,6 @@
+{
+  "testSha256": "02ac2fe3febb0ffdfcd709092cb4ac8f19d6058a0e6cdf649b6b19902ff03092",
+  "clientSha256": "b65dea36e455ea74a9c3926b64e456dea037771c9d1125ad158e34cbf73db14e",
+  "source": "sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java",
+  "failure": "file exists while pathlib.write_text has opened/truncated before writing PID; parse receives empty string"
+}

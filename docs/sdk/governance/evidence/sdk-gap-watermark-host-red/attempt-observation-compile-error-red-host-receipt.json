@@ -1,0 +1,35 @@
+{
+  "phase": "red",
+  "case": "host",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--all-features",
+    "--locked",
+    "--test",
+    "core_profile_e2e",
+    "ack_window_snapshot_ack_resumes_strictly_after_watermark",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/gap-watermark-red-evidence/source",
+  "environment": {
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "startedAt": "2026-10-13T16:18:24.565934+00:00",
+  "finishedAt": "2026-10-13T16:19:05.591373+00:00",
+  "exitCode": 101,
+  "eventsSha256": "2b372ce338a031cdd39723e98f1716b25a2986ccfb205709b787ad534ea04218",
+  "logSha256": "6be3c6692e8454d97ac87e4e6eb53342e29235d52dd27cd988322b08ef62de94",
+  "productionSdkEventsUnchanged": true,
+  "frameworkSourcesUnchanged": true,
+  "classification": "invalid observation fixture compile attempt: WireNonZeroU64 has no as_str method",
+  "supportsBehavior": false
+}

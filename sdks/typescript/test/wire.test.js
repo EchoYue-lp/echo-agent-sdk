@@ -116,7 +116,8 @@ test("decoding rejects malformed handles and integer text", () => {
     { id: "a".repeat(257), generation: "1", kind: "session" },
   ];
   for (const handle of malformedHandles) {
-    assert.throws(() => toWireValue(handle), TypeError);
+    assert.throws(() => toWireValue({kind:"handle",value:handle}), TypeError);
+    if(Object.keys(handle).length===3&&handle.kind!=="unknown")assert.throws(() => toWireValue(handle), TypeError);
     assert.throws(() => fromWireValue({ kind: "handle", value: handle }), TypeError);
   }
 

@@ -1,0 +1,74 @@
+   Compiling echo_core v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+   Compiling echo_state v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+   Compiling echo_tools v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+   Compiling echo_execution v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+   Compiling echo_orchestration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+   Compiling echo_integration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+   Compiling echo_agent v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+error[E0433]: cannot find module or crate `futures` in this scope
+   --> echo-sdk-host/src/lib.rs:488:9
+    |
+488 |     use futures::{StreamExt as _, future::BoxFuture, stream::BoxStream};
+    |         ^^^^^^^ use of unresolved module or unlinked crate `futures`
+    |
+    = help: if you wanted to use a crate named `futures`, use `cargo add futures` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `futures`
+   --> echo-sdk-host/src/lib.rs:488:9
+    |
+488 |     use futures::{StreamExt as _, future::BoxFuture, stream::BoxStream};
+    |         ^^^^^^^ use of unresolved module or unlinked crate `futures`
+    |
+    = help: if you wanted to use a crate named `futures`, use `cargo add futures` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `futures` in this scope
+    --> echo-sdk-host/src/lib.rs:1237:13
+     |
+1237 |             futures::poll!(&mut close),
+     |             ^^^^^^^ use of unresolved module or unlinked crate `futures`
+
+error[E0433]: cannot find module or crate `futures` in this scope
+   --> echo-sdk-host/src/lib.rs:525:33
+    |
+525 |             Box::pin(async { Ok(futures::stream::empty().boxed()) })
+    |                                 ^^^^^^^ use of unresolved module or unlinked crate `futures`
+    |
+    = help: if you wanted to use a crate named `futures`, use `cargo add futures` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `futures` in this scope
+   --> echo-sdk-host/src/lib.rs:600:33
+    |
+600 |             Box::pin(async { Ok(futures::stream::empty().boxed()) })
+    |                                 ^^^^^^^ use of unresolved module or unlinked crate `futures`
+    |
+    = help: if you wanted to use a crate named `futures`, use `cargo add futures` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `tokio_util` in this scope
+   --> echo-sdk-host/src/lib.rs:605:21
+    |
+605 |             cancel: tokio_util::sync::CancellationToken,
+    |                     ^^^^^^^^^^ use of unresolved module or unlinked crate `tokio_util`
+    |
+    = help: if you wanted to use a crate named `tokio_util`, use `cargo add tokio_util` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `futures` in this scope
+   --> echo-sdk-host/src/lib.rs:611:20
+    |
+611 |                 Ok(futures::stream::once(async move {
+    |                    ^^^^^^^ use of unresolved module or unlinked crate `futures`
+    |
+    = help: if you wanted to use a crate named `futures`, use `cargo add futures` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `futures` in this scope
+   --> echo-sdk-host/src/lib.rs:807:22
+    |
+807 |         let result = futures::executor::block_on(connect_owned(
+    |                      ^^^^^^^ use of unresolved module or unlinked crate `futures`
+    |
+    = help: if you wanted to use a crate named `futures`, use `cargo add futures` to add it to your `Cargo.toml`
+
+Some errors have detailed explanations: E0432, E0433.
+For more information about an error, try `rustc --explain E0432`.
+error: could not compile `echo-sdk-host` (lib test) due to 8 previous errors
+warning: build failed, waiting for other jobs to finish...

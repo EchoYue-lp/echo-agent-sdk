@@ -46,12 +46,7 @@ fn invalid(method: &'static str, message: impl Into<String>) -> EchoSdkError {
 }
 
 fn framework(method: &'static str, error: echo_agent::error::ReactError) -> EchoSdkError {
-    wire::sdk_error(
-        ExtensionErrorCode::FrameworkError,
-        wire::bounded_framework_message(&error.to_string()),
-        Retryability::Never,
-        method,
-    )
+    wire::framework_error(&error, method)
 }
 
 fn json_of(
@@ -59,7 +54,7 @@ fn json_of(
     value: &WireValue,
     position: usize,
 ) -> Result<serde_json::Value, EchoSdkError> {
-    value.clone().into_json().map_err(|error| {
+    super::family_argument_json(value).map_err(|error| {
         invalid(
             method,
             format!("argument {position} is not a lossless wire value: {error}"),
@@ -135,14 +130,13 @@ pub(crate) async fn dispatch_trace(
     match request.operation.as_str() {
         "trace.store.open" => {
             let mode = string_at(TRACE_METHOD, &arguments, 0, "a store mode (memory|jsonl)")?;
-            let path = arguments.get(1).and_then(serde_json::Value::as_str);
-            let (resource, _record) = handles.register_facade_resource(
-                limits.max_resources,
-                "trace",
-                "trace.store",
-                Some(owner),
-                TRACE_METHOD,
-            )?;
+            let path = match arguments.get(1) {
+                None | Some(serde_json::Value::Null) => None,
+                Some(serde_json::Value::String(path)) => Some(path.as_str()),
+                Some(_) => {
+                    return Err(invalid(TRACE_METHOD, "trace path must be a string or null"));
+                }
+            };
             let store: Arc<dyn echo_agent::trace::RunStore> = match (mode.as_str(), path) {
                 ("memory", _) => Arc::new(echo_agent::trace::InMemoryRunStore::new()),
                 ("jsonl", Some(path)) => {
@@ -163,6 +157,13 @@ pub(crate) async fn dispatch_trace(
                     ));
                 }
             };
+            let (resource, _record) = handles.register_facade_resource(
+                limits.max_resources,
+                "trace",
+                "trace.store",
+                Some(owner),
+                TRACE_METHOD,
+            )?;
             stores
                 .lock()
                 .unwrap_or_else(|error| error.into_inner())
@@ -198,7 +199,11 @@ pub(crate) async fn dispatch_trace(
                 .await
                 .map_err(|error| framework(TRACE_METHOD, error))?;
             let run = run
-                .map(|run| serde_json::to_value(&run).unwrap_or_default())
+                .map(serde_json::to_value)
+                .transpose()
+                .map_err(|error| {
+                    invalid(TRACE_METHOD, format!("run serialization failed: {error}"))
+                })?
                 .unwrap_or(serde_json::Value::Null);
             wire(serde_json::json!({"run": run}))
         }
@@ -215,18 +220,27 @@ pub(crate) async fn dispatch_trace(
             let page: Vec<serde_json::Value> = summaries
                 .iter()
                 .take(limits.page)
-                .map(|summary| serde_json::to_value(summary).unwrap_or_default())
-                .collect();
+                .map(serde_json::to_value)
+                .collect::<Result<_, _>>()
+                .map_err(|error| {
+                    invalid(
+                        TRACE_METHOD,
+                        format!("summary serialization failed: {error}"),
+                    )
+                })?;
             wire(serde_json::json!({"summaries": page}))
         }
         "trace.run.list_recent" => {
             let resource =
                 super::resource_handle_at(&arguments, 0, "a trace store resource", TRACE_METHOD)?;
-            let limit = arguments
-                .get(1)
-                .and_then(serde_json::Value::as_u64)
-                .map(|limit| limit.min(limits.page as u64) as usize)
-                .unwrap_or(limits.page);
+            let limit = match arguments.get(1) {
+                None | Some(serde_json::Value::Null) => limits.page,
+                Some(value) => usize::try_from(value.as_u64().ok_or_else(|| {
+                    invalid(TRACE_METHOD, "trace limit must be an unsigned integer")
+                })?)
+                .unwrap_or(usize::MAX)
+                .min(limits.page),
+            };
             let record = store_record(handles, stores, &resource, owner)?;
             let summaries = record
                 .store
@@ -236,8 +250,14 @@ pub(crate) async fn dispatch_trace(
             let page: Vec<serde_json::Value> = summaries
                 .iter()
                 .take(limit)
-                .map(|summary| serde_json::to_value(summary).unwrap_or_default())
-                .collect();
+                .map(serde_json::to_value)
+                .collect::<Result<_, _>>()
+                .map_err(|error| {
+                    invalid(
+                        TRACE_METHOD,
+                        format!("summary serialization failed: {error}"),
+                    )
+                })?;
             wire(serde_json::json!({"summaries": page}))
         }
         other => Err(invalid(
@@ -301,7 +321,10 @@ pub(crate) async fn dispatch_eval(
                 );
             }
             let report = echo_agent::eval::EvalReport::new(results);
-            wire(serde_json::to_value(&report).unwrap_or_default())
+            wire(
+                serde_json::to_value(&report)
+                    .map_err(|error| invalid(EVAL_METHOD, error.to_string()))?,
+            )
         }
         other => Err(invalid(
             EVAL_METHOD,
@@ -334,8 +357,9 @@ pub(crate) async fn dispatch_improve(
             let messages = echo_agent::improve::TrajectorySaver::convert_run_to_sharegpt(&run);
             let messages: Vec<serde_json::Value> = messages
                 .iter()
-                .map(|message| serde_json::to_value(message).unwrap_or_default())
-                .collect();
+                .map(serde_json::to_value)
+                .collect::<Result<_, _>>()
+                .map_err(|error| invalid(IMPROVE_METHOD, error.to_string()))?;
             wire(serde_json::json!({"messages": messages}))
         }
         "improve.run.analyze" => {
@@ -344,7 +368,10 @@ pub(crate) async fn dispatch_improve(
             #[cfg(feature = "framework-eval")]
             {
                 let critique = echo_agent::improve::Analyzer::analyze(&run);
-                wire(serde_json::to_value(&critique).unwrap_or_default())
+                wire(
+                    serde_json::to_value(&critique)
+                        .map_err(|error| invalid(IMPROVE_METHOD, error.to_string()))?,
+                )
             }
             #[cfg(not(feature = "framework-eval"))]
             {
@@ -379,4 +406,93 @@ pub(crate) fn drop_session_stores(
         .lock()
         .unwrap_or_else(|error| error.into_inner())
         .retain(|id, _| !closed.iter().any(|closed_id| closed_id == id));
+}
+
+#[cfg(test)]
+mod adapter_regression_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn failed_trace_open_does_not_consume_the_only_resource_slot()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for values in [
+            vec![serde_json::json!("unknown")],
+            vec![serde_json::json!("jsonl")],
+            vec![serde_json::json!("jsonl"), serde_json::json!(42)],
+        ] {
+            let handles = HandleRegistry::new(1, 8);
+            let llm_config = echo_agent::llm::LlmConfig::for_provider(
+                "local",
+                "http://127.0.0.1:11434/v1",
+                "",
+                "unused",
+                echo_agent::llm::LlmApiProtocol::ChatCompletions,
+            )?;
+            let definition = crate::factory::PreparedAgentDefinition::new(
+                Default::default(),
+                Arc::new(echo_agent::llm::OpenAiClient::new(llm_config)?),
+                None,
+                false,
+            );
+            let (agent, _) = handles
+                .register_agent(Arc::new(definition), String::new())
+                .map_err(|error| std::io::Error::other(error.message))?;
+            handles
+                .register_session_with_cwd("owner".to_string(), agent.id, None)
+                .map_err(|error| std::io::Error::other(error.message))?;
+            let stores = std::sync::Mutex::new(HashMap::new());
+            let request = FeatureOperationRequest {
+                operation: "trace.store.open".to_string(),
+                signature_digest: String::new(),
+                handle: None,
+                arguments: values
+                    .into_iter()
+                    .map(WireValue::from_json)
+                    .collect::<Result<_, _>>()?,
+            };
+            assert!(
+                dispatch_trace(
+                    &handles,
+                    &stores,
+                    "owner",
+                    &request,
+                    super::super::FacadeFamilyLimits {
+                        max_resources: 1,
+                        page: 8
+                    }
+                )
+                .await
+                .is_err_and(|error| error.code == ExtensionErrorCode::InvalidValue)
+            );
+            // A real successful creation must remain possible after failure.
+            let valid = FeatureOperationRequest {
+                operation: "trace.store.open".to_string(),
+                signature_digest: String::new(),
+                handle: None,
+                arguments: vec![WireValue::String("memory".to_string())],
+            };
+            assert!(
+                dispatch_trace(
+                    &handles,
+                    &stores,
+                    "owner",
+                    &valid,
+                    super::super::FacadeFamilyLimits {
+                        max_resources: 1,
+                        page: 8
+                    }
+                )
+                .await
+                .is_ok()
+            );
+            assert!(
+                stores
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .len()
+                    == 1
+            );
+        }
+        Ok(())
+    }
 }

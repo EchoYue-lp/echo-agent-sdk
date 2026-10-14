@@ -1,0 +1,10 @@
+{
+  "runtime_and_tests_and_scripts_unchanged": true,
+  "documentation_changed": [
+    "sdks/java/README.md"
+  ],
+  "documentation_before_sha256": "c05a54c4ec6be31fdff5a5bfa1f0655c62718a7ff01155d965b99dae9e2a9c77",
+  "documentation_after_sha256": "defa6fb4b60f293b1c773e5ff924b6262a27f41e77832723d5871978357bd66e",
+  "reason": "README excluded from executed code/tool inputs; metadata writer changed documentation during validation, retained as explicit drift instead of claiming whole source identical",
+  "runtime_sources_verified": 631
+}

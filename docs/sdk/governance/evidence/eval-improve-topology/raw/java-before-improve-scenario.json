@@ -1,0 +1,760 @@
+{
+  "group": "improve",
+  "steps": [
+    {
+      "id": "loop",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::new",
+      "arguments": []
+    },
+    {
+      "id": "max",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::max_iterations",
+      "arguments": [
+        {
+          "$ref": "loop",
+          "path": []
+        },
+        {
+          "$u64": "2"
+        }
+      ]
+    },
+    {
+      "id": "holdout",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::holdout_ratio",
+      "arguments": [
+        {
+          "$ref": "max",
+          "path": []
+        },
+        {
+          "$f64": 0.5
+        }
+      ]
+    },
+    {
+      "id": "threshold",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::improvement_threshold",
+      "arguments": [
+        {
+          "$ref": "holdout",
+          "path": []
+        },
+        {
+          "$f64": 0.75
+        }
+      ]
+    },
+    {
+      "id": "early",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::run",
+      "arguments": [
+        {
+          "$ref": "threshold",
+          "path": []
+        },
+        [
+          {
+            "id": "case-0",
+            "name": "case-0",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          },
+          {
+            "id": "case-1",
+            "name": "case-1",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          },
+          {
+            "id": "case-2",
+            "name": "case-2",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          },
+          {
+            "id": "case-3",
+            "name": "case-3",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          }
+        ],
+        {
+          "$factory": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "max-threshold",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::improvement_threshold",
+      "arguments": [
+        {
+          "$ref": "holdout",
+          "path": []
+        },
+        {
+          "$f64": 1.1
+        }
+      ]
+    },
+    {
+      "id": "maximum",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::run_async",
+      "arguments": [
+        {
+          "$ref": "max-threshold",
+          "path": []
+        },
+        [
+          {
+            "id": "case-0",
+            "name": "case-0",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          },
+          {
+            "id": "case-1",
+            "name": "case-1",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          },
+          {
+            "id": "case-2",
+            "name": "case-2",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          },
+          {
+            "id": "case-3",
+            "name": "case-3",
+            "description": "native bounded case 中文🙂",
+            "domain": null,
+            "task": "good",
+            "project_fixture": null,
+            "success_criteria": {
+              "type": "output_contains",
+              "substring": "OK 中文🙂"
+            },
+            "constraints": {}
+          }
+        ],
+        {
+          "$factory": true
+        },
+        null
+      ]
+    },
+    {
+      "id": "max-get",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::max_iterations",
+      "arguments": [
+        {
+          "$ref": "max-threshold",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "holdout-get",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::holdout_ratio",
+      "arguments": [
+        {
+          "$ref": "max-threshold",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "threshold-get",
+      "operation": "echo_agent::improve::loop::ImprovementLoop::improvement_threshold",
+      "arguments": [
+        {
+          "$ref": "max-threshold",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "operation": "trace.store.open",
+      "arguments": [
+        "jsonl",
+        {
+          "$string_path": "traces"
+        }
+      ]
+    },
+    {
+      "id": "save-run",
+      "operation": "trace.run.save",
+      "arguments": [
+        {
+          "$ref": "store",
+          "path": [
+            "resource"
+          ]
+        },
+        {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": 11
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": 11,
+              "original_bytes": 9,
+              "returned_bytes": 9,
+              "estimated_tokens": 3,
+              "output_handling": null,
+              "artifact": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 5,
+            "total_tokens": 22,
+            "cached_prompt_tokens": 3,
+            "cache_creation_prompt_tokens": 0,
+            "usage_reported_calls": 1,
+            "usage_missing_calls": 0
+          },
+          "timings": {
+            "total_duration_ms": 123,
+            "llm_duration_ms": 112,
+            "tool_duration_ms": 11
+          },
+          "started_at": "2026-10-13T00:00:00.123456789Z",
+          "finished_at": "2026-10-13T00:00:00.246456789Z"
+        }
+      ]
+    },
+    {
+      "id": "load-run",
+      "operation": "trace.run.load",
+      "arguments": [
+        {
+          "$ref": "store",
+          "path": [
+            "resource"
+          ]
+        },
+        "trajectory-中文🙂"
+      ]
+    },
+    {
+      "id": "sharegpt",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::convert_run_to_sharegpt",
+      "arguments": [
+        {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": 11
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": 11,
+              "original_bytes": 9,
+              "returned_bytes": 9,
+              "estimated_tokens": 3,
+              "output_handling": null,
+              "artifact": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 5,
+            "total_tokens": 22,
+            "cached_prompt_tokens": 3,
+            "cache_creation_prompt_tokens": 0,
+            "usage_reported_calls": 1,
+            "usage_missing_calls": 0
+          },
+          "timings": {
+            "total_duration_ms": 123,
+            "llm_duration_ms": 112,
+            "tool_duration_ms": 11
+          },
+          "started_at": "2026-10-13T00:00:00.123456789Z",
+          "finished_at": "2026-10-13T00:00:00.246456789Z"
+        }
+      ]
+    },
+    {
+      "id": "analyze",
+      "operation": "improve.run.analyze",
+      "arguments": [
+        {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": 11
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": 11,
+              "original_bytes": 9,
+              "returned_bytes": 9,
+              "estimated_tokens": 3,
+              "output_handling": null,
+              "artifact": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 5,
+            "total_tokens": 22,
+            "cached_prompt_tokens": 3,
+            "cache_creation_prompt_tokens": 0,
+            "usage_reported_calls": 1,
+            "usage_missing_calls": 0
+          },
+          "timings": {
+            "total_duration_ms": 123,
+            "llm_duration_ms": 112,
+            "tool_duration_ms": 11
+          },
+          "started_at": "2026-10-13T00:00:00.123456789Z",
+          "finished_at": "2026-10-13T00:00:00.246456789Z"
+        }
+      ]
+    },
+    {
+      "id": "saver",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::new",
+      "arguments": [
+        {
+          "$path": "trajectories"
+        }
+      ]
+    },
+    {
+      "id": "save",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::save",
+      "arguments": [
+        {
+          "$ref": "saver",
+          "path": []
+        },
+        {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": 11
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": 11,
+              "original_bytes": 9,
+              "returned_bytes": 9,
+              "estimated_tokens": 3,
+              "output_handling": null,
+              "artifact": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 5,
+            "total_tokens": 22,
+            "cached_prompt_tokens": 3,
+            "cache_creation_prompt_tokens": 0,
+            "usage_reported_calls": 1,
+            "usage_missing_calls": 0
+          },
+          "timings": {
+            "total_duration_ms": 123,
+            "llm_duration_ms": 112,
+            "tool_duration_ms": 11
+          },
+          "started_at": "2026-10-13T00:00:00.123456789Z",
+          "finished_at": "2026-10-13T00:00:00.246456789Z"
+        },
+        "model🙂"
+      ]
+    },
+    {
+      "id": "list",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::list",
+      "arguments": [
+        {
+          "$ref": "saver",
+          "path": []
+        },
+        null
+      ]
+    },
+    {
+      "id": "stats",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::stats",
+      "arguments": [
+        {
+          "$ref": "saver",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "block",
+      "action": "block_directory",
+      "directory": "trajectories"
+    },
+    {
+      "id": "failed-save",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::save",
+      "arguments": [
+        {
+          "$ref": "saver",
+          "path": []
+        },
+        {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": 11
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": 11,
+              "original_bytes": 9,
+              "returned_bytes": 9,
+              "estimated_tokens": 3,
+              "output_handling": null,
+              "artifact": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": 17,
+            "completion_tokens": 5,
+            "total_tokens": 22,
+            "cached_prompt_tokens": 3,
+            "cache_creation_prompt_tokens": 0,
+            "usage_reported_calls": 1,
+            "usage_missing_calls": 0
+          },
+          "timings": {
+            "total_duration_ms": 123,
+            "llm_duration_ms": 112,
+            "tool_duration_ms": 11
+          },
+          "started_at": "2026-10-13T00:00:00.123456789Z",
+          "finished_at": "2026-10-13T00:00:00.246456789Z"
+        },
+        "model🙂"
+      ],
+      "error": "framework_error"
+    },
+    {
+      "id": "restore",
+      "action": "restore_directory",
+      "directory": "trajectories"
+    },
+    {
+      "id": "saver-reopen",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::new",
+      "arguments": [
+        {
+          "$path": "trajectories"
+        }
+      ]
+    },
+    {
+      "id": "reopened-list",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::list",
+      "arguments": [
+        {
+          "$ref": "saver-reopen",
+          "path": []
+        },
+        null
+      ]
+    },
+    {
+      "id": "reopened-stats",
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::stats",
+      "arguments": [
+        {
+          "$ref": "saver-reopen",
+          "path": []
+        }
+      ]
+    }
+  ],
+  "run": {
+    "run_id": "trajectory-中文🙂",
+    "parent_run_id": "parent🙂",
+    "agent_name": "native-agent🙂",
+    "model": "fixed-model",
+    "provider": null,
+    "turn_id": "turn🙂",
+    "execution_id": "execute🙂",
+    "session_id": "session🙂",
+    "status": "completed",
+    "input": "读写中文🙂",
+    "events": [
+      {
+        "type": "tool_call",
+        "call_id": "call🙂",
+        "name": "write_file",
+        "args": {
+          "path": "file🙂",
+          "content": "written🙂"
+        },
+        "risk": "write",
+        "duration_ms": 11
+      },
+      {
+        "type": "file_edit",
+        "tool": "write_file",
+        "path": "file🙂"
+      },
+      {
+        "type": "tool_result",
+        "call_id": "call🙂",
+        "name": "write_file",
+        "success": true,
+        "output_preview": "写入🙂",
+        "output_truncated": false,
+        "duration_ms": 11,
+        "original_bytes": 9,
+        "returned_bytes": 9,
+        "estimated_tokens": 3,
+        "output_handling": null,
+        "artifact": null
+      }
+    ],
+    "final_output": "完成🙂",
+    "error": null,
+    "token_usage": {
+      "prompt_tokens": 17,
+      "completion_tokens": 5,
+      "total_tokens": 22,
+      "cached_prompt_tokens": 3,
+      "cache_creation_prompt_tokens": 0,
+      "usage_reported_calls": 1,
+      "usage_missing_calls": 0
+    },
+    "timings": {
+      "total_duration_ms": 123,
+      "llm_duration_ms": 112,
+      "tool_duration_ms": 11
+    },
+    "started_at": "2026-10-13T00:00:00.123456789Z",
+    "finished_at": "2026-10-13T00:00:00.246456789Z"
+  },
+  "grade_good": {
+    "results": [
+      {
+        "assertion_id": "a1",
+        "passed": true,
+        "confidence": 0.875,
+        "evidence": "OK",
+        "reasoning": "fixed one🙂"
+      },
+      {
+        "assertion_id": "a2",
+        "passed": false,
+        "confidence": 0.625,
+        "evidence": "none",
+        "reasoning": "fixed two🙂"
+      }
+    ],
+    "overall_assessment": "fixed grade🙂"
+  },
+  "factory_answer": "OK 中文🙂"
+}

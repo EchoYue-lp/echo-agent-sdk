@@ -1,0 +1,138 @@
+--- before-regression-bridge.rs
++++ ordering-fixed-bridge.rs
+@@ -1947,6 +1947,19 @@
+                         || state.sink.remote_terminal_received.load(Ordering::Acquire)
+                         || state._owner.finished.is_cancelled())
+                 {
++                    if state.sink.remote_terminal_received.load(Ordering::Acquire) {
++                        // The actual RPC answer and validated remote terminal
++                        // are both known here. Release the original invocation
++                        // before its terminal becomes visible to a consumer
++                        // that may immediately call this same child's close.
++                        state
++                            ._owner
++                            .retained_lease
++                            .lock()
++                            .unwrap_or_else(|error| error.into_inner())
++                            .take();
++                        state._owner.finished.cancel();
++                    }
+                     let pending_failure = state
+                         ._owner
+                         .pending_failure
+@@ -10045,6 +10058,115 @@
+         Ok(())
+     }
+ 
++    async fn custom_stream_holds_original_exclusive_lease_until_both_facts(
++        hold_response: bool,
++    ) -> Result<(), String> {
++        let authority = echo_agent::acp::ExtensionInvocationAuthority::new(2)
++            .map_err(|error| format!("{error:?}"))?;
++        let lease = authority
++            .lease(Some("same-child/custom-agent"), CancellationToken::new())
++            .map_err(|error| format!("{error:?}"))?;
++        let stream = test_stream_handle("factory-child-pending-stream");
++        let owner = Arc::new(CallbackInvocationOwner {
++            _stream: None,
++            _session_callback: None,
++            _agent_invocation: None,
++            retained_lease: Mutex::new(Some(lease)),
++            response_completed: CancellationToken::new(),
++            pending_failure: Mutex::new(None),
++            finished: CancellationToken::new(),
++        });
++        let shared = ExtensionBridgeShared::new();
++        let (sink, receiver) = ExtensionStreamSink::new(
++            stream.clone(),
++            "same-child".to_string(),
++            ExtensionKind::CustomAgent,
++            1,
++            None,
++        );
++        sink.retain_until_remote_terminal
++            .store(true, Ordering::Release);
++        shared.register_stream(sink.clone());
++        let terminal = ExtensionStreamEvent::Complete {
++            stream: stream.clone(),
++            sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
++                .map_err(|error| error.to_string())?,
++            value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::FinalAnswer {
++                text: "finished".to_string(),
++            }),
++        };
++        let (response_sender, response_receiver) = tokio::sync::oneshot::channel();
++        let mut response_sender = Some(response_sender);
++        if hold_response {
++            shared.deliver_stream_event(terminal.clone())?;
++        } else {
++            response_sender
++                .take()
++                .ok_or_else(|| "missing original response sender".to_string())?
++                .send(Ok(None))
++                .map_err(|_| "response receiver disappeared".to_string())?;
++            let mut wrong = terminal.clone();
++            if let ExtensionStreamEvent::Complete { stream, .. } = &mut wrong {
++                stream.generation = WireU64::from_u64(2);
++            }
++            assert!(shared.deliver_stream_event(wrong).is_err());
++            assert!(!sink.remote_terminal_received.load(Ordering::Acquire));
++        }
++        let mut source = owned_callback_event_stream(
++            owner,
++            CallbackStreamDropNotice {
++                cancellation: CancellationToken::new(),
++                armed: true,
++            },
++            sink,
++            receiver,
++            response_receiver,
++        );
++        assert!(
++            tokio::time::timeout(Duration::from_millis(20), source.next())
++                .await
++                .is_err()
++        );
++        assert_eq!(authority.in_flight(), 1);
++        assert!(
++            authority
++                .lease(Some("same-child/custom-agent"), CancellationToken::new())
++                .is_err(),
++            "a missing actual RPC answer or valid remote terminal must preserve child exclusivity"
++        );
++        if hold_response {
++            response_sender
++                .take()
++                .ok_or_else(|| "missing held original response".to_string())?
++                .send(Ok(None))
++                .map_err(|_| "response receiver disappeared".to_string())?;
++        } else {
++            shared.deliver_stream_event(terminal)?;
++        }
++        assert!(
++            source
++                .next()
++                .await
++                .ok_or_else(|| "missing completed terminal".to_string())?
++                .map_err(|error| error.message)?
++                .is_terminal()
++        );
++        assert_eq!(authority.in_flight(), 0);
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn custom_stream_keeps_child_exclusive_while_original_rpc_answer_is_pending()
++    -> Result<(), String> {
++        custom_stream_holds_original_exclusive_lease_until_both_facts(true).await
++    }
++
++    #[tokio::test]
++    async fn custom_stream_keeps_child_exclusive_until_valid_remote_terminal() -> Result<(), String>
++    {
++        custom_stream_holds_original_exclusive_lease_until_both_facts(false).await
++    }
++
+     fn test_stream_handle(id: &str) -> WireHandle {
+         WireHandle {
+             id: id.to_string(),

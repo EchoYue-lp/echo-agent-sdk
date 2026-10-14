@@ -6,6 +6,19 @@ import java.math.BigInteger;
 
 /** Closed, operation-discriminated input contract for Agent components. */
 public sealed interface AgentComponentRequest permits
+        AgentComponentRequest.ConversationEnsureProjectionEpochWithContext,
+        AgentComponentRequest.ConversationGetProjectionAuthorityWithContext,
+        AgentComponentRequest.ConversationApplyTranscriptProjectionWithContext,
+        AgentComponentRequest.ConversationDeleteManagedWithContext,
+        AgentComponentRequest.RuntimeLoadManagedStateWithContext,
+        AgentComponentRequest.RuntimeLoadScopeAuthorityWithContext,
+        AgentComponentRequest.RuntimeCompareAndSaveCheckpointWithContext,
+        AgentComponentRequest.RuntimeAcknowledgeTranscriptProjectionWithContext,
+        AgentComponentRequest.RuntimeRetireGenerationWithContext,
+        AgentComponentRequest.RuntimeBeginScopeRetirementWithContext,
+        AgentComponentRequest.RuntimeContinueScopeRetirementWithContext,
+        AgentComponentRequest.RevisionedTaskCompareAndCommitExecution,
+
         AgentComponentRequest.ConversationCreate,
         AgentComponentRequest.ConversationGet,
         AgentComponentRequest.ConversationList,
@@ -67,6 +80,123 @@ public sealed interface AgentComponentRequest permits
         AgentComponentRequest.SkillLoadAllows {
 
     String operation();
+
+    default String component() {
+        var operation = operation();
+        if (operation.startsWith("conversation_")) return "conversation_store";
+        if (operation.startsWith("run_")) return "run_store";
+        if (operation.startsWith("runtime_")) return "runtime_state_store";
+        if (operation.startsWith("audit_")) return "audit_logger";
+        if (operation.startsWith("workflow_checkpoint_")) return "workflow_checkpoint_store";
+        if (operation.startsWith("revisioned_task_")) return "revisioned_task_store";
+        if (operation.startsWith("sandbox_")) return "sandbox_executor";
+        if (operation.startsWith("mcp_transport_")) return "mcp_transport";
+        return switch (operation) {
+            case "context_project" -> "context_projector";
+            case "memory_trigger" -> "memory_trigger_sink";
+            case "guard_check" -> "guard";
+            case "search_provider_search" -> "search_provider";
+            case "embedder_embed" -> "embedder";
+            case "memory_promoter_promote" -> "memory_promoter";
+            case "workflow_run", "workflow_run_stream" -> "workflow";
+            case "intent_classify" -> "intent_classifier";
+            case "skill_load_allows" -> "skill_load_policy";
+            default -> throw new IllegalStateException("unknown Agent component result operation");
+        };
+    }
+
+
+
+    record ConversationEnsureProjectionEpochWithContext(ManagedPersistence.EnsureConversationProjectionRequest request, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public ConversationEnsureProjectionEpochWithContext {
+            if (request == null) throw new IllegalArgumentException("request must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "conversation_ensure_projection_epoch_with_context"; }
+    }
+    record ConversationGetProjectionAuthorityWithContext(String conversationId, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public ConversationGetProjectionAuthorityWithContext {
+            if (conversationId == null) throw new IllegalArgumentException("conversationId must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "conversation_get_projection_authority_with_context"; }
+    }
+    record ConversationApplyTranscriptProjectionWithContext(ManagedPersistence.TranscriptProjectionBatch batch, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public ConversationApplyTranscriptProjectionWithContext {
+            if (batch == null) throw new IllegalArgumentException("batch must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "conversation_apply_transcript_projection_with_context"; }
+    }
+    record ConversationDeleteManagedWithContext(ManagedPersistence.ManagedConversationDelete request, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public ConversationDeleteManagedWithContext {
+            if (request == null) throw new IllegalArgumentException("request must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "conversation_delete_managed_with_context"; }
+    }
+    record RuntimeLoadManagedStateWithContext(String scopeId, String runtimeStateId, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public RuntimeLoadManagedStateWithContext {
+            if (scopeId == null) throw new IllegalArgumentException("scopeId must not be null");
+            if (runtimeStateId == null) throw new IllegalArgumentException("runtimeStateId must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "runtime_load_managed_state_with_context"; }
+    }
+    record RuntimeLoadScopeAuthorityWithContext(String scopeId, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public RuntimeLoadScopeAuthorityWithContext {
+            if (scopeId == null) throw new IllegalArgumentException("scopeId must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "runtime_load_scope_authority_with_context"; }
+    }
+    record RuntimeCompareAndSaveCheckpointWithContext(ManagedPersistence.RuntimeCheckpointCasRequest request, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public RuntimeCompareAndSaveCheckpointWithContext {
+            if (request == null) throw new IllegalArgumentException("request must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "runtime_compare_and_save_checkpoint_with_context"; }
+    }
+    record RuntimeAcknowledgeTranscriptProjectionWithContext(ManagedPersistence.RuntimeTranscriptAckRequest request, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public RuntimeAcknowledgeTranscriptProjectionWithContext {
+            if (request == null) throw new IllegalArgumentException("request must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "runtime_acknowledge_transcript_projection_with_context"; }
+    }
+    record RuntimeRetireGenerationWithContext(ManagedPersistence.RuntimeGenerationRetireRequest request, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public RuntimeRetireGenerationWithContext {
+            if (request == null) throw new IllegalArgumentException("request must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "runtime_retire_generation_with_context"; }
+    }
+    record RuntimeBeginScopeRetirementWithContext(ManagedPersistence.ScopeRetirementRequest request, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public RuntimeBeginScopeRetirementWithContext {
+            if (request == null) throw new IllegalArgumentException("request must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "runtime_begin_scope_retirement_with_context"; }
+    }
+    record RuntimeContinueScopeRetirementWithContext(String scopeId, String deleteOperationId, BigInteger expectedScopeRevision, ManagedPersistence.ScopeRetirementAdvance advance, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {
+        public RuntimeContinueScopeRetirementWithContext {
+            if (scopeId == null) throw new IllegalArgumentException("scopeId must not be null");
+            if (deleteOperationId == null) throw new IllegalArgumentException("deleteOperationId must not be null");
+            if (expectedScopeRevision == null) throw new IllegalArgumentException("expectedScopeRevision must not be null");
+            WireValues.u64(expectedScopeRevision);
+            if (advance == null) throw new IllegalArgumentException("advance must not be null");
+            if (context == null) throw new IllegalArgumentException("context must not be null");
+        }
+        @Override public String operation() { return "runtime_continue_scope_retirement_with_context"; }
+    }
+    record RevisionedTaskCompareAndCommitExecution(String scopeId, TaskStore.TaskExecutionCommit commit) implements AgentComponentRequest {
+        public RevisionedTaskCompareAndCommitExecution {
+            if (scopeId == null) throw new IllegalArgumentException("scopeId must not be null");
+            if (commit == null) throw new IllegalArgumentException("commit must not be null");
+        }
+        @Override public String operation() { return "revisioned_task_compare_and_commit_execution"; }
+    }
+
 
     record ConversationCreate(JsonNode conversation) implements AgentComponentRequest {
         @Override public String operation() { return "conversation_create"; }
@@ -205,7 +335,7 @@ public sealed interface AgentComponentRequest permits
     record RevisionedTaskLoad(String scopeId) implements AgentComponentRequest {
         @Override public String operation() { return "revisioned_task_load"; }
     }
-    record RevisionedTaskCompareAndCommit(String scopeId, JsonNode commit) implements AgentComponentRequest {
+    record RevisionedTaskCompareAndCommit(String scopeId, TaskStore.TaskGraphCommit commit) implements AgentComponentRequest {
         @Override public String operation() { return "revisioned_task_compare_and_commit"; }
     }
     record SandboxIsAvailable() implements AgentComponentRequest {
@@ -262,6 +392,7 @@ public sealed interface AgentComponentRequest permits
         if (call == null || !call.isObject() || !call.path("operation").isTextual()) {
             throw new IllegalArgumentException("AgentComponent call must contain operation and input");
         }
+        ManagedPersistence.fields(call, "operation", "input");
         var operation = call.path("operation").textValue();
         var allowed = allowedFields(operation);
         var input = call.get("input");
@@ -278,6 +409,18 @@ public sealed interface AgentComponentRequest permits
             }
         });
         return switch (operation) {
+            case "conversation_ensure_projection_epoch_with_context" -> new ConversationEnsureProjectionEpochWithContext(ManagedPersistence.decode(required(input, "request"), ManagedPersistence.EnsureConversationProjectionRequest.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "conversation_get_projection_authority_with_context" -> new ConversationGetProjectionAuthorityWithContext(text(input, "conversation_id"), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "conversation_apply_transcript_projection_with_context" -> new ConversationApplyTranscriptProjectionWithContext(ManagedPersistence.decode(required(input, "batch"), ManagedPersistence.TranscriptProjectionBatch.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "conversation_delete_managed_with_context" -> new ConversationDeleteManagedWithContext(ManagedPersistence.decode(required(input, "request"), ManagedPersistence.ManagedConversationDelete.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "runtime_load_managed_state_with_context" -> new RuntimeLoadManagedStateWithContext(text(input, "scope_id"), text(input, "runtime_state_id"), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "runtime_load_scope_authority_with_context" -> new RuntimeLoadScopeAuthorityWithContext(text(input, "scope_id"), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "runtime_compare_and_save_checkpoint_with_context" -> new RuntimeCompareAndSaveCheckpointWithContext(ManagedPersistence.decode(required(input, "request"), ManagedPersistence.RuntimeCheckpointCasRequest.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "runtime_acknowledge_transcript_projection_with_context" -> new RuntimeAcknowledgeTranscriptProjectionWithContext(ManagedPersistence.decode(required(input, "request"), ManagedPersistence.RuntimeTranscriptAckRequest.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "runtime_retire_generation_with_context" -> new RuntimeRetireGenerationWithContext(ManagedPersistence.decode(required(input, "request"), ManagedPersistence.RuntimeGenerationRetireRequest.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "runtime_begin_scope_retirement_with_context" -> new RuntimeBeginScopeRetirementWithContext(ManagedPersistence.decode(required(input, "request"), ManagedPersistence.ScopeRetirementRequest.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "runtime_continue_scope_retirement_with_context" -> new RuntimeContinueScopeRetirementWithContext(text(input, "scope_id"), text(input, "delete_operation_id"), u64(input, "expected_scope_revision"), ManagedPersistence.decode(required(input, "advance"), ManagedPersistence.ScopeRetirementAdvance.class), ManagedPersistence.decode(required(input, "context"), ManagedPersistence.PersistenceCallContext.class));
+            case "revisioned_task_compare_and_commit_execution" -> new RevisionedTaskCompareAndCommitExecution(text(input, "scope_id"), ManagedPersistence.decode(required(input, "commit"), TaskStore.TaskExecutionCommit.class));
             case "conversation_create" -> new ConversationCreate(required(input, "conversation"));
             case "conversation_get" -> new ConversationGet(text(input, "conversation_id"));
             case "conversation_list" -> new ConversationList(optionalText(input, "user_id"),
@@ -336,7 +479,7 @@ public sealed interface AgentComponentRequest permits
             case "workflow_checkpoint_clear" -> new WorkflowCheckpointClear();
             case "revisioned_task_load" -> new RevisionedTaskLoad(text(input, "scope_id"));
             case "revisioned_task_compare_and_commit" -> new RevisionedTaskCompareAndCommit(
-                    text(input, "scope_id"), required(input, "commit"));
+                    text(input, "scope_id"), ManagedPersistence.decode(required(input, "commit"), TaskStore.TaskGraphCommit.class));
             case "sandbox_is_available" -> new SandboxIsAvailable();
             case "sandbox_execute" -> new SandboxExecute(required(input, "command"));
             case "sandbox_execute_stream" -> new SandboxExecuteStream(required(input, "command"));
@@ -361,6 +504,19 @@ public sealed interface AgentComponentRequest permits
 
     private static java.util.Set<String> allowedFields(String operation) {
         return switch (operation) {
+            case "conversation_ensure_projection_epoch_with_context" -> java.util.Set.of("request", "context");
+            case "conversation_get_projection_authority_with_context" -> java.util.Set.of("conversation_id", "context");
+            case "conversation_apply_transcript_projection_with_context" -> java.util.Set.of("batch", "context");
+            case "conversation_delete_managed_with_context" -> java.util.Set.of("request", "context");
+            case "runtime_load_managed_state_with_context" -> java.util.Set.of("scope_id", "runtime_state_id", "context");
+            case "runtime_load_scope_authority_with_context" -> java.util.Set.of("scope_id", "context");
+            case "runtime_compare_and_save_checkpoint_with_context" -> java.util.Set.of("request", "context");
+            case "runtime_acknowledge_transcript_projection_with_context" -> java.util.Set.of("request", "context");
+            case "runtime_retire_generation_with_context" -> java.util.Set.of("request", "context");
+            case "runtime_begin_scope_retirement_with_context" -> java.util.Set.of("request", "context");
+            case "runtime_continue_scope_retirement_with_context" -> java.util.Set.of("scope_id", "delete_operation_id", "expected_scope_revision", "advance", "context");
+            case "revisioned_task_compare_and_commit_execution" -> java.util.Set.of("scope_id", "commit");
+
             case "conversation_create" -> java.util.Set.of("conversation");
             case "conversation_get", "conversation_delete", "conversation_get_messages",
                     "conversation_count_messages", "runtime_get_checkpoint",

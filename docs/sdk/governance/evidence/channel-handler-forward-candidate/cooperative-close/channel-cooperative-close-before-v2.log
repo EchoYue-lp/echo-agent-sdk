@@ -1,0 +1,53 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance
+plugins: asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py::test_channel_close_deadline_retains_actual_callback_and_address FAILED
+
+=================================== FAILURES ===================================
+_______ test_channel_close_deadline_retains_actual_callback_and_address ________
+
+    @pytest.mark.asyncio
+    async def test_channel_close_deadline_retains_actual_callback_and_address():
+        work = Path(os.environ["ECHO_AGENT_SDK_COOPERATIVE_CLOSE_ROOT"])
+        work.mkdir(parents=True, exist_ok=True)
+        process = await asyncio.create_subprocess_exec("python3", str(fixture.SHARED / "mcp_channel_config_fixture.py"), str(work))
+        assert await process.wait() == 0
+        config = json.loads((work / "host.json").read_text())
+        config["sdk_profile"]["limits"]["shutdown_timeout_secs"] = 1
+        (work / "host.json").write_text(json.dumps(config))
+        sdk = await fixture.EchoAgentClient.spawn(fixture.HOST, "--config", str(work / "host.json"))
+        native = fixture.Native(sdk, work)
+        native.agent = await sdk.create_agent()
+        session = await native.agent.create_session()
+        manager = (await sdk.call("channels.manager.open", session.wire, []))["resource"]
+        owner = await native.register(session, manager)
+        message = native.park("park")
+        stream = None
+        try:
+            await native.start(owner)
+            stream = await native.call(owner, "channels.handler.handle_stream", message)
+            stream = fixture.WireHandle.from_dict(stream) if isinstance(stream, dict) else stream
+            await asyncio.wait_for(native.started["park"].wait(), 2)
+            before = native.finally_count
+            close_result, error_code = None, None
+            try:
+                close_result = await asyncio.wait_for(sdk.call("channels.stream.close", session.wire, [stream]), 2)
+            except fixture.EchoAgentError as error:
+                error_code = error.code
+                assert error.retryable == "after_delay"
+            await asyncio.wait_for(native.cancelled["park"].wait(), 2)
+            observed = {"close_result": close_result, "error_code": error_code, "callback_finally_before": before, "callback_finally_after_close": native.finally_count, "original_callback_still_held": not native.release["park"].is_set()}
+            (work / "observed.json").write_text(json.dumps(observed, indent=2))
+>           assert error_code == "framework_error", "close succeeded while the original Channel callback was still held"
+E           AssertionError: close succeeded while the original Channel callback was still held
+E           assert None == 'framework_error'
+
+../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py:48: AssertionError
+=========================== short test summary info ============================
+FAILED ../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py::test_channel_close_deadline_retains_actual_callback_and_address
+============================== 1 failed in 2.15s ===============================

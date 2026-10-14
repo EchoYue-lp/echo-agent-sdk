@@ -1,0 +1,41 @@
+{
+  "scope": "tmp-only candidate tests, accepted existing Workflow operations",
+  "files": [
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py",
+      "sha256": "aa6a3c4e0e1beb79d5820651cf638faceffd6dec10a89826e6631ff21f29fba6"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js",
+      "sha256": "a483ae8e1b4ce6e997c806976a200251b60bc50fbbcd4b8256b1e7663951e7b1"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/test_workflow_host.py",
+      "sha256": "4c89d8cf7e33a08411acfc071863009cc375d34279fbc529b1ec82437cc72376"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/WorkflowHostTest.java",
+      "sha256": "8a46138f008f6f9347cd1673e1d9b2de4699131ec61de5d3e54c67bb25ce350d"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/WorkflowProbeRunner.java",
+      "sha256": "5f289bcccd3d605e6bcd4fd89c78ccb7dcc766a85aa8284aef591e480da77200"
+    }
+  ],
+  "java_isolated_classes": [
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/classes/com/echoagent/sdk/WorkflowProbeRunner.class",
+      "sha256": "1730576cbe401ea46f104fe7160c64fddc2255e06d94a9e133fcd335a53323db"
+    },
+    {
+      "path": "/tmp/sdk-workflow-candidate-fixture/classes/com/echoagent/sdk/WorkflowHostTest.class",
+      "sha256": "a431b4ed5592250a4c7b08176cf6d0e2664d09cf2261829a83caf5432cb8d461"
+    }
+  ],
+  "red_manifest": "/tmp/sdk-workflow-candidate-fixture/red-evidence.json",
+  "red_manifest_sha256": "8197e3490b4eac0a2a8ab8bbecb5e6845da3a790e0d25a86b64b06f50aa4c4ac",
+  "old_host_sha256": "6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5",
+  "expected_assertions": "48 records=47 Workflow calls+1SessionClose; both malformed tuples InvalidValue+no canonical claim or state updates. Actual oldHost3language red preserved.",
+  "sdk_source_written": false,
+  "state": "await new immutable shape repaired Host green, no Cargo owned"
+}

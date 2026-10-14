@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance
+plugins: asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py::test_channel_close_deadline_retains_actual_callback_and_address PASSED
+../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py::test_channel_bad_chunk_retains_original_failure_and_cleanup_owner PASSED
+
+============================== 2 passed in 3.31s ===============================

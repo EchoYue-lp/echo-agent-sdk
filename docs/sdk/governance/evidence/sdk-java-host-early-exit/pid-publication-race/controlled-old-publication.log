@@ -1,0 +1,7 @@
+actual child=84274 targetExistsWhilePayloadHeld=true
+old exists readiness accepts an empty PID file
+Exception in thread "main" java.lang.NumberFormatException: For input string: ""
+	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
+	at java.base/java.lang.Long.parseLong(Long.java:719)
+	at java.base/java.lang.Long.parseLong(Long.java:832)
+	at PidPublicationProbe.main(PidPublicationProbe.java:12)

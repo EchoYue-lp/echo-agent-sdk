@@ -1,0 +1,37 @@
+{
+  "scope": "executed test body vs current test precondition; does not prove newly strengthened blank-env case ran",
+  "files": [
+    {
+      "path": "sdks/shared/testing/state_trace_delivery_fixture.py",
+      "executed_sha256": "1f26d96802f5f1acf677abba02196126226074c141b1820fb2cb4935beec3f25",
+      "current_sha256": "1f26d96802f5f1acf677abba02196126226074c141b1820fb2cb4935beec3f25",
+      "matching": true,
+      "delta": "none",
+      "diff": ""
+    },
+    {
+      "path": "sdks/typescript/test/state-trace-delivery-host.test.js",
+      "executed_sha256": "5183d66485219c95bd5019e2a92098922cdb6b050b867204499b12d3a253f01a",
+      "current_sha256": "c882cbedee70a25bd29e29f2396a774396e66cbc129d79dc2e846add80df3b37",
+      "matching": false,
+      "delta": "required Host env nonblank precondition only; valid explicit Host native scenario assertions unchanged",
+      "diff": "--- \n+++ \n@@ -9,5 +9,5 @@\n \n const host = process.env.ECHO_AGENT_SDK_HOST;\n-if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === \"1\" && !host) throw new Error(\"required State/Trace/Delivery Host binary missing\");\n+if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === \"1\" && (!host || !host.trim())) throw new Error(\"required State/Trace/Delivery Host binary missing\");\n const fixture = fileURLToPath(new URL(\"../../shared/testing/state_trace_delivery_fixture.py\", import.meta.url));\n \n"
+    },
+    {
+      "path": "sdks/python/tests/test_state_trace_delivery_host.py",
+      "executed_sha256": "5560683667a48f238c337a372d7ba15a1e70bc62b539df92d48f742b5dd3bc70",
+      "current_sha256": "e9f9561de0de997653c13bd378be9fe18295d4515b5c6af906140d46f979af1f",
+      "matching": false,
+      "delta": "required Host env nonblank precondition only; valid explicit Host native scenario assertions unchanged",
+      "diff": "--- \n+++ \n@@ -419,5 +419,7 @@\n \n HOST = os.environ.get(\"ECHO_AGENT_SDK_HOST\")\n-if os.environ.get(\"ECHO_AGENT_SDK_REQUIRE_HOST_E2E\") == \"1\" and not HOST:\n+if os.environ.get(\"ECHO_AGENT_SDK_REQUIRE_HOST_E2E\") == \"1\" and (\n+    not HOST or not HOST.strip()\n+):\n     raise RuntimeError(\"required State/Trace/Delivery Host binary missing\")\n \n"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java",
+      "executed_sha256": "796683b4986c97e4c6c4be4ab482aa8be1d5cd61a309ef1def4900b81df05036",
+      "current_sha256": "11fd31b689ce14b53245e444562da3d8c8481eacf7a50a00026663b10554cb70",
+      "matching": false,
+      "delta": "required Host env nonblank precondition only; valid explicit Host native scenario assertions unchanged",
+      "diff": "--- \n+++ \n@@ -44,5 +44,5 @@\n  void runScene(String scene) throws Exception {\n      host = System.getenv(\"ECHO_AGENT_SDK_HOST\");\n-     if (\"1\".equals(System.getenv(\"ECHO_AGENT_SDK_REQUIRE_HOST_E2E\"))) assertNotNull(host, \"required State/Trace/Delivery Host binary missing\");\n+     if (\"1\".equals(System.getenv(\"ECHO_AGENT_SDK_REQUIRE_HOST_E2E\"))) assertTrue(host != null && !host.isBlank(), \"required State/Trace/Delivery Host binary missing\");\n      assumeTrue(host != null && !host.isBlank(), \"real Host binary required\");\n      work = Files.createTempDirectory(\"sdk-java-\" + scene + \"-\");\n"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "tool-result-authoritative-effects-valid",
+  "kind": "valid",
+  "target": "ToolResultWire",
+  "description": "Tool effects preserve producer facts, Unicode and exact failure counts.",
+  "payload": {
+    "kind": {
+      "kind": "text"
+    },
+    "success": true,
+    "output": "已完成 🧪",
+    "truncated": false,
+    "effects": [
+      {
+        "effect": "file_read",
+        "path": "文档/计划.md"
+      },
+      {
+        "effect": "test_run",
+        "command": "cargo test",
+        "passed": false,
+        "failure_count": "9007199254740993"
+      }
+    ]
+  }
+}

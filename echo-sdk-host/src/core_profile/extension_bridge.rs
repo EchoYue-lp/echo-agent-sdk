@@ -7,7 +7,9 @@
 //!   [`ExtensionInvokeCall`] through the official `ConnectionTo` transport
 //!   and settle exactly once. Deadline, cancellation and disconnect all
 //!   settle locally with typed errors; a late response can only be
-//!   discarded. There is never a built-in fallback implementation.
+//!   discarded. Channel handlers use a driven adapter: cancellation signals
+//!   the callback, while the original connection response task retains its
+//!   lease until the callback actually returns. There is no built-in fallback.
 //! - *SDK → Host stream delivery*: streaming callbacks answer with the
 //!   Host-minted stream handle and deliver chunks through
 //!   `_echo_agent/extension/stream` notifications routed to a bounded sink
@@ -35,7 +37,7 @@ use futures::{Stream, StreamExt as _};
 use std::collections::{HashMap, VecDeque};
 use std::pin::Pin;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock, Weak};
 use std::task::{Context, Poll};
 use std::time::Duration;
 use std::time::Instant;
@@ -50,23 +52,22 @@ use echo_sdk_protocol::methods::{
     AgentEventWire, AgentFactoryConfigWire, AgentMessageInput, AgentStreamChunkWire,
     AgentStreamTerminalWire, AgentTaskInput, ApprovalScopeWire, CallbackFinalAnswerInput,
     CallbackIterationInput, CallbackThinkEndInput, CallbackThinkStartInput, CallbackToolEndInput,
-    CallbackToolErrorInput, CallbackToolStartInput, CompressionInputWire, CompressionOutputWire,
-    CritiqueInput, CritiqueWire, CustomAgentDescriptorWire, ExtensionDescriptor,
-    ExtensionInvocation, ExtensionInvocationContext, ExtensionInvokeCall, ExtensionInvokeOutcome,
-    ExtensionKind, ExtensionOperation, ExtensionResult, ExtensionStreamChunkValue,
-    ExtensionStreamCompleteValue, ExtensionStreamEvent, ExtensionUnit, HookResultWire,
-    HookRunInput, HumanLoopKindWire, HumanLoopRequestWire, HumanLoopResponseWire,
-    HumanRiskLevelWire, InterventionResultWire, LlmChatChunkWire, LlmChatRequestWire,
-    LlmChatResponseWire, LlmDeltaToolCallWire, LlmMessageWire, LlmReasoningBlockWire,
-    LlmStreamChunkWire, LlmStreamCompleteWire, LlmToolCallWire, LlmToolDefinitionWire,
-    PermissionDecisionWire, SandboxOutputChannelWire, SandboxStreamChunkWire,
-    SandboxStreamCompleteWire, SandboxStreamFailureWire, SkillDescriptorPolicyWire, StepTypeWire,
-    StoreItemWire, StoreKeyInput, StoreListNamespacesInput, StoreNamespaceInput, StorePutInput,
-    StoreSearchInput, StoreSearchModeWire, StoreSearchQueryWire, StoreSearchWithInput,
-    TokenizerReferenceWire, ToolContextWire, ToolExecuteInput, ToolFailureWire,
-    ToolOutputArtifactConfigWire, ToolOutputArtifactRefWire, ToolResultContentWire,
-    ToolResultKindWire, ToolResultWire, ToolStreamChunkWire, ToolStreamEventWire,
-    ToolValidateInput, WorkflowStreamChunkWire, WorkflowStreamCompleteWire,
+    CallbackToolErrorInput, CallbackToolInterruptedInput, CallbackToolStartInput,
+    CompressionInputWire, CompressionOutputWire, CritiqueInput, CritiqueWire,
+    CustomAgentDescriptorWire, ExtensionDescriptor, ExtensionInvocation,
+    ExtensionInvocationContext, ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionKind,
+    ExtensionOperation, ExtensionResult, ExtensionStreamChunkValue, ExtensionStreamCompleteValue,
+    ExtensionStreamEvent, ExtensionUnit, HookResultWire, HookRunInput, HumanLoopKindWire,
+    HumanLoopRequestWire, HumanLoopResponseWire, HumanRiskLevelWire, InterventionResultWire,
+    LlmChatChunkWire, LlmChatRequestWire, LlmChatResponseWire, LlmDeltaToolCallWire,
+    LlmMessageWire, LlmReasoningBlockWire, LlmStreamChunkWire, LlmStreamCompleteWire,
+    LlmToolCallWire, LlmToolDefinitionWire, PermissionDecisionWire, SandboxOutputChannelWire,
+    SandboxStreamChunkWire, SandboxStreamCompleteWire, SandboxStreamFailureWire,
+    SkillDescriptorPolicyWire, StepTypeWire, StoreItemWire, StoreKeyInput,
+    StoreListNamespacesInput, StoreNamespaceInput, StorePutInput, StoreSearchInput,
+    StoreSearchModeWire, StoreSearchQueryWire, StoreSearchWithInput, TokenizerReferenceWire,
+    ToolContextWire, ToolExecuteInput, ToolOutputArtifactConfigWire, ToolStreamChunkWire,
+    ToolStreamEventWire, ToolValidateInput, WorkflowStreamChunkWire, WorkflowStreamCompleteWire,
 };
 #[cfg(feature = "framework-channels")]
 use echo_sdk_protocol::methods::{
@@ -79,7 +80,12 @@ use echo_sdk_protocol::methods::{LlmDeltaFunctionWire, LlmUsageWire};
 use echo_sdk_protocol::scalar::{WireI64, WirePath, WireU64, WireValue};
 
 use super::state::CoreProfileState;
-use super::wire::sdk_error;
+use super::wire::managed::Projection as _;
+use super::wire::{sdk_error, tool_result_from_wire, tool_result_to_wire};
+use echo_sdk_protocol::managed::{
+    ConversationProjectionCapabilityWire, PersistenceCallCapabilityWire,
+    PersistenceCallContextWire, RuntimeStateCapabilityWire,
+};
 
 /// Bounded stream-channel capacity for one reverse callback stream. The
 /// consumer (the Rust stream proxy) paces delivery; a full channel makes the
@@ -102,6 +108,11 @@ pub(crate) struct ExtensionBridgeShared {
     /// exclusive mutation of the same Session must fail immediately rather
     /// than wait on the Agent lock held by the originating run.
     active_session_callbacks: Mutex<HashMap<String, usize>>,
+    /// Cleanup jobs remain owned by this connection, including while they
+    /// back off between reverse invocations. Teardown aborts and removes
+    /// them before releasing the corresponding extension handles.
+    factory_cleanup_tasks: Mutex<Vec<tokio::task::JoinHandle<()>>>,
+    cleanup_closed: AtomicBool,
 }
 
 impl ExtensionBridgeShared {
@@ -110,6 +121,8 @@ impl ExtensionBridgeShared {
             connection: OnceLock::new(),
             streams: Mutex::new(HashMap::new()),
             active_session_callbacks: Mutex::new(HashMap::new()),
+            factory_cleanup_tasks: Mutex::new(Vec::new()),
+            cleanup_closed: AtomicBool::new(false),
         }
     }
 
@@ -195,6 +208,16 @@ impl ExtensionBridgeShared {
     }
 
     pub(crate) fn close_all_streams(&self) {
+        self.cleanup_closed.store(true, Ordering::Release);
+        let tasks = self
+            .factory_cleanup_tasks
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .drain(..)
+            .collect::<Vec<_>>();
+        for task in tasks {
+            task.abort();
+        }
         let sinks = self
             .streams
             .lock()
@@ -207,12 +230,33 @@ impl ExtensionBridgeShared {
         }
     }
 
+    fn track_factory_cleanup(&self, task: tokio::task::JoinHandle<()>) {
+        let mut tasks = self
+            .factory_cleanup_tasks
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        tasks.retain(|task| !task.is_finished());
+        if self.cleanup_closed.load(Ordering::Acquire) {
+            task.abort();
+        } else {
+            tasks.push(task);
+        }
+    }
+
     fn stream_sink(&self, stream_id: &str) -> Option<Arc<ExtensionStreamSink>> {
         self.streams
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
             .get(stream_id)
             .cloned()
+    }
+
+    /// Match the original already-admitted callback stream during teardown.
+    /// This lookup grants no new registration or invocation admission.
+    pub(crate) fn owns_settlement_stream(&self, stream: &WireHandle, extension_id: &str) -> bool {
+        self.stream_sink(&stream.id).is_some_and(|sink| {
+            sink.stream_handle() == stream && sink.extension_id() == extension_id
+        })
     }
 
     /// Route one `_echo_agent/extension/stream` notification. Unknown or
@@ -242,6 +286,12 @@ impl ExtensionBridgeShared {
             );
             return Ok(());
         };
+
+        if event.stream() != sink.stream_handle() {
+            return Err(
+                "extension stream handle does not match the original owner/generation".to_string(),
+            );
+        }
         let payload_kind = match &event {
             ExtensionStreamEvent::Chunk { value, .. } => Some(value.operation_kind()),
             ExtensionStreamEvent::Complete { value, .. } => Some(value.operation_kind()),
@@ -254,6 +304,18 @@ impl ExtensionBridgeShared {
             );
             return Err("extension stream payload kind does not match the invocation".to_string());
         }
+        let is_terminal = event.is_terminal();
+        if !sink.observe_remote_sequence(&event) {
+            self.fail_stream(
+                sink.stream_handle(),
+                "extension stream remote sequence is not contiguous",
+            );
+            return Err("extension stream remote sequence is not contiguous".to_string());
+        }
+        if is_terminal {
+            sink.remote_terminal_received.store(true, Ordering::Release);
+            sink.remote_terminal_notify.notify_waiters();
+        }
         let sequence = event.sequence().to_u64().unwrap_or_default();
         if !sink.admit_event(&event) {
             let reason = format!(
@@ -262,7 +324,6 @@ impl ExtensionBridgeShared {
             self.fail_stream(sink.stream_handle(), &reason);
             return Err(reason);
         }
-        let is_terminal = event.is_terminal();
         match sink.sender().try_send(event) {
             Ok(()) => {
                 if is_terminal {
@@ -271,13 +332,17 @@ impl ExtensionBridgeShared {
                 Ok(())
             }
             Err(mpsc::error::TrySendError::Closed(_)) => {
-                self.remove_stream(sink.stream_id());
+                if !sink.retain_until_remote_terminal.load(Ordering::Acquire) {
+                    self.remove_stream(sink.stream_id());
+                }
                 Ok(())
             }
             Err(mpsc::error::TrySendError::Full(event)) => {
                 let reason = "extension stream consumer exceeded its bounded mailbox";
                 sink.fail_undelivered(event.sequence().clone(), reason);
-                self.remove_stream(sink.stream_id());
+                if !sink.retain_until_remote_terminal.load(Ordering::Acquire) {
+                    self.remove_stream(sink.stream_id());
+                }
                 Err(reason.to_string())
             }
         }
@@ -297,7 +362,9 @@ impl ExtensionBridgeShared {
                     "_echo_agent/extension/stream",
                 ),
             });
-            self.remove_stream(sink.stream_id());
+            if !sink.retain_until_remote_terminal.load(Ordering::Acquire) {
+                self.remove_stream(sink.stream_id());
+            }
         }
     }
 }
@@ -336,10 +403,14 @@ pub(crate) struct ExtensionStreamSink {
     closed: AtomicBool,
     closed_notify: Notify,
     session_callback: Mutex<Option<SessionCallbackGuard>>,
+    retain_until_remote_terminal: AtomicBool,
+    remote_terminal_received: AtomicBool,
+    remote_terminal_notify: Notify,
 }
 
 struct StreamSinkInner {
     last_sequence: u64,
+    remote_last_sequence: u64,
     terminal_seen: bool,
     terminal: Option<ExtensionStreamEvent>,
 }
@@ -361,12 +432,16 @@ impl ExtensionStreamSink {
                 sender,
                 inner: Mutex::new(StreamSinkInner {
                     last_sequence: 0,
+                    remote_last_sequence: 0,
                     terminal_seen: false,
                     terminal: None,
                 }),
                 closed: AtomicBool::new(false),
                 closed_notify: Notify::new(),
                 session_callback: Mutex::new(session_callback),
+                retain_until_remote_terminal: AtomicBool::new(false),
+                remote_terminal_received: AtomicBool::new(false),
+                remote_terminal_notify: Notify::new(),
             }),
             receiver,
         )
@@ -414,6 +489,34 @@ impl ExtensionStreamSink {
             }
             notified.await;
         }
+    }
+
+    /// Observes a validated terminal received from the remote producer. Local
+    /// timeout/backpressure terminals are not evidence that that producer ended.
+    async fn wait_remote_terminal(&self) {
+        loop {
+            let notified = self.remote_terminal_notify.notified();
+            if self.remote_terminal_received.load(Ordering::Acquire) {
+                return;
+            }
+            notified.await;
+        }
+    }
+
+    /// Remote receive watermark shares this same sink ledger. Locally
+    /// synthesized terminal sequences never advance what the peer sent.
+    fn observe_remote_sequence(&self, event: &ExtensionStreamEvent) -> bool {
+        let Some(sequence) = event.sequence().to_u64() else {
+            return false;
+        };
+        let mut inner = self.inner.lock().unwrap_or_else(|error| error.into_inner());
+        if self.remote_terminal_received.load(Ordering::Acquire)
+            || inner.remote_last_sequence.checked_add(1) != Some(sequence)
+        {
+            return false;
+        }
+        inner.remote_last_sequence = sequence;
+        true
     }
 
     /// Sequence/terminal admission. Returns false for events that must be
@@ -508,13 +611,28 @@ impl ExtensionStreamSink {
 /// definition must capture it before any Session exists).
 #[derive(Clone)]
 pub(crate) struct ExtensionBridge {
-    state: OnceLock<Arc<CoreProfileState>>,
+    // The profile owns this bridge (also through PreparedAgentDefinition).
+    // A strong back-reference would keep the complete Host generation and
+    // persistence resources alive after every embedded Host close/drop.
+    state: OnceLock<Weak<CoreProfileState>>,
     shared: Arc<ExtensionBridgeShared>,
+}
+
+/// Transport lifetime facts for a reverse call. The optional submission
+/// observer lets a factory release a reservation only before it was handed
+/// to the official outgoing actor; it is not an execution state authority.
+struct ReverseInvocationScope<'a> {
+    cancellation: CancellationToken,
+    resolve_run_cancellation: bool,
+    submitted: Option<&'a AtomicBool>,
 }
 
 /// Kinds whose callbacks mutate the implementation exclusively: a second
 /// in-flight invocation on the same registration is a typed conflict, never
 /// a wait (design §12.3).
+/// AgentFactory creates independent instances and follows the framework's
+/// Send + Sync factory contract. Exclusivity starts at each CustomAgent child,
+/// not at its shared constructor registration.
 fn is_exclusive_invocation(kind: ExtensionKind, invocation: &ExtensionInvocation) -> bool {
     if kind == ExtensionKind::AgentComponent {
         return matches!(
@@ -531,11 +649,9 @@ fn is_exclusive_invocation(kind: ExtensionKind, invocation: &ExtensionInvocation
     matches!(
         kind,
         ExtensionKind::HumanLoopProvider
-            | ExtensionKind::AgentFactory
             | ExtensionKind::CustomAgent
             | ExtensionKind::Hook
             | ExtensionKind::ChannelPlugin
-            | ExtensionKind::ChannelMessageHandler
             | ExtensionKind::ContextCompressor
     )
 }
@@ -593,14 +709,14 @@ impl ExtensionBridge {
 
     /// Bind the profile state once; every proxy resolves it per invocation.
     pub(crate) fn bind_state(&self, state: Arc<CoreProfileState>) {
-        let _ = self.state.set(state);
+        let _ = self.state.set(Arc::downgrade(&state));
     }
 
     fn state(&self) -> std::result::Result<Arc<CoreProfileState>, EchoSdkError> {
-        self.state.get().cloned().ok_or_else(|| {
+        self.state.get().and_then(Weak::upgrade).ok_or_else(|| {
             sdk_error(
                 ExtensionErrorCode::HostShuttingDown,
-                "extension bridge is not bound to the profile state",
+                "extension bridge profile state is not live",
                 Retryability::Never,
                 "_echo_agent/extension/invoke",
             )
@@ -691,7 +807,11 @@ impl ExtensionBridge {
                 OPERATION,
             ));
         }
-        let record = state.handles.extension(extension)?;
+        let record = if operation == ExtensionOperation::AgentClose {
+            state.handles.extension_for_cleanup(extension)?
+        } else {
+            state.handles.extension(extension)?
+        };
         if record.kind != operation.kind() {
             return Err(sdk_error(
                 ExtensionErrorCode::InvalidValue,
@@ -730,8 +850,17 @@ impl ExtensionBridge {
         invocation: ExtensionInvocation,
         framework_cancellation: CancellationToken,
     ) -> std::result::Result<ExtensionResult, EchoSdkError> {
-        self.invoke_once_with_scope(extension, context, invocation, framework_cancellation, true)
-            .await
+        self.invoke_once_with_scope(
+            extension,
+            context,
+            invocation,
+            ReverseInvocationScope {
+                cancellation: framework_cancellation,
+                resolve_run_cancellation: true,
+                submitted: None,
+            },
+        )
+        .await
     }
 
     async fn invoke_once_connection_scoped(
@@ -744,8 +873,11 @@ impl ExtensionBridge {
             extension,
             context,
             invocation,
-            self.connection_cancellation(),
-            false,
+            ReverseInvocationScope {
+                cancellation: self.connection_cancellation(),
+                resolve_run_cancellation: false,
+                submitted: None,
+            },
         )
         .await
     }
@@ -755,23 +887,59 @@ impl ExtensionBridge {
         extension: &WireHandle,
         context: Option<ExtensionInvocationContext>,
         invocation: ExtensionInvocation,
-        framework_cancellation: CancellationToken,
-        resolve_run_cancellation: bool,
+        scope: ReverseInvocationScope<'_>,
     ) -> std::result::Result<ExtensionResult, EchoSdkError> {
         let operation = invocation.operation();
-        let framework_cancellation = if resolve_run_cancellation {
-            self.cancellation_for_context(context.as_ref(), framework_cancellation)
+        let framework_cancellation = if scope.resolve_run_cancellation {
+            self.cancellation_for_context(context.as_ref(), scope.cancellation)
                 .await
         } else {
-            framework_cancellation
+            scope.cancellation
         };
-        let connection = self.shared.connection()?;
         let (mut lease, record, _authority) =
             self.prepare(extension, operation, &invocation, framework_cancellation)?;
+        let connection = self.shared.connection()?;
         self.ensure_payload_bound(&invocation, false)?;
-        let deadline = self.deadline_of(&record);
+        let mut deadline = self.deadline_of(&record);
+        if let ExtensionInvocation::AgentComponentCall(call) = &invocation
+            && let Some(context) = managed_call_context(&call.call)
+        {
+            let absolute_deadline_unix_ms =
+                context.absolute_deadline_unix_ms.to_i64().ok_or_else(|| {
+                    sdk_error(
+                        ExtensionErrorCode::InvalidValue,
+                        "invalid managed deadline",
+                        Retryability::Never,
+                        "_echo_agent/extension/invoke",
+                    )
+                })?;
+            let remaining = echo_agent::memory::PersistenceCallContext {
+                absolute_deadline_unix_ms,
+            }
+            .remaining_duration()
+            .map_err(|error| {
+                let mut error = sdk_error(
+                    ExtensionErrorCode::ExtensionTimeout,
+                    error.to_string(),
+                    Retryability::Never,
+                    "_echo_agent/extension/invoke",
+                );
+                // This rejection is before send_request. The backend
+                // cannot have committed, unlike a response timeout.
+                error.details = Some(echo_sdk_protocol::error::ErrorDetails {
+                    fields: Some(vec![echo_sdk_protocol::error::DetailField {
+                        key: "persistence_error_class".to_string(),
+                        value: "deadline_exceeded".to_string(),
+                    }]),
+                    ..Default::default()
+                });
+                error
+            })?;
+            deadline = deadline.min(remaining);
+        }
         let call = ExtensionInvokeCall {
             extension: extension.clone(),
+            factory_origin: record.factory_origin.clone(),
             invocation_id: lease.identity().to_string(),
             context,
             invocation,
@@ -792,6 +960,13 @@ impl ExtensionBridge {
                 .and_then(|value| value.session_id.as_deref()),
         );
         let sent = connection.send_request(call);
+        // The official transport enqueues eagerly in send_request (not when
+        // SentRequest is polled). After submission the constructor outcome
+        // is unknown until its typed acknowledgement; before this point no
+        // remote constructor could have observed the reserved child.
+        if let Some(submitted) = scope.submitted {
+            submitted.store(true, Ordering::Release);
+        }
         let cancellation = lease.cancellation();
         let mut drop_notice = InvocationDropNotice::new(self.clone(), lease.identity());
         let result = tokio::select! {
@@ -847,6 +1022,465 @@ impl ExtensionBridge {
         result
     }
 
+    /// Channel calls opt into the framework's driven cancellation contract.
+    /// The official connection response task owns the original lease even if
+    /// the caller drops its wait; the Channel driver waits for that same real
+    /// callback response before releasing its entry invocation receipt.
+    fn submit_owned_invocation(
+        &self,
+        call: ExtensionInvokeCall,
+        mut lease: echo_agent::acp::ExtensionInvocationLease,
+        call_cancellation: CancellationToken,
+        policy: CallbackStreamPolicy,
+        owner: Arc<CallbackInvocationOwner>,
+        sink: Option<Arc<ExtensionStreamSink>>,
+    ) -> std::result::Result<
+        tokio::sync::oneshot::Receiver<std::result::Result<Option<ExtensionResult>, EchoSdkError>>,
+        EchoSdkError,
+    > {
+        let connection = self.shared.connection()?;
+        let operation = call.invocation.operation();
+        let expected_stream = call.stream.clone();
+        let deadline = Duration::new(
+            call.deadline.seconds.to_u64().ok_or_else(|| {
+                sdk_error(
+                    ExtensionErrorCode::SerializationViolation,
+                    "invalid channel callback deadline",
+                    Retryability::Never,
+                    "_echo_agent/extension/invoke",
+                )
+            })?,
+            call.deadline.nanos,
+        );
+        let cancellation = lease.cancellation();
+        let invocation_id = lease.identity().to_string();
+        let interrupted = Arc::new(Mutex::new(None::<EchoSdkError>));
+        let (sender, receiver) = tokio::sync::oneshot::channel();
+        let response_interrupted = interrupted.clone();
+        let response_owner = owner.clone();
+        let response_policy = policy;
+        let response_sink = sink.clone();
+        let response_cancellation = cancellation.clone();
+        let notice_owner = owner.clone();
+        let bridge = self.clone();
+        let finished = owner.finished.clone();
+        connection
+            .spawn(async move {
+                let timeout = tokio::select! {
+                    biased;
+                    () = finished.cancelled() => return Ok(()),
+                    () = cancellation.cancelled() => false,
+                    _ = tokio::time::sleep(deadline) => true,
+                };
+                let error = sdk_error(
+                    if timeout {
+                        ExtensionErrorCode::ExtensionTimeout
+                    } else {
+                        ExtensionErrorCode::Cancelled
+                    },
+                    if timeout {
+                        "channel callback exceeded its deadline"
+                    } else {
+                        "channel callback was cancelled"
+                    },
+                    Retryability::Never,
+                    "_echo_agent/extension/invoke",
+                );
+                *interrupted
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner()) = Some(error.clone());
+                if policy == CallbackStreamPolicy::CustomAgent {
+                    *notice_owner
+                        .pending_failure
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner()) = Some(error.clone());
+                }
+                if timeout {
+                    call_cancellation.cancel();
+                }
+                let _ = bridge.send_cancel_notice(
+                    &invocation_id,
+                    if timeout { "timeout" } else { "cancelled" },
+                );
+                if policy == CallbackStreamPolicy::Channel
+                    && let Some(sink) = sink
+                {
+                    sink.terminate(|sequence| ExtensionStreamEvent::Failed {
+                        stream: sink.stream_handle().clone(),
+                        sequence,
+                        error,
+                    });
+                }
+                // Neither notice nor synthetic terminal releases the real owner.
+                Ok(())
+            })
+            .map_err(|error| transport_error(&error))?;
+        if policy == CallbackStreamPolicy::CustomAgent
+            && let Some(sink) = response_sink.clone()
+        {
+            let tracked_owner = owner.clone();
+            let tracked_connection = connection.clone();
+            connection
+                .spawn(async move {
+                    tokio::select! {
+                        biased;
+                        () = tracked_owner.finished.cancelled() => return Ok(()),
+                        _ = tracked_connection.incoming_closed() => {},
+                        () = tracked_owner.response_completed.cancelled() => {
+                            tokio::select! {
+                                biased;
+                                () = tracked_owner.finished.cancelled() => return Ok(()),
+                                _ = tracked_connection.incoming_closed() => {},
+                                () = sink.wait_remote_terminal() => {},
+                            }
+                        }
+                    }
+                    if tracked_connection.is_incoming_closed() {
+                        sink.terminate(|sequence| ExtensionStreamEvent::Failed {
+                            stream: sink.stream_handle().clone(),
+                            sequence,
+                            error: sdk_error(
+                                ExtensionErrorCode::ExtensionDisconnected,
+                                "custom Agent producer connection closed before its terminal",
+                                Retryability::Never,
+                                "_echo_agent/extension/stream",
+                            ),
+                        });
+                    }
+                    tracked_owner.finished.cancel();
+                    tracked_owner
+                        .retained_lease
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .take();
+                    Ok(())
+                })
+                .map_err(|error| transport_error(&error))?;
+        }
+        let bridge = self.clone();
+        // Do not forward cancellation into the transport request: dropping the
+        // language callback task can finish its RPC before asynchronous cleanup.
+        // The typed notice signals its original cooperative callback instead.
+        connection
+            .send_request(call)
+            .on_receiving_result(async move |answer| {
+                let actual_setup_ack = response_policy == CallbackStreamPolicy::CustomAgent
+                    && matches!(&answer, Ok(ExtensionInvokeOutcome::Stream { stream })
+                        if expected_stream.as_ref() == Some(stream) && stream.validate().is_ok());
+                let interruption = response_interrupted
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .clone()
+                    .or_else(|| {
+                        response_cancellation.is_cancelled().then(|| {
+                            sdk_error(
+                                ExtensionErrorCode::Cancelled,
+                                "channel callback was cancelled",
+                                Retryability::Never,
+                                "_echo_agent/extension/invoke",
+                            )
+                        })
+                    });
+                let result = if let Some(error) = interruption {
+                    let settlement = if error.code == ExtensionErrorCode::ExtensionTimeout {
+                        echo_agent::acp::ExtensionSettlement::TimedOut
+                    } else {
+                        echo_agent::acp::ExtensionSettlement::Cancelled
+                    };
+                    lease.settle(settlement);
+                    if actual_setup_ack {
+                        *response_owner
+                            .pending_failure
+                            .lock()
+                            .unwrap_or_else(|error| error.into_inner()) = Some(error);
+                        Ok(None)
+                    } else {
+                        Err(error)
+                    }
+                } else {
+                    match answer {
+                        Ok(outcome) => bridge.settle_outcome(
+                            &mut lease,
+                            outcome,
+                            operation,
+                            expected_stream.as_ref(),
+                        ),
+                        Err(error) => {
+                            let typed = transport_error(&error);
+                            lease.settle(
+                                if typed.code == ExtensionErrorCode::ExtensionDisconnected {
+                                    echo_agent::acp::ExtensionSettlement::Disconnected
+                                } else {
+                                    echo_agent::acp::ExtensionSettlement::Answered
+                                },
+                            );
+                            Err(typed)
+                        }
+                    }
+                };
+                // A response is a callback-return fact. The lease and session guard
+                // must be released before the framework driver observes that fact.
+                // Prior stream notifications are routed inline by the ACP
+                // dispatch loop before this ordered response callback. At this
+                // point callback return without a terminal is an invalid flow,
+                // not permission to wait forever for user-detached work.
+                if response_policy == CallbackStreamPolicy::Channel
+                    && matches!(&result, Ok(None))
+                    && let Some(sink) = response_sink
+                {
+                    sink.terminate(|sequence| ExtensionStreamEvent::Failed {
+                        stream: sink.stream_handle().clone(),
+                        sequence,
+                        error: sdk_error(
+                            ExtensionErrorCode::SerializationViolation,
+                            "channel callback returned without a stream terminal",
+                            Retryability::Never,
+                            "_echo_agent/extension/stream",
+                        ),
+                    });
+                }
+                if response_policy == CallbackStreamPolicy::CustomAgent
+                    && matches!(&result, Ok(None))
+                {
+                    // The existing CustomAgent protocol permits a setup answer
+                    // before its producer sends terminal. Retain this same lease
+                    // until both the real answer and declared terminal exist.
+                    *response_owner
+                        .retained_lease
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner()) = Some(lease);
+                } else {
+                    response_owner.finished.cancel();
+                    drop(lease);
+                }
+                response_owner.response_completed.cancel();
+                drop(response_owner);
+                let _ = sender.send(result);
+                Ok(())
+            })
+            .map_err(|error| transport_error(&error))?;
+        Ok(receiver)
+    }
+
+    #[cfg(feature = "framework-channels")]
+    async fn invoke_channel_once(
+        &self,
+        extension: &WireHandle,
+        invocation: ExtensionInvocation,
+        cancellation: CancellationToken,
+    ) -> std::result::Result<ExtensionResult, EchoSdkError> {
+        let operation = invocation.operation();
+        let (lease, record, _authority) =
+            self.prepare(extension, operation, &invocation, cancellation.clone())?;
+        self.ensure_payload_bound(&invocation, false)?;
+        let call = ExtensionInvokeCall {
+            extension: extension.clone(),
+            factory_origin: record.factory_origin.clone(),
+            invocation_id: lease.identity().to_string(),
+            context: None,
+            invocation,
+            deadline: wire_duration(self.deadline_of(&record)),
+            stream: None,
+        };
+        call.validate().map_err(|reason| {
+            sdk_error(
+                ExtensionErrorCode::SerializationViolation,
+                reason,
+                Retryability::Never,
+                "_echo_agent/extension/invoke",
+            )
+        })?;
+        let owner = Arc::new(CallbackInvocationOwner {
+            _stream: None,
+            _session_callback: None,
+            _agent_invocation: None,
+            retained_lease: Mutex::new(None),
+            response_completed: CancellationToken::new(),
+            pending_failure: Mutex::new(None),
+            finished: CancellationToken::new(),
+        });
+        let response = self.submit_owned_invocation(
+            call,
+            lease,
+            cancellation,
+            CallbackStreamPolicy::Channel,
+            owner,
+            None,
+        )?;
+        response
+            .await
+            .map_err(callback_response_lost)??
+            .ok_or_else(|| {
+                sdk_error(
+                    ExtensionErrorCode::ExtensionFailed,
+                    "channel callback returned no single result",
+                    Retryability::Never,
+                    "_echo_agent/extension/invoke",
+                )
+            })
+    }
+
+    #[cfg(feature = "framework-channels")]
+    async fn invoke_channel_stream(
+        &self,
+        extension: &WireHandle,
+        invocation: ExtensionInvocation,
+        cancellation: CancellationToken,
+    ) -> std::result::Result<
+        futures::stream::BoxStream<'static, echo_agent::error::Result<OutboundMessage>>,
+        EchoSdkError,
+    > {
+        let operation = invocation.operation();
+        let (lease, record, _authority) =
+            self.prepare(extension, operation, &invocation, cancellation.clone())?;
+        self.ensure_payload_bound(&invocation, false)?;
+        let state = self.state()?;
+        let stream = state.handles.register_extension_stream(&extension.id)?;
+        let owner = Arc::new(CallbackInvocationOwner {
+            _stream: Some(PendingExtensionStream {
+                bridge: self.clone(),
+                stream: Some(stream.clone()),
+            }),
+            _session_callback: None,
+            _agent_invocation: None,
+            retained_lease: Mutex::new(None),
+            response_completed: CancellationToken::new(),
+            pending_failure: Mutex::new(None),
+            finished: CancellationToken::new(),
+        });
+        let (sink, receiver) = ExtensionStreamSink::new(
+            stream.clone(),
+            extension.id.clone(),
+            operation.kind(),
+            state.limits.max_outstanding_live_events,
+            None,
+        );
+        self.shared.register_stream(sink.clone());
+        let drop_notice = CallbackStreamDropNotice {
+            cancellation: cancellation.clone(),
+            armed: true,
+        };
+        let call = ExtensionInvokeCall {
+            extension: extension.clone(),
+            factory_origin: record.factory_origin.clone(),
+            invocation_id: lease.identity().to_string(),
+            context: None,
+            invocation,
+            deadline: wire_duration(self.deadline_of(&record)),
+            stream: Some(stream),
+        };
+        call.validate().map_err(|reason| {
+            sdk_error(
+                ExtensionErrorCode::SerializationViolation,
+                reason,
+                Retryability::Never,
+                "_echo_agent/extension/invoke",
+            )
+        })?;
+        let completion = self.submit_owned_invocation(
+            call,
+            lease,
+            cancellation,
+            CallbackStreamPolicy::Channel,
+            owner.clone(),
+            Some(sink.clone()),
+        )?;
+        // Setup does not wait for the RPC response. Native callbacks may await
+        // their entire producer/finally before returning that response.
+        Ok(channel_callback_event_stream(
+            owner,
+            drop_notice,
+            sink,
+            receiver,
+            completion,
+        ))
+    }
+
+    /// CustomAgent permits the existing setup ACK before stream terminal.
+    /// Its explicit framework invocation token never resolves through another
+    /// active Run of the registered parent Session.
+    async fn invoke_owned_producer_stream(
+        &self,
+        extension: &WireHandle,
+        context: ExtensionInvocationContext,
+        invocation: ExtensionInvocation,
+        cancellation: CancellationToken,
+        agent_invocation: Option<echo_agent::agent::AgentInvocationContext>,
+    ) -> std::result::Result<
+        futures::stream::BoxStream<
+            'static,
+            std::result::Result<ExtensionStreamEvent, EchoSdkError>,
+        >,
+        EchoSdkError,
+    > {
+        let operation = invocation.operation();
+        let (lease, record, _authority) =
+            self.prepare(extension, operation, &invocation, cancellation.clone())?;
+        self.ensure_payload_bound(&invocation, false)?;
+        let state = self.state()?;
+        let stream = state.handles.register_extension_stream(&extension.id)?;
+        let owner = Arc::new(CallbackInvocationOwner {
+            _stream: Some(PendingExtensionStream {
+                bridge: self.clone(),
+                stream: Some(stream.clone()),
+            }),
+            _session_callback: self
+                .shared
+                .enter_session_callback(context.session_id.as_deref()),
+            _agent_invocation: agent_invocation,
+            retained_lease: Mutex::new(None),
+            response_completed: CancellationToken::new(),
+            pending_failure: Mutex::new(None),
+            finished: CancellationToken::new(),
+        });
+        let (sink, receiver) = ExtensionStreamSink::new(
+            stream.clone(),
+            extension.id.clone(),
+            operation.kind(),
+            state.limits.max_outstanding_live_events,
+            None,
+        );
+        sink.retain_until_remote_terminal
+            .store(true, Ordering::Release);
+        self.shared.register_stream(sink.clone());
+        let drop_notice = CallbackStreamDropNotice {
+            cancellation: cancellation.clone(),
+            armed: true,
+        };
+        let call = ExtensionInvokeCall {
+            extension: extension.clone(),
+            factory_origin: record.factory_origin.clone(),
+            invocation_id: lease.identity().to_string(),
+            context: Some(context),
+            invocation,
+            deadline: wire_duration(self.deadline_of(&record)),
+            stream: Some(stream),
+        };
+        call.validate().map_err(|reason| {
+            sdk_error(
+                ExtensionErrorCode::SerializationViolation,
+                reason,
+                Retryability::Never,
+                "_echo_agent/extension/invoke",
+            )
+        })?;
+        let completion = self.submit_owned_invocation(
+            call,
+            lease,
+            cancellation,
+            CallbackStreamPolicy::CustomAgent,
+            owner.clone(),
+            Some(sink.clone()),
+        )?;
+        Ok(owned_callback_event_stream(
+            owner,
+            drop_notice,
+            sink,
+            receiver,
+            completion,
+        ))
+    }
+
     /// Drive one streaming reverse invocation: mint the stream handle,
     /// subscribe the sink, return the bounded receiver the Rust stream
     /// proxy consumes.
@@ -874,9 +1508,9 @@ impl ExtensionBridge {
         let framework_cancellation = self
             .cancellation_for_context(context.as_ref(), framework_cancellation)
             .await;
-        let connection = self.shared.connection()?;
         let (mut lease, record, _authority) =
             self.prepare(extension, operation, &invocation, framework_cancellation)?;
+        let connection = self.shared.connection()?;
         self.ensure_payload_bound(&invocation, false)?;
         let deadline = self.deadline_of(&record);
         let state = self.state()?;
@@ -894,8 +1528,16 @@ impl ExtensionBridge {
             session_callback,
         );
         self.shared.register_stream(sink.clone());
+        // The enclosing framework timeout can drop this future before the
+        // reverse request answers. Until the receiver is handed off, this
+        // owner must release both handle quota and the session reentry guard.
+        let mut pending_stream = PendingExtensionStream {
+            bridge: self.clone(),
+            stream: Some(stream.clone()),
+        };
         let call = ExtensionInvokeCall {
             extension: extension.clone(),
+            factory_origin: record.factory_origin.clone(),
             invocation_id: lease.identity().to_string(),
             context,
             invocation,
@@ -903,7 +1545,6 @@ impl ExtensionBridge {
             stream: Some(stream.clone()),
         };
         if let Err(reason) = call.validate() {
-            self.release_stream(&stream);
             return Err(sdk_error(
                 ExtensionErrorCode::SerializationViolation,
                 reason,
@@ -926,8 +1567,7 @@ impl ExtensionBridge {
                             lease.settle(echo_agent::acp::ExtensionSettlement::Answered);
                         }
                         drop_notice.disarm();
-                        self.release_stream(&stream);
-                        return Err(typed);
+                                    return Err(typed);
                     }
                 }
             }
@@ -935,11 +1575,9 @@ impl ExtensionBridge {
                 let _ = self.send_cancel_notice(lease.identity(), "cancelled");
                 drop_notice.disarm();
                 if !lease.settle(echo_agent::acp::ExtensionSettlement::Cancelled) {
-                    self.release_stream(&stream);
-                    return Err(settlement_error(lease.settlement()));
+                            return Err(settlement_error(lease.settlement()));
                 }
-                self.release_stream(&stream);
-                return Err(sdk_error(
+                    return Err(sdk_error(
                     ExtensionErrorCode::Cancelled,
                     "extension stream invocation was cancelled",
                     Retryability::Never,
@@ -950,11 +1588,9 @@ impl ExtensionBridge {
                 let _ = self.send_cancel_notice(lease.identity(), "timeout");
                 drop_notice.disarm();
                 if !lease.settle_timeout() {
-                    self.release_stream(&stream);
-                    return Err(settlement_error(lease.settlement()));
+                            return Err(settlement_error(lease.settlement()));
                 }
-                self.release_stream(&stream);
-                return Err(sdk_error(
+                    return Err(sdk_error(
                     ExtensionErrorCode::ExtensionTimeout,
                     "extension stream invocation exceeded its deadline",
                     Retryability::Never,
@@ -974,21 +1610,16 @@ impl ExtensionBridge {
                     deadline.saturating_sub(started_at.elapsed()),
                     lease.clone(),
                 );
+                pending_stream.stream.take();
                 Ok((receiver, stream, invocation_id, cancellation, lease, sink))
             }
-            Ok(Some(_)) => {
-                self.release_stream(&stream);
-                Err(sdk_error(
-                    ExtensionErrorCode::ExtensionFailed,
-                    "streaming invocation returned a single result",
-                    Retryability::Never,
-                    OPERATION_STR,
-                ))
-            }
-            Err(error) => {
-                self.release_stream(&stream);
-                Err(error)
-            }
+            Ok(Some(_)) => Err(sdk_error(
+                ExtensionErrorCode::ExtensionFailed,
+                "streaming invocation returned a single result",
+                Retryability::Never,
+                OPERATION_STR,
+            )),
+            Err(error) => Err(error),
         }
     }
 
@@ -1066,6 +1697,7 @@ impl ExtensionBridge {
     fn register_factory_instance(
         &self,
         factory: &WireHandle,
+        instance: &WireHandle,
         descriptor: &CustomAgentDescriptorWire,
     ) -> std::result::Result<WireHandle, EchoSdkError> {
         let state = self.state()?;
@@ -1085,25 +1717,18 @@ impl ExtensionBridge {
             system_prompt: descriptor.system_prompt.clone(),
             tool_names: descriptor.tool_names.clone(),
         };
-        let implementation_id = format!(
-            "{}::instance-{}",
-            factory_record.implementation_id,
-            uuid::Uuid::new_v4()
-        );
         state
             .handles
-            .register_extension(
+            .complete_factory_instance_reserved(
                 super::handles::ExtensionRegistrationLimits {
                     max_extensions: state.limits.max_registered_extensions,
                     max_descriptor_bytes: state.limits.max_extension_descriptor_bytes,
                 },
-                ExtensionKind::CustomAgent,
-                &implementation_id,
+                instance,
+                factory,
                 custom_descriptor,
-                factory_record.timeout.clone(),
-                true,
             )
-            .map(|(handle, _)| handle)
+            .map(|_| instance.clone())
     }
 
     fn release_extension(&self, extension: &WireHandle) {
@@ -1222,6 +1847,234 @@ struct InvocationDropNotice {
     bridge: ExtensionBridge,
     invocation_id: String,
     armed: bool,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CallbackStreamPolicy {
+    Channel,
+    CustomAgent,
+}
+
+struct CallbackStreamDropNotice {
+    cancellation: CancellationToken,
+    armed: bool,
+}
+
+impl Drop for CallbackStreamDropNotice {
+    fn drop(&mut self) {
+        if self.armed {
+            self.cancellation.cancel();
+        }
+    }
+}
+
+struct CallbackInvocationOwner {
+    _stream: Option<PendingExtensionStream>,
+    _session_callback: Option<SessionCallbackGuard>,
+    _agent_invocation: Option<echo_agent::agent::AgentInvocationContext>,
+    retained_lease: Mutex<Option<echo_agent::acp::ExtensionInvocationLease>>,
+    response_completed: CancellationToken,
+    pending_failure: Mutex<Option<EchoSdkError>>,
+    finished: CancellationToken,
+}
+
+impl Drop for CallbackInvocationOwner {
+    fn drop(&mut self) {
+        self.finished.cancel();
+    }
+}
+
+struct CallbackStreamState {
+    _owner: Arc<CallbackInvocationOwner>,
+    drop_notice: CallbackStreamDropNotice,
+    sink: Arc<ExtensionStreamSink>,
+    receiver: mpsc::Receiver<ExtensionStreamEvent>,
+    completion:
+        tokio::sync::oneshot::Receiver<std::result::Result<Option<ExtensionResult>, EchoSdkError>>,
+    answered: bool,
+    terminal: Option<ExtensionStreamEvent>,
+    sink_ended: bool,
+    finished: bool,
+}
+
+#[cfg(feature = "framework-channels")]
+fn channel_callback_event_stream(
+    owner: Arc<CallbackInvocationOwner>,
+    drop_notice: CallbackStreamDropNotice,
+    sink: Arc<ExtensionStreamSink>,
+    receiver: mpsc::Receiver<ExtensionStreamEvent>,
+    completion: tokio::sync::oneshot::Receiver<
+        std::result::Result<Option<ExtensionResult>, EchoSdkError>,
+    >,
+) -> futures::stream::BoxStream<'static, echo_agent::error::Result<OutboundMessage>> {
+    owned_callback_event_stream(owner, drop_notice, sink, receiver, completion)
+        .map(|event| event.map_err(react_error).and_then(channel_stream_message))
+        .boxed()
+}
+
+fn owned_callback_event_stream(
+    owner: Arc<CallbackInvocationOwner>,
+    drop_notice: CallbackStreamDropNotice,
+    sink: Arc<ExtensionStreamSink>,
+    receiver: mpsc::Receiver<ExtensionStreamEvent>,
+    completion: tokio::sync::oneshot::Receiver<
+        std::result::Result<Option<ExtensionResult>, EchoSdkError>,
+    >,
+) -> futures::stream::BoxStream<'static, std::result::Result<ExtensionStreamEvent, EchoSdkError>> {
+    Box::pin(futures::stream::unfold(
+        CallbackStreamState {
+            _owner: owner,
+            drop_notice,
+            sink,
+            receiver,
+            completion,
+            answered: false,
+            terminal: None,
+            sink_ended: false,
+            finished: false,
+        },
+        async move |mut state| {
+            if state.finished {
+                return None;
+            }
+            loop {
+                if (state.terminal.is_some() || state.sink_ended)
+                    && state.answered
+                    && (!state
+                        .sink
+                        .retain_until_remote_terminal
+                        .load(Ordering::Acquire)
+                        || state.sink.remote_terminal_received.load(Ordering::Acquire)
+                        || state._owner.finished.is_cancelled())
+                {
+                    if state.sink.remote_terminal_received.load(Ordering::Acquire) {
+                        // The actual RPC answer and validated remote terminal
+                        // are both known here. Release the original invocation
+                        // before its terminal becomes visible to a consumer
+                        // that may immediately call this same child's close.
+                        state
+                            ._owner
+                            .retained_lease
+                            .lock()
+                            .unwrap_or_else(|error| error.into_inner())
+                            .take();
+                        state._owner.finished.cancel();
+                    }
+                    let pending_failure = state
+                        ._owner
+                        .pending_failure
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .take();
+                    let item = if let Some(error) = pending_failure {
+                        Err(error)
+                    } else {
+                        state.terminal.take().ok_or_else(|| {
+                            sdk_error(
+                                ExtensionErrorCode::ExtensionFailed,
+                                "callback stream sink ended without a terminal",
+                                Retryability::Never,
+                                "_echo_agent/extension/stream",
+                            )
+                        })
+                    };
+                    state.finished = true;
+                    state.drop_notice.armed = false;
+                    return Some((item, state));
+                }
+                if state.receiver.is_empty()
+                    && let Some(event) = state.sink.take_terminal()
+                {
+                    state.terminal = Some(event);
+                    continue;
+                }
+                tokio::select! {
+                    response = &mut state.completion, if !state.answered => {
+                        state.answered = true;
+                        match response.map_err(callback_response_lost).and_then(|result| result) {
+                            Ok(None) => {},
+                            result => {
+                                state.finished = true;
+                                state.drop_notice.armed = false;
+                                let error = match result {
+                                    Err(error) => error,
+                                    Ok(_) => sdk_error(ExtensionErrorCode::ExtensionFailed,
+                                        "callback stream returned a single result", Retryability::Never,
+                                        "_echo_agent/extension/invoke"),
+                                };
+                                return Some((Err(error), state));
+                            }
+                        }
+                    }
+                    () = state.sink.wait_remote_terminal(), if state.answered
+                        && state.sink.retain_until_remote_terminal.load(Ordering::Acquire)
+                        && !state.sink.remote_terminal_received.load(Ordering::Acquire) => {},
+                    () = state._owner.finished.cancelled(), if state.answered
+                        && state.sink.retain_until_remote_terminal.load(Ordering::Acquire)
+                        && !state._owner.finished.is_cancelled() => {},
+                    event = state.receiver.recv(), if state.terminal.is_none() && !state.sink_ended => {
+                        match event {
+                            Some(event) if event.is_terminal() => { state.terminal = Some(event); }
+                            Some(event) => { return Some((Ok(event), state)); }
+                            None => {
+                                // Closed notification delivery is not callback completion.
+                                state.terminal = state.sink.take_terminal();
+                                state.sink_ended = true;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+    ))
+}
+
+fn callback_response_lost(error: tokio::sync::oneshot::error::RecvError) -> EchoSdkError {
+    sdk_error(
+        ExtensionErrorCode::ExtensionDisconnected,
+        format!("channel response owner ended without a callback response: {error}"),
+        Retryability::Never,
+        "_echo_agent/extension/invoke",
+    )
+}
+
+#[cfg(feature = "framework-channels")]
+fn channel_stream_message(
+    event: ExtensionStreamEvent,
+) -> echo_agent::error::Result<OutboundMessage> {
+    match event {
+        ExtensionStreamEvent::Chunk {
+            value: ExtensionStreamChunkValue::Channel(message),
+            ..
+        }
+        | ExtensionStreamEvent::Complete {
+            value: ExtensionStreamCompleteValue::Channel(message),
+            ..
+        } => channel_outbound_from_wire(message),
+        ExtensionStreamEvent::Failed { error, .. } => Err(react_error(error)),
+        ExtensionStreamEvent::Cancelled { .. } => Err(react_error(sdk_error(
+            ExtensionErrorCode::Cancelled,
+            "channel handler stream was cancelled",
+            Retryability::Never,
+            "_echo_agent/extension/stream",
+        ))),
+        _ => Err(ReactError::Other(
+            "channel handler stream received a non-channel payload".to_string(),
+        )),
+    }
+}
+
+struct PendingExtensionStream {
+    bridge: ExtensionBridge,
+    stream: Option<WireHandle>,
+}
+
+impl Drop for PendingExtensionStream {
+    fn drop(&mut self) {
+        if let Some(stream) = self.stream.take() {
+            self.bridge.release_stream(&stream);
+        }
+    }
 }
 
 impl InvocationDropNotice {
@@ -1354,11 +2207,129 @@ fn drop_stream_lease(lease: &Arc<Mutex<Option<echo_agent::acp::ExtensionInvocati
 }
 
 fn react_error(error: EchoSdkError) -> ReactError {
-    ReactError::Other(format!(
+    let message = format!(
         "extension bridge failure {}: {}",
         error.code.as_str(),
         error.message
-    ))
+    );
+    match error.code {
+        ExtensionErrorCode::Cancelled => echo_agent::error::AgentError::Cancelled(message).into(),
+        ExtensionErrorCode::ExtensionTimeout => {
+            echo_agent::error::AgentError::Timeout(message).into()
+        }
+        _ => ReactError::Other(message),
+    }
+}
+
+fn tool_react_error(error: EchoSdkError) -> ReactError {
+    let message = format!(
+        "extension bridge failure {}: {}",
+        error.code.as_str(),
+        error.message
+    );
+    match error.code {
+        ExtensionErrorCode::Cancelled => echo_agent::error::ToolError::Cancelled(message).into(),
+        ExtensionErrorCode::ExtensionTimeout => {
+            echo_agent::error::ToolError::Timeout(message).into()
+        }
+        _ => react_error(error),
+    }
+}
+
+fn managed_call_context(call: &AgentComponentCallInputWire) -> Option<&PersistenceCallContextWire> {
+    match call {
+        AgentComponentCallInputWire::ConversationEnsureProjectionEpochWithContext {
+            context,
+            ..
+        } => Some(context),
+        AgentComponentCallInputWire::ConversationGetProjectionAuthorityWithContext {
+            context,
+            ..
+        } => Some(context),
+        AgentComponentCallInputWire::ConversationApplyTranscriptProjectionWithContext {
+            context,
+            ..
+        } => Some(context),
+        AgentComponentCallInputWire::ConversationDeleteManagedWithContext { context, .. } => {
+            Some(context)
+        }
+        AgentComponentCallInputWire::RuntimeLoadManagedStateWithContext { context, .. } => {
+            Some(context)
+        }
+        AgentComponentCallInputWire::RuntimeLoadScopeAuthorityWithContext { context, .. } => {
+            Some(context)
+        }
+        AgentComponentCallInputWire::RuntimeCompareAndSaveCheckpointWithContext {
+            context, ..
+        } => Some(context),
+        AgentComponentCallInputWire::RuntimeAcknowledgeTranscriptProjectionWithContext {
+            context,
+            ..
+        } => Some(context),
+        AgentComponentCallInputWire::RuntimeRetireGenerationWithContext { context, .. } => {
+            Some(context)
+        }
+        AgentComponentCallInputWire::RuntimeBeginScopeRetirementWithContext { context, .. } => {
+            Some(context)
+        }
+        AgentComponentCallInputWire::RuntimeContinueScopeRetirementWithContext {
+            context, ..
+        } => Some(context),
+        _ => None,
+    }
+}
+
+fn managed_persistence_error(error: EchoSdkError, component: AgentComponentKindWire) -> ReactError {
+    let class = error
+        .details
+        .as_ref()
+        .and_then(|details| details.fields.as_ref())
+        .and_then(|fields| {
+            fields
+                .iter()
+                .find(|field| field.key == "persistence_error_class")
+        })
+        .map(|field| field.value.as_str());
+    let message = format!(
+        "extension bridge failure {}: {}",
+        error.code.as_str(),
+        error.message
+    );
+    match (component, class) {
+        (AgentComponentKindWire::ConversationStore, Some("transient_no_commit")) => {
+            echo_agent::error::MemoryError::TransientNoCommit(message).into()
+        }
+        (AgentComponentKindWire::ConversationStore, Some("deadline_exceeded")) => {
+            echo_agent::error::MemoryError::DeadlineExceeded(message).into()
+        }
+        (AgentComponentKindWire::ConversationStore, Some("unsupported")) => {
+            echo_agent::error::MemoryError::Unsupported(message).into()
+        }
+        (AgentComponentKindWire::ConversationStore, Some("corrupt_state")) => {
+            echo_agent::error::MemoryError::SerializationError(message).into()
+        }
+        (AgentComponentKindWire::ConversationStore, Some("invalid_configuration")) => {
+            echo_agent::error::ConfigError::ConfigFileError(message).into()
+        }
+        (AgentComponentKindWire::RuntimeStateStore, Some("transient_no_commit")) => {
+            echo_agent::error::RuntimeStateError::TransientNoCommit(message).into()
+        }
+        (AgentComponentKindWire::RuntimeStateStore, Some("deadline_exceeded")) => {
+            echo_agent::error::RuntimeStateError::DeadlineExceeded(message).into()
+        }
+        (AgentComponentKindWire::RuntimeStateStore, Some("unsupported")) => {
+            echo_agent::error::RuntimeStateError::Unsupported(message).into()
+        }
+        (AgentComponentKindWire::RuntimeStateStore, Some("corrupt_state")) => {
+            echo_agent::error::RuntimeStateError::SerializationError(message).into()
+        }
+        (AgentComponentKindWire::RuntimeStateStore, Some("invalid_configuration")) => {
+            echo_agent::error::ConfigError::ConfigFileError(message).into()
+        }
+        // Conflict is a domain result with an authoritative receipt. An
+        // exception claiming conflict lacks that receipt and remains unknown.
+        _ => ReactError::Other(message),
+    }
 }
 
 fn sandbox_react_error(error: EchoSdkError) -> ReactError {
@@ -1509,155 +2480,6 @@ fn session_invocation_context(session_id: &str) -> ExtensionInvocationContext {
     }
 }
 
-fn wire_path_to_path(path: WirePath) -> std::result::Result<std::path::PathBuf, String> {
-    match path {
-        WirePath::Utf8 { path } => Ok(path.into()),
-        WirePath::Unix { bytes_base64, .. } => {
-            #[cfg(unix)]
-            {
-                use std::os::unix::ffi::OsStringExt as _;
-                let bytes = base64::engine::general_purpose::STANDARD_NO_PAD
-                    .decode(bytes_base64)
-                    .map_err(|error| error.to_string())?;
-                Ok(std::ffi::OsString::from_vec(bytes).into())
-            }
-            #[cfg(not(unix))]
-            {
-                let _ = bytes_base64;
-                Err("a Unix artifact path cannot be restored on this platform".to_string())
-            }
-        }
-        WirePath::Windows { utf16_base64, .. } => {
-            #[cfg(windows)]
-            {
-                use std::os::windows::ffi::OsStringExt as _;
-                let bytes = base64::engine::general_purpose::STANDARD_NO_PAD
-                    .decode(utf16_base64)
-                    .map_err(|error| error.to_string())?;
-                if bytes.len() % 2 != 0 {
-                    return Err("Windows artifact path has an odd UTF-16 byte count".to_string());
-                }
-                let units = bytes
-                    .chunks_exact(2)
-                    .filter_map(|pair| Some(u16::from_le_bytes([*pair.first()?, *pair.get(1)?])))
-                    .collect::<Vec<_>>();
-                Ok(std::ffi::OsString::from_wide(&units).into())
-            }
-            #[cfg(not(windows))]
-            {
-                let _ = utf16_base64;
-                Err("a Windows artifact path cannot be restored on this platform".to_string())
-            }
-        }
-    }
-}
-
-fn tool_result_from_wire(wire: ToolResultWire) -> std::result::Result<ToolResult, String> {
-    use echo_agent::tools::{
-        ToolFailure, ToolFailureCategory, ToolRecoveryAction, ToolResultContent, ToolResultKind,
-        ToolSideEffect,
-    };
-    let kind = match wire.kind {
-        ToolResultKindWire::Text => ToolResultKind::Text,
-        ToolResultKindWire::Json => ToolResultKind::Json,
-        ToolResultKindWire::Image { mime_type } => ToolResultKind::Image { mime_type },
-        ToolResultKindWire::Table { columns, rows } => ToolResultKind::Table { columns, rows },
-        ToolResultKindWire::Diff { unified_diff } => ToolResultKind::Diff { unified_diff },
-        ToolResultKindWire::FileReference { path } => ToolResultKind::FileReference { path },
-        ToolResultKindWire::CommandOutput { exit_code } => {
-            ToolResultKind::CommandOutput { exit_code }
-        }
-        ToolResultKindWire::SkillActivation { name } => ToolResultKind::SkillActivation { name },
-        ToolResultKindWire::StructuredError { error_code } => {
-            ToolResultKind::StructuredError { error_code }
-        }
-    };
-    let failure = wire
-        .failure
-        .map(|failure| -> std::result::Result<ToolFailure, String> {
-            let category = match failure.category.as_str() {
-                "invalid_arguments" => Ok(ToolFailureCategory::InvalidArguments),
-                "unavailable" => Ok(ToolFailureCategory::Unavailable),
-                "timeout" => Ok(ToolFailureCategory::Timeout),
-                "cancelled" => Ok(ToolFailureCategory::Cancelled),
-                "transient" => Ok(ToolFailureCategory::Transient),
-                "permanent" => Ok(ToolFailureCategory::Permanent),
-                "partial_side_effect" => Ok(ToolFailureCategory::PartialSideEffect),
-                _ => Err("unknown tool failure category".to_string()),
-            }?;
-            let recovery = match failure.recovery.as_str() {
-                "correct_arguments" => Ok(ToolRecoveryAction::CorrectArguments),
-                "retry" => Ok(ToolRecoveryAction::Retry),
-                "restore_then_retry" => Ok(ToolRecoveryAction::RestoreThenRetry),
-                "verify_then_retry" => Ok(ToolRecoveryAction::VerifyThenRetry),
-                "stop" => Ok(ToolRecoveryAction::Stop),
-                _ => Err("unknown tool recovery action".to_string()),
-            }?;
-            let side_effect = match failure.side_effect.as_str() {
-                "none" => Ok(ToolSideEffect::None),
-                "possible" => Ok(ToolSideEffect::Possible),
-                "confirmed" => Ok(ToolSideEffect::Confirmed),
-                _ => Err("unknown tool side-effect status".to_string()),
-            }?;
-            Ok(ToolFailure {
-                category,
-                recovery,
-                side_effect,
-                retry_after_ms: failure.retry_after_ms.and_then(|value| value.to_u64()),
-                idempotency_key: failure.idempotency_key,
-                postcondition: failure.postcondition,
-            })
-        })
-        .transpose()?;
-    let artifact =
-        wire.artifact
-            .map(
-                |artifact| -> std::result::Result<
-                    echo_agent::tools::artifact::ToolOutputArtifactRef,
-                    String,
-                > {
-                    Ok(echo_agent::tools::artifact::ToolOutputArtifactRef {
-                        path: wire_path_to_path(artifact.path)?,
-                        artifact_bytes: artifact
-                            .artifact_bytes
-                            .to_u64()
-                            .ok_or_else(|| "invalid artifact byte count".to_string())?,
-                        payload_bytes: artifact
-                            .payload_bytes
-                            .to_u64()
-                            .ok_or_else(|| "invalid payload byte count".to_string())?,
-                        sha256: artifact.sha256,
-                        retention: artifact.retention,
-                    })
-                },
-            )
-            .transpose()?;
-    Ok(ToolResult {
-        kind,
-        success: wire.success,
-        output: wire.output,
-        error: wire.error,
-        failure,
-        data: wire
-            .data
-            .map(|value| value.into_json().map_err(|error| error.to_string()))
-            .transpose()?,
-        truncated: wire.truncated,
-        mime_type: wire.mime_type,
-        artifact,
-        metadata: wire.metadata.into_iter().collect(),
-        model_content: wire
-            .model_content
-            .into_iter()
-            .map(|content| match content {
-                ToolResultContentWire::ImageUrl { url, detail } => {
-                    ToolResultContent::ImageUrl { url, detail }
-                }
-            })
-            .collect(),
-    })
-}
-
 fn tool_stream_event_from_wire(
     wire: ToolStreamEventWire,
 ) -> std::result::Result<ToolStreamEvent, String> {
@@ -1693,94 +2515,6 @@ fn tool_stream_chunk_from_wire(
     }
 }
 
-/// Reverse projections are retained as round-trip helpers for future Host-
-/// originated extension events; current bridge direction only consumes SDK
-/// results.
-#[allow(dead_code)]
-fn tool_result_wire_from_framework(
-    result: &ToolResult,
-) -> std::result::Result<ToolResultWire, String> {
-    use echo_agent::tools::ToolResultKind;
-    let kind = match &result.kind {
-        ToolResultKind::Text => ToolResultKindWire::Text,
-        ToolResultKind::Json => ToolResultKindWire::Json,
-        ToolResultKind::Image { mime_type } => ToolResultKindWire::Image {
-            mime_type: mime_type.clone(),
-        },
-        ToolResultKind::Table { columns, rows } => ToolResultKindWire::Table {
-            columns: columns.clone(),
-            rows: rows.clone(),
-        },
-        ToolResultKind::Diff { unified_diff } => ToolResultKindWire::Diff {
-            unified_diff: unified_diff.clone(),
-        },
-        ToolResultKind::FileReference { path } => {
-            ToolResultKindWire::FileReference { path: path.clone() }
-        }
-        ToolResultKind::CommandOutput { exit_code } => ToolResultKindWire::CommandOutput {
-            exit_code: *exit_code,
-        },
-        ToolResultKind::SkillActivation { name } => {
-            ToolResultKindWire::SkillActivation { name: name.clone() }
-        }
-        ToolResultKind::StructuredError { error_code } => ToolResultKindWire::StructuredError {
-            error_code: error_code.clone(),
-        },
-    };
-    let failure = result.failure.as_ref().map(|failure| ToolFailureWire {
-        category: failure.category.as_str().to_string(),
-        recovery: failure.recovery.as_str().to_string(),
-        side_effect: match failure.side_effect {
-            echo_agent::tools::ToolSideEffect::None => "none",
-            echo_agent::tools::ToolSideEffect::Possible => "possible",
-            echo_agent::tools::ToolSideEffect::Confirmed => "confirmed",
-        }
-        .to_string(),
-        retry_after_ms: failure.retry_after_ms.map(WireU64::from_u64),
-        idempotency_key: failure.idempotency_key.clone(),
-        postcondition: failure.postcondition.clone(),
-    });
-    let artifact = result
-        .artifact
-        .as_ref()
-        .map(|artifact| ToolOutputArtifactRefWire {
-            path: wire_path(&artifact.path),
-            artifact_bytes: WireU64::from_u64(artifact.artifact_bytes),
-            payload_bytes: WireU64::from_u64(artifact.payload_bytes),
-            sha256: artifact.sha256.clone(),
-            retention: artifact.retention.clone(),
-        });
-    let model_content = result
-        .model_content
-        .iter()
-        .map(|content| match content {
-            echo_agent::tools::ToolResultContent::ImageUrl { url, detail } => {
-                ToolResultContentWire::ImageUrl {
-                    url: url.clone(),
-                    detail: detail.clone(),
-                }
-            }
-        })
-        .collect();
-    Ok(ToolResultWire {
-        kind,
-        success: result.success,
-        output: result.output.clone(),
-        error: result.error.clone(),
-        failure,
-        data: result.data.as_ref().map(to_wire).transpose()?,
-        truncated: result.truncated,
-        mime_type: result.mime_type.clone(),
-        artifact,
-        metadata: result
-            .metadata
-            .iter()
-            .map(|(key, value)| (key.clone(), value.clone()))
-            .collect(),
-        model_content,
-    })
-}
-
 #[allow(dead_code)]
 fn tool_stream_event_wire_from_framework(
     event: &ToolStreamEvent,
@@ -1800,7 +2534,7 @@ fn tool_stream_event_wire_from_framework(
             chunk: chunk.clone(),
         },
         ToolStreamEvent::Complete(result) => ToolStreamEventWire::Complete {
-            result: tool_result_wire_from_framework(result)?,
+            result: tool_result_to_wire(result)?,
         },
     })
 }
@@ -1873,7 +2607,7 @@ fn agent_event_wire_from_framework(
         } => AgentEventWire::ToolResult {
             call_id: call_id.clone(),
             name: name.clone(),
-            result: tool_result_wire_from_framework(result)?,
+            result: tool_result_to_wire(result)?,
         },
         AgentEvent::ToolStream {
             call_id,
@@ -1892,6 +2626,11 @@ fn agent_event_wire_from_framework(
             guard: guard.clone(),
             blocked: *blocked,
         },
+        AgentEvent::TranscriptProjectionSettlement(settlement) => {
+            AgentEventWire::TranscriptProjectionSettlement {
+                settlement: settlement.clone().project()?,
+            }
+        }
         AgentEvent::MemoryRecalled { count } => AgentEventWire::MemoryRecalled {
             count: WireU64::from_u64(u64::try_from(*count).unwrap_or(u64::MAX)),
         },
@@ -2021,6 +2760,11 @@ fn agent_event_from_wire(wire: AgentEventWire) -> std::result::Result<AgentEvent
         AgentEventWire::ToolBatchEnd => AgentEvent::ToolBatchEnd,
         AgentEventWire::GuardTriggered { guard, blocked } => {
             AgentEvent::GuardTriggered { guard, blocked }
+        }
+        AgentEventWire::TranscriptProjectionSettlement { settlement } => {
+            AgentEvent::TranscriptProjectionSettlement(super::wire::managed::Projection::restore(
+                settlement,
+            )?)
         }
         AgentEventWire::MemoryRecalled { count } => AgentEvent::MemoryRecalled {
             count: wire_usize(count, "recalled memory count")?,
@@ -2193,7 +2937,7 @@ impl ExtensionToolProxy {
                     .clone(),
             )
             .await
-            .map_err(react_error)?;
+            .map_err(tool_react_error)?;
         let ExtensionResult::ToolExecute(result) = value else {
             return Err(ReactError::Other(
                 "tool extension returned the wrong result variant".to_string(),
@@ -2391,7 +3135,7 @@ impl echo_agent::tools::Tool for ExtensionToolProxy {
                     cancellation,
                 )
                 .await
-                .map_err(react_error)?;
+                .map_err(tool_react_error)?;
             Ok(Box::pin(futures::StreamExt::map(
                 extension_event_stream(
                     self.bridge.clone(),
@@ -2454,7 +3198,7 @@ impl echo_agent::tools::Tool for ExtensionToolProxy {
                     self.bridge.connection_cancellation(),
                 )
                 .await
-                .map_err(react_error)?;
+                .map_err(tool_react_error)?;
             // The validation contract is `null` when the parameters are
             // valid and a bounded rejection reason otherwise.
             let ExtensionResult::ToolValidateParameters(result) = value else {
@@ -3244,11 +3988,139 @@ impl ExtensionAgentComponentProxy {
         });
     }
 
+    fn require_managed_persistence(&self) -> echo_agent::error::Result<()> {
+        let supported = self.capabilities.persistence_call
+            == PersistenceCallCapabilityWire::AbsoluteDeadlineV1
+            && match self.component {
+                AgentComponentKindWire::ConversationStore => {
+                    self.capabilities.conversation_projection
+                        == ConversationProjectionCapabilityWire::AtomicV1
+                }
+                AgentComponentKindWire::RuntimeStateStore => {
+                    self.capabilities.runtime_state == RuntimeStateCapabilityWire::RevisionedV1
+                }
+                _ => false,
+            };
+        if !supported {
+            return Err(match self.component {
+                AgentComponentKindWire::RuntimeStateStore => {
+                    echo_agent::error::RuntimeStateError::Unsupported(
+                        "extension lacks revisioned/deadline persistence capability".to_string(),
+                    )
+                    .into()
+                }
+                _ => echo_agent::error::MemoryError::Unsupported(
+                    "extension lacks atomic/deadline persistence capability".to_string(),
+                )
+                .into(),
+            });
+        }
+        Ok(())
+    }
+
+    fn managed_context(
+        &self,
+        context: echo_agent::memory::PersistenceCallContext,
+    ) -> echo_agent::error::Result<PersistenceCallContextWire> {
+        if let Err(error) = context.ensure_not_expired() {
+            return Err(match self.component {
+                AgentComponentKindWire::RuntimeStateStore => {
+                    echo_agent::error::RuntimeStateError::DeadlineExceeded(error.to_string()).into()
+                }
+                _ => error.into(),
+            });
+        }
+        Ok(PersistenceCallContextWire {
+            absolute_deadline_unix_ms: WireI64::from_i64(context.absolute_deadline_unix_ms),
+        })
+    }
+
+    async fn invoke_task_store(
+        &self,
+        call: AgentComponentCallInputWire,
+    ) -> Result<AgentComponentCallResultWire, echo_agent::tasks::RevisionedTaskStoreError> {
+        let operation = call.operation();
+        let result = self
+            .bridge
+            .invoke_once_connection_scoped(
+                &self.extension,
+                Some(session_invocation_context(&self.session_id)),
+                ExtensionInvocation::AgentComponentCall(AgentComponentCallWire {
+                    component: self.component,
+                    call,
+                }),
+            )
+            .await
+            .map_err(|error| {
+                if error.code == ExtensionErrorCode::FeatureUnavailable {
+                    return echo_agent::tasks::RevisionedTaskStoreError::Unsupported {
+                        operation: format!("{operation:?}"),
+                    };
+                }
+                let fields = error
+                    .details
+                    .as_ref()
+                    .and_then(|details| details.fields.as_ref());
+                let field = |name: &str| {
+                    fields
+                        .and_then(|fields| fields.iter().find(|field| field.key == name))
+                        .map(|field| field.value.as_str())
+                };
+                if field("task_store_error_class") == Some("conflict") {
+                    let revision = |name: &str| match field(name) {
+                        Some("absent") => Ok(None),
+                        Some(value) => value
+                            .parse::<u64>()
+                            .map(Some)
+                            .map_err(|error| error.to_string()),
+                        None => Err(format!("missing {name}")),
+                    };
+                    if let (Ok(expected), Ok(current)) =
+                        (revision("expected_revision"), revision("current_revision"))
+                    {
+                        return echo_agent::tasks::RevisionedTaskStoreError::Conflict {
+                            expected,
+                            current,
+                        };
+                    }
+                }
+                echo_agent::tasks::RevisionedTaskStoreError::Backend {
+                    message: error.message,
+                }
+            })?;
+        match result {
+            ExtensionResult::AgentComponentCall(result)
+                if result.component == self.component && result.result.operation() == operation =>
+            {
+                Ok(result.result)
+            }
+            _ => Err(echo_agent::tasks::RevisionedTaskStoreError::Backend {
+                message: "task store returned mismatched component or operation".to_string(),
+            }),
+        }
+    }
+
     async fn invoke(
         &self,
         call: AgentComponentCallInputWire,
     ) -> echo_agent::error::Result<AgentComponentCallResultWire> {
+        self.invoke_scoped(call, true).await
+    }
+
+    async fn invoke_connection_scoped(
+        &self,
+        call: AgentComponentCallInputWire,
+    ) -> echo_agent::error::Result<AgentComponentCallResultWire> {
+        self.invoke_scoped(call, false).await
+    }
+
+    async fn invoke_scoped(
+        &self,
+        call: AgentComponentCallInputWire,
+        resolve_run_cancellation: bool,
+    ) -> echo_agent::error::Result<AgentComponentCallResultWire> {
         let operation = call.operation();
+        let managed = managed_call_context(&call).is_some();
         if operation.component() != self.component {
             return Err(ReactError::Other(
                 "agent component operation does not match its descriptor".to_string(),
@@ -3256,17 +4128,27 @@ impl ExtensionAgentComponentProxy {
         }
         let result = self
             .bridge
-            .invoke_once(
+            .invoke_once_with_scope(
                 &self.extension,
                 Some(session_invocation_context(&self.session_id)),
                 ExtensionInvocation::AgentComponentCall(AgentComponentCallWire {
                     component: self.component,
                     call,
                 }),
-                self.bridge.connection_cancellation(),
+                ReverseInvocationScope {
+                    cancellation: self.bridge.connection_cancellation(),
+                    resolve_run_cancellation,
+                    submitted: None,
+                },
             )
             .await
-            .map_err(react_error)?;
+            .map_err(|error| {
+                if managed {
+                    managed_persistence_error(error, self.component)
+                } else {
+                    react_error(error)
+                }
+            })?;
         let ExtensionResult::AgentComponentCall(result) = result else {
             return Err(ReactError::Other(
                 "agent component extension returned the wrong result variant".to_string(),
@@ -3536,6 +4418,143 @@ fn usize_wire(value: usize, field: &str) -> echo_agent::error::Result<WireU64> {
 }
 
 impl echo_agent::memory::ConversationStore for ExtensionAgentComponentProxy {
+    fn projection_capability(&self) -> echo_agent::memory::ConversationProjectionCapability {
+        match self.capabilities.conversation_projection {
+            ConversationProjectionCapabilityWire::Unsupported => {
+                echo_agent::memory::ConversationProjectionCapability::Unsupported
+            }
+            ConversationProjectionCapabilityWire::AtomicV1 => {
+                echo_agent::memory::ConversationProjectionCapability::AtomicV1
+            }
+        }
+    }
+    fn persistence_call_capability(&self) -> echo_agent::memory::PersistenceCallCapability {
+        match self.capabilities.persistence_call {
+            PersistenceCallCapabilityWire::Unsupported => {
+                echo_agent::memory::PersistenceCallCapability::Unsupported
+            }
+            PersistenceCallCapabilityWire::AbsoluteDeadlineV1 => {
+                echo_agent::memory::PersistenceCallCapability::AbsoluteDeadlineV1
+            }
+        }
+    }
+    fn ensure_projection_epoch_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        request: echo_agent::memory::EnsureConversationProjectionRequest,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::memory::ConversationProjectionEpochReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::ConversationEnsureProjectionEpochWithContext {
+                        context,
+                        request: request.project().map_err(ReactError::Other)?,
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::ConversationEnsureProjectionEpochWithContext {
+                    receipt,
+                } => super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other),
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::ConversationEnsureProjectionEpochWithContext,
+                )),
+            }
+        })
+    }
+    fn get_projection_authority_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        conversation_id: &'a str,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<Option<echo_agent::memory::ConversationProjectionAuthority>>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::ConversationGetProjectionAuthorityWithContext {
+                        context,
+                        conversation_id: conversation_id.to_string(),
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::ConversationGetProjectionAuthorityWithContext {
+                    authority,
+                } => {
+                    super::wire::managed::Projection::restore(authority).map_err(ReactError::Other)
+                }
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::ConversationGetProjectionAuthorityWithContext,
+                )),
+            }
+        })
+    }
+    fn apply_transcript_projection_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        batch: echo_agent::memory::TranscriptProjectionBatch,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::memory::TranscriptProjectionApplyReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::ConversationApplyTranscriptProjectionWithContext {
+                        context,
+                        batch: batch.project().map_err(ReactError::Other)?,
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::ConversationApplyTranscriptProjectionWithContext { receipt } => {
+                    super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other)
+                },
+                _ => Err(component_mismatch(AgentComponentOperationWire::ConversationApplyTranscriptProjectionWithContext)),
+            }
+        })
+    }
+    fn delete_managed_conversation_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        request: echo_agent::memory::ManagedConversationDelete,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::memory::ManagedConversationDeleteReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::ConversationDeleteManagedWithContext {
+                        context,
+                        request: request.project().map_err(ReactError::Other)?,
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::ConversationDeleteManagedWithContext { receipt } => {
+                    super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other)
+                }
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::ConversationDeleteManagedWithContext,
+                )),
+            }
+        })
+    }
+
     fn create_conversation<'a>(
         &'a self,
         conversation: echo_agent::memory::NewConversation,
@@ -3881,6 +4900,236 @@ impl echo_agent::trace::RunStore for ExtensionAgentComponentProxy {
 }
 
 impl echo_agent::state::RuntimeStateStore for ExtensionAgentComponentProxy {
+    fn runtime_state_capability(&self) -> echo_agent::state::RuntimeStateCapability {
+        match self.capabilities.runtime_state {
+            RuntimeStateCapabilityWire::Unsupported => {
+                echo_agent::state::RuntimeStateCapability::Unsupported
+            }
+            RuntimeStateCapabilityWire::RevisionedV1 => {
+                echo_agent::state::RuntimeStateCapability::RevisionedV1
+            }
+        }
+    }
+    fn persistence_call_capability(&self) -> echo_agent::memory::PersistenceCallCapability {
+        match self.capabilities.persistence_call {
+            PersistenceCallCapabilityWire::Unsupported => {
+                echo_agent::memory::PersistenceCallCapability::Unsupported
+            }
+            PersistenceCallCapabilityWire::AbsoluteDeadlineV1 => {
+                echo_agent::memory::PersistenceCallCapability::AbsoluteDeadlineV1
+            }
+        }
+    }
+    fn load_runtime_state_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        scope_id: &'a str,
+        runtime_state_id: &'a str,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<Option<echo_agent::state::ManagedRuntimeStateSnapshot>>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::RuntimeLoadManagedStateWithContext {
+                        context,
+                        scope_id: scope_id.to_string(),
+                        runtime_state_id: runtime_state_id.to_string(),
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::RuntimeLoadManagedStateWithContext { snapshot } => {
+                    super::wire::managed::Projection::restore(snapshot).map_err(ReactError::Other)
+                }
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::RuntimeLoadManagedStateWithContext,
+                )),
+            }
+        })
+    }
+    fn load_scope_authority_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        scope_id: &'a str,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<Option<echo_agent::state::RuntimeScopeAuthority>>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::RuntimeLoadScopeAuthorityWithContext {
+                        context,
+                        scope_id: scope_id.to_string(),
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::RuntimeLoadScopeAuthorityWithContext {
+                    authority,
+                } => {
+                    super::wire::managed::Projection::restore(authority).map_err(ReactError::Other)
+                }
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::RuntimeLoadScopeAuthorityWithContext,
+                )),
+            }
+        })
+    }
+    fn compare_and_save_checkpoint_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        request: echo_agent::state::RuntimeCheckpointCasRequest,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::state::RuntimeCheckpointCasReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::RuntimeCompareAndSaveCheckpointWithContext {
+                        context,
+                        request: request.project().map_err(ReactError::Other)?,
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::RuntimeCompareAndSaveCheckpointWithContext {
+                    receipt,
+                } => super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other),
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::RuntimeCompareAndSaveCheckpointWithContext,
+                )),
+            }
+        })
+    }
+    fn acknowledge_transcript_projection_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        request: echo_agent::state::RuntimeTranscriptAckRequest,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::state::RuntimeCheckpointCasReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self.invoke_connection_scoped(AgentComponentCallInputWire::RuntimeAcknowledgeTranscriptProjectionWithContext {
+                context,
+                request: request.project().map_err(ReactError::Other)?,
+            }).await?;
+            match result {
+                AgentComponentCallResultWire::RuntimeAcknowledgeTranscriptProjectionWithContext { receipt } => {
+                    super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other)
+                },
+                _ => Err(component_mismatch(AgentComponentOperationWire::RuntimeAcknowledgeTranscriptProjectionWithContext)),
+            }
+        })
+    }
+    fn retire_runtime_generation_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        request: echo_agent::state::RuntimeGenerationRetireRequest,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::state::RuntimeGenerationRetireReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::RuntimeRetireGenerationWithContext {
+                        context,
+                        request: request.project().map_err(ReactError::Other)?,
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::RuntimeRetireGenerationWithContext { receipt } => {
+                    super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other)
+                }
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::RuntimeRetireGenerationWithContext,
+                )),
+            }
+        })
+    }
+    fn begin_scope_retirement_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        request: echo_agent::state::ScopeRetirementRequest,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::state::ScopeRetirementReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::RuntimeBeginScopeRetirementWithContext {
+                        context,
+                        request: request.project().map_err(ReactError::Other)?,
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::RuntimeBeginScopeRetirementWithContext {
+                    receipt,
+                } => super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other),
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::RuntimeBeginScopeRetirementWithContext,
+                )),
+            }
+        })
+    }
+    fn continue_scope_retirement_with_context<'a>(
+        &'a self,
+        context: echo_agent::memory::PersistenceCallContext,
+        scope_id: &'a str,
+        delete_operation_id: &'a str,
+        expected_scope_revision: u64,
+        advance: echo_agent::state::ScopeRetirementAdvance,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<echo_agent::state::ScopeRetirementReceipt>,
+    > {
+        Box::pin(async move {
+            self.require_managed_persistence()?;
+            let context = self.managed_context(context)?;
+            let result = self
+                .invoke_connection_scoped(
+                    AgentComponentCallInputWire::RuntimeContinueScopeRetirementWithContext {
+                        context,
+                        scope_id: scope_id.to_string(),
+                        delete_operation_id: delete_operation_id.to_string(),
+                        expected_scope_revision: expected_scope_revision
+                            .project()
+                            .map_err(ReactError::Other)?,
+                        advance: advance.project().map_err(ReactError::Other)?,
+                    },
+                )
+                .await?;
+            match result {
+                AgentComponentCallResultWire::RuntimeContinueScopeRetirementWithContext {
+                    receipt,
+                } => super::wire::managed::Projection::restore(receipt).map_err(ReactError::Other),
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::RuntimeContinueScopeRetirementWithContext,
+                )),
+            }
+        })
+    }
+
     fn get_checkpoint<'a>(
         &'a self,
         conversation_id: &'a str,
@@ -4459,6 +5708,9 @@ impl echo_agent::workflow::CheckpointStore for ExtensionAgentComponentProxy {
 
 #[async_trait::async_trait]
 impl echo_agent::tasks::RevisionedTaskStore for ExtensionAgentComponentProxy {
+    fn supports_runtime_execution(&self) -> bool {
+        self.capabilities.execution_cas_v1
+    }
     async fn load(
         &self,
         scope_id: &str,
@@ -4467,18 +5719,13 @@ impl echo_agent::tasks::RevisionedTaskStore for ExtensionAgentComponentProxy {
         echo_agent::tasks::RevisionedTaskStoreError,
     > {
         let result = self
-            .invoke(AgentComponentCallInputWire::RevisionedTaskLoad {
+            .invoke_task_store(AgentComponentCallInputWire::RevisionedTaskLoad {
                 scope_id: scope_id.to_string(),
             })
-            .await
-            .map_err(
-                |error| echo_agent::tasks::RevisionedTaskStoreError::Backend {
-                    message: error.to_string(),
-                },
-            )?;
+            .await?;
         match result {
             AgentComponentCallResultWire::RevisionedTaskLoad { graph } => {
-                graph.map(component_decode).transpose().map_err(|error| {
+                super::wire::managed::Projection::restore(graph).map_err(|error| {
                     echo_agent::tasks::RevisionedTaskStoreError::Backend {
                         message: error.to_string(),
                     }
@@ -4499,27 +5746,22 @@ impl echo_agent::tasks::RevisionedTaskStore for ExtensionAgentComponentProxy {
         echo_agent::tasks::RevisionedTaskGraph,
         echo_agent::tasks::RevisionedTaskStoreError,
     > {
-        let commit = component_value(commit).map_err(|error| {
+        let commit = commit.project().map_err(|error| {
             echo_agent::tasks::RevisionedTaskStoreError::Backend {
                 message: error.to_string(),
             }
         })?;
         let result = self
-            .invoke(
+            .invoke_task_store(
                 AgentComponentCallInputWire::RevisionedTaskCompareAndCommit {
                     scope_id: scope_id.to_string(),
                     commit,
                 },
             )
-            .await
-            .map_err(
-                |error| echo_agent::tasks::RevisionedTaskStoreError::Backend {
-                    message: error.to_string(),
-                },
-            )?;
+            .await?;
         match result {
             AgentComponentCallResultWire::RevisionedTaskCompareAndCommit { graph } => {
-                component_decode(graph).map_err(|error| {
+                super::wire::managed::Projection::restore(graph).map_err(|error| {
                     echo_agent::tasks::RevisionedTaskStoreError::Backend {
                         message: error.to_string(),
                     }
@@ -4532,6 +5774,123 @@ impl echo_agent::tasks::RevisionedTaskStore for ExtensionAgentComponentProxy {
                 .to_string(),
             }),
         }
+    }
+    async fn compare_and_commit_execution(
+        &self,
+        scope_id: &str,
+        commit: echo_agent::tasks::TaskExecutionCommit,
+    ) -> Result<echo_agent::tasks::RevisionedTaskGraph, echo_agent::tasks::RevisionedTaskStoreError>
+    {
+        let commit = commit
+            .project()
+            .map_err(|message| echo_agent::tasks::RevisionedTaskStoreError::Backend { message })?;
+        let result = self
+            .invoke_task_store(
+                AgentComponentCallInputWire::RevisionedTaskCompareAndCommitExecution {
+                    scope_id: scope_id.to_string(),
+                    commit,
+                },
+            )
+            .await?;
+        match result {
+            AgentComponentCallResultWire::RevisionedTaskCompareAndCommitExecution { graph } => {
+                super::wire::managed::Projection::restore(graph).map_err(|message| {
+                    echo_agent::tasks::RevisionedTaskStoreError::Backend { message }
+                })
+            }
+            _ => Err(echo_agent::tasks::RevisionedTaskStoreError::Backend {
+                message: component_mismatch(
+                    AgentComponentOperationWire::RevisionedTaskCompareAndCommitExecution,
+                )
+                .to_string(),
+            }),
+        }
+    }
+}
+
+impl ExtensionAgentComponentProxy {
+    pub(crate) fn execute_stream_with_cancel<'a>(
+        &'a self,
+        command: echo_agent::sandbox::SandboxCommand,
+        cancellation: CancellationToken,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            std::pin::Pin<
+                Box<
+                    dyn futures::Stream<Item = echo_agent::sandbox::SandboxStreamEvent> + Send + 'a,
+                >,
+            >,
+        >,
+    > {
+        Box::pin(async move {
+            let invocation =
+                ExtensionInvocation::AgentComponentCallStream(AgentComponentCallWire {
+                    component: self.component,
+                    call: AgentComponentCallInputWire::SandboxExecuteStream {
+                        command: component_value(command)?,
+                    },
+                });
+            let source = self
+                .bridge
+                .invoke_owned_producer_stream(
+                    &self.extension,
+                    session_invocation_context(&self.session_id),
+                    invocation,
+                    cancellation.clone(),
+                    None,
+                )
+                .await
+                .map_err(react_error)?;
+            Ok(futures::stream::unfold(
+                (source, cancellation, false),
+                async move |(mut source, cancellation, finished)| {
+                    if finished {
+                        return None;
+                    }
+                    let event = source.next().await?;
+                    let converted = match event {
+                        Ok(ExtensionStreamEvent::Chunk {
+                            value: ExtensionStreamChunkValue::AgentComponent(value),
+                            ..
+                        }) => sandbox_stream_chunk(value),
+                        Ok(ExtensionStreamEvent::Complete {
+                            value: ExtensionStreamCompleteValue::AgentComponent(value),
+                            ..
+                        }) => sandbox_stream_complete(value),
+                        Ok(ExtensionStreamEvent::Cancelled { .. }) => {
+                            Ok(echo_agent::sandbox::SandboxStreamEvent::Failed {
+                                failure: echo_agent::sandbox::SandboxStreamFailure::Cancelled {
+                                    message: "sandbox extension stream cancelled".to_string(),
+                                },
+                            })
+                        }
+                        Ok(ExtensionStreamEvent::Failed { error, .. }) | Err(error) => {
+                            Err(react_error(error))
+                        }
+                        _ => Err(ReactError::Other(
+                            "sandbox extension returned a mismatched stream value".to_string(),
+                        )),
+                    };
+                    match converted {
+                        Ok(event) => Some((event, (source, cancellation, false))),
+                        Err(error) => {
+                            cancellation.cancel();
+                            while source.next().await.is_some() {}
+                            Some((
+                                echo_agent::sandbox::SandboxStreamEvent::Failed {
+                                    failure: echo_agent::sandbox::SandboxStreamFailure::IoError {
+                                        message: error.to_string(),
+                                    },
+                                },
+                                (source, cancellation, true),
+                            ))
+                        }
+                    }
+                },
+            )
+            .boxed())
+        })
     }
 }
 
@@ -4730,8 +6089,11 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
                 )
                 .await;
             if cancellation.is_cancelled() {
+                // Cleanup settles local resources after Run cancellation;
+                // inheriting that already-cancelled token would drop its
+                // response before the SDK acknowledges the actual cleanup.
                 let cleanup = self
-                    .invoke(AgentComponentCallInputWire::SandboxCleanup)
+                    .invoke_connection_scoped(AgentComponentCallInputWire::SandboxCleanup)
                     .await;
                 if !matches!(cleanup, Ok(AgentComponentCallResultWire::SandboxCleanup)) {
                     return Err(ReactError::Sandbox(Box::new(
@@ -4764,7 +6126,7 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
     fn cleanup(&self) -> futures::future::BoxFuture<'_, echo_agent::error::Result<()>> {
         Box::pin(async move {
             let result = self
-                .invoke(AgentComponentCallInputWire::SandboxCleanup)
+                .invoke_connection_scoped(AgentComponentCallInputWire::SandboxCleanup)
                 .await?;
             match result {
                 AgentComponentCallResultWire::SandboxCleanup => Ok(()),
@@ -4821,12 +6183,18 @@ impl echo_agent::mcp::integration::transport::McpTransport for ExtensionAgentCom
         })
     }
 
-    fn close(&self) -> futures::future::BoxFuture<'_, ()> {
+    fn close(&self) -> futures::future::BoxFuture<'_, echo_agent::error::Result<()>> {
         Box::pin(async move {
             self.notification_cancel.cancel();
-            let _ = self
-                .invoke(AgentComponentCallInputWire::McpTransportClose)
-                .await;
+            match self
+                .invoke_connection_scoped(AgentComponentCallInputWire::McpTransportClose)
+                .await?
+            {
+                AgentComponentCallResultWire::McpTransportClose => Ok(()),
+                _ => Err(component_mismatch(
+                    AgentComponentOperationWire::McpTransportClose,
+                )),
+            }
         })
     }
 
@@ -5740,6 +7108,21 @@ impl ExtensionAgentCallbackProxy {
         &self,
         invocation: std::result::Result<ExtensionInvocation, String>,
     ) -> futures::future::BoxFuture<'_, ()> {
+        self.observe_scoped(invocation, true)
+    }
+
+    fn observe_connection_scoped(
+        &self,
+        invocation: Result<ExtensionInvocation, String>,
+    ) -> futures::future::BoxFuture<'_, ()> {
+        self.observe_scoped(invocation, false)
+    }
+
+    fn observe_scoped(
+        &self,
+        invocation: Result<ExtensionInvocation, String>,
+        resolve_run_cancellation: bool,
+    ) -> futures::future::BoxFuture<'_, ()> {
         let bridge = self.bridge.clone();
         let extension = self.extension.clone();
         let session_id = self.session_id.clone();
@@ -5752,11 +7135,15 @@ impl ExtensionAgentCallbackProxy {
                 }
             };
             if let Err(error) = bridge
-                .invoke_once(
+                .invoke_once_with_scope(
                     &extension,
                     Some(session_invocation_context(&session_id)),
                     invocation,
-                    bridge.connection_cancellation(),
+                    ReverseInvocationScope {
+                        cancellation: bridge.connection_cancellation(),
+                        resolve_run_cancellation,
+                        submitted: None,
+                    },
                 )
                 .await
             {
@@ -5834,6 +7221,7 @@ impl echo_agent::agent::AgentCallback for ExtensionAgentCallbackProxy {
         self.observe(to_wire(args).map(|args| {
             ExtensionInvocation::CallbackOnToolStart(CallbackToolStartInput {
                 agent: agent.to_string(),
+                call_id: None,
                 tool: tool.to_string(),
                 args,
             })
@@ -5846,9 +7234,10 @@ impl echo_agent::agent::AgentCallback for ExtensionAgentCallbackProxy {
         tool: &'a str,
         result: &'a str,
     ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe(Ok(ExtensionInvocation::CallbackOnToolEnd(
+        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolEnd(
             CallbackToolEndInput {
                 agent: agent.to_string(),
+                call_id: None,
                 tool: tool.to_string(),
                 result: result.to_string(),
             },
@@ -5861,13 +7250,84 @@ impl echo_agent::agent::AgentCallback for ExtensionAgentCallbackProxy {
         tool: &'a str,
         error: &'a ReactError,
     ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe(Ok(ExtensionInvocation::CallbackOnToolError(
+        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolError(
             CallbackToolErrorInput {
                 agent: agent.to_string(),
+                call_id: None,
                 tool: tool.to_string(),
                 error: error.to_string(),
             },
         )))
+    }
+
+    fn on_tool_start_with_id<'a>(
+        &'a self,
+        agent: &'a str,
+        call_id: &'a str,
+        tool: &'a str,
+        args: &'a serde_json::Value,
+    ) -> futures::future::BoxFuture<'a, ()> {
+        self.observe(to_wire(args).map(|args| {
+            ExtensionInvocation::CallbackOnToolStart(CallbackToolStartInput {
+                agent: agent.to_string(),
+                call_id: Some(call_id.to_string()),
+                tool: tool.to_string(),
+                args,
+            })
+        }))
+    }
+
+    fn on_tool_end_with_id<'a>(
+        &'a self,
+        agent: &'a str,
+        call_id: &'a str,
+        tool: &'a str,
+        result: &'a str,
+    ) -> futures::future::BoxFuture<'a, ()> {
+        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolEnd(
+            CallbackToolEndInput {
+                agent: agent.to_string(),
+                call_id: Some(call_id.to_string()),
+                tool: tool.to_string(),
+                result: result.to_string(),
+            },
+        )))
+    }
+
+    fn on_tool_error_with_id<'a>(
+        &'a self,
+        agent: &'a str,
+        call_id: &'a str,
+        tool: &'a str,
+        error: &'a ReactError,
+    ) -> futures::future::BoxFuture<'a, ()> {
+        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolError(
+            CallbackToolErrorInput {
+                agent: agent.to_string(),
+                call_id: Some(call_id.to_string()),
+                tool: tool.to_string(),
+                error: error.to_string(),
+            },
+        )))
+    }
+
+    fn on_tool_interrupted_with_id<'a>(
+        &'a self,
+        agent: &'a str,
+        call_id: &'a str,
+        tool: &'a str,
+        input: &'a serde_json::Value,
+        error: &'a ReactError,
+    ) -> futures::future::BoxFuture<'a, ()> {
+        self.observe_connection_scoped(to_wire(input).map(|input| {
+            ExtensionInvocation::CallbackOnToolInterrupted(CallbackToolInterruptedInput {
+                agent: agent.to_string(),
+                call_id: call_id.to_string(),
+                tool: tool.to_string(),
+                input,
+                error: error.to_string(),
+            })
+        }))
     }
 
     fn on_final_answer<'a>(
@@ -5875,7 +7335,7 @@ impl echo_agent::agent::AgentCallback for ExtensionAgentCallbackProxy {
         agent: &'a str,
         answer: &'a str,
     ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe(Ok(ExtensionInvocation::CallbackOnFinalAnswer(
+        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnFinalAnswer(
             CallbackFinalAnswerInput {
                 agent: agent.to_string(),
                 answer: answer.to_string(),
@@ -6014,6 +7474,7 @@ impl echo_agent::agent::InterventionCallback for ExtensionInterventionProxy {
         self.decide(to_wire(args).map(|args| {
             ExtensionInvocation::InterventionOnToolCall(CallbackToolStartInput {
                 agent: agent.to_string(),
+                call_id: None,
                 tool: tool.to_string(),
                 args,
             })
@@ -6093,35 +7554,78 @@ impl echo_agent::agent::subagent::AgentFactory for SubagentFactoryAdapter {
         let subagent_name = self.subagent_name.clone();
         let session_id = self.session_id.clone();
         Box::pin(async move {
+            let state = bridge.state().map_err(react_error)?;
+            let factory_record = state.handles.extension(&extension).map_err(react_error)?;
+            let implementation_id = format!(
+                "{}::instance-{}",
+                factory_record.implementation_id,
+                uuid::Uuid::new_v4()
+            );
+            let custom_extension = state
+                .handles
+                .reserve_factory_instance(
+                    super::handles::ExtensionRegistrationLimits {
+                        max_extensions: state.limits.max_registered_extensions,
+                        max_descriptor_bytes: state.limits.max_extension_descriptor_bytes,
+                    },
+                    &extension,
+                    &implementation_id,
+                    factory_record.timeout.clone(),
+                )
+                .map_err(react_error)?;
+            // Establish cleanup ownership before the remote constructor can
+            // see its identity. Outer cancellation drops this owner too.
+            let factory_lease = Arc::new(FactoryInstanceLease {
+                bridge: bridge.clone(),
+                extension: custom_extension.clone(),
+                session_id: session_id.clone(),
+                close_result: tokio::sync::OnceCell::new(),
+                construction_submitted: AtomicBool::new(false),
+            });
             let payload = AgentFactoryConfigWire {
+                instance: custom_extension.clone(),
                 model: String::new(),
                 name: subagent_name,
                 system_prompt: String::new(),
                 tool_count: WireU64::from_u64(0),
             };
             let value = bridge
-                .invoke_once(
+                .invoke_once_with_scope(
                     &extension,
                     Some(session_invocation_context(&session_id)),
                     ExtensionInvocation::FactoryCreateAgent(payload),
-                    bridge.connection_cancellation(),
+                    ReverseInvocationScope {
+                        cancellation: bridge.connection_cancellation(),
+                        resolve_run_cancellation: true,
+                        submitted: Some(&factory_lease.construction_submitted),
+                    },
                 )
                 .await
-                .map_err(react_error)?;
-            let ExtensionResult::FactoryCreateAgent(descriptor) = value else {
-                return Err(ReactError::Other(
-                    "agent factory returned the wrong result variant".to_string(),
-                ));
+                .map_err(react_error);
+            let descriptor = match value {
+                Ok(ExtensionResult::FactoryCreateAgent(descriptor)) => descriptor,
+                other => {
+                    if let Err(error) = factory_lease.close().await {
+                        tracing::warn!(
+                            "factory construction cleanup retained pending owner: {error}"
+                        );
+                    }
+                    return Err(match other {
+                        Err(error) => error,
+                        _ => ReactError::Other(
+                            "agent factory returned the wrong result variant".to_string(),
+                        ),
+                    });
+                }
             };
-            let custom_extension = bridge
-                .register_factory_instance(&extension, &descriptor)
-                .map_err(react_error)?;
-            let factory_lease = Arc::new(FactoryInstanceLease {
-                bridge: bridge.clone(),
-                extension: custom_extension.clone(),
-                session_id: session_id.clone(),
-                close_result: tokio::sync::OnceCell::new(),
-            });
+            if let Err(error) =
+                bridge.register_factory_instance(&extension, &custom_extension, &descriptor)
+            {
+                if let Err(error) = factory_lease.close().await {
+                    tracing::warn!("factory publication cleanup retained pending owner: {error}");
+                }
+                return Err(react_error(error));
+            }
             Ok(Box::new(ExtensionCustomAgentProxy {
                 bridge,
                 extension: custom_extension,
@@ -6137,13 +7641,19 @@ struct FactoryInstanceLease {
     bridge: Arc<ExtensionBridge>,
     extension: WireHandle,
     session_id: String,
-    close_result: tokio::sync::OnceCell<std::result::Result<(), String>>,
+    close_result: tokio::sync::OnceCell<()>,
+    construction_submitted: AtomicBool,
 }
 
 impl FactoryInstanceLease {
     async fn close(&self) -> echo_agent::error::Result<()> {
         self.close_result
-            .get_or_init(|| async {
+            .get_or_try_init(|| async {
+                if !self.construction_submitted.load(Ordering::Acquire) {
+                    self.bridge.release_extension(&self.extension);
+                    return Ok(());
+                }
+
                 close_factory_instance(
                     self.bridge.clone(),
                     self.extension.clone(),
@@ -6153,7 +7663,7 @@ impl FactoryInstanceLease {
                 .map_err(|error| error.to_string())
             })
             .await
-            .clone()
+            .copied()
             .map_err(ReactError::Other)
     }
 }
@@ -6163,17 +7673,46 @@ impl Drop for FactoryInstanceLease {
         if self.close_result.get().is_some() {
             return;
         }
+        if !self.construction_submitted.load(Ordering::Acquire) {
+            self.bridge.release_extension(&self.extension);
+            return;
+        }
         let bridge = self.bridge.clone();
         let extension = self.extension.clone();
         let session_id = self.session_id.clone();
         if let Ok(runtime) = tokio::runtime::Handle::try_current() {
-            runtime.spawn(async move {
-                if let Err(error) = close_factory_instance(bridge, extension, session_id).await {
-                    tracing::warn!("factory-created custom agent close failed: {error}");
+            let task = runtime.spawn(async move {
+                // A failed close retains the reserved child and its parent
+                // relationship. Retry under the connection's bounded scope;
+                // no failed acknowledgement becomes a successful release.
+                let connection = bridge.connection_cancellation();
+                let mut retry_delay = Duration::from_millis(100);
+                loop {
+                    if connection.is_cancelled() {
+                        return;
+                    }
+                    match close_factory_instance(
+                        bridge.clone(),
+                        extension.clone(),
+                        session_id.clone(),
+                    )
+                    .await
+                    {
+                        Ok(()) => return,
+                        Err(error) => {
+                            tracing::warn!("factory-created custom agent close failed: {error}")
+                        }
+                    }
+                    tokio::select! {
+                        () = connection.cancelled() => return,
+                        () = tokio::time::sleep(retry_delay) => {}
+                    }
+                    retry_delay = retry_delay.saturating_mul(2).min(Duration::from_secs(5));
                 }
             });
+            self.bridge.shared.track_factory_cleanup(task);
         } else {
-            self.bridge.release_extension(&self.extension);
+            tracing::warn!("factory child cleanup requires a live runtime; retaining owned handle");
         }
     }
 }
@@ -6183,14 +7722,23 @@ async fn close_factory_instance(
     extension: WireHandle,
     session_id: String,
 ) -> echo_agent::error::Result<()> {
-    let result = bridge
-        .invoke_once_connection_scoped(
-            &extension,
-            Some(session_invocation_context(&session_id)),
-            ExtensionInvocation::AgentClose(ExtensionUnit),
-        )
+    let deadline = Duration::from_secs(
+        bridge
+            .state()
+            .map(|state| state.limits.shutdown_timeout_secs)
+            .unwrap_or(5),
+    );
+    let close = bridge.invoke_once_connection_scoped(
+        &extension,
+        Some(session_invocation_context(&session_id)),
+        ExtensionInvocation::AgentClose(ExtensionUnit),
+    );
+    let result = tokio::time::timeout(deadline, close)
         .await
-        .map_err(react_error)
+        .map_err(|_| {
+            ReactError::Other("factory child cleanup exceeded its bounded deadline".to_string())
+        })
+        .and_then(|result| result.map_err(react_error))
         .and_then(|result| {
             matches!(result, ExtensionResult::AgentClose(_))
                 .then_some(())
@@ -6201,7 +7749,9 @@ async fn close_factory_instance(
                     )
                 })
         });
-    bridge.release_extension(&extension);
+    if result.is_ok() {
+        bridge.release_extension(&extension);
+    }
     result
 }
 
@@ -6242,50 +7792,53 @@ impl ExtensionCustomAgentProxy {
     ) -> echo_agent::error::Result<
         futures::stream::BoxStream<'static, echo_agent::error::Result<AgentEvent>>,
     > {
-        let (receiver, stream, invocation_id, cancellation, lease, sink) = self
+        self.run_stream_scoped(
+            invocation,
+            self.bridge.connection_cancellation().child_token(),
+            None,
+        )
+        .await
+    }
+
+    async fn run_stream_scoped(
+        &self,
+        invocation: ExtensionInvocation,
+        cancellation: CancellationToken,
+        context: Option<echo_agent::agent::AgentInvocationContext>,
+    ) -> echo_agent::error::Result<
+        futures::stream::BoxStream<'static, echo_agent::error::Result<AgentEvent>>,
+    > {
+        let wire_context = custom_agent_invocation_context(&self.session_id, context.as_ref());
+        let source = self
             .bridge
-            .invoke_stream(
+            .invoke_owned_producer_stream(
                 &self.extension,
-                Some(session_invocation_context(&self.session_id)),
+                wire_context,
                 invocation,
-                self.bridge.connection_cancellation(),
+                cancellation.clone(),
+                context,
             )
             .await
             .map_err(react_error)?;
-        Ok(futures::StreamExt::map(
-            extension_event_stream(
-                self.bridge.clone(),
-                stream,
-                invocation_id,
-                cancellation,
-                lease,
-                sink,
-                receiver,
-            ),
-            |event: ExtensionStreamEvent| {
-                let result: echo_agent::error::Result<AgentEvent> = match event {
-                    ExtensionStreamEvent::Chunk { value, .. } => {
-                        let ExtensionStreamChunkValue::Agent(value) = value else {
-                            return Err(ReactError::Other(
-                                "custom agent stream received a non-agent payload".to_string(),
-                            ));
-                        };
-                        agent_stream_chunk_from_wire(value).map_err(ReactError::Other)
-                    }
-                    ExtensionStreamEvent::Complete { value, .. } => {
-                        let ExtensionStreamCompleteValue::Agent(value) = value else {
-                            return Err(ReactError::Other(
-                                "custom agent stream received a non-agent terminal".to_string(),
-                            ));
-                        };
-                        agent_stream_terminal_from_wire(value).map_err(ReactError::Other)
-                    }
-                    ExtensionStreamEvent::Failed { error, .. } => Err(react_error(error)),
-                    ExtensionStreamEvent::Cancelled { .. } => Err(ReactError::Other(
-                        "custom agent stream was cancelled".to_string(),
-                    )),
-                };
-                result
+        Ok(futures::stream::unfold(
+            (source, cancellation, false),
+            async move |(mut source, cancellation, finished)| {
+                if finished {
+                    return None;
+                }
+                let event = source.next().await?;
+                let result = event
+                    .map_err(react_error)
+                    .and_then(custom_agent_stream_event);
+                if result.is_err() {
+                    cancellation.cancel();
+                    // A conversion failure is local. Keep driving the original
+                    // owner until its RPC/producer receipt before exposing an error
+                    // that the canonical turn driver treats as terminal.
+                    while source.next().await.is_some() {}
+                    return Some((result, (source, cancellation, true)));
+                }
+                Some((result, (source, cancellation, false)))
             },
         )
         .boxed())
@@ -6304,6 +7857,38 @@ impl ExtensionCustomAgentProxy {
             (Ok(value), Ok(())) => Ok(value),
             (Ok(_), Err(error)) => Err(error),
         }
+    }
+}
+
+fn custom_agent_invocation_context(
+    session_id: &str,
+    invocation: Option<&echo_agent::agent::AgentInvocationContext>,
+) -> ExtensionInvocationContext {
+    let mut context = session_invocation_context(session_id);
+    if let Some(runtime) = invocation.and_then(|invocation| invocation.runtime.as_ref()) {
+        context.run_id = runtime.run_id.clone();
+        context.turn_id = runtime.turn_id.clone();
+        context.message_id = runtime.message_id.clone();
+        context.execution_id = runtime.execution_id.clone();
+    }
+    context
+}
+
+fn custom_agent_stream_event(event: ExtensionStreamEvent) -> echo_agent::error::Result<AgentEvent> {
+    match event {
+        ExtensionStreamEvent::Chunk {
+            value: ExtensionStreamChunkValue::Agent(value),
+            ..
+        } => agent_stream_chunk_from_wire(value).map_err(ReactError::Other),
+        ExtensionStreamEvent::Complete {
+            value: ExtensionStreamCompleteValue::Agent(value),
+            ..
+        } => agent_stream_terminal_from_wire(value).map_err(ReactError::Other),
+        ExtensionStreamEvent::Failed { error, .. } => Err(react_error(error)),
+        ExtensionStreamEvent::Cancelled { .. } => Ok(AgentEvent::Cancelled),
+        _ => Err(ReactError::Other(
+            "custom agent stream received a non-agent payload".to_string(),
+        )),
     }
 }
 
@@ -6431,6 +8016,188 @@ impl Agent for ExtensionCustomAgentProxy {
         })
     }
 
+    fn execute_stream_with_cancel<'a>(
+        &'a self,
+        task: &'a str,
+        cancel: CancellationToken,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<'a, echo_agent::error::Result<AgentEvent>>,
+        >,
+    > {
+        self.execute_stream_with_invocation_context(
+            task,
+            cancel,
+            echo_agent::agent::AgentInvocationContext::default(),
+        )
+    }
+
+    fn execute_stream_with_invocation_context<'a>(
+        &'a self,
+        task: &'a str,
+        cancel: CancellationToken,
+        invocation: echo_agent::agent::AgentInvocationContext,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<'a, echo_agent::error::Result<AgentEvent>>,
+        >,
+    > {
+        Box::pin(async move {
+            let stream = match self
+                .run_stream_scoped(
+                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+                        task: task.to_string(),
+                    }),
+                    cancel,
+                    Some(invocation),
+                )
+                .await
+            {
+                Ok(stream) => stream,
+                Err(error) => return self.finish_factory_result(Err(error)).await,
+            };
+            Ok(match &self.factory_lease {
+                Some(lease) => close_factory_stream(stream, lease.clone()),
+                None => stream,
+            })
+        })
+    }
+
+    fn chat_stream_with_cancel<'a>(
+        &'a self,
+        message: &'a str,
+        cancel: CancellationToken,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<'a, echo_agent::error::Result<AgentEvent>>,
+        >,
+    > {
+        Box::pin(async move {
+            let stream = match self
+                .run_stream_scoped(
+                    ExtensionInvocation::AgentChatStream(AgentMessageInput {
+                        message: message.to_string(),
+                    }),
+                    cancel,
+                    None,
+                )
+                .await
+            {
+                Ok(stream) => stream,
+                Err(error) => return self.finish_factory_result(Err(error)).await,
+            };
+            Ok(match &self.factory_lease {
+                Some(lease) => close_factory_stream(stream, lease.clone()),
+                None => stream,
+            })
+        })
+    }
+
+    fn execute_stream_message_with_cancel<'a>(
+        &'a self,
+        message: echo_agent::llm::types::Message,
+        cancel: CancellationToken,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<'a, echo_agent::error::Result<AgentEvent>>,
+        >,
+    > {
+        self.execute_stream_message_with_invocation_context(
+            message,
+            cancel,
+            echo_agent::agent::AgentInvocationContext::default(),
+        )
+    }
+
+    fn execute_stream_message_with_invocation_context<'a>(
+        &'a self,
+        message: echo_agent::llm::types::Message,
+        cancel: CancellationToken,
+        invocation: echo_agent::agent::AgentInvocationContext,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<'a, echo_agent::error::Result<AgentEvent>>,
+        >,
+    > {
+        Box::pin(async move {
+            let text = match message.content {
+                echo_agent::llm::types::MessageContent::Text(text) => text,
+                _ => return Err(ReactError::Other("custom Agent accepted task wire supports text only; multimodal input is unsupported".to_string())),
+            };
+            let stream = match self
+                .run_stream_scoped(
+                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput { task: text }),
+                    cancel,
+                    Some(invocation),
+                )
+                .await
+            {
+                Ok(stream) => stream,
+                Err(error) => return self.finish_factory_result(Err(error)).await,
+            };
+            Ok(match &self.factory_lease {
+                Some(lease) => close_factory_stream(stream, lease.clone()),
+                None => stream,
+            })
+        })
+    }
+
+    fn chat_stream_message_with_cancel<'a>(
+        &'a self,
+        message: echo_agent::llm::types::Message,
+        cancel: CancellationToken,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<'a, echo_agent::error::Result<AgentEvent>>,
+        >,
+    > {
+        self.chat_stream_message_with_invocation_context(
+            message,
+            cancel,
+            echo_agent::agent::AgentInvocationContext::default(),
+        )
+    }
+
+    fn chat_stream_message_with_invocation_context<'a>(
+        &'a self,
+        message: echo_agent::llm::types::Message,
+        cancel: CancellationToken,
+        invocation: echo_agent::agent::AgentInvocationContext,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<'a, echo_agent::error::Result<AgentEvent>>,
+        >,
+    > {
+        Box::pin(async move {
+            let text = match message.content {
+                echo_agent::llm::types::MessageContent::Text(text) => text,
+                _ => return Err(ReactError::Other("custom Agent accepted message wire supports text only; multimodal input is unsupported".to_string())),
+            };
+            let stream = match self
+                .run_stream_scoped(
+                    ExtensionInvocation::AgentChatStream(AgentMessageInput { message: text }),
+                    cancel,
+                    Some(invocation),
+                )
+                .await
+            {
+                Ok(stream) => stream,
+                Err(error) => return self.finish_factory_result(Err(error)).await,
+            };
+            Ok(match &self.factory_lease {
+                Some(lease) => close_factory_stream(stream, lease.clone()),
+                None => stream,
+            })
+        })
+    }
+
     fn chat<'a>(
         &'a self,
         message: &'a str,
@@ -6534,7 +8301,7 @@ fn channel_inbound_to_wire(value: &InboundMessage) -> ChannelInboundMessageWire 
 
 #[cfg(feature = "framework-channels")]
 #[allow(dead_code)]
-fn channel_outbound_to_wire(value: &OutboundMessage) -> ChannelOutboundMessageWire {
+pub(crate) fn channel_outbound_to_wire(value: &OutboundMessage) -> ChannelOutboundMessageWire {
     ChannelOutboundMessageWire {
         channel_id: value.channel_id.clone(),
         to: value.to.clone(),
@@ -6577,9 +8344,17 @@ fn channel_attachment_from_wire(
 
 #[cfg(feature = "framework-channels")]
 #[allow(dead_code)]
-fn channel_inbound_from_wire(
+pub(crate) fn channel_inbound_from_wire(
     value: ChannelInboundMessageWire,
 ) -> echo_agent::error::Result<InboundMessage> {
+    if value.channel_id.trim().is_empty()
+        || value.sender_id.trim().is_empty()
+        || value.chat_id.trim().is_empty()
+    {
+        return Err(ReactError::Other(
+            "channel/sender/chat identities must be nonempty".to_string(),
+        ));
+    }
     Ok(InboundMessage {
         channel_id: value.channel_id,
         sender_id: value.sender_id,
@@ -6587,7 +8362,9 @@ fn channel_inbound_from_wire(
         chat_type: channel_chat_type_from_wire(value.chat_type),
         text: value.text,
         message_id: value.message_id,
-        timestamp: value.timestamp.to_u64().unwrap_or_default(),
+        timestamp: value.timestamp.to_u64().ok_or_else(|| {
+            ReactError::Other("channel timestamp is not a canonical u64".to_string())
+        })?,
         attachments: value
             .attachments
             .into_iter()
@@ -6601,18 +8378,21 @@ fn channel_inbound_from_wire(
 pub(crate) fn channel_outbound_from_wire(
     value: ChannelOutboundMessageWire,
 ) -> echo_agent::error::Result<OutboundMessage> {
-    Ok(OutboundMessage {
-        channel_id: value.channel_id,
-        to: value.to,
-        chat_type: channel_chat_type_from_wire(value.chat_type),
-        text: value.text,
-        reply_to: value.reply_to,
-        attachments: value
+    let mut message = OutboundMessage::new(
+        value.channel_id,
+        value.to,
+        channel_chat_type_from_wire(value.chat_type),
+        value.text,
+    )
+    .with_attachments(
+        value
             .attachments
             .into_iter()
             .map(channel_attachment_from_wire)
             .collect::<echo_agent::error::Result<Vec<_>>>()?,
-    })
+    );
+    message.reply_to = value.reply_to;
+    Ok(message)
 }
 
 #[cfg(feature = "framework-channels")]
@@ -6632,9 +8412,10 @@ impl ExtensionChannelMessageHandlerProxy {
     async fn invoke(
         &self,
         invocation: ExtensionInvocation,
+        cancellation: CancellationToken,
     ) -> echo_agent::error::Result<ExtensionResult> {
         self.bridge
-            .invoke_once_connection_scoped(&self.extension, None, invocation)
+            .invoke_channel_once(&self.extension, invocation, cancellation)
             .await
             .map_err(react_error)
     }
@@ -6644,10 +8425,22 @@ impl ExtensionChannelMessageHandlerProxy {
 #[async_trait]
 impl MessageHandler for ExtensionChannelMessageHandlerProxy {
     async fn handle(&self, message: InboundMessage) -> echo_agent::error::Result<OutboundMessage> {
+        self.handle_with_cancel(message, self.bridge.connection_cancellation().child_token())
+            .await
+    }
+
+    async fn handle_with_cancel(
+        &self,
+        message: InboundMessage,
+        cancellation: CancellationToken,
+    ) -> echo_agent::error::Result<OutboundMessage> {
         let result = self
-            .invoke(ExtensionInvocation::ChannelHandle(ChannelHandleInput {
-                message: channel_inbound_to_wire(&message),
-            }))
+            .invoke(
+                ExtensionInvocation::ChannelHandle(ChannelHandleInput {
+                    message: channel_inbound_to_wire(&message),
+                }),
+                cancellation,
+            )
             .await?;
         let ExtensionResult::ChannelHandle(value) = result else {
             return Err(ReactError::Other(
@@ -6663,58 +8456,50 @@ impl MessageHandler for ExtensionChannelMessageHandlerProxy {
     ) -> echo_agent::error::Result<
         futures::stream::BoxStream<'a, echo_agent::error::Result<OutboundMessage>>,
     > {
-        let (receiver, stream, invocation_id, cancellation, lease, sink) = self
-            .bridge
-            .invoke_stream(
+        self.handle_stream_with_cancel(message, self.bridge.connection_cancellation().child_token())
+            .await
+    }
+
+    async fn handle_stream_with_cancel<'a>(
+        &'a self,
+        message: InboundMessage,
+        cancellation: CancellationToken,
+    ) -> echo_agent::error::Result<
+        futures::stream::BoxStream<'a, echo_agent::error::Result<OutboundMessage>>,
+    > {
+        self.bridge
+            .invoke_channel_stream(
                 &self.extension,
-                None,
                 ExtensionInvocation::ChannelHandleStream(ChannelHandleInput {
                     message: channel_inbound_to_wire(&message),
                 }),
-                CancellationToken::new(),
+                cancellation,
             )
             .await
-            .map_err(react_error)?;
-        Ok(Box::pin(
-            extension_event_stream(
-                self.bridge.clone(),
-                stream,
-                invocation_id,
-                cancellation,
-                lease,
-                sink,
-                receiver,
-            )
-            .map(|event| match event {
-                ExtensionStreamEvent::Chunk { value, .. } => match value {
-                    ExtensionStreamChunkValue::Channel(message) => {
-                        channel_outbound_from_wire(message)
-                    }
-                    _ => Err(ReactError::Other(
-                        "channel handler stream received a non-channel payload".to_string(),
-                    )),
-                },
-                ExtensionStreamEvent::Complete { value, .. } => match value {
-                    ExtensionStreamCompleteValue::Channel(message) => {
-                        channel_outbound_from_wire(message)
-                    }
-                    _ => Err(ReactError::Other(
-                        "channel handler stream received a non-channel terminal".to_string(),
-                    )),
-                },
-                ExtensionStreamEvent::Failed { error, .. } => Err(react_error(error)),
-                ExtensionStreamEvent::Cancelled { .. } => Err(ReactError::Other(
-                    "channel handler stream was cancelled".to_string(),
-                )),
-            }),
-        ))
+            .map_err(react_error)
+    }
+
+    fn settles_on_cancel(&self) -> bool {
+        true
     }
 
     async fn reply(&self, message: OutboundMessage) -> echo_agent::error::Result<()> {
+        self.reply_with_cancel(message, self.bridge.connection_cancellation().child_token())
+            .await
+    }
+
+    async fn reply_with_cancel(
+        &self,
+        message: OutboundMessage,
+        cancellation: CancellationToken,
+    ) -> echo_agent::error::Result<()> {
         let result = self
-            .invoke(ExtensionInvocation::ChannelReply(ChannelReplyInput {
-                message: channel_outbound_to_wire(&message),
-            }))
+            .invoke(
+                ExtensionInvocation::ChannelReply(ChannelReplyInput {
+                    message: channel_outbound_to_wire(&message),
+                }),
+                cancellation,
+            )
             .await?;
         if matches!(result, ExtensionResult::ChannelReply(_)) {
             Ok(())
@@ -6733,7 +8518,6 @@ pub(crate) struct ExtensionChannelPluginProxy {
     extension: WireHandle,
     descriptor: ChannelPluginDescriptorWire,
     capabilities: ChannelCapabilities,
-    handler: Mutex<Option<Arc<dyn MessageHandler>>>,
 }
 
 #[cfg(feature = "framework-channels")]
@@ -6762,7 +8546,6 @@ impl ExtensionChannelPluginProxy {
             extension,
             descriptor,
             capabilities,
-            handler: Mutex::new(None),
         }
     }
 
@@ -6792,11 +8575,9 @@ impl ChannelPlugin for ExtensionChannelPluginProxy {
         &self.capabilities
     }
 
-    async fn start(&mut self, handler: Arc<dyn MessageHandler>) -> echo_agent::error::Result<()> {
-        *self
-            .handler
-            .lock()
-            .unwrap_or_else(|error| error.into_inner()) = Some(handler);
+    async fn start(&mut self, _handler: Arc<dyn MessageHandler>) -> echo_agent::error::Result<()> {
+        // The original framework entry retains the handler. The proxy sends
+        // only its declared name; all forward calls return to that entry.
         let result = self
             .invoke(ExtensionInvocation::ChannelStart(ChannelStartInput {
                 handler_id: self.descriptor.handler_id.clone(),
@@ -6816,10 +8597,6 @@ impl ChannelPlugin for ExtensionChannelPluginProxy {
             .invoke(ExtensionInvocation::ChannelStop(ExtensionUnit))
             .await?;
         if matches!(result, ExtensionResult::ChannelStop(_)) {
-            *self
-                .handler
-                .lock()
-                .unwrap_or_else(|error| error.into_inner()) = None;
             Ok(())
         } else {
             Err(ReactError::Other(
@@ -6947,12 +8724,13 @@ pub(crate) async fn apply_extensions_to_agent(
             AgentComponentKindWire::SearchProvider => {}
             AgentComponentKindWire::WorkflowCheckpointStore => {}
             AgentComponentKindWire::RevisionedTaskStore => {
-                agent.set_task_revision_service(Arc::new(
-                    echo_agent::tasks::TaskRevisionService::new(
+                echo_agent::tasks::register_task_tools(
+                    agent,
+                    Arc::new(echo_agent::tasks::TaskRevisionService::new(
                         Arc::new(proxy),
                         Arc::new(echo_agent::tasks::DefaultTaskToolPolicy::default()),
-                    ),
-                ));
+                    )),
+                );
             }
             AgentComponentKindWire::SandboxExecutor => {
                 agent.set_sandbox_executor(Arc::new(proxy));
@@ -7052,7 +8830,9 @@ pub(crate) async fn apply_extensions_to_agent(
                 Arc::new(embedder),
             ));
         }
-        agent.set_memory_store(store);
+        agent
+            .set_memory_store(store)
+            .map_err(|error| error.to_string())?;
     }
     // Critic: deterministic latest-registration ownership. Installing the
     // proxy does not enable the framework verifier; that remains config-owned.
@@ -7192,12 +8972,1412 @@ impl ExtensionCustomAgentProxy {
 mod tests {
     use super::*;
 
+    #[cfg(feature = "framework-channels")]
+    fn channel_owner_outbound(text: &str) -> ChannelOutboundMessageWire {
+        ChannelOutboundMessageWire {
+            channel_id: "original-channel".to_string(),
+            to: "chat".to_string(),
+            chat_type: ChannelChatTypeWire::Direct,
+            text: text.to_string(),
+            reply_to: None,
+            attachments: Vec::new(),
+        }
+    }
+
+    /// Real official ACP requests, rather than a mock lease-settlement future.
+    /// The remote callback sends its stream terminal before it finishes cleanup.
+    #[cfg(feature = "framework-channels")]
+    async fn channel_callback_owner_case(streaming: bool, mode: &str) -> Result<(), String> {
+        use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
+        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
+            "schema_version":1,"default_agent":{
+                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+                "agent":{"name":"fixture","enable_tools":true}
+            }
+        })).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )
+        .map_err(|error| error.to_string())?;
+        let bridge = state.extension_bridge.clone();
+        let authority = echo_agent::acp::ExtensionInvocationAuthority::new(4)
+            .map_err(|error| format!("{error:?}"))?;
+        let custom_eof = mode == "custom_eof";
+        let custom_late_ack = mode == "custom_late_ack" || custom_eof;
+        let remote_notice = Arc::new(Notify::new());
+        let setup_answered = Arc::new(Notify::new());
+        let entered = Arc::new(Notify::new());
+        let release = Arc::new(Notify::new());
+        let noticed = Arc::new(Notify::new());
+        let callback_finished = Arc::new(AtomicBool::new(false));
+        let finish = CancellationToken::new();
+        let sdk_finish = finish.clone();
+        let callback_finish = finish.clone();
+        let (host_io, sdk_io) = tokio::io::duplex(16_384);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (sdk_read, sdk_write) = tokio::io::split(sdk_io);
+        let missing_terminal = mode == "missing_terminal";
+        let callback_error = mode == "callback_error";
+        let sdk = Client.builder()
+            .on_receive_request({
+                let entered = entered.clone();
+                let release = release.clone();
+                let callback_finished = callback_finished.clone();
+                let remote_notice = remote_notice.clone();
+                let setup_answered = setup_answered.clone();
+                let callback_finish = callback_finish.clone();
+                async move |call: ExtensionInvokeCall,
+                            responder: Responder<ExtensionInvokeOutcome>,
+                            connection: ConnectionTo<AcpAgent>| {
+                    if matches!(&call.invocation,
+                        ExtensionInvocation::ChannelReply(input) if input.message.text == "independent B") {
+                        return responder.respond(ExtensionInvokeOutcome::Result {
+                            result: ExtensionResult::ChannelReply(ExtensionUnit),
+                        });
+                    }
+                    let entered = entered.clone();
+                    let release = release.clone();
+                    let callback_finished = callback_finished.clone();
+                    let callback_connection = connection.clone();
+                    let remote_notice = remote_notice.clone();
+                    let setup_answered = setup_answered.clone();
+                    let callback_finish = callback_finish.clone();
+                    connection.spawn(async move {
+                    let connection = callback_connection;
+                    if custom_late_ack {
+                        let stream = call.stream.ok_or_else(|| RpcError::internal_error().data("missing original stream"))?;
+                        entered.notify_one();
+                        if !custom_eof { remote_notice.notified().await; }
+                        responder.respond(ExtensionInvokeOutcome::Stream { stream: stream.clone() })?;
+                        setup_answered.notify_one();
+                        release.notified().await;
+                        callback_finished.store(true, Ordering::Release);
+                        if custom_eof { callback_finish.cancel(); return Ok(()); }
+                        return connection.send_notification(ExtensionStreamEvent::Complete {
+                            stream, sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
+                                .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                            value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::Cancelled),
+                        });
+                    }
+                    let outcome = if callback_error {
+                        ExtensionInvokeOutcome::Error { error: sdk_error(
+                            ExtensionErrorCode::ExtensionFailed, "original callback failure", Retryability::Never,
+                            "_echo_agent/extension/invoke",
+                        ) }
+                    } else if missing_terminal {
+                        ExtensionInvokeOutcome::Stream { stream: call.stream.clone().ok_or_else(||
+                            RpcError::internal_error().data("missing callback stream handle"))? }
+                    } else if let Some(stream) = call.stream.clone() {
+                        connection.send_notification(ExtensionStreamEvent::Chunk {
+                            stream: stream.clone(),
+                            sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
+                                .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                            value: ExtensionStreamChunkValue::Channel(channel_owner_outbound("first")),
+                        })?;
+                        connection.send_notification(ExtensionStreamEvent::Complete {
+                            stream: stream.clone(),
+                            sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("2".to_string())
+                                .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                            value: ExtensionStreamCompleteValue::Channel(channel_owner_outbound("last")),
+                        })?;
+                        ExtensionInvokeOutcome::Stream { stream }
+                    } else {
+                        ExtensionInvokeOutcome::Result { result: ExtensionResult::ChannelReply(ExtensionUnit) }
+                    };
+                    entered.notify_one();
+                    // Represents the native callback's asynchronous finally;
+                    // no typed RPC answer is sent until this actual await ends.
+                    release.notified().await;
+                    callback_finished.store(true, Ordering::Release);
+                    responder.respond(outcome)
+                    })
+                }
+            }, agent_client_protocol::on_receive_request!())
+            .on_receive_notification({
+                let noticed = noticed.clone();
+                let remote_notice = remote_notice.clone();
+                async move |_notice: echo_sdk_protocol::methods::ExtensionCancelNotice,
+                            _connection: ConnectionTo<AcpAgent>| {
+                    noticed.notify_one(); remote_notice.notify_one(); Ok(())
+                }
+            }, agent_client_protocol::on_receive_notification!())
+            .connect_with(ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()), async move |_| {
+                sdk_finish.cancelled().await;
+                Ok(())
+            });
+        let host = AcpAgent
+            .builder()
+            .on_receive_notification(
+                {
+                    let shared = state.extension_shared.clone();
+                    async move |event: ExtensionStreamEvent, _connection: ConnectionTo<Client>| {
+                        shared
+                            .deliver_stream_event(event)
+                            .map_err(|error| RpcError::internal_error().data(error))
+                    }
+                },
+                agent_client_protocol::on_receive_notification!(),
+            )
+            .connect_with(
+                ByteStreams::new(host_write.compat_write(), host_read.compat()),
+                async move |connection| {
+                    bridge.shared.bind_connection(connection);
+                    let ancestor = CancellationToken::new();
+                    let cancellation = ancestor.child_token();
+                    let lease = authority
+                        .lease(None, cancellation.clone())
+                        .map_err(|error| RpcError::internal_error().data(format!("{error:?}")))?;
+                    let child = cancellation.clone();
+                    let stream = streaming.then(|| test_stream_handle("original-channel-stream"));
+                    let owner = Arc::new(CallbackInvocationOwner {
+                        _stream: stream.clone().map(|stream| PendingExtensionStream {
+                            bridge: bridge.as_ref().clone(),
+                            stream: Some(stream),
+                        }),
+                        _session_callback: None,
+                        _agent_invocation: None,
+                        retained_lease: Mutex::new(None),
+                        response_completed: CancellationToken::new(),
+                        pending_failure: Mutex::new(None),
+                        finished: CancellationToken::new(),
+                    });
+                    let (sink, receiver) = ExtensionStreamSink::new(
+                        test_stream_handle("original-channel-stream"),
+                        "handler".to_string(),
+                        if custom_late_ack {
+                            ExtensionKind::CustomAgent
+                        } else {
+                            ExtensionKind::ChannelMessageHandler
+                        },
+                        2,
+                        None,
+                    );
+                    if custom_late_ack {
+                        sink.retain_until_remote_terminal
+                            .store(true, Ordering::Release);
+                    }
+                    if streaming {
+                        bridge.shared.register_stream(sink.clone());
+                    }
+                    let invocation = if custom_late_ack {
+                        ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+                            task: "late-setup".to_string(),
+                        })
+                    } else if streaming {
+                        ExtensionInvocation::ChannelHandleStream(ChannelHandleInput {
+                            message: ChannelInboundMessageWire {
+                                channel_id: "original-channel".to_string(),
+                                sender_id: "sender".to_string(),
+                                chat_id: "chat".to_string(),
+                                chat_type: ChannelChatTypeWire::Direct,
+                                text: "stream".to_string(),
+                                message_id: "message".to_string(),
+                                timestamp: WireU64::from_u64(1),
+                                attachments: Vec::new(),
+                            },
+                        })
+                    } else {
+                        ExtensionInvocation::ChannelReply(ChannelReplyInput {
+                            message: channel_owner_outbound("once"),
+                        })
+                    };
+                    let call = ExtensionInvokeCall {
+                        extension: WireHandle {
+                            id: "handler".to_string(),
+                            generation: WireU64::from_u64(1),
+                            kind: HandleKind::Extension,
+                        },
+                        factory_origin: None,
+                        invocation_id: lease.identity().to_string(),
+                        context: None,
+                        invocation,
+                        deadline: wire_duration(if mode == "timeout" {
+                            Duration::from_millis(50)
+                        } else if mode == "answered_slow" {
+                            Duration::from_millis(150)
+                        } else {
+                            Duration::from_secs(5)
+                        }),
+                        stream: stream.clone(),
+                    };
+                    let mut response = Some(
+                        bridge
+                            .submit_owned_invocation(
+                                call,
+                                lease,
+                                cancellation.clone(),
+                                if custom_late_ack {
+                                    CallbackStreamPolicy::CustomAgent
+                                } else {
+                                    CallbackStreamPolicy::Channel
+                                },
+                                owner.clone(),
+                                streaming.then(|| sink.clone()),
+                            )
+                            .map_err(|error| RpcError::internal_error().data(error.message))?,
+                    );
+                    let mut events = if streaming {
+                        Some(channel_callback_event_stream(
+                            owner.clone(),
+                            CallbackStreamDropNotice {
+                                cancellation: child,
+                                armed: true,
+                            },
+                            sink.clone(),
+                            receiver,
+                            response.take().ok_or_else(|| {
+                                RpcError::internal_error().data("missing stream response owner")
+                            })?,
+                        ))
+                    } else {
+                        None
+                    };
+                    // The once branch keeps its actual response receiver; the stream
+                    // branch consumes that receiver through the production adapter.
+                    if !missing_terminal
+                        && !callback_error
+                        && !custom_late_ack
+                        && let Some(events) = events.as_mut()
+                    {
+                        let item = events
+                            .next()
+                            .await
+                            .ok_or_else(|| RpcError::internal_error().data("missing first item"))?
+                            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                        assert_eq!(item.text, "first");
+                    }
+                    entered.notified().await;
+                    if mode == "cancel" || (custom_late_ack && !custom_eof) {
+                        cancellation.cancel();
+                    }
+                    if mode == "drop" {
+                        drop(events.take());
+                        drop(response.take());
+                    }
+                    if mode != "normal"
+                        && mode != "answered_slow"
+                        && !missing_terminal
+                        && !callback_error
+                        && !custom_eof
+                    {
+                        tokio::time::timeout(Duration::from_secs(2), noticed.notified())
+                            .await
+                            .map_err(|_| {
+                                RpcError::internal_error().data("missing cancellation notice")
+                            })?;
+                    }
+                    if custom_late_ack {
+                        setup_answered.notified().await;
+                        tokio::time::sleep(Duration::from_millis(20)).await;
+                    }
+                    assert!(!callback_finished.load(Ordering::Acquire));
+                    assert_eq!(authority.in_flight(), 1);
+                    assert!(!is_exclusive_invocation(
+                        ExtensionKind::ChannelMessageHandler,
+                        &ExtensionInvocation::ChannelReply(ChannelReplyInput {
+                            message: channel_owner_outbound("same handler")
+                        })
+                    ));
+
+                    if let Some(events) = events.as_mut() {
+                        assert!(
+                            tokio::time::timeout(Duration::from_millis(20), events.next())
+                                .await
+                                .is_err(),
+                            "terminal notification must not bypass the real callback response"
+                        );
+                        assert!(
+                            bridge
+                                .shared
+                                .stream_sink("original-channel-stream")
+                                .is_some()
+                        );
+                    } else if mode != "drop" {
+                        assert!(matches!(
+                            response
+                                .as_mut()
+                                .ok_or_else(|| RpcError::internal_error()
+                                    .data("missing once response owner"))?
+                                .try_recv(),
+                            Err(tokio::sync::oneshot::error::TryRecvError::Empty)
+                        ));
+                    }
+                    // B settles independently while A's native finally is held.
+                    let independent = authority
+                        .lease(None, CancellationToken::new())
+                        .map_err(|error| RpcError::internal_error().data(format!("{error:?}")))?;
+                    let independent_call = ExtensionInvokeCall {
+                        extension: WireHandle {
+                            id: "handler".to_string(),
+                            generation: WireU64::from_u64(1),
+                            kind: HandleKind::Extension,
+                        },
+                        factory_origin: None,
+                        invocation_id: independent.identity().to_string(),
+                        context: None,
+                        invocation: ExtensionInvocation::ChannelReply(ChannelReplyInput {
+                            message: channel_owner_outbound("independent B"),
+                        }),
+                        deadline: wire_duration(Duration::from_secs(5)),
+                        stream: None,
+                    };
+                    let independent_owner = Arc::new(CallbackInvocationOwner {
+                        _stream: None,
+                        _session_callback: None,
+                        _agent_invocation: None,
+                        retained_lease: Mutex::new(None),
+                        response_completed: CancellationToken::new(),
+                        pending_failure: Mutex::new(None),
+                        finished: CancellationToken::new(),
+                    });
+                    let independent_response = bridge
+                        .submit_owned_invocation(
+                            independent_call,
+                            independent,
+                            CancellationToken::new(),
+                            CallbackStreamPolicy::Channel,
+                            independent_owner,
+                            None,
+                        )
+                        .map_err(|error| RpcError::internal_error().data(error.message))?;
+                    assert!(matches!(
+                        independent_response
+                            .await
+                            .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                        Ok(Some(ExtensionResult::ChannelReply(_)))
+                    ));
+                    assert_eq!(authority.in_flight(), 1);
+                    if mode == "drop" {
+                        assert!(
+                            !ancestor.is_cancelled(),
+                            "dropping A must not cancel its parent"
+                        );
+                    }
+                    release.notify_one();
+                    if mode == "answered_slow" {
+                        assert_eq!(authority.drain(Duration::from_secs(2)).await, 0);
+                        tokio::time::sleep(Duration::from_millis(200)).await;
+                        assert!(
+                            !cancellation.is_cancelled(),
+                            "callback deadline must stop at its actual RPC answer"
+                        );
+                    }
+                    if let Some(events) = events.as_mut() {
+                        let terminal =
+                            tokio::time::timeout(Duration::from_millis(200), events.next())
+                                .await
+                                .map_err(|_| {
+                                    RpcError::internal_error()
+                                        .data("callback already returned but stream never ended")
+                                })?
+                                .ok_or_else(|| {
+                                    RpcError::internal_error().data("missing final result")
+                                })?;
+                        if mode == "normal" || mode == "answered_slow" {
+                            assert_eq!(
+                                terminal
+                                    .map_err(
+                                        |error| RpcError::internal_error().data(error.to_string())
+                                    )?
+                                    .text,
+                                "last"
+                            );
+                        } else {
+                            let error = terminal.err().ok_or_else(|| {
+                                RpcError::internal_error().data("missing stream failure")
+                            })?;
+                            if missing_terminal {
+                                assert!(error.to_string().contains("without a stream terminal"));
+                            }
+                            if custom_eof {
+                                assert!(error.to_string().contains("producer connection closed"));
+                            }
+                            if callback_error {
+                                assert!(error.to_string().contains("original callback failure"));
+                            }
+                        }
+                        assert!(events.next().await.is_none());
+                    } else if !streaming {
+                        let result = response
+                            .take()
+                            .ok_or_else(|| {
+                                RpcError::internal_error().data("missing once response owner")
+                            })?
+                            .await
+                            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                        assert_eq!(
+                            result.err().map(|error| error.code),
+                            Some(if mode == "timeout" {
+                                ExtensionErrorCode::ExtensionTimeout
+                            } else {
+                                ExtensionErrorCode::Cancelled
+                            })
+                        );
+                    }
+                    let remaining = authority.drain(Duration::from_secs(2)).await;
+                    assert_eq!(remaining, 0);
+                    assert!(callback_finished.load(Ordering::Acquire));
+                    drop(owner);
+                    if streaming {
+                        assert!(
+                            bridge
+                                .shared
+                                .stream_sink("original-channel-stream")
+                                .is_none()
+                        );
+                    }
+                    finish.cancel();
+                    Ok(())
+                },
+            );
+        let (host, sdk) =
+            tokio::time::timeout(Duration::from_secs(10), async { tokio::join!(host, sdk) })
+                .await
+                .map_err(|_| "official ACP Channel owner test timed out".to_string())?;
+        host.map_err(|error| error.to_string())?;
+        sdk.map_err(|error| error.to_string())?;
+        Ok(())
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_callback_cancel_retains_actual_response_owner() -> Result<(), String> {
+        channel_callback_owner_case(false, "cancel").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_callback_timeout_retains_actual_response_owner() -> Result<(), String> {
+        channel_callback_owner_case(false, "timeout").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_stream_terminal_waits_for_actual_callback_return() -> Result<(), String> {
+        channel_callback_owner_case(true, "normal").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_stream_cancel_waits_for_actual_callback_return() -> Result<(), String> {
+        channel_callback_owner_case(true, "cancel").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_stream_timeout_waits_for_actual_callback_return() -> Result<(), String> {
+        channel_callback_owner_case(true, "timeout").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_stream_drop_retains_connection_response_owner() -> Result<(), String> {
+        channel_callback_owner_case(true, "drop").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_stream_answer_stops_deadline_before_slow_terminal_consumption()
+    -> Result<(), String> {
+        channel_callback_owner_case(true, "answered_slow").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_stream_callback_return_without_terminal_fails_instead_of_hanging()
+    -> Result<(), String> {
+        channel_callback_owner_case(true, "missing_terminal").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_stream_callback_error_keeps_original_cause_until_actual_return()
+    -> Result<(), String> {
+        channel_callback_owner_case(true, "callback_error").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    async fn channel_once_public_helper_owner_case() -> Result<(), String> {
+        use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
+        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
+            "schema_version":1,"default_agent":{
+                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+                "agent":{"name":"fixture","enable_tools":true}
+            }
+        })).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )
+        .map_err(|error| error.to_string())?;
+        let bridge = state.extension_bridge.clone();
+        let registry = Arc::new(echo_agent::acp::SessionRegistry::new(
+            Arc::new(state.session_factory.clone()),
+            4,
+        ));
+        let services = Arc::new(echo_agent::acp::AcpConnectionServices::new(
+            registry,
+            Arc::new(echo_agent::acp::AcpAdapterConfig::default()),
+        ));
+        state.bind_services(services.clone());
+        let authority = services.extensions().clone();
+        let (extension, _) = state
+            .handles
+            .register_extension(
+                super::super::handles::ExtensionRegistrationLimits {
+                    max_extensions: 4,
+                    max_descriptor_bytes: 65_536,
+                },
+                ExtensionKind::ChannelMessageHandler,
+                "actual-shared-handler",
+                ExtensionDescriptor::ChannelMessageHandler(
+                    echo_sdk_protocol::methods::ChannelMessageHandlerDescriptorWire {
+                        descriptor_version: 1,
+                        handler_id: "actual-shared-handler".to_string(),
+                    },
+                ),
+                None,
+                false,
+            )
+            .map_err(|error| error.message)?;
+        let entered = Arc::new(Notify::new());
+        let release = Arc::new(Notify::new());
+        let noticed = Arc::new(Notify::new());
+        let callback_finished = Arc::new(AtomicBool::new(false));
+        let finish = CancellationToken::new();
+        let sdk_finish = finish.clone();
+        let (host_io, sdk_io) = tokio::io::duplex(16_384);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (sdk_read, sdk_write) = tokio::io::split(sdk_io);
+        let sdk = Client.builder()
+            .on_receive_request({
+                let entered = entered.clone();
+                let release = release.clone();
+                let callback_finished = callback_finished.clone();
+                async move |call: ExtensionInvokeCall,
+                            responder: Responder<ExtensionInvokeOutcome>,
+                            connection: ConnectionTo<AcpAgent>| {
+                    if matches!(&call.invocation,
+                        ExtensionInvocation::ChannelReply(input) if input.message.text == "independent B") {
+                        return responder.respond(ExtensionInvokeOutcome::Result {
+                            result: ExtensionResult::ChannelReply(ExtensionUnit),
+                        });
+                    }
+                    let entered = entered.clone();
+                    let release = release.clone();
+                    let callback_finished = callback_finished.clone();
+                    connection.spawn(async move {
+                    let outcome = ExtensionInvokeOutcome::Result {
+                    result: ExtensionResult::ChannelReply(ExtensionUnit),
+                };
+                entered.notify_one();
+                    // Represents the native callback's asynchronous finally;
+                    // no typed RPC answer is sent until this actual await ends.
+                    release.notified().await;
+                    callback_finished.store(true, Ordering::Release);
+                    responder.respond(outcome)
+                    })
+                }
+            }, agent_client_protocol::on_receive_request!())
+            .on_receive_notification({
+                let noticed = noticed.clone();
+                async move |_notice: echo_sdk_protocol::methods::ExtensionCancelNotice,
+                            _connection: ConnectionTo<AcpAgent>| {
+                    noticed.notify_one(); Ok(())
+                }
+            }, agent_client_protocol::on_receive_notification!())
+            .connect_with(ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()), async move |_| {
+                sdk_finish.cancelled().await;
+                Ok(())
+            });
+        let host = AcpAgent
+            .builder()
+            .on_receive_notification(
+                {
+                    let shared = state.extension_shared.clone();
+                    async move |event: ExtensionStreamEvent, _connection: ConnectionTo<Client>| {
+                        shared
+                            .deliver_stream_event(event)
+                            .map_err(|error| RpcError::internal_error().data(error))
+                    }
+                },
+                agent_client_protocol::on_receive_notification!(),
+            )
+            .connect_with(
+                ByteStreams::new(host_write.compat_write(), host_read.compat()),
+                async move |connection| {
+                    bridge.shared.bind_connection(connection);
+                    let ancestor = CancellationToken::new();
+                    let cancellation = ancestor.child_token();
+                    let call = ExtensionInvocation::ChannelReply(ChannelReplyInput {
+                        message: channel_owner_outbound("once"),
+                    });
+                    let original_bridge = bridge.clone();
+                    let original_extension = extension.clone();
+                    let original_cancellation = cancellation.clone();
+                    let mut response = tokio::spawn(async move {
+                        original_bridge
+                            .invoke_channel_once(&original_extension, call, original_cancellation)
+                            .await
+                    });
+                    entered.notified().await;
+                    cancellation.cancel();
+                    tokio::time::timeout(Duration::from_secs(2), noticed.notified())
+                        .await
+                        .map_err(|_| {
+                            RpcError::internal_error().data("missing cancellation notice")
+                        })?;
+                    assert!(!callback_finished.load(Ordering::Acquire));
+                    assert_eq!(authority.in_flight(), 1);
+                    assert!(!is_exclusive_invocation(
+                        ExtensionKind::ChannelMessageHandler,
+                        &ExtensionInvocation::ChannelReply(ChannelReplyInput {
+                            message: channel_owner_outbound("same handler")
+                        })
+                    ));
+
+                    assert!(
+                        tokio::time::timeout(Duration::from_millis(20), &mut response)
+                            .await
+                            .is_err(),
+                        "cancelled helper must keep its original callback until actual RPC answer"
+                    );
+                    let independent = bridge
+                        .invoke_channel_once(
+                            &extension,
+                            ExtensionInvocation::ChannelReply(ChannelReplyInput {
+                                message: channel_owner_outbound("independent B"),
+                            }),
+                            CancellationToken::new(),
+                        )
+                        .await
+                        .map_err(|error| RpcError::internal_error().data(error.message))?;
+                    assert!(matches!(independent, ExtensionResult::ChannelReply(_)));
+                    assert_eq!(authority.in_flight(), 1);
+                    assert!(!ancestor.is_cancelled());
+                    release.notify_one();
+                    let result = response
+                        .await
+                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                    assert_eq!(
+                        result.err().map(|error| error.code),
+                        Some(ExtensionErrorCode::Cancelled)
+                    );
+                    let remaining = authority.drain(Duration::from_secs(2)).await;
+                    assert_eq!(remaining, 0);
+                    assert!(callback_finished.load(Ordering::Acquire));
+                    finish.cancel();
+                    Ok(())
+                },
+            );
+        let (host, sdk) =
+            tokio::time::timeout(Duration::from_secs(10), async { tokio::join!(host, sdk) })
+                .await
+                .map_err(|_| "official ACP Channel owner test timed out".to_string())?;
+        host.map_err(|error| error.to_string())?;
+        sdk.map_err(|error| error.to_string())?;
+        Ok(())
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn channel_once_public_helper_keeps_real_callback_after_cancel() -> Result<(), String> {
+        channel_once_public_helper_owner_case().await
+    }
+    #[test]
+    fn custom_agent_transport_failure_retains_exact_remote_terminal_observation()
+    -> Result<(), String> {
+        let shared = ExtensionBridgeShared::new();
+        let stream = test_stream_handle("custom-actual-producer");
+        let (sink, mut receiver) = ExtensionStreamSink::new(
+            stream.clone(),
+            "custom-original-extension".to_string(),
+            ExtensionKind::CustomAgent,
+            1,
+            None,
+        );
+        sink.retain_until_remote_terminal
+            .store(true, Ordering::Release);
+        shared.register_stream(sink.clone());
+        shared.fail_stream(&stream, "original transport payload failure");
+        assert!(
+            shared.stream_sink(&stream.id).is_some(),
+            "failure cannot remove the only live producer address"
+        );
+        assert!(!sink.remote_terminal_received.load(Ordering::Acquire));
+        let mut wrong = stream.clone();
+        wrong.generation = WireU64::from_u64(2);
+        assert!(
+            shared
+                .deliver_stream_event(ExtensionStreamEvent::Complete {
+                    stream: wrong,
+                    sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
+                        .map_err(|error| error.to_string())?,
+                    value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::Cancelled),
+                })
+                .is_err()
+        );
+        assert!(
+            !sink.remote_terminal_received.load(Ordering::Acquire),
+            "another generation cannot end this producer"
+        );
+        assert!(
+            shared
+                .deliver_stream_event(ExtensionStreamEvent::Complete {
+                    stream: stream.clone(),
+                    sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("2".to_string())
+                        .map_err(|error| error.to_string())?,
+                    value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::Cancelled),
+                })
+                .is_err()
+        );
+        assert!(
+            !sink.remote_terminal_received.load(Ordering::Acquire),
+            "wrong remote sequence cannot release the owner"
+        );
+        // The existing ledger still rejects a terminal after the local failure;
+        // the validated original producer's declaration is a distinct physical
+        // observation and must not replace the already-preserved failure cause.
+        assert!(
+            shared
+                .deliver_stream_event(ExtensionStreamEvent::Complete {
+                    stream: stream.clone(),
+                    sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
+                        .map_err(|error| error.to_string())?,
+                    value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::Cancelled),
+                })
+                .is_err()
+        );
+        assert!(sink.remote_terminal_received.load(Ordering::Acquire));
+        assert!(
+            shared
+                .deliver_stream_event(ExtensionStreamEvent::Complete {
+                    stream: stream.clone(),
+                    sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
+                        .map_err(|error| error.to_string())?,
+                    value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::Cancelled),
+                })
+                .is_err(),
+            "duplicate declaration cannot replace the original failure"
+        );
+        let terminal = receiver.try_recv().map_err(|error| error.to_string())?;
+        assert!(
+            matches!(terminal, ExtensionStreamEvent::Failed { error, .. }
+            if error.message == "original transport payload failure")
+        );
+        shared.remove_stream(&stream.id);
+        Ok(())
+    }
+
+    #[test]
+    fn custom_agent_invocation_context_preserves_original_correlation_without_new_wire_fields() {
+        let invocation = echo_agent::agent::AgentInvocationContext {
+            runtime: Some(echo_agent::tools::ExternalRunContext {
+                conversation_id: Some("external-eval-not-an-acp-session".to_string()),
+                run_id: Some("canonical-run".to_string()),
+                turn_id: Some("canonical-turn".to_string()),
+                execution_id: Some("canonical-execution".to_string()),
+                message_id: Some("canonical-message".to_string()),
+                ..echo_agent::tools::ExternalRunContext::default()
+            }),
+            working_dir: Some(std::path::PathBuf::from("/原框架/workspace")),
+            ..echo_agent::agent::AgentInvocationContext::default()
+        };
+        let context =
+            custom_agent_invocation_context("original-registered-session", Some(&invocation));
+        assert_eq!(
+            context.session_id.as_deref(),
+            Some("original-registered-session")
+        );
+        assert_eq!(context.run_id.as_deref(), Some("canonical-run"));
+        assert_eq!(context.turn_id.as_deref(), Some("canonical-turn"));
+        assert_eq!(context.execution_id.as_deref(), Some("canonical-execution"));
+        assert_eq!(context.message_id.as_deref(), Some("canonical-message"));
+        assert_eq!(context.call_id, None);
+        assert_eq!(context.stream_id, None);
+        assert_eq!(
+            invocation.working_dir,
+            Some(std::path::PathBuf::from("/原框架/workspace"))
+        );
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn custom_late_setup_ack_after_cancel_waits_for_remote_terminal() -> Result<(), String> {
+        channel_callback_owner_case(true, "custom_late_ack").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn custom_setup_ack_then_transport_eof_returns_disconnected_failure() -> Result<(), String>
+    {
+        channel_callback_owner_case(true, "custom_eof").await
+    }
+
+    #[cfg(feature = "framework-channels")]
+    async fn teardown_admitted_prefix_keeps_original_remote_watermark_case() -> Result<(), String> {
+        use agent_client_protocol::{ByteStreams, Error as RpcError};
+        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
+            "schema_version":1,"default_agent":{
+                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+                "agent":{"name":"fixture","enable_tools":true}
+            }
+        })).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )
+        .map_err(|error| error.to_string())?;
+        let factory = state.session_factory.clone();
+        let profile = super::super::SdkCoreProfile {
+            state: state.clone(),
+        };
+        let adapter = echo_agent::acp::AcpAgentAdapter::new(factory).with_profile(profile);
+        let close_owner = adapter.close_owner();
+        let (host_io, sdk_io) = tokio::io::duplex(16_384);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (sdk_read, sdk_write) = tokio::io::split(sdk_io);
+        let host = agent_client_protocol::ConnectTo::connect_to(
+            adapter,
+            ByteStreams::new(host_write.compat_write(), host_read.compat()),
+        );
+        let client = Client.builder().connect_with(
+            ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()),
+            async move |connection| {
+                let mut initialize = agent_client_protocol::schema::v1::InitializeRequest::new(
+                    agent_client_protocol::schema::ProtocolVersion::V1,
+                );
+                let mut meta = agent_client_protocol::schema::v1::Meta::new();
+                meta.insert(
+                    "echo_agent".to_string(),
+                    serde_json::to_value(echo_sdk_protocol::capability::EchoAgentClientHello {
+                        extension_protocol_version: echo_sdk_protocol::EXTENSION_PROTOCOL_VERSION,
+                        contract_digest: state.advertisement.contract_digest.clone(),
+                        source_contract_digest: state.advertisement.source_contract_digest.clone(),
+                        required_features: Vec::new(),
+                        required_capabilities: Vec::new(),
+                    })
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                );
+                initialize.client_capabilities.meta = Some(meta);
+                connection.send_request(initialize).block_task().await?;
+                let services = state
+                    .services()
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                assert!(
+                    services.is_extended().await,
+                    "official initialize must negotiate real Extended mode"
+                );
+                let (extension, _) = state
+                    .handles
+                    .register_extension(
+                        super::super::handles::ExtensionRegistrationLimits {
+                            max_extensions: 4,
+                            max_descriptor_bytes: 65_536,
+                        },
+                        ExtensionKind::ChannelMessageHandler,
+                        "teardown-original-handler",
+                        ExtensionDescriptor::ChannelMessageHandler(
+                            echo_sdk_protocol::methods::ChannelMessageHandlerDescriptorWire {
+                                descriptor_version: 1,
+                                handler_id: "teardown-original-handler".to_string(),
+                            },
+                        ),
+                        None,
+                        false,
+                    )
+                    .map_err(|error| RpcError::internal_error().data(error.message))?;
+                let stream = state
+                    .handles
+                    .register_extension_stream(&extension.id)
+                    .map_err(|error| RpcError::internal_error().data(error.message))?;
+                let (sink, mut receiver) = ExtensionStreamSink::new(
+                    stream.clone(),
+                    extension.id.clone(),
+                    ExtensionKind::ChannelMessageHandler,
+                    2,
+                    None,
+                );
+                sink.retain_until_remote_terminal
+                    .store(true, Ordering::Release);
+                state.extension_shared.register_stream(sink.clone());
+                services.close_admission();
+                assert!(services.ensure_admission().is_err());
+                // These two notifications traverse the actual Host handler,
+                // not shared.deliver directly; only the original admitted
+                // identity may advance this receive ledger after close.
+                super::super::handler::extension_stream(
+                    state.clone(),
+                    ExtensionStreamEvent::Chunk {
+                        stream: stream.clone(),
+                        sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from(
+                            "1".to_string(),
+                        )
+                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                        value: ExtensionStreamChunkValue::Channel(channel_owner_outbound(
+                            "queued-before-cancel",
+                        )),
+                    },
+                )
+                .await
+                .map_err(|error| RpcError::internal_error().data(error))?;
+                super::super::handler::extension_stream(
+                    state.clone(),
+                    ExtensionStreamEvent::Complete {
+                        stream: stream.clone(),
+                        sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from(
+                            "2".to_string(),
+                        )
+                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                        value: ExtensionStreamCompleteValue::Channel(channel_owner_outbound(
+                            "real-end",
+                        )),
+                    },
+                )
+                .await
+                .map_err(|error| RpcError::internal_error().data(error))?;
+                assert!(
+                    sink.remote_terminal_received.load(Ordering::Acquire),
+                    "admitted prefix must advance the original remote watermark before terminal"
+                );
+                assert!(matches!(
+                    receiver.try_recv(),
+                    Ok(ExtensionStreamEvent::Chunk { .. })
+                ));
+                assert!(matches!(
+                    receiver.try_recv(),
+                    Ok(ExtensionStreamEvent::Complete { .. })
+                ));
+                state.extension_shared.remove_stream(&stream.id);
+                state.handles.remove_extension_stream(&stream.id);
+                Ok(())
+            },
+        );
+        let (host, client) =
+            tokio::time::timeout(Duration::from_secs(5), async { tokio::join!(host, client) })
+                .await
+                .map_err(|_| "official teardown prefix scenario timed out".to_string())?;
+        host.map_err(|error| error.to_string())?;
+        client.map_err(|error| error.to_string())?;
+        drop(close_owner);
+        Ok(())
+    }
+
+    #[cfg(feature = "framework-channels")]
+    #[tokio::test]
+    async fn teardown_admitted_prefix_keeps_original_remote_watermark() -> Result<(), String> {
+        teardown_admitted_prefix_keeps_original_remote_watermark_case().await
+    }
+    #[tokio::test]
+    async fn custom_stream_releases_original_exclusive_lease_before_terminal_consumer_close()
+    -> Result<(), String> {
+        let authority = echo_agent::acp::ExtensionInvocationAuthority::new(1)
+            .map_err(|error| format!("{error:?}"))?;
+        let lease = authority
+            .lease(Some("same-child/custom-agent"), CancellationToken::new())
+            .map_err(|error| format!("{error:?}"))?;
+        let stream = test_stream_handle("factory-child-stream");
+        let owner = Arc::new(CallbackInvocationOwner {
+            _stream: None,
+            _session_callback: None,
+            _agent_invocation: None,
+            retained_lease: Mutex::new(Some(lease)),
+            response_completed: CancellationToken::new(),
+            pending_failure: Mutex::new(None),
+            finished: CancellationToken::new(),
+        });
+        let shared = ExtensionBridgeShared::new();
+        let (sink, receiver) = ExtensionStreamSink::new(
+            stream.clone(),
+            "same-child".to_string(),
+            ExtensionKind::CustomAgent,
+            1,
+            None,
+        );
+        sink.retain_until_remote_terminal
+            .store(true, Ordering::Release);
+        shared.register_stream(sink.clone());
+        let (response_sender, response_receiver) = tokio::sync::oneshot::channel();
+        response_sender
+            .send(Ok(None))
+            .map_err(|_| "response receiver disappeared".to_string())?;
+        // Both original physical facts already exist. Deliberately do not run
+        // a separate collector; terminal consumption must order the same lease
+        // release before the factory can enter its original AgentClose call.
+        shared.deliver_stream_event(ExtensionStreamEvent::Complete {
+            stream,
+            sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
+                .map_err(|error| error.to_string())?,
+            value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::FinalAnswer {
+                text: "finished".to_string(),
+            }),
+        })?;
+        let mut source = owned_callback_event_stream(
+            owner,
+            CallbackStreamDropNotice {
+                cancellation: CancellationToken::new(),
+                armed: true,
+            },
+            sink,
+            receiver,
+            response_receiver,
+        );
+        let event = source
+            .next()
+            .await
+            .ok_or_else(|| "missing terminal".to_string())?
+            .map_err(|error| error.message)?;
+        assert!(event.is_terminal());
+        assert_eq!(
+            authority.in_flight(),
+            0,
+            "terminal consumer must observe the released original invocation before calling child close"
+        );
+        let close = authority
+            .lease(Some("same-child/custom-agent"), CancellationToken::new())
+            .map_err(|error| {
+                format!("child close rejected after physical completion: {error:?}")
+            })?;
+        drop(close);
+        Ok(())
+    }
+
+    async fn custom_stream_holds_original_exclusive_lease_until_both_facts(
+        hold_response: bool,
+    ) -> Result<(), String> {
+        let authority = echo_agent::acp::ExtensionInvocationAuthority::new(2)
+            .map_err(|error| format!("{error:?}"))?;
+        let lease = authority
+            .lease(Some("same-child/custom-agent"), CancellationToken::new())
+            .map_err(|error| format!("{error:?}"))?;
+        let stream = test_stream_handle("factory-child-pending-stream");
+        let owner = Arc::new(CallbackInvocationOwner {
+            _stream: None,
+            _session_callback: None,
+            _agent_invocation: None,
+            retained_lease: Mutex::new(Some(lease)),
+            response_completed: CancellationToken::new(),
+            pending_failure: Mutex::new(None),
+            finished: CancellationToken::new(),
+        });
+        let shared = ExtensionBridgeShared::new();
+        let (sink, receiver) = ExtensionStreamSink::new(
+            stream.clone(),
+            "same-child".to_string(),
+            ExtensionKind::CustomAgent,
+            1,
+            None,
+        );
+        sink.retain_until_remote_terminal
+            .store(true, Ordering::Release);
+        shared.register_stream(sink.clone());
+        let terminal = ExtensionStreamEvent::Complete {
+            stream: stream.clone(),
+            sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
+                .map_err(|error| error.to_string())?,
+            value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::FinalAnswer {
+                text: "finished".to_string(),
+            }),
+        };
+        let (response_sender, response_receiver) = tokio::sync::oneshot::channel();
+        let mut response_sender = Some(response_sender);
+        if hold_response {
+            shared.deliver_stream_event(terminal.clone())?;
+        } else {
+            response_sender
+                .take()
+                .ok_or_else(|| "missing original response sender".to_string())?
+                .send(Ok(None))
+                .map_err(|_| "response receiver disappeared".to_string())?;
+            let mut wrong = terminal.clone();
+            if let ExtensionStreamEvent::Complete { stream, .. } = &mut wrong {
+                stream.generation = WireU64::from_u64(2);
+            }
+            assert!(shared.deliver_stream_event(wrong).is_err());
+            assert!(!sink.remote_terminal_received.load(Ordering::Acquire));
+        }
+        let mut source = owned_callback_event_stream(
+            owner,
+            CallbackStreamDropNotice {
+                cancellation: CancellationToken::new(),
+                armed: true,
+            },
+            sink,
+            receiver,
+            response_receiver,
+        );
+        assert!(
+            tokio::time::timeout(Duration::from_millis(20), source.next())
+                .await
+                .is_err()
+        );
+        assert_eq!(authority.in_flight(), 1);
+        assert!(
+            authority
+                .lease(Some("same-child/custom-agent"), CancellationToken::new())
+                .is_err(),
+            "a missing actual RPC answer or valid remote terminal must preserve child exclusivity"
+        );
+        if hold_response {
+            response_sender
+                .take()
+                .ok_or_else(|| "missing held original response".to_string())?
+                .send(Ok(None))
+                .map_err(|_| "response receiver disappeared".to_string())?;
+        } else {
+            shared.deliver_stream_event(terminal)?;
+        }
+        assert!(
+            source
+                .next()
+                .await
+                .ok_or_else(|| "missing completed terminal".to_string())?
+                .map_err(|error| error.message)?
+                .is_terminal()
+        );
+        assert_eq!(authority.in_flight(), 0);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn custom_stream_keeps_child_exclusive_while_original_rpc_answer_is_pending()
+    -> Result<(), String> {
+        custom_stream_holds_original_exclusive_lease_until_both_facts(true).await
+    }
+
+    #[tokio::test]
+    async fn custom_stream_keeps_child_exclusive_until_valid_remote_terminal() -> Result<(), String>
+    {
+        custom_stream_holds_original_exclusive_lease_until_both_facts(false).await
+    }
+
+    async fn factory_child_retry_case() -> Result<(), String> {
+        use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
+        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
+            "schema_version":1,"default_agent":{
+                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+                "agent":{"name":"fixture","enable_tools":true}
+            }
+        })).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )
+        .map_err(|error| error.to_string())?;
+        let bridge = state.extension_bridge.clone();
+        let registry = Arc::new(echo_agent::acp::SessionRegistry::new(
+            Arc::new(state.session_factory.clone()),
+            4,
+        ));
+        let services = Arc::new(echo_agent::acp::AcpConnectionServices::new(
+            registry,
+            Arc::new(echo_agent::acp::AcpAdapterConfig::default()),
+        ));
+        state.bind_services(services);
+        let limits = super::super::handles::ExtensionRegistrationLimits {
+            max_extensions: 4,
+            max_descriptor_bytes: 65_536,
+        };
+        let (factory, _) = state
+            .handles
+            .register_extension(
+                limits,
+                ExtensionKind::AgentFactory,
+                "retry-parent",
+                ExtensionDescriptor::AgentFactory {
+                    descriptor_version: 1,
+                },
+                None,
+                false,
+            )
+            .map_err(|error| error.message)?;
+        let child = state
+            .handles
+            .reserve_factory_instance(
+                super::super::handles::ExtensionRegistrationLimits {
+                    max_extensions: 4,
+                    max_descriptor_bytes: 65_536,
+                },
+                &factory,
+                "retry-child",
+                None,
+            )
+            .map_err(|error| error.message)?;
+        let owner = Arc::new(FactoryInstanceLease {
+            bridge: bridge.clone(),
+            extension: child.clone(),
+            session_id: "original-session".to_string(),
+            close_result: tokio::sync::OnceCell::new(),
+            construction_submitted: AtomicBool::new(true),
+        });
+        let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let finish = CancellationToken::new();
+        let sdk_finish = finish.clone();
+        let (host_io, sdk_io) = tokio::io::duplex(16_384);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (sdk_read, sdk_write) = tokio::io::split(sdk_io);
+        let sdk = Client
+            .builder()
+            .on_receive_request(
+                {
+                    let calls = calls.clone();
+                    let child = child.clone();
+                    let factory = factory.clone();
+                    async move |call: ExtensionInvokeCall,
+                                responder: Responder<ExtensionInvokeOutcome>,
+                                _connection: ConnectionTo<AcpAgent>| {
+                        assert_eq!(call.extension, child);
+                        assert_eq!(call.factory_origin, Some(factory.clone()));
+                        assert!(matches!(
+                            call.invocation,
+                            ExtensionInvocation::AgentClose(_)
+                        ));
+                        let attempt = calls.fetch_add(1, Ordering::AcqRel);
+                        responder.respond(if attempt == 0 {
+                            ExtensionInvokeOutcome::Error {
+                                error: sdk_error(
+                                    ExtensionErrorCode::ExtensionFailed,
+                                    "retryable original child close failed",
+                                    Retryability::AfterDelay,
+                                    "_echo_agent/extension/invoke",
+                                ),
+                            }
+                        } else {
+                            ExtensionInvokeOutcome::Result {
+                                result: ExtensionResult::AgentClose(ExtensionUnit),
+                            }
+                        })
+                    }
+                },
+                agent_client_protocol::on_receive_request!(),
+            )
+            .connect_with(
+                ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()),
+                async move |_| {
+                    sdk_finish.cancelled().await;
+                    Ok(())
+                },
+            );
+        let host = AcpAgent.builder().connect_with(
+            ByteStreams::new(host_write.compat_write(), host_read.compat()), async move |connection| {
+                bridge.shared.bind_connection(connection);
+                assert!(owner.close().await.is_err());
+                assert!(state.handles.extension_for_cleanup(&child).is_ok());
+                assert!(state.handles.close_extension(&factory).is_err(), "failed cleanup must retain the same child and parent ownership");
+                let (first, second) = tokio::join!(owner.close(), owner.close());
+                let passed = first.is_ok() && second.is_ok();
+                let physical_calls = calls.load(Ordering::Acquire);
+                // End the official peer regardless of assertion outcome, so a
+                // failed retry assertion cannot be hidden by fixture shutdown.
+                finish.cancel();
+                assert!(passed, "same original cleanup owner must retry after its first failed acknowledgement; first={first:?}, second={second:?}, calls={physical_calls}");
+                assert_eq!(physical_calls, 2, "concurrent retry callers share one original physical cleanup");
+                assert!(owner.close().await.is_ok());
+                assert_eq!(calls.load(Ordering::Acquire), 2);
+                assert!(state.handles.is_closed(&child));
+                assert!(state.handles.close_extension(&factory).map_err(|error| RpcError::internal_error().data(error.message))?);
+                Ok(())
+            });
+        let (host, sdk) =
+            tokio::time::timeout(Duration::from_secs(5), async { tokio::join!(host, sdk) })
+                .await
+                .map_err(|_| "official factory cleanup retry test timed out".to_string())?;
+        host.map_err(|error| error.to_string())?;
+        sdk.map_err(|error| error.to_string())?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn factory_child_failed_cleanup_keeps_same_retry_owner_and_coalesces_success()
+    -> Result<(), String> {
+        factory_child_retry_case().await
+    }
     fn test_stream_handle(id: &str) -> WireHandle {
         WireHandle {
             id: id.to_string(),
             generation: WireU64::from_u64(1),
             kind: HandleKind::Stream,
         }
+    }
+
+    #[test]
+    fn dropped_pending_stream_releases_sink_and_session_reentry_guard() -> Result<(), String> {
+        let shared = Arc::new(ExtensionBridgeShared::new());
+        let bridge = ExtensionBridge::unbound(shared.clone());
+        let stream = test_stream_handle("pending-stream");
+        let guard = shared.enter_session_callback(Some("pending-session"));
+        let (sink, _receiver) = ExtensionStreamSink::new(
+            stream.clone(),
+            "extension".to_string(),
+            ExtensionKind::LlmClient,
+            1,
+            guard,
+        );
+        shared.register_stream(sink);
+        assert!(shared.has_active_session_callback("pending-session"));
+        drop(PendingExtensionStream {
+            bridge,
+            stream: Some(stream.clone()),
+        });
+        assert!(shared.stream_sink(&stream.id).is_none());
+        assert!(!shared.has_active_session_callback("pending-session"));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn connection_teardown_aborts_owned_factory_cleanup_jobs() -> Result<(), String> {
+        let shared = ExtensionBridgeShared::new();
+        let blocked = Arc::new(Notify::new());
+        let task = tokio::spawn({
+            let blocked = blocked.clone();
+            async move {
+                blocked.notified().await;
+            }
+        });
+        let abort = task.abort_handle();
+        shared.track_factory_cleanup(task);
+        shared.close_all_streams();
+        tokio::task::yield_now().await;
+        assert!(abort.is_finished());
+        assert!(
+            shared
+                .factory_cleanup_tasks
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .is_empty()
+        );
+        let task = tokio::spawn(async move {
+            blocked.notified().await;
+        });
+        let abort = task.abort_handle();
+        shared.track_factory_cleanup(task);
+        tokio::task::yield_now().await;
+        assert!(
+            abort.is_finished(),
+            "late cleanup admission must obey the connection closed fence"
+        );
+        Ok(())
     }
 
     #[test]
@@ -7222,6 +10402,20 @@ mod tests {
 
     #[test]
     fn agent_component_exclusivity_is_operation_scoped() {
+        assert!(!is_exclusive_invocation(
+            ExtensionKind::AgentFactory,
+            &ExtensionInvocation::FactoryCreateAgent(AgentFactoryConfigWire {
+                instance: WireHandle {
+                    id: "reserved".to_string(),
+                    generation: WireU64::from_u64(1),
+                    kind: HandleKind::Extension
+                },
+                model: String::new(),
+                name: "independent".to_string(),
+                system_prompt: String::new(),
+                tool_count: WireU64::from_u64(0),
+            })
+        ));
         let audit = ExtensionInvocation::AgentComponentCall(AgentComponentCallWire {
             component: AgentComponentKindWire::AuditLogger,
             call: AgentComponentCallInputWire::AuditLog {
@@ -7255,6 +10449,40 @@ mod tests {
             ExtensionKind::AgentComponent,
             &workflow_stream
         ));
+    }
+
+    #[test]
+    fn reverse_errors_preserve_cancellation_and_tool_timeout_domains() {
+        let cancelled = sdk_error(
+            ExtensionErrorCode::Cancelled,
+            "cancel",
+            Retryability::Never,
+            "extension/invoke",
+        );
+        assert_eq!(
+            echo_agent::error::AgentFailure::from(&react_error(cancelled.clone())).terminal_kind,
+            echo_agent::error::AgentTerminalKind::Cancelled
+        );
+        let tool = tool_react_error(cancelled);
+        let failure = echo_agent::tools::ToolFailure::from_error(&tool, true);
+        assert_eq!(
+            failure.category,
+            echo_agent::tools::ToolFailureCategory::Cancelled
+        );
+        assert_eq!(
+            failure.side_effect,
+            echo_agent::tools::ToolSideEffect::Possible
+        );
+        let timeout = tool_react_error(sdk_error(
+            ExtensionErrorCode::ExtensionTimeout,
+            "timeout",
+            Retryability::Never,
+            "extension/invoke",
+        ));
+        assert_eq!(
+            echo_agent::tools::ToolFailure::from_error(&timeout, true).category,
+            echo_agent::tools::ToolFailureCategory::Timeout
+        );
     }
 
     fn test_sequence(
@@ -7457,6 +10685,19 @@ mod tests {
                 blocked: true,
             },
             AgentEvent::MemoryRecalled { count: 2 },
+            AgentEvent::TranscriptProjectionSettlement(
+                echo_agent::memory::TranscriptProjectionSettlement {
+                    status: echo_agent::memory::TranscriptProjectionSettlementStatus::Deferred,
+                    operation_id: Some("operation-中文🙂".to_string()),
+                    conversation_id: Some("conversation".to_string()),
+                    generation_id: Some("generation".to_string()),
+                    attempt: 7,
+                    error_class: Some(
+                        echo_agent::memory::TranscriptProjectionErrorClass::OutcomeUnknown,
+                    ),
+                    detail: Some("committed response lost".to_string()),
+                },
+            ),
             AgentEvent::ContextCompressed {
                 before_count: 4,
                 after_count: 2,
@@ -7524,6 +10765,90 @@ mod tests {
                 ..
             }
         ));
+        Ok(())
+    }
+}
+
+#[cfg(all(test, feature = "framework-channels"))]
+mod channel_forward_conversion_tests {
+    use super::*;
+
+    fn inbound() -> serde_json::Value {
+        serde_json::json!({"channel_id":"通道🙂", "sender_id":"sender中文", "chat_id":"chat🧪", "chat_type":"group", "text":"输入 中文🙂", "message_id":"消息", "timestamp":"18446744073709551615"})
+    }
+
+    #[test]
+    fn channel_inbound_maximum_timestamp_and_attachment_bytes_are_lossless()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut input = inbound();
+        input["attachments"] = serde_json::json!([
+            {"kind":"image","data_base64":"AP9BgA==","filename":"文件🙂"},
+            {"kind":"file","data_base64":"AP9BgA==","filename":""},
+            {"kind":"audio","data_base64":"AP9BgA==","filename":null},
+            {"kind":"video","data_base64":"AP9BgA=="}
+        ]);
+        let wire: ChannelInboundMessageWire = serde_json::from_value(input)?;
+        let native = channel_inbound_from_wire(wire)?;
+        assert_eq!(native.timestamp, u64::MAX);
+        assert_eq!(native.text, "输入 中文🙂");
+        for attachment in &native.attachments {
+            assert_eq!(attachment.data, vec![0, 255, 65, 128]);
+        }
+        let roundtrip = serde_json::to_value(channel_inbound_to_wire(&native))?;
+        assert_eq!(
+            roundtrip.get("timestamp"),
+            Some(&serde_json::json!("18446744073709551615"))
+        );
+        let names = native
+            .attachments
+            .iter()
+            .map(|attachment| attachment.filename.as_deref())
+            .collect::<Vec<_>>();
+        assert_eq!(names, vec![Some("文件🙂"), Some(""), None, None]);
+        Ok(())
+    }
+
+    #[test]
+    fn channel_inbound_rejects_noncanonical_required_fields_before_forward()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for timestamp in [
+            serde_json::json!(0),
+            serde_json::json!(-1),
+            serde_json::json!(null),
+            serde_json::json!("01"),
+            serde_json::json!("18446744073709551616"),
+        ] {
+            let mut input = inbound();
+            input["timestamp"] = timestamp;
+            assert!(serde_json::from_value::<ChannelInboundMessageWire>(input).is_err());
+        }
+        for field in [
+            "channel_id",
+            "sender_id",
+            "chat_id",
+            "chat_type",
+            "text",
+            "message_id",
+            "timestamp",
+        ] {
+            let mut input = inbound();
+            if let Some(object) = input.as_object_mut() {
+                object.remove(field);
+            }
+            assert!(serde_json::from_value::<ChannelInboundMessageWire>(input).is_err());
+        }
+        let mut input = inbound();
+        input["sender"] = serde_json::json!("invented");
+        assert!(serde_json::from_value::<ChannelInboundMessageWire>(input).is_err());
+        let mut input = inbound();
+        input["attachments"] = serde_json::Value::Null;
+        assert!(serde_json::from_value::<ChannelInboundMessageWire>(input).is_err());
+        for (kind, data) in [("unknown", "AP9BgA=="), ("image", "invalid base64!")] {
+            let mut input = inbound();
+            input["attachments"] = serde_json::json!([{"kind":kind,"data_base64":data}]);
+            let wire: ChannelInboundMessageWire = serde_json::from_value(input)?;
+            assert!(channel_inbound_from_wire(wire).is_err());
+        }
         Ok(())
     }
 }

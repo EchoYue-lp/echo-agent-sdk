@@ -1,0 +1,3 @@
+217:                     Duration.ofSeconds(30), transport, requestHandlers, notificationHandlers,
+616:                         if (error != null) throw EchoAgentException.from(error, method);
+620:             return CompletableFuture.failedFuture(EchoAgentException.from(error, method));

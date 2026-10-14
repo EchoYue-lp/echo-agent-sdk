@@ -1,0 +1,523 @@
+{
+  "languages": 3,
+  "rows": 49,
+  "matched_rows": 45,
+  "external_observations": 4,
+  "rows_compared": [
+    {
+      "id": "file-create",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-append",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-update",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-update-missing",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-create-existing",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-write-stale",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-move",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-patch",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-patch-rollback",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-read",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-diff",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-list",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-grep",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-glob",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-map",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-search",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-missing",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-delete",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "file-delete-missing",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "artifact-persist",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "artifact bytes/hash/retention and separately verified typed path"
+      ]
+    },
+    {
+      "id": "artifact-page-0",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "page content/hash/offset/total/complete; opaque cursor independently roundtripped"
+      ]
+    },
+    {
+      "id": "artifact-page-1",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "page content/hash/offset/total/complete; opaque cursor independently roundtripped"
+      ]
+    },
+    {
+      "id": "artifact-page-2",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "page content/hash/offset/total/complete; opaque cursor independently roundtripped"
+      ]
+    },
+    {
+      "id": "artifact-page-3",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "page content/hash/offset/total/complete; opaque cursor independently roundtripped"
+      ]
+    },
+    {
+      "id": "artifact-bad-cursor",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "complete error payload"
+      ]
+    },
+    {
+      "id": "artifact-mutate",
+      "comparison": "matched",
+      "fields": [
+        "artifact mutation action",
+        "protected files"
+      ]
+    },
+    {
+      "id": "artifact-stale",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "complete error payload"
+      ]
+    },
+    {
+      "id": "shell-unicode",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "shell-stderr",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "shell-timeout",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "shell-signal",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "shell-policy",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "web-fetch",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "web-truncated",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "web-extract",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "web-http-error",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "web-closed-port",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "db-tables",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "db-describe",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "db-page-0",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "db-page-1",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "db-stale-cursor",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "db-bad-url",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "complete error payload"
+      ]
+    },
+    {
+      "id": "db-missing",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "db-sql-error",
+      "comparison": "matched",
+      "fields": [
+        "protected_before",
+        "protected_after",
+        "files_before",
+        "files_after",
+        "kind/success/failure/truncated/mime/effects and applicable values"
+      ]
+    },
+    {
+      "id": "research-arxiv_search",
+      "comparison": "external_observation",
+      "reason": "Fixed official provider results/errors depend on service state; each dataset passed shape and explicit error oracle"
+    },
+    {
+      "id": "research-semantic_scholar_search",
+      "comparison": "external_observation",
+      "reason": "Fixed official provider results/errors depend on service state; each dataset passed shape and explicit error oracle"
+    },
+    {
+      "id": "research-pubmed_search",
+      "comparison": "external_observation",
+      "reason": "Fixed official provider results/errors depend on service state; each dataset passed shape and explicit error oracle"
+    },
+    {
+      "id": "research-clinical_trials_search",
+      "comparison": "external_observation",
+      "reason": "Fixed official provider results/errors depend on service state; each dataset passed shape and explicit error oracle"
+    }
+  ],
+  "limitations": [
+    "Opaque cursor bytes, runtime-generated artifact paths/checkpoint metadata, process identity/duration and per-service result text are independently verified facts rather than cross-language equality"
+  ]
+}

@@ -1,0 +1,137 @@
+F
+=================================== FAILURES ===================================
+____________ test_computation_host_exact_values_errors_and_effects _____________
+
+tmp_path = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/computation-work/python/test_computation_host_exact_va0')
+
+    async def test_computation_host_exact_values_errors_and_effects(tmp_path):
+        work = tmp_path
+        fixture.prepare(work)
+        rows = []
+        async with await EchoAgentClient.spawn(
+            HOST, "--config", str(work / "host.json")
+        ) as sdk:
+            agent = await sdk.create_agent()
+            session = await agent.create_session(str(work))
+            identity = {
+                "agent": agent.wire.to_dict(),
+                "session": session.wire.to_dict(),
+                "capability": sdk.capability,
+            }
+            for step in json.loads((work / "scenario.json").read_text())["rows"]:
+                args = step["arguments"]
+                row = {**step, "protected_before": fixture.snapshot(work)}
+                try:
+                    if step["operation"] == "structured_output.validate":
+                        value = await sdk.request(
+                            "_echo_agent/structured_output/validate",
+                            {
+                                "operation": step["operation"],
+                                "signature_digest": "sha256:" + "0123456789abcdef" * 4,
+                                "handle": session.wire.to_dict(),
+                                "arguments": [to_wire(item) for item in args],
+                            },
+                        )
+                        result = from_wire(value["value"])
+                    else:
+                        result = await session.invoke(step["operation"], args)
+                    row["result"] = result
+                    assert step["expected_error"] is None, step["id"]
+                except EchoAgentError as error:
+                    row["error"] = {
+                        "code": error.code,
+                        "message": error.message,
+                        "operation": error.operation,
+                        "retryable": error.retryable,
+                        "handle": error.handle.to_dict() if error.handle else None,
+                        "details": error.details,
+                    }
+                    assert error.code == step["expected_error"], row
+                row["protected_after"] = fixture.snapshot(work)
+                rows.append(row)
+            await session.close()
+            await agent.close()
+        data = {
+            "host": HOST,
+            "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+            "work": str(work),
+            "rows": rows,
+            "raw_identity": identity,
+            "actual_exports": {
+                "output_text": (work / "output.txt").read_text(),
+                "output_json": json.loads((work / "output.json").read_text()),
+            },
+            "actual_side_effects": {
+                "sentinel_contents": (work / "sentinel.txt").read_text(),
+                "sentinel_sha256": hashlib.sha256(
+                    (work / "sentinel.txt").read_bytes()
+                ).hexdigest(),
+            },
+        }
+        (work / "results.json").write_text(
+            json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+        )
+        print(
+            "Computation verified:",
+>           json.dumps(fixture.verify(work, data)),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "evidence:",
+            work,
+        )
+
+tests/test_computation_host.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/computation-work/python/test_computation_host_exact_va0')
+evidence = {'host': '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-owned-channel-host', 'host...{...}, 'name': {...}}, 'required': ['count'], 'additionalProperties': False}], 'expected_error': None, ...}, ...], ...}
+
+    def verify(work, evidence):
+        global EVIDENCE, ROWS
+        EVIDENCE = evidence
+        ROWS = {row["id"]: row for row in evidence["rows"]}
+        assert len(ROWS) == len(ROWS_TEMPLATE) == len(evidence["rows"])
+        assert (
+            evidence["host_sha256"]
+            == hashlib.sha256(Path(evidence["host"]).read_bytes()).hexdigest()
+        )
+        suite = unittest.TestSuite(
+            [
+                unittest.defaultTestLoader.loadTestsFromTestCase(ExactGreenObservations),
+                unittest.defaultTestLoader.loadTestsFromTestCase(
+                    OriginalSemanticCounterexamples
+                ),
+            ]
+        )
+        stream = io.StringIO()
+        result = unittest.TextTestRunner(stream=stream).run(suite)
+        assert result.wasSuccessful(), stream.getvalue()
+        for row in evidence["rows"]:
+            assert row["protected_before"] == row["protected_after"] == snapshot(work), (
+                row["id"] + " changed protected input"
+            )
+            if row["expected_error"] is None:
+                assert "error" not in row, row["id"]
+            else:
+                error = row["error"]
+                assert error["code"] == row["expected_error"]
+                assert (
+                    error["message"]
+                    and error["operation"]
+                    and error["retryable"] == "never"
+                )
+                if error["code"] == "framework_error":
+                    fields = {
+                        entry["key"]: entry["value"] for entry in error["details"]["fields"]
+                    }
+                    assert fields["framework_terminal_kind"] == "failed"
+                    assert fields["framework_failure_category"] == "tool"
+                    assert fields["framework_failure_code"] == "tool"
+                    assert fields["framework_retryable"] == "false"
+>                   assert error["handle"]["kind"] == "session"
+                           ^^^^^^^^^^^^^^^^^^^^^^^
+E                   TypeError: 'NoneType' object is not subscriptable
+
+../shared/testing/computation_fixture.py:864: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_computation_host.py::test_computation_host_exact_values_errors_and_effects
+1 failed in 2.48s

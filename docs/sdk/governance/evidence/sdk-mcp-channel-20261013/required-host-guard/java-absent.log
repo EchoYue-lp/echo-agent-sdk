@@ -1,0 +1,8 @@
+Exception in thread "main" org.opentest4j.AssertionFailedError: required MCP/channel Host missing ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:214)
+	at com.echoagent.sdk.McpChannelHostTest.requireHost(McpChannelHostTest.java:11)
+	at com.echoagent.sdk.McpChannelGuardRunner.main(McpChannelGuardRunner.java:1)

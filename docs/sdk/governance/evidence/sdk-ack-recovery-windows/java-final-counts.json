@@ -1,0 +1,22 @@
+{
+  "AckSubmissionTest": {
+    "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+    "version": "3.0.2",
+    "name": "com.echoagent.sdk.AckSubmissionTest",
+    "time": "0.202",
+    "tests": "12",
+    "errors": "0",
+    "skipped": "0",
+    "failures": "0"
+  },
+  "GapAckHostTest": {
+    "{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd",
+    "version": "3.0.2",
+    "name": "com.echoagent.sdk.GapAckHostTest",
+    "time": "3.913",
+    "tests": "6",
+    "errors": "0",
+    "skipped": "0",
+    "failures": "0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "rustsec-remote-head.txt": "3e7bcbd64b7938ee92502ec1f430f307cb6c398e4eff0c7a5a899b5dd105cf0e",
+  "result.json": "a6847465e1c376d23b9b27d4c2a561db89c8f42793f5e57a7cca4c2330db6d0f",
+  "source-after.json": "9ddce822ba9e9564caf7be03cbc89e3effa0237ca3dff96802ed69978d020bfb",
+  "deny.log": "14aeb79543361a51ee5b2b0c298d2fbc150c068275597eeb831d9382238476cd",
+  "db-provenance.json": "e0a6b7435471ec33e6c1cce7b6d20c2e0ca592dd45c944e098f19a6503405127",
+  "rustsec-remote-head.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "README.md": "f6989b858bb48c856646895514bfb7369fe05950d0059aa7520ee0a99727b35b",
+  "audit.log": "51a842092c4039dd67b53b5f4520c8378367da252a30b7e5f3d826a899c19b53",
+  "accepted-policy.md": "1bd944b2ed88c059f9a549274595d3d8e92ef72aa4a82ef5efbc80b6299433a3",
+  "deny-receipt.json": "807e5d241ffdc25c102a722459e125e1ce88ab47e7bdfb1976c715d5ec0eecfa",
+  "network-context-sanitized.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+  "run.json": "4f78d4239110bdaa49c41e20626c3989c0511d8a5d6cd2696fec89390a4b72b0",
+  "audit-receipt.json": "5060d52483123e31eadf11752576901d2a79906db0f1502ddee250a5aa32cb1c"
+}

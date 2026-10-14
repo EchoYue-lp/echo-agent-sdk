@@ -1,0 +1,39 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 43.93s
+     Running tests/core_profile_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/core_profile_e2e-bf95be7797833fb9)
+
+running 31 tests
+test ack_window_snapshot_ack_resumes_strictly_after_watermark ... ok
+test consumed_multiple_replay_page_ack_resumes_live_after_page_cursor ... ok
+test consumed_single_replay_page_ack_resumes_live_after_page_cursor ... ok
+test eval_and_improve_families_use_the_framework_analyzers ... ok
+test every_canonical_source_operation_reaches_a_host_adapter ... ok
+test explicit_session_create_reserves_persisted_turn_identity_before_new_run ... ok
+test extended_standard_prompt_bridges_shared_core_handles ... ok
+test integration_families_use_framework_managers_and_clients ... ok
+test killed_active_run_is_interrupted_never_completed ... ok
+test malformed_recovered_identity_rejects_actual_method_without_handle_publication ... ok
+test negotiated_facade_admission_fails_closed ... ok
+test oversized_input_frame_fails_without_side_effects ... ok
+test plain_client_and_mismatched_hello_fail_closed ... ok
+test plain_clients_get_method_not_found_for_facade_methods ... ok
+test remaining_tool_families_execute_framework_tools_locally ... ok
+test restart_recovers_history_and_marks_killed_runs_interrupted ... ok
+test session_load_reserves_persisted_turn_identity_before_new_run ... ok
+test source_files_and_skill_registry_preserve_rust_authority ... ok
+test state_delivery_and_trace_families_use_framework_services ... ok
+test stateful_source_resources_preserve_owner_state_and_close ... ok
+test subagent_family_dispatches_and_controls_live_attempts ... ok
+test subagent_short_await_preserves_result_and_dispatch_receipt ... ok
+test task_cancel_is_exact_and_pending_sibling_continues ... ok
+test task_execute_and_control_settle_through_the_runtime ... ok
+test task_pause_is_exact_and_resume_reuses_canonical_dependency_result ... ok
+test task_rpc_shares_the_session_task_authority ... ok
+test tiny_live_window_emits_a_valid_gap_until_acknowledged ... ok
+test tool_families_execute_framework_tools_with_the_session_cwd ... ok
+test turn_receipt_source_operations_project_live_and_recovered ... ok
+test valid_hello_completes_full_core_lifecycle ... ok
+test workflow_family_runs_declarative_graphs_over_the_framework_engine ... ok
+
+test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.09s
+

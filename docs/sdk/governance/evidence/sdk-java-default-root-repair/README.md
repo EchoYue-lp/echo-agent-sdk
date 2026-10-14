@@ -1,0 +1,11 @@
+# Java消费者默认工作根绝对化
+
+官方路径默认值未覆盖环境下，首次完整Maven66suites/311tests有1failure8errors0skip：Channel3与Tool3setup等待超时，Eval2拒相对typedUTF8path，RAG1错误oracle路径包含未规范化../..。测试focused以前显式绝对ROOT配置掩盖默认路径缺口，原日志/全部XML/线程dump保于before-full-suite。
+
+唯一fix是六个Java test classes的八个工作根表达式调用toAbsolutePath().normalize：ChannelHandlerForwardHostTest、EvalImproveTopologyHostTest、ToolValueEffectHostTest（三处）、LlmWorkflowStreamHostTest、ManagedRetirementHostTest、RagProjectRulesHostTest（已absolute补normalize）。保调用者配置的相对CWD意义；没改生产、序列化字段、case/断言、skip或正式脚本过滤。6.patch/source-manifest保存前后，原assert文本保持不变。
+
+同默认环境（未设各能力ROOT override）、同不可变Host8d819：六类15测试0fail0error0skip；随后完整Maven66suites/311测试0fail0error0skip，classpath及Javaquickstart成功，officialrun-command完整terminal receipt exit0。不是把subset当full。
+
+主线程传达独立reader对六类最小source差异与15focused证据PASS/action0；完整suite随后已终态冻结原日志/receipt/XML，源无再变。标准平台临时目录由Java运行时按既有方式使用，不以此新增JVM政策或删外项目临时目录。
+
+Java ACP原Host早退出Futurepending属于另一个core lifecycle失败契约，不能由本fixture根路径修正或311green掩盖；该owner继续实现并验证。完整官方check-language-sdks.sh原3次失败均保，新的client源码变化后必须重跑同完整脚本；本包不宣称最终全语言、accepted-source continuity、SDKmain交付通过。

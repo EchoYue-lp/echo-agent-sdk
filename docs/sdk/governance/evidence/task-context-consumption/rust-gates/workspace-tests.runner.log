@@ -1,0 +1,21 @@
+{
+  "label": "workspace-tests",
+  "command": [
+    "cargo",
+    "test",
+    "--workspace",
+    "--all-targets",
+    "--all-features",
+    "--locked"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates/workspace-tests.log",
+  "exitCode": 101,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 25123,
+  "bytesWritten": 25123,
+  "startedAt": "2026-10-13T21:28:11.481Z",
+  "finishedAt": "2026-10-13T21:29:49.779Z"
+}

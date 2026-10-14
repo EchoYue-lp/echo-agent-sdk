@@ -1,0 +1,568 @@
+[
+  {
+    "package": [
+      "echo_agent",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_agent",
+      "version": "0.2.0",
+      "dependencies": [
+        "agent-client-protocol",
+        "async-stream",
+        "async-trait",
+        "axum",
+        "base64",
+        "chrono",
+        "dotenvy",
+        "echo_core",
+        "echo_execution",
+        "echo_integration",
+        "echo_macros",
+        "echo_orchestration",
+        "echo_state",
+        "echo_tools",
+        "fastrand",
+        "fs2",
+        "futures",
+        "jsonschema",
+        "jsonwebtoken",
+        "opentelemetry",
+        "opentelemetry-otlp",
+        "opentelemetry_sdk",
+        "regex",
+        "reqwest",
+        "rusqlite",
+        "schemars 0.8.22",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "shlex 1.3.0",
+        "similar",
+        "tempfile",
+        "tokio",
+        "tokio-stream",
+        "tokio-util",
+        "tracing",
+        "tracing-opentelemetry",
+        "tracing-subscriber",
+        "uuid",
+        "yaml_serde"
+      ]
+    },
+    "after": {
+      "name": "echo_agent",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "agent-client-protocol",
+        "async-stream",
+        "async-trait",
+        "axum",
+        "base64",
+        "chrono",
+        "dotenvy",
+        "echo_core",
+        "echo_execution",
+        "echo_integration",
+        "echo_macros",
+        "echo_orchestration",
+        "echo_state",
+        "echo_tools",
+        "fastrand",
+        "fs2",
+        "futures",
+        "jsonschema",
+        "jsonwebtoken",
+        "opentelemetry",
+        "opentelemetry-otlp",
+        "opentelemetry_sdk",
+        "regex",
+        "reqwest",
+        "rusqlite",
+        "schemars 0.8.22",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "shlex 1.3.0",
+        "similar",
+        "tempfile",
+        "tokio",
+        "tokio-stream",
+        "tokio-util",
+        "tracing",
+        "tracing-opentelemetry",
+        "tracing-subscriber",
+        "uuid",
+        "yaml_serde"
+      ]
+    }
+  },
+  {
+    "package": [
+      "echo_core",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_core",
+      "version": "0.2.0",
+      "dependencies": [
+        "async-stream",
+        "chrono",
+        "fs2",
+        "futures",
+        "globset",
+        "libc",
+        "parking_lot",
+        "rand 0.9.5",
+        "regex",
+        "reqwest",
+        "schemars 0.8.22",
+        "semver",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "thiserror 2.0.20",
+        "tokio",
+        "tokio-util",
+        "tracing",
+        "uuid",
+        "windows-sys 0.61.2",
+        "yaml_serde"
+      ]
+    },
+    "after": {
+      "name": "echo_core",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "async-stream",
+        "chrono",
+        "fs2",
+        "futures",
+        "globset",
+        "libc",
+        "parking_lot",
+        "rand 0.9.5",
+        "regex",
+        "reqwest",
+        "schemars 0.8.22",
+        "semver",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "thiserror 2.0.20",
+        "tokio",
+        "tokio-util",
+        "tracing",
+        "uuid",
+        "windows-sys 0.61.2",
+        "yaml_serde"
+      ]
+    }
+  },
+  {
+    "package": [
+      "echo_execution",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_execution",
+      "version": "0.2.0",
+      "dependencies": [
+        "dashmap",
+        "dirs",
+        "echo_core",
+        "futures",
+        "glob",
+        "jsonschema",
+        "libc",
+        "parking_lot",
+        "regex",
+        "reqwest",
+        "serde",
+        "serde_json",
+        "shlex 1.3.0",
+        "tokio",
+        "tokio-util",
+        "tracing",
+        "uuid",
+        "yaml_serde"
+      ]
+    },
+    "after": {
+      "name": "echo_execution",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "dashmap",
+        "dirs",
+        "echo_core",
+        "futures",
+        "glob",
+        "jsonschema",
+        "libc",
+        "parking_lot",
+        "regex",
+        "reqwest",
+        "serde",
+        "serde_json",
+        "shlex 1.3.0",
+        "tokio",
+        "tokio-util",
+        "tracing",
+        "uuid",
+        "yaml_serde"
+      ]
+    }
+  },
+  {
+    "package": [
+      "echo_integration",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_integration",
+      "version": "0.2.0",
+      "dependencies": [
+        "async-stream",
+        "async-trait",
+        "axum",
+        "base64",
+        "chrono",
+        "dashmap",
+        "dotenvy",
+        "echo_core",
+        "futures",
+        "hmac",
+        "prost",
+        "rand 0.9.5",
+        "reqwest",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "subtle",
+        "tokio",
+        "tokio-tungstenite",
+        "tokio-util",
+        "tracing",
+        "url",
+        "uuid",
+        "yaml_serde"
+      ]
+    },
+    "after": {
+      "name": "echo_integration",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "async-stream",
+        "async-trait",
+        "axum",
+        "base64",
+        "chrono",
+        "dashmap",
+        "dotenvy",
+        "echo_core",
+        "futures",
+        "hmac",
+        "prost",
+        "rand 0.9.5",
+        "reqwest",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "subtle",
+        "tokio",
+        "tokio-tungstenite",
+        "tokio-util",
+        "tracing",
+        "url",
+        "uuid",
+        "yaml_serde"
+      ]
+    }
+  },
+  {
+    "package": [
+      "echo_macros",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_macros",
+      "version": "0.2.0",
+      "dependencies": [
+        "proc-macro-crate",
+        "proc-macro2",
+        "quote",
+        "syn 2.0.119"
+      ]
+    },
+    "after": {
+      "name": "echo_macros",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "proc-macro-crate",
+        "proc-macro2",
+        "quote",
+        "syn 2.0.119"
+      ]
+    }
+  },
+  {
+    "package": [
+      "echo_orchestration",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_orchestration",
+      "version": "0.2.0",
+      "dependencies": [
+        "async-stream",
+        "async-trait",
+        "chrono",
+        "cron",
+        "dashmap",
+        "echo_core",
+        "echo_state",
+        "fastrand",
+        "fs2",
+        "futures",
+        "regex",
+        "reqwest",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "thiserror 2.0.20",
+        "tokio",
+        "tokio-tungstenite",
+        "tokio-util",
+        "tracing",
+        "uuid"
+      ]
+    },
+    "after": {
+      "name": "echo_orchestration",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "async-stream",
+        "async-trait",
+        "chrono",
+        "cron",
+        "dashmap",
+        "echo_core",
+        "echo_state",
+        "fastrand",
+        "fs2",
+        "futures",
+        "regex",
+        "reqwest",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "thiserror 2.0.20",
+        "tokio",
+        "tokio-tungstenite",
+        "tokio-util",
+        "tracing",
+        "uuid"
+      ]
+    }
+  },
+  {
+    "package": [
+      "echo_state",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_state",
+      "version": "0.2.0",
+      "dependencies": [
+        "chrono",
+        "echo_core",
+        "futures",
+        "reqwest",
+        "rusqlite",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "tokio",
+        "tracing",
+        "uuid"
+      ]
+    },
+    "after": {
+      "name": "echo_state",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "chrono",
+        "echo_core",
+        "futures",
+        "reqwest",
+        "rusqlite",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "tokio",
+        "tracing",
+        "uuid"
+      ]
+    }
+  },
+  {
+    "package": [
+      "echo_tools",
+      "0.2.0"
+    ],
+    "before": {
+      "name": "echo_tools",
+      "version": "0.2.0",
+      "dependencies": [
+        "async-trait",
+        "base64",
+        "calamine",
+        "chrono",
+        "docx-rs",
+        "echo_core",
+        "echo_macros",
+        "encoding_rs",
+        "futures",
+        "html2text",
+        "libc",
+        "lopdf",
+        "polars",
+        "quick-xml 0.41.0",
+        "regex",
+        "reqwest",
+        "rust_xlsxwriter",
+        "schemars 0.8.22",
+        "scraper",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "shlex 1.3.0",
+        "similar",
+        "sqlx",
+        "tokio",
+        "tracing",
+        "tree-sitter",
+        "tree-sitter-go",
+        "tree-sitter-java",
+        "tree-sitter-javascript",
+        "tree-sitter-python",
+        "tree-sitter-rust",
+        "tree-sitter-typescript",
+        "url",
+        "urlencoding",
+        "uuid",
+        "windows-sys 0.61.2"
+      ]
+    },
+    "after": {
+      "name": "echo_tools",
+      "version": "0.2.0",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558620f5f9693c736c85c214db14f62a8cb",
+      "dependencies": [
+        "async-trait",
+        "base64",
+        "calamine",
+        "chrono",
+        "docx-rs",
+        "echo_core",
+        "echo_macros",
+        "encoding_rs",
+        "futures",
+        "html2text",
+        "libc",
+        "lopdf",
+        "polars",
+        "quick-xml 0.41.0",
+        "regex",
+        "reqwest",
+        "rust_xlsxwriter",
+        "schemars 0.8.22",
+        "scraper",
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "shlex 1.3.0",
+        "similar",
+        "sqlx",
+        "tokio",
+        "tracing",
+        "tree-sitter",
+        "tree-sitter-go",
+        "tree-sitter-java",
+        "tree-sitter-javascript",
+        "tree-sitter-python",
+        "tree-sitter-rust",
+        "tree-sitter-typescript",
+        "url",
+        "urlencoding",
+        "uuid",
+        "windows-sys 0.61.2"
+      ]
+    }
+  },
+  {
+    "package": [
+      "quinn-proto",
+      "0.11.16"
+    ],
+    "before": {
+      "name": "quinn-proto",
+      "version": "0.11.16",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "2f4bfc015262b9df63c8845072ce59068853ff5872180c2ce2f13038b970e560",
+      "dependencies": [
+        "bytes",
+        "getrandom 0.4.3",
+        "lru-slab",
+        "rand 0.10.2",
+        "rand_pcg",
+        "ring",
+        "rustc-hash",
+        "rustls",
+        "rustls-pki-types",
+        "slab",
+        "thiserror 2.0.20",
+        "tinyvec",
+        "tracing",
+        "web-time"
+      ]
+    },
+    "after": null
+  },
+  {
+    "package": [
+      "quinn-proto",
+      "0.11.18"
+    ],
+    "before": null,
+    "after": {
+      "name": "quinn-proto",
+      "version": "0.11.18",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "a9746dbde176634f4f2f1faf2404e30a31b2bc1e9cafb5329c95d8177a18c9fc",
+      "dependencies": [
+        "bytes",
+        "getrandom 0.4.3",
+        "lru-slab",
+        "rand 0.10.2",
+        "rand_pcg",
+        "ring",
+        "rustc-hash",
+        "rustls",
+        "rustls-pki-types",
+        "slab",
+        "thiserror 2.0.20",
+        "tinyvec",
+        "tracing",
+        "web-time"
+      ]
+    }
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "rustsec-remote-head.txt": "3e7bcbd64b7938ee92502ec1f430f307cb6c398e4eff0c7a5a899b5dd105cf0e",
+  "policy-result.json": "2d99d72df72ecce11aa1bd758204cd1173b67803302fa00a79c7b25e847f8ea7",
+  "source-before.json": "a918b6b21ff93ddd261ee607d905b53e3994c8a901b69bccc5dec771311be73a",
+  "source-after.json": "9a334abeb6e210d312efa8c2498428120c69107a72156ead277ad52c95a21e86",
+  "versions.txt": "c17db78dfc59da68e5402cec42649513d86a751daaa61fc301f66fe118182952",
+  "deny.log": "14aeb79543361a51ee5b2b0c298d2fbc150c068275597eeb831d9382238476cd",
+  "deny-database-provenance.json": "e3e8b0b0ded7e514617bad816772bb22590511a94c52859aa0fa8cde7e1de747",
+  "README.md": "71acaf9b07e3a9d30622196a900628a5ce6ba20fd47afb6cdef498f7e1883f2d",
+  "audit.log": "51a842092c4039dd67b53b5f4520c8378367da252a30b7e5f3d826a899c19b53",
+  "deny-receipt.json": "043106767eebbe01640842b465840c191a115679a833ef1c32d3a28688a846a0",
+  "run.json": "1866098f4e55dbe8f822d25614c3eabcc64cfda0adee62c904990102a49ebaa6",
+  "rustsec-database-manifest.json": "c0efb6a95fff443c126d4bcf60f0f400a982d01315f45abe8234882cc1fc1845",
+  "audit-receipt.json": "053a0a298f62fda1ccc8d18839293cd7cab6527a4b4c9e6640badee07afa7fb6",
+  "inputs/Cargo.toml": "5965a85e0e2ef738381ab8b65f9cf9d1ee43694dfdd41f93b0e847af759cbd00",
+  "inputs/deny.toml": "b18307d3e0afa05d0c1ad32004b59cb0a7fe62136e90037bec17738545b3013f",
+  "inputs/Cargo.lock": "a42cfbc993a3eabb714a6b221472600d424fa411226659458b7286d490f7e837",
+  "inputs/.cargo/audit.toml": "492c8acc68663b2252daafa1a44d4a977b43d1f8461851dd92229d83a50dbd70",
+  "inputs/.cargo/config.toml": "493c87fc3ef8111f097808dd20ba21984d574e90758c49f0134d55580fdc3c20",
+  "inputs/echo-sdk-host/Cargo.toml": "e1ee65763c18fd754bacfec922ba22d68180f3bea3114a25146f7d5bc1651a0e",
+  "inputs/.github/workflows/rust-ci.yml": "cc519d0da616dcced4fab5984e2efc2a9519a53436aa39aea360770c04e132e3"
+}

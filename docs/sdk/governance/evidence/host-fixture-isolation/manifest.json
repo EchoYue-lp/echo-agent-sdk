@@ -1,0 +1,17 @@
+{
+  "scope": "two TypeScript real Host fixture state/config isolation only; original FileRuntimeStateStore native lock and all assertions unchanged",
+  "host_sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10",
+  "before": "unchanged two-file default parallel run3tests2pass1OS35error",
+  "after": "same two-file default parallel final-source run3tests3pass0fail0skip",
+  "source": {
+    "host.test.js": {
+      "before_sha256": "796aadc7a3449b6bd31d54951b811e0f263a79745dc94e6f0cdd35f70702cd17",
+      "after_sha256": "427abceebc699c04e3649a721c10271c5e248951c496fe2d5b86aab89c5b4bda"
+    },
+    "family-route-host.test.js": {
+      "before_sha256": "6dbf7c6ced8e509e2de3c7b6e2ab9bf5fbbf64921fcc9bdbecb1e7b6df1c1051",
+      "after_sha256": "0fb0cee6cb24536ccbc36af817f9610e603c2bb54920705e2ab4ad4a89414881"
+    }
+  },
+  "deferred": "separate Task pause exclusive extension lease root cause owner; full official script rerun after that fix, not represented by these3focusedtests"
+}

@@ -204,3 +204,91 @@ Workflow/Sandbox stream variants are explicit union members. Streaming
 callbacks return the Host stream handle and use `agentComponentChunk` /
 `agentComponentComplete`; separate chunk and terminal unions prevent invalid
 inner terminal sequencing.
+
+## Governance and failure boundaries
+
+The compatibility promise is the explicitly accepted external contract and
+accepted facade catalog. Complete Rust public inventory/intrinsic membership
+is non-blocking telemetry; it is not a requirement to expose every Rust
+identity in all languages. The current governance candidate awaits final
+contract, real-Host three-language and exact-main acceptance. The
+[capability/evidence matrix](../../docs/sdk/governance/behavior-evidence-matrix.md)
+records behavior evidence and remaining scope; catalog `done` labels alone do
+not prove a failure path.
+
+A failed Agent/Session/Run close retains its local cleanup state so the caller
+can retry; only successful cleanup ends the stream/releases the owner.
+Duplicate successful close is idempotent. Timeout, cancellation, EOF and Host
+exit must not be treated as a successful terminal. Facade resources validate
+owner plus complete generation-fenced handles; failed publication rolls back
+construction rather than returning an unusable handle.
+
+Factory callbacks echo the Host-reserved instance handle. Child invocations
+carry `factory_origin`, binding that instance to its parent registration.
+Concurrent same-name factory instances remain independent; no name-based
+fallback routes an unknown child. A construction timeout/cancellation retains
+cleanup ownership until construction really finishes, including cleanup of a
+late-created child.
+
+Managed ConversationStore/RuntimeStateStore callbacks retain declared
+capabilities, atomic receipts, revisions/generations and exact commit
+deadlines. Unsupported calls fail explicitly; `OutcomeUnknown` is unresolved
+until backend evidence establishes the outcome. RevisionedTaskStore is
+CRUD-only unless its descriptor opts into `execution_cas_v1` (default false).
+Execution without this capability fails before work starts; implementations
+that opt in must atomically preserve expected executions, exact claims,
+results and Cancelled/Paused disposition. SDK callbacks transport these facts;
+the framework alone schedules tasks and owns terminal state.
+
+`set_memory_store` connects approved-memory recall/search. Automatic memory
+writing/promotion requires the framework MemoryLayerManager. Explicit
+`set_store` and accepted raw KV `memory.put/get` calls do not promote their
+values into Active memory.
+
+Live `RunHandle.events` is bounded. Its async iterator ACKs an event at the
+consumption boundary when iteration resumes after yielding it, including
+iterator close. Callers must coordinate asynchronous work with iteration;
+this does not wait for detached business tasks. Fetching
+`run.replay(afterSequence, limit)` validates and records a replay page but
+never ACKs it. Apply any required snapshot and consume the page, then call
+`await sdk.acknowledge(run.stream, page.next_cursor.last_processed_sequence)`.
+An explicit gap/snapshot ACK establishes the continuation floor; later live
+facts must be above it. Queuing a frame is not application consumption.
+If replay includes the journal's terminal event, a successfully submitted
+explicit ACK covering that event also ends the local event feed naturally.
+Fetching the page or sending an uncovered future cursor does not end it;
+this delivery projection does not change the authoritative Run state.
+
+Each successful transport submission advances the local consumed cursor
+monotonically. Pending, failed or cancelled submissions do not retire queue
+facts or establish replay-terminal EOF; transport failure reports
+`ack_submission: outcome_unknown` in error details, because a notification
+has no peer acceptance receipt. Another concurrent ACK cannot borrow a
+pending submission's cursor. The framework journal remains authoritative.
+
+Typed Host errors in ACP `error.data` become `EchoAgentError` and retain
+`code`, `retryable`, `operation`, `handle` and `details`. Standard ACP errors
+keep the official wire semantics; their message is not parsed into a domain
+code. Use `bigint`, decimal text or `wireU64`/`wireI64` for full-range integers;
+unsafe JavaScript numbers are rejected. Tagged unknown values round-trip,
+while missing discriminators/malformed known nested values fail. Domain keys
+such as `__proto__`, `constructor` and `kind` remain map data, not SDK metadata.
+
+
+### Channel handler consumption examples
+
+The real Host examples for the six canonical Channel operations and Sandbox
+cooperative close are described in
+[Channel consumption](../../docs/sdk/channel-handler-consumption.md). The
+existing native Channel forward tests are executable examples and are included
+in `scripts/check-language-sdks.sh`; they register real callbacks, consume the
+original handler, and verify typed results and cleanup. MessageHandler callbacks
+retain their awaited work/cleanup lifetime. An asynchronous producer using the
+existing early Stream setup ACK may return immediately; cancellation continues
+to reach its original signal until the matching terminal is successfully sent.
+The producer must finish cleanup before declaring that terminal. Cancellation
+before ACK and terminal before ACK preserve their original stream identity;
+wrong-generation or failed terminal sends and failed close retain the route
+for retry on the same stream. Neither ACK nor notification delivery lets the
+SDK infer physical cleanup. Full inventory and intrinsic membership remain
+non-blocking telemetry.

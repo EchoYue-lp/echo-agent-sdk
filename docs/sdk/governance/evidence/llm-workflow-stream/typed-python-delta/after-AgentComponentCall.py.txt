@@ -1,0 +1,63 @@
+@dataclass(frozen=True, slots=True)
+class AgentComponentCall:
+    """Decoded invocation retaining its optional Host-issued producer stream."""
+
+    component: str
+    request: AgentComponentRequest
+    operation: Literal["agent_component_call", "agent_component_call_stream"] = (
+        "agent_component_call"
+    )
+    extension: WireHandle | None = None
+    invocation_id: str | None = None
+    deadline: Mapping[str, Any] | None = None
+    stream: WireHandle | None = None
+
+    @classmethod
+    def from_payload(cls, payload: Mapping[str, Any]) -> AgentComponentCall:
+        invocation = payload.get("invocation")
+        if not isinstance(invocation, Mapping) or invocation.get("operation") not in {
+            "agent_component_call",
+            "agent_component_call_stream",
+        }:
+            raise ValueError("unsupported Agent component operation")
+        raw_input = invocation.get("input")
+        call = raw_input.get("call") if isinstance(raw_input, Mapping) else None
+        if (
+            not isinstance(raw_input, Mapping)
+            or not isinstance(raw_input.get("component"), str)
+            or not isinstance(call, Mapping)
+            or not isinstance(call.get("operation"), str)
+        ):
+            raise TypeError("Agent component invocation input is malformed")
+        component_operation = cast(str, call["operation"])
+        component_input = call.get("input")
+        if component_input is None and not _AGENT_COMPONENT_INPUT_FIELDS.get(
+            component_operation
+        ):
+            component_input = {}
+        if not isinstance(component_input, Mapping):
+            raise TypeError("Agent component invocation input is malformed")
+        component = cast(str, raw_input["component"])
+        expected_component = _component_for_operation(component_operation)
+        if component != expected_component:
+            raise ValueError("Agent component kind does not match its operation")
+        request = _component_request(
+            component_operation, cast(Mapping[str, Any], component_input)
+        )
+        return cls(
+            component=component,
+            request=request,
+            operation=cast(
+                Literal["agent_component_call", "agent_component_call_stream"],
+                invocation["operation"],
+            ),
+            extension=_payload_handle(payload, "extension"),
+            invocation_id=_optional_text(payload.get("invocation_id")),
+            deadline=cast(Mapping[str, Any] | None, payload.get("deadline")),
+            stream=_payload_handle(payload, "stream"),
+        )
+
+    @property
+    def component_operation(self) -> str:
+        return self.request.operation
+

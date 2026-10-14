@@ -1,0 +1,11 @@
+# Feature wiring当前manifest的依赖门禁
+
+同原两命令cargo audit --deny warnings与cargo deny --workspace --all-features --locked check实际退出0，以官方run-command完整终态记录。新manifest/devfeaturewiring由源码owner完成后，此轮固定7输入的精确当前摘要，不复用旧inputcut假当前；没有更改锁、生产、配置、四项例外或阈值，也没有rustc编译。
+
+Audit实际fresh fetch官方数据库，1310条advisory/658lockeddependencies；两工具自己的数据库分别clean、同HEAD6aed84668c23d7f535077a9fe918bf1fa0f6a5bc，与独立实时git ls-remote官方HEAD一致，database-provenance保存两个缓存与全文markdown摘要，不假使用历史frameworkDB证明当前。
+
+Deny advisories/bans/licenses/sources ok但实际50warning[duplicate]，其它warning类别0。baseline-comparison逐条核crate身份和版本数组与原packet、proposed规则表一致，不能仅凭数量50相同。原4exceptions与multipleversionswarn未改变，没有追加ignore或消音。
+
+工具返回0尚不等于SDK仓库零警告门禁满足：50duplicate政策提案未被用户接受，现有AGENTS规则冲突保持阻断；本包不作新增风险接受、全SDK/main交付通过声明。后续frameworkpin/锁/manifest/feature检查范围变化需要重新验证与版本组复审，不自动扩大基线。
+
+原stdout/receipt/run、7输入原文件、before/after、工具版本与freshremote证明都可复核。Host源码Factory新切点的完整语言验证另见sdk-language-factory-final；public合同不按Rustinventory自动扩API。

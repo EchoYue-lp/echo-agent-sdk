@@ -1,0 +1,291 @@
+{
+  "group": "topology",
+  "steps": [
+    {
+      "id": "tracker",
+      "operation": "topology.tracker.open_exact",
+      "arguments": []
+    },
+    {
+      "id": "node-0",
+      "operation": "topology.node.add_exact",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        },
+        {
+          "id": "agent🙂",
+          "label": "Agent 中文",
+          "node_type": "Agent",
+          "metadata": {
+            "model": "固定",
+            "optional": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-1",
+      "operation": "topology.node.add_exact",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        },
+        {
+          "id": "subagent🌊",
+          "label": "Subagent 🌊",
+          "node_type": "Subagent",
+          "metadata": {
+            "owner": "agent🙂"
+          }
+        }
+      ]
+    },
+    {
+      "id": "duration",
+      "operation": "topology.call.record_with_duration",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        },
+        "agent🙂",
+        "subagent🌊",
+        "执行🙂",
+        {
+          "$u64": "123"
+        }
+      ]
+    },
+    {
+      "id": "second-call",
+      "operation": "topology.call.record",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        },
+        "agent🙂",
+        "subagent🌊",
+        "再次🙂"
+      ]
+    },
+    {
+      "id": "nodes",
+      "operation": "topology.nodes",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "edges",
+      "operation": "topology.edges",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "stats",
+      "operation": "topology.stats",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "snapshot",
+      "operation": "topology.snapshot",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "to_json",
+      "operation": "topology.to_json",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "to_mermaid",
+      "operation": "topology.to_mermaid",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "to_dot",
+      "operation": "topology.to_dot",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "foreign",
+      "operation": "topology.clear",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ],
+      "session": "b",
+      "error": "invalid_value"
+    },
+    {
+      "id": "after-foreign",
+      "operation": "topology.stats",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "clear",
+      "operation": "topology.clear",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "empty",
+      "operation": "topology.snapshot",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "close",
+      "operation": "facade.resource.close",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ]
+    },
+    {
+      "id": "closed",
+      "operation": "topology.stats",
+      "arguments": [
+        {
+          "$ref": "tracker",
+          "path": []
+        }
+      ],
+      "error": "closed_handle"
+    }
+  ],
+  "run": {
+    "run_id": "trajectory-中文🙂",
+    "parent_run_id": "parent🙂",
+    "agent_name": "native-agent🙂",
+    "model": "fixed-model",
+    "provider": null,
+    "turn_id": "turn🙂",
+    "execution_id": "execute🙂",
+    "session_id": "session🙂",
+    "status": "completed",
+    "input": "读写中文🙂",
+    "events": [
+      {
+        "type": "tool_call",
+        "call_id": "call🙂",
+        "name": "write_file",
+        "args": {
+          "path": "file🙂",
+          "content": "written🙂"
+        },
+        "risk": "write",
+        "duration_ms": 11
+      },
+      {
+        "type": "file_edit",
+        "tool": "write_file",
+        "path": "file🙂"
+      },
+      {
+        "type": "tool_result",
+        "call_id": "call🙂",
+        "name": "write_file",
+        "success": true,
+        "output_preview": "写入🙂",
+        "output_truncated": false,
+        "duration_ms": 11,
+        "original_bytes": 9,
+        "returned_bytes": 9,
+        "estimated_tokens": 3,
+        "output_handling": null,
+        "artifact": null
+      }
+    ],
+    "final_output": "完成🙂",
+    "error": null,
+    "token_usage": {
+      "prompt_tokens": 17,
+      "completion_tokens": 5,
+      "total_tokens": 22,
+      "cached_prompt_tokens": 3,
+      "cache_creation_prompt_tokens": 0,
+      "usage_reported_calls": 1,
+      "usage_missing_calls": 0
+    },
+    "timings": {
+      "total_duration_ms": 123,
+      "llm_duration_ms": 112,
+      "tool_duration_ms": 11
+    },
+    "started_at": "2026-10-13T00:00:00.123456789Z",
+    "finished_at": "2026-10-13T00:00:00.246456789Z"
+  },
+  "grade_good": {
+    "results": [
+      {
+        "assertion_id": "a1",
+        "passed": true,
+        "confidence": 0.875,
+        "evidence": "OK",
+        "reasoning": "fixed one🙂"
+      },
+      {
+        "assertion_id": "a2",
+        "passed": false,
+        "confidence": 0.625,
+        "evidence": "none",
+        "reasoning": "fixed two🙂"
+      }
+    ],
+    "overall_assessment": "fixed grade🙂"
+  },
+  "factory_answer": "OK 中文🙂"
+}

@@ -1,0 +1,22 @@
+{
+  "label": "ci-default-host",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--lib",
+    "--tests",
+    "--locked"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-factory-final/ci-default-host.log",
+  "exitCode": 101,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 4312,
+  "bytesWritten": 4312,
+  "startedAt": "2026-10-13T21:52:12.325Z",
+  "finishedAt": "2026-10-13T21:52:41.439Z"
+}

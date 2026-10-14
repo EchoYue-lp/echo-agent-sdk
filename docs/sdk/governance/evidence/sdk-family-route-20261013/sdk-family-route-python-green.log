@@ -1,0 +1,48 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________ test_native_family_calls_use_catalog_wire_method _______________
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(not HOST, reason="real Host binary required")
+    async def test_native_family_calls_use_catalog_wire_method():
+>       sdk = await EchoAgentClient.spawn(
+            HOST, "--config", os.environ["ECHO_AGENT_SDK_CONFIG"]
+        )
+
+tests/test_family_route_host.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/echo_agent_sdk/client.py:3232: in spawn
+    initialized = await connection.initialize(
+.venv/lib/python3.12/site-packages/acp/client/connection.py:150: in initialize
+    return await request_model(
+.venv/lib/python3.12/site-packages/acp/utils.py:97: in request_model
+    response = await conn.send_request(method, serialize_params(params))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <acp.connection.Connection object at 0x1055444d0>, method = 'initialize'
+params = {'protocolVersion': 1, 'clientCapabilities': {'auth': {}, '_meta': {'echo_agent': {'extension_protocol_version': 1, 'c...2087be27b8e015e', 'required_features': [], ...}}}, 'clientInfo': {'name': 'echo-agent-sdk-python', 'version': '0.1.0'}}
+
+    async def send_request(self, method: str, params: JsonValue | None = None) -> Any:
+        self._raise_if_unavailable()
+        request_id = self._next_request_id
+        self._next_request_id += 1
+        future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
+        self._pending[request_id] = future
+        payload = {"jsonrpc": "2.0", "id": request_id, "method": method, "params": params}
+        try:
+            await self._transport.send(payload)
+        except BaseException:
+            self._pending.pop(request_id, None)
+            future.cancel()
+            raise
+        self._notify_observers(StreamDirection.OUTGOING, payload)
+        try:
+>           return await future
+                   ^^^^^^^^^^^^
+E           ConnectionError: Connection closed
+
+.venv/lib/python3.12/site-packages/acp/connection.py:126: ConnectionError
+=========================== short test summary info ============================
+FAILED tests/test_family_route_host.py::test_native_family_calls_use_catalog_wire_method
+1 failed in 0.50s

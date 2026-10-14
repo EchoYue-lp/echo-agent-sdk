@@ -1,0 +1,6 @@
+{
+  "provenance": "Root actualreceipt/log+67XML sourcefreeze reading; exactsame officialsingleentry notmergedsegments",
+  "scope": "onebash scripts/check-language-sdks.sh complete21:10:01-21:14:10UTC/90900bytes untruncated/exit0;Node290/PY357+18/Java32067suites0skip/3quickstarts/Ruff175;632beforeafterhashesallsame",
+  "logging": "JavaSLF4Jwarn0 testscopeNOP2.0.18 compileCPabsent/testexampleCPpresent independentreaderPASS0; negative expectedRPCHostWARNpreserved",
+  "boundary": "Gitb909/noPatch8d819 partialsourcecontract3cd835;accepted12migration/physical5secproposals awaituser;no finalSDKmain/Rust/contract/globalstrict"
+}

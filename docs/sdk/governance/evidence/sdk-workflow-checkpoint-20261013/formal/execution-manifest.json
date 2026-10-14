@@ -1,0 +1,739 @@
+{
+  "host": "/tmp/echo-sdk-governance-workflow-shape-host",
+  "host_sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2",
+  "workflow_source_sha256": "f5c72f5e132d0de1e2fd6b9a17fb892201026838cff72db4b5a802bed02e7701",
+  "sources": [
+    {
+      "path": "sdks/shared/testing/workflow_checkpoint_fixture.py",
+      "sha256": "2f3f9c9cdd5e5ece1e9f99e520d2d321ef01f396faffbbe7150a89167fe77cb4"
+    },
+    {
+      "path": "sdks/typescript/test/workflow-checkpoint-host.test.js",
+      "sha256": "0ee3de114be931d4c993f1a8bc7612fec661017eb55a1d65cbf54f1ed38c8965"
+    },
+    {
+      "path": "sdks/python/tests/test_workflow_checkpoint_host.py",
+      "sha256": "823ed4d54c43cfad181dd771d4badd432ded29cec994eea4b9da4f8ccc204663"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/WorkflowCheckpointHostTest.java",
+      "sha256": "b5a93a357d6d186b7873a1cc447dcafb42ed87bee96a56bf0719ba6837fba266"
+    },
+    {
+      "path": "docs/sdk/governance/workflow-evidence.md",
+      "sha256": "ec59e751ee863801c3f24ed6ce7a567ea4c068670f82855881ea7a8a973b1741"
+    }
+  ],
+  "runs": [
+    {
+      "language": "typescript",
+      "exit_code": 0,
+      "test_count": 1,
+      "skipped": 0,
+      "scenario_rows": 48,
+      "workflow_calls": 47,
+      "session_close_calls": 1,
+      "root": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-workflow-BipCbB",
+      "files": [
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-reject-parent.json",
+          "sha256": "4be71a2fe31bb535df0c094bded9ec78568bf1119e5a6065ca3bea73929da94a"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-closed-state.json",
+          "sha256": "d72939d1f4bc85b55120f42dfe83f979e3df40fb29144793b26a4900bff781b6"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/resolve.json",
+          "sha256": "3aa18844e141019e1cebe5b56f7bf1625b08b23707a5051d23be082ff606b408"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-shape-updates-parent.json",
+          "sha256": "4be71a2fe31bb535df0c094bded9ec78568bf1119e5a6065ca3bea73929da94a"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-build.json",
+          "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-load-consumed.json",
+          "sha256": "1a2c4b7bd9de3e4507cfe77af706809c87b1654c6bf0ac7a76ebc393d5f14d00"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-replacement-quota.json",
+          "sha256": "7fcd174230aa5958f0f06b46bfabf9e63fe6220eb64110d9d46c043dfee08e4e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-duplicate-exact.json",
+          "sha256": "4ee878de2e1e4a6e92f1654b559a13ab9896c38812d8157dec11a760f8e6c4c1"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-shape-updates-after.json",
+          "sha256": "13c75ce823904a1cf5a671174f94dc3bde433d78cc9536c84e1e72224cfd84fb"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-tag-first.json",
+          "sha256": "ca35307ea7a6a24725114ed13627ef235e6f88228fff55690d5c06fbaa0a9e62"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-branch-load.json",
+          "sha256": "13bb18cfba368d638b5b9343747c16173952e25d3bde1b4def48bfba496066ca"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-no-direct.json",
+          "sha256": "539a1f53c78483dadd6c7129b228a24099e163f6b87b8457e8541be5e6930c12"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-parent-finish.json",
+          "sha256": "f5b809078d016a234a1da009487d9c70120067ba82f949d4bc3d17379c198fbd"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-replacement-state.json",
+          "sha256": "5fd64db683b86806ba308ff179fa25275b7da59f1a9ad9702597d95ad468572f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/run.log",
+          "sha256": "aec0c85413063309542380ce64678f786d100d8c8ae9db70670e4f76c5b40a5d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-defer.json",
+          "sha256": "06cb8e497e4eb4db4c1dc500eaac6c7fff86a86770a6684e0cc1ef810775083a"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-branch-parent.json",
+          "sha256": "655de9ac160e3a0e544704f2ebdceb979e13cf9a7ba592738e0ff6ac872cb967"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/results.json",
+          "sha256": "0182d24e5d7f7d466b6b08df6b1b67b6942cb5c82bd642f6729d27adfde02ab4"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-load-rejected.json",
+          "sha256": "6c19d697c9df286c2795985ffebe6a9af2c106f746723b18d484a1ff221ca01e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-list-remaining.json",
+          "sha256": "dca915b04c2e8e71f5ad211a000c4261fc38fc7375cf79ec330ab5f55eb51ecf"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-tuple-resume.json",
+          "sha256": "6fc14722497f058fc7b6932012eeb063e03892dbe9b2e2b5409a9bf754cd3c2a"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-state-keys.json",
+          "sha256": "59fe0b417a627ca59bfa1e33ca54d42b15a7449863265c9280067e577819b734"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-closed-graph.json",
+          "sha256": "0d5cc701e077c4dca950fa44fac20ce39e78cbbe7e676d4d5ef7e1cadd318824"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-reject-duplicate.json",
+          "sha256": "cf68b14a5e510d348675ccfbe2472faea7f668f25334166f3d548fde5f07c603"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-shape-parent.json",
+          "sha256": "4be71a2fe31bb535df0c094bded9ec78568bf1119e5a6065ca3bea73929da94a"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-branch.json",
+          "sha256": "f2f74d59ae79211572111b70f451e03def32785d1ebf6ac1b950ce5fafc065d6"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-shape-parent-after.json",
+          "sha256": "9e760d828be1e6582caf5bd5913d1e902acb09d2c9eb34b47178b2f5e169cde7"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-duplicate-id.json",
+          "sha256": "bad18e0c7e3360b27c6a9930ed8071dfa909c4c904a4160b4a48c44fb52f2ebe"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-cross-owner.json",
+          "sha256": "0d5cc701e077c4dca950fa44fac20ce39e78cbbe7e676d4d5ef7e1cadd318824"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-restore-first.json",
+          "sha256": "96248585cfcda74e95fcbf144b8189406aec1dddbbc78f6ce9e9e1d3708f047f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-load-after-defer.json",
+          "sha256": "1a2c4b7bd9de3e4507cfe77af706809c87b1654c6bf0ac7a76ebc393d5f14d00"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-replacement-graph.json",
+          "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/scenario.json",
+          "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-branch-finish.json",
+          "sha256": "4477187609fcc3dbe0cbe27f8191247219bec24a7ebd472df9264d7d695a6353"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-resume-exact.json",
+          "sha256": "4ee878de2e1e4a6e92f1654b559a13ab9896c38812d8157dec11a760f8e6c4c1"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-list-by-graph.json",
+          "sha256": "e047d3024c070f77e57530c4f5d78a20c0f2299f0dd1eea588d4b4fbe39435a4"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-state-new.json",
+          "sha256": "152d5a28494e99875692a0f04f13cf6d47a5f3041898dcf0d92bba1bd4a09a4e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-load-first.json",
+          "sha256": "1a2c4b7bd9de3e4507cfe77af706809c87b1654c6bf0ac7a76ebc393d5f14d00"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-state-get.json",
+          "sha256": "d72939d1f4bc85b55120f42dfe83f979e3df40fb29144793b26a4900bff781b6"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-parent-after-branch.json",
+          "sha256": "e3f790fbb315e2cf6fb53a869bb5cc41a3c74ae75c6dc2ba64e44213502f72bd"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-state-set.json",
+          "sha256": "b586175fe019b4f9a03720e583bfc28527156faaa29e3d0839313ee4e80bf866"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-resume-finish.json",
+          "sha256": "bad18e0c7e3360b27c6a9930ed8071dfa909c4c904a4160b4a48c44fb52f2ebe"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-yes-direct.json",
+          "sha256": "0d5cc701e077c4dca950fa44fac20ce39e78cbbe7e676d4d5ef7e1cadd318824"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-state-snapshot.json",
+          "sha256": "0d1284d4b21051d8e49ed79d2808ea28ae7dcdb0d37132a04986a1120ca4ec9c"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-parent-updates.json",
+          "sha256": "080632492bfc50201d1114ef3127f690482ce8c3538386bb049721a794c14a6b"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-tuple-with-state.json",
+          "sha256": "a7dff5b7e36c8efed7d6ac356c45d80b88fe4cec523fac2af563c73a84e1e687"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-reject.json",
+          "sha256": "0cad40c17420d985685958e2077a116b90e5ed420e131f6ef868be706329dbe0"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-quota.json",
+          "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-state-cross-owner.json",
+          "sha256": "d72939d1f4bc85b55120f42dfe83f979e3df40fb29144793b26a4900bff781b6"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-load-tagged.json",
+          "sha256": "1a2c4b7bd9de3e4507cfe77af706809c87b1654c6bf0ac7a76ebc393d5f14d00"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/typescript/call-first.json",
+          "sha256": "4be71a2fe31bb535df0c094bded9ec78568bf1119e5a6065ca3bea73929da94a"
+        }
+      ]
+    },
+    {
+      "language": "python",
+      "exit_code": 0,
+      "test_count": 1,
+      "skipped": 0,
+      "scenario_rows": 48,
+      "workflow_calls": 47,
+      "session_close_calls": 1,
+      "root": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-mtpxqt6u",
+      "files": [
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-reject-parent.json",
+          "sha256": "789d889232eb733696dee9eeeb4d17b2343e0557e52c729e334287944fbc2675"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-closed-state.json",
+          "sha256": "d8ff937d4d98a569d53699225887c94a267fe36d2b4dfd2c0a559103b78cfa09"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/resolve.json",
+          "sha256": "3e14531937b624a7877cab4aa965a5ae42918c04f3c973328ae53ead4265739e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-shape-updates-parent.json",
+          "sha256": "789d889232eb733696dee9eeeb4d17b2343e0557e52c729e334287944fbc2675"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-build.json",
+          "sha256": "6d09c269c4c346b92546e0db124ce6cc5689066856c172637f96107f13fe7db0"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-load-consumed.json",
+          "sha256": "6159a2cd0f26befcea3e748dbd2e5c5ded3491a66ea41c5ccf8f53eb869879d5"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-replacement-quota.json",
+          "sha256": "75978eab1ce27eb1874e722b9585361bf3995b9620f55e9d616348bd4682d86b"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-duplicate-exact.json",
+          "sha256": "259fadca20bbe0b71ef54ec5195664c8c68b2894fc8fa68806aa67bf965d6b6b"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-shape-updates-after.json",
+          "sha256": "13e77868cb80bbe5157dc86acb5b547765ee5bbbb47948479b11860049ff4dc3"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-tag-first.json",
+          "sha256": "c17078deee35bb880270f60e5f686bac84d026ec76c9306f2b8609f1f58726c7"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-branch-load.json",
+          "sha256": "fa4d7b3c2c4fc9d20eb348202f5a8cef7da4d36890f690f9733e80fade60ea3a"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-no-direct.json",
+          "sha256": "2c40bad5a46279e450699fd7d32e46b0904042def047f7b00766c20b1f38a33e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-parent-finish.json",
+          "sha256": "120ae4e45cdf5e6641e52ab6cbdd19e1aff578d60f4d6510aa434b9057a0242e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-replacement-state.json",
+          "sha256": "90c5dc73f326b93932f608392f7e248487042fc525e80fa592339e77f06d2c03"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/run.log",
+          "sha256": "9cdf0eee98618dbc47a4c124bfa759407a9d48b49252d072cce22f483ec0ce72"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-defer.json",
+          "sha256": "7caf162eec2f69c97d63dd5cf9e4336491501bac34b25b320c1c990444749458"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-branch-parent.json",
+          "sha256": "1509ecf8b645d60b79fe4aa4de5859279809b753d5e7d404135b127ae9ecfb00"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/results.json",
+          "sha256": "62bbf099478e865a127fbc3f3ec5ed28ea8b045f909aeda62ec8a003109a3ceb"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-load-rejected.json",
+          "sha256": "c0b7ac470a4421612cfee006c29360a69cccb5f86b8b2c992b8a9e6214484e12"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-list-remaining.json",
+          "sha256": "c609eea8916470c32a50471df0078f8e222d0b3dc3bef2609b7f6b200b4a7c0d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-tuple-resume.json",
+          "sha256": "dd3a3cf717de4dc2f01632378dfd08d266e69082d48e55b38ec851dea2c9a1f6"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-state-keys.json",
+          "sha256": "e192cfb91270f1c38ad628709cfe486d43b4cb53d8bebf7d4f3a7d690bc12b6d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-closed-graph.json",
+          "sha256": "4ffcdaa80ffec0a163effc5ab03e830f8b9f23e937b8f14e41757d6f23ed7ed2"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-reject-duplicate.json",
+          "sha256": "889b27b8d23c257f62e7172d9b1c1faf15bd8ca7aca0ef7e6ab099d1e1425e59"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-shape-parent.json",
+          "sha256": "789d889232eb733696dee9eeeb4d17b2343e0557e52c729e334287944fbc2675"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-branch.json",
+          "sha256": "342362900c10b09151520ffd4a99bd54db443714b48a20f76507435396126009"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-shape-parent-after.json",
+          "sha256": "dc7194f6ce9bea3b066f44518a73d037bb42d657e87fc0e18f43d0af1a93b28f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-duplicate-id.json",
+          "sha256": "812f6f5767db755539e977b4f8fab8cc7d5a458f3ff8172839b1c157c547026d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-cross-owner.json",
+          "sha256": "4ffcdaa80ffec0a163effc5ab03e830f8b9f23e937b8f14e41757d6f23ed7ed2"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-restore-first.json",
+          "sha256": "0c6f6c0b4ab04f44ca1689e2a7e8c3c49fc8288b4ffdcc047c0e035414410643"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-load-after-defer.json",
+          "sha256": "6159a2cd0f26befcea3e748dbd2e5c5ded3491a66ea41c5ccf8f53eb869879d5"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-replacement-graph.json",
+          "sha256": "6d09c269c4c346b92546e0db124ce6cc5689066856c172637f96107f13fe7db0"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/scenario.json",
+          "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-branch-finish.json",
+          "sha256": "5d90d6dd44c5e895c926561f85a340b9dd4ec19ceae8da64246ec4a3369d8009"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-resume-exact.json",
+          "sha256": "259fadca20bbe0b71ef54ec5195664c8c68b2894fc8fa68806aa67bf965d6b6b"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-list-by-graph.json",
+          "sha256": "53684d2e9e31772673282451b75ac56edf021f70735e23ad07401b1d168a34e9"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-state-new.json",
+          "sha256": "c2730eb1eebb719b6997a1a26164fda8a25a123a09191f3299d9e16e381e7b4c"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-load-first.json",
+          "sha256": "6159a2cd0f26befcea3e748dbd2e5c5ded3491a66ea41c5ccf8f53eb869879d5"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-state-get.json",
+          "sha256": "d8ff937d4d98a569d53699225887c94a267fe36d2b4dfd2c0a559103b78cfa09"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-parent-after-branch.json",
+          "sha256": "38a7ee6a60e51a86460561828edd147b1ee6acc12dba19a1d6b25bfac428cb41"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-state-set.json",
+          "sha256": "bfb7a0382f3932bacced855299526be27e2b8f9a7e8df6ec2edef57c9344eeb5"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-resume-finish.json",
+          "sha256": "812f6f5767db755539e977b4f8fab8cc7d5a458f3ff8172839b1c157c547026d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-yes-direct.json",
+          "sha256": "4ffcdaa80ffec0a163effc5ab03e830f8b9f23e937b8f14e41757d6f23ed7ed2"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-state-snapshot.json",
+          "sha256": "d262fab72f1d0a2ce21d596be9f47d4d682799b450a4a2f08649dd13c296ca67"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-parent-updates.json",
+          "sha256": "8588505c8c0533ffcb66f5df7b52359dd140539237a936c77cb723877e875649"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-tuple-with-state.json",
+          "sha256": "db073851d2238e0497bd9f44d28f14e965b8df7526dd1d6120d7b4801301e0ad"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-reject.json",
+          "sha256": "4af9aaa863afbfe32bea8b5c965e2820987f9f9b3d7d8e0f7055b472fd874299"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-quota.json",
+          "sha256": "6d09c269c4c346b92546e0db124ce6cc5689066856c172637f96107f13fe7db0"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-state-cross-owner.json",
+          "sha256": "d8ff937d4d98a569d53699225887c94a267fe36d2b4dfd2c0a559103b78cfa09"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-load-tagged.json",
+          "sha256": "6159a2cd0f26befcea3e748dbd2e5c5ded3491a66ea41c5ccf8f53eb869879d5"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/python/call-first.json",
+          "sha256": "789d889232eb733696dee9eeeb4d17b2343e0557e52c729e334287944fbc2675"
+        }
+      ]
+    },
+    {
+      "language": "java",
+      "exit_code": 0,
+      "test_count": 1,
+      "skipped": 0,
+      "scenario_rows": 48,
+      "workflow_calls": 47,
+      "session_close_calls": 1,
+      "root": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-workflow-17559209461585700420",
+      "files": [
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-reject-parent.json",
+          "sha256": "549401966c4128c426e98a011796c28cdc26791dde4bff816fb63d631a5fc798"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-closed-state.json",
+          "sha256": "bc2587d81d12c4c0b674e409306439d6b9a20415d225560765b82ad381a5489b"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/resolve.json",
+          "sha256": "02355bf4fa3cc6a5a73c66172d70a9a04dd51134238ac376be3885415e1eff3e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-shape-updates-parent.json",
+          "sha256": "549401966c4128c426e98a011796c28cdc26791dde4bff816fb63d631a5fc798"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-build.json",
+          "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-load-consumed.json",
+          "sha256": "9117e01c576f0544b4ff4d0fa02151befc44cdb9fbb3cc08c27b7aa89d4e9b2d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-replacement-quota.json",
+          "sha256": "7fcd174230aa5958f0f06b46bfabf9e63fe6220eb64110d9d46c043dfee08e4e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-duplicate-exact.json",
+          "sha256": "00aebb10f774b017048a6860be8b3f111482a130cfb29a73966275da84d34078"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-shape-updates-after.json",
+          "sha256": "f182053a5cce4f449f4ebc704a2d4ccc1026fb93a091400e4632718bb12c39a6"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-tag-first.json",
+          "sha256": "2d5dad770a8e199ecdc731e840aaa6ac17eac8554ce42574ccf83ec718dd70fd"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-branch-load.json",
+          "sha256": "34097034dd9f3db5a71da49c9d8673a3d07a526cee88e0041ec5969db5ee58a4"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-no-direct.json",
+          "sha256": "d1a7e228514dbae0ea6c34fbf5b2b0dba4ddb3152d0f5c9de40957d5cf419d58"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-parent-finish.json",
+          "sha256": "8df0de261394397c535827897dfb22df0c2df4e2fc9f058890cc5d932ae2f9f1"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-replacement-state.json",
+          "sha256": "5fd64db683b86806ba308ff179fa25275b7da59f1a9ad9702597d95ad468572f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/run.log",
+          "sha256": "a9fb484f48e7dcaafe3aee5b19555c27124cc67d5cb86162e6e10e573d6725d4"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-defer.json",
+          "sha256": "e53b3bfad44b88e77e58f838ad896becb5c5dc4f8ae25a42cf4d022a6c3dfd66"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-branch-parent.json",
+          "sha256": "53ca31f2881a3a4f89b149f55ade2e3c9f7a621881eeb0f231fa6ae62e02fdba"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/results.json",
+          "sha256": "646824768cd48208d99c2e5ab02542c3449b855345ba436b12ad7f6ced68be54"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-load-rejected.json",
+          "sha256": "adf126aa11e8da9638edfcb8792adc73c3a356ae6c57fea845244fba5cda0b64"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-list-remaining.json",
+          "sha256": "cc98c8a7577ceee28585b59c96b600997f3af0f63ea757cf24aaf2fb5e4ab99e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-tuple-resume.json",
+          "sha256": "a668ddc5a3d22ded019d7db275ec8a62346a5b96c101a36eaf0d36979b38d08f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-state-keys.json",
+          "sha256": "70379b540e274a51cc8efbad9d207813c72ae48158e3f7e1fd16f8e9218eb56d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-closed-graph.json",
+          "sha256": "434a020731d5d13d2ea054a731d7394877179fb0c8819e47603d74b91e95d1db"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-reject-duplicate.json",
+          "sha256": "158337fce874a6a68c64faa71c8a0b25de21835770881537d23a6d404bc86377"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-shape-parent.json",
+          "sha256": "549401966c4128c426e98a011796c28cdc26791dde4bff816fb63d631a5fc798"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-branch.json",
+          "sha256": "d68354b16dd3169394dfca18cbba5f535ce052f776e0763a363ac07d7276ffc2"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-shape-parent-after.json",
+          "sha256": "a48edab9713def29c42ccf6a0682aadfbad2e766640c8656eb29c228ec3c8a22"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-duplicate-id.json",
+          "sha256": "1087f3073abaea265dce170c8139a068d9e9d78d984123d2194a9e4852140934"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-cross-owner.json",
+          "sha256": "434a020731d5d13d2ea054a731d7394877179fb0c8819e47603d74b91e95d1db"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-restore-first.json",
+          "sha256": "945077d89f175cdd0cbce34e9cd301b6b6fea4349c651762476274db3edfd167"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-load-after-defer.json",
+          "sha256": "9117e01c576f0544b4ff4d0fa02151befc44cdb9fbb3cc08c27b7aa89d4e9b2d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-replacement-graph.json",
+          "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/scenario.json",
+          "sha256": "a47f1a7ff5e46485abef77c50227360d287c152a0964673dc008589d1d7a3a7f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-branch-finish.json",
+          "sha256": "b30daa3247092f248a117b343a5c9ad7a8d399d6a325a8f38d805a914d66d8d8"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-resume-exact.json",
+          "sha256": "00aebb10f774b017048a6860be8b3f111482a130cfb29a73966275da84d34078"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-list-by-graph.json",
+          "sha256": "93460e69b43b3bcc6685a8737b941fff9a4ce9749864c6d26982ca2353f0795f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-state-new.json",
+          "sha256": "152d5a28494e99875692a0f04f13cf6d47a5f3041898dcf0d92bba1bd4a09a4e"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-load-first.json",
+          "sha256": "9117e01c576f0544b4ff4d0fa02151befc44cdb9fbb3cc08c27b7aa89d4e9b2d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-state-get.json",
+          "sha256": "bc2587d81d12c4c0b674e409306439d6b9a20415d225560765b82ad381a5489b"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-parent-after-branch.json",
+          "sha256": "9aa276ad89885c497043ca5c27167175b22a1535ac03a4c7aa5a5ac566496b08"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-state-set.json",
+          "sha256": "c9c9853b317807a6ed0c1aaa00fde5645e408369c1c6d96dbdd49a383bccaed2"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-resume-finish.json",
+          "sha256": "1087f3073abaea265dce170c8139a068d9e9d78d984123d2194a9e4852140934"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-yes-direct.json",
+          "sha256": "434a020731d5d13d2ea054a731d7394877179fb0c8819e47603d74b91e95d1db"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-state-snapshot.json",
+          "sha256": "b06c166bb6e7970c23a8976c06fd57d658a53f89237a161a77fcef58c60d3667"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-parent-updates.json",
+          "sha256": "ac763fec363927238e6951043e4e993739e4e6d8c27f782ef8fcac4c23515d23"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-tuple-with-state.json",
+          "sha256": "c64616bd59c969946f6964f08ffb20be47f723cada30b779efa2f5d9c036447f"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-reject.json",
+          "sha256": "4be7d53cec2904d74123b3df651552bffb26d705a0ca077e533341964f92ab87"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-quota.json",
+          "sha256": "6d05a31f74bdf8ba39cb1259debe01921099d38972176833f7262d64cae20833"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-state-cross-owner.json",
+          "sha256": "bc2587d81d12c4c0b674e409306439d6b9a20415d225560765b82ad381a5489b"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-load-tagged.json",
+          "sha256": "9117e01c576f0544b4ff4d0fa02151befc44cdb9fbb3cc08c27b7aa89d4e9b2d"
+        },
+        {
+          "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/java/call-first.json",
+          "sha256": "549401966c4128c426e98a011796c28cdc26791dde4bff816fb63d631a5fc798"
+        }
+      ]
+    }
+  ],
+  "java_xml": {
+    "path": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml",
+    "sha256": "d0324caa20142662293deb3f4d3d49f3baac181d0f447f1fa6602a3ea49ea21a",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "contract_scope": "17 existing accepted operations; 48 scenario rows, 47 Workflow calls plus 1 Session close, 11 expected RPC errors. No new API/schema/accepted identity.",
+  "gates": "formal focused native SDK tests only; final full published-pin/main gates pending; no Cargo in this lane",
+  "historical_originals": "archive-manifest.json original hashes unchanged; formal captures are a new epoch not replacing original red/green receipts",
+  "comparison": {
+    "all_three_equal": true,
+    "normalization": "Stable occurrence UUID/time labels preserve equality; only unordered SharedState.keys sorted; optional absent error details=null. Ordered path/tags/context lists and numeric/data/detail values preserved.",
+    "normalized_sha256": {
+      "typescript": "c56868829603d87170255e40bcd3a71a44555207d3bbf84c8f332cb709ca0ab7",
+      "python": "c56868829603d87170255e40bcd3a71a44555207d3bbf84c8f332cb709ca0ab7",
+      "java": "c56868829603d87170255e40bcd3a71a44555207d3bbf84c8f332cb709ca0ab7"
+    }
+  },
+  "post_verification_java_guard_delta": {
+    "source": "sdks/java/src/test/java/com/echoagent/sdk/WorkflowCheckpointHostTest.java",
+    "before_verified48_sha256": "b5a93a357d6d186b7873a1cc447dcafb42ed87bee96a56bf0719ba6837fba266",
+    "after_guard_sha256": "ca55760361fc12cdab5769a3c1bae6697cc0dd8fda9f183c3e641e60a90457ad",
+    "behavior": "REQUIRE_HOST=1 rejects absent and blank Host instead of skipping. Normal configured-Host call flow unchanged; historical 48-case source epoch preserved, no whole Maven current-source claim.",
+    "validation": "isolated public test method javac invocation: both absent/blank fail with assertion, no shared target/Maven/Host; later full Java gate must bind new source",
+    "proof": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal-required-host-guard/java-isolated/proof.json"
+  },
+  "required_guard_ts_py_validation": [
+    {
+      "language": "typescript",
+      "mode": "absent",
+      "exit_code": 1,
+      "assertion_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal-required-host-guard/typescript-absent.log",
+      "log_sha256": "cdce309da5b3aeebccc27f90214379b7f297ce7811e0613805be224e6dc1da71"
+    },
+    {
+      "language": "typescript",
+      "mode": "blank",
+      "exit_code": 1,
+      "assertion_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal-required-host-guard/typescript-blank.log",
+      "log_sha256": "0a644b3afdd355b89a491e38f0371bc037dde7f20f3c8818a5050b99cdf6d670"
+    },
+    {
+      "language": "python",
+      "mode": "absent",
+      "exit_code": 2,
+      "assertion_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal-required-host-guard/python-absent.log",
+      "log_sha256": "f7f2464479da7f37af6dfc0fd0157f06e973e1abfa2214e9a4da052414df3753"
+    },
+    {
+      "language": "python",
+      "mode": "blank",
+      "exit_code": 2,
+      "assertion_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-workflow-checkpoint-20261013/formal-required-host-guard/python-blank.log",
+      "log_sha256": "55cb7b838d2d60b27fcc29c1e4fc24c61b557aab65dc46b3821127a6841a1336"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+TAP version 13
+# Subtest: Sandbox stream real process completion, pending cancel and repeated close
+not ok 1 - Sandbox stream real process completion, pending cancel and repeated close
+  ---
+  duration_ms: 5595.744875
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/tool-value-effect-host.test.js:55:1'
+  failureType: 'testCodeFailure'
+  error: 'argument 0 is not a lossless wire value: wire value exceeds limit: typed wire value has no implicit JSON projection'
+  code: 'invalid_value'
+  name: 'EchoAgentError'
+  stack: |-
+    EchoAgentError.fromUnknown (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/dist/errors.js:29:16)
+    EchoAgentClient.request (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/dist/client.js:480:34)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async EchoAgentClient.family (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/dist/client.js:607:23)
+    async TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/tool-value-effect-host.test.js:67:281)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5799.921208

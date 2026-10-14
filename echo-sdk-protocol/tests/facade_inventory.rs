@@ -200,6 +200,9 @@ fn compatibility_document(manifest: &ParityManifest) -> serde_json::Value {
     let obligations = manifest
         .entries
         .iter()
+        // Re-export aliases are telemetry: the persisted acceptance authority
+        // contains defining identities, not a second set of alias obligations.
+        .filter(|entry| entry.sdk_scope == SdkScope::ExternalContract && entry.canonical)
         .map(|entry| &entry.route)
         .collect::<Vec<_>>();
     let catalog = echo_sdk_protocol::facade::build_facade_operation_catalog(
@@ -2624,5 +2627,400 @@ fn canonical_intrinsic_routes_do_not_use_generic_fallback_reasons() -> TestResul
             entry.route.route
         );
     }
+    Ok(())
+}
+
+#[test]
+fn new_upstream_managed_and_team_seams_have_explicit_sdk_scope() {
+    use echo_sdk_protocol::facade::governance_source_disposition;
+    for source in [
+        "echo_core::memory::conversation::ConversationStore::import_managed_messages",
+        "echo_core::memory::conversation::ConversationStore::get_latest_managed_import_with_context",
+        "echo_core::memory::conversation::ConversationStore::update_managed_conversation",
+        "echo_core::memory::conversation::ManagedConversationMetadataUpdate::prepare",
+    ] {
+        assert_eq!(
+            governance_source_disposition(source),
+            Some("deferred-managed-import-and-metadata-without-host-caller")
+        );
+    }
+    for source in [
+        "echo_agent::agent::subagent::team::TeamRuntimeHandle::snapshot",
+        "echo_agent::agent::subagent::team::TeamDispatchController::dispatch",
+        "echo_agent::agent::subagent::team::execute_team_on_runtime_service",
+    ] {
+        assert_eq!(
+            governance_source_disposition(source),
+            Some("process-local-team-runtime-and-dispatch-authority")
+        );
+    }
+    for production_caller in [
+        "echo_core::memory::conversation::ConversationStore::apply_transcript_projection_with_context",
+        "echo_core::memory::conversation::ConversationStore::delete_managed_conversation_with_context",
+        "echo_agent::state::RuntimeStateStore::compare_and_save_checkpoint_with_context",
+    ] {
+        assert!(
+            governance_source_disposition(production_caller).is_none(),
+            "existing managed caller bridge must remain accepted"
+        );
+    }
+}
+
+#[test]
+fn runtime_capability_getter_is_host_preflight_without_new_remote_api() {
+    assert_eq!(
+        echo_sdk_protocol::facade::governance_source_disposition(
+            "echo_orchestration::tasks::revisioned::TaskRevisionService::supports_runtime_execution"
+        ),
+        Some("process-local-task-runtime-capability-preflight")
+    );
+    assert!(
+        echo_sdk_protocol::facade::governance_source_disposition(
+            "echo_orchestration::tasks::revisioned::RevisionedTaskStore::supports_runtime_execution"
+        )
+        .is_none(),
+        "the accepted registered-store bridge projects its capability descriptor"
+    );
+}
+
+fn accepted_seed() -> TestResult<AcceptedExternalContract> {
+    Ok(serde_json::from_str(&read(
+        "contracts/sdk/accepted-external-contract.json",
+    )?)?)
+}
+
+fn source_key(
+    entry: &echo_sdk_protocol::inventory::ManifestEntry,
+) -> (String, echo_sdk_protocol::inventory::ItemKind) {
+    (
+        entry
+            .source_paths
+            .iter()
+            .next()
+            .cloned()
+            .unwrap_or_else(|| entry.path.clone()),
+        entry.kind,
+    )
+}
+
+#[test]
+fn acceptance_scope_new_routable_public_identity_never_implies_acceptance() -> TestResult {
+    let seed = accepted_seed()?;
+    let mut current = manifest()?;
+    let mut new = seed
+        .entries
+        .iter()
+        .find(|entry| entry.route.surface == "invoke")
+        .cloned()
+        .ok_or("accepted source operation missing")?;
+    new.path = "echo_agent::NewRuntimeCapability::execute".to_string();
+    new.source_paths = BTreeSet::from(["echo_core::NewRuntimeCapability::execute".to_string()]);
+    new.route.route = "source:echo_core::NewRuntimeCapability::execute".to_string();
+    new.route.operation = Some("echo_core::NewRuntimeCapability::execute".to_string());
+    let new_key = source_key(&new);
+    current.entries.push(new);
+    echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &BTreeSet::new(),
+    )?;
+    assert_eq!(
+        current
+            .entries
+            .iter()
+            .find(|entry| source_key(entry) == new_key)
+            .ok_or("new identity disappeared from telemetry")?
+            .sdk_scope,
+        SdkScope::Deferred
+    );
+    assert!(
+        !echo_sdk_protocol::inventory::accepted_external_contract_document(&current)
+            .entries
+            .iter()
+            .any(|entry| source_key(entry) == new_key)
+    );
+    Ok(())
+}
+
+#[test]
+fn acceptance_scope_exact_accepted_source_and_kind_survive_alias_and_signature_changes()
+-> TestResult {
+    let seed = accepted_seed()?;
+    let mut current = manifest()?;
+    let key = source_key(seed.entries.first().ok_or("empty accepted seed")?);
+    let entry = current
+        .entries
+        .iter_mut()
+        .find(|entry| entry.canonical && source_key(entry) == key)
+        .ok_or("accepted identity missing")?;
+    entry.path.push_str("_new_facade_alias");
+    entry.signatures = vec![echo_sdk_protocol::inventory::ManifestSignature {
+        digest: "sha256:changed".to_string(),
+    }];
+    entry.route.signatures = entry.signatures.clone();
+    echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &BTreeSet::new(),
+    )?;
+    let accepted = echo_sdk_protocol::inventory::accepted_external_contract_document(&current);
+    let entry = accepted
+        .entries
+        .iter()
+        .find(|entry| source_key(entry) == key)
+        .ok_or("silently retired accepted signature")?;
+    assert!(entry.path.ends_with("_new_facade_alias"));
+    assert_eq!(
+        entry
+            .signatures
+            .first()
+            .map(|signature| signature.digest.as_str()),
+        Some("sha256:changed")
+    );
+    assert_ne!(accepted, seed);
+    Ok(())
+}
+
+#[test]
+fn acceptance_scope_disappearing_accepted_identity_fails_atomically_without_explicit_retirement()
+-> TestResult {
+    let seed = accepted_seed()?;
+    let mut current = manifest()?;
+    let key = source_key(seed.entries.first().ok_or("empty accepted seed")?);
+    current.entries.retain(|entry| source_key(entry) != key);
+    let before = current.clone();
+    let error = echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &BTreeSet::new(),
+    )
+    .err()
+    .ok_or("silent accepted retirement")?;
+    assert!(error.contains("accepted source disappeared"));
+    assert_eq!(current, before);
+    echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &BTreeSet::from([key.clone()]),
+    )?;
+    assert!(
+        !echo_sdk_protocol::inventory::accepted_external_contract_document(&current)
+            .entries
+            .iter()
+            .any(|entry| source_key(entry) == key)
+    );
+    Ok(())
+}
+
+#[test]
+fn acceptance_scope_new_task_result_field_requires_exact_accepted_delta_without_accepting_its_siblings()
+-> TestResult {
+    let seed = accepted_seed()?;
+    let mut current = manifest()?;
+    let field = seed
+        .entries
+        .iter()
+        .find(|entry| entry.path.ends_with("TaskExecution::status"))
+        .cloned()
+        .ok_or("accepted Task execution field missing")?;
+    let mut keys = Vec::new();
+    for name in ["result", "unreviewed_future_field"] {
+        let mut new = field.clone();
+        new.path = format!("echo_agent::tasks::TaskExecution::{name}");
+        new.source_paths = BTreeSet::from([format!(
+            "echo_orchestration::tasks::runtime::TaskExecution::{name}"
+        )]);
+        keys.push(source_key(&new));
+        current.entries.push(new);
+    }
+    let accepted_key = keys.first().cloned().ok_or("result field missing")?;
+    echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::from([accepted_key.clone()]),
+        &BTreeSet::new(),
+    )?;
+    for key in keys {
+        let entry = current
+            .entries
+            .iter()
+            .find(|entry| source_key(entry) == key)
+            .ok_or("new field missing")?;
+        assert_eq!(
+            entry.sdk_scope,
+            if key == accepted_key {
+                SdkScope::ExternalContract
+            } else {
+                SdkScope::Deferred
+            }
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn acceptance_scope_recovered_turn_reservation_is_host_authority_without_new_language_contract()
+-> TestResult {
+    let seed = accepted_seed()?;
+    let mut current = manifest()?;
+    let mut new = seed
+        .entries
+        .iter()
+        .find(|entry| entry.kind == echo_sdk_protocol::inventory::ItemKind::Method)
+        .cloned()
+        .ok_or("method fixture missing")?;
+    new.path = "echo_agent::acp::AcpSession::reserve_recovered_turn_ids".to_string();
+    new.source_paths = BTreeSet::from([new.path.clone()]);
+    let key = source_key(&new);
+    current.entries.push(new);
+    echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &BTreeSet::new(),
+    )?;
+    assert_eq!(
+        current
+            .entries
+            .iter()
+            .find(|entry| source_key(entry) == key)
+            .ok_or("recovery method missing")?
+            .sdk_scope,
+        SdkScope::HostOrRustOnly
+    );
+    assert!(
+        echo_sdk_protocol::inventory::apply_accepted_source_scope(
+            &mut current,
+            &seed,
+            &BTreeSet::from([key]),
+            &BTreeSet::new()
+        )
+        .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn acceptance_scope_current_seed_reproduces_exact_committed_membership() -> TestResult {
+    let seed = accepted_seed()?;
+    let mut current = manifest()?;
+    let empty = BTreeSet::new();
+    echo_sdk_protocol::inventory::apply_accepted_source_scope(&mut current, &seed, &empty, &empty)?;
+    assert_eq!(
+        echo_sdk_protocol::inventory::accepted_external_contract_document(&current),
+        seed
+    );
+    Ok(())
+}
+
+#[test]
+fn acceptance_scope_invalid_deltas_fail_atomically() -> TestResult {
+    use echo_sdk_protocol::inventory::{ItemKind, apply_accepted_source_scope};
+    let seed = accepted_seed()?;
+    let current = manifest()?;
+    let key = source_key(seed.entries.first().ok_or("accepted seed empty")?);
+    let empty = BTreeSet::new();
+    for (additions, retirements) in [
+        (BTreeSet::from([key.clone()]), empty.clone()),
+        (BTreeSet::from([key.clone()]), BTreeSet::from([key.clone()])),
+        (
+            BTreeSet::from([(
+                "echo_core::UnknownCapability::invoke".to_string(),
+                ItemKind::Method,
+            )]),
+            empty.clone(),
+        ),
+        (
+            empty.clone(),
+            BTreeSet::from([(
+                "echo_core::UnknownCapability::invoke".to_string(),
+                ItemKind::Method,
+            )]),
+        ),
+    ] {
+        let mut candidate = current.clone();
+        assert!(
+            apply_accepted_source_scope(&mut candidate, &seed, &additions, &retirements).is_err()
+        );
+        assert_eq!(candidate, current);
+    }
+    let mut changed_kind = current.clone();
+    for entry in changed_kind
+        .entries
+        .iter_mut()
+        .filter(|entry| source_key(entry) == key)
+    {
+        entry.kind = if entry.kind == ItemKind::Method {
+            ItemKind::Function
+        } else {
+            ItemKind::Method
+        };
+    }
+    let before = changed_kind.clone();
+    assert!(apply_accepted_source_scope(&mut changed_kind, &seed, &empty, &empty).is_err());
+    assert_eq!(changed_kind, before);
+    Ok(())
+}
+
+#[test]
+fn acceptance_scope_reports_all_missing_sources_before_mutation_and_excludes_retired() -> TestResult
+{
+    let seed = accepted_seed()?;
+    let keys: Vec<_> = seed.entries.iter().take(3).map(source_key).collect();
+    assert_eq!(
+        keys.len(),
+        3,
+        "the accepted seed needs three distinct source identities"
+    );
+    let mut current = manifest()?;
+    current
+        .entries
+        .retain(|entry| !keys.contains(&source_key(entry)));
+    let before = current.clone();
+    let error = echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &BTreeSet::new(),
+    )
+    .err()
+    .ok_or("multiple disappeared sources were silently retired")?;
+    for (identity, kind) in &keys {
+        assert!(
+            error.contains(&format!("{identity} ({kind:?})")),
+            "missing closure omitted {identity}: {error}"
+        );
+    }
+    assert_eq!(
+        current, before,
+        "diagnostic collection must not alter the manifest"
+    );
+    let retired = keys.first().ok_or("first source is absent")?.clone();
+    let error = echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &BTreeSet::from([retired.clone()]),
+    )
+    .err()
+    .ok_or("partial retirement hid the remaining missing sources")?;
+    assert!(
+        !error.contains(&format!("{} ({:?})", retired.0, retired.1)),
+        "an explicitly retired source must not remain in the missing report"
+    );
+    for (identity, kind) in keys.iter().skip(1) {
+        assert!(error.contains(&format!("{identity} ({kind:?})")));
+    }
+    assert_eq!(current, before);
+    echo_sdk_protocol::inventory::apply_accepted_source_scope(
+        &mut current,
+        &seed,
+        &BTreeSet::new(),
+        &keys.into_iter().collect(),
+    )?;
     Ok(())
 }

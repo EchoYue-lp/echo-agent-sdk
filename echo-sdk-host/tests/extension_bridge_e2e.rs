@@ -256,6 +256,8 @@ type SharedVec<T> = Arc<Mutex<Vec<T>>>;
 struct HostProcess {
     child: tokio::process::Child,
     stderr: SharedVec<u8>,
+    stdout: SharedVec<u8>,
+    stdin: SharedVec<u8>,
 }
 
 async fn spawn_host(config: &Path) -> Result<HostProcess, Box<dyn std::error::Error>> {
@@ -290,21 +292,111 @@ async fn spawn_host(config: &Path) -> Result<HostProcess, Box<dyn std::error::Er
             }
         }
     });
-    Ok(HostProcess { child, stderr })
+    Ok(HostProcess {
+        child,
+        stderr,
+        stdout: Arc::new(Mutex::new(Vec::new())),
+        stdin: Arc::new(Mutex::new(Vec::new())),
+    })
+}
+
+/// Record exact stdout bytes while preserving the same poll and transport
+/// lifecycle. Failed reverse-call decoding can therefore be reproduced from
+/// the real frame, instead of being guessed from a timeout.
+struct RecordedHostStdout {
+    source: tokio::process::ChildStdout,
+    bytes: SharedVec<u8>,
+}
+
+impl tokio::io::AsyncRead for RecordedHostStdout {
+    fn poll_read(
+        mut self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+        buffer: &mut tokio::io::ReadBuf<'_>,
+    ) -> std::task::Poll<std::io::Result<()>> {
+        let previous = buffer.filled().len();
+        let result =
+            tokio::io::AsyncRead::poll_read(std::pin::Pin::new(&mut self.source), cx, buffer);
+        if matches!(result, std::task::Poll::Ready(Ok(()))) {
+            let mut bytes = self.bytes.lock().unwrap_or_else(|error| error.into_inner());
+            if bytes.len() < 2_097_152 {
+                bytes.extend_from_slice(buffer.filled().get(previous..).unwrap_or_default());
+            }
+        }
+        result
+    }
+}
+
+struct RecordedHostStdin {
+    destination: tokio::process::ChildStdin,
+    bytes: SharedVec<u8>,
+}
+impl tokio::io::AsyncWrite for RecordedHostStdin {
+    fn poll_write(
+        mut self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+        buffer: &[u8],
+    ) -> std::task::Poll<std::io::Result<usize>> {
+        let result = tokio::io::AsyncWrite::poll_write(
+            std::pin::Pin::new(&mut self.destination),
+            cx,
+            buffer,
+        );
+        if let std::task::Poll::Ready(Ok(written)) = result {
+            let mut bytes = self.bytes.lock().unwrap_or_else(|error| error.into_inner());
+            if bytes.len() < 2_097_152 {
+                bytes.extend_from_slice(buffer.get(..written).unwrap_or_default());
+            }
+        }
+        result
+    }
+    fn poll_flush(
+        mut self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<std::io::Result<()>> {
+        tokio::io::AsyncWrite::poll_flush(std::pin::Pin::new(&mut self.destination), cx)
+    }
+    fn poll_shutdown(
+        mut self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<std::io::Result<()>> {
+        tokio::io::AsyncWrite::poll_shutdown(std::pin::Pin::new(&mut self.destination), cx)
+    }
 }
 
 fn host_transport(
     host: &mut HostProcess,
 ) -> ByteStreams<
-    tokio_util::compat::Compat<tokio::process::ChildStdin>,
-    tokio_util::compat::Compat<tokio::process::ChildStdout>,
+    tokio_util::compat::Compat<RecordedHostStdin>,
+    tokio_util::compat::Compat<RecordedHostStdout>,
 > {
     let stdin = host.child.stdin.take().expect("host stdin piped");
     let stdout = host.child.stdout.take().expect("host stdout piped");
     ByteStreams::new(
-        tokio_util::compat::TokioAsyncWriteCompatExt::compat_write(stdin),
-        tokio_util::compat::TokioAsyncReadCompatExt::compat(stdout),
+        tokio_util::compat::TokioAsyncWriteCompatExt::compat_write(RecordedHostStdin {
+            destination: stdin,
+            bytes: host.stdin.clone(),
+        }),
+        tokio_util::compat::TokioAsyncReadCompatExt::compat(RecordedHostStdout {
+            source: stdout,
+            bytes: host.stdout.clone(),
+        }),
     )
+}
+
+fn reverse_frames(host: &HostProcess) -> Vec<serde_json::Value> {
+    let bytes = host
+        .stdout
+        .lock()
+        .unwrap_or_else(|error| error.into_inner());
+    bytes
+        .split(|byte| *byte == b'\n')
+        .filter_map(|frame| serde_json::from_slice::<serde_json::Value>(frame).ok())
+        .filter(|frame| {
+            frame.get("method").and_then(serde_json::Value::as_str)
+                == Some("_echo_agent/extension/invoke")
+        })
+        .collect()
 }
 
 fn stderr_text(host: &HostProcess) -> String {
@@ -316,6 +408,8 @@ fn stderr_text(host: &HostProcess) -> String {
     )
     .to_string()
 }
+
+type SharedRawStore = Arc<Mutex<std::collections::BTreeMap<(Vec<String>, String), WireValue>>>;
 
 /// The fake SDK dispatcher state shared by client handlers.
 #[derive(Default)]
@@ -336,10 +430,485 @@ struct SdkDispatch {
     flood_stream: Arc<std::sync::atomic::AtomicBool>,
     missing_finish_reason: Arc<std::sync::atomic::AtomicBool>,
     hang_sandbox_cancel: Arc<std::sync::atomic::AtomicBool>,
+    delayed_sandbox_cleanup: Arc<std::sync::atomic::AtomicBool>,
+    sandbox_cleanups_completed: Arc<AtomicUsize>,
     reentrant_mutation: Arc<Mutex<Option<(WireHandle, WireHandle)>>>,
     reentrant_conflicts: Arc<AtomicUsize>,
     tokenizer_counts: Arc<AtomicUsize>,
     checkpoints: Arc<CheckpointDispatch>,
+    managed: Arc<ManagedStoreDispatch>,
+    events: SharedVec<echo_sdk_protocol::event::WireEventEnvelope>,
+    factory_instances: Arc<Mutex<std::collections::BTreeMap<String, String>>>,
+    factory_created: SharedVec<String>,
+    factory_closed: SharedVec<String>,
+    task_store: Arc<TaskStoreDispatch>,
+    interrupted_callbacks: SharedVec<CallbackToolInterruptedInput>,
+    raw_store: SharedRawStore,
+}
+
+#[derive(Default)]
+struct TaskStoreDispatch {
+    graphs: Mutex<std::collections::BTreeMap<String, RevisionedTaskGraphWire>>,
+    execution_commits: AtomicUsize,
+    reject_execution: std::sync::atomic::AtomicBool,
+    relation_commits: AtomicUsize,
+}
+
+impl TaskStoreDispatch {
+    fn executions(
+        graph: &RevisionedTaskGraphWire,
+    ) -> std::collections::BTreeMap<String, TaskExecutionWire> {
+        graph
+            .snapshot
+            .tasks
+            .iter()
+            .map(|task| (task.spec.id.clone(), task.execution.clone()))
+            .collect()
+    }
+    fn handle(
+        &self,
+        call: &AgentComponentCallInputWire,
+    ) -> Result<AgentComponentCallResultWire, Box<EchoSdkError>> {
+        let mut graphs = self
+            .graphs
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        match call {
+            AgentComponentCallInputWire::RevisionedTaskLoad { scope_id } => {
+                Ok(AgentComponentCallResultWire::RevisionedTaskLoad {
+                    graph: graphs.get(scope_id).cloned(),
+                })
+            }
+            AgentComponentCallInputWire::RevisionedTaskCompareAndCommit { scope_id, commit } => {
+                let previous = graphs.get(scope_id);
+                let actual = previous.map(|graph| graph.snapshot.revision.clone());
+                if actual != commit.expected_revision
+                    || commit.expected_executions.as_ref().is_some_and(|expected| {
+                        previous.is_none_or(|graph| &Self::executions(graph) != expected)
+                    })
+                {
+                    return Err(Self::conflict(
+                        commit.expected_revision.as_ref(),
+                        actual.as_ref(),
+                    ));
+                }
+                if actual
+                    .as_ref()
+                    .and_then(WireU64::to_u64)
+                    .unwrap_or(0)
+                    .checked_add(1)
+                    != commit.next.snapshot.revision.to_u64()
+                {
+                    return Err(ManagedStoreDispatch::error("corrupt_state"));
+                }
+                graphs.insert(scope_id.clone(), commit.next.clone());
+                self.relation_commits.fetch_add(1, Ordering::AcqRel);
+                Ok(
+                    AgentComponentCallResultWire::RevisionedTaskCompareAndCommit {
+                        graph: commit.next.clone(),
+                    },
+                )
+            }
+            AgentComponentCallInputWire::RevisionedTaskCompareAndCommitExecution {
+                scope_id,
+                commit,
+            } => {
+                if self.reject_execution.load(Ordering::Acquire) {
+                    return Err(Box::new(EchoSdkError::new(
+                        ExtensionErrorCode::ExtensionFailed,
+                        "task execution persistence failed",
+                        Retryability::Never,
+                    )));
+                }
+                let previous = graphs
+                    .get(scope_id)
+                    .ok_or_else(|| Self::conflict(Some(&commit.expected_revision), None))?;
+                if previous.snapshot.revision != commit.expected_revision
+                    || Self::executions(previous) != commit.expected_executions
+                {
+                    return Err(Self::conflict(
+                        Some(&commit.expected_revision),
+                        Some(&previous.snapshot.revision),
+                    ));
+                }
+                if previous.snapshot.revision != commit.next.snapshot.revision
+                    || previous.context != commit.next.context
+                    || previous
+                        .snapshot
+                        .tasks
+                        .iter()
+                        .map(|task| &task.spec)
+                        .ne(commit.next.snapshot.tasks.iter().map(|task| &task.spec))
+                {
+                    return Err(ManagedStoreDispatch::error("corrupt_state"));
+                }
+                graphs.insert(scope_id.clone(), commit.next.clone());
+                self.execution_commits.fetch_add(1, Ordering::AcqRel);
+                Ok(
+                    AgentComponentCallResultWire::RevisionedTaskCompareAndCommitExecution {
+                        graph: commit.next.clone(),
+                    },
+                )
+            }
+            _ => Err(ManagedStoreDispatch::error("unsupported")),
+        }
+    }
+    fn conflict(expected: Option<&WireU64>, current: Option<&WireU64>) -> Box<EchoSdkError> {
+        let mut error = EchoSdkError::new(
+            ExtensionErrorCode::ExtensionConflict,
+            "atomic task backend conflict",
+            Retryability::Never,
+        );
+        error.details = Some(echo_sdk_protocol::error::ErrorDetails {
+            fields: Some(vec![
+                echo_sdk_protocol::error::DetailField {
+                    key: "task_store_error_class".to_string(),
+                    value: "conflict".to_string(),
+                },
+                echo_sdk_protocol::error::DetailField {
+                    key: "expected_revision".to_string(),
+                    value: expected
+                        .map(|value| value.as_str())
+                        .unwrap_or("absent")
+                        .to_string(),
+                },
+                echo_sdk_protocol::error::DetailField {
+                    key: "current_revision".to_string(),
+                    value: current
+                        .map(|value| value.as_str())
+                        .unwrap_or("absent")
+                        .to_string(),
+                },
+            ]),
+            ..Default::default()
+        });
+        Box::new(error)
+    }
+}
+
+/// Test-only remote backend. The receipt map models the backend's atomic
+/// idempotent commit, while the real framework performs persistence recovery.
+#[derive(Default)]
+struct ManagedStoreDispatch {
+    enabled: std::sync::atomic::AtomicBool,
+    delay_before_commit: std::sync::atomic::AtomicBool,
+    lose_first_apply_response: std::sync::atomic::AtomicBool,
+    conversation: Mutex<Option<ConversationProjectionAuthorityWire>>,
+    runtime: Mutex<std::collections::BTreeMap<(String, String), ManagedRuntimeStateSnapshotWire>>,
+    scopes: Mutex<std::collections::BTreeMap<String, RuntimeScopeAuthorityWire>>,
+    receipts: Mutex<std::collections::BTreeMap<String, TranscriptProjectionApplyReceiptWire>>,
+    expired: AtomicUsize,
+    mutations: AtomicUsize,
+    projected_items: AtomicUsize,
+    duplicate_applies: AtomicUsize,
+}
+
+impl ManagedStoreDispatch {
+    fn deadline(call: &AgentComponentCallInputWire) -> Option<&PersistenceCallContextWire> {
+        match call {
+            AgentComponentCallInputWire::ConversationEnsureProjectionEpochWithContext {
+                context,
+                ..
+            }
+            | AgentComponentCallInputWire::ConversationGetProjectionAuthorityWithContext {
+                context,
+                ..
+            }
+            | AgentComponentCallInputWire::ConversationApplyTranscriptProjectionWithContext {
+                context,
+                ..
+            }
+            | AgentComponentCallInputWire::ConversationDeleteManagedWithContext {
+                context, ..
+            }
+            | AgentComponentCallInputWire::RuntimeLoadManagedStateWithContext { context, .. }
+            | AgentComponentCallInputWire::RuntimeLoadScopeAuthorityWithContext {
+                context, ..
+            }
+            | AgentComponentCallInputWire::RuntimeCompareAndSaveCheckpointWithContext {
+                context,
+                ..
+            }
+            | AgentComponentCallInputWire::RuntimeAcknowledgeTranscriptProjectionWithContext {
+                context,
+                ..
+            }
+            | AgentComponentCallInputWire::RuntimeRetireGenerationWithContext { context, .. }
+            | AgentComponentCallInputWire::RuntimeBeginScopeRetirementWithContext {
+                context, ..
+            }
+            | AgentComponentCallInputWire::RuntimeContinueScopeRetirementWithContext {
+                context,
+                ..
+            } => Some(context),
+            _ => None,
+        }
+    }
+
+    fn error(class: &str) -> Box<EchoSdkError> {
+        let mut error = EchoSdkError::new(
+            ExtensionErrorCode::ExtensionFailed,
+            format!("managed fixture {class}"),
+            Retryability::Never,
+        );
+        error.details = Some(echo_sdk_protocol::error::ErrorDetails {
+            fields: Some(vec![echo_sdk_protocol::error::DetailField {
+                key: "persistence_error_class".to_string(),
+                value: class.to_string(),
+            }]),
+            ..Default::default()
+        });
+        Box::new(error)
+    }
+
+    fn now_ms() -> Result<i64, RpcError> {
+        let elapsed = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+        i64::try_from(elapsed.as_millis())
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))
+    }
+
+    fn handle(
+        &self,
+        call: &AgentComponentCallInputWire,
+    ) -> Result<AgentComponentCallResultWire, Box<EchoSdkError>> {
+        let context = Self::deadline(call).ok_or_else(|| Self::error("unsupported"))?;
+        let now = Self::now_ms().map_err(|_| Self::error("invalid_configuration"))?;
+        if context
+            .absolute_deadline_unix_ms
+            .to_i64()
+            .is_none_or(|deadline| deadline <= now)
+        {
+            self.expired.fetch_add(1, Ordering::AcqRel);
+            return Err(Self::error("deadline_exceeded"));
+        }
+        match call {
+            AgentComponentCallInputWire::ConversationEnsureProjectionEpochWithContext {
+                request,
+                ..
+            } => {
+                let mut slot = self
+                    .conversation
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner());
+                let existed = slot.is_some();
+                let authority = slot
+                    .get_or_insert_with(|| ConversationProjectionAuthorityWire {
+                        conversation_id: request.conversation.conversation_id.clone(),
+                        epoch: WireU64::from_u64(1),
+                        revision: WireU64::from_u64(1),
+                        lifecycle: ConversationProjectionLifecycleWire::Live,
+                        delete_receipt_retention_floor_epoch: WireU64::from_u64(0),
+                    })
+                    .clone();
+                if !existed {
+                    self.mutations.fetch_add(1, Ordering::AcqRel);
+                }
+                Ok(
+                    AgentComponentCallResultWire::ConversationEnsureProjectionEpochWithContext {
+                        receipt: ConversationProjectionEpochReceiptWire {
+                            authority,
+                            status: if existed {
+                                ConversationProjectionEpochStatusWire::Existing
+                            } else {
+                                ConversationProjectionEpochStatusWire::Created
+                            },
+                        },
+                    },
+                )
+            }
+            AgentComponentCallInputWire::ConversationGetProjectionAuthorityWithContext {
+                ..
+            } => Ok(
+                AgentComponentCallResultWire::ConversationGetProjectionAuthorityWithContext {
+                    authority: self
+                        .conversation
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .clone(),
+                },
+            ),
+            AgentComponentCallInputWire::RuntimeLoadManagedStateWithContext {
+                scope_id,
+                runtime_state_id,
+                ..
+            } => Ok(
+                AgentComponentCallResultWire::RuntimeLoadManagedStateWithContext {
+                    snapshot: self
+                        .runtime
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .get(&(scope_id.clone(), runtime_state_id.clone()))
+                        .cloned(),
+                },
+            ),
+            AgentComponentCallInputWire::RuntimeLoadScopeAuthorityWithContext {
+                scope_id, ..
+            } => Ok(
+                AgentComponentCallResultWire::RuntimeLoadScopeAuthorityWithContext {
+                    authority: self
+                        .scopes
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .get(scope_id)
+                        .cloned(),
+                },
+            ),
+            AgentComponentCallInputWire::RuntimeCompareAndSaveCheckpointWithContext {
+                request,
+                ..
+            } => self.save(
+                (&request.scope_id, &request.runtime_state_id),
+                &request.expected_scope_revision,
+                &request.expected_state_version,
+                request.conversation_epoch.clone(),
+                request.checkpoint.clone(),
+                false,
+            ),
+            AgentComponentCallInputWire::RuntimeAcknowledgeTranscriptProjectionWithContext {
+                request,
+                ..
+            } => self.save(
+                (&request.scope_id, &request.runtime_state_id),
+                &request.expected_scope_revision,
+                &request.expected_state_version,
+                Some(request.conversation_epoch.clone()),
+                request.checkpoint.clone(),
+                true,
+            ),
+            AgentComponentCallInputWire::ConversationApplyTranscriptProjectionWithContext {
+                batch,
+                ..
+            } => {
+                let mut receipts = self
+                    .receipts
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner());
+                if let Some(receipt) = receipts.get(&batch.operation_id) {
+                    if receipt.payload_digest != batch.payload_digest {
+                        return Err(Self::error("corrupt_state"));
+                    }
+                    self.duplicate_applies.fetch_add(1, Ordering::AcqRel);
+                    let mut receipt = receipt.clone();
+                    receipt.status = TranscriptProjectionApplyStatusWire::AlreadyApplied;
+                    return Ok(AgentComponentCallResultWire::ConversationApplyTranscriptProjectionWithContext { receipt });
+                }
+                let mut slot = self
+                    .conversation
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner());
+                let authority = slot.as_mut().ok_or_else(|| Self::error("corrupt_state"))?;
+                let revision = authority
+                    .revision
+                    .to_u64()
+                    .and_then(|revision| revision.checked_add(1))
+                    .ok_or_else(|| Self::error("corrupt_state"))?;
+                authority.revision = WireU64::from_u64(revision);
+                let receipt = TranscriptProjectionApplyReceiptWire {
+                    operation_id: batch.operation_id.clone(),
+                    payload_digest: batch.payload_digest.clone(),
+                    authority: authority.clone(),
+                    status: TranscriptProjectionApplyStatusWire::Applied,
+                };
+                receipts.insert(batch.operation_id.clone(), receipt.clone());
+                self.projected_items
+                    .fetch_add(batch.items.len(), Ordering::AcqRel);
+                self.mutations.fetch_add(1, Ordering::AcqRel);
+                Ok(AgentComponentCallResultWire::ConversationApplyTranscriptProjectionWithContext { receipt })
+            }
+            _ => Err(Self::error("unsupported")),
+        }
+    }
+
+    fn save(
+        &self,
+        identity: (&str, &str),
+        expected_scope_revision: &WireU64,
+        expected_state_version: &RuntimeStateExpectedVersionWire,
+        epoch: Option<WireU64>,
+        checkpoint: AgentCheckpointWire,
+        ack: bool,
+    ) -> Result<AgentComponentCallResultWire, Box<EchoSdkError>> {
+        let (scope_id, runtime_state_id) = identity;
+        let mut states = self
+            .runtime
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        let key = (scope_id.to_string(), runtime_state_id.to_string());
+        let previous = states.get(&key);
+        let expected = expected_scope_revision
+            .to_u64()
+            .ok_or_else(|| Self::error("corrupt_state"))?;
+        let mut scopes = self
+            .scopes
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        let actual = scopes
+            .get(scope_id)
+            .and_then(|scope| scope.revision.to_u64())
+            .unwrap_or(0);
+        let state_matches = match (
+            previous.map(|snapshot| &snapshot.version),
+            expected_state_version,
+        ) {
+            (None, RuntimeStateExpectedVersionWire::Absent) => true,
+            (
+                Some(RuntimeStateVersionWire::Managed { revision: actual }),
+                RuntimeStateExpectedVersionWire::Managed { revision: expected },
+            ) => actual == expected,
+            _ => false,
+        };
+        if !state_matches {
+            return Err(Self::error("corrupt_state"));
+        }
+        if actual != expected {
+            return Err(Self::error("corrupt_state"));
+        }
+        let revision = actual
+            .checked_add(1)
+            .ok_or_else(|| Self::error("corrupt_state"))?;
+        let state_revision = match previous.map(|snapshot| &snapshot.version) {
+            Some(RuntimeStateVersionWire::Managed { revision }) => revision
+                .to_u64()
+                .and_then(|revision| revision.checked_add(1))
+                .ok_or_else(|| Self::error("corrupt_state"))?,
+            _ => 1,
+        };
+        let scope = RuntimeScopeAuthorityWire {
+            scope_id: scope_id.to_string(),
+            conversation_epoch: epoch,
+            revision: WireU64::from_u64(revision),
+            lifecycle: RuntimeScopeLifecycleWire::Active,
+        };
+        let version = RuntimeStateVersionWire::Managed {
+            revision: WireU64::from_u64(state_revision),
+        };
+        scopes.insert(scope_id.to_string(), scope.clone());
+        states.insert(
+            key,
+            ManagedRuntimeStateSnapshotWire {
+                scope: scope.clone(),
+                runtime_state_id: runtime_state_id.to_string(),
+                version: version.clone(),
+                checkpoint: Some(checkpoint),
+            },
+        );
+        self.mutations.fetch_add(1, Ordering::AcqRel);
+        let receipt = RuntimeCheckpointCasReceiptWire {
+            scope,
+            runtime_state_id: runtime_state_id.to_string(),
+            version,
+            status: RuntimeCheckpointCasStatusWire::Applied,
+        };
+        Ok(if ack {
+            AgentComponentCallResultWire::RuntimeAcknowledgeTranscriptProjectionWithContext {
+                receipt,
+            }
+        } else {
+            AgentComponentCallResultWire::RuntimeCompareAndSaveCheckpointWithContext { receipt }
+        })
+    }
 }
 
 #[derive(Default)]
@@ -620,10 +1189,20 @@ where
     let flood_stream = dispatch.flood_stream.clone();
     let missing_finish_reason = dispatch.missing_finish_reason.clone();
     let hang_sandbox_cancel = dispatch.hang_sandbox_cancel.clone();
+    let delayed_sandbox_cleanup = dispatch.delayed_sandbox_cleanup.clone();
+    let sandbox_cleanups_completed = dispatch.sandbox_cleanups_completed.clone();
     let reentrant_mutation = dispatch.reentrant_mutation.clone();
     let reentrant_conflicts = dispatch.reentrant_conflicts.clone();
     let tokenizer_counts = dispatch.tokenizer_counts.clone();
     let checkpoints = dispatch.checkpoints.clone();
+    let managed = dispatch.managed.clone();
+    let event_log = dispatch.events.clone();
+    let factory_instances = dispatch.factory_instances.clone();
+    let factory_created = dispatch.factory_created.clone();
+    let factory_closed = dispatch.factory_closed.clone();
+    let task_store = dispatch.task_store.clone();
+    let interrupted_callbacks = dispatch.interrupted_callbacks.clone();
+    let raw_store = dispatch.raw_store.clone();
     let connect = Client
         .builder()
         .on_receive_request(
@@ -641,10 +1220,19 @@ where
                 let flood_stream = flood_stream.clone();
                 let missing_finish_reason = missing_finish_reason.clone();
                 let hang_sandbox_cancel = hang_sandbox_cancel.clone();
+                let delayed_sandbox_cleanup = delayed_sandbox_cleanup.clone();
+                let sandbox_cleanups_completed = sandbox_cleanups_completed.clone();
                 let reentrant_mutation = reentrant_mutation.clone();
                 let reentrant_conflicts = reentrant_conflicts.clone();
                 let tokenizer_counts = tokenizer_counts.clone();
                 let checkpoints = checkpoints.clone();
+                let managed = managed.clone();
+                let factory_instances = factory_instances.clone();
+                let factory_created = factory_created.clone();
+                let factory_closed = factory_closed.clone();
+                let task_store = task_store.clone();
+                let interrupted_callbacks = interrupted_callbacks.clone();
+                let raw_store = raw_store.clone();
                 move |call: ExtensionInvokeCall,
                       responder: Responder<ExtensionInvokeOutcome>,
                       connection: ConnectionTo<agent_client_protocol::Agent>| {
@@ -661,10 +1249,19 @@ where
                     let flood_stream = flood_stream.clone();
                     let missing_finish_reason = missing_finish_reason.clone();
                     let hang_sandbox_cancel = hang_sandbox_cancel.clone();
+                    let delayed_sandbox_cleanup = delayed_sandbox_cleanup.clone();
+                    let sandbox_cleanups_completed = sandbox_cleanups_completed.clone();
                     let reentrant_mutation = reentrant_mutation.clone();
                     let reentrant_conflicts = reentrant_conflicts.clone();
                     let tokenizer_counts = tokenizer_counts.clone();
                     let checkpoints = checkpoints.clone();
+                    let managed = managed.clone();
+                    let factory_instances = factory_instances.clone();
+                    let factory_created = factory_created.clone();
+                    let factory_closed = factory_closed.clone();
+                    let task_store = task_store.clone();
+                    let interrupted_callbacks = interrupted_callbacks.clone();
+                    let raw_store = raw_store.clone();
                     async move {
                         let operation = call.invocation.operation();
                         operations
@@ -680,6 +1277,12 @@ where
                             silent.lock().expect("silent lock").push(responder);
                             return Ok(());
                         }
+                        if let Some(origin) = &call.factory_origin {
+                            let instances = factory_instances.lock().unwrap_or_else(|error| error.into_inner());
+                            if instances.get(&call.extension.id) != Some(&origin.id) {
+                                return responder.respond(ExtensionInvokeOutcome::Error { error: EchoSdkError::new(ExtensionErrorCode::ExtensionRejected, "factory instance does not belong to this registered parent", Retryability::Never) });
+                            }
+                        }
                         match call.invocation {
                             ExtensionInvocation::ToolExecute(_) => {
                                 responder.respond(ExtensionInvokeOutcome::Result {
@@ -693,14 +1296,16 @@ where
                                     result: ExtensionResult::ToolValidateParameters(None),
                                 })
                             }
-                            ExtensionInvocation::StorePut(_) => {
+                            ExtensionInvocation::StorePut(input) => {
+                                raw_store.lock().unwrap_or_else(|error| error.into_inner()).insert((input.namespace, input.key), input.value);
                                 responder.respond(ExtensionInvokeOutcome::Result {
                                     result: ExtensionResult::StorePut(ExtensionUnit),
                                 })
                             }
-                            ExtensionInvocation::StoreGet(_) => {
+                            ExtensionInvocation::StoreGet(input) => {
+                                let value = raw_store.lock().unwrap_or_else(|error| error.into_inner()).get(&(input.namespace.clone(), input.key.clone())).cloned();
                                 responder.respond(ExtensionInvokeOutcome::Result {
-                                    result: ExtensionResult::StoreGet(None),
+                                    result: ExtensionResult::StoreGet(value.map(|value| StoreItemWire { namespace: input.namespace, key: input.key, value, created_at: WireU64::from_u64(1), updated_at: WireU64::from_u64(1), score: None, importance: 5.0, last_accessed: None, expires_at: None })),
                                 })
                             }
                             ExtensionInvocation::StoreSearch(_)
@@ -821,6 +1426,14 @@ where
                                         .push(responder);
                                     return Ok(());
                                 }
+                                if operation == AgentComponentOperationWire::SandboxCleanup {
+                                    if delayed_sandbox_cleanup.load(Ordering::Acquire) {
+                                        tokio::time::sleep(Duration::from_millis(250)).await;
+                                    }
+                                    // This is the acknowledged resource cleanup side effect,
+                                    // deliberately later than callback admission.
+                                    sandbox_cleanups_completed.fetch_add(1, Ordering::AcqRel);
+                                }
                                 let reentrant = reentrant_mutation
                                     .lock()
                                     .unwrap_or_else(|error| error.into_inner())
@@ -859,6 +1472,25 @@ where
                                         }
                                     });
                                     tokio::time::sleep(Duration::from_millis(25)).await;
+                                }
+                                if managed.enabled.load(Ordering::Acquire) && ManagedStoreDispatch::deadline(&input.call).is_some() {
+                                    if managed.delay_before_commit.swap(false, Ordering::AcqRel)
+                                        && let Some(context) = ManagedStoreDispatch::deadline(&input.call) {
+                                        let now = ManagedStoreDispatch::now_ms()?;
+                                        let deadline = context.absolute_deadline_unix_ms.to_i64().ok_or_else(RpcError::invalid_params)?;
+                                        let delay = deadline.checked_sub(now).and_then(|value| u64::try_from(value).ok()).unwrap_or(0).saturating_add(30);
+                                        tokio::time::sleep(Duration::from_millis(delay)).await;
+                                    }
+                                    let result = managed.handle(&input.call);
+                                    if result.is_ok() && matches!(input.call, AgentComponentCallInputWire::ConversationApplyTranscriptProjectionWithContext { .. })
+                                        && managed.lose_first_apply_response.swap(false, Ordering::AcqRel) {
+                                        silent.lock().unwrap_or_else(|error| error.into_inner()).push(responder);
+                                        return Ok(());
+                                    }
+                                    return responder.respond(match result {
+                                        Ok(result) => ExtensionInvokeOutcome::Result { result: ExtensionResult::AgentComponentCall(AgentComponentResultWire { component: input.component, result }) },
+                                        Err(error) => ExtensionInvokeOutcome::Error { error: *error },
+                                    });
                                 }
                                 let result = match input.call {
                                     AgentComponentCallInputWire::ConversationCreate { conversation } => {
@@ -975,8 +1607,14 @@ where
                                     AgentComponentCallInputWire::WorkflowCheckpointListFiltered { .. } => AgentComponentCallResultWire::WorkflowCheckpointListFiltered { checkpoints: Vec::new() },
                                     AgentComponentCallInputWire::WorkflowCheckpointDelete { .. } => AgentComponentCallResultWire::WorkflowCheckpointDelete,
                                     AgentComponentCallInputWire::WorkflowCheckpointClear => AgentComponentCallResultWire::WorkflowCheckpointClear,
-                                    AgentComponentCallInputWire::RevisionedTaskLoad { .. } => AgentComponentCallResultWire::RevisionedTaskLoad { graph: None },
-                                    AgentComponentCallInputWire::RevisionedTaskCompareAndCommit { commit, .. } => AgentComponentCallResultWire::RevisionedTaskCompareAndCommit { graph: commit },
+                                    AgentComponentCallInputWire::RevisionedTaskLoad { .. }
+                                    | AgentComponentCallInputWire::RevisionedTaskCompareAndCommit { .. }
+                                    | AgentComponentCallInputWire::RevisionedTaskCompareAndCommitExecution { .. } => {
+                                        match task_store.handle(&input.call) {
+                                            Ok(result) => result,
+                                            Err(error) => return responder.respond(ExtensionInvokeOutcome::Error { error: *error }),
+                                        }
+                                    },
                                     AgentComponentCallInputWire::SandboxIsAvailable => AgentComponentCallResultWire::SandboxIsAvailable { available: true },
                                     AgentComponentCallInputWire::SandboxExecute { .. } => AgentComponentCallResultWire::SandboxExecute {
                                         result: WireValue::from_json(serde_json::json!({
@@ -1081,6 +1719,9 @@ where
                                             ),
                                         });
                                     }
+                                    _ => return responder.respond(ExtensionInvokeOutcome::Error {
+                                        error: EchoSdkError::new(ExtensionErrorCode::FeatureUnavailable, "fixture component operation is not implemented", Retryability::Never),
+                                    }),
                                 };
                                 responder.respond(ExtensionInvokeOutcome::Result {
                                     result: ExtensionResult::AgentComponentCall(
@@ -1328,7 +1969,16 @@ where
                                     ),
                                 })
                             }
+                            ExtensionInvocation::CallbackOnToolInterrupted(input) => {
+                                // Admission alone does not prove completion; this
+                                // side effect intentionally follows Run cancellation.
+                                tokio::time::sleep(Duration::from_millis(250)).await;
+                                interrupted_callbacks.lock().unwrap_or_else(|error| error.into_inner()).push(input);
+                                responder.respond(ExtensionInvokeOutcome::Result { result: ExtensionResult::CallbackOnToolInterrupted(ExtensionUnit) })
+                            }
                             ExtensionInvocation::FactoryCreateAgent(config) => {
+                                factory_instances.lock().unwrap_or_else(|error| error.into_inner()).insert(config.instance.id.clone(), call.extension.id.clone());
+                                factory_created.lock().unwrap_or_else(|error| error.into_inner()).push(config.instance.id);
                                 responder.respond(ExtensionInvokeOutcome::Result {
                                     result: ExtensionResult::FactoryCreateAgent(
                                         CustomAgentDescriptorWire {
@@ -1355,6 +2005,10 @@ where
                                 })
                             }
                             ExtensionInvocation::AgentClose(_) => {
+                                if call.factory_origin.is_some() {
+                                    factory_instances.lock().unwrap_or_else(|error| error.into_inner()).remove(&call.extension.id);
+                                    factory_closed.lock().unwrap_or_else(|error| error.into_inner()).push(call.extension.id.clone());
+                                }
                                 responder.respond(ExtensionInvokeOutcome::Result {
                                     result: ExtensionResult::AgentClose(ExtensionUnit),
                                 })
@@ -1488,6 +2142,15 @@ where
             },
             agent_client_protocol::on_receive_request!(),
         )
+        .on_receive_request(
+            async move |message: UntypedMessage, responder: Responder<serde_json::Value>, _connection: ConnectionTo<agent_client_protocol::Agent>| {
+                let reason = if message.method == "_echo_agent/extension/invoke" {
+                    serde_json::from_value::<ExtensionInvokeCall>(message.params).err().map(|error| error.to_string()).unwrap_or_else(|| "unhandled typed invocation".to_string())
+                } else { format!("unexpected SDK fixture request {}", message.method) };
+                responder.respond_with_error(RpcError::invalid_params().data(reason))
+            },
+            agent_client_protocol::on_receive_request!(),
+        )
         .on_receive_notification(
             {
                 let cancel_notices = cancel_notices.clone();
@@ -1505,6 +2168,18 @@ where
         .on_receive_notification(
             async move |_notification: v1::SessionNotification,
                         _connection: ConnectionTo<agent_client_protocol::Agent>| {
+                Ok(())
+            },
+            agent_client_protocol::on_receive_notification!(),
+        )
+        .on_receive_notification(
+            async move |notification: echo_sdk_protocol::event::EventNotification,
+                        connection: ConnectionTo<agent_client_protocol::Agent>| {
+                let sequence = notification.envelope.sequence.clone();
+                event_log.lock().unwrap_or_else(|error| error.into_inner()).push(notification.envelope);
+                connection.send_notification(echo_sdk_protocol::event::EventAckNotification {
+                    ack: echo_sdk_protocol::event::EventAck { stream: notification.stream, last_processed_sequence: sequence },
+                })?;
                 Ok(())
             },
             agent_client_protocol::on_receive_notification!(),
@@ -1542,6 +2217,7 @@ fn tool_result_wire(output: &str) -> ToolResultWire {
         truncated: false,
         mime_type: None,
         artifact: None,
+        effects: Vec::new(),
         metadata: std::collections::BTreeMap::new(),
         model_content: Vec::new(),
     }
@@ -1610,6 +2286,9 @@ fn neutral_result_wire(operation: ExtensionOperation) -> ExtensionResult {
         ExtensionOperation::CallbackOnToolEnd => ExtensionResult::CallbackOnToolEnd(ExtensionUnit),
         ExtensionOperation::CallbackOnToolError => {
             ExtensionResult::CallbackOnToolError(ExtensionUnit)
+        }
+        ExtensionOperation::CallbackOnToolInterrupted => {
+            ExtensionResult::CallbackOnToolInterrupted(ExtensionUnit)
         }
         ExtensionOperation::CallbackOnFinalAnswer => {
             ExtensionResult::CallbackOnFinalAnswer(ExtensionUnit)
@@ -2136,7 +2815,7 @@ async fn store_and_human_loop_extensions_round_trip() -> Result<(), Box<dyn std:
     let directory = tempfile::tempdir()?;
     let state_root = directory.path().join("state");
     let model = start_scripted_model(vec![
-        tool_call_script("remember", r#"{"content":"bridge memory"}"#),
+        tool_call_script("recall", r#"{"query":"bridge memory"}"#),
         final_script("remembered"),
     ])
     .await?;
@@ -2169,13 +2848,80 @@ async fn store_and_human_loop_extensions_round_trip() -> Result<(), Box<dyn std:
                 None,
             )
             .await?;
-            let session: v1::NewSessionResponse = connection
-                .send_request(v1::NewSessionRequest::new(session_dir))
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent,
+                    working_dir: Some(WirePath::Utf8 {
+                        path: session_dir.display().to_string(),
+                    }),
+                    session_id: None,
+                    idempotency_id: None,
+                })
                 .block_task()
                 .await?;
+            let request = FeatureOperationRequest {
+                operation: "memory.store.put".to_string(),
+                signature_digest: echo_sdk_protocol::facade::family_operation_signature_digest(
+                    "memory",
+                    "memory.store.put",
+                ),
+                handle: Some(session.session.clone()),
+                arguments: vec![
+                    WireValue::List(vec![WireValue::String("raw-kv".to_string())]),
+                    WireValue::String("fixture".to_string()),
+                    WireValue::String("bridge memory".to_string()),
+                ],
+            };
+            connection
+                .send_request(UntypedMessage::new(
+                    "_echo_agent/memory/op",
+                    serde_json::to_value(request)
+                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                )?)
+                .block_task()
+                .await?;
+            let got = connection
+                .send_request(UntypedMessage::new(
+                    "_echo_agent/memory/op",
+                    serde_json::to_value(FeatureOperationRequest {
+                        operation: "memory.store.get".to_string(),
+                        signature_digest:
+                            echo_sdk_protocol::facade::family_operation_signature_digest(
+                                "memory",
+                                "memory.store.get",
+                            ),
+                        handle: Some(session.session.clone()),
+                        arguments: vec![
+                            WireValue::List(vec![WireValue::String("raw-kv".to_string())]),
+                            WireValue::String("fixture".to_string()),
+                        ],
+                    })
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                )?)
+                .block_task()
+                .await?;
+            let got: FeatureOperationResponse = serde_json::from_value(got)
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            assert!(
+                got.value
+                    .into_json()
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?
+                    .to_string()
+                    .contains("bridge memory"),
+                "explicit raw put/get must use the same registered Store"
+            );
+            let acp_session_id = v1::SessionId::new(session.acp_session_id);
             let prompt = connection
                 .send_request(v1::PromptRequest::new(
-                    session.session_id,
+                    acp_session_id,
                     vec![v1::ContentBlock::Text(v1::TextContent::new(
                         "remember this",
                     ))],
@@ -2405,9 +3151,13 @@ async fn cancelled_factory_stream_closes_and_releases_instance()
     dispatch.omit_stream_terminal.store(true, Ordering::Release);
     dispatch.hang.lock().expect("hang lock").push("agent_close");
     let operations = dispatch.operations.clone();
+    let hang = dispatch.hang.clone();
+    let closed = dispatch.factory_closed.clone();
     let session_dir = directory.path().canonicalize()?;
     let outcome = drive_sdk(&mut host, dispatch.clone(), move |connection| {
         let operations = operations.clone();
+        let hang = hang.clone();
+        let closed = closed.clone();
         let session_dir = session_dir.clone();
         Box::pin(async move {
             connection
@@ -2464,9 +3214,35 @@ async fn cancelled_factory_stream_closes_and_releases_instance()
             connection.send_notification(v1::CancelNotification::new(session.session_id))?;
             let _ = tokio::time::timeout(Duration::from_secs(5), prompt.block_task()).await;
 
-            // AgentClose intentionally hangs. Its independent one-second
-            // cleanup deadline must still release the instance slot.
+            // A timeout is not proof of remote cleanup. The child retains
+            // its quota until the same bound identity acknowledges close.
             tokio::time::sleep(Duration::from_millis(1_500)).await;
+            let rejected = register_extension(
+                &connection,
+                ExtensionKind::Tool,
+                "cleanup-probe",
+                tool_descriptor("cleanup_probe"),
+                None,
+            )
+            .await;
+            assert!(
+                rejected.is_err(),
+                "unacknowledged remote cleanup must retain its owned quota"
+            );
+            hang.lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .retain(|operation| *operation != "agent_close");
+            tokio::time::timeout(Duration::from_secs(10), async {
+                while closed
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .is_empty()
+                {
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            })
+            .await
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
             let probe = register_extension(
                 &connection,
                 ExtensionKind::Tool,
@@ -2797,6 +3573,7 @@ async fn agent_components_are_consumed_by_new_session_agents()
     );
     let mut host = spawn_host(&config).await?;
     let dispatch = Arc::new(SdkDispatch::default());
+    dispatch.managed.enabled.store(true, Ordering::Release);
     let reentrant_mutation = dispatch.reentrant_mutation.clone();
     let session_dir = directory.path().to_path_buf();
     let skill_dir = directory.path().join("policy-skills");
@@ -2838,7 +3615,11 @@ async fn agent_components_are_consumed_by_new_session_agents()
                     descriptor_version: 1,
                     component: AgentComponentKindWire::ConversationStore,
                     name: "sdk-conversation".to_string(),
-                    capabilities: AgentComponentCapabilitiesWire::default(),
+                    capabilities: AgentComponentCapabilitiesWire {
+                        conversation_projection: ConversationProjectionCapabilityWire::AtomicV1,
+                        persistence_call: PersistenceCallCapabilityWire::AbsoluteDeadlineV1,
+                        ..Default::default()
+                    },
                 },
                 None,
             )
@@ -3262,7 +4043,7 @@ async fn agent_components_are_consumed_by_new_session_agents()
         "SandboxExecutor:SandboxExecute",
         "IntentClassifier:IntentClassify",
         "SkillLoadPolicy:SkillLoadAllows",
-        "ConversationStore:ConversationEnsure",
+        "ConversationStore:ConversationEnsureProjectionEpochWithContext",
         "RunStore:RunAppendEvent",
         "WorkflowCheckpointStore:WorkflowCheckpointSave",
         "WorkflowCheckpointStore:WorkflowCheckpointSaveIfGeneration",
@@ -3300,7 +4081,9 @@ async fn mcp_transport_is_closed_when_handle_publication_exceeds_quota()
     set_profile_limit(&config, "max_facade_resources", 1)?;
     let mut host = spawn_host(&config).await?;
     let dispatch = Arc::new(SdkDispatch::default());
+    let observed = dispatch.component_operations.clone();
     let outcome = drive_sdk(&mut host, dispatch.clone(), move |connection| {
+        let observed = observed.clone();
         Box::pin(async move {
             connection
                 .send_request(initialize_request(Some(client_hello())))
@@ -3393,6 +4176,14 @@ async fn mcp_transport_is_closed_when_handle_publication_exceeds_quota()
                 .map_err(|decode| RpcError::internal_error().data(decode.to_string()))?;
             assert_eq!(typed.code, ExtensionErrorCode::PayloadTooLarge);
 
+            assert!(
+                observed
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .iter()
+                    .all(|operation| !operation.starts_with("McpTransport:")),
+                "quota admission must reject before constructing or opening a transport"
+            );
             connection
                 .send_request(family_call(
                     "invoke",
@@ -3441,8 +4232,8 @@ async fn mcp_transport_is_closed_when_handle_publication_exceeds_quota()
         .filter(|operation| operation.contains("McpTransport:McpTransportClose"))
         .count();
     assert_eq!(
-        closes, 2,
-        "failed publication and explicit resource close must each close the transport: {operations:?}"
+        closes, 1,
+        "only the successfully admitted transport is opened and explicitly closed: {operations:?}"
     );
     host.child.kill().await?;
     Ok(())
@@ -3467,9 +4258,14 @@ async fn sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_termina
     let mut host = spawn_host(&config).await?;
     let dispatch = Arc::new(SdkDispatch::default());
     dispatch.hang_sandbox_cancel.store(true, Ordering::Release);
+    dispatch
+        .delayed_sandbox_cleanup
+        .store(true, Ordering::Release);
     let component_operations = dispatch.component_operations.clone();
+    let sandbox_cleanups_completed = dispatch.sandbox_cleanups_completed.clone();
     let outcome = drive_sdk(&mut host, dispatch.clone(), move |connection| {
         let component_operations = component_operations.clone();
+        let sandbox_cleanups_completed = sandbox_cleanups_completed.clone();
         Box::pin(async move {
             connection
                 .send_request(initialize_request(Some(client_hello())))
@@ -3571,6 +4367,11 @@ async fn sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_termina
                 matches!(waited.terminal, Some(RunTerminal::Cancelled)),
                 "sandbox cancellation must preserve the Run cancelled terminal: {:?}",
                 waited.terminal
+            );
+            assert_eq!(
+                sandbox_cleanups_completed.load(Ordering::Acquire),
+                1,
+                "Run terminal must follow the delayed cleanup side effect and its response"
             );
             assert!(
                 component_operations
@@ -3760,6 +4561,90 @@ async fn eval_and_improve_source_adapters_invoke_agent_factory_lazily()
     assert_eq!(
         factory_calls, 4,
         "EvalRunner and early-stopped ImprovementLoop must construct exactly one Agent per executed case"
+    );
+    let created = dispatch
+        .factory_created
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    let closed = dispatch
+        .factory_closed
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    assert_eq!(created.len(), 4);
+    assert_eq!(
+        created
+            .iter()
+            .collect::<std::collections::BTreeSet<_>>()
+            .len(),
+        4,
+        "each lazy constructor must receive its own preallocated identity"
+    );
+    assert_eq!(
+        closed.iter().collect::<std::collections::BTreeSet<_>>(),
+        created.iter().collect::<std::collections::BTreeSet<_>>(),
+        "each created factory object must be closed through the same parent-bound identity"
+    );
+    assert!(
+        dispatch
+            .factory_instances
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .is_empty()
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+#[cfg(feature = "framework-eval")]
+#[tokio::test]
+async fn same_factory_constructs_independent_instances_across_concurrent_sessions()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![final_script("unused")]).await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    let created = dispatch.factory_created.clone();
+    let closed = dispatch.factory_closed.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let created = created.clone(); let closed = closed.clone();
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let factory = register_extension(&connection, ExtensionKind::AgentFactory, "shared-factory", ExtensionDescriptor::AgentFactory { descriptor_version: 1 }, None).await?;
+            let mut invocations = Vec::new();
+            for id in ["first", "second"] {
+                let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+                let session = connection.send_request(SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+                let runner = invoke_source_operation(&connection, agent.clone(), "echo_agent::eval::runner::EvalRunner::new", vec![WireValue::Handle(session.session.clone()), WireValue::Path(WirePath::Utf8 { path: std::env::temp_dir().join(id).display().to_string() })]).await?;
+                let WireValue::Handle(runner) = runner.value else { return Err(RpcError::internal_error().data("no runner")); };
+                let case = WireValue::from_json(serde_json::json!({"id":id,"name":"same descriptor","description":"independent factory states","domain":null,"task":"return SDK output","project_fixture":null,"success_criteria":{"type":"output_contains","substring":"SDK"},"constraints":{}})).map_err(|error| RpcError::invalid_params().data(error.to_string()))?;
+                invocations.push((agent, vec![WireValue::Handle(session.session), WireValue::Handle(runner), WireValue::List(vec![case]), WireValue::Handle(factory.clone())]));
+            }
+            let first = invocations.first().cloned().ok_or_else(|| RpcError::internal_error().data("missing first runner"))?;
+            let second = invocations.get(1).cloned().ok_or_else(|| RpcError::internal_error().data("missing second runner"))?;
+            let (first, second) = tokio::join!(invoke_source_operation(&connection, first.0, "echo_agent::eval::runner::EvalRunner::run_all", first.1), invoke_source_operation(&connection, second.0, "echo_agent::eval::runner::EvalRunner::run_all", second.1));
+            for result in [first?, second?] {
+                let data = result.value.into_json().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                assert!(!data.to_string().contains("extension_conflict"), "independent factory creations must not share the child execution lock; actual result: {data}");
+            }
+            let created = created.lock().unwrap_or_else(|error| error.into_inner()).clone();
+            let closed = closed.lock().unwrap_or_else(|error| error.into_inner()).clone();
+            assert_eq!(created.len(), 2); assert_eq!(created.iter().collect::<std::collections::BTreeSet<_>>().len(), 2);
+            assert_eq!(closed.iter().collect::<std::collections::BTreeSet<_>>(), created.iter().collect::<std::collections::BTreeSet<_>>());
+            assert!(unregister(&connection, &factory).await?);
+            Ok(())
+        })
+    }).await;
+    assert!(
+        outcome.is_ok(),
+        "parallel factory construction failed: {outcome:?}; {}",
+        stderr_text(&host)
     );
     host.child.kill().await?;
     Ok(())
@@ -4647,6 +5532,1117 @@ async fn deadline_and_cancellation_settle_typed_outcomes() -> Result<(), Box<dyn
         );
         host.child.kill().await?;
     }
+    Ok(())
+}
+
+#[tokio::test]
+async fn cancelled_tool_waits_for_canonical_interrupted_callback()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![tool_call_script(
+        "pending_tool",
+        r#"{"query":"原始🙂"}"#,
+    )])
+    .await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    dispatch
+        .hang
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .push("tool_execute");
+    let pending = dispatch.silent.clone();
+    let interrupted = dispatch.interrupted_callbacks.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let pending = pending.clone();
+        let interrupted = interrupted.clone();
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let mut descriptor = tool_descriptor("pending_tool");
+            if let ExtensionDescriptor::Tool { risk_level, .. } = &mut descriptor {
+                *risk_level = ToolRiskLevelWire::Standard;
+            }
+            register_extension(
+                &connection,
+                ExtensionKind::Tool,
+                "interrupted-tool",
+                descriptor,
+                None,
+            )
+            .await?;
+            register_extension(
+                &connection,
+                ExtensionKind::AgentCallback,
+                "canonical-callback",
+                ExtensionDescriptor::AgentCallback {
+                    descriptor_version: 1,
+                },
+                None,
+            )
+            .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent: agent.clone(),
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            invoke_source_operation(
+                &connection,
+                agent,
+                "echo_agent::agent::react::ReactAgent::set_permission_mode",
+                vec![
+                    WireValue::Handle(session.session.clone()),
+                    WireValue::String("full-auto".to_string()),
+                ],
+            )
+            .await?;
+            let started = connection
+                .send_request(RunStartRequest {
+                    session: session.session,
+                    input: RunInput::Chat {
+                        text: "cancel the tool".to_string(),
+                    },
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            tokio::time::timeout(Duration::from_secs(10), async {
+                while pending
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .is_empty()
+                {
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            })
+            .await
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            connection
+                .send_request(RunCancelRequest {
+                    run: started.run.clone(),
+                })
+                .block_task()
+                .await?;
+            let terminal = connection
+                .send_request(RunWaitRequest {
+                    run: started.run,
+                    timeout: Some(WireDuration::from_nanos(10_000_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(matches!(terminal.terminal, Some(RunTerminal::Cancelled)));
+            let interrupted = interrupted
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            assert_eq!(
+                interrupted.len(),
+                1,
+                "Run terminal must follow the interrupted callback's delayed completed side effect"
+            );
+            let callback = interrupted
+                .first()
+                .ok_or_else(|| RpcError::internal_error().data("missing interrupted callback"))?;
+            assert!(!callback.call_id.is_empty());
+            assert_eq!(callback.tool, "pending_tool");
+            assert_eq!(
+                callback
+                    .input
+                    .clone()
+                    .into_json()
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                serde_json::json!({"query":"原始🙂"})
+            );
+            Ok(())
+        })
+    })
+    .await;
+    assert!(
+        outcome.is_ok(),
+        "terminal callback dropped on cancelled Run: {outcome:?}; {}",
+        stderr_text(&host)
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+/// Payload admission rejects a constructor before submission. Its reserved
+/// child is released locally, so unregister has no phantom cleanup debt.
+#[cfg(feature = "framework-eval")]
+#[tokio::test]
+async fn factory_presubmit_failure_releases_unseen_child() -> Result<(), Box<dyn std::error::Error>>
+{
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![final_script("unused")]).await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    set_profile_limit(&config, "max_extension_payload_bytes", 1)?;
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    let created = dispatch.factory_created.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let created = created.clone();
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let factory = register_extension(&connection, ExtensionKind::AgentFactory, "presubmit-factory", ExtensionDescriptor::AgentFactory { descriptor_version: 1 }, None).await?;
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            let runner = invoke_source_operation(&connection, agent.clone(), "echo_agent::eval::runner::EvalRunner::new", vec![WireValue::Handle(session.session.clone()), WireValue::Path(WirePath::Utf8 { path: std::env::temp_dir().display().to_string() })]).await?;
+            let WireValue::Handle(runner) = runner.value else { return Err(RpcError::internal_error().data("missing EvalRunner")); };
+            let case = WireValue::from_json(serde_json::json!({"id":"unseen","name":"unseen","description":"presubmit payload bound","domain":null,"task":"never construct","project_fixture":null,"success_criteria":{"type":"output_contains","substring":"SDK"},"constraints":{}})).map_err(|error| RpcError::invalid_params().data(error.to_string()))?;
+            let _result = invoke_source_operation(&connection, agent, "echo_agent::eval::runner::EvalRunner::run_all", vec![WireValue::Handle(session.session), WireValue::Handle(runner), WireValue::List(vec![case]), WireValue::Handle(factory.clone())]).await;
+            assert!(created.lock().unwrap_or_else(|error| error.into_inner()).is_empty(), "rejected constructor must never reach the language implementation");
+            assert!(unregister(&connection, &factory).await?, "an unseen child must not become remote cleanup debt");
+            Ok(())
+        })
+    }).await;
+    assert!(
+        outcome.is_ok(),
+        "factory pre-submit reservation leaked: {outcome:?}; {}",
+        stderr_text(&host)
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn crud_only_task_store_rejects_execute_before_runtime_side_effects()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![final_script("unused")]).await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    let backend = dispatch.task_store.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let backend = backend.clone();
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            register_extension(&connection, ExtensionKind::AgentComponent, "crud-only", ExtensionDescriptor::AgentComponent { descriptor_version: 1, component: AgentComponentKindWire::RevisionedTaskStore, name: "crud-only".to_string(), capabilities: Default::default() }, None).await?;
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest { agent, working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            connection.send_request(TaskCreateRequest { task_run: session.task_run.clone(), spec: WireValue::from_json(serde_json::json!({"tasks":[{"id":"pending","title":"pending","description":"must not dispatch"}]})).map_err(|error| RpcError::invalid_params().data(error.to_string()))? }).block_task().await?;
+            let error = connection.send_request(TaskExecuteRequest { task_run: session.task_run.clone() }).block_task().await.err().ok_or_else(|| RpcError::internal_error().data("CRUD-only execution unexpectedly accepted"))?;
+            let typed = EchoSdkError::from_jsonrpc_data(error.data.as_ref()).map_err(|error| RpcError::internal_error().data(error))?;
+            assert_eq!(typed.code, ExtensionErrorCode::FeatureUnavailable);
+            let listed = connection.send_request(TaskListRequest { task_run: session.task_run }).block_task().await?;
+            assert!(listed.tasks.iter().all(|task| matches!(task.status, WireTaskStatus::Pending)));
+            assert_eq!(backend.execution_commits.load(Ordering::Acquire), 0, "capability preflight must not probe a runtime mutation");
+            Ok(())
+        })
+    }).await;
+    assert!(
+        outcome.is_ok(),
+        "CRUD-only backend rejection failed: {outcome:?}; {}",
+        stderr_text(&host)
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn task_execution_backend_failure_remains_queryable_as_typed_error()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![final_script("unused")]).await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    dispatch
+        .task_store
+        .reject_execution
+        .store(true, Ordering::Release);
+    let backend = dispatch.task_store.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let backend = backend.clone();
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            register_extension(&connection, ExtensionKind::AgentComponent, "failing-backend", ExtensionDescriptor::AgentComponent { descriptor_version: 1, component: AgentComponentKindWire::RevisionedTaskStore, name: "failing-backend".to_string(), capabilities: AgentComponentCapabilitiesWire { execution_cas_v1: true, ..Default::default() } }, None).await?;
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest { agent, working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            connection.send_request(TaskCreateRequest { task_run: session.task_run.clone(), spec: WireValue::from_json(serde_json::json!({"tasks":[{"id":"pending","title":"pending","description":"backend failure"}]})).map_err(|error| RpcError::invalid_params().data(error.to_string()))? }).block_task().await?;
+            connection.send_request(TaskExecuteRequest { task_run: session.task_run.clone() }).block_task().await?;
+            let failure = tokio::time::timeout(Duration::from_secs(10), async {
+                loop {
+                    match connection.send_request(TaskListRequest { task_run: session.task_run.clone() }).block_task().await {
+                        Ok(_) => tokio::time::sleep(Duration::from_millis(10)).await,
+                        Err(error) => return Ok::<_, RpcError>(error),
+                    }
+                }
+            }).await.map_err(|error| RpcError::internal_error().data(error.to_string()))??;
+            let typed = EchoSdkError::from_jsonrpc_data(failure.data.as_ref()).map_err(|error| RpcError::internal_error().data(error))?;
+            assert_eq!(typed.code, ExtensionErrorCode::FrameworkError);
+            assert_eq!(typed.operation.as_deref(), Some("_echo_agent/task/list"));
+            assert_eq!(typed.handle, Some(session.task_run.clone()));
+            assert!(typed.details.as_ref().and_then(|details| details.fields.as_ref()).is_some_and(|fields| fields.iter().any(|field| field.key == "origin_operation" && field.value == "_echo_agent/task/execute")), "the current query must preserve the originating execution failure identity");
+            let repeated = connection.send_request(TaskListRequest { task_run: session.task_run.clone() }).block_task().await.err().ok_or_else(|| RpcError::internal_error().data("lost TaskRun execution error on repeated query"))?;
+            assert_eq!(EchoSdkError::from_jsonrpc_data(repeated.data.as_ref()).map_err(|error| RpcError::internal_error().data(error))?, typed);
+            let graphs = backend.graphs.lock().unwrap_or_else(|error| error.into_inner());
+            assert!(graphs.values().flat_map(|graph| graph.snapshot.tasks.iter()).all(|task| matches!(task.execution.status, WireTaskStatus::Pending)), "diagnostic projection must not invent a canonical Failed task");
+            Ok(())
+        })
+    }).await;
+    assert!(
+        outcome.is_ok(),
+        "backend execution error became invisible: {outcome:?}; {}",
+        stderr_text(&host)
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+/// External CRUD and execution callbacks observe one backend graph; its
+/// stored Completed state contains the exact Subagent result in the same CAS.
+#[tokio::test]
+async fn revisioned_task_extension_is_shared_by_crud_and_execution()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![final_script("unused")]).await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    let diagnostics = dispatch.component_operations.clone();
+    let backend = dispatch.task_store.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let backend = backend.clone();
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            register_extension(&connection, ExtensionKind::AgentComponent, "task-backend", ExtensionDescriptor::AgentComponent { descriptor_version: 1, component: AgentComponentKindWire::RevisionedTaskStore, name: "task-backend".to_string(), capabilities: AgentComponentCapabilitiesWire { execution_cas_v1: true, ..Default::default() } }, None).await?;
+            register_extension(&connection, ExtensionKind::CustomAgent, "task-agent", ExtensionDescriptor::CustomAgent { descriptor_version: 1, name: "task-agent".to_string(), model_name: "sdk".to_string(), system_prompt: String::new(), tool_names: Vec::new() }, None).await?;
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest { agent, working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            let created = connection.send_request(TaskCreateRequest { task_run: session.task_run.clone(), spec: WireValue::from_json(serde_json::json!({"execution_mode":"sequential","tasks":[{"id":"A","title":"A","description":"first","extension":{"subagent":"task-agent"}},{"id":"B","title":"B","description":"second","depends_on":["A"],"extension":{"subagent":"task-agent"}}]})).map_err(|error| RpcError::invalid_params().data(error.to_string()))? }).block_task().await?;
+            assert_eq!(created.tasks.len(), 2);
+            assert_eq!(backend.relation_commits.load(Ordering::Acquire), 1);
+            connection.send_request(TaskExecuteRequest { task_run: session.task_run.clone() }).block_task().await?;
+            tokio::time::timeout(Duration::from_secs(10), async {
+                loop {
+                    let listed = connection.send_request(TaskListRequest { task_run: session.task_run.clone() }).block_task().await?;
+                    if listed.tasks.iter().all(|task| matches!(task.status, WireTaskStatus::Completed)) && listed.tasks.len() == 2 { return Ok::<_, RpcError>(()); }
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            }).await.map_err(|error| RpcError::internal_error().data(error.to_string()))??;
+            assert!(backend.execution_commits.load(Ordering::Acquire) >= 4, "claim and terminal writes must use the registered backend");
+            let graphs = backend.graphs.lock().unwrap_or_else(|error| error.into_inner());
+            assert_eq!(graphs.len(), 1);
+            let graph = graphs.values().next().ok_or_else(|| RpcError::internal_error().data("backend graph missing"))?;
+            assert_eq!(graph.snapshot.revision.to_u64(), Some(1), "runtime execution CAS must not bump relation revision");
+            assert!(graph.snapshot.tasks.iter().all(|task| matches!(task.execution.status, WireTaskStatus::Completed) && task.execution.result.is_some()), "Completed must carry its durable result in the backend transaction");
+            Ok(())
+        })
+    }).await;
+    assert!(
+        outcome.is_ok(),
+        "registered task backend diverged: {outcome:?}; stderr: {}; operations: {:?}; reverse frames: {:?}; callback replies: {}",
+        stderr_text(&host),
+        diagnostics
+            .lock()
+            .unwrap_or_else(|error| error.into_inner()),
+        reverse_frames(&host),
+        String::from_utf8_lossy(&host.stdin.lock().unwrap_or_else(|error| error.into_inner()))
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn missing_managed_capability_fails_before_store_mutation()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![final_script("must not commit")]).await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    let operations = dispatch.component_operations.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let operations = operations.clone();
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            register_extension(
+                &connection,
+                ExtensionKind::AgentComponent,
+                "legacy-conversation",
+                ExtensionDescriptor::AgentComponent {
+                    descriptor_version: 1,
+                    component: AgentComponentKindWire::ConversationStore,
+                    name: "legacy-conversation".to_string(),
+                    capabilities: Default::default(),
+                },
+                None,
+            )
+            .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent,
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let started = connection
+                .send_request(RunStartRequest {
+                    session: session.session,
+                    input: RunInput::Chat {
+                        text: "cannot persist".to_string(),
+                    },
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await;
+            match started {
+                Err(error) => assert!(EchoSdkError::from_jsonrpc_data(error.data.as_ref()).is_ok()),
+                Ok(started) => {
+                    let terminal = connection
+                        .send_request(RunWaitRequest {
+                            run: started.run,
+                            timeout: Some(WireDuration::from_nanos(10_000_000_000)),
+                        })
+                        .block_task()
+                        .await?;
+                    assert!(
+                        matches!(terminal.terminal, Some(RunTerminal::Failed { .. })),
+                        "missing persistence capability must fail explicitly"
+                    );
+                }
+            }
+            assert!(
+                operations
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .iter()
+                    .all(|operation| !operation.starts_with("ConversationStore:")),
+                "capability rejection must precede every reverse store side effect"
+            );
+            Ok(())
+        })
+    })
+    .await;
+    assert!(
+        outcome.is_ok(),
+        "missing managed capability was silently accepted: {outcome:?}; {}",
+        stderr_text(&host)
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+/// Managed persistence is tested through its real production Run path, with
+/// a remote backend that loses an acknowledgement after its atomic commit.
+#[tokio::test]
+async fn managed_persistence_deadline_and_lost_ack_preserve_commit_authority()
+-> Result<(), Box<dyn std::error::Error>> {
+    for lose_ack in [false, true] {
+        let directory = tempfile::tempdir()?;
+        let model =
+            start_scripted_model(vec![final_script("first"), final_script("second")]).await?;
+        let config = write_config(
+            directory.path(),
+            &format!("http://{model}/v1/chat/completions"),
+            &directory.path().join("state"),
+        );
+        let mut host = spawn_host(&config).await?;
+        let dispatch = Arc::new(SdkDispatch::default());
+        dispatch.managed.enabled.store(true, Ordering::Release);
+        dispatch
+            .managed
+            .delay_before_commit
+            .store(!lose_ack, Ordering::Release);
+        dispatch
+            .managed
+            .lose_first_apply_response
+            .store(lose_ack, Ordering::Release);
+        let managed = dispatch.managed.clone();
+        let events = dispatch.events.clone();
+        let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+            let managed = managed.clone();
+            let events = events.clone();
+            Box::pin(async move {
+                connection
+                    .send_request(initialize_request(Some(client_hello())))
+                    .block_task()
+                    .await?;
+                for component in [
+                    AgentComponentKindWire::ConversationStore,
+                    AgentComponentKindWire::RuntimeStateStore,
+                ] {
+                    register_extension(
+                        &connection,
+                        ExtensionKind::AgentComponent,
+                        &format!("managed-{component:?}"),
+                        ExtensionDescriptor::AgentComponent {
+                            descriptor_version: 1,
+                            component,
+                            name: format!("managed-{component:?}"),
+                            capabilities: AgentComponentCapabilitiesWire {
+                                conversation_projection: if component
+                                    == AgentComponentKindWire::ConversationStore
+                                {
+                                    ConversationProjectionCapabilityWire::AtomicV1
+                                } else {
+                                    ConversationProjectionCapabilityWire::Unsupported
+                                },
+                                runtime_state: if component
+                                    == AgentComponentKindWire::RuntimeStateStore
+                                {
+                                    RuntimeStateCapabilityWire::RevisionedV1
+                                } else {
+                                    RuntimeStateCapabilityWire::Unsupported
+                                },
+                                persistence_call: PersistenceCallCapabilityWire::AbsoluteDeadlineV1,
+                                ..Default::default()
+                            },
+                        },
+                        Some(WireDuration::from_nanos(30_000_000_000)),
+                    )
+                    .await?;
+                }
+                let agent = connection
+                    .send_request(AgentCreateRequest {
+                        config: AgentConfigWire::HostDefault,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?
+                    .agent;
+                let session = connection
+                    .send_request(SessionCreateRequest {
+                        agent,
+                        working_dir: None,
+                        session_id: None,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?;
+                let started = connection
+                    .send_request(RunStartRequest {
+                        session: session.session.clone(),
+                        input: RunInput::Chat {
+                            text: "first".to_string(),
+                        },
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?;
+                let terminal = connection
+                    .send_request(RunWaitRequest {
+                        run: started.run,
+                        timeout: Some(WireDuration::from_nanos(20_000_000_000)),
+                    })
+                    .block_task()
+                    .await?;
+                assert!(terminal.terminal.is_some());
+                if !lose_ack {
+                    tokio::time::timeout(Duration::from_secs(2), async {
+                        while managed.expired.load(Ordering::Acquire) == 0 {
+                            tokio::time::sleep(Duration::from_millis(10)).await;
+                        }
+                    })
+                    .await
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                    assert_eq!(
+                        managed.mutations.load(Ordering::Acquire),
+                        0,
+                        "an expired absolute deadline must never start a durable mutation"
+                    );
+                    return Ok(());
+                }
+                let committed_receipts = managed
+                    .receipts
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .clone();
+                let committed = managed.projected_items.load(Ordering::Acquire);
+                assert!(
+                    committed > 0,
+                    "fixture must commit before withholding its response"
+                );
+                let pending = managed
+                    .runtime
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .values()
+                    .filter_map(|snapshot| snapshot.checkpoint.as_ref())
+                    .any(|checkpoint| {
+                        serde_json::from_str::<serde_json::Value>(&checkpoint.messages_json)
+                            .ok()
+                            .and_then(|payload| {
+                                payload.get("pending_transcript_projection").cloned()
+                            })
+                            .is_some_and(|pending| !pending.is_null())
+                    });
+                assert!(
+                    pending,
+                    "lost response must retain the durable pending effect for recovery"
+                );
+                let deferred_unknown = events.lock().unwrap_or_else(|error| error.into_inner()).iter().any(|event| {
+                    event.payload.event_type == "transcript_projection_settlement"
+                        && event.payload.data.clone().and_then(|data| data.into_json().ok())
+                            .and_then(|data| serde_json::from_value::<TranscriptProjectionSettlementWire>(data).ok())
+                            .is_some_and(|settlement| settlement.status == TranscriptProjectionSettlementStatusWire::Deferred
+                                && settlement.error_class == Some(TranscriptProjectionErrorClassWire::DeadlineExceeded)
+                                && settlement.operation_id.as_ref().is_some_and(|operation| committed_receipts.contains_key(operation)))
+                });
+                // The framework's shared absolute deadline classifies a
+                // timeout as DeadlineExceeded. It retains a durable pending
+                // intent because expiry after dispatch does not prove no commit.
+                assert!(deferred_unknown, "post-dispatch deadline must preserve a typed deferred effect with its committed operation identity");
+                let second = connection
+                    .send_request(RunStartRequest {
+                        session: session.session,
+                        input: RunInput::Chat {
+                            text: "second".to_string(),
+                        },
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?;
+                let settled = connection
+                    .send_request(RunWaitRequest {
+                        run: second.run,
+                        timeout: Some(WireDuration::from_nanos(20_000_000_000)),
+                    })
+                    .block_task()
+                    .await?;
+                assert!(
+                    matches!(settled.terminal, Some(RunTerminal::Completed { .. })),
+                    "recovery must reconcile the known receipt before continuing: {:?}",
+                    settled.terminal
+                );
+                assert!(
+                    managed.duplicate_applies.load(Ordering::Acquire) > 0,
+                    "framework must recover using the same durable batch identity"
+                );
+                let receipt_count = managed
+                    .receipts
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .len();
+                assert!(receipt_count > 0);
+                let receipts = managed
+                    .receipts
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner());
+                for (operation, original) in committed_receipts {
+                    assert_eq!(
+                        receipts.get(&operation),
+                        Some(&original),
+                        "recovery must preserve the exact atomic commit receipt"
+                    );
+                }
+                Ok(())
+            })
+        })
+        .await;
+        assert!(
+            outcome.is_ok(),
+            "managed persistence scenario lose_ack={lose_ack} failed: {outcome:?}; stderr: {}",
+            stderr_text(&host)
+        );
+        host.child.kill().await?;
+    }
+    Ok(())
+}
+
+/// A backend commit survives an actual ACP disconnect and Host restart.
+/// Recovery reuses its operation identity and exact receipt instead of
+/// treating an unanswered callback as a known no-commit failure.
+#[tokio::test]
+async fn managed_commit_disconnect_restart_replays_same_receipt()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![
+        final_script("before disconnect"),
+        final_script("after restart"),
+    ])
+    .await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let dispatch = Arc::new(SdkDispatch::default());
+    dispatch.managed.enabled.store(true, Ordering::Release);
+    dispatch
+        .managed
+        .lose_first_apply_response
+        .store(true, Ordering::Release);
+    let mut host = spawn_host(&config).await?;
+    let backend = dispatch.managed.clone();
+    let first = drive_sdk(&mut host, dispatch.clone(), move |connection| {
+        let backend = backend.clone();
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            register_managed_stores(&connection).await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent,
+                    working_dir: None,
+                    session_id: Some("managed-restart".to_string()),
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            connection
+                .send_request(RunStartRequest {
+                    session: session.session,
+                    input: RunInput::Chat {
+                        text: "commit then disconnect".to_string(),
+                    },
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            tokio::time::timeout(Duration::from_secs(10), async {
+                while backend.projected_items.load(Ordering::Acquire) == 0 {
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            })
+            .await
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            // Returning closes the official ACP transport while the reverse
+            // response is still held. This is a real disconnect, not an error DTO.
+            Ok(())
+        })
+    })
+    .await;
+    assert!(
+        first.is_ok(),
+        "disconnect fixture failed: {first:?}; {}",
+        stderr_text(&host)
+    );
+    let _ = tokio::time::timeout(Duration::from_secs(10), host.child.wait()).await??;
+    let committed_receipts = dispatch
+        .managed
+        .receipts
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    assert!(!committed_receipts.is_empty());
+    let pending = dispatch
+        .managed
+        .runtime
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .values()
+        .filter_map(|snapshot| snapshot.checkpoint.as_ref())
+        .any(|checkpoint| {
+            serde_json::from_str::<serde_json::Value>(&checkpoint.messages_json)
+                .ok()
+                .and_then(|payload| payload.get("pending_transcript_projection").cloned())
+                .is_some_and(|pending| !pending.is_null())
+        });
+    assert!(
+        pending,
+        "disconnect must retain framework-owned pending intent"
+    );
+    // Keep the backend's durable committed state across the new transport.
+    let mut host = spawn_host(&config).await?;
+    let backend = dispatch.managed.clone();
+    let resumed = drive_sdk(&mut host, dispatch.clone(), move |connection| {
+        let backend = backend.clone();
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            register_managed_stores(&connection).await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionLoadRequest {
+                    agent,
+                    session_id: "managed-restart".to_string(),
+                    working_dir: None,
+                })
+                .block_task()
+                .await?;
+            let run = connection
+                .send_request(RunStartRequest {
+                    session: session.session,
+                    input: RunInput::Chat {
+                        text: "continue after restart".to_string(),
+                    },
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let terminal = connection
+                .send_request(RunWaitRequest {
+                    run: run.run,
+                    timeout: Some(WireDuration::from_nanos(20_000_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(
+                matches!(terminal.terminal, Some(RunTerminal::Completed { .. })),
+                "restart recovery failed: {:?}",
+                terminal.terminal
+            );
+            assert!(
+                backend.duplicate_applies.load(Ordering::Acquire) > 0,
+                "restart must reconcile the same operation instead of creating a replacement batch"
+            );
+            Ok(())
+        })
+    })
+    .await;
+    assert!(
+        resumed.is_ok(),
+        "managed restart fixture failed: {resumed:?}; {}",
+        stderr_text(&host)
+    );
+    {
+        let receipts = dispatch
+            .managed
+            .receipts
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        for (operation, original) in committed_receipts {
+            assert_eq!(receipts.get(&operation), Some(&original));
+        }
+    }
+    host.child.kill().await?;
+    Ok(())
+}
+
+async fn register_managed_stores(
+    connection: &ConnectionTo<agent_client_protocol::Agent>,
+) -> Result<(), RpcError> {
+    for component in [
+        AgentComponentKindWire::ConversationStore,
+        AgentComponentKindWire::RuntimeStateStore,
+    ] {
+        register_extension(
+            connection,
+            ExtensionKind::AgentComponent,
+            &format!("managed-{component:?}"),
+            ExtensionDescriptor::AgentComponent {
+                descriptor_version: 1,
+                component,
+                name: format!("managed-{component:?}"),
+                capabilities: AgentComponentCapabilitiesWire {
+                    conversation_projection: if component
+                        == AgentComponentKindWire::ConversationStore
+                    {
+                        ConversationProjectionCapabilityWire::AtomicV1
+                    } else {
+                        ConversationProjectionCapabilityWire::Unsupported
+                    },
+                    runtime_state: if component == AgentComponentKindWire::RuntimeStateStore {
+                        RuntimeStateCapabilityWire::RevisionedV1
+                    } else {
+                        RuntimeStateCapabilityWire::Unsupported
+                    },
+                    persistence_call: PersistenceCallCapabilityWire::AbsoluteDeadlineV1,
+                    ..Default::default()
+                },
+            },
+            Some(WireDuration::from_nanos(30_000_000_000)),
+        )
+        .await?;
+    }
+    Ok(())
+}
+
+/// The ordinary ToolManager timeout drops the reverse request before its
+/// first response. Both Session reentry and handle quota must become usable.
+#[tokio::test]
+async fn tool_manager_timeout_before_stream_ack_releases_callback_owner()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![
+        tool_call_script("pending_tool", r#"{"query":"timeout"}"#),
+        final_script("recovered"),
+    ])
+    .await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut document: serde_json::Value = serde_json::from_slice(&std::fs::read(&config)?)?;
+    let settings = document
+        .pointer_mut("/default_agent/agent")
+        .and_then(serde_json::Value::as_object_mut)
+        .ok_or("missing agent settings")?;
+    settings.insert("tool_timeout_ms".to_string(), serde_json::json!(50));
+    std::fs::write(&config, serde_json::to_vec_pretty(&document)?)?;
+    // One default Agent + extension + explicit Agent + Session + TaskRun +
+    // Run + Run stream + pending callback exhaust this budget exactly.
+    set_profile_limit(&config, "max_open_handles", 8)?;
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    dispatch
+        .hang
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .push("tool_execute_stream");
+    let pending = dispatch.silent.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let pending = pending.clone();
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let mut descriptor = tool_descriptor("pending_tool");
+            if let ExtensionDescriptor::Tool {
+                supports_streaming, ..
+            } = &mut descriptor
+            {
+                *supports_streaming = true;
+            }
+            let extension = register_extension(
+                &connection,
+                ExtensionKind::Tool,
+                "pending-tool",
+                descriptor,
+                Some(WireDuration::from_nanos(30_000_000_000)),
+            )
+            .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent: agent.clone(),
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let started = connection
+                .send_request(RunStartRequest {
+                    session: session.session.clone(),
+                    input: RunInput::Chat {
+                        text: "call the tool".to_string(),
+                    },
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let terminal = connection
+                .send_request(RunWaitRequest {
+                    run: started.run,
+                    timeout: Some(WireDuration::from_nanos(10_000_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(terminal.terminal.is_some());
+            assert!(
+                !pending
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .is_empty(),
+                "fixture must withhold every attempted initial stream acknowledgement"
+            );
+            invoke_source_operation(
+                &connection,
+                agent,
+                "echo_agent::agent::react::ReactAgent::set_plan_mode",
+                vec![WireValue::Handle(session.session), WireValue::Bool(true)],
+            )
+            .await?;
+            connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            assert!(unregister(&connection, &extension).await?);
+            Ok(())
+        })
+    })
+    .await;
+    assert!(
+        outcome.is_ok(),
+        "ToolManager timeout leaked pending stream: {outcome:?}; stderr: {}",
+        stderr_text(&host)
+    );
+    host.child.kill().await?;
+    Ok(())
+}
+
+/// Cancellation before the reverse stream acknowledgement releases the
+/// pending Session callback owner, so the next exclusive mutation can run.
+#[tokio::test]
+async fn cancelled_initial_stream_response_releases_session_callback_owner()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let model = start_scripted_model(vec![final_script("unused")]).await?;
+    let config = write_config(
+        directory.path(),
+        &format!("http://{model}/v1/chat/completions"),
+        &directory.path().join("state"),
+    );
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    dispatch
+        .hang
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .push("llm_chat_stream");
+    let pending = dispatch.silent.clone();
+    let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let pending = pending.clone();
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            register_extension(
+                &connection,
+                ExtensionKind::LlmClient,
+                "pending-llm",
+                llm_descriptor("pending"),
+                Some(WireDuration::from_nanos(30_000_000_000)),
+            )
+            .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent: agent.clone(),
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let started = connection
+                .send_request(RunStartRequest {
+                    session: session.session.clone(),
+                    input: RunInput::Chat {
+                        text: "wait for initial callback".to_string(),
+                    },
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            tokio::time::timeout(Duration::from_secs(10), async {
+                loop {
+                    if !pending
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .is_empty()
+                    {
+                        break;
+                    }
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            })
+            .await
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            connection
+                .send_request(RunCancelRequest {
+                    run: started.run.clone(),
+                })
+                .block_task()
+                .await?;
+            let terminal = connection
+                .send_request(RunWaitRequest {
+                    run: started.run,
+                    timeout: Some(WireDuration::from_nanos(10_000_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(matches!(terminal.terminal, Some(RunTerminal::Cancelled)));
+            invoke_source_operation(
+                &connection,
+                agent,
+                "echo_agent::agent::react::ReactAgent::set_plan_mode",
+                vec![WireValue::Handle(session.session), WireValue::Bool(true)],
+            )
+            .await?;
+            Ok(())
+        })
+    })
+    .await;
+    assert!(
+        outcome.is_ok(),
+        "pending stream owner leaked: {outcome:?}; stderr: {}",
+        stderr_text(&host)
+    );
+    host.child.kill().await?;
     Ok(())
 }
 

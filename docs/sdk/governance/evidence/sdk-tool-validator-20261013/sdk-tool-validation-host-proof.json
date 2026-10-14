@@ -1,0 +1,18 @@
+{
+  "classification": "new canonical framework Tool validation SDK candidate; local path combination, no publishedpin/main",
+  "host": "/tmp/echo-sdk-governance-tool-validation-host",
+  "host_sha256": "c52da2d346d8848074b646e5442ecc83890cd68991f08287780280f871b59f89",
+  "source_sha256": {
+    "echo-sdk-host/src/core_profile/facade/tools.rs": "e3224c4ed670a639585a99af09c1f1902c61431a832507a4b835d4dac0b2f70a",
+    "echo-sdk-host/src/core_profile/facade/workflow.rs": "f5c72f5e132d0de1e2fd6b9a17fb892201026838cff72db4b5a802bed02e7701"
+  },
+  "framework_helper_source_sha256": "34be8fa37e80f2052056043c312e9fcbb316b3ab2c710e05737e989619eaf4ad",
+  "full_rust_log": "/tmp/sdk-canonical-tool-validation-full-rust-correct-reexport.log",
+  "log_sha256": "8b052a259b2ab83139a2c1b6599b389096eb497ba404b214e3e2244d278e9287",
+  "passed": 418,
+  "failed": 0,
+  "ignored": 0,
+  "targets": 13,
+  "build_log": "/tmp/sdk-canonical-tool-validation-host-build.log",
+  "initial_compile_error": "incorrect re-export manager path corrected to existing tools::execution; raw initial log preserved"
+}

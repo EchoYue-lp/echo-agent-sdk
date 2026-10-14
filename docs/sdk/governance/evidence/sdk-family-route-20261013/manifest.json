@@ -1,0 +1,48 @@
+{
+  "classification": "native catalog wire-method spelling repair; three languages actual each1realHostcase, not finalmain",
+  "host": "/tmp/echo-sdk-governance-tool-validation-host",
+  "host_sha256": "c52da2d346d8848074b646e5442ecc83890cd68991f08287780280f871b59f89",
+  "source_sha256": {
+    "sdks/typescript/src/client.ts": "8a3305983e88e995b3e636c94d65173816b159a7e4fe7702f3598a5b51cff3da",
+    "sdks/python/src/echo_agent_sdk/client.py": "3abae76652ebd97897d649a52b4cec7290bf723326fc770ba44ed952c600ed3a",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "e5597e4687b5f232c305ef167094f39296b6dd5bed63df42774efcbf287a640f",
+    "sdks/typescript/test/family-route-host.test.js": "6dbf7c6ced8e509e2de3c7b6e2ab9bf5fbbf64921fcc9bdbecb1e7b6df1c1051",
+    "sdks/python/tests/test_family_route_host.py": "4a29586deee532e282f88ab54770bdc41b630dd54e20ea32f134119e5ac478c2",
+    "sdks/java/src/test/java/com/echoagent/sdk/FamilyRouteHostTest.java": "c601acd1b875ef8b657f1bf3c446ff64365e4bd94f6b5754f0b3133c5e2fc706"
+  },
+  "files": [
+    {
+      "path": "docs/sdk/governance/evidence/sdk-family-route-20261013/sdk-family-route-typescript-green.log",
+      "sha256": "59cfd6409515f5c5416d775dd4631be3e8d26bf69241f855ba1ba125f0e77c14",
+      "original": "/tmp/sdk-family-route-typescript-green.log"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-family-route-20261013/sdk-family-route-python-green.log",
+      "sha256": "b04656d863ecadc967f93f0bf7a2f527194da3a48ce46273d6f1031502da787d",
+      "original": "/tmp/sdk-family-route-python-green.log"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-family-route-20261013/sdk-family-route-python-serial-green.log",
+      "sha256": "781d8adb85d573445f0a3aa93007fd37217a9bd16cb36bbbb550e5b91756898b",
+      "original": "/tmp/sdk-family-route-python-serial-green.log"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-family-route-20261013/sdk-family-route-java-green.log",
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "original": "/tmp/sdk-family-route-java-green.log"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-family-route-20261013/content-guard-public-call-route-failure.log",
+      "sha256": "facee131488751e69bdecaf7cd38910323398d1d2136d3435c9f3ec4d28f0788",
+      "original": "/tmp/sdk-computation-candidate-fixture/content-guard-public-call-route-failure.log"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-family-route-20261013/TEST-com.echoagent.sdk.FamilyRouteHostTest.xml",
+      "sha256": "c3a6e23b4b4c33ff03fa325608e9b576a10739c60a519d2a142e8dd31b4507b7",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.FamilyRouteHostTest.xml"
+    }
+  ],
+  "scenario": "call and family content_guard redact_exact UTF8 exactly, wrong family localreject; catalog exactmethod/signatureauthority",
+  "python_initial_failure": "concurrent native clients used same state root; initial connectionclosed with otherlanguages stillgreen, serial publicspawn sameconfig passes. Preserve raw initial failure; isolated roots required across concurrent nativeHosts.",
+  "source_contract_expanded": false
+}

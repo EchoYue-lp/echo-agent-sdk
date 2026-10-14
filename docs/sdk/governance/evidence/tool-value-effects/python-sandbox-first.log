@@ -1,0 +1,231 @@
+F
+=================================== FAILURES ===================================
+_________ test_sandbox_stream_real_process_completion_cancel_and_close _________
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x1066e52e0>
+method = '_echo_agent/shell/op'
+params = {'operation': 'sandbox.extension.run_stream', 'signature_digest': 'sha256:b874f25886904bf82944bfb5c95c93021d3fc7058a9a...'value': {'kind': 'map', 'value': [...]}}, {'key': {'kind': 'string', 'value': 'stdin'}, 'value': {'kind': 'null'}}]}]}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+>           return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+
+sdks/python/src/echo_agent_sdk/client.py:3387: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/.venv/lib/python3.12/site-packages/acp/client/connection.py:340: in ext_method
+    return await self._conn.send_request(f"_{method}", params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <acp.connection.Connection object at 0x1066e4680>
+method = '_echo_agent/shell/op'
+params = {'operation': 'sandbox.extension.run_stream', 'signature_digest': 'sha256:b874f25886904bf82944bfb5c95c93021d3fc7058a9a...'value': {'kind': 'map', 'value': [...]}}, {'key': {'kind': 'string', 'value': 'stdin'}, 'value': {'kind': 'null'}}]}]}
+
+    async def send_request(self, method: str, params: JsonValue | None = None) -> Any:
+        self._raise_if_unavailable()
+        request_id = self._next_request_id
+        self._next_request_id += 1
+        future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
+        self._pending[request_id] = future
+        payload = {"jsonrpc": "2.0", "id": request_id, "method": method, "params": params}
+        try:
+            await self._transport.send(payload)
+        except BaseException:
+            self._pending.pop(request_id, None)
+            future.cancel()
+            raise
+        self._notify_observers(StreamDirection.OUTGOING, payload)
+        try:
+>           return await future
+                   ^^^^^^^^^^^^
+E           acp.exceptions.RequestError: argument 0 is not a lossless wire value: wire value exceeds limit: typed wire value has no implicit JSON projection
+
+sdks/python/.venv/lib/python3.12/site-packages/acp/connection.py:126: RequestError
+
+The above exception was the direct cause of the following exception:
+
+    async def test_sandbox_stream_real_process_completion_cancel_and_close():
+        import shlex
+        import signal
+    
+        from echo_agent_sdk import AgentComponentDescriptor, WireHandle, from_wire, to_wire
+    
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-sandbox-", dir=ROOT))
+        fixture_process = await asyncio.create_subprocess_exec(
+            sys.executable, str(Path(fixture.__file__)), "--work", str(work)
+        )
+        sdk = None
+        facts = []
+        tasks = []
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert fixture_process.returncode is None
+                    await asyncio.sleep(0.01)
+            sdk = await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json"))
+            for mode in ["success", "cancel", "close"]:
+                fact = {
+                    "mode": mode,
+                    "started": False,
+                    "cancel_observed": False,
+                    "finally": 0,
+                    "pid": None,
+                    "exit_code": None,
+                    "sent": [],
+                }
+                facts.append(fact)
+                started = asyncio.Event()
+                settled = asyncio.Event()
+    
+                async def handler(
+                    payload,
+                    cancellation,
+                    *,
+                    fact=fact,
+                    started=started,
+                    settled=settled,
+                    mode=mode,
+                ):
+                    request = payload["invocation"]["input"]["call"]
+                    assert request["operation"] == "sandbox_execute_stream"
+                    command = from_wire(request["value"]["command"])
+                    fact["command"] = command
+                    fact["invocation_id"] = payload["invocation_id"]
+                    stream = WireHandle.from_dict(payload["stream"])
+                    writer = sdk.stream_writer(stream)
+                    child = None
+                    try:
+                        child = await asyncio.create_subprocess_exec(
+                            *shlex.split(command["kind"]["Shell"]),
+                            stdout=asyncio.subprocess.PIPE,
+                            stderr=asyncio.subprocess.PIPE,
+                            start_new_session=True,
+                        )
+                        fact["pid"] = child.pid
+                        fact["started"] = True
+                        started.set()
+                        if mode == "success":
+                            stdout, stderr = await child.communicate()
+                            fact["exit_code"] = child.returncode
+                            for channel, data in [("stdout", stdout), ("stderr", stderr)]:
+                                if data:
+                                    text = data.decode("utf8")
+                                    fact["sent"].append({"channel": channel, "chunk": text})
+                                    await writer.agent_component_chunk(
+                                        {
+                                            "component": "sandbox",
+                                            "event": {
+                                                "event": "output",
+                                                "channel": channel,
+                                                "chunk": text,
+                                            },
+                                        }
+                                    )
+                            result = {
+                                "exit_code": child.returncode,
+                                "stdout": stdout.decode(),
+                                "stderr": stderr.decode(),
+                                "duration": {"secs": 0, "nanos": 1},
+                                "sandbox_type": "owned-native-fixture",
+                                "timed_out": False,
+                                "cancelled": False,
+                                "output_truncated": False,
+                                "stdout_bytes": len(stdout),
+                                "stderr_bytes": len(stderr),
+                            }
+                            await writer.agent_component_complete(
+                                {
+                                    "component": "sandbox",
+                                    "terminal": {
+                                        "terminal": "complete",
+                                        "result": to_wire(result),
+                                    },
+                                }
+                            )
+                            return {"outcome": "stream", "stream": stream.to_dict()}
+                        await asyncio.wait_for(cancellation.wait(), 5)
+                        fact["cancel_observed"] = cancellation.is_set()
+                        os.killpg(child.pid, signal.SIGTERM)
+                        await child.wait()
+                        fact["exit_code"] = child.returncode
+                        return {"outcome": "cancelled"}
+                    finally:
+                        if child and child.returncode is None:
+                            os.killpg(child.pid, signal.SIGTERM)
+                            await child.wait()
+                            fact["exit_code"] = child.returncode
+                        fact["finally"] += 1
+                        settled.set()
+    
+                registration = await sdk.register_extension(
+                    "agent_component",
+                    "sandbox-" + mode,
+                    AgentComponentDescriptor(
+                        "sandbox_executor",
+                        "native-sandbox",
+                        isolation_level="process",
+                        supports_streaming=True,
+                    ).to_wire(),
+                    handler,
+                )
+                agent = await sdk.create_agent()
+                session = await agent.create_session(str(work))
+                shell = (
+                    "printf 'sandbox 中文🙂\\n'"
+                    if mode == "success"
+                    else "tail -f " + str(work / "tail.txt")
+                )
+                command = {
+                    "kind": {"Shell": shell},
+                    "minimum_isolation": None,
+                    "working_dir": None,
+                    "env": {},
+                    "timeout": {"secs": 30, "nanos": 0},
+                    "stdin": None,
+                }
+>               stream = await session.invoke(
+                    "sandbox.extension.run_stream", [registration.wire, command]
+                )
+
+sdks/python/tests/test_tool_value_effect_host.py:427: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/src/echo_agent_sdk/client.py:4313: in invoke
+    return await self.client.call(operation, self.wire, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sdks/python/src/echo_agent_sdk/client.py:3567: in call
+    return await self.family(resolved.family, operation, handle, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sdks/python/src/echo_agent_sdk/client.py:3585: in family
+    response = await self.request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x1066e52e0>
+method = '_echo_agent/shell/op'
+params = {'operation': 'sandbox.extension.run_stream', 'signature_digest': 'sha256:b874f25886904bf82944bfb5c95c93021d3fc7058a9a...'value': {'kind': 'map', 'value': [...]}}, {'key': {'kind': 'string', 'value': 'stdin'}, 'value': {'kind': 'null'}}]}]}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+            return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+>           raise EchoAgentError.from_exception(error, method) from error
+E           echo_agent_sdk.errors.EchoAgentError: argument 0 is not a lossless wire value: wire value exceeds limit: typed wire value has no implicit JSON projection
+
+sdks/python/src/echo_agent_sdk/client.py:3393: EchoAgentError
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_tool_value_effect_host.py::test_sandbox_stream_real_process_completion_cancel_and_close
+1 failed, 2 deselected in 0.89s

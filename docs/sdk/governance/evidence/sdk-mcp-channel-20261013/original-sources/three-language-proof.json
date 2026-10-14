@@ -1,0 +1,290 @@
+{
+  "host": "/tmp/echo-sdk-governance-workflow-shape-host",
+  "host_sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2",
+  "runs": [
+    {
+      "language": "typescript",
+      "exit_code": 0,
+      "actual_scenarios": 4,
+      "execution_kind": "native public SDK test4passed0skip",
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-stdio-gU0Qo2",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-transport-retry-Qjonou",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-normal-xrZoiL",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-retry-CRe6H5"
+      ],
+      "log_sha256": "0cc65ac890cf980fc55b37aa4e3673f84ddfa43bd12ff586f3d568c488db9d26",
+      "raw_files": [
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-stdio/b.pid",
+          "sha256": "f96bc3b20239f56562a20c7094c14880ab233b04dc254001062a42b04ecd27b6"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-stdio/a.pid",
+          "sha256": "b47abeef9fafcc583d91b75138dd18d746068961422a9d547ab8c21d9d69de78"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-stdio/a.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-stdio/a-requests.jsonl",
+          "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-stdio/b.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-stdio/b-requests.jsonl",
+          "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-stdio/observed.json",
+          "sha256": "5ac9fd08aac3280fbafe90e73fdad67815ee0d6d8a28253acac161cd551ee87c"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/mcp-transport-retry/observed.json",
+          "sha256": "eb874825966eb7759d414d4e559db5bd3a31199194198544b0d2eee13f181a06"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/channels-normal/b.pid",
+          "sha256": "442c4e0bf53acc36d2f77a59f88bc6621ca9189b6dc066cb0555863ce16eda66"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/channels-normal/a.pid",
+          "sha256": "a66be9f926fee2d49219af98d96ae8446c2eb39856d7bf85199d0b2957e59c4e"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/channels-normal/observed.json",
+          "sha256": "d953612a33093af9d8d827ffef55924274681c0f6bb6c97718f7683f4f065474"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/channels-retry/b.pid",
+          "sha256": "aa2c7dd07f39f02fc59d4527ffffe9fb8b3fc40e2b1fd7d723001f6ea332189c"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/channels-retry/a.pid",
+          "sha256": "9a94bf19f4ff9658ab6075299f215ab0f392571aa20f4c189e174bd9b12cbacf"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/typescript/channels-retry/observed.json",
+          "sha256": "92e023e3c5cc2f98ecffb0eb91758330296e6fd63128f3091adcceaea00e7e4c"
+        }
+      ],
+      "normalized_sha256": "381e02e69018880cb5266e3bf97b5cd442beccb6689d80a576792c6d619450e1"
+    },
+    {
+      "language": "python",
+      "exit_code": 0,
+      "actual_scenarios": 4,
+      "execution_kind": "native public SDK test4passed0skip",
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-mcp-stdio-7l7za6dx",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-mcp-transport-retry-0og2c99t",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-channels-normal-5s6qeirv",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-channels-retry-464nilka"
+      ],
+      "log_sha256": "c91306f709dd73a73008e5ddc249564e7767e8d2693e098a384f0bd6152cea92",
+      "raw_files": [
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/b.pid",
+          "sha256": "bb914f7f318a9e3c08d5b1003cd9057075fdee20dcd8c109f6c7cf9359a78a1f"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/a.pid",
+          "sha256": "abf00632d271f8e0bdcedbed3093bb3bebdf10de63243491bdba81743dd29195"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/a.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/a-requests.jsonl",
+          "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/b.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/b-requests.jsonl",
+          "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/errors.jsonl",
+          "sha256": "fac23280582eee5e8d50f33599ad8e37e0adb8b2d9d96cbfaa2d56635813e066"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-stdio/observed.json",
+          "sha256": "2dbba5b0f574a009e8ebe24c136ac3aca80610226b6df898ccaff7c296065a32"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-transport-retry/errors.jsonl",
+          "sha256": "b2b76e387c592de637f005b15c82de966153b2dc2a06123759cb3af2f94cf6bc"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/mcp-transport-retry/observed.json",
+          "sha256": "a40cda1243390bd50d67d5255f03a21ce29b5a1d4005680ffc3204e700b622f3"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/channels-normal/b.pid",
+          "sha256": "0dd0a65cb46c64e134dae4d4c1f2394a9a23037af82dd07c5c392951cd1c41ad"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/channels-normal/a.pid",
+          "sha256": "fba27d30961d46010f2dcc7650857aa1861feada3a707450ad0822f9acdd6834"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/channels-normal/observed.json",
+          "sha256": "c2f4b1356bbef567c7634c6ff74e034707c68d6f88bdf8647a84468f4ac3961f"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/channels-retry/b.pid",
+          "sha256": "4a62a93822e2ce3d0499421c566b012274df3aca1790d367374541a470e7612c"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/channels-retry/a.pid",
+          "sha256": "f55bdcdf194e5b14b0bf77a6afa532d758d038d64c43bc4282f708a51cd971b0"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/channels-retry/errors.jsonl",
+          "sha256": "c9272f1271b90ae94179be13df5591ad074ccf875f48be522b89a4248e56773b"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/python/channels-retry/observed.json",
+          "sha256": "fbecc024e5ebcac32bd6fae708f26a996f5aec01b48d9356afaefd5fafafbb13"
+        }
+      ],
+      "normalized_sha256": "381e02e69018880cb5266e3bf97b5cd442beccb6689d80a576792c6d619450e1"
+    },
+    {
+      "language": "java",
+      "exit_code": 0,
+      "actual_scenarios": 4,
+      "execution_kind": "public SDK native client calls; Java isolated javac/main assertions, not JUnit count",
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-stdio-4767734077616320861",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-transport-retry-5789853562831640785",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-normal-8220659748692205817",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-retry-1788195605441002071"
+      ],
+      "log_sha256": "fa2b4d3631a597be2152479e35954b88f06fac2444689d7286b5c126de57cc40",
+      "raw_files": [
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-stdio/b.pid",
+          "sha256": "5a3c41792572e8dedc1e8cc17b884e307e2013200c41ac6e047b67f44c03ed71"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-stdio/a.pid",
+          "sha256": "c3a0bea84292f62478276c04a12692fde509a20ef9517cd92c7507115add6c35"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-stdio/a.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-stdio/a-requests.jsonl",
+          "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-stdio/b.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-stdio/b-requests.jsonl",
+          "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-stdio/observed.json",
+          "sha256": "3303e86c868fe0a610e30007c3ba3656c0a2021896a03b943629eb72cad5b08b"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-transport-retry/summary.json",
+          "sha256": "300d5c1c7cefb3b79ff29182f92a082ab0fc38588c09ce69d666ee230d678caf"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/mcp-transport-retry/observed.json",
+          "sha256": "891f8dcc35c556c34fc5a446a3d6a1f57381d73e25403cd3901e582d95315b3f"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-normal/summary.json",
+          "sha256": "d6e555be80976865d8b550391a87a80f1af7e413a79b63280823c9ff88c04afc"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-normal/b.pid",
+          "sha256": "b0d966ecb4e2737836f4f8f40056139cac8d4fca0c679f3b51946363270e5ca7"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-normal/a.pid",
+          "sha256": "4c749cc4e79d2e6b330e0b68495772f501731fc3cca85fae0c53183732f86553"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-normal/observed.json",
+          "sha256": "ed2ce2ac0189455ce5a1b3e8ed73361ed3a70b0740eeb2756cff2e0e72df044a"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-retry/summary.json",
+          "sha256": "2a1f0eb09916c78050c232a7a6d6a3c4fc7cf8438eb6cff54c5447a1573ec6bb"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-retry/b.pid",
+          "sha256": "dbaabb587a9d66242c92f0108153ca3ac40969d4e3c1b9f3c09cde8dd6eee411"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-retry/a.pid",
+          "sha256": "3468f10b0efe2539479a1bd6a9e51f78b4989226f46a055062a0620e179bbac4"
+        },
+        {
+          "path": "/tmp/sdk-mcp-channel-candidate-fixture/three-language-evidence/java/channels-retry/observed.json",
+          "sha256": "e45e74626c534de86fb34d01b421c1626615329420a82bfea9c192b864396bad"
+        }
+      ],
+      "normalized_sha256": "381e02e69018880cb5266e3bf97b5cd442beccb6689d80a576792c6d619450e1"
+    }
+  ],
+  "all_three_common_projection_match": true,
+  "common_projection": "Exact 9 MCP metadata/resource/template/prompt/tool result values and process cleanup facts; transport close callback count/order+quota reuse; exact channel start/send attachments and stop counts/running/inbound0. PID/handles/times retained raw, not compared as cross-process identifiers.",
+  "sources": [
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/channel-reentry.test.js",
+      "sha256": "8ad1c83a5f50a0a9c7c96296729a4e8891ba056385c6b5be1f1de39ac3c2dc45"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/config.py",
+      "sha256": "cada0a07799ca36971e0460b8eaa80d6c999ce378af6d9ad7f057dafed92fd95"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/archive_three_languages.py",
+      "sha256": "b339477f0c0edd6729da714446aaabc8fc83919cc694a1eeca8332bee84bc6a2"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/mcp_stdio_fixture.py",
+      "sha256": "f38fbeb5a12efa08282c31fc0d376c29193d67e4fe925f567cf4cb2528c2b4db"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/McpChannelCandidate.java",
+      "sha256": "4ac887b40f639198f81e433ac36d17298c5e5fc5361c3e05df53b51dfc552a64"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/mcp-channel-host.test.js",
+      "sha256": "882dc7c3995e9ea0a3dc1891d7eeffde7ae016a896c09abbc560e9bb3e8c4423"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/scenario-plan.md",
+      "sha256": "2f0ffe656e1e9818ebc65eb3883a410097efd8159d910093be21e25d5aae28fd"
+    },
+    {
+      "path": "/tmp/sdk-mcp-channel-candidate-fixture/test_mcp_channel_host.py",
+      "sha256": "53a55da530e685cab8e7c2701535a02973f4a0de6e8767bbae48b4196753a083"
+    }
+  ],
+  "known_red": "real ChannelHealth callback→manager.ids same-manager circular wait; candidate-proof.json retained1red not green",
+  "scope_limits": [
+    "4scenarios only, not all accepted operations",
+    "MessageHandler accepted inbound consumer unresolved, never fake input",
+    "held-close/caller-cancel cleanup and all aliases publication fault not yet proved",
+    "framework owned channel read lease design pending root; production unmodified",
+    "local patched framework/Host not published pin/main"
+  ]
+}

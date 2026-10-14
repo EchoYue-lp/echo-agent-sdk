@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python
+configfile: pyproject.toml
+plugins: asyncio-1.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/test_mcp_channel_host.py::test_actual_mcp_stdio_metadata_owner_and_process_cleanup MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-py-mcp-stdio-xg0ta8p3
+PASSED
+tests/test_mcp_channel_host.py::test_reverse_transport_failed_close_retains_same_owner_and_quota MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-py-mcp-transport-retry-3ex1fnrm
+PASSED
+tests/test_mcp_channel_host.py::test_channel_outbound_attachments_and_exact_stop[normal] MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-py-channels-normal-8s1dgjdh
+PASSED
+tests/test_mcp_channel_host.py::test_channel_outbound_attachments_and_exact_stop[retry] MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-py-channels-retry-078g3ih4
+PASSED
+tests/test_mcp_channel_host.py::test_channel_owned_callbacks_reenter_metadata_and_preserve_close_owner MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-owned-native/runtime/sdk-py-channels-owned-reentry-b9bvet21
+PASSED
+
+============================== 5 passed in 1.94s ===============================

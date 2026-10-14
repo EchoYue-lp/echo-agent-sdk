@@ -1,0 +1,46 @@
+{
+  "classification": "focused accepted public SDK consumers; not whole SDK/main/published pin proof",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-owned-channel-host",
+  "host_sha256": "7bbd1569367b0b1004fbe1cbc537b6869a2bc685bb1ca14e63228b1746aee3b2",
+  "native_rows_per_language": 50,
+  "original_rows": 45,
+  "final_pivot_rows": 5,
+  "typed_errors_per_language": 19,
+  "oracle_groups_per_language": 9,
+  "protected_files_per_call": 8,
+  "case_counts": {
+    "python": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "typescript": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "java": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "exit_codes": {
+    "python": 0,
+    "typescript": 0,
+    "java": 0
+  },
+  "runtime_roots": {
+    "python": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/computation-work/python-final/test_computation_host_exact_va0",
+    "typescript": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/computation-work/sdk-computation-native-typescript-nxtmA0",
+    "java": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/computation-work/sdk-computation-native-java-16071095358900943689"
+  },
+  "source_inputs_unchanged": true,
+  "java_compiled_case_sha256": "d9c3f2601d42d9e1811c2aec7cc1ae9e058a1b4c8df8d6c82e2970e2313e494f",
+  "known_dependency_warning": "Java ACP dependency emits three existing SLF4J no-provider notices; no compiler errors/new warnings",
+  "required_host_guard": "Python/Node missing and whitespace actual rejected before skip; Java JUnit isBlank before assumeTrue source assertion",
+  "generic_validation_scope": "accepted builtin routes and file effects; custom Tool override separately owned Host unit evidence"
+}

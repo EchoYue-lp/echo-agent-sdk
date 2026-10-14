@@ -1,0 +1,20 @@
+{
+  "files": {
+    "sdks/shared/testing/tool_value_effect_fixture.py": "91b5d3ce43a231a26ef85302dd54ce48383cada956d00873df0e4a6a3b006c11",
+    "sdks/typescript/test/tool-value-effect-host.test.js": "1c1d72bd619b6b735d0541ceb020b827db979cf21dd694b10fe33727f97f87a5",
+    "sdks/python/tests/test_tool_value_effect_host.py": "972af24e6198e1a6280ad103e2e0629a4b4031697350d258349fb0feef0275a3",
+    "sdks/java/src/test/java/com/echoagent/sdk/ToolValueEffectHostTest.java": "eba41e2370fd62ba6a165111472849126d19e65b0f1476f5d1d353eca86ea8ec",
+    "sdks/shared/facade-operation-catalog.json": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+    "sdks/shared/contract-digests.json": "2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7",
+    "sdks/typescript/dist/client.js": "a31145bd7b000dea56c741f3ae5e12c64bce4868e5d4d3e2f89b0a18abfc80fc",
+    "sdks/typescript/dist/wire.js": "f5566cc584a59e158fb47cccf86deaddb43d5a3079cdf80569847a08dc2afc66",
+    "sdks/typescript/dist/catalog.js": "fa456244acef9e77038ca1a855900b1d7be2dcb8d4f2e931869b8d27d45367d8",
+    "sdks/python/src/echo_agent_sdk/client.py": "d1589b1c05b1642a9f8c2160d419c27ea85c87a92f9dc4669d33c8894b7a2c31",
+    "sdks/python/src/echo_agent_sdk/wire.py": "50d132ec93ebc09110ed52e549335ff6c789bf198a1cfc94253023d75966c374",
+    "sdks/python/src/echo_agent_sdk/catalog.py": "74da96985c6b7e9be9eaeaf0708af598bb104d798884435cdaa2ba81524fa67e",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "866aa24fbd95a2cf7a8ddbfe19329ca954048a3d1353890205cae7b7e9018599",
+    "sdks/java/src/main/java/com/echoagent/sdk/JsonSupport.java": "56d05f02022141827f5f942dd3d390aa336dc2243453210ee9cec68c9980e745",
+    "sdks/java/src/main/java/com/echoagent/sdk/FacadeCatalog.java": "7101dc83ee9b6935b23a34b5a45fbfd8f159ad5d74d2b63003650133b2e098fe"
+  },
+  "status": "prepared only: actual execution must bind matching source and immutable Host hash; this snapshot does not prove green"
+}

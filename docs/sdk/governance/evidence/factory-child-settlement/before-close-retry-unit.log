@@ -1,0 +1,19 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 45.40s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-7c7b8032facc7b43)
+
+running 1 test
+
+thread 'core_profile::extension_bridge::tests::factory_child_failed_cleanup_keeps_same_retry_owner_and_coalesces_success' (130724882) panicked at echo-sdk-host/src/core_profile/extension_bridge.rs:10294:17:
+same original cleanup owner must retry after its first failed acknowledgement; first=Err(Other("extension bridge failure extension_failed: retryable original child close failed")), second=Err(Other("extension bridge failure extension_failed: retryable original child close failed")), calls=1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test core_profile::extension_bridge::tests::factory_child_failed_cleanup_keeps_same_retry_owner_and_coalesces_success ... FAILED
+
+failures:
+
+failures:
+    core_profile::extension_bridge::tests::factory_child_failed_cleanup_keeps_same_retry_owner_and_coalesces_success
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 170 filtered out; finished in 0.45s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

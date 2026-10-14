@@ -1,0 +1,17 @@
+WARN `--no-project` was provided, but no project was found
+Traceback (most recent call last):
+  File "/private/tmp/sdk-memory-permission-candidate-fixture/run_python.py", line 149, in <module>
+    asyncio.run(main())
+  File "/opt/anaconda3/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/private/tmp/sdk-memory-permission-candidate-fixture/run_python.py", line 102, in main
+    assert 'SDK-Recall-Active 中文🌊'in serialized
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

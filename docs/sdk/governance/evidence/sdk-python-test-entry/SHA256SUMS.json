@@ -1,0 +1,10 @@
+{
+  "interpreter-diagnosis.log": "25f317a8e0b77c084b2212d7a0cfbfa7518543973bafe0a3d23bd011b040ec4b",
+  "host.json": "c399331e512cb1f491877cc0c4d80f581effbbbf3dba7a5a4bd89f17c452cc00",
+  "python-entry.patch": "6359d95b74caac791204a2dd3b93573f2e7124bd7c49850acfd61ae5a17431f5",
+  "check-language-sdks.before.sh": "1fbfcf65c72d87137c7734a97eb7421d435d6a7316a63c736dc8f7a34586a5ab",
+  "python-receipt.json": "fd343c3cd6d2e9090b22ef9638c682b6454365026f4959ea5b6e80621d8c61f6",
+  "README.md": "ee3ec96d469eccb05411e9ff73306ac46e04b6c75d9e0204b7c389839a69ade0",
+  "full-python.log": "916dff921eccf0b9902708d46e6109ba6a051f2306592d7cb6111336cb6d90c8",
+  "check-language-sdks.after.sh": "8f2ae358ff8131034a3b9c65b9de50d576d24661559a50835d16be40198f020a"
+}

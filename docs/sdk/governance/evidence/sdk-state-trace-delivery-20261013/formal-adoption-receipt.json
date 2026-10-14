@@ -1,0 +1,80 @@
+{
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "new_production_files": 0,
+  "new_test_files": {
+    "sdks/shared/testing/state_trace_delivery_fixture.py": "1f26d96802f5f1acf677abba02196126226074c141b1820fb2cb4935beec3f25",
+    "sdks/typescript/test/state-trace-delivery-host.test.js": "c882cbedee70a25bd29e29f2396a774396e66cbc129d79dc2e846add80df3b37",
+    "sdks/python/tests/test_state_trace_delivery_host.py": "e9f9561de0de997653c13bd378be9fe18295d4515b5c6af906140d46f979af1f",
+    "sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java": "11fd31b689ce14b53245e444562da3d8c8481eacf7a50a00026663b10554cb70"
+  },
+  "java_surefire_tests": 3,
+  "java_zero_failure_error_skip": true,
+  "java_xml_archive": "docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml",
+  "java_xml_sha256": "8a7bf8d891a51ea3115c66e5fba58cd002889c2cd5d4c402d8041f31c9e21bbf",
+  "integrated_host_sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2",
+  "required_host_missing": "All three test modules explicitly fail when required=1 and Host absent; no added silent skip route.",
+  "full_gate_discovery": {
+    "typescript": "package.json npm test builds TS and Node test/*.test.js matches new namedfile",
+    "python": "check-language-sdks.sh pytest -q tests ../shared/testing discovers test_state_trace_delivery_host.py; Ruff scope includes shared fixture",
+    "java": "Maven Surefire default *Test convention discovers StateTraceDeliveryHostTest and three @Test methods"
+  },
+  "focused_results": {
+    "typescript": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "python": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "java": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "minor_offline_comparison": {
+    "status": "limited pass before final gate",
+    "important_findings": 0,
+    "minor": "Keep mailbox_accepted_at/drained_at in cross-language comparison and assert both null.",
+    "minor_resolution": "Applied only to current integrated offline comparator; all nine retained raw scene outputs pass; original-6711 snapshots preserved.",
+    "offline_comparison_after_minor": "docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/integrated-cb9/three-language-comparison.json",
+    "comparison_sha256": "476800d1d11e2bf6e5943f1e2fc8758dbb24a577753b8433c883fee998314095"
+  },
+  "archive_manifest": "docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/archive-manifest.json",
+  "archive_manifest_sha256": "89425a805d469a699f13a8db50bc111866d78f10c2ba02d6c0a896c76f2a280d",
+  "original_runtimeproof_preserved": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/original-6711/runtime-proof.json",
+  "original_minor_comparator_not_overwritten": true,
+  "ruff_and_diffcheck": 0,
+  "publication_complete": false,
+  "remaining": "Final language complete script, published framework source/pin/CI/main acceptance; no fullfamilyclosure inferred",
+  "commit_stage_push": false,
+  "original_executed_source_files": {
+    "sdks/shared/testing/state_trace_delivery_fixture.py": "1f26d96802f5f1acf677abba02196126226074c141b1820fb2cb4935beec3f25",
+    "sdks/typescript/test/state-trace-delivery-host.test.js": "5183d66485219c95bd5019e2a92098922cdb6b050b867204499b12d3a253f01a",
+    "sdks/python/tests/test_state_trace_delivery_host.py": "5560683667a48f238c337a372d7ba15a1e70bc62b539df92d48f742b5dd3bc70",
+    "sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java": "796683b4986c97e4c6c4be4ab482aa8be1d5cd61a309ef1def4900b81df05036"
+  },
+  "current_source_files": {
+    "sdks/shared/testing/state_trace_delivery_fixture.py": "1f26d96802f5f1acf677abba02196126226074c141b1820fb2cb4935beec3f25",
+    "sdks/typescript/test/state-trace-delivery-host.test.js": "c882cbedee70a25bd29e29f2396a774396e66cbc129d79dc2e846add80df3b37",
+    "sdks/python/tests/test_state_trace_delivery_host.py": "e9f9561de0de997653c13bd378be9fe18295d4515b5c6af906140d46f979af1f",
+    "sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java": "11fd31b689ce14b53245e444562da3d8c8481eacf7a50a00026663b10554cb70"
+  },
+  "guard_only_delta": {
+    "actual_cases": 6,
+    "cases": "missing and whitespace-only requiredHost in all3languages",
+    "results": "required-host-guard/results.json",
+    "source_delta": "required-host-guard/guard-only-source.patch",
+    "production_change": false,
+    "positive_scene_code_changed": false,
+    "java_compile_into": "external /tmp guard classes, shared target/classes unchanged",
+    "normal9_scenes_repeated": false,
+    "final_full_language_gate": "pending to include finalguard source; positive9 input/behavior assertions unchanged"
+  }
+}

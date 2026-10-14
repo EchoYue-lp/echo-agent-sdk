@@ -1,0 +1,14 @@
+   Compiling echo_state v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=be5f0a8405b593c4ef964cd6fd2df4beabf4956c#be5f0a84)
+   Compiling echo_integration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=be5f0a8405b593c4ef964cd6fd2df4beabf4956c#be5f0a84)
+   Compiling echo_orchestration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=be5f0a8405b593c4ef964cd6fd2df4beabf4956c#be5f0a84)
+   Compiling echo_execution v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=be5f0a8405b593c4ef964cd6fd2df4beabf4956c#be5f0a84)
+   Compiling echo_agent v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=be5f0a8405b593c4ef964cd6fd2df4beabf4956c#be5f0a84)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 44.28s
+     Running tests/core_profile_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/core_profile_e2e-f0883856b24a8370)
+
+running 1 test
+test every_canonical_source_operation_reaches_a_host_adapter ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.41s
+

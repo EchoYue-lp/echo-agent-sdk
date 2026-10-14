@@ -1,0 +1,19 @@
+{
+  "label": "host-fixture-before",
+  "command": [
+    "node",
+    "--test",
+    "sdks/typescript/test/host.test.js",
+    "sdks/typescript/test/family-route-host.test.js"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-fixture-isolation/before-parallel.log",
+  "exitCode": 1,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 2062,
+  "bytesWritten": 2062,
+  "startedAt": "2026-10-13T19:50:14.854Z",
+  "finishedAt": "2026-10-13T19:50:20.759Z"
+}

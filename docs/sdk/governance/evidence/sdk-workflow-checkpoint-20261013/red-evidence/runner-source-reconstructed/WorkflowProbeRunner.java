@@ -1,0 +1,1 @@
+package com.echoagent.sdk; public final class WorkflowProbeRunner { public static void main(String[] args) throws Exception { new WorkflowHostTest().routingCheckpointClaimsBranchOwnerAndShapeBoundary(); } }

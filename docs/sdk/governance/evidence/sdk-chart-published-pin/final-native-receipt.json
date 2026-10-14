@@ -1,0 +1,965 @@
+{
+  "scope": "exact-published-Chart-framework-upgrade-and-three-native-boundary-consumers",
+  "oldFrameworkRevision": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "newFrameworkRevision": "be5f0a8405b593c4ef964cd6fd2df4beabf4956c",
+  "frameworkTree": "4bff4c2ce436df1606a421f0ac92a905fc5d9b03",
+  "oldHostSha256": "bb4f3c2b7f94795394be96179217f3db4b8036af8c9c8cd81c7636d7112f5ecd",
+  "newHostSha256": "bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345",
+  "sourceBuildManifestSha256": "01e856e06e305e9a35dfff156247ad52781cac36684fd85927f3b7c6d741d48a",
+  "pinProvenanceSha256": "928b596d195420b441d834f05e7160e52fb3107fad969104d99b681140cd13cf",
+  "controlledTrackedChanges": {
+    "AGENTS.md": "4d3e62422fdc09b553f5a87bfc56a1bf28a5c776d34950e0947550f24ffad56b",
+    "Cargo.lock": "442acc0afe6d412bcae990a9dc7811befd7b051a27fc3c9e8d6e7fccf64d07e5",
+    "MIGRATION-SOURCE.md": "5bdd46a62fb8b675caffe29c34deae0305bde1d852c5e2742c1da121cd24661f",
+    "README.md": "a4efccfc3374f48066edc5e7290fc884004385d35d1b23ebfc8e0682f2990c5e",
+    "echo-sdk-host/Cargo.toml": "db4c5655bc8e586766e0e2738eb14493e6e42d2180fe050057ae846bb52b51ea",
+    "scripts/check-sdk-contracts.sh": "e11856029178a1851cdb79a89def9b058601257c9cc4e8507c307633465f40f1"
+  },
+  "lockOnlyEightGitSourcesChanged": true,
+  "languageRuntime627FilesUnchanged": true,
+  "sameConsumerSourcesBeforeAfter": {
+    "typescript.mjs": true,
+    "python.py": true,
+    "ChartBounds.java": true,
+    "prepare.py": true
+  },
+  "nativeExitCodes": {
+    "typescript": 0,
+    "python": 0,
+    "java": 0
+  },
+  "nativeRowsPerLanguage": 11,
+  "beforeBehaviorFailuresPerLanguage": 4,
+  "afterBehaviorFailuresPerLanguage": 0,
+  "allThreeNativeExactNormalizedEquality": true,
+  "comparison": [
+    {
+      "language": "typescript",
+      "id": "width-overflow",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': 4294967296 is greater than the maximum of 4294967295",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "typescript",
+      "id": "height-overflow",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': 4294967297 is greater than the maximum of 4294967295",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "typescript",
+      "id": "width-negative",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': -1 is less than the minimum of 0",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "typescript",
+      "id": "height-negative",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': -1 is less than the minimum of 0",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "typescript",
+      "id": "width-u32-max",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "typescript",
+      "id": "height-u32-max",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "typescript",
+      "id": "zero",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "typescript",
+      "id": "null",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "typescript",
+      "id": "wrong-width-type",
+      "wireInputIdentical": true,
+      "beforeOutcome": "error",
+      "afterOutcome": "error",
+      "beforeError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"wide\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"wide\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "typescript",
+      "id": "wrong-height-type",
+      "wireInputIdentical": true,
+      "beforeOutcome": "error",
+      "afterOutcome": "error",
+      "beforeError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"tall\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"tall\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "typescript",
+      "id": "omitted-dimensions",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "python",
+      "id": "width-overflow",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': 4294967296 is greater than the maximum of 4294967295",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "python",
+      "id": "height-overflow",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': 4294967297 is greater than the maximum of 4294967295",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "python",
+      "id": "width-negative",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': -1 is less than the minimum of 0",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "python",
+      "id": "height-negative",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': -1 is less than the minimum of 0",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "python",
+      "id": "width-u32-max",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "python",
+      "id": "height-u32-max",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "python",
+      "id": "zero",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "python",
+      "id": "null",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "python",
+      "id": "wrong-width-type",
+      "wireInputIdentical": true,
+      "beforeOutcome": "error",
+      "afterOutcome": "error",
+      "beforeError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"wide\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"wide\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "python",
+      "id": "wrong-height-type",
+      "wireInputIdentical": true,
+      "beforeOutcome": "error",
+      "afterOutcome": "error",
+      "beforeError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"tall\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"tall\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "python",
+      "id": "omitted-dimensions",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "java",
+      "id": "width-overflow",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': 4294967296 is greater than the maximum of 4294967295",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "java",
+      "id": "height-overflow",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': 4294967297 is greater than the maximum of 4294967295",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "java",
+      "id": "width-negative",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': -1 is less than the minimum of 0",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "java",
+      "id": "height-negative",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "error",
+      "beforeError": null,
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': -1 is less than the minimum of 0",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "java",
+      "id": "width-u32-max",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "java",
+      "id": "height-u32-max",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "java",
+      "id": "zero",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "java",
+      "id": "null",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    },
+    {
+      "language": "java",
+      "id": "wrong-width-type",
+      "wireInputIdentical": true,
+      "beforeOutcome": "error",
+      "afterOutcome": "error",
+      "beforeError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"wide\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"wide\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "java",
+      "id": "wrong-height-type",
+      "wireInputIdentical": true,
+      "beforeOutcome": "error",
+      "afterOutcome": "error",
+      "beforeError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"tall\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "afterError": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"tall\" is not of type \"integer\"",
+        "operation": "generate_chart",
+        "retryable": "never",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "language": "java",
+      "id": "omitted-dimensions",
+      "wireInputIdentical": true,
+      "beforeOutcome": "success",
+      "afterOutcome": "success",
+      "beforeError": null,
+      "afterError": null
+    }
+  ],
+  "nullableOptionalSlotBinding": "Original Host bind_parameters drops WireNull optional slots as None/missing; public SDK null dimensions retain 600/400 defaults. Direct framework supplied ToolParameters null is a separate rejected input; no binding change.",
+  "limits": [
+    "No full fourteen Rust or full native-language suite gates on be5 yet; parent schedules them next.",
+    "Previously passed b909 fourteen gates remain old source epoch and are not be5 proof.",
+    "Twelve accepted identity dispositions/full28generation/B Task policy remain pending; no generated artifact or accepted-seed change.",
+    "No CLI/website/public-wire/SDKclient modification. Existing advisory warning policy unchanged."
+  ]
+}

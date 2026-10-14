@@ -208,3 +208,133 @@ values; the Java SDK does not duplicate the framework's classification rules.
 Session updates and Run events use bounded `Flow.Publisher` instances; event
 sequence gaps fail explicitly, consumed events are ACKed, and `closeAsync()`
 provides bounded CompletionStage shutdown for sessions, runs and the client.
+
+## Governance and failure boundaries
+
+The compatibility promise is the explicitly accepted external contract and
+accepted facade catalog. Complete Rust public inventory/intrinsic membership
+is non-blocking telemetry; it is not a requirement to expose every Rust
+identity in all languages. The current governance candidate awaits final
+contract, real-Host three-language and exact-main acceptance. The
+[capability/evidence matrix](../../docs/sdk/governance/behavior-evidence-matrix.md)
+records behavior evidence and remaining scope; catalog `done` labels alone do
+not prove a failure path.
+
+A failed Agent/Session/Run close retains its local cleanup state so the caller
+can retry; only successful cleanup ends the stream/releases the owner.
+Duplicate successful close is idempotent. Timeout, cancellation, EOF and Host
+exit must not be treated as a successful terminal. Facade resources validate
+owner plus complete generation-fenced handles; failed publication rolls back
+construction rather than returning an unusable handle.
+
+Actual Host process exit promptly ends pending Java requests and event/update
+subscriptions with `transport_error`. Cancelling initialize closes the same
+spawned Host through the existing session close path; failed close retains its
+cleanup owner for retry. Stdout EOF while the child remains alive is outside
+this process-exit guarantee, and transport failure proves neither a Run terminal
+nor cleanup of an external producer.
+
+Factory callbacks echo the Host-reserved instance handle. Child invocations
+carry `factory_origin`, binding that instance to its parent registration.
+Concurrent same-name factory instances remain independent; no name-based
+fallback routes an unknown child. A construction timeout/cancellation retains
+cleanup ownership until construction really finishes, including cleanup of a
+late-created child. Constructor shutdown also retains the original user
+`CompletionStage` and signals its existing cancellation token; cancelling a
+future projection is not construction completion. Client close waits for the
+original constructor and then cleans the reserved child exactly once, including
+partial construction failure. If construction cannot settle within the close
+budget, the parent registration, child and original stage remain retryable.
+Concurrent cleanup callbacks for the same complete child
+handle share one actual cleanup job. Each invocation keeps its own deadline
+and cancellation wait; these do not cancel the cleanup job. Only its successful
+`agent_close` unit result releases the child and records idempotent closure.
+A failed cleanup attempt retains the live child and allows a new attempt;
+connection close signals a separate cleanup-owner cancellation token and
+waits for the original `CompletionStage` to actually complete. Cancelling a
+`toCompletableFuture()` projection is not native completion proof. If an
+original stage remains pending for five seconds, close reports
+`extension_timeout` and retains the same child, stage and routing for retry;
+`closed` stays false. Each `closeAsync()` call returns its own waiting stage;
+cancelling one waiter leaves later waiters attached to the same private cleanup
+owner. A subsequent close joins that retained stage and can complete after the
+original work settles successfully. Actual stage completion alone does not
+prove resource cleanup: exceptional completion, a typed error or a malformed
+outcome makes client close fail and retains the child and handler. A later
+close starts one new attempt for each failed child; children that already
+closed successfully never repeat cleanup. Malformed, null or streaming close
+results fail explicitly and release only the failed attempt, retaining retry
+rights while the connection is live. These maps describe local
+reverse-call ownership and do not decide framework Run or Task terminal state.
+
+Managed ConversationStore/RuntimeStateStore callbacks retain declared
+capabilities, atomic receipts, revisions/generations and exact commit
+deadlines. Unsupported calls fail explicitly; `OutcomeUnknown` is unresolved
+until backend evidence establishes the outcome. RevisionedTaskStore is
+CRUD-only unless its descriptor opts into `execution_cas_v1` (default false).
+Execution without this capability fails before work starts; implementations
+that opt in must atomically preserve expected executions, exact claims,
+results and Cancelled/Paused disposition. SDK callbacks transport these facts;
+the framework alone schedules tasks and owns terminal state.
+
+`set_memory_store` connects approved-memory recall/search. Automatic memory
+writing/promotion requires the framework MemoryLayerManager. Explicit
+`set_store` and accepted raw KV `memory.put/get` calls do not promote their
+values into Active memory.
+
+Run event publishers ACK only after the subscriber's `onNext` consumption
+boundary, not when transport buffering accepts a notification. Processing
+that continues asynchronously after `onNext` must be coordinated by the
+subscriber. `run.replay(afterSequence, maxEvents)` validates/records the page
+without ACKing it. After applying a required snapshot and consuming the page,
+use `sdk.notify("_echo_agent/event/ack", params)` with `params.ack.stream =
+run.stream().toJson()` and `params.ack.last_processed_sequence =
+page.path("next_cursor").path("last_processed_sequence").asText()`.
+The ACK establishes the monotonic continuation floor; subsequent live facts
+must be above it. Await the returned `CompletionStage` rather than treating
+notification enqueue as application processing.
+If replay includes the journal's terminal event, a successfully submitted
+explicit ACK covering that event also ends the local event feed naturally.
+Fetching the page or sending an uncovered future cursor does not end it;
+this delivery projection does not change the authoritative Run state.
+
+Each successful transport submission advances the local consumed cursor
+monotonically. Pending, failed or cancelled submissions do not retire queue
+facts or establish replay-terminal EOF; transport failure reports
+`ack_submission: outcome_unknown` in error details, because a notification
+has no peer acceptance receipt. Another concurrent ACK cannot borrow a
+pending submission's cursor. The framework journal remains authoritative.
+Cancelling the returned caller future does not cancel the submission's
+completion observer. A later actual success still commits its cursor; client
+close settles pending submission ownership without claiming consumption.
+
+Typed ACP `error.data` becomes `EchoAgentException`, preserving `code()`,
+`retryable()`, `operation()`, `handle()` and `details()`. Standard ACP errors
+retain official wire semantics; human messages are not parsed into domain
+codes. Prefer `closeAsync()` when integrating asynchronous lifecycle cleanup;
+`close()` is the blocking `AutoCloseable` convenience. Full-range integer
+values stay textual/BigInteger rather than floating point. Paths and time
+retain their tagged encoding. Unknown tagged values round-trip; malformed
+known values and missing nested discriminators fail. Object keys such as
+`kind` remain domain data unless explicitly inside a wire envelope.
+
+
+### Channel handler consumption examples
+
+The real Host examples for the six canonical Channel operations and Sandbox
+cooperative close are described in
+[Channel consumption](../../docs/sdk/channel-handler-consumption.md). The
+existing native Channel forward tests are executable examples and are included
+in `scripts/check-language-sdks.sh`; they register real callbacks, consume the
+original handler, and verify typed results and cleanup. MessageHandler callbacks
+retain their awaited work/cleanup lifetime. An asynchronous producer using the
+existing early Stream setup ACK may return immediately; cancellation continues
+to reach its original signal until the matching terminal is successfully sent.
+The producer must finish cleanup before declaring that terminal. Cancellation
+before ACK and terminal before ACK preserve their original stream identity;
+wrong-generation or failed terminal sends and failed close retain the route
+for retry on the same stream. Neither ACK nor notification delivery lets the
+SDK infer physical cleanup. Full inventory and intrinsic membership remain
+non-blocking telemetry.
+
+The source verification suite and standalone quickstart use a test-scoped `slf4j-nop` provider matching `slf4j-api` 2.0.18. This explicitly preserves SLF4J’s default no-operation behavior without missing-provider warnings. The SDK library’s compile/runtime dependencies do not include this provider; applications choose their own logging provider.

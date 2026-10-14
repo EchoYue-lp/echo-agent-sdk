@@ -28,9 +28,11 @@ pub mod event;
 pub mod facade;
 pub mod handle;
 pub mod inventory;
+pub mod managed;
 pub mod methods;
 pub mod scalar;
 pub mod schema;
+pub mod task_store;
 
 /// ACP extension method namespace. Every custom request/notification the SDK
 /// profile defines lives under this prefix (ACP extensibility requires the

@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_event_consumption_acknowledges_highest_contiguous_sequence ________
+
+>   ???
+E   KeyError: WireHandle(id='stream-1', generation='1', kind='stream')
+
+/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_lifecycle.py:309: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_lifecycle.py::test_event_consumption_acknowledges_highest_contiguous_sequence
+1 failed in 0.40s

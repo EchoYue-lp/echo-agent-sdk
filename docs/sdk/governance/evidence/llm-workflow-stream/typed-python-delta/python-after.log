@@ -1,0 +1,11 @@
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typed-python-delta/python-llm-v3t1shhj
+{"group": "llm", "verified": true}
+
+.LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typed-python-delta/python-workflow-kge8v1d4
+{"group": "workflow", "verified": true}
+
+.LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/typed-python-delta/python-graph-l_q1ekp6
+{"group": "graph", "verified": true}
+
+...
+5 passed in 2.95s

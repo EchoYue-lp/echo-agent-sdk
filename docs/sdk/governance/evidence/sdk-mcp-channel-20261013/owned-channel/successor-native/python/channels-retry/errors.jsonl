@@ -1,0 +1,1 @@
+{"code": "framework_error", "operation": "_echo_agent/integration/op", "message": "extension bridge failure extension_conflict: stop once fails", "retryable": "never", "details": null}

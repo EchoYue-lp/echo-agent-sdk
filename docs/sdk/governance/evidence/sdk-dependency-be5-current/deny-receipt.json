@@ -1,0 +1,21 @@
+{
+  "label": "sdk-be5-deny",
+  "command": [
+    "cargo",
+    "deny",
+    "--workspace",
+    "--all-features",
+    "--locked",
+    "check"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-dependency-be5-current/deny.log",
+  "exitCode": 1,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 416,
+  "bytesWritten": 416,
+  "startedAt": "2026-10-14T02:19:12.294Z",
+  "finishedAt": "2026-10-14T02:20:27.552Z"
+}

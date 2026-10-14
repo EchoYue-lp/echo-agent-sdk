@@ -1,0 +1,52 @@
+# Subagent physical settlement after cancellation — proposed decision
+
+- Status: Proposed; human compatibility decision pending. **Not approved or implemented.**
+- Base: framework published `b9099558620f5f9693c736c85c214db14f62a8cb`.
+- Owner: existing framework RuntimeTaskService/RuntimeDagExecutor and SubagentExecutor.
+- Scope: exact/root cancellation, caller drop, owner unwind and stream cleanup; SDK only adapts transport/observations.
+
+## Evidence and existing authority
+
+A real TeamRuntimeHandle with the original exact-claim request and default five-second grace was driven through a custom stream with a held cleanup barrier. At 5.10 seconds the dispatch returned, durable status was Cancelled, claim was absent and interruption_requested absent, while the original producer still had not stopped. Original diagnostic code is recoverable at private Git `286715f9bb8d7a7102dbf9da4199bc2b7e43814d` / `refs/echo-semantic/diagnostics/subagent-stream-grace-held`; executor source SHA256 is `887bdac5c11ab998d96841f13b541ce26fc66cf213651761fa4acff79422b971`. The test exited101. The original producer was released and cleaned after recording these facts. This failure remains open even though cooperative stream cases pass; removing the temporary probe from the normal source is not a repair claim.
+
+ADR0058 currently promises targeted AbortHandle abort followed by JoinSet drain/CAS after grace. ADR0060 says physical stop precedes exact claim settlement. Those statements coincide for an entirely local non-detached future, but diverge for a stream whose original producer remains alive after consumer drop. `SubagentAttemptAdmission::Drop` settles the local control registry; `SubagentSteeringLease::Drop` detaches live steering. Neither observes producer cleanup. `InvocationResourceGuard` retains opaque resources but exposes no awaitable cleanup acknowledgement. Current reconcile loads durable claims and removes stale local projections; it does not prove remote physical stop or provide an independent original cleanup receipt.
+
+Local repair in executor.rs retains the original pinned execution future, signals its token, preserves the first observed cause and drains the original raw stream (not merely envelope EOF). It fixes cooperative cancel/deadline/error paths in Sync/Fork/Teammate. It intentionally does **not** change five-second Task abort or twelve-second React reaper policy.
+
+## Mature implementation references
+
+[Tokio graceful shutdown](https://tokio.rs/tokio/topics/shutdown) separates cancellation notification from waiting for owned tasks to finish. [Tokio JoinHandle](https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html) documents that dropping a handle detaches its task. [Python task cancellation](https://docs.python.org/3/library/asyncio-task.html) describes cancellation propagation and finally cleanup. The convergent pattern is one retained execution owner and observable completion, not an observer substituting a new terminal. These references support the ownership model, not proof of this repository's implementation or permission to change its policy.
+
+## Option A: retain forced abort, report unknown ownership
+
+Keep the five-second abort policy. When abort cannot prove original producer completion, retain the exact durable claim/interruption_requested and publish existing AuthorityUnknown observation; refuse resume/retry of that attempt. To converge later, the existing controller would need an authoritative physical-settlement receipt that survives losing the consumer future. Current generic Agent BoxStream and controller contracts do not supply it. Extending a controller/Agent physical-receipt contract or independently retaining the original producer owner would be necessary; a new public receipt identity is not automatically an accepted cross-language API.
+
+Without that receipt, automatic reconciliation is impossible: disappearance of a local registry, disconnect, or restart cannot prove detached/remote effects stopped. Merely retaining Unknown forever is an incomplete design. A true connection/producer failure receipt or backend owner fence could reconcile through the same exact CAS; it must have stable generation/claim identity and remain recoverable. This option has higher interface/owner cost and contradicts an unconditional terminal-after-grace promise.
+
+## Option B: retain one original cleanup owner; five seconds bound observation (recommended)
+
+Keep five seconds as the deadline for waiting on an observer, **not permission to destroy the only cleanup owner**. Exact requests already return ActiveRequested/ActiveAlreadyRequested; those are pending acknowledgements, not terminal receipts. Root pause/cancel records the original durable disposition. Running state, exact claim and interruption_requested remain until the original execution stream/producer closes and the same framework CAS commits Paused/Cancelled. New TaskStatus, task store, DAG scheduler or SDK cancellation authority is unnecessary.
+
+`RuntimeTaskService::execute` already spawns a retained owner. After its observer deadline, return an explicit un-settled observation error while retaining that supervisor; never return RuntimeDagOutcome::Cancelled/Paused as though durable settlement occurred. Existing SDK `after_delay`/error projection may be reused only where its actual accepted schema expresses this observation; no default snapshot or fake terminal. If Rust callers need a typed `RuntimeExecutionObservationError::NotSettled` (exact type/name remains proposed), that is a public Rust contract change to review and catalogue; Host maps it to an existing explicit SDK error/observation boundary and does not automatically add every Rust identity to the three languages.
+
+The change must consistently address exact `schedule_attempt_abort`, root wave `abort_all`, parent-drop/unwind `UnjoinedWaveOwner`, Fork/Teammate child JoinHandle ownership, and producer-owned drop/reaper. An outer observer cannot abort/drop the only dispatch drain owner and then clear claim. Panics or lost owners without a physical receipt remain explicit AuthorityUnknown with retained claim; no blanket catch-and-success.
+
+Cancellation deadline and original timeout cause remain unchanged. Time elapsed changes what the observer can report; actual execution completion still belongs to the original owner. The local private first-failure observation prevents a later cancel/timeout from overwriting an already observed raw/event failure, while a prior cancellation remains its cause if cleanup later fails. Task CAS interruption precedence remains independently canonical.
+
+## Non-cooperative work, resource limits and recovery
+
+A producer that ignores cancellation remains pending and retains its original permits/handles/claim. Existing resource limits reject new work when capacity is held; no unbounded parallel supervisor pool or replacement attempt is started. Observer errors expose this condition rather than hanging each caller indefinitely. Reporting pending does not prove eventual progress for permanently non-cooperative foreign code; user-directed producer/process shutdown or an authoritative backend owner fence may be required.
+
+A real transport disconnection can settle only when the original bridge owner publishes its actual terminal/error and releases the same invocation lease. A socket close alone does not prove remote finally ran. When connection loss prevents that knowledge, preserve unknown ownership and refuse resume. On process restart, durable claim/interruption_requested must be reconciled with original backend/producer generation or stable receipt; absence of process-local controls is insufficient. Local producer death may be established by actual owned process termination; remote work requires its protocol receipt/fence. Neither option can silently fabricate a restart cleanup acknowledgement.
+
+## Compatibility and rollback
+
+Option B changes ADR0058's terminal-after-forced-abort semantics: cancellation requests may remain pending past five seconds, with explicit observation timeout/error instead of a settled lifecycle. Throughput retains permits while cleanup is pending; callers must handle this explicit outcome. Accepted wire fields and Task lifecycle statuses need not expand. A typed Rust observation error, if required, must be explicitly accepted rather than inferred from telemetry inventory.
+
+Rollback point is published b909; rolling back B reintroduces the known early-CAS defect for detached producers and is not safe behavior equivalence. Retain the cooperative local fix and all red/green evidence. Any emergency policy fallback must explicitly document weaker completion guarantees and prevent duplicate physical execution; it cannot present the old behavior as safe.
+
+## Acceptance and decision
+
+Human choice is required for Option B's grace/observation semantics versus Option A's forced-abort receipt contract. No implementation of either policy is authorized by this proposed document.
+
+After approval, verify exact and root cancel/pause with cleanup held beyond grace: request/observer acknowledgement occurs within its bound, while original claim and exclusive lease remain; no new attempt may enter. Releasing finally produces one original terminal, then one exact CAS and resumable next attempt. Cover Sync/Fork/Teammate, cancellation and timeout cause order, caller drop, supervisor unwind, actual disconnect and generation-fenced restart recovery. A permanently non-cooperative producer must expose pending/unknown with retained limits and stable identity rather than a false success. Independent source/evidence review and full framework gates precede publication.

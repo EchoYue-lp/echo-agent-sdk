@@ -1,0 +1,392 @@
+--- before-bridge.rs
++++ after-bridge.rs
+@@ -1947,6 +1947,19 @@
+                         || state.sink.remote_terminal_received.load(Ordering::Acquire)
+                         || state._owner.finished.is_cancelled())
+                 {
++                    if state.sink.remote_terminal_received.load(Ordering::Acquire) {
++                        // The actual RPC answer and validated remote terminal
++                        // are both known here. Release the original invocation
++                        // before its terminal becomes visible to a consumer
++                        // that may immediately call this same child's close.
++                        state
++                            ._owner
++                            .retained_lease
++                            .lock()
++                            .unwrap_or_else(|error| error.into_inner())
++                            .take();
++                        state._owner.finished.cancel();
++                    }
+                     let pending_failure = state
+                         ._owner
+                         .pending_failure
+@@ -7628,14 +7641,14 @@
+     bridge: Arc<ExtensionBridge>,
+     extension: WireHandle,
+     session_id: String,
+-    close_result: tokio::sync::OnceCell<std::result::Result<(), String>>,
++    close_result: tokio::sync::OnceCell<()>,
+     construction_submitted: AtomicBool,
+ }
+ 
+ impl FactoryInstanceLease {
+     async fn close(&self) -> echo_agent::error::Result<()> {
+         self.close_result
+-            .get_or_init(|| async {
++            .get_or_try_init(|| async {
+                 if !self.construction_submitted.load(Ordering::Acquire) {
+                     self.bridge.release_extension(&self.extension);
+                     return Ok(());
+@@ -7650,14 +7663,14 @@
+                 .map_err(|error| error.to_string())
+             })
+             .await
+-            .clone()
++            .copied()
+             .map_err(ReactError::Other)
+     }
+ }
+ 
+ impl Drop for FactoryInstanceLease {
+     fn drop(&mut self) {
+-        if self.close_result.get().is_some_and(Result::is_ok) {
++        if self.close_result.get().is_some() {
+             return;
+         }
+         if !self.construction_submitted.load(Ordering::Acquire) {
+@@ -9971,6 +9984,335 @@
+     async fn teardown_admitted_prefix_keeps_original_remote_watermark() -> Result<(), String> {
+         teardown_admitted_prefix_keeps_original_remote_watermark_case().await
+     }
++    #[tokio::test]
++    async fn custom_stream_releases_original_exclusive_lease_before_terminal_consumer_close()
++    -> Result<(), String> {
++        let authority = echo_agent::acp::ExtensionInvocationAuthority::new(1)
++            .map_err(|error| format!("{error:?}"))?;
++        let lease = authority
++            .lease(Some("same-child/custom-agent"), CancellationToken::new())
++            .map_err(|error| format!("{error:?}"))?;
++        let stream = test_stream_handle("factory-child-stream");
++        let owner = Arc::new(CallbackInvocationOwner {
++            _stream: None,
++            _session_callback: None,
++            _agent_invocation: None,
++            retained_lease: Mutex::new(Some(lease)),
++            response_completed: CancellationToken::new(),
++            pending_failure: Mutex::new(None),
++            finished: CancellationToken::new(),
++        });
++        let shared = ExtensionBridgeShared::new();
++        let (sink, receiver) = ExtensionStreamSink::new(
++            stream.clone(),
++            "same-child".to_string(),
++            ExtensionKind::CustomAgent,
++            1,
++            None,
++        );
++        sink.retain_until_remote_terminal
++            .store(true, Ordering::Release);
++        shared.register_stream(sink.clone());
++        let (response_sender, response_receiver) = tokio::sync::oneshot::channel();
++        response_sender
++            .send(Ok(None))
++            .map_err(|_| "response receiver disappeared".to_string())?;
++        // Both original physical facts already exist. Deliberately do not run
++        // a separate collector; terminal consumption must order the same lease
++        // release before the factory can enter its original AgentClose call.
++        shared.deliver_stream_event(ExtensionStreamEvent::Complete {
++            stream,
++            sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
++                .map_err(|error| error.to_string())?,
++            value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::FinalAnswer {
++                text: "finished".to_string(),
++            }),
++        })?;
++        let mut source = owned_callback_event_stream(
++            owner,
++            CallbackStreamDropNotice {
++                cancellation: CancellationToken::new(),
++                armed: true,
++            },
++            sink,
++            receiver,
++            response_receiver,
++        );
++        let event = source
++            .next()
++            .await
++            .ok_or_else(|| "missing terminal".to_string())?
++            .map_err(|error| error.message)?;
++        assert!(event.is_terminal());
++        assert_eq!(
++            authority.in_flight(),
++            0,
++            "terminal consumer must observe the released original invocation before calling child close"
++        );
++        let close = authority
++            .lease(Some("same-child/custom-agent"), CancellationToken::new())
++            .map_err(|error| {
++                format!("child close rejected after physical completion: {error:?}")
++            })?;
++        drop(close);
++        Ok(())
++    }
++
++    async fn custom_stream_holds_original_exclusive_lease_until_both_facts(
++        hold_response: bool,
++    ) -> Result<(), String> {
++        let authority = echo_agent::acp::ExtensionInvocationAuthority::new(2)
++            .map_err(|error| format!("{error:?}"))?;
++        let lease = authority
++            .lease(Some("same-child/custom-agent"), CancellationToken::new())
++            .map_err(|error| format!("{error:?}"))?;
++        let stream = test_stream_handle("factory-child-pending-stream");
++        let owner = Arc::new(CallbackInvocationOwner {
++            _stream: None,
++            _session_callback: None,
++            _agent_invocation: None,
++            retained_lease: Mutex::new(Some(lease)),
++            response_completed: CancellationToken::new(),
++            pending_failure: Mutex::new(None),
++            finished: CancellationToken::new(),
++        });
++        let shared = ExtensionBridgeShared::new();
++        let (sink, receiver) = ExtensionStreamSink::new(
++            stream.clone(),
++            "same-child".to_string(),
++            ExtensionKind::CustomAgent,
++            1,
++            None,
++        );
++        sink.retain_until_remote_terminal
++            .store(true, Ordering::Release);
++        shared.register_stream(sink.clone());
++        let terminal = ExtensionStreamEvent::Complete {
++            stream: stream.clone(),
++            sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
++                .map_err(|error| error.to_string())?,
++            value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::FinalAnswer {
++                text: "finished".to_string(),
++            }),
++        };
++        let (response_sender, response_receiver) = tokio::sync::oneshot::channel();
++        let mut response_sender = Some(response_sender);
++        if hold_response {
++            shared.deliver_stream_event(terminal.clone())?;
++        } else {
++            response_sender
++                .take()
++                .ok_or_else(|| "missing original response sender".to_string())?
++                .send(Ok(None))
++                .map_err(|_| "response receiver disappeared".to_string())?;
++            let mut wrong = terminal.clone();
++            if let ExtensionStreamEvent::Complete { stream, .. } = &mut wrong {
++                stream.generation = WireU64::from_u64(2);
++            }
++            assert!(shared.deliver_stream_event(wrong).is_err());
++            assert!(!sink.remote_terminal_received.load(Ordering::Acquire));
++        }
++        let mut source = owned_callback_event_stream(
++            owner,
++            CallbackStreamDropNotice {
++                cancellation: CancellationToken::new(),
++                armed: true,
++            },
++            sink,
++            receiver,
++            response_receiver,
++        );
++        assert!(
++            tokio::time::timeout(Duration::from_millis(20), source.next())
++                .await
++                .is_err()
++        );
++        assert_eq!(authority.in_flight(), 1);
++        assert!(
++            authority
++                .lease(Some("same-child/custom-agent"), CancellationToken::new())
++                .is_err(),
++            "a missing actual RPC answer or valid remote terminal must preserve child exclusivity"
++        );
++        if hold_response {
++            response_sender
++                .take()
++                .ok_or_else(|| "missing held original response".to_string())?
++                .send(Ok(None))
++                .map_err(|_| "response receiver disappeared".to_string())?;
++        } else {
++            shared.deliver_stream_event(terminal)?;
++        }
++        assert!(
++            source
++                .next()
++                .await
++                .ok_or_else(|| "missing completed terminal".to_string())?
++                .map_err(|error| error.message)?
++                .is_terminal()
++        );
++        assert_eq!(authority.in_flight(), 0);
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn custom_stream_keeps_child_exclusive_while_original_rpc_answer_is_pending()
++    -> Result<(), String> {
++        custom_stream_holds_original_exclusive_lease_until_both_facts(true).await
++    }
++
++    #[tokio::test]
++    async fn custom_stream_keeps_child_exclusive_until_valid_remote_terminal() -> Result<(), String>
++    {
++        custom_stream_holds_original_exclusive_lease_until_both_facts(false).await
++    }
++
++    async fn factory_child_retry_case() -> Result<(), String> {
++        use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
++        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
++        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
++        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
++            "schema_version":1,"default_agent":{
++                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
++                "agent":{"name":"fixture","enable_tools":true}
++            }
++        })).map_err(|error| error.to_string())?;
++        let prepared = config.prepare().map_err(|error| error.to_string())?;
++        let state = CoreProfileState::install(
++            root.path(),
++            crate::config::SdkProfileLimits::default(),
++            prepared.framework,
++            prepared.llm_client,
++        )
++        .map_err(|error| error.to_string())?;
++        let bridge = state.extension_bridge.clone();
++        let registry = Arc::new(echo_agent::acp::SessionRegistry::new(
++            Arc::new(state.session_factory.clone()),
++            4,
++        ));
++        let services = Arc::new(echo_agent::acp::AcpConnectionServices::new(
++            registry,
++            Arc::new(echo_agent::acp::AcpAdapterConfig::default()),
++        ));
++        state.bind_services(services);
++        let limits = super::super::handles::ExtensionRegistrationLimits {
++            max_extensions: 4,
++            max_descriptor_bytes: 65_536,
++        };
++        let (factory, _) = state
++            .handles
++            .register_extension(
++                limits,
++                ExtensionKind::AgentFactory,
++                "retry-parent",
++                ExtensionDescriptor::AgentFactory {
++                    descriptor_version: 1,
++                },
++                None,
++                false,
++            )
++            .map_err(|error| error.message)?;
++        let child = state
++            .handles
++            .reserve_factory_instance(
++                super::super::handles::ExtensionRegistrationLimits {
++                    max_extensions: 4,
++                    max_descriptor_bytes: 65_536,
++                },
++                &factory,
++                "retry-child",
++                None,
++            )
++            .map_err(|error| error.message)?;
++        let owner = Arc::new(FactoryInstanceLease {
++            bridge: bridge.clone(),
++            extension: child.clone(),
++            session_id: "original-session".to_string(),
++            close_result: tokio::sync::OnceCell::new(),
++            construction_submitted: AtomicBool::new(true),
++        });
++        let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
++        let finish = CancellationToken::new();
++        let sdk_finish = finish.clone();
++        let (host_io, sdk_io) = tokio::io::duplex(16_384);
++        let (host_read, host_write) = tokio::io::split(host_io);
++        let (sdk_read, sdk_write) = tokio::io::split(sdk_io);
++        let sdk = Client
++            .builder()
++            .on_receive_request(
++                {
++                    let calls = calls.clone();
++                    let child = child.clone();
++                    let factory = factory.clone();
++                    async move |call: ExtensionInvokeCall,
++                                responder: Responder<ExtensionInvokeOutcome>,
++                                _connection: ConnectionTo<AcpAgent>| {
++                        assert_eq!(call.extension, child);
++                        assert_eq!(call.factory_origin, Some(factory.clone()));
++                        assert!(matches!(
++                            call.invocation,
++                            ExtensionInvocation::AgentClose(_)
++                        ));
++                        let attempt = calls.fetch_add(1, Ordering::AcqRel);
++                        responder.respond(if attempt == 0 {
++                            ExtensionInvokeOutcome::Error {
++                                error: sdk_error(
++                                    ExtensionErrorCode::ExtensionFailed,
++                                    "retryable original child close failed",
++                                    Retryability::AfterDelay,
++                                    "_echo_agent/extension/invoke",
++                                ),
++                            }
++                        } else {
++                            ExtensionInvokeOutcome::Result {
++                                result: ExtensionResult::AgentClose(ExtensionUnit),
++                            }
++                        })
++                    }
++                },
++                agent_client_protocol::on_receive_request!(),
++            )
++            .connect_with(
++                ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()),
++                async move |_| {
++                    sdk_finish.cancelled().await;
++                    Ok(())
++                },
++            );
++        let host = AcpAgent.builder().connect_with(
++            ByteStreams::new(host_write.compat_write(), host_read.compat()), async move |connection| {
++                bridge.shared.bind_connection(connection);
++                assert!(owner.close().await.is_err());
++                assert!(state.handles.extension_for_cleanup(&child).is_ok());
++                assert!(state.handles.close_extension(&factory).is_err(), "failed cleanup must retain the same child and parent ownership");
++                let (first, second) = tokio::join!(owner.close(), owner.close());
++                let passed = first.is_ok() && second.is_ok();
++                let physical_calls = calls.load(Ordering::Acquire);
++                // End the official peer regardless of assertion outcome, so a
++                // failed retry assertion cannot be hidden by fixture shutdown.
++                finish.cancel();
++                assert!(passed, "same original cleanup owner must retry after its first failed acknowledgement; first={first:?}, second={second:?}, calls={physical_calls}");
++                assert_eq!(physical_calls, 2, "concurrent retry callers share one original physical cleanup");
++                assert!(owner.close().await.is_ok());
++                assert_eq!(calls.load(Ordering::Acquire), 2);
++                assert!(state.handles.is_closed(&child));
++                assert!(state.handles.close_extension(&factory).map_err(|error| RpcError::internal_error().data(error.message))?);
++                Ok(())
++            });
++        let (host, sdk) =
++            tokio::time::timeout(Duration::from_secs(5), async { tokio::join!(host, sdk) })
++                .await
++                .map_err(|_| "official factory cleanup retry test timed out".to_string())?;
++        host.map_err(|error| error.to_string())?;
++        sdk.map_err(|error| error.to_string())?;
++        Ok(())
++    }
++
++    #[tokio::test]
++    async fn factory_child_failed_cleanup_keeps_same_retry_owner_and_coalesces_success()
++    -> Result<(), String> {
++        factory_child_retry_case().await
++    }
+     fn test_stream_handle(id: &str) -> WireHandle {
+         WireHandle {
+             id: id.to_string(),

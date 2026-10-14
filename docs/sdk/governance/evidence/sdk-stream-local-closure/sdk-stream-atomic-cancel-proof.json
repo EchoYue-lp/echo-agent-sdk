@@ -1,0 +1,97 @@
+{
+  "scope": "same HandleRegistry stream state mutex atomically commits terminal sequence and returns actual cancellation fact; cancellation after terminal returns false",
+  "worktree": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "files": {
+    "stream_before": {
+      "path": "/tmp/sdk-stream-atomic-cancel-before.rs",
+      "sha256": "538a92c8ded24f121a650486e2d1f5fae8ac6963c3b8058286e3d8d195258a04"
+    },
+    "handles_before": {
+      "path": "/tmp/sdk-handles-atomic-cancel-before.rs",
+      "sha256": "dbfd492927f528ae4f5ba1738f5efe5d994687b2e91abb47afa62f1649ace6bc"
+    },
+    "red_source": {
+      "path": "/tmp/sdk-stream-atomic-cancel-red.rs",
+      "sha256": "f85c42b862cd72ad6bac0a3d83e6ac9b2361881d72c82a142f4325e17cb76b17"
+    },
+    "stream_source": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/stream.rs",
+      "sha256": "0b660a6a0a5a12e5fdc29f6bb52048ece12a038934a4850cc30f331e327dc885"
+    },
+    "handles_source": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/handles.rs",
+      "sha256": "a31d1c51efe73df0bd56624baf0293cde73312748a9f5691d80b2257b7c2fe39"
+    },
+    "red_log": {
+      "path": "/tmp/sdk-stream-atomic-cancel-red.log",
+      "sha256": "efb972705a91e8d11f8b4af7fe07beec638c5fa35aebb12431ce7b8f22bd6c22"
+    },
+    "green_stream_log": {
+      "path": "/tmp/sdk-stream-atomic-cancel-green.log",
+      "sha256": "c27907eb72482be6ecd7bf85146ca4e8903fd7d2b2bc12887039b5a417eff222"
+    },
+    "whole_handles_log": {
+      "path": "/tmp/sdk-stream-atomic-cancel-handles.log",
+      "sha256": "85a12710a2b397bea3be318cd1d3dbad909fd527a38c58f1da3423b550df4fd7"
+    },
+    "real_host_stream_log": {
+      "path": "/tmp/sdk-stream-atomic-cancel-facade.log",
+      "sha256": "3d9f0051d117031547dcb9cf0e5976fcc2d10c718d545787c9a9332884f05c03"
+    },
+    "fmt_log": {
+      "path": "/tmp/sdk-stream-atomic-cancel-fmt-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "results": {
+    "red": {
+      "exit": 101,
+      "passed": 7,
+      "failed": 2,
+      "ignored": 0,
+      "warnings": 0,
+      "failures": [
+        "real next barrier allowed accepted cancel before commit but complete projection",
+        "cancel after terminal commit incorrectly true"
+      ]
+    },
+    "green_stream": {
+      "exit": 0,
+      "passed": 17,
+      "failed": 0,
+      "ignored": 0,
+      "warnings": 0
+    },
+    "whole_handle_registry": {
+      "exit": 0,
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "warnings": 0
+    },
+    "real_host_streams": {
+      "exit": 0,
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "warnings": 0
+    },
+    "fmt_check": {
+      "exit": 0
+    },
+    "diff_check": {
+      "exit": 0
+    }
+  },
+  "framework_provenance": {
+    "kind": "temporary combined local ACP + Task patch, not published independent pin proof",
+    "root": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity",
+    "base": "95ec66c6083a8feb17a1c28de0d01e1a24ca8a28",
+    "tracked_diff_sha256": "36e3c8c43428fd557c1e04c17bb44dddd73df6cec79c3ec825855e7b23392d67"
+  },
+  "review_boundaries": [
+    "whole facade/stream.rs next/cancel/close/collector/pending failure path",
+    "handles.rs facade stream terminal/cancel same-lock linearization and all call sites"
+  ],
+  "limits": "Full Host gates and independent final source review remain coordinator work; no new wire/API/schema or framework business terminal authority."
+}

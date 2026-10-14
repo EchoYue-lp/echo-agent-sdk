@@ -1,0 +1,9 @@
+    Checking echo_core v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-core)
+    Checking echo_state v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-state)
+    Checking echo_execution v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-execution)
+    Checking echo_integration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-integration)
+    Checking echo_orchestration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-orchestration)
+    Checking echo_tools v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-tools)
+    Checking echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity)
+    Checking echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `dev` profile [unoptimized] target(s) in 35.05s

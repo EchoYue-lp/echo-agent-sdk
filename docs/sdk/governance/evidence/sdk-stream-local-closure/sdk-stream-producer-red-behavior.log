@@ -1,0 +1,36 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 44.45s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-e1cde4efcace38ae)
+
+running 4 tests
+test core_profile::facade::stream::cleanup_tests::cancelled_stream_close_retains_producer_until_collector_settles ... ok
+
+thread 'core_profile::facade::stream::cleanup_tests::producer_abort_yields_failed_terminal_not_complete' (126129438) panicked at echo-sdk-host/src/core_profile/facade/stream.rs:593:9:
+assertion `left == right` failed: abnormal producer exit must never project complete
+  left: "complete"
+ right: "failed"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'core_profile::facade::stream::cleanup_tests::eof_waits_for_producer_failure_and_cancelled_pull_retries_same_cause' (126129437) panicked at echo-sdk-host/src/core_profile/facade/stream.rs:728:9:
+assertion failed: tokio::time::timeout(std::time::Duration::from_millis(20),
+            runtime.next(&handles, &handle, "session-a", "fixture",
+                "fixture.stream.next")).await.is_err()
+
+thread 'core_profile::facade::stream::cleanup_tests::producer_unwind_yields_failed_terminal_not_complete' (126129439) panicked at echo-sdk-host/src/core_profile/facade/stream.rs:593:9:
+assertion `left == right` failed: abnormal producer exit must never project complete
+  left: "complete"
+ right: "failed"
+test core_profile::facade::stream::cleanup_tests::producer_abort_yields_failed_terminal_not_complete ... FAILED
+test core_profile::facade::stream::cleanup_tests::producer_unwind_yields_failed_terminal_not_complete ... FAILED
+test core_profile::facade::stream::cleanup_tests::eof_waits_for_producer_failure_and_cancelled_pull_retries_same_cause ... FAILED
+
+failures:
+
+failures:
+    core_profile::facade::stream::cleanup_tests::eof_waits_for_producer_failure_and_cancelled_pull_retries_same_cause
+    core_profile::facade::stream::cleanup_tests::producer_abort_yields_failed_terminal_not_complete
+    core_profile::facade::stream::cleanup_tests::producer_unwind_yields_failed_terminal_not_complete
+
+test result: FAILED. 1 passed; 3 failed; 0 ignored; 0 measured; 121 filtered out; finished in 0.20s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

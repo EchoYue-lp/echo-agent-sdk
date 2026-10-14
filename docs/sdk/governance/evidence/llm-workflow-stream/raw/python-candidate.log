@@ -1,0 +1,11 @@
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/python-llm-7z3w_8_a
+{"group": "llm", "verified": true}
+
+.LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/python-workflow-mg3dn8de
+{"group": "workflow", "verified": true}
+
+.LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/llm-workflow-stream-work/python-graph-qeleeby6
+{"group": "graph", "verified": true}
+
+.
+3 passed in 2.65s

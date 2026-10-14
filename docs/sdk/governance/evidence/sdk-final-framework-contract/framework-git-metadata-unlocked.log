@@ -1,0 +1,10 @@
+    Updating git repository `https://github.com/EchoYue-lp/echo-agent.git`
+     Locking 8 packages to highest Rust 1.95 compatible versions
+      Adding echo_agent v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+      Adding echo_core v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+      Adding echo_execution v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+      Adding echo_integration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+      Adding echo_macros v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+      Adding echo_orchestration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+      Adding echo_state v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+      Adding echo_tools v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)

@@ -1,9 +1,16 @@
 # echo-agent SDK (standard ACP Host available)
 
 This is the single external entry point for the echo-agent multilingual SDK
-program. The SDK's goal is full **functional and semantic parity** between
-the Rust framework's public facade and TypeScript, Python and Java — without
-rewriting the agent framework in any of those languages.
+program. The SDK preserves the behavior of **explicitly accepted cross-language
+contracts** in TypeScript, Python and Java, while the Rust framework owns
+execution and state. Its complete Rust public inventory is drift telemetry;
+it does not automatically create a three-language API commitment.
+
+Capability governance tracks entrypoints, state authority, lifecycle, failure
+paths and behavioral evidence in the [capability map](governance/capability-map.md),
+[behavior matrix](governance/behavior-evidence-matrix.md) and
+[Finding ledger](governance/finding-ledger.md). Historical build and catalog
+gates do not close that audit; unresolved scopes remain explicit there.
 
 > **Current status: ACP conformant (standard profile) + core extension profile
 > + extension bridge + facade feature adapters delivered in the Rust Host.** The source-built `echo-agent-sdk-host` passes
@@ -105,9 +112,24 @@ byte-stable:
 # regenerate after an intentional facade or contract change
 cargo run -p echo-sdk-protocol --bin export_schema --locked -- --update
 
-# read-only drift check (also run by scripts/verify.sh and CI)
+# read-only drift check (also run by SDK contract CI)
 ./scripts/check-sdk-contracts.sh
 ```
+
+During a framework adapter upgrade, the same generator can prepare a wire
+candidate without rerunning the upstream rustdoc inventory:
+
+```bash
+cargo run -p echo-sdk-protocol --bin export_schema --locked -- --wire-candidate-update
+./scripts/export-language-sdk-catalog.sh
+```
+
+This candidate combines the committed inventory and accepted identity scope
+with current wire definitions. It refreshes schema, fixtures, catalogs and
+their compatibility digest, and records its input hashes. It does not refresh
+framework provenance or accept new Rust identities. A release or completed
+governance outcome still requires full generation against the final published
+framework revision and the read-only contract gate above.
 
 ## Status ladder
 
@@ -136,7 +158,8 @@ surfaces have no remaining not-done canonical identities.
 
 These counts are SDK inventory telemetry, not repository-wide semantic progress
 and not an instruction to open one pull request per identity. The complete
-inventory remains the drift authority. Further language work is grouped by an
+inventory is non-blocking drift telemetry; only the explicitly accepted
+external contract and catalog are compatibility gates. Further language work is grouped by an
 externally useful SDK capability or a confirmed Finding, while whole-workspace
 governance is measured through Capability, Behavior, Rule, state authority,
 lifecycle, Finding, and Evidence coverage. See
@@ -154,8 +177,10 @@ the adapter route and per-language status:
 | `deferred` | 1,448 | Potential capabilities awaiting capability-level contract review. |
 
 The scope is generated, aliases inherit their canonical identity, and no row
-is manually promoted. A delivered intrinsic route remains an external contract;
-a deferred item is not rejected, but it does not become thousands of separate
+is manually promoted. An intrinsic route becomes a blocking external contract
+only through an explicit accepted disposition; route membership alone does not
+promote it. A deferred item is not rejected, but it does not become thousands
+of separate
 tasks. See [ADR 0032](../adr/0032-sdk-contract-scope-classification.md).
 
 External contract completion supports claims only about the declared external
@@ -329,3 +354,10 @@ without owning live-control registry state.
 - ADR 0028: `docs/adr/0028-source-first-multilanguage-sdk-runtime.md`
 - Official ACP documentation: <https://agentclientprotocol.com/>
 - Official Rust SDK: <https://github.com/agentclientprotocol/rust-sdk>
+
+
+Channel MessageHandler forward calls, cooperative stream close and executable
+three-language callback examples are documented in
+[Channel consumption](channel-handler-consumption.md). Full Rust inventory and
+intrinsic membership remain non-blocking telemetry; these examples exercise the
+six explicitly accepted Channel family operations.

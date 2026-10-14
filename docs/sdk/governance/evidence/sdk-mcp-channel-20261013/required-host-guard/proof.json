@@ -1,0 +1,53 @@
+{
+  "scope": "requiredHost absent/blank guard only; isolated Java@BeforeAll publicmethod, no Maven/shared target/Host launched",
+  "results": [
+    {
+      "language": "typescript",
+      "mode": "absent",
+      "exit_code": 1,
+      "explicit_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/required-host-guard/typescript-absent.log",
+      "sha256": "d46c68f77578d46d93aa0d1e0eb167c5fcbbf3936153e6fd8b0268b5cf7af6b4"
+    },
+    {
+      "language": "typescript",
+      "mode": "blank",
+      "exit_code": 1,
+      "explicit_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/required-host-guard/typescript-blank.log",
+      "sha256": "46142da1a028da1e083a4941f29a06aa404dac3646a3d2987127c51af2171019"
+    },
+    {
+      "language": "python",
+      "mode": "absent",
+      "exit_code": 2,
+      "explicit_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/required-host-guard/python-absent.log",
+      "sha256": "82833811b9b57cc3f6eb56702e16916d57429edaed621ac20d684f92e9ffc994"
+    },
+    {
+      "language": "python",
+      "mode": "blank",
+      "exit_code": 2,
+      "explicit_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/required-host-guard/python-blank.log",
+      "sha256": "304fbfafc5bc6fb0f03cbe5557a08ca4503863d69b7b9878873286079566df42"
+    },
+    {
+      "language": "java",
+      "mode": "absent",
+      "exit_code": 1,
+      "explicit_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/required-host-guard/java-absent.log",
+      "sha256": "21a2ac96cabe3df96e1bf8823e42fb34b84ccde114b44462b92f7e3a774ac4e6"
+    },
+    {
+      "language": "java",
+      "mode": "blank",
+      "exit_code": 1,
+      "explicit_failure_not_skip": true,
+      "log": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/required-host-guard/java-blank.log",
+      "sha256": "21a2ac96cabe3df96e1bf8823e42fb34b84ccde114b44462b92f7e3a774ac4e6"
+    }
+  ]
+}

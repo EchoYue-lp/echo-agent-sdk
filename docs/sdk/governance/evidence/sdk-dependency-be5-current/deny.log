@@ -1,0 +1,3 @@
+2026-10-14 02:19:12 [ERROR] failed to fetch advisory database https://github.com/RustSec/advisory-db with cli: failed to fetch latest changes: ["-C", "/Users/ls/.cargo/advisory-dbs/advisory-db-3157b0e258782691", "fetch", "--depth=1", "-u", "origin", "+main:main"]
+fatal: unable to access 'https://github.com/RustSec/advisory-db/': Failed to connect to github.com port 443 after 75005 ms: Couldn't connect to server
+

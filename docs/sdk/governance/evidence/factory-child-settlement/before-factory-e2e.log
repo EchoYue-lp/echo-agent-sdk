@@ -1,0 +1,27 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 18.87s
+     Running tests/extension_bridge_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/extension_bridge_e2e-4a6d4877e2246c9b)
+
+running 5 tests
+test factory_presubmit_failure_releases_unseen_child ... ok
+
+thread 'same_factory_constructs_independent_instances_across_concurrent_sessions' (130693419) panicked at echo-sdk-host/tests/extension_bridge_e2e.rs:4634:17:
+independent factory creations must not share the child execution lock; actual result: {"total":1,"passed":0,"failed":1,"avg_score":0.0,"std_dev":0.0,"min_score":0.0,"max_score":0.0,"delta_vs_baseline":null,"total_tool_calls":0,"total_tokens_in":0,"total_tokens_out":0,"total_cached_tokens_in":0,"total_cache_creation_tokens_in":0,"cache_hit_rate":null,"total_tool_errors":0,"max_protected_context_tokens":0,"total_file_changes":0,"results":[{"case_id":"first","success":false,"score":0.0,"metrics":[],"violations":["Agent error (other): extension bridge failure extension_conflict: extension is already executing an exclusive invocation"],"run_id":null,"duration_ms":2,"tool_calls":0,"tokens_in":0,"tokens_out":0,"cached_tokens_in":0,"cache_creation_tokens_in":0,"cache_hit_rate":null,"tool_errors":0,"max_protected_context_tokens":0,"file_changes":0,"compile_ok":null,"tests_pass":null}]}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test same_factory_constructs_independent_instances_across_concurrent_sessions ... FAILED
+
+thread 'eval_and_improve_source_adapters_invoke_agent_factory_lazily' (130693416) panicked at echo-sdk-host/tests/extension_bridge_e2e.rs:4551:5:
+lazy factory scenario failed: Err(Error { code: -32050: Unknown error, message: "factory still owns live CustomAgent instances", data: Some(Object {"code": String("extension_conflict"), "message": String("factory still owns live CustomAgent instances"), "retryable": String("never"), "operation": String("_echo_agent/extension/unregister"), "handle": Object {"id": String("extension-214a1a1e-942c-4831-861a-cf8239d26182"), "generation": String("1"), "kind": String("extension")}}) })
+test eval_and_improve_source_adapters_invoke_agent_factory_lazily ... FAILED
+test factory_and_custom_agent_extensions_round_trip ... ok
+test cancelled_factory_stream_closes_and_releases_instance ... ok
+
+failures:
+
+failures:
+    eval_and_improve_source_adapters_invoke_agent_factory_lazily
+    same_factory_constructs_independent_instances_across_concurrent_sessions
+
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 29 filtered out; finished in 3.07s
+
+error: test failed, to rerun pass `-p echo-sdk-host --test extension_bridge_e2e`

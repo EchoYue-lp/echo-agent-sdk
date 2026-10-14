@@ -1,0 +1,72 @@
+{
+  "audit": {
+    "exit": 0,
+    "loaded_advisories": 1310,
+    "scanned_locked_dependencies": 658
+  },
+  "deny": {
+    "exit": 0,
+    "warning_count": 50,
+    "warning_categories": {
+      "warning[duplicate]": 50
+    },
+    "warnings": [
+      "warning[duplicate]: found 2 duplicate entries for crate 'block-buffer'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'const-oid'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'core-foundation'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'cpufeatures'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'crypto-common'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'digest'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'foldhash'",
+      "warning[duplicate]: found 3 duplicate entries for crate 'getrandom'",
+      "warning[duplicate]: found 5 duplicate entries for crate 'hashbrown'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'hashlink'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'html5ever'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'indexmap'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'markup5ever'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'md-5'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'nom'",
+      "warning[duplicate]: found 3 duplicate entries for crate 'phf'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'phf_codegen'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'phf_generator'",
+      "warning[duplicate]: found 3 duplicate entries for crate 'phf_shared'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'quick-xml'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'r-efi'",
+      "warning[duplicate]: found 3 duplicate entries for crate 'rand'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'rand_chacha'",
+      "warning[duplicate]: found 3 duplicate entries for crate 'rand_core'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'redox_syscall'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'schemars'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'schemars_derive'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'serde_derive_internals'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'sha2'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'shlex'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'socket2'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'string_cache'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'string_cache_codegen'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'syn'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'tendril'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'thiserror'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'thiserror-impl'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'tower'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'web_atoms'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'weezl'",
+      "warning[duplicate]: found 3 duplicate entries for crate 'windows-sys'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows-targets'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows_aarch64_gnullvm'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows_aarch64_msvc'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows_i686_gnu'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows_i686_msvc'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows_x86_64_gnu'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows_x86_64_gnullvm'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'windows_x86_64_msvc'",
+      "warning[duplicate]: found 2 duplicate entries for crate 'zip'"
+    ],
+    "declared_policy": "bans.multiple-versions=warn, all original exceptions unchanged",
+    "summary": "advisories ok, bans ok, licenses ok, sources ok"
+  },
+  "RustSec": {
+    "revision": "6aed84668c23d7f535077a9fe918bf1fa0f6a5bc",
+    "remote_HEAD": "6aed84668c23d7f535077a9fe918bf1fa0f6a5bc"
+  }
+}

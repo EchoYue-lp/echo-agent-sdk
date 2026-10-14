@@ -147,6 +147,26 @@ public final class ToolResult {
         return result;
     }
 
+    /** Append typed execution facts without deriving facts from the output text. */
+    public ToolResult withEffects(Collection<? extends ToolEffect> effects) {
+        if (effects == null) throw new IllegalArgumentException("effects must not be null");
+        var result = copy();
+        var existing = result.json.get("effects");
+        ArrayNode values = existing instanceof ArrayNode array ? array : result.json.putArray("effects");
+        for (ToolEffect effect : effects) {
+            if (effect == null) throw new IllegalArgumentException("effect must not be null");
+            values.add(effect.toJson());
+        }
+        return result;
+    }
+
+    public List<ToolEffect> effects() {
+        var result = new java.util.ArrayList<ToolEffect>();
+        var values = json.get("effects");
+        if (values != null) values.forEach(value -> result.add(ToolEffect.from(value)));
+        return List.copyOf(result);
+    }
+
     private ToolResult copy() { return new ToolResult(json.deepCopy()); }
 
     private ObjectNode withMetadataObject() {
@@ -311,6 +331,11 @@ public final class ToolResult {
             return this;
         }
 
+        public Builder effects(Collection<? extends ToolEffect> value) {
+            effects = List.copyOf(value == null ? List.of() : value); return this;
+        }
+        private List<? extends ToolEffect> effects = List.of();
+
         public ToolResult build() {
             var result = JsonSupport.MAPPER.createObjectNode();
             var kindValue = JsonSupport.MAPPER.createObjectNode().put("kind", kind);
@@ -326,7 +351,7 @@ public final class ToolResult {
             metadata.forEach(metadataValue::put);
             ArrayNode content = result.putArray("model_content");
             modelContent.forEach(value -> content.add(value.deepCopy()));
-            return new ToolResult(result);
+            return new ToolResult(result).withEffects(effects);
         }
     }
 }

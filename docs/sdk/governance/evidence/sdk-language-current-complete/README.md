@@ -1,0 +1,13 @@
+# 当前候选官方完整三语言门禁
+
+唯一完整命令`bash ./scripts/check-language-sdks.sh`以官方run-command记录，实际exit0，246秒，原日志91253字节未截断。所有原步骤真实执行：当前candidatecatalog export --check、locked Host build、npm ci/TypeScript build/examples/290测试、TSquickstart、Ruff所有范围check与175fileformat、原UV module pytest所有tests/shared357测试+18subtests、Pythonquickstart、完整Maven67suites320tests、classpath及Javaquickstart；没有case过滤、skip或强制串行、ROOT环境覆盖。
+
+原实际counts/command/exit/time/log字节在summary.json、receipt.json、run.json与完整log；Java67个原XML立即复制至java-xml，0fail/error/skip。Node290/0skip与Python357+18均为这次完整命令的新结果，不把先前分段测试拼成exit0。
+
+before/after固定632个source文件摘要。运行期间仅sdks/java/README.md由文档owner修改，原source-after.same_source=false和路径保留；631个执行源码/测试/脚本输入完全不变。source-scope-classification记录纯文档差异，不能宣称整个源码摘要相同；不会因此重跑与文档无关的整个gate。
+
+WARN原文保留于full-language.log与warning-classification：Host outgoing_actor对刻意错误输入/关闭/失败RPC的expected error response，以及Java原SLF4J未配置provider的NOP提示；无Rust compiler/dependency warning。没有删除或隐藏原输出。
+
+精确framework仍真实Gitb9099558620f5f9693c736c85c214db14f62a8cb、无localpathpatch；新框架driver治理、12accepted identity裁决/full producer生成与finalSDKmain并未由这次门禁完成。source-contract只是受控候选；本包证明当前源码切片的官方三语言门禁通过，不宣称最终accepted-source continuity、main交付或npm/PyPI/Maven发布。
+
+原先3次完整脚本失败日志均独立保留：Node287中的Host目录冲突和Taskpause失败、Node290后Ruff7I001、Ruff通过后Python旧pytestshebang88collectionerror。Java默认路径原311/9fail与修后15/311另正式证据完整保留；当前320包含JavaHost提前退出新9项真实生命周期回归。旧错误未被覆盖，最终source/client/fixture修复及独立审查由各owner提供。

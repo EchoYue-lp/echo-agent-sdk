@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/eval_improve_topology_fixture.py", line 473, in <module>
+    main()
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/eval_improve_topology_fixture.py", line 469, in main
+    verify(args.work)
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/eval_improve_topology_fixture.py", line 367, in verify
+    assert any(
+AssertionError: {'case_id': 'timeout', 'success': False, 'score': 0, 'metrics': [], 'violations': ['Timeout', 'Turn did not settle within 12000 ms cancellation grace', 'Workspace retained after timeout: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/eval-improve-topology-work/typescript-eval-vW1Zsn/eval-configured/eval-r2BrWM'], 'run_id': None, 'duration_ms': '13006', 'tool_calls': '0', 'tokens_in': '0', 'tokens_out': '0', 'cached_tokens_in': '0', 'cache_creation_tokens_in': '0', 'cache_hit_rate': None, 'tool_errors': '0', 'max_protected_context_tokens': '0', 'file_changes': '0', 'compile_ok': None, 'tests_pass': None}

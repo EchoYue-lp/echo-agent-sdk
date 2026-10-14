@@ -1,0 +1,49 @@
+TAP version 13
+# 2026-10-13T05:32:56.909403Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(14) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "facade request payload is malformed: unknown variant `node`, expected one of `null`, `bool`, `string`, `i64`, `u64`, `f64`, `bytes`, `duration`, `timestamp`, `path`, `handle`, `list`, `map`, `record`, `variant`, `unknown`", data: Some(Object {"code": String("invalid_request"), "message": String("facade request payload is malformed: unknown variant `node`, expected one of `null`, `bool`, `string`, `i64`, `u64`, `f64`, `bytes`, `duration`, `timestamp`, `path`, `handle`, `list`, `map`, `record`, `variant`, `unknown`"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op"), "details": Object {"facade": Object {}}}) }
+# 2026-10-13T05:32:57.001051Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(16) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "facade request payload is malformed: unknown variant `node`, expected one of `null`, `bool`, `string`, `i64`, `u64`, `f64`, `bytes`, `duration`, `timestamp`, `path`, `handle`, `list`, `map`, `record`, `variant`, `unknown`", data: Some(Object {"code": String("invalid_request"), "message": String("facade request payload is malformed: unknown variant `node`, expected one of `null`, `bool`, `string`, `i64`, `u64`, `f64`, `bytes`, `duration`, `timestamp`, `path`, `handle`, `list`, `map`, `record`, `variant`, `unknown`"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op"), "details": Object {"facade": Object {}}}) }
+# Workflow evidence retained: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-workflow-zsRHxZ
+# Subtest: workflow routing/checkpoint/claims/branch/owner and shape boundary
+not ok 1 - workflow routing/checkpoint/claims/branch/owner and shape boundary
+  ---
+  duration_ms: 5827.403667
+  type: 'test'
+  location: '/private/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js:17:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Traceback (most recent call last):
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 215, in <module>
+        if __name__ == "__main__": main()
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 210, in main
+        print(json.dumps(resolve(request["value"], request["results"]), ensure_ascii=False))
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 27, in resolve
+        return [resolve(item, results) for item in value]
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 27, in <listcomp>
+        return [resolve(item, results) for item in value]
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 31, in resolve
+        selected = results[value["$ref"]]["value"]
+    KeyError: 'value'
+    
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    helper (file:///private/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js:15:10)
+    TestContext.<anonymous> (file:///private/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js:28:26)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5921.033041

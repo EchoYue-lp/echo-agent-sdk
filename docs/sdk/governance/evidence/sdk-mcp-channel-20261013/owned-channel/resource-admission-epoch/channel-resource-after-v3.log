@@ -1,0 +1,11 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 42.25s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-0c359bb28c6f77b1)
+
+running 3 tests
+test core_profile::facade::integrations::channel_resource_admission_tests::channel_resource_operation_rechecks_tombstone_after_waiting_for_close ... ok
+test core_profile::facade::integrations::channel_resource_admission_tests::captured_channel_start_is_settled_before_resource_close ... ok
+test core_profile::facade::integrations::channel_resource_admission_tests::channel_dispatch_start_admission_outlives_close_queue_and_metadata_stays_readable ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 137 filtered out; finished in 0.07s
+

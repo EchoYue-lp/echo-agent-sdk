@@ -1,0 +1,180 @@
+name: Rust CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# The exhaustive all-feature gate runs once on the task branch before merge.
+# CI keeps the signals that a local macOS run cannot replace: Linux compilation
+# and tests, Windows compatibility, and dependency policy. Test groups remain
+# split because a single workspace test job exceeds the hosted runner's memory.
+jobs:
+  linux-quality:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "false"
+      - name: Check Linux formatting, lints, and featureless build
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+          cargo check --workspace --lib --no-default-features --locked
+
+  linux-test:
+    name: linux test (${{ matrix.group }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: protocol
+            packages: -p echo-sdk-protocol
+          - group: sdk-host
+            packages: -p echo-sdk-host
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      ECHO_SEMANTIC_TARGET_REVISION: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+      RUSTFLAGS: -C link-arg=-fuse-ld=lld
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Install low-memory linker
+        run: sudo apt-get install --no-install-recommends -y lld
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "false"
+      - name: Test default feature surface
+        run: cargo test ${{ matrix.packages }} --lib --tests --locked
+      - name: Test core profile E2E (sdk-host group only)
+        if: matrix.group == 'sdk-host'
+        run: cargo test -p echo-sdk-host --features sdk-core-profile --lib --tests --locked
+      - name: Test extension bridge E2E (sdk-host group only)
+        if: matrix.group == 'sdk-host'
+        run: |
+          RUSTFLAGS="$RUSTFLAGS -D warnings" cargo test -p echo-sdk-host --features sdk-extension-bridge --tests --no-run --locked
+          RUSTFLAGS="$RUSTFLAGS -D warnings" cargo test -p echo-sdk-host --features sdk-extension-bridge --locked --test extension_bridge_e2e
+      - name: Test facade feature adapters E2E (sdk-host group only)
+        if: matrix.group == 'sdk-host'
+        run: cargo test -p echo-sdk-host --features sdk-facade-all --locked --test facade_feature_adapters_e2e --test core_profile_e2e
+      - name: Test facade adapters without reverse bridge (sdk-host group only)
+        if: matrix.group == 'sdk-host'
+        run: >-
+          cargo test -p echo-sdk-host --no-default-features
+          --features sdk-facade-adapters,framework-eval,framework-improve,framework-sqlite
+          --locked --test core_profile_e2e every_canonical_source_operation_reaches_a_host_adapter
+
+  windows-check:
+    runs-on: windows-latest
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "false"
+      - name: Compile SDK workspace for Windows
+        run: cargo check --workspace --lib --all-features --locked
+
+  # Blocking SDK contract signal: deterministic regeneration of the accepted
+  # external contract, extension schema and fixtures must produce zero drift.
+  # The complete Rust inventory and Host catalog are retained in a separate
+  # non-blocking telemetry job below.
+  sdk-contract:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@v6
+      - name: Read pinned rustdoc toolchain
+        id: toolchain
+        run: |
+          toolchain=$(python3 -c "import json;print(json.load(open('contracts/sdk/toolchain.json'))['rustdoc']['toolchain'])")
+          echo "toolchain=$toolchain" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.toolchain.outputs.toolchain }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "false"
+      - name: Check SDK contract artifacts
+        run: ./scripts/check-sdk-contracts.sh
+
+  inventory-telemetry:
+    name: Rust inventory telemetry
+    runs-on: ubuntu-latest
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@v6
+      - name: Read pinned rustdoc toolchain
+        id: toolchain
+        run: |
+          toolchain=$(python3 -c "import json;print(json.load(open('contracts/sdk/toolchain.json'))['rustdoc']['toolchain'])")
+          echo "toolchain=$toolchain" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.toolchain.outputs.toolchain }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "false"
+      - name: Report complete Rust inventory drift
+        run: ./scripts/check-sdk-inventory-telemetry.sh
+
+  language-sdk:
+    name: source language SDKs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: sdks/typescript/package-lock.json
+      - uses: astral-sh/setup-uv@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Build and test source SDKs
+        run: ./scripts/check-language-sdks.sh
+
+  dependency-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: taiki-e/install-action@cargo-audit
+      - name: Audit vulnerabilities and maintenance warnings
+        run: cargo audit --deny warnings
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          arguments: --workspace --all-features --locked

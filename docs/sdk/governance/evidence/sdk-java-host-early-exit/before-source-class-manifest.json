@@ -1,0 +1,7 @@
+{
+  "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "5dd37fb7a5ca71b9f8ff5fa89c1c79c41d2f5f34dcc8839a1a6cd83c8d38d37a",
+  "sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java": "fc5a7c498a941fb9223f2a1ef752d0e26ac78e27c88610a36234db419b5d326e",
+  "currentClientClass": "6ad7037118f6dc52b64218832cb896251d1b1b6cca4d5a18d998458e0feb7355",
+  "officialAcpJar": "daa9487c594817032f218aaa2b2707731a8872caedfc11faec0137d1441e2f47",
+  "probeSource": "e865d5faeb408aafb7fed768e1a81a97065634b50fafcb3c08d1903ea57ef2ec"
+}

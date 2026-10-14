@@ -1,0 +1,17 @@
+{
+  "label": "sdk-full-language-candidate",
+  "command": [
+    "bash",
+    "./scripts/check-language-sdks.sh"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight/full-language.log",
+  "exitCode": 1,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 82571,
+  "bytesWritten": 82571,
+  "startedAt": "2026-10-13T19:46:46.023Z",
+  "finishedAt": "2026-10-13T19:48:10.218Z"
+}

@@ -1,0 +1,52 @@
+TAP version 13
+# 2026-10-13T05:37:08.163455Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(16) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "Checkpoint is missing or consumed", data: Some(Object {"code": String("framework_error"), "message": String("Checkpoint is missing or consumed"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("other")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("other")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-13T05:37:08.245958Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(18) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "unknown checkpoint 72e59700-59e5-4a3e-8670-a01693ac8014", data: Some(Object {"code": String("invalid_value"), "message": String("unknown checkpoint 72e59700-59e5-4a3e-8670-a01693ac8014"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-13T05:37:08.719905Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(29) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "unknown checkpoint 5a0a17a3-9e1c-4d4e-af40-f0296bed9dba", data: Some(Object {"code": String("invalid_value"), "message": String("unknown checkpoint 5a0a17a3-9e1c-4d4e-af40-f0296bed9dba"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-13T05:37:08.841328Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(32) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "facade resource belongs to another session", data: Some(Object {"code": String("invalid_value"), "message": String("facade resource belongs to another session"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-13T05:37:09.083792Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(38) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "facade resource belongs to another session", data: Some(Object {"code": String("invalid_value"), "message": String("facade resource belongs to another session"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-13T05:37:09.124376Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(39) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "open facade resource limit 2 reached", data: Some(Object {"code": String("payload_too_large"), "message": String("open facade resource limit 2 reached"), "retryable": String("after_delay"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-13T05:37:09.412417Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(47) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "handle was already released by this Host generation", data: Some(Object {"code": String("closed_handle"), "message": String("handle was already released by this Host generation"), "retryable": String("never"), "operation": String("_echo_agent/session"), "handle": Object {"id": String("session-0a755f00-2678-41a5-a3e4-79ddff8b02f8"), "generation": String("1"), "kind": String("session")}}) }
+# 2026-10-13T05:37:09.453418Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(48) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "handle was already released by this Host generation", data: Some(Object {"code": String("closed_handle"), "message": String("handle was already released by this Host generation"), "retryable": String("never"), "operation": String("_echo_agent/session"), "handle": Object {"id": String("session-0a755f00-2678-41a5-a3e4-79ddff8b02f8"), "generation": String("1"), "kind": String("session")}}) }
+# 2026-10-13T05:37:09.577036Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(51) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "open facade resource limit 2 reached", data: Some(Object {"code": String("payload_too_large"), "message": String("open facade resource limit 2 reached"), "retryable": String("after_delay"), "operation": String("_echo_agent/workflow/op")}) }
+# Workflow evidence retained: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-workflow-H1S8pq
+# Subtest: workflow routing/checkpoint/claims/branch/owner and shape boundary
+not ok 1 - workflow routing/checkpoint/claims/branch/owner and shape boundary
+  ---
+  duration_ms: 7265.754542
+  type: 'test'
+  location: '/private/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js:17:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Traceback (most recent call last):
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 239, in <module>
+        if __name__ == "__main__": main()
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 236, in main
+        print(json.dumps(verify(args.work, json.loads(args.verify.read_text()))))
+      File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 215, in verify
+        assert tuple_result["outcome"] == "error" and tuple_result["code"] == "invalid_value", ("tuple shape accepted; positive routing/checkpoint/state assertions above all passed", tuple_result)
+    AssertionError: ('tuple shape accepted; positive routing/checkpoint/state assertions above all passed', {'id': 'tuple-resume', 'outcome': 'result', 'value': {'outcome': 'interrupted', 'pending_node': 'end', 'prompt': "Node 'end' requires confirmation before execution", 'checkpoint': {'id': '66e08142-b1bc-46c5-9d56-6a3cac644605', 'graph_name': 'shared-workflow-中文🙂', 'workflow_run_id': 'ae791dfa-e76f-4161-999e-455e9aea7337', 'graph_revision': 'e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa', 'generation': '1', 'resume_attempt_id': None, 'current_node': 'end', 'state_snapshot': {'values': {'memo': 'checkpoint 中文🙂', 'context': {'optional': None, 'list': ['a', 'b']}, 'approved': True}, 'messages': [], 'current_node': 'yes'}, 'path': ['start', 'gate', 'yes'], 'step_count': '3', 'created_at': '2026-10-13T13:37:09.205834+08:00', 'continuation': {'kind': 'node'}, 'interrupt_type': 'beforenode', 'parent_checkpoint_id': '7f4c54a5-d83a-4877-ba99-73304ef30be6', 'label': None, 'tags': [], 'branch': None}}})
+    
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    helper (file:///private/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js:15:10)
+    TestContext.<anonymous> (file:///private/tmp/sdk-workflow-candidate-fixture/workflow-host.test.js:35:22)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7379.98375

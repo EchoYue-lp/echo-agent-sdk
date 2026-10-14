@@ -1,0 +1,14 @@
+{
+  "reviewer": "sdk_capability_acceptance_audit",
+  "source": "actual independent reviewer session plus coordinator confirmation in same goal",
+  "result": "limited pass, zero findings",
+  "scope": "catalog owns exact family wire method; TS/Python/Java check family identity before dispatch, content_guard uses content-guard; each realHost1 case and wrongfamily rejection",
+  "reviewed_source_sha256": {
+    "sdks/typescript/src/client.ts": "8a3305983e88e995b3e636c94d65173816b159a7e4fe7702f3598a5b51cff3da",
+    "sdks/python/src/echo_agent_sdk/client.py": "3abae76652ebd97897d649a52b4cec7290bf723326fc770ba44ed952c600ed3a",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "e5597e4687b5f232c305ef167094f39296b6dd5bed63df42774efcbf287a640f",
+    "sdks/java/src/test/java/com/echoagent/sdk/FamilyRouteHostTest.java": "c601acd1b875ef8b657f1bf3c446ff64365e4bd94f6b5754f0b3133c5e2fc706"
+  },
+  "runtime_host_sha256": "c52da2d346d8848074b646e5442ecc83890cd68991f08287780280f871b59f89",
+  "limitations": "local bug review only; not everyfamily/fullpackagefinal/mainCI/publication"
+}

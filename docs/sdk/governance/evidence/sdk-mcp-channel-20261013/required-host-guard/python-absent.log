@@ -1,0 +1,10 @@
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_mcp_channel_host.py ________________
+tests/test_mcp_channel_host.py:19: in <module>
+    raise RuntimeError("required MCP/channel Host missing")
+E   RuntimeError: required MCP/channel Host missing
+=========================== short test summary info ============================
+ERROR tests/test_mcp_channel_host.py - RuntimeError: required MCP/channel Hos...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.54s

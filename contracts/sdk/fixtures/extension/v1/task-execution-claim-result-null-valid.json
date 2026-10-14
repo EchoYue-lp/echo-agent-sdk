@@ -1,0 +1,23 @@
+{
+  "name": "task-execution-claim-result-null-valid",
+  "kind": "valid",
+  "target": "TaskExecutionWire",
+  "description": "A supplied null result remains distinct from absent output, and the exact claim revision survives.",
+  "payload": {
+    "task_id": "任务",
+    "status": {
+      "status": "completed"
+    },
+    "retry_count": 0,
+    "failure_fingerprint": null,
+    "claim": {
+      "claim_id": "claim-1",
+      "revision": "9007199254740993",
+      "attempt": 1,
+      "spec_hash": "digest"
+    },
+    "result": {
+      "kind": "null"
+    }
+  }
+}

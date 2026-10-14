@@ -1,0 +1,9 @@
+{
+  "fixture_before_sha256": "91b5d3ce43a231a26ef85302dd54ce48383cada956d00873df0e4a6a3b006c11",
+  "fixture_after_sha256": "75c9f86c0ac1f8e91473806a95b2c8732a9039a39e1d23a925cc7844078687d6",
+  "test_sha256": "76d3be61b9065452a5537f7959a819243da474c10f2384cb01e3ac7b88504529",
+  "producer_changed": false,
+  "client_deadline_changed": false,
+  "cases_removed": false,
+  "scope": "exact existing official ACP timeout external observation only; no generic transport_error acceptance"
+}

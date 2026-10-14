@@ -1,0 +1,68 @@
+{
+  "python": {
+    "existing_rows": 29,
+    "unchanged_baseline_rows_except_intended_chunk_count": 28,
+    "changed_chunk_char_counts": {
+      "before": [
+        13,
+        12,
+        9
+      ],
+      "after": [
+        4,
+        4,
+        3
+      ]
+    },
+    "additional_rows": [
+      "chunk-200-scalars",
+      "chunk-201-scalars",
+      "chunk-70-chinese"
+    ],
+    "native_total_calls": 32
+  },
+  "typescript": {
+    "existing_rows": 29,
+    "unchanged_baseline_rows_except_intended_chunk_count": 28,
+    "changed_chunk_char_counts": {
+      "before": [
+        13,
+        12,
+        9
+      ],
+      "after": [
+        4,
+        4,
+        3
+      ]
+    },
+    "additional_rows": [
+      "chunk-200-scalars",
+      "chunk-201-scalars",
+      "chunk-70-chinese"
+    ],
+    "native_total_calls": 32
+  },
+  "java": {
+    "existing_rows": 29,
+    "unchanged_baseline_rows_except_intended_chunk_count": 28,
+    "changed_chunk_char_counts": {
+      "before": [
+        13,
+        12,
+        9
+      ],
+      "after": [
+        4,
+        4,
+        3
+      ]
+    },
+    "additional_rows": [
+      "chunk-200-scalars",
+      "chunk-201-scalars",
+      "chunk-70-chinese"
+    ],
+    "native_total_calls": 32
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "phase": "native-current-candidate-proof-not-published-pin",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802",
+  "contract_digest": {
+    "contract_digest": "sha256:df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61",
+    "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6"
+  },
+  "sourceFiles": {
+    "sdks/shared/testing/channel_forward_scenarios.json": "9920c8b8ae82c3cda7d156c8971579b6ed52ec1e704ec24f09da381d596fdcd7",
+    "sdks/shared/testing/compare_channel_forward_results.py": "d08a8170cf3220e7a6c077423d6013d418daa16f8cd45dab7cbf6d10dc7451c4",
+    "sdks/typescript/test/channel-handler-forward-host.test.js": "cf35bb797e9b57129f24b17e1b3d1b3eb88247e9a80fe6e0531acd56b97a5be5",
+    "sdks/python/tests/test_channel_handler_forward_host.py": "0a669f703875fd458a0641d7c4e3f1abd96f832daec32729a69f21b6f9ea8b77",
+    "sdks/java/src/test/java/com/echoagent/sdk/ChannelHandlerForwardHostTest.java": "586b14a1d8fba4155cd90ed9d1ce9aa4d13242cae30546ed0f9f8cbf194cbd34"
+  },
+  "receipts": [
+    {
+      "language": "typescript",
+      "receipt": "docs/sdk/governance/evidence/sdk-channel-handler-forward-native/typescript.json",
+      "sha256": "ec597133dc2e40ff536aafd6a2533f07f68ac5152615b8c18e6f9024ac2a82d9",
+      "host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802",
+      "source_hashes": {
+        "channel-handler-forward-host.test.js": "cf35bb797e9b57129f24b17e1b3d1b3eb88247e9a80fe6e0531acd56b97a5be5",
+        "client.ts": "ded47f340ee3de942442e93ae45aa7909ee5e70d2da914825b01002840333ca4",
+        "channel_forward_scenarios.json": "9920c8b8ae82c3cda7d156c8971579b6ed52ec1e704ec24f09da381d596fdcd7"
+      },
+      "scenario_rows": 51
+    },
+    {
+      "language": "python",
+      "receipt": "docs/sdk/governance/evidence/sdk-channel-handler-forward-native/python.json",
+      "sha256": "267db53f3af9aab59b72b804751ab3e85b8d084cd10f450819c5d356fa1a357d",
+      "host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802",
+      "source_hashes": {
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_channel_handler_forward_host.py": "0a669f703875fd458a0641d7c4e3f1abd96f832daec32729a69f21b6f9ea8b77",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/channel_forward_scenarios.json": "9920c8b8ae82c3cda7d156c8971579b6ed52ec1e704ec24f09da381d596fdcd7"
+      },
+      "scenario_rows": 18
+    },
+    {
+      "language": "java",
+      "receipt": "docs/sdk/governance/evidence/sdk-channel-handler-forward-native/java.json",
+      "sha256": "7fdd49a4c312fd8746fbfeed94982056b3c1637b1622c5bc00225e7fb818faf4",
+      "host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802",
+      "source_hashes": {
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/ChannelHandlerForwardHostTest.java": "586b14a1d8fba4155cd90ed9d1ce9aa4d13242cae30546ed0f9f8cbf194cbd34",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/../shared/testing/channel_forward_scenarios.json": "9920c8b8ae82c3cda7d156c8971579b6ed52ec1e704ec24f09da381d596fdcd7"
+      },
+      "scenario_rows": 18
+    }
+  ],
+  "tests": {
+    "typescript": 10,
+    "python": 3,
+    "java": 3
+  },
+  "comparison": {
+    "command": "python3 sdks/shared/testing/compare_channel_forward_results.py docs/sdk/governance/evidence/sdk-channel-handler-forward-native/typescript.json docs/sdk/governance/evidence/sdk-channel-handler-forward-native/python.json docs/sdk/governance/evidence/sdk-channel-handler-forward-native/java.json",
+    "result": "pass"
+  },
+  "remaining": "published framework pin, full SDK gates, internal lifecycle fault matrices, independent review/exact main",
+  "compiledBuildManifest": {
+    "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/source-build-manifest.json",
+    "sha256": "37cb2ee376df25bd12e62000a2838746950c671c935ea8168ed3ce54e3d3ab51",
+    "compiledSources": {
+      "echo-sdk-host/src/core_profile/facade/integrations.rs": "1ddd9ff366621eda03ced1f6089eeae80f151635dbb8d42cb6321d8a9623e3ab",
+      "echo-sdk-host/src/core_profile/facade/mod.rs": "33c327b50f513e1e7ca9afb0247ccc6e282204d9b865d62c757747c64fd27fae",
+      "echo-sdk-host/src/core_profile/facade/stream.rs": "ade4f9b8f7ccaab2566242f2f893af80418a076cd69aa2b1e360eed9aac7a44d",
+      "echo-sdk-host/src/core_profile/handles.rs": "8c66cab1884085c2d0591fd8d909623d0c3a07a588c21e0334a098a3e273dca1",
+      "echo-sdk-host/src/core_profile/extension_bridge.rs": "ed5f3446bdca72cdbc324ff0fe7fbbfdf2cdd6c4ea7430a6070aa2580732b0a6",
+      "echo-sdk-host/src/core_profile/facade/workflow.rs": "f6314db954f6ba83af44eba2987822e728859bd7089e33ed519bb5d98e04fcbe",
+      "echo-sdk-protocol/src/facade.rs": "5f0c44138d8a595145735c2c7b6b5e5bf836b6a615cb1487fa47b5373461a24b",
+      "echo-sdk-protocol/src/methods.rs": "9e9deb481eb7850a039fc930971a2f9363db6e7905490165121dd28a57641000",
+      "contracts/sdk/source-contract.json": "e689bb8fee5e8aabbf517264bb608f47a0bd19e6ef665b54b5d26ea2c248d394",
+      "contracts/sdk/facade-operation-catalog.json": "87fe186ea7812b82b064e999969837bd83edf6fede8a756725c819ce1c657bb6",
+      "sdks/shared/facade-operation-catalog.json": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+      ".cargo/config.toml": "65e87a54d615e7cc202c662b03dda190e770a1eb6474429db06c20922081ab6b",
+      "Cargo.lock": "a4f93d36245e4c6367b8050abef7d61e175f2c39e94b931a813bd06174eb01ae"
+    }
+  }
+}

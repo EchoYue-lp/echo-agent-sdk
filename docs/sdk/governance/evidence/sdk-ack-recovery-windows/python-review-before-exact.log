@@ -1,0 +1,1135 @@
+FFFFFFFFFFFFFFFFFFFFFFF                                                  [100%]
+=================================== FAILURES ===================================
+_________ test_success_commits_only_its_own_cursor[order0-successful0] _________
+
+order = (2, 10), successful = {2}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,successful",
+        [
+            ((2, 10), {2}),
+            ((10, 2), {2}),
+            ((2, 10), {10}),
+            ((10, 2), {10}),
+            ((10, 2), {2, 10}),
+            ((2, 10), set()),
+        ],
+    )
+    async def test_success_commits_only_its_own_cursor(order, successful):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_________ test_success_commits_only_its_own_cursor[order1-successful1] _________
+
+order = (10, 2), successful = {2}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,successful",
+        [
+            ((2, 10), {2}),
+            ((10, 2), {2}),
+            ((2, 10), {10}),
+            ((10, 2), {10}),
+            ((10, 2), {2, 10}),
+            ((2, 10), set()),
+        ],
+    )
+    async def test_success_commits_only_its_own_cursor(order, successful):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_________ test_success_commits_only_its_own_cursor[order2-successful2] _________
+
+order = (2, 10), successful = {10}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,successful",
+        [
+            ((2, 10), {2}),
+            ((10, 2), {2}),
+            ((2, 10), {10}),
+            ((10, 2), {10}),
+            ((10, 2), {2, 10}),
+            ((2, 10), set()),
+        ],
+    )
+    async def test_success_commits_only_its_own_cursor(order, successful):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_________ test_success_commits_only_its_own_cursor[order3-successful3] _________
+
+order = (10, 2), successful = {10}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,successful",
+        [
+            ((2, 10), {2}),
+            ((10, 2), {2}),
+            ((2, 10), {10}),
+            ((10, 2), {10}),
+            ((10, 2), {2, 10}),
+            ((2, 10), set()),
+        ],
+    )
+    async def test_success_commits_only_its_own_cursor(order, successful):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_________ test_success_commits_only_its_own_cursor[order4-successful4] _________
+
+order = (10, 2), successful = {2, 10}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,successful",
+        [
+            ((2, 10), {2}),
+            ((10, 2), {2}),
+            ((2, 10), {10}),
+            ((10, 2), {10}),
+            ((10, 2), {2, 10}),
+            ((2, 10), set()),
+        ],
+    )
+    async def test_success_commits_only_its_own_cursor(order, successful):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_________ test_success_commits_only_its_own_cursor[order5-successful5] _________
+
+order = (2, 10), successful = set()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,successful",
+        [
+            ((2, 10), {2}),
+            ((10, 2), {2}),
+            ((2, 10), {10}),
+            ((10, 2), {10}),
+            ((10, 2), {2, 10}),
+            ((2, 10), set()),
+        ],
+    )
+    async def test_success_commits_only_its_own_cursor(order, successful):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+____________ test_duplicate_ack_late_failure_cannot_retract_success ____________
+
+    @pytest.mark.asyncio
+    async def test_duplicate_ack_late_failure_cannot_retract_success():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_____ test_cancel_before_completion_preserves_unknown_until_actual_failure _____
+
+    @pytest.mark.asyncio
+    async def test_cancel_before_completion_preserves_unknown_until_actual_failure():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:146: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+______ test_caller_cancel_after_send_success_cannot_erase_submission_fact ______
+
+    @pytest.mark.asyncio
+    async def test_caller_cancel_after_send_success_cannot_erase_submission_fact():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:176: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+________ test_pending_coverage_allows_live_continuation_without_commit _________
+
+    @pytest.mark.asyncio
+    async def test_pending_coverage_allows_live_continuation_without_commit():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+________________ test_sdk_close_settles_pending_submission_jobs ________________
+
+    @pytest.mark.asyncio
+    async def test_sdk_close_settles_pending_submission_jobs():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:215: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_________ test_lower_pending_ack_cannot_authorize_backwards_live_fact __________
+
+    @pytest.mark.asyncio
+    async def test_lower_pending_ack_cannot_authorize_backwards_live_fact():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:230: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+___________ test_ack_submission_keeps_the_validated_request_snapshot ___________
+
+    @pytest.mark.asyncio
+    async def test_ack_submission_keeps_the_validated_request_snapshot():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:254: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_______ test_retention_replay_bridge_requires_successful_official_write ________
+
+    @pytest.mark.asyncio
+    async def test_retention_replay_bridge_requires_successful_official_write():
+        from echo_agent_sdk.client import RunHandle
+    
+>       client, stream, feed, _ = fixture()
+                                  ^^^^^^^^^
+
+tests/test_ack_submission.py:316: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+___ test_pending_replay_ack_allows_contiguous_gap_without_consumption[False] ___
+
+success = False
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("success", [False, True])
+    async def test_pending_replay_ack_allows_contiguous_gap_without_consumption(success):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:360: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+___ test_pending_replay_ack_allows_contiguous_gap_without_consumption[True] ____
+
+success = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("success", [False, True])
+    async def test_pending_replay_ack_allows_contiguous_gap_without_consumption(success):
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:360: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+______ test_gap_plus_empty_after_gap_page_cannot_authorize_missing_cursor ______
+
+    @pytest.mark.asyncio
+    async def test_gap_plus_empty_after_gap_page_cannot_authorize_missing_cursor():
+        from echo_agent_sdk.client import RunHandle
+    
+>       client, stream, feed, _ = fixture()
+                                  ^^^^^^^^^
+
+tests/test_ack_submission.py:408: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_______ test_pending_ack_cannot_authorize_noncontiguous_or_backwards_gap _______
+
+    @pytest.mark.asyncio
+    async def test_pending_ack_cannot_authorize_noncontiguous_or_backwards_gap():
+>       client, stream, feed, transport = fixture()
+                                          ^^^^^^^^^
+
+tests/test_ack_submission.py:444: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_ test_public_replay_coverage_closure_is_order_independent[empty_gap_tail-True] _
+
+order = 'empty_gap_tail', expected = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,expected",
+        [
+            ("empty_gap_tail", True),
+            ("reverse_gap", True),
+            ("reverse_plain", True),
+            ("disconnected", False),
+        ],
+    )
+    async def test_public_replay_coverage_closure_is_order_independent(order, expected):
+        from echo_agent_sdk.client import RunHandle
+    
+>       client, stream, feed, _ = fixture()
+                                  ^^^^^^^^^
+
+tests/test_ack_submission.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+__ test_public_replay_coverage_closure_is_order_independent[reverse_gap-True] __
+
+order = 'reverse_gap', expected = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,expected",
+        [
+            ("empty_gap_tail", True),
+            ("reverse_gap", True),
+            ("reverse_plain", True),
+            ("disconnected", False),
+        ],
+    )
+    async def test_public_replay_coverage_closure_is_order_independent(order, expected):
+        from echo_agent_sdk.client import RunHandle
+    
+>       client, stream, feed, _ = fixture()
+                                  ^^^^^^^^^
+
+tests/test_ack_submission.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_ test_public_replay_coverage_closure_is_order_independent[reverse_plain-True] _
+
+order = 'reverse_plain', expected = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,expected",
+        [
+            ("empty_gap_tail", True),
+            ("reverse_gap", True),
+            ("reverse_plain", True),
+            ("disconnected", False),
+        ],
+    )
+    async def test_public_replay_coverage_closure_is_order_independent(order, expected):
+        from echo_agent_sdk.client import RunHandle
+    
+>       client, stream, feed, _ = fixture()
+                                  ^^^^^^^^^
+
+tests/test_ack_submission.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+_ test_public_replay_coverage_closure_is_order_independent[disconnected-False] _
+
+order = 'disconnected', expected = False
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,expected",
+        [
+            ("empty_gap_tail", True),
+            ("reverse_gap", True),
+            ("reverse_plain", True),
+            ("disconnected", False),
+        ],
+    )
+    async def test_public_replay_coverage_closure_is_order_independent(order, expected):
+        from echo_agent_sdk.client import RunHandle
+    
+>       client, stream, feed, _ = fixture()
+                                  ^^^^^^^^^
+
+tests/test_ack_submission.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+____ test_pending_recovery_live_continuation_cannot_authorize_absent_prefix ____
+
+    @pytest.mark.asyncio
+    async def test_pending_recovery_live_continuation_cannot_authorize_absent_prefix():
+        from echo_agent_sdk.client import RunHandle
+    
+>       client, stream, feed, _ = fixture()
+                                  ^^^^^^^^^
+
+tests/test_ack_submission.py:565: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def fixture():
+        stream = WireHandle("stream", "1", "stream")
+        transport = Transport()
+        client = object.__new__(EchoAgentClient)
+        client.connection = ClientSideConnection(
+            _Callbacks({}, 8), transport, listening=False
+        )
+        client._event_cursors = {}
+        client._replay_ranges = {stream: [(0, 10)]}
+        client._closed = False
+        client.process = None  # This fixture owns a message transport, not a child.
+        client._close_lock = asyncio.Lock()
+        client._callbacks = _Callbacks({}, 8)
+        client._updates = {}
+        client._process_watch = None
+    
+        class Context:
+            async def __aexit__(self, *_args):
+                await client.connection.close()
+    
+        client._context_manager = Context()
+>       feed = _EventFeed(
+            _AsyncQueue(32),
+            stream,
+            last_sequence=1,
+            last_live_sequence=1,
+            live_ranges=[(1, 1)],
+            replay_terminal_sequence=10,
+        )
+E       TypeError: _EventFeed.__init__() got an unexpected keyword argument 'live_ranges'
+
+tests/test_ack_submission.py:56: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_ack_submission.py::test_success_commits_only_its_own_cursor[order0-successful0]
+FAILED tests/test_ack_submission.py::test_success_commits_only_its_own_cursor[order1-successful1]
+FAILED tests/test_ack_submission.py::test_success_commits_only_its_own_cursor[order2-successful2]
+FAILED tests/test_ack_submission.py::test_success_commits_only_its_own_cursor[order3-successful3]
+FAILED tests/test_ack_submission.py::test_success_commits_only_its_own_cursor[order4-successful4]
+FAILED tests/test_ack_submission.py::test_success_commits_only_its_own_cursor[order5-successful5]
+FAILED tests/test_ack_submission.py::test_duplicate_ack_late_failure_cannot_retract_success
+FAILED tests/test_ack_submission.py::test_cancel_before_completion_preserves_unknown_until_actual_failure
+FAILED tests/test_ack_submission.py::test_caller_cancel_after_send_success_cannot_erase_submission_fact
+FAILED tests/test_ack_submission.py::test_pending_coverage_allows_live_continuation_without_commit
+FAILED tests/test_ack_submission.py::test_sdk_close_settles_pending_submission_jobs
+FAILED tests/test_ack_submission.py::test_lower_pending_ack_cannot_authorize_backwards_live_fact
+FAILED tests/test_ack_submission.py::test_ack_submission_keeps_the_validated_request_snapshot
+FAILED tests/test_ack_submission.py::test_retention_replay_bridge_requires_successful_official_write
+FAILED tests/test_ack_submission.py::test_pending_replay_ack_allows_contiguous_gap_without_consumption[False]
+FAILED tests/test_ack_submission.py::test_pending_replay_ack_allows_contiguous_gap_without_consumption[True]
+FAILED tests/test_ack_submission.py::test_gap_plus_empty_after_gap_page_cannot_authorize_missing_cursor
+FAILED tests/test_ack_submission.py::test_pending_ack_cannot_authorize_noncontiguous_or_backwards_gap
+FAILED tests/test_ack_submission.py::test_public_replay_coverage_closure_is_order_independent[empty_gap_tail-True]
+FAILED tests/test_ack_submission.py::test_public_replay_coverage_closure_is_order_independent[reverse_gap-True]
+FAILED tests/test_ack_submission.py::test_public_replay_coverage_closure_is_order_independent[reverse_plain-True]
+FAILED tests/test_ack_submission.py::test_public_replay_coverage_closure_is_order_independent[disconnected-False]
+FAILED tests/test_ack_submission.py::test_pending_recovery_live_continuation_cannot_authorize_absent_prefix
+23 failed in 1.03s

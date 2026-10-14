@@ -1,0 +1,12 @@
+{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "echo-agent", "version": "0.2.0", "title": "Echo Agent MCP Client"}}}
+{"jsonrpc": "2.0", "method": "notifications/initialized"}
+{"jsonrpc": "2.0", "id": 2, "method": "tools/list"}
+{"jsonrpc": "2.0", "id": 3, "method": "resources/list"}
+{"jsonrpc": "2.0", "id": 4, "method": "prompts/list"}
+{"jsonrpc": "2.0", "id": 5, "method": "resources/list"}
+{"jsonrpc": "2.0", "id": 6, "method": "resources/templates/list"}
+{"jsonrpc": "2.0", "id": 7, "method": "resources/read", "params": {"uri": "fixture://binary"}}
+{"jsonrpc": "2.0", "id": 8, "method": "resources/read", "params": {"uri": "fixture://中文/text"}}
+{"jsonrpc": "2.0", "id": 9, "method": "prompts/get", "params": {"name": "compose", "arguments": {"topic": "无损🧪"}}}
+{"jsonrpc": "2.0", "id": 10, "method": "tools/call", "params": {"name": "echo", "arguments": {"text": "工具🙂"}}}
+{"jsonrpc": "2.0", "id": 11, "method": "ping"}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "/Users/ls/.codex/plugins/cache/echo-semantic/echo-semantic/0.5.0/skills/semantic-contract/scripts/verify_semantic.py",
+    "--root",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent",
+    "--task-scope",
+    "--task-id",
+    "01a12de5-2e2a-7861-9e97-b45cdb727ed3",
+    "--session-id",
+    "01a12de5-2e2a-7861-9e97-b45cdb727ed3",
+    "--base",
+    "c98a810f0bd4e4f51a005de6827280b8a8a83563"
+  ],
+  "exitCode": 0,
+  "scope": "Top-level preflight scope only; ignored admin experiment yields paths=[]; SDK semantic closure remains coordinator/model-owner work",
+  "globalClosure": "not_checked"
+}

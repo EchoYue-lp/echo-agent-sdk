@@ -1,0 +1,26 @@
+{
+  "classification": "Merged framework milestone exact tree comparison and remote CI; SDK and successor Channel excluded",
+  "mergedCommit": "77de6ca90ad842eb4b7b2921a4baa954f41cccfe",
+  "reviewedCommit": "803535017c879edc65814e0f98a346ed3e16a068",
+  "mergedTree": "69cc9a6624b779940ce6acc02cd1b93a940b330b",
+  "reviewedTree": "69cc9a6624b779940ce6acc02cd1b93a940b330b",
+  "status": "",
+  "unmerged": "",
+  "gateManifestSha256": "0d45d7414739a1fdf57801bfcea536ffd672802e6cce7eece11abd5e1744fb1f",
+  "baselineFinalSha256": "8ffd326005d12d8fd06537399e7d337cd12057a5404b694b1d70eeee59cae338",
+  "pr": 181,
+  "remoteRun": 38424368341,
+  "allSevenRemoteChecks": "SUCCESS",
+  "sourceDigest": "1c515c09873968a279e6076cf6abf659923f1fa96137144423970bfcd0e1881c",
+  "recordedAt": "2026-10-13T16:00:08.571Z",
+  "mergedMainSemantic": {
+    "exitCode": 0,
+    "base": "77de6ca90ad842eb4b7b2921a4baa954f41cccfe",
+    "sha256": "f72cd073939e72b8c1946482bbd1c54d1bce6cdc6c21bb0810797752739e5e15",
+    "log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/framework-main-77de-semantic.log"
+  },
+  "postMergeRemoteRun": 38426335587,
+  "postMergeRemoteConclusion": "SUCCESS",
+  "postMergeRemoteSevenChecks": "SUCCESS",
+  "postMergeRemoteCompletedObservedAt": "2026-10-13T16:10:46.362Z"
+}

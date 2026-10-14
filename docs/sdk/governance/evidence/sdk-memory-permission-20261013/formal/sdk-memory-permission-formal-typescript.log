@@ -1,0 +1,17 @@
+TAP version 13
+# TS actual memory/permission evidence rows 59 work /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-memory-permission-typescript-3VUQ5t
+# Subtest: memory and permission retain live authorities, context and actual effects
+ok 1 - memory and permission retain live authorities, context and actual effects
+  ---
+  duration_ms: 8932.500792
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9206.038625

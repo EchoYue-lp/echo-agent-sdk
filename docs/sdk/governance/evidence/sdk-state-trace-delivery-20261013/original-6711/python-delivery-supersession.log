@@ -1,0 +1,54 @@
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3348, in request
+    return await self.connection.ext_method(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/.cache/uv/archive-v0/CmdZk7sK3q-3dXZmqbroC/lib/python3.12/site-packages/acp/client/connection.py", line 340, in ext_method
+    return await self._conn.send_request(f"_{method}", params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/.cache/uv/archive-v0/CmdZk7sK3q-3dXZmqbroC/lib/python3.12/site-packages/acp/connection.py", line 126, in send_request
+    return await future
+           ^^^^^^^^^^^^
+acp.exceptions.RequestError: delivery operation requires the complete claim returned by claim_next: invalid type: string "1", expected u32
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tmp/sdk-state-trace-delivery-candidate-fixture/python_public_driver_draft.py", line 39, in must_error
+    await call
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 4268, in invoke
+    return await self.client.call(operation, self.wire, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3528, in call
+    return await self.family(resolved.family, operation, handle, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3538, in family
+    response = await self.request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py", line 3354, in request
+    raise EchoAgentError.from_exception(error, method) from error
+echo_agent_sdk.errors.EchoAgentError: delivery operation requires the complete claim returned by claim_next: invalid type: string "1", expected u32
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/sdk-state-trace-delivery-candidate-fixture/python_public_driver_draft.py", line 219, in <module>
+    asyncio.run(main())
+  File "/opt/anaconda3/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/tmp/sdk-state-trace-delivery-candidate-fixture/python_public_driver_draft.py", line 215, in main
+    result = await {"state": state_scene, "trace": trace_scene, "delivery": delivery_scene}[args.scene](args.host, args.work, fixture)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/sdk-state-trace-delivery-candidate-fixture/python_public_driver_draft.py", line 171, in delivery_scene
+    proof["errors"].append(await must_error(session.invoke("delivery.transition",
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/sdk-state-trace-delivery-candidate-fixture/python_public_driver_draft.py", line 41, in must_error
+    assert error.code == "framework_error", (error.code, str(error))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('invalid_value', 'delivery operation requires the complete claim returned by claim_next: invalid type: string "1", expected u32')

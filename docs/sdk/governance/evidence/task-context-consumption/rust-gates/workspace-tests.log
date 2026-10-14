@@ -1,0 +1,279 @@
+   Compiling echo-sdk-protocol v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-protocol)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 1m 01s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-7c7b8032facc7b43)
+
+running 167 tests
+test config::tests::blank_environment_credential_name_is_rejected ... ok
+test config::tests::bounded_reader_stops_after_limit_plus_one ... ok
+test config::tests::cli_requires_one_explicit_config_path ... ok
+test config::tests::credential_sources_are_exclusive_and_secret_is_not_in_error ... ok
+test config::tests::config_path_must_be_a_regular_file ... ok
+test config::tests::unknown_top_level_config_field_is_rejected ... ok
+test bounded_stdio::tests::oversized_frames_fail_before_delivery_completes ... ok
+test bounded_stdio::tests::frames_split_across_reads_are_measured_exactly ... ok
+test bounded_stdio::tests::frames_within_the_bound_pass_through ... ok
+test bounded_stdio::tests::utf8_multibyte_frames_are_byte_counted_not_char_counted ... ok
+test core_profile::events::tests::byte_bound_gap_retires_only_after_snapshot_ack ... ok
+test config::tests::schema_and_required_model_fields_fail_fast ... ok
+test core_profile::events::tests::failed_publications_do_not_create_ackable_facts_or_retire_budget ... ok
+test core_profile::events::tests::failed_gap_enqueue_preserves_existing_event_budget_and_ack_cursor ... ok
+test core_profile::events::tests::gap_reasons_are_stable_strings ... ok
+test core_profile::events::tests::future_late_and_duplicate_acks_cannot_retract_an_announced_gap ... ok
+test core_profile::events::tests::multiple_replay_pages_and_retention_gap_only_grant_returned_coverage ... ok
+test core_profile::events::tests::replay_oversized_gap_waits_for_its_ack_and_suppresses_covered_records ... ok
+test core_profile::events::tests::consumed_replay_cursor_resumes_after_the_whole_page_not_the_initial_gap ... ok
+test core_profile::events::tests::replay_window_lookahead_keeps_the_durable_tail_recoverable ... ok
+test core_profile::events::tests::replay_publication_failure_and_empty_future_page_grant_no_ack_coverage ... ok
+test core_profile::extension_bridge::channel_forward_conversion_tests::channel_inbound_rejects_noncanonical_required_fields_before_forward ... ok
+test core_profile::extension_bridge::tests::agent_component_exclusivity_is_operation_scoped ... ok
+test core_profile::extension_bridge::tests::approval_scope_maps_all_closed_variants ... ok
+test core_profile::events::tests::closed_acp_transport_cannot_publish_or_make_a_gap_ackable ... ok
+test core_profile::extension_bridge::channel_forward_conversion_tests::channel_inbound_maximum_timestamp_and_attachment_bytes_are_lossless ... ok
+test config::tests::checked_in_example_is_current_and_valid ... ok
+test config::tests::unsupported_profile_settings_fail_before_stdio ... ok
+test config::tests::environment_credential_is_resolved_without_entering_framework_config ... ok
+test config::tests::valid_local_config_prepares_without_a_secret ... ok
+test core_profile::events::tests::real_journal_retention_page_authorizes_only_its_returned_watermark ... ok
+test core_profile::extension_bridge::tests::channel_callback_cancel_retains_actual_response_owner ... ok
+test core_profile::extension_bridge::tests::channel_once_public_helper_keeps_real_callback_after_cancel ... ok
+test core_profile::extension_bridge::tests::channel_stream_callback_return_without_terminal_fails_instead_of_hanging ... ok
+test core_profile::extension_bridge::tests::channel_stream_callback_error_keeps_original_cause_until_actual_return ... ok
+test core_profile::extension_bridge::tests::chat_chunk_wire_round_trips_fields ... ok
+test core_profile::extension_bridge::tests::context_compressor_proxy_preserves_descriptor_name ... ok
+test core_profile::extension_bridge::tests::custom_agent_invocation_context_preserves_original_correlation_without_new_wire_fields ... ok
+test core_profile::extension_bridge::tests::connection_teardown_aborts_owned_factory_cleanup_jobs ... ok
+test core_profile::extension_bridge::tests::custom_agent_tool_stream_chunk_stays_non_terminal ... ok
+test core_profile::extension_bridge::tests::custom_agent_transport_failure_retains_exact_remote_terminal_observation ... ok
+test core_profile::extension_bridge::tests::channel_stream_cancel_waits_for_actual_callback_return ... ok
+test core_profile::extension_bridge::tests::dropped_pending_stream_releases_sink_and_session_reentry_guard ... ok
+test core_profile::extension_bridge::tests::duplicate_stream_sequence_settles_a_failed_terminal ... ok
+test core_profile::extension_bridge::tests::every_public_agent_event_variant_round_trips ... ok
+test core_profile::extension_bridge::tests::full_stream_mailbox_retains_a_failed_terminal_without_a_gap ... ok
+test core_profile::extension_bridge::tests::reverse_errors_preserve_cancellation_and_tool_timeout_domains ... ok
+test core_profile::extension_bridge::tests::channel_callback_timeout_retains_actual_response_owner ... ok
+test core_profile::extension_bridge::tests::tool_context_keeps_non_utf8_working_directory_lossless ... ok
+test core_profile::facade::integrations::channel_resource_admission_tests::captured_channel_start_is_settled_before_resource_close ... ok
+test core_profile::facade::integrations::channel_resource_admission_tests::channel_batch_start_binding_mismatch_rejects_every_plugin_before_effects ... ok
+test core_profile::extension_bridge::tests::channel_stream_drop_retains_connection_response_owner ... ok
+test core_profile::facade::integrations::channel_resource_admission_tests::channel_resource_close_cancels_original_call_before_waiting_for_permit ... ok
+test core_profile::facade::integrations::channel_resource_admission_tests::channel_dispatch_pending_start_rejects_early_close_fence_without_restart ... ok
+test core_profile::facade::integrations::channel_resource_admission_tests::channel_resource_operation_rechecks_tombstone_after_waiting_for_close ... ok
+test core_profile::facade::integrations::tests::dropped_preparation_retains_scope_for_connection_cleanup ... ok
+test core_profile::facade::integrations::tests::failed_close_retains_host_resource_for_retry ... ok
+test core_profile::facade::integrations::tests::unpublished_mcp_cleanup_debt_consumes_resource_quota_before_construction ... ok
+test core_profile::facade::integrations::tests::exact_mcp_config_preserves_every_transport_field ... ok
+test core_profile::facade::memory::tests::explicit_invalid_limits_are_not_defaulted ... ok
+test core_profile::facade::memory::failure_fidelity_regressions::unsupported_store_operation_keeps_memory_cause_without_mutation ... ok
+test core_profile::facade::memory::tests::malformed_namespace_never_writes_and_replacement_store_is_live_authority ... ok
+test core_profile::facade::permission::tests::invocation_dto_accepts_nullable_context_components ... ok
+test core_profile::facade::permission::tests::rule_dto_rejects_unknown_behavior_and_source ... ok
+test core_profile::facade::permission::tests::wire_permissions_are_lowercase_and_explicit ... ok
+test core_profile::facade::observability::adapter_regression_tests::failed_trace_open_does_not_consume_the_only_resource_slot ... ok
+test core_profile::facade::registry::tests::family_method_summaries_carry_frozen_feature_semantics ... ok
+test core_profile::facade::registry::tests::family_operations_resolve_through_the_generic_invoke_binding ... ok
+test core_profile::facade::source_operations::classify_tests::classify_projects_completed_cancelled_and_non_terminal ... ok
+test core_profile::facade::registry::tests::embedded_catalog_parses_with_both_route_tables ... ok
+test core_profile::facade::source_operations::classify_tests::classify_projects_typed_failure_and_rejects_malformed_input ... ok
+test core_profile::facade::source_operations::tests::recovered_usage_preserves_nonzero_wire_u64_counters ... ok
+test core_profile::facade::state_delivery::adapter_regression_tests::exact_claim_roundtrip_rejects_delayed_attempt_and_id_only ... ok
+test core_profile::facade::stream::cleanup_tests::accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled ... ok
+test core_profile::facade::stream::cleanup_tests::cancel_after_registry_terminal_commit_is_not_accepted ... ok
+test core_profile::facade::stream::cleanup_tests::cancellation_wakes_initial_receive_while_external_source_keeps_sender ... ok
+test core_profile::facade::source_operations::eval_factory_failure_regressions::factory_failure_retains_canonical_cause_in_real_eval_result ... ok
+test core_profile::extension_bridge::tests::channel_stream_terminal_waits_for_actual_callback_return ... ok
+test core_profile::facade::stream::cleanup_tests::close_deadline_aborts_producer_and_collector_retains_abort_fact ... ok
+test core_profile::facade::stream::cleanup_tests::cooperative_close_deadline_retains_same_address_until_original_producer_exits ... ok
+test core_profile::facade::stream::cleanup_tests::cancelled_stream_close_retains_producer_until_collector_settles ... ok
+test core_profile::facade::stream::cleanup_tests::producer_abort_yields_failed_terminal_not_complete ... ok
+test core_profile::facade::stream::cleanup_tests::producer_token_cancellation_does_not_commit_a_buffered_item ... ok
+test core_profile::facade::stream::cleanup_tests::cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence ... ok
+test core_profile::facade::subagent::tests::dispatch_fields_are_typed_and_unknown_fields_are_rejected ... ok
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nondefault_delegation_policy_survives_actual_dispatch_binding ... ok
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nonwaived_completed_dependency_without_result_rejects_before_agent ... ok
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_run_id_selects_the_original_graph_and_exact_claim_lineage ... ok
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_waived_skipped_dependency_and_completed_output_reach_actual_prompt ... ok
+test core_profile::facade::telemetry::tests::invalid_console_flag_is_rejected_before_process_initialization ... ok
+test core_profile::facade::tests::family_handle_argument_retains_opaque_resource_address ... ok
+test core_profile::facade::tests::only_compiled_methods_are_owned ... ok
+test core_profile::facade::tests::rag_tools_are_removed_with_session_and_connection_close ... ok
+test core_profile::facade::tests::sandbox_natural_eof_preserves_queued_complete_without_cleanup_cancellation ... ok
+test core_profile::facade::tests::sandbox_producer_eof_and_cleanup_drain_share_a_fused_actual_source ... ok
+test core_profile::facade::tools::adapter_regression_tests::direct_tool_validation_precedes_custom_rules_and_execution ... ok
+test core_profile::facade::tools::adapter_regression_tests::tool_family_projection_preserves_partial_effects_and_artifact ... ok
+test core_profile::facade::tools::tests::rag_index_and_search_share_one_session_store ... ok
+test core_profile::facade::workflow::adapter_regression_tests::optional_workflow_fields_reject_malformed_values ... ok
+test core_profile::extension_bridge::tests::channel_stream_answer_stops_deadline_before_slow_terminal_consumption ... ok
+test core_profile::handles::tests::atomic_facade_batch_rejects_global_handle_quota_without_prefix ... ok
+test core_profile::handles::tests::atomic_facade_batch_rejects_resource_quota_without_prefix ... ok
+test core_profile::handles::tests::closing_facade_resource_atomically_closes_associated_streams ... ok
+test core_profile::handles::tests::config_fingerprint_redacts_inline_credentials ... ok
+test core_profile::handles::tests::empty_ids_fail_shape_first ... ok
+test core_profile::handles::tests::facade_stream_resource_cascade_does_not_touch_other_resources ... ok
+test core_profile::handles::tests::facade_stream_uses_registry_generation_owner_and_sequence_ladder ... ok
+test core_profile::handles::tests::factory_reservation_is_quota_bound_and_commits_same_owned_identity ... ok
+test core_profile::handles::tests::failed_factory_commit_preserves_pending_close_address ... ok
+test core_profile::handles::tests::resource_close_preserves_stale_generation_classification_for_old_streams ... ok
+test core_profile::handles::tests::semantic_extension_identities_are_unique ... ok
+test core_profile::handles::tests::stale_generation_is_reported_before_unknown_ids ... ok
+test core_profile::handles::tests::task_handle_ladder_checks_generation_before_lookup ... ok
+test core_profile::handles::tests::unknown_current_generation_ids_are_invalid_not_stale ... ok
+test core_profile::handles::tests::wrong_kind_is_a_typed_invalid_value ... ok
+test core_profile::extension_bridge::tests::teardown_admitted_prefix_keeps_original_remote_watermark ... ok
+test core_profile::extension_bridge::tests::custom_setup_ack_then_transport_eof_returns_disconnected_failure ... ok
+test core_profile::extension_bridge::tests::custom_late_setup_ack_after_cancel_waits_for_remote_terminal ... ok
+test core_profile::persistence::tests::generation_advances_monotonically_within_one_state_root ... ok
+test core_profile::facade::stream::cleanup_tests::eof_waits_for_producer_failure_and_cancelled_pull_retries_same_cause ... ok
+test core_profile::facade::stream::cleanup_tests::producer_unwind_yields_failed_terminal_not_complete ... ok
+test core_profile::persistence::tests::run_ids_are_sanitized_into_journal_directories ... ok
+test core_profile::extension_bridge::tests::channel_stream_timeout_waits_for_actual_callback_return ... ok
+test core_profile::state::settlement_tests::completion_before_first_poll_drains_without_waiting ... ok
+test core_profile::state::settlement_tests::completion_between_predicate_and_await_is_not_lost ... ok
+test core_profile::persistence::tests::interrupted_runs_are_never_reported_settled ... ok
+test core_profile::handler::recovered_identity_tests::failed_reservation_retains_unpublished_framework_session_for_same_owner_cleanup ... ok
+test core_profile::state::settlement_tests::registered_settlement_wait_retains_completion_before_next_poll ... ok
+test core_profile::persistence::tests::settlement_rejects_terminal_receipt_conflicts ... ok
+test core_profile::persistence::tests::legacy_receipt_without_delivery_recovers_as_unknown ... ok
+test core_profile::wire::tests::framework_error_preserves_cause_without_reclassifying_reverse_deadlines ... ok
+test core_profile::wire::tests::task_store_projection_keeps_large_revision_null_result_and_interrupt ... ok
+test core_profile::wire::tests::terminal_projects_cancelled ... ok
+test core_profile::wire::tests::tool_effects_and_model_content_survive_shared_projection ... ok
+test core_profile::wire::tests::unix_non_utf8_paths_round_trip_without_loss ... ok
+test core_profile::wire::tests::wire_envelope_preserves_identity ... ok
+test core_profile::wire::tests::managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds ... ok
+test factory::tests::definition_snapshot_reports_construction_facts ... ok
+test core_profile::persistence::tests::concurrent_settlement_updates_do_not_drop_run_index_entries ... ok
+test core_profile::persistence::tests::recovery_rejects_corrupt_terminal_receipt_pair ... ok
+test features::tests::facade_families_are_sorted_and_unique ... ok
+test factory::tests::core_profile_factory_binds_each_session_to_its_definition ... ok
+test features::tests::runtime_build_advertises_the_acp_baseline ... ok
+test mcp::tests::invalid_or_unadvertised_mcp_inputs_are_rejected ... ok
+test mcp::tests::stdio_mcp_fields_are_preserved ... ok
+test factory::tests::sessions_have_distinct_agents_contexts_and_working_directories ... ok
+test ownership_tests::actor_abort_before_first_poll_settles_waiters_without_admitting_resources ... ok
+test factory::tests::later_mcp_failure_closes_previously_connected_process ... ok
+test ownership_tests::actor_panic_before_bind_publishes_join_error_and_wakes_close ... ok
+test ownership_tests::close_before_first_run_poll_fences_admission ... ok
+test core_profile::persistence::tests::recovered_settlement_rejects_missing_or_truncated_journal ... ok
+test ownership_tests::concurrent_close_between_retention_and_framework_bind_waits_for_activation ... ok
+test ownership_tests::closed_owner_rejects_stdio_before_configuration_access ... ok
+test ownership_tests::convenience_future_abort_closes_active_actor_without_caller_owned_scope ... ok
+test core_profile::state::settlement_tests::durable_quota_is_reserved_before_runs_and_releases_only_after_projection ... ok
+test ownership_tests::manual_concurrent_close_terminates_live_host_without_transport_eof ... ok
+test ownership_tests::missing_tokio_runtime_is_an_explicit_host_error_before_actor_admission ... ok
+test ownership_tests::nondefault_profile_shutdown_deadline_reaches_framework_configuration ... ok
+test ownership_tests::caller_abort_keeps_active_run_actor_for_retryable_close ... ok
+Host cancellation cleanup remains pending: Internal error: "ACP Session shutdown incomplete: 1 Runs lack framework receipts; Session Agent close failed: ACP Session Agent close awaits unsettled callbacks or Runs"
+test ownership_tests::actor_abort_after_active_run_reports_failure_without_inventing_receipt ... ok
+test ownership_tests::manual_close_keeps_active_run_actor_until_cleanup_and_receipt_settle ... ok
+test ownership_tests::owned_host_close_survives_run_abort_failure_and_timeout ... ok
+test core_profile::state::settlement_tests::retained_bridge_and_definition_do_not_keep_profile_owner_alive ... ok
+test core_profile::state::settlement_tests::failed_durable_receipt_remains_pending_until_exact_retry_succeeds ... ok
+test ownership_tests::convenience_cleanup_retries_failed_deadline_without_transport_eof ... ok
+test ownership_tests::nondefault_shutdown_deadline_bounds_real_agent_close_and_retains_retry_owner ... ok
+test features::tests::framework_feature_table_matches_root_crate ... ok
+
+test result: ok. 167 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.52s
+
+     Running unittests src/main.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_agent_sdk_host-8d6f3888c7117607)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/core_profile_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/core_profile_e2e-cdcec6bf3c6ef105)
+
+running 31 tests
+test explicit_session_create_reserves_persisted_turn_identity_before_new_run ... ok
+test extended_standard_prompt_bridges_shared_core_handles ... ok
+test eval_and_improve_families_use_the_framework_analyzers ... ok
+test consumed_multiple_replay_page_ack_resumes_live_after_page_cursor ... ok
+test oversized_input_frame_fails_without_side_effects ... ok
+test consumed_single_replay_page_ack_resumes_live_after_page_cursor ... ok
+test plain_client_and_mismatched_hello_fail_closed ... ok
+test integration_families_use_framework_managers_and_clients ... ok
+test restart_recovers_history_and_marks_killed_runs_interrupted ... ok
+test session_load_reserves_persisted_turn_identity_before_new_run ... ok
+test source_files_and_skill_registry_preserve_rust_authority ... ok
+test state_delivery_and_trace_families_use_framework_services ... ok
+test stateful_source_resources_preserve_owner_state_and_close ... ok
+test subagent_family_dispatches_and_controls_live_attempts ... ok
+test malformed_recovered_identity_rejects_actual_method_without_handle_publication ... ok
+test task_cancel_is_exact_and_pending_sibling_continues ... ok
+test task_execute_and_control_settle_through_the_runtime ... ok
+test task_pause_is_exact_and_resume_reuses_canonical_dependency_result ... ok
+test every_canonical_source_operation_reaches_a_host_adapter ... ok
+test tiny_live_window_emits_a_valid_gap_until_acknowledged ... ok
+test task_rpc_shares_the_session_task_authority ... ok
+test turn_receipt_source_operations_project_live_and_recovered ... ok
+test valid_hello_completes_full_core_lifecycle ... ok
+test killed_active_run_is_interrupted_never_completed ... ok
+test tool_families_execute_framework_tools_with_the_session_cwd ... ok
+test subagent_short_await_preserves_result_and_dispatch_receipt ... ok
+test negotiated_facade_admission_fails_closed ... ok
+test remaining_tool_families_execute_framework_tools_locally ... ok
+test plain_clients_get_method_not_found_for_facade_methods ... ok
+test workflow_family_runs_declarative_graphs_over_the_framework_engine ... ok
+test ack_window_snapshot_ack_resumes_strictly_after_watermark ... ok
+
+test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.50s
+
+     Running tests/extension_bridge_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/extension_bridge_e2e-4a6d4877e2246c9b)
+
+running 34 tests
+test crud_only_task_store_rejects_execute_before_runtime_side_effects ... ok
+test channel_plugin_facade_round_trip ... ok
+test context_compressor_registration_drives_session_compression ... ok
+test critic_registration_preserves_default_verifier_disabled_behavior ... ok
+test cancelled_initial_stream_response_releases_session_callback_owner ... ok
+test cancelled_tool_waits_for_canonical_interrupted_callback ... ok
+test eval_and_improve_source_adapters_invoke_agent_factory_lazily ... FAILED
+test factory_presubmit_failure_releases_unseen_child ... ok
+test directly_registered_custom_agent_round_trips_and_unregisters ... ok
+test llm_client_stream_extension_answers_prompts ... ok
+test malformed_stream_kind_fails_without_waiting_for_deadline ... ok
+test factory_and_custom_agent_extensions_round_trip ... ok
+test mcp_transport_is_closed_when_handle_publication_exceeds_quota ... ok
+test managed_commit_disconnect_restart_replays_same_receipt ... ok
+test missing_managed_capability_fails_before_store_mutation ... ok
+test non_streaming_llm_extension_adapts_chat_to_framework_stream ... ok
+test non_streaming_llm_without_finish_reason_fails_closed ... ok
+test out_of_order_stream_fails_without_waiting_for_deadline ... ok
+test oversized_stream_chunk_fails_without_waiting_for_deadline ... ok
+test agent_components_are_consumed_by_new_session_agents ... ok
+test revisioned_task_extension_is_shared_by_crud_and_execution ... ok
+test cancelled_factory_stream_closes_and_releases_instance ... ok
+test deadline_and_cancellation_settle_typed_outcomes ... ok
+test same_factory_constructs_independent_instances_across_concurrent_sessions ... FAILED
+test task_execution_backend_failure_remains_queryable_as_typed_error ... ok
+test stream_flood_hits_bounded_host_backpressure ... ok
+test sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_terminal ... ok
+test tool_bridge_round_trip_with_callbacks_intervention_and_hook ... ok
+test workflow_agent_component_stream_flows_through_facade_pull_stream ... ok
+test store_and_human_loop_extensions_round_trip ... ok
+test tool_manager_timeout_before_stream_ack_releases_callback_owner ... ok
+test sdk_disconnect_cancels_an_unterminated_stream_and_exits_host ... ok
+test managed_persistence_deadline_and_lost_ack_preserve_commit_authority ... ok
+test plain_clients_get_method_not_found_for_the_bridge ... ok
+
+failures:
+
+---- eval_and_improve_source_adapters_invoke_agent_factory_lazily stdout ----
+
+thread 'eval_and_improve_source_adapters_invoke_agent_factory_lazily' (130681262) panicked at echo-sdk-host/tests/extension_bridge_e2e.rs:4551:5:
+lazy factory scenario failed: Err(Error { code: -32050: Unknown error, message: "factory still owns live CustomAgent instances", data: Some(Object {"code": String("extension_conflict"), "message": String("factory still owns live CustomAgent instances"), "retryable": String("never"), "operation": String("_echo_agent/extension/unregister"), "handle": Object {"id": String("extension-1f3e402c-35a6-4a38-8548-a082d1acbe68"), "generation": String("1"), "kind": String("extension")}}) })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- same_factory_constructs_independent_instances_across_concurrent_sessions stdout ----
+
+thread 'same_factory_constructs_independent_instances_across_concurrent_sessions' (130681581) panicked at echo-sdk-host/tests/extension_bridge_e2e.rs:4634:17:
+independent factory creations must not share the child execution lock
+
+
+failures:
+    eval_and_improve_source_adapters_invoke_agent_factory_lazily
+    same_factory_constructs_independent_instances_across_concurrent_sessions
+
+test result: FAILED. 32 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.22s
+
+error: test failed, to rerun pass `-p echo-sdk-host --test extension_bridge_e2e`

@@ -1,0 +1,370 @@
+{
+  "calls": [
+    {
+      "operation": "channel_handle_stream",
+      "message": {
+        "channel_id": "forward-中文",
+        "sender_id": "sender-中文",
+        "chat_id": "chat-🌊",
+        "chat_type": "direct",
+        "text": "入站 中文🌊",
+        "message_id": "park",
+        "timestamp": "18446744073709551615",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      },
+      "extension": {
+        "id": "extension-32ff2e89-9b68-4c69-83b4-2339e5bbf388",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-60148e2ebb3147d98cd2cb82bc9c4b2c-1",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "operation": "channel_handle",
+      "message": {
+        "channel_id": "forward-中文",
+        "sender_id": "sender-中文",
+        "chat_id": "chat-🌊",
+        "chat_type": "direct",
+        "text": "入站 中文🌊",
+        "message_id": "message-1",
+        "timestamp": "18446744073709551615",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      },
+      "extension": {
+        "id": "extension-32ff2e89-9b68-4c69-83b4-2339e5bbf388",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-60148e2ebb3147d98cd2cb82bc9c4b2c-2",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "operation": "channel_handle_stream",
+      "message": {
+        "channel_id": "forward-中文",
+        "sender_id": "sender-中文",
+        "chat_id": "chat-🌊",
+        "chat_type": "direct",
+        "text": "入站 中文🌊",
+        "message_id": "full",
+        "timestamp": "18446744073709551615",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      },
+      "extension": {
+        "id": "extension-32ff2e89-9b68-4c69-83b4-2339e5bbf388",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-60148e2ebb3147d98cd2cb82bc9c4b2c-3",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "operation": "channel_handle",
+      "message": {
+        "channel_id": "forward-中文",
+        "sender_id": "sender-中文",
+        "chat_id": "chat-🌊",
+        "chat_type": "direct",
+        "text": "入站 中文🌊",
+        "message_id": "caller",
+        "timestamp": "18446744073709551615",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      },
+      "extension": {
+        "id": "extension-32ff2e89-9b68-4c69-83b4-2339e5bbf388",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-60148e2ebb3147d98cd2cb82bc9c4b2c-4",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "operation": "channel_reply",
+      "message": {
+        "channel_id": "forward-中文",
+        "to": "chat-🌊",
+        "chat_type": "direct",
+        "text": "error",
+        "reply_to": "",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      },
+      "extension": {
+        "id": "extension-32ff2e89-9b68-4c69-83b4-2339e5bbf388",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-60148e2ebb3147d98cd2cb82bc9c4b2c-7",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "operation": "channel_handle_stream",
+      "message": {
+        "channel_id": "forward-中文",
+        "sender_id": "sender-中文",
+        "chat_id": "chat-🌊",
+        "chat_type": "direct",
+        "text": "入站 中文🌊",
+        "message_id": "resource",
+        "timestamp": "18446744073709551615",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      },
+      "extension": {
+        "id": "extension-32ff2e89-9b68-4c69-83b4-2339e5bbf388",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-60148e2ebb3147d98cd2cb82bc9c4b2c-8",
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    }
+  ],
+  "plugin_calls": [
+    {
+      "operation": "channel_start",
+      "channel": "forward-中文",
+      "input": {
+        "handler_id": "forward-handler"
+      }
+    },
+    {
+      "operation": "channel_stop",
+      "channel": "forward-中文",
+      "input": null
+    },
+    {
+      "operation": "channel_start",
+      "channel": "forward-中文",
+      "input": {
+        "handler_id": "forward-handler"
+      }
+    },
+    {
+      "operation": "channel_stop",
+      "channel": "forward-中文",
+      "input": null
+    }
+  ],
+  "finally_count": 6,
+  "metadata": [
+    {
+      "ids": [
+        "forward-中文"
+      ],
+      "list": {
+        "channels": [
+          "forward-中文"
+        ]
+      }
+    },
+    {
+      "ids": [
+        "forward-中文"
+      ],
+      "list": {
+        "channels": [
+          "forward-中文"
+        ]
+      }
+    },
+    {
+      "ids": [
+        "forward-中文"
+      ],
+      "list": {
+        "channels": [
+          "forward-中文"
+        ]
+      }
+    },
+    {
+      "ids": [
+        "forward-中文"
+      ],
+      "list": {
+        "channels": [
+          "forward-中文"
+        ]
+      }
+    },
+    {
+      "ids": [
+        "forward-中文"
+      ],
+      "list": {
+        "channels": [
+          "forward-中文"
+        ]
+      }
+    },
+    {
+      "ids": [
+        "forward-中文"
+      ],
+      "list": {
+        "channels": [
+          "forward-中文"
+        ]
+      }
+    }
+  ],
+  "rows": [
+    {
+      "scenario": "cancel-peer-full-close-caller-drop-resource-close",
+      "cancel_peer_survived": true,
+      "cleanup_waited": true,
+      "reply_error": {
+        "code": "framework_error",
+        "message": "extension bridge failure extension_conflict: controlled channel reply failure",
+        "operation": "_echo_agent/integration/op",
+        "details": null
+      },
+      "callback_finally": 6,
+      "callbacks": 6
+    }
+  ]
+}

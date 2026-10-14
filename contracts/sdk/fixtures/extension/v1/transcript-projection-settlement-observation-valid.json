@@ -1,0 +1,20 @@
+{
+  "name": "transcript-projection-settlement-observation-valid",
+  "kind": "valid",
+  "target": "AgentEventWire",
+  "description": "Transcript settlement is a typed framework observation before the invocation terminal.",
+  "payload": {
+    "event": "transcript_projection_settlement",
+    "data": {
+      "settlement": {
+        "status": "deferred",
+        "operation_id": "projection-1",
+        "conversation_id": "会话",
+        "generation_id": "generation-1",
+        "attempt": 2,
+        "error_class": "outcome_unknown",
+        "detail": "receipt lookup required"
+      }
+    }
+  }
+}

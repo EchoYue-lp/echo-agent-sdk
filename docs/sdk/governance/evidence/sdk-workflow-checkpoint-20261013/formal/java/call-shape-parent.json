@@ -1,0 +1,1 @@
+{"operation":"workflow.graph.run_until_interrupt","arguments":[{"id":"facade_resource-2bec0889-ee64-4c6d-9717-36c6467f946f","generation":"1","kind":"facade_resource"},{"approved":true,"memo":"checkpoint 中文🙂","context":{"optional":null,"list":["a","b"]}}]}

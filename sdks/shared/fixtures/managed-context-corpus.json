@@ -1,0 +1,465 @@
+[
+  {
+    "scenario_id": "managed.conversation_ensure_projection_epoch_with_context",
+    "component": "conversation_store",
+    "operation": "conversation_ensure_projection_epoch_with_context",
+    "input": {
+      "request": {
+        "conversation": {
+          "conversation_id": "fixture-conversation_id中文🙂",
+          "user_id": "fixture-user_id中文🙂",
+          "agent_type": "fixture-agent_type中文🙂",
+          "title": "fixture-title中文🙂"
+        },
+        "expected_tombstone_epoch": "9007199254740993"
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "authority": {
+          "conversation_id": "fixture-conversation_id中文🙂",
+          "epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "live",
+          "delete_receipt_retention_floor_epoch": "9007199254740993"
+        },
+        "status": "created"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.conversation_get_projection_authority_with_context",
+    "component": "conversation_store",
+    "operation": "conversation_get_projection_authority_with_context",
+    "input": {
+      "conversation_id": "fixture-conversation_id中文🙂",
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "authority": {
+        "conversation_id": "fixture-conversation_id中文🙂",
+        "epoch": "9007199254740993",
+        "revision": "9007199254740993",
+        "lifecycle": "live",
+        "delete_receipt_retention_floor_epoch": "9007199254740993"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.conversation_apply_transcript_projection_with_context",
+    "component": "conversation_store",
+    "operation": "conversation_apply_transcript_projection_with_context",
+    "input": {
+      "batch": {
+        "schema_version": 1,
+        "operation_id": "fixture-operation_id中文🙂",
+        "payload_digest": "fixture-payload_digest中文🙂",
+        "conversation_id": "fixture-conversation_id中文🙂",
+        "conversation_epoch": "9007199254740993",
+        "generation_id": "fixture-generation_id中文🙂",
+        "items": []
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "operation_id": "fixture-operation_id中文🙂",
+        "payload_digest": "fixture-payload_digest中文🙂",
+        "authority": {
+          "conversation_id": "fixture-conversation_id中文🙂",
+          "epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "live",
+          "delete_receipt_retention_floor_epoch": "9007199254740993"
+        },
+        "status": {
+          "fenced": {
+            "current_epoch": "9007199254740993",
+            "lifecycle": "live"
+          }
+        }
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.conversation_delete_managed_with_context",
+    "component": "conversation_store",
+    "operation": "conversation_delete_managed_with_context",
+    "input": {
+      "request": {
+        "schema_version": 1,
+        "operation_id": "fixture-operation_id中文🙂",
+        "payload_digest": "fixture-payload_digest中文🙂",
+        "conversation_id": "fixture-conversation_id中文🙂",
+        "expected_epoch": "9007199254740993"
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "operation_id": "fixture-operation_id中文🙂",
+        "payload_digest": "fixture-payload_digest中文🙂",
+        "deleted_epoch": "9007199254740993",
+        "retention_floor_epoch": "9007199254740993",
+        "status": "deleted"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.runtime_load_managed_state_with_context",
+    "component": "runtime_state_store",
+    "operation": "runtime_load_managed_state_with_context",
+    "input": {
+      "scope_id": "fixture-scope_id中文🙂",
+      "runtime_state_id": "fixture-runtime_state_id中文🙂",
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "snapshot": {
+        "scope": {
+          "scope_id": "fixture-scope_id中文🙂",
+          "conversation_epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "active"
+        },
+        "runtime_state_id": "fixture-runtime_state_id中文🙂",
+        "version": {
+          "unmanaged": {
+            "digest": "fixture-digest中文🙂"
+          }
+        },
+        "checkpoint": {
+          "conversation_id": "fixture-conversation_id中文🙂",
+          "messages_json": "{\"schema_version\":5,\"execution_facts\":[{\"call_id\":\"canonical/中文\",\"effects\":[{\"effect\":\"file_edit\",\"path\":\"/中文🙂\"}]}]}",
+          "current_plan": "fixture-current_plan中文🙂",
+          "active_skills": [],
+          "blocked_reason": "fixture-blocked_reason中文🙂",
+          "working_dir": {
+            "encoding": "unix",
+            "bytes_base64": "L3RtcC//"
+          },
+          "timestamp": {
+            "unix_seconds": "-1",
+            "nanos": 123456789
+          }
+        }
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.runtime_load_scope_authority_with_context",
+    "component": "runtime_state_store",
+    "operation": "runtime_load_scope_authority_with_context",
+    "input": {
+      "scope_id": "fixture-scope_id中文🙂",
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "authority": {
+        "scope_id": "fixture-scope_id中文🙂",
+        "conversation_epoch": "9007199254740993",
+        "revision": "9007199254740993",
+        "lifecycle": "active"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.runtime_compare_and_save_checkpoint_with_context",
+    "component": "runtime_state_store",
+    "operation": "runtime_compare_and_save_checkpoint_with_context",
+    "input": {
+      "request": {
+        "scope_id": "fixture-scope_id中文🙂",
+        "runtime_state_id": "fixture-runtime_state_id中文🙂",
+        "conversation_epoch": "9007199254740993",
+        "expected_scope_revision": "9007199254740993",
+        "expected_state_version": {
+          "unmanaged": {
+            "digest": "fixture-digest中文🙂"
+          }
+        },
+        "checkpoint": {
+          "conversation_id": "fixture-conversation_id中文🙂",
+          "messages_json": "{\"schema_version\":5,\"execution_facts\":[{\"call_id\":\"canonical/中文\",\"effects\":[{\"effect\":\"file_edit\",\"path\":\"/中文🙂\"}]}]}",
+          "current_plan": "fixture-current_plan中文🙂",
+          "active_skills": [],
+          "blocked_reason": "fixture-blocked_reason中文🙂",
+          "working_dir": {
+            "encoding": "unix",
+            "bytes_base64": "L3RtcC//"
+          },
+          "timestamp": {
+            "unix_seconds": "-1",
+            "nanos": 123456789
+          }
+        },
+        "managed_import": {
+          "request": {
+            "schema_version": 1,
+            "operation_id": "fixture-operation_id中文🙂",
+            "payload_digest": "fixture-payload_digest中文🙂",
+            "conversation_id": "fixture-conversation_id中文🙂",
+            "expected_epoch": "9007199254740993",
+            "expected_revision": "9007199254740993",
+            "generation_id": "fixture-generation_id中文🙂",
+            "messages": []
+          },
+          "receipt": {
+            "operation_id": "fixture-operation_id中文🙂",
+            "payload_digest": "fixture-payload_digest中文🙂",
+            "authority": {
+              "conversation_id": "fixture-conversation_id中文🙂",
+              "epoch": "9007199254740993",
+              "revision": "9007199254740993",
+              "lifecycle": "live",
+              "delete_receipt_retention_floor_epoch": "9007199254740993"
+            },
+            "status": {
+              "fenced": {
+                "current_epoch": "9007199254740993",
+                "lifecycle": "live"
+              }
+            }
+          }
+        }
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "scope": {
+          "scope_id": "fixture-scope_id中文🙂",
+          "conversation_epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "active"
+        },
+        "runtime_state_id": "fixture-runtime_state_id中文🙂",
+        "version": {
+          "unmanaged": {
+            "digest": "fixture-digest中文🙂"
+          }
+        },
+        "status": "applied"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.runtime_acknowledge_transcript_projection_with_context",
+    "component": "runtime_state_store",
+    "operation": "runtime_acknowledge_transcript_projection_with_context",
+    "input": {
+      "request": {
+        "scope_id": "fixture-scope_id中文🙂",
+        "runtime_state_id": "fixture-runtime_state_id中文🙂",
+        "conversation_epoch": "9007199254740993",
+        "expected_scope_revision": "9007199254740993",
+        "expected_state_version": {
+          "unmanaged": {
+            "digest": "fixture-digest中文🙂"
+          }
+        },
+        "projection_receipt": {
+          "operation_id": "fixture-operation_id中文🙂",
+          "payload_digest": "fixture-payload_digest中文🙂",
+          "authority": {
+            "conversation_id": "fixture-conversation_id中文🙂",
+            "epoch": "9007199254740993",
+            "revision": "9007199254740993",
+            "lifecycle": "live",
+            "delete_receipt_retention_floor_epoch": "9007199254740993"
+          },
+          "status": {
+            "fenced": {
+              "current_epoch": "9007199254740993",
+              "lifecycle": "live"
+            }
+          }
+        },
+        "checkpoint": {
+          "conversation_id": "fixture-conversation_id中文🙂",
+          "messages_json": "{\"schema_version\":5,\"execution_facts\":[{\"call_id\":\"canonical/中文\",\"effects\":[{\"effect\":\"file_edit\",\"path\":\"/中文🙂\"}]}]}",
+          "current_plan": "fixture-current_plan中文🙂",
+          "active_skills": [],
+          "blocked_reason": "fixture-blocked_reason中文🙂",
+          "working_dir": {
+            "encoding": "unix",
+            "bytes_base64": "L3RtcC//"
+          },
+          "timestamp": {
+            "unix_seconds": "-1",
+            "nanos": 123456789
+          }
+        }
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "scope": {
+          "scope_id": "fixture-scope_id中文🙂",
+          "conversation_epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "active"
+        },
+        "runtime_state_id": "fixture-runtime_state_id中文🙂",
+        "version": {
+          "unmanaged": {
+            "digest": "fixture-digest中文🙂"
+          }
+        },
+        "status": "applied"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.runtime_retire_generation_with_context",
+    "component": "runtime_state_store",
+    "operation": "runtime_retire_generation_with_context",
+    "input": {
+      "request": {
+        "schema_version": 1,
+        "operation_id": "fixture-operation_id中文🙂",
+        "payload_digest": "fixture-payload_digest中文🙂",
+        "scope_id": "fixture-scope_id中文🙂",
+        "runtime_state_id": "fixture-runtime_state_id中文🙂",
+        "expected_scope_revision": "9007199254740993",
+        "expected_state_version": {
+          "unmanaged": {
+            "digest": "fixture-digest中文🙂"
+          }
+        }
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "scope": {
+          "scope_id": "fixture-scope_id中文🙂",
+          "conversation_epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "active"
+        },
+        "runtime_state_id": "fixture-runtime_state_id中文🙂",
+        "version": {
+          "unmanaged": {
+            "digest": "fixture-digest中文🙂"
+          }
+        },
+        "status": "retired"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.runtime_begin_scope_retirement_with_context",
+    "component": "runtime_state_store",
+    "operation": "runtime_begin_scope_retirement_with_context",
+    "input": {
+      "request": {
+        "schema_version": 1,
+        "delete_operation_id": "fixture-delete_operation_id中文🙂",
+        "payload_digest": "fixture-payload_digest中文🙂",
+        "scope_id": "fixture-scope_id中文🙂",
+        "expected_scope_revision": "9007199254740993",
+        "expected_conversation_epoch": "9007199254740993"
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "scope": {
+          "scope_id": "fixture-scope_id中文🙂",
+          "conversation_epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "active"
+        },
+        "manifest": {
+          "delete_operation_id": "fixture-delete_operation_id中文🙂",
+          "payload_digest": "fixture-payload_digest中文🙂",
+          "expected_conversation_epoch": "9007199254740993",
+          "items": [],
+          "conversation_delete_receipt": {
+            "operation_id": "fixture-operation_id中文🙂",
+            "payload_digest": "fixture-payload_digest中文🙂",
+            "deleted_epoch": "9007199254740993",
+            "retention_floor_epoch": "9007199254740993",
+            "status": "deleted"
+          }
+        },
+        "dropped_operation_ids": [],
+        "retention_floor_epoch": "9007199254740993",
+        "status": "begun"
+      }
+    }
+  },
+  {
+    "scenario_id": "managed.runtime_continue_scope_retirement_with_context",
+    "component": "runtime_state_store",
+    "operation": "runtime_continue_scope_retirement_with_context",
+    "input": {
+      "scope_id": "fixture-scope_id中文🙂",
+      "delete_operation_id": "fixture-delete_operation_id中文🙂",
+      "expected_scope_revision": "9007199254740993",
+      "advance": {
+        "conversation_deleted": {
+          "receipt": {
+            "operation_id": "fixture-operation_id中文🙂",
+            "payload_digest": "fixture-payload_digest中文🙂",
+            "deleted_epoch": "9007199254740993",
+            "retention_floor_epoch": "9007199254740993",
+            "status": "deleted"
+          }
+        }
+      },
+      "context": {
+        "absolute_deadline_unix_ms": "9223372036854775807"
+      }
+    },
+    "result": {
+      "receipt": {
+        "scope": {
+          "scope_id": "fixture-scope_id中文🙂",
+          "conversation_epoch": "9007199254740993",
+          "revision": "9007199254740993",
+          "lifecycle": "active"
+        },
+        "manifest": {
+          "delete_operation_id": "fixture-delete_operation_id中文🙂",
+          "payload_digest": "fixture-payload_digest中文🙂",
+          "expected_conversation_epoch": "9007199254740993",
+          "items": [],
+          "conversation_delete_receipt": {
+            "operation_id": "fixture-operation_id中文🙂",
+            "payload_digest": "fixture-payload_digest中文🙂",
+            "deleted_epoch": "9007199254740993",
+            "retention_floor_epoch": "9007199254740993",
+            "status": "deleted"
+          }
+        },
+        "dropped_operation_ids": [],
+        "retention_floor_epoch": "9007199254740993",
+        "status": "begun"
+      }
+    }
+  }
+]
