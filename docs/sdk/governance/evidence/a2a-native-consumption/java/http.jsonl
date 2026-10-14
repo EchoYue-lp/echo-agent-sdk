@@ -1,0 +1,8 @@
+{"path": "/.well-known/agent.json", "method": "GET"}
+{"path": "/a2a", "method": "POST", "request": {"jsonrpc": "2.0", "id": "b6d92534-e71b-4bc0-9059-ae9c8ad43266", "method": "tasks/send", "params": {"sessionId": "远端-session-🙂", "message": {"role": "user", "parts": [{"type": "text", "text": "请求 中文🙂"}]}}}}
+{"path": "/a2a", "method": "POST", "request": {"jsonrpc": "2.0", "id": "3090796c-6664-4ef3-9222-881c60f2738b", "method": "tasks/get", "params": {"id": "task-中文🙂", "message": {"role": "user", "parts": [{"type": "text", "text": ""}]}}}}
+{"path": "/a2a", "method": "POST", "request": {"jsonrpc": "2.0", "id": "2341dd33-e607-4fc8-885e-0737b5acbd06", "method": "tasks/cancel", "params": {"id": "task-中文🙂", "message": {"role": "user", "parts": [{"type": "text", "text": ""}]}}}}
+{"path": "/a2a", "method": "POST", "request": {"jsonrpc": "2.0", "id": "90116add-d990-49ec-b140-90972ae05031", "method": "tasks/get", "params": {"id": "missing", "message": {"role": "user", "parts": [{"type": "text", "text": ""}]}}}}
+{"path": "/stream", "method": "POST", "request": {"jsonrpc": "2.0", "id": "76a130e3-dbce-4af4-9892-7c2160673aa7", "method": "tasks/sendSubscribe", "params": {"sessionId": "远端-session-🙂", "message": {"role": "user", "parts": [{"type": "text", "text": "请求 中文🙂"}]}}}}
+{"path": "/held", "method": "POST", "request": {"jsonrpc": "2.0", "id": "0441e557-e9fe-4d48-a4c0-7a05f01fd8c3", "method": "tasks/sendSubscribe", "params": {"message": {"role": "user", "parts": [{"type": "text", "text": "请求 中文🙂"}]}}}}
+{"path": "/held", "method": "POST", "request": {"jsonrpc": "2.0", "id": "10182f39-886b-4714-b57e-c6ed6e910273", "method": "tasks/sendSubscribe", "params": {"message": {"role": "user", "parts": [{"type": "text", "text": "请求 中文🙂"}]}}}}

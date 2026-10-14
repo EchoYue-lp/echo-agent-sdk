@@ -43,3 +43,7 @@ docs/sdk/governance/evidence/live-journal-replacement/gap_ack_fixture.py.patch -
 docs/sdk/governance/evidence/live-journal-replacement/python-first-order.log -diff
 docs/sdk/governance/evidence/remote-stream-failure-domain/after.log -diff
 docs/sdk/governance/evidence/remote-stream-failure-domain/production-only.patch -diff
+docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/java-first.log -diff
+docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/python-first.log -diff
+docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/typescript-first.log -diff
+docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/typescript-second.log -diff

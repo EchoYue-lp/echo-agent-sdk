@@ -1,0 +1,38 @@
+{
+  "sdks/shared/testing/a2a_host_fixture.py": {
+    "sha256": "128d81008b104e3ab6e5c25da77af3d5f6b38f8a017acb587ada0319ba1ef8e3",
+    "bytes": 14424
+  },
+  "sdks/typescript/test/a2a-host.test.js": {
+    "sha256": "f8b4f0e8c325c98a72af0e0a4d760446526f6377aa03cd7a820477074a12c544",
+    "bytes": 3105
+  },
+  "sdks/python/tests/test_a2a_host.py": {
+    "sha256": "d526d3348482cf5ea9db36b715bd752b3642897e348408611d89f85b870e4dbc",
+    "bytes": 5483
+  },
+  "sdks/java/src/test/java/com/echoagent/sdk/A2AHostTest.java": {
+    "sha256": "667af3aa6ce483f0e31f8507c5c52b547e553233d83b4d5aabe2f672000c7da0",
+    "bytes": 6407
+  },
+  "sdks/typescript/dist/client.js": {
+    "sha256": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+    "bytes": 104022
+  },
+  "sdks/python/src/echo_agent_sdk/client.py": {
+    "sha256": "30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e",
+    "bytes": 174225
+  },
+  "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": {
+    "sha256": "86efd3959d478723949910ff97058f26a6fd32b3e050b54713f83288a2ca6131",
+    "bytes": 86857
+  },
+  "sdks/shared/facade-operation-catalog.json": {
+    "sha256": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+    "bytes": 521273
+  },
+  "sdks/shared/contract-digests.json": {
+    "sha256": "2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7",
+    "bytes": 193
+  }
+}

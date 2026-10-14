@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+  "steps": [
+    {
+      "label": "a2a-typescript-final",
+      "command": [
+        "env",
+        "ECHO_AGENT_SDK_HOST=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-composed-host",
+        "ECHO_AGENT_SDK_REQUIRE_HOST_E2E=1",
+        "ECHO_AGENT_SDK_A2A_ROOT=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/a2a-native",
+        "node",
+        "--test",
+        "test/a2a-host.test.js"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/a2a-typescript-final.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 460,
+      "bytesWritten": 460,
+      "startedAt": "2026-10-14T07:26:38.607Z",
+      "finishedAt": "2026-10-14T07:26:39.909Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T07:26:39.909Z"
+}

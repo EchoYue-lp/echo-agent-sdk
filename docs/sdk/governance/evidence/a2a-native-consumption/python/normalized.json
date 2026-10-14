@@ -1,0 +1,53 @@
+{
+  "operations": [
+    "a2a.client.open",
+    "a2a.discover",
+    "a2a.stream.cancel",
+    "a2a.stream.close",
+    "a2a.stream.next",
+    "a2a.task.cancel",
+    "a2a.task.get",
+    "a2a.task.send",
+    "a2a.task.stream.open"
+  ],
+  "http_methods": [
+    "GET",
+    "tasks/send",
+    "tasks/get",
+    "tasks/cancel",
+    "tasks/get",
+    "tasks/sendSubscribe",
+    "tasks/sendSubscribe",
+    "tasks/sendSubscribe"
+  ],
+  "errors": {
+    "bad_args": "invalid_value",
+    "cross_owner": "invalid_value",
+    "future_generation": "invalid_value",
+    "remote_error": "framework_error",
+    "stream_cross_owner": "invalid_value",
+    "stream_future_generation": "invalid_value",
+    "terminal_closed": "closed_handle",
+    "resource_after_owner_close": "closed_handle"
+  },
+  "task_states": [
+    "completed",
+    "completed",
+    "canceled"
+  ],
+  "stream_variants": [
+    "item",
+    "item",
+    "complete",
+    "cancelled"
+  ],
+  "sequences": [
+    "1",
+    "2",
+    "3",
+    "1"
+  ],
+  "unicode_preserved": true,
+  "invalid_calls_no_http": true,
+  "local_control_scope": "stream cancellation/close joins Host adapter only; no assertion of remote physical task termination"
+}
