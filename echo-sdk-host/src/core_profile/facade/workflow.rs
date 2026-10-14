@@ -734,4 +734,217 @@ mod adapter_regression_tests {
             Some(None)
         );
     }
+
+    struct CountingWorkflowClient {
+        name: &'static str,
+        answer: &'static str,
+        requests: std::sync::Mutex<Vec<echo_agent::llm::ChatRequest>>,
+    }
+
+    impl echo_agent::llm::LlmClient for CountingWorkflowClient {
+        fn chat(
+            &self,
+            _request: echo_agent::llm::ChatRequest,
+        ) -> futures::future::BoxFuture<'_, echo_agent::error::Result<echo_agent::llm::ChatResponse>>
+        {
+            Box::pin(async {
+                Err(echo_agent::error::ReactError::Other(
+                    "workflow must consume its AgentNode stream".to_string(),
+                ))
+            })
+        }
+
+        fn chat_stream(
+            &self,
+            request: echo_agent::llm::ChatRequest,
+        ) -> futures::future::BoxFuture<
+            '_,
+            echo_agent::error::Result<
+                futures::stream::BoxStream<
+                    'static,
+                    echo_agent::error::Result<echo_agent::llm::ChatChunk>,
+                >,
+            >,
+        > {
+            Box::pin(async move {
+                self.requests
+                    .lock()
+                    .map_err(|error| echo_agent::error::ReactError::Other(error.to_string()))?
+                    .push(request);
+                let chunk = echo_agent::llm::ChatChunk {
+                    delta: echo_agent::llm::types::DeltaMessage {
+                        role: Some("assistant".to_string()),
+                        content: Some(self.answer.to_string()),
+                        ..Default::default()
+                    },
+                    finish_reason: Some("stop".to_string()),
+                    usage: None,
+                };
+                Ok(Box::pin(futures::stream::once(async move { Ok(chunk) }))
+                    as futures::stream::BoxStream<
+                        'static,
+                        echo_agent::error::Result<echo_agent::llm::ChatChunk>,
+                    >)
+            })
+        }
+
+        fn model_name(&self) -> &str {
+            self.name
+        }
+    }
+
+    fn live_provider_request(
+        operation: &str,
+        values: Vec<serde_json::Value>,
+    ) -> Result<FeatureOperationRequest, Box<dyn std::error::Error>> {
+        Ok(FeatureOperationRequest {
+            operation: operation.to_string(),
+            signature_digest: String::new(),
+            handle: None,
+            arguments: values
+                .into_iter()
+                .map(WireValue::from_json)
+                .collect::<Result<_, _>>()?,
+        })
+    }
+
+    #[tokio::test]
+    async fn agent_node_uses_replaced_live_llm_after_session_services_capture()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let first = Arc::new(CountingWorkflowClient {
+            name: "provider-a",
+            answer: "stale provider A",
+            requests: std::sync::Mutex::new(Vec::new()),
+        });
+        let second = Arc::new(CountingWorkflowClient {
+            name: "provider-b",
+            answer: "live provider B 中文🌊",
+            requests: std::sync::Mutex::new(Vec::new()),
+        });
+        let agent = echo_agent::agent::ReactAgent::new(echo_agent::agent::AgentConfig::new(
+            "unused-model",
+            "live-services",
+            "unused Session prompt",
+        ))
+        .with_llm_client(first.clone());
+        let handle = echo_agent::agent::AgentHandle::new(agent);
+        let authorities = Arc::new(
+            handle
+                .read(|agent| {
+                    SessionAuthorityServices::of(handle.clone(), agent, std::path::PathBuf::new())
+                })
+                .await,
+        );
+        // Mutate the very Agent captured by the Session, not a new Agent or graph-specific client.
+        handle
+            .write(|agent| agent.set_llm_client(second.clone()))
+            .await;
+        let handles = HandleRegistry::new(1, 8);
+        let definition = crate::factory::PreparedAgentDefinition::new(
+            Default::default(),
+            first.clone(),
+            None,
+            false,
+        );
+        let (agent_address, _) = handles
+            .register_agent(Arc::new(definition), String::new())
+            .map_err(|error| std::io::Error::other(error.message))?;
+        handles
+            .register_session_with_cwd("session-owner".to_string(), agent_address.id, None)
+            .map_err(|error| std::io::Error::other(error.message))?;
+        let graphs = std::sync::Mutex::new(HashMap::new());
+        let states = std::sync::Mutex::new(HashMap::new());
+        let streams = super::super::stream::FacadeStreamRuntime::new(8, 5);
+        let limits = super::super::FacadeFamilyLimits {
+            max_resources: 8,
+            page: 8,
+        };
+        let definition = json!({"name":"live-provider", "nodes":[{"name":"agent_step","type":"agent","system_prompt":"actual workflow prompt 中文🙂","input_key":"task","output_key":"agent_out"}],"edges":[],"entry":"agent_step","finish":["agent_step"]}).to_string();
+        let build = live_provider_request("workflow.graph.build", vec![json!(definition)])?;
+        let built = dispatch(
+            &handles,
+            &graphs,
+            &states,
+            &streams,
+            &authorities,
+            None,
+            "session-owner",
+            &build,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        let resource: WireHandle = serde_json::from_value(
+            built
+                .get("resource")
+                .cloned()
+                .ok_or("graph build did not return its real resource")?,
+        )?;
+        let input = "execute original task 中文🌳";
+        let run = live_provider_request(
+            "workflow.graph.run_until_interrupt",
+            vec![serde_json::to_value(&resource)?, json!({"task":input})],
+        )?;
+        let outcome = dispatch(
+            &handles,
+            &graphs,
+            &states,
+            &streams,
+            &authorities,
+            None,
+            "session-owner",
+            &run,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        assert_eq!(outcome.get("outcome"), Some(&json!("completed")));
+        assert_eq!(
+            outcome.pointer("/state/values/agent_out"),
+            Some(&json!(second.answer))
+        );
+        assert_eq!(outcome.pointer("/state/values/task"), Some(&json!(input)));
+        assert_eq!(outcome.get("path"), Some(&json!(["agent_step"])));
+        assert_eq!(
+            first
+                .requests
+                .lock()
+                .map_err(|error| std::io::Error::other(error.to_string()))?
+                .len(),
+            0,
+            "captured provider A must not execute"
+        );
+        let requests = second
+            .requests
+            .lock()
+            .map_err(|error| std::io::Error::other(error.to_string()))?;
+        assert_eq!(
+            requests.len(),
+            1,
+            "the real AgentNode must consume provider B exactly once"
+        );
+        let request = requests.first().ok_or("provider B had no actual request")?;
+        assert!(
+            request
+                .messages
+                .iter()
+                .any(|message| message.role == echo_agent::llm::types::Role::User
+                    && message.content.as_text().as_deref() == Some(input))
+        );
+        assert!(request.messages.iter().any(|message| {
+            message.role == echo_agent::llm::types::Role::System
+                && message
+                    .content
+                    .as_text()
+                    .is_some_and(|text| text.contains("actual workflow prompt 中文🙂"))
+        }));
+        drop(requests);
+        handles
+            .close_facade_resource(&resource, "workflow.test.close")
+            .map_err(|error| std::io::Error::other(error.message))?;
+        drop_session_resources(&graphs, &states, std::slice::from_ref(&resource.id));
+        Ok(())
+    }
 }

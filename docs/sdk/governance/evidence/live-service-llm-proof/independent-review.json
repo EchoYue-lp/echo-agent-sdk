@@ -1,0 +1,13 @@
+{
+  "reviewer": "/root/sdk_capability_acceptance_audit",
+  "decision": "finite live-LLM source and packet PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "sourceSHA256": "d516d4af66328d7c7dbb6d1ec6c940b14cc8364c306228aa30d96f1472aa3825",
+  "productionPrefixSHA256": "9ae6dabea8054ef41202db2f92f6e3c3813a299d53958b6006de84cdd92eb438",
+  "examined": "same captured AgentHandle and Session services, public setter B, real Host Workflow dispatcher, framework AgentNode/provider stream A0 B1, actual request fields and B output; cfg-only source delta and original raw gate receipts",
+  "gates": "focused1/Hostlib187/Clippy warnings0/fmt+check0",
+  "limits": "does not hot-swap an already built graph or exercise public RPC; no new API; current whole SDK gate and delivery are separate",
+  "history": "two fixture errors and real 30d source evidence retained, no fabricated original-production red"
+}

@@ -1,0 +1,56 @@
+{
+  "head": "378ddbe676cbee898f796f6e29f02d89219d0be9",
+  "framework": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "source": {
+    "path": "echo-sdk-host/src/core_profile/facade/workflow.rs",
+    "currentSHA256": "d516d4af66328d7c7dbb6d1ec6c940b14cc8364c306228aa30d96f1472aa3825",
+    "beforeNewTestSHA256": "f6314db954f6ba83af44eba2987822e728859bd7089e33ed519bb5d98e04fcbe",
+    "productionPrefixUnchanged": true,
+    "productionPrefixSHA256": "9ae6dabea8054ef41202db2f92f6e3c3813a299d53958b6006de84cdd92eb438"
+  },
+  "historicalCapturedClientSources": {
+    "echo-sdk-host/src/core_profile/facade/workflow.rs": {
+      "git": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+      "sha256": "0972d0a8d569b4e3671e580f616756fb75d6f9705dc3eb801a78308db7508d99"
+    },
+    "echo-sdk-host/src/factory.rs": {
+      "git": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+      "sha256": "4c9b49122dfe24154be9eacb96c8d054bf62fe04d1dce4d9ac4d513db8b42f60"
+    }
+  },
+  "frameworkActualGitSourceSHA256": {
+    "src/agent/react/mod.rs": "92b2f2a21b833acf2a2f5689a2de16eadae2909c714080b7c47cd16927b27bf1",
+    "src/workflow/loader.rs": "4534b21e1bb3e7508be9e7aba3617a424f1e944caddca60e3d02ea20b7a39739",
+    "echo-orchestration/src/workflow/node.rs": "c0fe7180326c2bd2836e8c6f5778cc221ecb7d7a68861513c4818ce2c03a870f",
+    "echo-orchestration/src/workflow/state.rs": "81706f5bb9611035442d5a85e69a52ea064347a0880acf7a598c2488d267550b"
+  },
+  "test": "agent_node_uses_replaced_live_llm_after_session_services_capture",
+  "assertions": {
+    "sameAgentHandle": true,
+    "sessionAuthorityCapturedBeforeSetterB": true,
+    "realWorkflowDefinitionAgentNode": true,
+    "actualClientAStreamCalls": 0,
+    "actualClientBStreamCalls": 1,
+    "actualProviderRequestIncludesOriginalTaskAndWorkflowSystemPrompt": true,
+    "completedStateAnswer": "live provider B \u4e2d\u6587\ud83c\udf0a",
+    "originalTaskUnchanged": "execute original task \u4e2d\u6587\ud83c\udf33"
+  },
+  "gates": {
+    "focused": {
+      "exit": 0,
+      "passed": 1
+    },
+    "hostAllFeaturesLib": {
+      "exit": 0,
+      "passed": 187,
+      "ignored": 0
+    },
+    "fmt": 0,
+    "fmtCheck": 0,
+    "hostStrictAllTargetsClippy": 0
+  },
+  "firstFailure": "test omitted issued Session owner; real Registry rejected publication before graph execution; not production red",
+  "secondFailure": "test oracle used /state/agent_out instead of existing SharedState /state/values/agent_out; original compiled AgentNode completed, strong result assertion failed on wrong path; not production red",
+  "scope": "only new cfg(test) provider and real Workflow adapter regression; not new setter/API, not public RPC/native three-language path, no synthetic historical production counterexample",
+  "leases": "Cargo released after all actual subprocesses terminated; Maven not invoked"
+}

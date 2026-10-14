@@ -165,3 +165,7 @@ docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-ow
 
 # Original Git progress includes carriage returns and trailing spaces.
 docs/sdk/governance/evidence/semantic-source-provenance/successor-observed-tags/incremental/fetch.log -diff
+
+# Exact live-provider test output retains original final blank lines.
+docs/sdk/governance/evidence/live-service-llm-proof/focused-correct-state.log -diff
+docs/sdk/governance/evidence/live-service-llm-proof/host-lib.log -diff

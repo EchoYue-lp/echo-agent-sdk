@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "steps": [
+    {
+      "label": "live-workflow-llm-focused",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--lib",
+        "--all-features",
+        "--locked",
+        "agent_node_uses_replaced_live_llm_after_session_services_capture"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/live-service-llm-proof/focused.log",
+      "exitCode": 101,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 1407,
+      "bytesWritten": 1407,
+      "startedAt": "2026-10-14T15:14:55.813Z",
+      "finishedAt": "2026-10-14T15:15:46.589Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T15:15:46.589Z"
+}

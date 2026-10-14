@@ -1,0 +1,19 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 52.04s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-deb50fbc4d526ffc)
+
+running 1 test
+test core_profile::facade::workflow::adapter_regression_tests::agent_node_uses_replaced_live_llm_after_session_services_capture ... FAILED
+
+failures:
+
+---- core_profile::facade::workflow::adapter_regression_tests::agent_node_uses_replaced_live_llm_after_session_services_capture stdout ----
+Error: Custom { kind: Other, error: "handle was never issued by this Host generation" }
+
+
+failures:
+    core_profile::facade::workflow::adapter_regression_tests::agent_node_uses_replaced_live_llm_after_session_services_capture
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 186 filtered out; finished in 0.12s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`
