@@ -1,0 +1,46 @@
+{
+  "scope": "accepted SDK initialization advertisement only; no Host/Rust/wire/schema/client API changes",
+  "status": "local focused behavior verified; independent review pending; whole SDK final current source verification pending",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-negotiation-validation-host",
+  "hostSHA256": "da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444",
+  "before": [
+    "Java four named faults accepted (4 failures, zero errors/skips)",
+    "Java additional empty-capabilities/limits{} accepted (six total failures)",
+    "TypeScript and Python both accepted two malformed shape responses",
+    "Python overflowing ACP protocol response was rejected by official ACP schema but leaked ValidationError instead of typed SDK error"
+  ],
+  "after": {
+    "java": {
+      "tests": "21",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "typescript": {
+      "tests": 25,
+      "failures": 0,
+      "skipped": 0,
+      "buildExitCode": 0
+    },
+    "python": {
+      "tests": 25,
+      "failures": 0,
+      "skipped": 0,
+      "ruffExitCode": 0,
+      "formatExitCode": 0
+    }
+  },
+  "additionalAfterCounterScope": [
+    "duplicate/unsorted features",
+    "duplicate capability",
+    "zero/overflow/numeric WireU64 limit",
+    "invalid nanos",
+    "positive Rust Unicode scalar ordering U+E000 before U+10000"
+  ],
+  "newFaultsWithBeforeRed": 6,
+  "otherNewFaultsHaveAfterOnly": 7,
+  "errors": "local initialization rejection has extension_capability_mismatch, operation initialize, retryability never; missing requested feature still feature_unavailable; transport failures keep original path",
+  "authority": "matches existing EchoAgentCapability/EchoLimits/WireU64/WireDuration validation; no new constants configure Host limits",
+  "docsExamplesWebsite": "protocol.md updated; no new language method or input fields, existing examples retain normal Host initialization and need only normal repository gates; website documentation sync belongs to its existing owner before external publication",
+  "wholeBefore": "original 782-input full language success is an earlier source epoch, not proof of these changes"
+}

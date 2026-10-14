@@ -34,12 +34,34 @@ async def scenario(mode):
             yield client
 
 
-@pytest.mark.parametrize("mode", ["bad-version", "bad-digest", "bad-acp-version"])
+@pytest.mark.parametrize(
+    "mode",
+    [
+        "bad-version",
+        "bad-digest",
+        "bad-acp-version",
+        "overflow-acp-version",
+        "overflow-extension-version",
+        "nontext-feature",
+        "null-capability",
+        "empty-capabilities",
+        "missing-limits",
+        "duplicate-feature",
+        "unsorted-features",
+        "duplicate-capability",
+        "zero-limit",
+        "overflow-limit",
+        "numeric-limit",
+        "invalid-timeout",
+    ],
+)
 async def test_negotiation_rejects(mode):
     with pytest.raises(EchoAgentError) as error:
         async with scenario(mode):
             pytest.fail("must reject")
     assert error.value.code == "extension_capability_mismatch"
+    assert error.value.operation == "initialize"
+    assert error.value.retryable == "never"
 
 
 async def test_real_host_typed_error_and_independent_sessions():
@@ -311,3 +333,8 @@ async def test_cancelled_tool_waits_for_interrupted_callback_side_effect():
         await model.close()
         await callback.close()
         await agent.close()
+
+
+async def test_negotiation_accepts_rust_unicode_feature_order():
+    async with scenario("unicode-features") as sdk:
+        assert sdk.capability["features"] == ["\ue000", "\U00010000"]

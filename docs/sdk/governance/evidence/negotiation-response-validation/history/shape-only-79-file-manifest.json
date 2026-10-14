@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3328,
+      "sha256": "d803ceb93918caea3e068bc486c95f65d601a4b76db677c7f64e4de120a3c92c"
+    },
+    {
+      "path": "after/java-protocol-receipt.json",
+      "bytes": 100,
+      "sha256": "f787ef56997ba17e0015b413ff1209d9da38d0836c3c90034d6e22619d87cdf1"
+    },
+    {
+      "path": "after/java-protocol.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/java-protocol.xml",
+      "bytes": 11402,
+      "sha256": "5dcf4ed81b30a57ebd00793becb46a1b695e621423761e70db70ee3838e5588a"
+    },
+    {
+      "path": "after/python-format.log",
+      "bytes": 26,
+      "sha256": "eee76f865de5a9f2456950f710ae5d5f9b5bd0ea02aa54f614c5eed6642a0bfd"
+    },
+    {
+      "path": "after/python-protocol.log",
+      "bytes": 99,
+      "sha256": "5b46e3ce8f1a28bfb08d11817d0be0a0d4ac965caf945f247c4f4b748f8b1dbe"
+    },
+    {
+      "path": "after/python-receipts.json",
+      "bytes": 867,
+      "sha256": "df21f0ea00e5df529f025a663859f61ee2b77694858c6118f9c7112b1a4a9b8d"
+    },
+    {
+      "path": "after/python-ruff.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "after/source-freeze.json",
+      "bytes": 1023,
+      "sha256": "1d04828d71ca713869184c17cb32318c3cd80a23e9223c2b1cc54a4c586098f9"
+    },
+    {
+      "path": "after/typescript-build.log",
+      "bytes": 73,
+      "sha256": "ecaabe720cdb6e456b6ea808f53ecdcf6b96fa864c581db00d35c2ce4fe6ee46"
+    },
+    {
+      "path": "after/typescript-protocol.log",
+      "bytes": 5856,
+      "sha256": "d75aaccb49385a406dcb4732f895c070c84b4aa91b4ca370ceeef28f6e45d1ac"
+    },
+    {
+      "path": "after/typescript-receipts.json",
+      "bytes": 204,
+      "sha256": "8f2511bb18d38dbdb3c1aad37e525cce7d7e8e3d06cb9e893bf6055ea4aeecc1"
+    },
+    {
+      "path": "attempt-history.json",
+      "bytes": 954,
+      "sha256": "2ddc2433541070d50e677cdc07101b47691ec1c4a87f7c8fd714311081d2a3f5"
+    },
+    {
+      "path": "attempts/python-import-sort.log",
+      "bytes": 1428,
+      "sha256": "78f8e4a115af2a4e1b1690175cf72efbfc53de77968a536c749b3077728da77c"
+    },
+    {
+      "path": "attempts/python-wrong-environment.log",
+      "bytes": 1438,
+      "sha256": "094e3d411bc249f7d39d4e1fe91f73f398496c0eeca7e253d4ea7b4298080c6e"
+    },
+    {
+      "path": "attempts/typescript-omitted-digest-operation.log",
+      "bytes": 6707,
+      "sha256": "1f630cccde1cce61b123d2dd2608ab3e380728c705dd5a33d4f0032ab6a64216"
+    },
+    {
+      "path": "before/four-fault-inputs.json",
+      "bytes": 619,
+      "sha256": "46c371746edda15d7d6d2395ae181dd9202295769a3ad2f8f934af359e55d559"
+    },
+    {
+      "path": "before/java-four-faults-receipt.json",
+      "bytes": 150,
+      "sha256": "ceedfccb7d41d15d6b7b6844adfc8504abeea20ec262061a3daa8803f2e3ee8d"
+    },
+    {
+      "path": "before/java-four-faults.log",
+      "bytes": 19686,
+      "sha256": "f8b7a85f3b97664abdc08d177dd6ab5c388c26b236fcba563072918acc7abed0"
+    },
+    {
+      "path": "before/java-four-faults.xml",
+      "bytes": 27404,
+      "sha256": "1fd61b54fa42a461b6904e26d83ab213089321358c5372fadba3d606c9673510"
+    },
+    {
+      "path": "before/java-six-faults-receipt.json",
+      "bytes": 150,
+      "sha256": "d8569e3f412735b92860435ed81a37841df0f6b866e917930963d3e8939d2a20"
+    },
+    {
+      "path": "before/java-six-faults.log",
+      "bytes": 28992,
+      "sha256": "64a535854f68f015bc61b351e6d1d27cb54ea83ce783179c28992e3e66c61794"
+    },
+    {
+      "path": "before/java-six-faults.xml",
+      "bytes": 36754,
+      "sha256": "aa7ed12affb32e1dc514c78baf2b2f821d13c55a49dfa5a4db90a51421720027"
+    },
+    {
+      "path": "before/python-ACP-overflow-typed-error.log",
+      "bytes": 2524,
+      "sha256": "875bf51a5699d20e435cf1e27c550eedb08c667b6200c91ded496ea846378ab4"
+    },
+    {
+      "path": "before/python-two-shape-faults.log",
+      "bytes": 1591,
+      "sha256": "b237535e40f805e28202c13b8dce627d920a6599f3ae850aaa701057e4fa9cff"
+    },
+    {
+      "path": "before/source/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "bytes": 86857,
+      "sha256": "86efd3959d478723949910ff97058f26a6fd32b3e050b54713f83288a2ca6131"
+    },
+    {
+      "path": "before/source/sdks/python/src/echo_agent_sdk/client.py",
+      "bytes": 174225,
+      "sha256": "30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e"
+    },
+    {
+      "path": "before/source/sdks/typescript/src/client.ts",
+      "bytes": 105756,
+      "sha256": "dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f"
+    },
+    {
+      "path": "before/source.json",
+      "bytes": 855,
+      "sha256": "4e9353b00c5a2fcaaeaa27df5c4af576fda4b3e433ce88e8492b1d1e5c566716"
+    },
+    {
+      "path": "before/typescript-original-four-faults.log",
+      "bytes": 1919,
+      "sha256": "a4882c17a01aab89f2a79d34002ee6829e61eba084f4610ce10c5cb3f82f21e5"
+    },
+    {
+      "path": "before/typescript-two-shape-faults.log",
+      "bytes": 2323,
+      "sha256": "6cd0f3e20d6c2fe2fd73bd90890a716d6da1a34c5187a4597276c5d95e300413"
+    },
+    {
+      "path": "candidate.patch",
+      "bytes": 34332,
+      "sha256": "73b0da44ac9ca39306aaf218c2ca2ba203ee03bacb2d62c9985501b18a2055ca"
+    },
+    {
+      "path": "contract-basis/echo-sdk-protocol/src/capability.rs",
+      "bytes": 26386,
+      "sha256": "c683f51728c241be24d1d3e4bc0d4448b7dd3fd10541f63a50238d753c8ce995"
+    },
+    {
+      "path": "contract-basis/echo-sdk-protocol/src/scalar.rs",
+      "bytes": 23928,
+      "sha256": "8332f6ccc7be4a2ce1a0143c31bfcf9df4b89e015dc8cf64cc2f1927bca9b92b"
+    },
+    {
+      "path": "proxy-frame-manifest.json",
+      "bytes": 12356,
+      "sha256": "8628a5b104dbed8d7324bdeb001d083b0e92dd6b10638aec5b42b9791aa8cf20"
+    },
+    {
+      "path": "proxy-frames/duplicate-capability-sdk-java-protocol-13534818168785023890.jsonl",
+      "bytes": 2159,
+      "sha256": "dc4dac5fe2ba73473b9bedd716ccd3865df6ec429ae8f183aa9102db33416447"
+    },
+    {
+      "path": "proxy-frames/duplicate-feature-sdk-java-protocol-7230044430330611182.jsonl",
+      "bytes": 1853,
+      "sha256": "c810a2e9d907d7fada3f330d057efbe23043cfa494ed8b20ae1e91bd3143f33d"
+    },
+    {
+      "path": "proxy-frames/empty-capabilities-sdk-java-protocol-16649428075897067058.jsonl",
+      "bytes": 1642,
+      "sha256": "0296d21d0cf013e039780ccb7186940512eaf44aeb9d3d65f0e1108a06cb7f38"
+    },
+    {
+      "path": "proxy-frames/empty-capabilities-sdk-java-protocol-479467848676780022.jsonl",
+      "bytes": 1642,
+      "sha256": "1b11d560a13951dd93f28a6c139d865b1501981c054bd55eeec3cf2ed76611c0"
+    },
+    {
+      "path": "proxy-frames/invalid-timeout-sdk-java-protocol-9721390200892356147.jsonl",
+      "bytes": 2114,
+      "sha256": "3fe9c8345fbcc8e9dab96dbe158788e1c7cd760a4034d538fd36f25fe2f266bc"
+    },
+    {
+      "path": "proxy-frames/missing-limits-sdk-java-protocol-12214474905904009249.jsonl",
+      "bytes": 1422,
+      "sha256": "1ff519625b816f0f27ed1386388fc13018546bb539d9fae8fc74afb6ba3c3c08"
+    },
+    {
+      "path": "proxy-frames/missing-limits-sdk-java-protocol-4398135561311436862.jsonl",
+      "bytes": 1422,
+      "sha256": "948c80d16445b339426b83451088178b02219b969ec79cd37f47df010d1c547e"
+    },
+    {
+      "path": "proxy-frames/nontext-feature-sdk-java-protocol-1930500333612816004.jsonl",
+      "bytes": 2109,
+      "sha256": "e76f6879f01eab98bc1ff281a5b4fd08b1f5574073c1bbe71e7d89036005cb22"
+    },
+    {
+      "path": "proxy-frames/nontext-feature-sdk-java-protocol-4367959167527784689.jsonl",
+      "bytes": 2109,
+      "sha256": "6767e94aec6c8dc5cc496648c8af78163a6d1cfea79056aa5f7c0625d06f73d6"
+    },
+    {
+      "path": "proxy-frames/nontext-feature-sdk-java-protocol-9538269850404231900.jsonl",
+      "bytes": 2109,
+      "sha256": "3bba8ca5e01ad81d721256c6b9d0fe41679a78c37a86a985e0ebee830b0cc1fa"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-10331301078747805441.jsonl",
+      "bytes": 4957,
+      "sha256": "f0cdeb64370ce62a4d496d9440a7ad92fdcffdee4b1081d911ade44e91d4d695"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-15152590648530856128.jsonl",
+      "bytes": 176176,
+      "sha256": "070947e89ac8c4351cc6e6559ca0c48d8f9f3f9215785b6ee1f97b678ab6414e"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-17126720753935563157.jsonl",
+      "bytes": 2046,
+      "sha256": "8e581a4a703d082270bbeb56b9c10e5bb9e060d9740f929491cc909c4171a3c4"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-2189261973535266822.jsonl",
+      "bytes": 2105,
+      "sha256": "81be1f9b07ae55d855680f34dab16796a2da4f2df55931f6cbbb6afd3733bae7"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-3293055028047437483.jsonl",
+      "bytes": 2938,
+      "sha256": "4767e4cc5a7bdf621654928e9745e46480a39e94d3897dd3d514283556501f98"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-4448907860148044920.jsonl",
+      "bytes": 2738,
+      "sha256": "1056cf6391c085c3e2b74a41ad80d8a9b92285979e769bd4fb9dc43a39c8616c"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-6006246155009430433.jsonl",
+      "bytes": 174195,
+      "sha256": "94e62571fe07e9835f1aa6bbe97991ce91c7eb07baefd240fa3258ddefef31ae"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-8085671386089536900.jsonl",
+      "bytes": 5629,
+      "sha256": "7daecc2fb3e88ad33c044ed52947389bf40ad68a1862789e3644b4719a7c9bd7"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-8507090152643143812.jsonl",
+      "bytes": 2105,
+      "sha256": "24e390a3f5e0e2e6c998f9abaa8259678c20709e27b751e56dfac9026db60607"
+    },
+    {
+      "path": "proxy-frames/normal-sdk-java-protocol-8618018914297440346.jsonl",
+      "bytes": 2540,
+      "sha256": "632f77c296f25b6833dc108fd49b3feb984eb35cc32e77f53f2fb10dc7240f92"
+    },
+    {
+      "path": "proxy-frames/null-capability-sdk-java-protocol-14814276280659588836.jsonl",
+      "bytes": 2111,
+      "sha256": "fb03372116f025ae7d45939d19b0a63b84927b7bd79dae25893ae2814ffa4dc9"
+    },
+    {
+      "path": "proxy-frames/null-capability-sdk-java-protocol-16358944231937391606.jsonl",
+      "bytes": 2111,
+      "sha256": "b338ec4b12e8bf8b7ac2f6619dfccd2055ee3d8660704e67d1b64d3cf358ec20"
+    },
+    {
+      "path": "proxy-frames/null-capability-sdk-java-protocol-9015651825116054645.jsonl",
+      "bytes": 2111,
+      "sha256": "a3ff6188f8be27fe6ff322df58378e2eaf18273c2b71ceb87a6bc7316440aba4"
+    },
+    {
+      "path": "proxy-frames/numeric-limit-sdk-java-protocol-14047701440546743565.jsonl",
+      "bytes": 2099,
+      "sha256": "7659f947d559eb5ef22cbc265e903e72d4ba5d03cdc515b26d3a2a2df77785a2"
+    },
+    {
+      "path": "proxy-frames/overflow-acp-version-sdk-java-protocol-3941053900485995755.jsonl",
+      "bytes": 2114,
+      "sha256": "f56123a64f093f891f6f56a08fcc158cae82fbbd278d64fa52c9cfccc7781962"
+    },
+    {
+      "path": "proxy-frames/overflow-acp-version-sdk-java-protocol-6822730374708140470.jsonl",
+      "bytes": 2114,
+      "sha256": "b3d1b36537a88ac001331858442cdbacd36c157caefd72dd73edded3df7fdcc3"
+    },
+    {
+      "path": "proxy-frames/overflow-acp-version-sdk-java-protocol-8463601351262068154.jsonl",
+      "bytes": 2114,
+      "sha256": "6551b6f8a79f8bd39868cc237212dc7dc609b8cdb4ef096fe726ecc7381a4dd3"
+    },
+    {
+      "path": "proxy-frames/overflow-extension-version-sdk-java-protocol-17137730006337702695.jsonl",
+      "bytes": 2114,
+      "sha256": "b7bbb8a48712301ffd58e268e339794df3a0deed2ba96ad60fbf4a60d0edeee1"
+    },
+    {
+      "path": "proxy-frames/overflow-extension-version-sdk-java-protocol-3847354944595311068.jsonl",
+      "bytes": 2114,
+      "sha256": "d5f8824c26bc204d21204ebeeaa9c43572a80f8deceb18c5e24d83fe33dbe144"
+    },
+    {
+      "path": "proxy-frames/overflow-extension-version-sdk-java-protocol-8879925769241253609.jsonl",
+      "bytes": 2114,
+      "sha256": "75f9786ee55e50df055e729c16c67e01554ebbf856bc4c096a4c6aaef88ec96e"
+    },
+    {
+      "path": "proxy-frames/overflow-limit-sdk-java-protocol-527677194585068386.jsonl",
+      "bytes": 2118,
+      "sha256": "3d986b712382fc1189424a4711f321f24f253e41b070a3382e6d96af4c3c0130"
+    },
+    {
+      "path": "proxy-frames/unicode-features-sdk-java-protocol-3853299973077741203.jsonl",
+      "bytes": 1852,
+      "sha256": "3036feb74e261d913a7bdf72c4297b8477d9409ebed733ff93f1fc38c22c45bc"
+    },
+    {
+      "path": "proxy-frames/unsorted-features-sdk-java-protocol-5278519704217977489.jsonl",
+      "bytes": 1847,
+      "sha256": "4770beaee8a401ecb2825570b531d90dac2696d581e37779bc7b48de3bfa6925"
+    },
+    {
+      "path": "proxy-frames/zero-limit-sdk-java-protocol-9393523619884353795.jsonl",
+      "bytes": 2103,
+      "sha256": "b1af2357e4898e3cee0373c3c04891fa8b0313a2edfaf7b52cef3d36446ad5ad"
+    },
+    {
+      "path": "source/docs/sdk/protocol.md",
+      "bytes": 19717,
+      "sha256": "cf0bf6e5bd3e954de3ba23519f19e32ca528276f06894b12d930cb44ce9ceb12"
+    },
+    {
+      "path": "source/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "bytes": 91079,
+      "sha256": "32c4768bf5542d36a4ce08628e367efe328b96f1a2d5a7c210a4dab09f071746"
+    },
+    {
+      "path": "source/sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java",
+      "bytes": 9810,
+      "sha256": "5b9d303e4ba6e65d4d5fa7b20a6088ff2f53878dffcf44b6d5abfdda8f2040bc"
+    },
+    {
+      "path": "source/sdks/python/src/echo_agent_sdk/client.py",
+      "bytes": 178404,
+      "sha256": "fc843caf105c9e755f8976c4307533a560da98607965f63a3c5d5d21446924a9"
+    },
+    {
+      "path": "source/sdks/python/tests/protocol_host_proxy.py",
+      "bytes": 7508,
+      "sha256": "4f740f6ea561bac38405761feb957240e564588aebd13989daed175d6d6a18c1"
+    },
+    {
+      "path": "source/sdks/python/tests/test_protocol_host.py",
+      "bytes": 11614,
+      "sha256": "d5e37b866014d3b2d0b06d7cb5982c5eba3203fb16aac38231b93413ad4272e6"
+    },
+    {
+      "path": "source/sdks/typescript/src/client.ts",
+      "bytes": 109170,
+      "sha256": "67cd39761882aea14b5e77f2733e3285d2b298de5038ae48991c930c0cb0f2c0"
+    },
+    {
+      "path": "source/sdks/typescript/test/protocol-host.test.js",
+      "bytes": 8646,
+      "sha256": "d0153f1323a6a0abaebe0492c89c8236282c1afa0efb81e343a170d0cd8cb1cc"
+    },
+    {
+      "path": "verification-summary.json",
+      "bytes": 2228,
+      "sha256": "34d1d0db0d4bdd7e1f203018a01d0b02d77543fd5d19d571c51d5a30db4a57a5"
+    }
+  ],
+  "adminRawCopiesExact": true
+}

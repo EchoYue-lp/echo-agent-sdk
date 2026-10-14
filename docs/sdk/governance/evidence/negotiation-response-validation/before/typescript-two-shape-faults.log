@@ -1,0 +1,54 @@
+TAP version 13
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-Ks7clT
+# Subtest: Host empty-capabilities negotiation fails
+not ok 1 - Host empty-capabilities negotiation fails
+  ---
+  duration_ms: 410.416083
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/protocol-host.test.js:20:193'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    AssertionError [ERR_ASSERTION]: must reject
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/protocol-host.test.js:21:2)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-x6QJ3Y
+# Subtest: Host missing-limits negotiation fails
+not ok 2 - Host missing-limits negotiation fails
+  ---
+  duration_ms: 188.473625
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/protocol-host.test.js:20:193'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    AssertionError [ERR_ASSERTION]: must reject
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/protocol-host.test.js:21:2)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 817.593375

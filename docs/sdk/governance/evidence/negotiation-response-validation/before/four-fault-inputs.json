@@ -1,0 +1,7 @@
+{
+  "sdks/python/tests/protocol_host_proxy.py": "028d5f1ac3cb30576dcb6907c5dd5bc62b4b11756fc0e129cef5f3c24c1855c3",
+  "sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java": "3c1f570f265273def34dd037efaa45471516eeefeb3c26b338b8625a449d2aa8",
+  "sdks/typescript/test/protocol-host.test.js": "740bf75e0fadd738ca7aeccb45a5ea47e50383e442b2a94a5870cf3d4e3306e3",
+  "sdks/python/tests/test_protocol_host.py": "1d3e073afc4b9fe895c921d2d9c76bc488c21e1690d08eeb766ecb190212311e",
+  "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "86efd3959d478723949910ff97058f26a6fd32b3e050b54713f83288a2ca6131"
+}

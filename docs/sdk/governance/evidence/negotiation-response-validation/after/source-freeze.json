@@ -1,0 +1,13 @@
+{
+  "actualHEAD": "b10f40e21bc73e50d891f41d00e96f5f3a18384a",
+  "files": {
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "32c4768bf5542d36a4ce08628e367efe328b96f1a2d5a7c210a4dab09f071746",
+    "sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java": "5b9d303e4ba6e65d4d5fa7b20a6088ff2f53878dffcf44b6d5abfdda8f2040bc",
+    "sdks/python/tests/protocol_host_proxy.py": "4f740f6ea561bac38405761feb957240e564588aebd13989daed175d6d6a18c1",
+    "sdks/typescript/test/protocol-host.test.js": "d0153f1323a6a0abaebe0492c89c8236282c1afa0efb81e343a170d0cd8cb1cc",
+    "sdks/python/tests/test_protocol_host.py": "d5e37b866014d3b2d0b06d7cb5982c5eba3203fb16aac38231b93413ad4272e6",
+    "sdks/typescript/src/client.ts": "67cd39761882aea14b5e77f2733e3285d2b298de5038ae48991c930c0cb0f2c0",
+    "sdks/python/src/echo_agent_sdk/client.py": "fc843caf105c9e755f8976c4307533a560da98607965f63a3c5d5d21446924a9",
+    "docs/sdk/protocol.md": "cf0bf6e5bd3e954de3ba23519f19e32ca528276f06894b12d930cb44ce9ceb12"
+  }
+}

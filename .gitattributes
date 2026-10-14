@@ -148,3 +148,17 @@ docs/sdk/governance/evidence/run-steer-native/java-original/focused.log -diff
 # Original SecretScan oracle failures are immutable raw output.
 docs/sdk/governance/evidence/secret-scan-native/python-first.log -diff
 docs/sdk/governance/evidence/secret-scan-native/typescript-first.log -diff
+
+# Exact negotiation diagnostics and patches retain original bytes.
+docs/sdk/governance/evidence/negotiation-response-validation/after/typescript-build.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/attempts/python-wrong-environment.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/attempts/typescript-omitted-digest-operation.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/before/java-four-faults.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/before/java-six-faults.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/before/python-ACP-overflow-typed-error.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/before/typescript-two-shape-faults.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/candidate.patch -diff
+docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/before-generator-fixture.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/candidate.patch -diff
+docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/initialization-owner-before.log -diff
+docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/typescript-build.log -diff

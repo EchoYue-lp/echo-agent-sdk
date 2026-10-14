@@ -1,0 +1,9 @@
+{
+  "args": [
+    "mvn",
+    "-q",
+    "-Dtest=ProtocolHostTest#negotiationRejectsLossyVersionAndMalformedMembers",
+    "test"
+  ],
+  "exitCode": 1
+}

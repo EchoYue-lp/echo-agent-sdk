@@ -1,0 +1,729 @@
+diff --git a/docs/sdk/protocol.md b/docs/sdk/protocol.md
+index 1a1f2fe..868c913 100644
+--- a/docs/sdk/protocol.md
++++ b/docs/sdk/protocol.md
+@@ -107,6 +107,23 @@ digest, required capability or feature set does not match — the Host stays
+ Standard and extension calls answer method-not-found; it never silently
+ degrades to partial parity (design §10.2).
+ 
++SDK clients also validate the advertisement itself during initialization:
++versions must equal 1 without integer narrowing; feature names are sorted and
++distinct in Rust Unicode scalar order; capability declarations are nonempty,
++distinct and retain their boolean `required` field. Every advertised WireU64
++limit must be present as canonical positive decimal text within u64 range;
++callback concurrency is a positive u32 and callback timeout retains valid
++seconds/nanos. Malformed advertisements return
++`extension_capability_mismatch` for `initialize` with retryability `never`,
++instead of dropping members or supplying queue defaults. This SDK validation
++does not change the plain ACP profile's `_meta` behavior.
++A rejected TypeScript handshake also uses the original stdio close owner:
++it sends stdin EOF and waits for the original EOF callback and native child
++exit before delivering the initialization error. A sent termination signal
++alone is not an exit receipt; the existing close deadline policy is unchanged.
++The initialization classification remains the primary error, with any cleanup
++failure retained as its cause.
++
+ ## Extension namespace
+ 
+ All custom methods live under `_echo_agent/*` (leading underscore per ACP
+diff --git a/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java b/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+index 76d0f8e..dce4e13 100644
+--- a/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
++++ b/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+@@ -361,7 +361,7 @@ public final class EchoAgentClient implements AutoCloseable {
+                     new AcpSchema.Implementation("echo-agent-sdk-java", "0.1.0"), Map.of());
+             var initializeSubmission=transport.untilExit(session.sendRequest("initialize", initialize, JSON_NODE), "initialize").toFuture();
+             var initialization=initializeSubmission.thenApply(result -> {
+-                        if (!result.path("protocolVersion").isIntegralNumber() || result.path("protocolVersion").intValue() != 1) throw new EchoAgentException("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize", result);
++                        if (!isProtocolVersionOne(result.path("protocolVersion"))) throw new EchoAgentException("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize", result);
+                         JsonNode advertised = result.path("agentCapabilities")
+                                 .path("_meta").path("echo_agent");
+                         if (!advertised.isObject()) {
+@@ -703,16 +703,71 @@ public final class EchoAgentClient implements AutoCloseable {
+         return result.stream().distinct().toList();
+     }
+ 
++    private static boolean isProtocolVersionOne(JsonNode value) {
++        return value.isIntegralNumber() && value.bigIntegerValue().equals(java.math.BigInteger.ONE);
++    }
++
++    private static java.math.BigInteger advertisedU64(JsonNode value, String field) {
++        if (!value.isTextual() || !value.textValue().matches("0|[1-9][0-9]{0,19}")) {
++            throw new EchoAgentException("extension_capability_mismatch", "malformed Host limit " + field, "never", "initialize", value);
++        }
++        var parsed = new java.math.BigInteger(value.textValue());
++        if (parsed.compareTo(new java.math.BigInteger("18446744073709551615")) > 0) {
++            throw new EchoAgentException("extension_capability_mismatch", "Host limit exceeds u64 " + field, "never", "initialize", value);
++        }
++        return parsed;
++    }
++
++    private static void validateAdvertisedLimits(JsonNode limits) {
++        for (String name : List.of("max_message_bytes", "max_stream_buffer_events", "max_replay_events", "max_structured_output_bytes", "max_outstanding_live_events", "max_stream_buffer_bytes", "max_replay_bytes", "max_open_handles", "max_registered_extensions", "max_extension_descriptor_bytes", "max_extension_payload_bytes", "max_extension_stream_bytes", "max_inflight_extension_invocations", "max_facade_resources", "max_facade_streams", "max_facade_page_items", "max_facade_operation_args")) {
++            if (advertisedU64(limits.path(name), name).signum() == 0) {
++                throw new EchoAgentException("extension_capability_mismatch", "Host limit must be positive " + name, "never", "initialize", limits);
++            }
++        }
++        var concurrency = limits.path("max_callback_concurrency");
++        if (!concurrency.isIntegralNumber() || concurrency.bigIntegerValue().signum() <= 0
++                || concurrency.bigIntegerValue().compareTo(new java.math.BigInteger("4294967295")) > 0) {
++            throw new EchoAgentException("extension_capability_mismatch", "malformed Host callback concurrency", "never", "initialize", limits);
++        }
++        var timeout = limits.path("callback_timeout");
++        if (!timeout.isObject()) throw new EchoAgentException("extension_capability_mismatch", "malformed Host callback timeout", "never", "initialize", limits);
++        advertisedU64(timeout.path("seconds"), "callback_timeout.seconds");
++        var nanos = timeout.path("nanos");
++        if (!nanos.isIntegralNumber() || nanos.bigIntegerValue().signum() < 0
++                || nanos.bigIntegerValue().compareTo(java.math.BigInteger.valueOf(999999999)) > 0) {
++            throw new EchoAgentException("extension_capability_mismatch", "malformed Host callback timeout nanos", "never", "initialize", timeout);
++        }
++    }
++
++    // Match Rust UTF-8 String ordering by Unicode scalar values, not UTF-16 units.
++    private static int compareFeatureNames(String left, String right) {
++        var lhs = left.codePoints().iterator();
++        var rhs = right.codePoints().iterator();
++        while (lhs.hasNext() && rhs.hasNext()) {
++            int result = Integer.compare(lhs.nextInt(), rhs.nextInt());
++            if (result != 0) return result;
++        }
++        return lhs.hasNext() ? 1 : rhs.hasNext() ? -1 : 0;
++    }
++
+     private static void validateCapability(
+             JsonNode advertised, Collection<String> requiredFeatures, Collection<String> requiredCapabilities) {
+-        if (!advertised.path("extension_protocol_version").isIntegralNumber() || advertised.path("extension_protocol_version").intValue() != 1) {
++        if (!isProtocolVersionOne(advertised.path("extension_protocol_version"))) {
+             throw new EchoAgentException("extension_capability_mismatch", "unsupported extension protocol version", "never", "initialize", advertised);
+         }
+         if (!advertised.path("features").isArray() || !advertised.path("capabilities").isArray() || !advertised.path("limits").isObject()) throw new EchoAgentException("extension_capability_mismatch", "malformed Host capability advertisement", "never", "initialize", advertised);
+         var features = new java.util.HashSet<String>();
+         advertised.path("features").elements().forEachRemaining(value -> {
+-            if (value.isTextual()) features.add(value.textValue());
++            if (!value.isTextual()) throw new EchoAgentException("extension_capability_mismatch", "malformed Host feature member", "never", "initialize", advertised);
++            features.add(value.textValue());
+         });
++        String previousFeature = null;
++        for (JsonNode feature : advertised.path("features")) {
++            if (previousFeature != null && compareFeatureNames(previousFeature, feature.textValue()) >= 0) {
++                throw new EchoAgentException("extension_capability_mismatch", "Host features must be sorted and distinct", "never", "initialize", advertised);
++            }
++            previousFeature = feature.textValue();
++        }
+         for (String required : sortedDistinct(requiredFeatures)) {
+             if (!features.contains(required)) {
+                 throw new EchoAgentException("feature_unavailable", "Host lacks feature " + required,
+@@ -720,9 +775,14 @@ public final class EchoAgentClient implements AutoCloseable {
+             }
+         }
+         var capabilities = new java.util.HashSet<String>();
++        if (advertised.path("capabilities").isEmpty()) throw new EchoAgentException("extension_capability_mismatch", "Host must declare a capability", "never", "initialize", advertised);
+         advertised.path("capabilities").elements().forEachRemaining(value -> {
+-            if (value.path("capability").isTextual()) capabilities.add(value.path("capability").textValue());
++            if (!value.isObject() || !value.path("capability").isTextual() || !value.path("required").isBoolean()
++                    || !capabilities.add(value.path("capability").textValue())) {
++                throw new EchoAgentException("extension_capability_mismatch", "malformed or duplicate Host capability member", "never", "initialize", advertised);
++            }
+         });
++        validateAdvertisedLimits(advertised.path("limits"));
+         for (String required : sortedDistinct(requiredCapabilities)) {
+             if (!capabilities.contains(required)) {
+                 throw new EchoAgentException("extension_capability_mismatch", "Host lacks capability " + required,
+diff --git a/sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java b/sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java
+index 33baa8e..53f4a51 100644
+--- a/sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java
++++ b/sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java
+@@ -33,6 +33,30 @@ class ProtocolHostTest {
+             assertEquals("extension_capability_mismatch", typed.code());
+         }
+     }
++    @org.junit.jupiter.params.ParameterizedTest
++    @org.junit.jupiter.params.provider.ValueSource(strings = {"overflow-acp-version", "overflow-extension-version", "nontext-feature", "null-capability", "empty-capabilities", "missing-limits", "duplicate-feature", "unsorted-features", "duplicate-capability", "zero-limit", "overflow-limit", "numeric-limit", "invalid-timeout"})
++    void negotiationRejectsLossyVersionAndMalformedMembers(String mode) throws Exception {
++        EchoAgentClient accepted = null;
++        try {
++            try {
++                accepted = spawn(mode);
++            } catch (java.util.concurrent.ExecutionException failure) {
++                var error = assertInstanceOf(EchoAgentException.class, failure.getCause());
++                assertEquals("extension_capability_mismatch", error.code());
++                assertEquals("initialize", error.operation());
++                return;
++            }
++            fail("malformed negotiation advertisement was accepted: " + mode);
++        } finally {
++            if (accepted != null) accepted.close();
++        }
++    }
++    @Test void negotiationAcceptsRustUnicodeFeatureOrder() throws Exception {
++        try (var sdk = spawn("unicode-features")) {
++            assertEquals("\uE000", sdk.capability().path("features").get(0).asText());
++            assertEquals("\uD800\uDC00", sdk.capability().path("features").get(1).asText());
++        }
++    }
+     @Test void errorsPreserveHandlesAndIndependentSessions() throws Exception {
+         try (var sdk = spawn("normal")) {
+             var agent = sdk.createAgent().toCompletableFuture().get(5, TimeUnit.SECONDS);
+diff --git a/sdks/python/src/echo_agent_sdk/client.py b/sdks/python/src/echo_agent_sdk/client.py
+index 723e91c..3414bb0 100644
+--- a/sdks/python/src/echo_agent_sdk/client.py
++++ b/sdks/python/src/echo_agent_sdk/client.py
+@@ -17,6 +17,7 @@ from typing import Any, Literal, Protocol, TypedDict, cast
+ from acp.connection import StreamDirection, StreamEvent
+ from acp.schema import ClientCapabilities, Implementation
+ from acp.stdio import spawn_agent_process
++from pydantic import ValidationError
+ from typing_extensions import Self
+ 
+ from .catalog import FacadeCatalog
+@@ -3326,18 +3327,27 @@ class EchoAgentClient:
+                 "required_features": sorted(set(required_features)),
+                 "required_capabilities": sorted(set(required_capabilities)),
+             }
+-            initialized = await connection.initialize(
+-                1,
+-                client_capabilities=ClientCapabilities.model_validate(
+-                    {"_meta": {"echo_agent": hello}}
+-                ),
+-                client_info=Implementation(
+-                    name="echo-agent-sdk-python", version="0.1.0"
+-                ),
+-            )
++            try:
++                initialized = await connection.initialize(
++                    1,
++                    client_capabilities=ClientCapabilities.model_validate(
++                        {"_meta": {"echo_agent": hello}}
++                    ),
++                    client_info=Implementation(
++                        name="echo-agent-sdk-python", version="0.1.0"
++                    ),
++                )
++            except ValidationError as error:
++                raise EchoAgentError(
++                    "extension_capability_mismatch",
++                    "malformed ACP initialization response",
++                    operation="initialize",
++                ) from error
+             if initialized.protocol_version != 1:
+                 raise EchoAgentError(
+-                    "extension_capability_mismatch", "unsupported ACP protocol version"
++                    "extension_capability_mismatch",
++                    "unsupported ACP protocol version",
++                    operation="initialize",
+                 )
+             raw_capability = (
+                 initialized.agent_capabilities.field_meta.get("echo_agent")
+@@ -3348,6 +3358,7 @@ class EchoAgentClient:
+                 raise EchoAgentError(
+                     "extension_capability_mismatch",
+                     "Host did not advertise echo-agent extension",
++                    operation="initialize",
+                 )
+             cls._validate_capability(
+                 raw_capability, required_features, required_capabilities, catalog
+@@ -3392,21 +3403,28 @@ class EchoAgentClient:
+             raise EchoAgentError(
+                 "extension_capability_mismatch",
+                 "unsupported extension protocol version",
++                operation="initialize",
+             )
+         if capability.get("contract_digest") != catalog.contract_digest:
+             raise EchoAgentError(
+-                "extension_capability_mismatch", "contract digest mismatch"
++                "extension_capability_mismatch",
++                "contract digest mismatch",
++                operation="initialize",
+             )
+         if capability.get("source_contract_digest") != catalog.source_contract_digest:
+             raise EchoAgentError(
+-                "extension_capability_mismatch", "source contract digest mismatch"
++                "extension_capability_mismatch",
++                "source contract digest mismatch",
++                operation="initialize",
+             )
+         if (
+             not isinstance(capability.get("features"), list)
+             or not all(isinstance(value, str) for value in capability["features"])
+             or not isinstance(capability.get("capabilities"), list)
+             or not all(
+-                isinstance(value, dict) and isinstance(value.get("capability"), str)
++                isinstance(value, dict)
++                and isinstance(value.get("capability"), str)
++                and type(value.get("required")) is bool
+                 for value in capability["capabilities"]
+             )
+             or not isinstance(capability.get("limits"), dict)
+@@ -3414,6 +3432,87 @@ class EchoAgentClient:
+             raise EchoAgentError(
+                 "extension_capability_mismatch",
+                 "malformed Host capability advertisement",
++                operation="initialize",
++            )
++        if capability["features"] != sorted(set(capability["features"])):
++            raise EchoAgentError(
++                "extension_capability_mismatch",
++                "Host features must be sorted and distinct",
++                operation="initialize",
++            )
++        declarations = capability["capabilities"]
++        if not declarations or len(
++            {value["capability"] for value in declarations}
++        ) != len(declarations):
++            raise EchoAgentError(
++                "extension_capability_mismatch",
++                "Host must declare distinct capabilities",
++                operation="initialize",
++            )
++        limits = capability["limits"]
++
++        def advertised_u64(value: Any, field: str) -> int:
++            if not isinstance(value, str) or len(value) > 20:
++                raise EchoAgentError(
++                    "extension_capability_mismatch",
++                    f"malformed Host limit {field}",
++                    operation="initialize",
++                )
++            try:
++                return int(_canonical_u64_text(value, field))
++            except (TypeError, ValueError) as error:
++                raise EchoAgentError(
++                    "extension_capability_mismatch",
++                    f"malformed Host limit {field}",
++                    operation="initialize",
++                ) from error
++
++        for name in (
++            "max_message_bytes",
++            "max_stream_buffer_events",
++            "max_replay_events",
++            "max_structured_output_bytes",
++            "max_outstanding_live_events",
++            "max_stream_buffer_bytes",
++            "max_replay_bytes",
++            "max_open_handles",
++            "max_registered_extensions",
++            "max_extension_descriptor_bytes",
++            "max_extension_payload_bytes",
++            "max_extension_stream_bytes",
++            "max_inflight_extension_invocations",
++            "max_facade_resources",
++            "max_facade_streams",
++            "max_facade_page_items",
++            "max_facade_operation_args",
++        ):
++            if advertised_u64(limits.get(name), name) == 0:
++                raise EchoAgentError(
++                    "extension_capability_mismatch",
++                    f"Host limit must be positive {name}",
++                    operation="initialize",
++                )
++        concurrency = limits.get("max_callback_concurrency")
++        if type(concurrency) is not int or not 0 < concurrency <= 4294967295:
++            raise EchoAgentError(
++                "extension_capability_mismatch",
++                "malformed Host callback concurrency",
++                operation="initialize",
++            )
++        timeout = limits.get("callback_timeout")
++        if not isinstance(timeout, dict):
++            raise EchoAgentError(
++                "extension_capability_mismatch",
++                "malformed Host callback timeout",
++                operation="initialize",
++            )
++        advertised_u64(timeout.get("seconds"), "callback_timeout.seconds")
++        nanos = timeout.get("nanos")
++        if type(nanos) is not int or not 0 <= nanos < 1000000000:
++            raise EchoAgentError(
++                "extension_capability_mismatch",
++                "malformed Host callback timeout nanos",
++                operation="initialize",
+             )
+         features = capability.get("features", [])
+         declared = (
+@@ -3422,7 +3521,9 @@ class EchoAgentClient:
+         for feature in required_features:
+             if feature not in declared:
+                 raise EchoAgentError(
+-                    "feature_unavailable", f"Host lacks feature {feature}"
++                    "feature_unavailable",
++                    f"Host lacks feature {feature}",
++                    operation="initialize",
+                 )
+         capabilities = capability.get("capabilities", [])
+         names = {
+@@ -3433,7 +3534,9 @@ class EchoAgentClient:
+         for name in required_capabilities:
+             if name not in names:
+                 raise EchoAgentError(
+-                    "extension_capability_mismatch", f"Host lacks capability {name}"
++                    "extension_capability_mismatch",
++                    f"Host lacks capability {name}",
++                    operation="initialize",
+                 )
+ 
+     async def request(self, method: str, params: Any = None) -> Any:
+diff --git a/sdks/python/tests/protocol_host_proxy.py b/sdks/python/tests/protocol_host_proxy.py
+index 2c1df86..63c8f0a 100644
+--- a/sdks/python/tests/protocol_host_proxy.py
++++ b/sdks/python/tests/protocol_host_proxy.py
+@@ -128,6 +128,36 @@ def main() -> None:
+                     ]
+                     if args.mode == "bad-acp-version":
+                         frame["result"]["protocolVersion"] = 2
++                    elif args.mode == "overflow-acp-version":
++                        frame["result"]["protocolVersion"] = 4294967297
++                    if args.mode == "overflow-extension-version":
++                        capability["extension_protocol_version"] = 4294967297
++                    elif args.mode == "nontext-feature":
++                        capability["features"].append(17)
++                    elif args.mode == "null-capability":
++                        capability["capabilities"].append(None)
++                    elif args.mode == "empty-capabilities":
++                        capability["capabilities"] = []
++                    elif args.mode == "missing-limits":
++                        capability["limits"] = {}
++                    elif args.mode == "duplicate-feature":
++                        capability["features"] = ["same", "same"]
++                    elif args.mode == "unsorted-features":
++                        capability["features"] = ["z", "a"]
++                    elif args.mode == "duplicate-capability":
++                        capability["capabilities"].append(capability["capabilities"][0])
++                    elif args.mode == "zero-limit":
++                        capability["limits"]["max_outstanding_live_events"] = "0"
++                    elif args.mode == "overflow-limit":
++                        capability["limits"]["max_message_bytes"] = (
++                            "18446744073709551616"
++                        )
++                    elif args.mode == "numeric-limit":
++                        capability["limits"]["max_message_bytes"] = 100
++                    elif args.mode == "invalid-timeout":
++                        capability["limits"]["callback_timeout"]["nanos"] = 1000000000
++                    elif args.mode == "unicode-features":
++                        capability["features"] = ["\ue000", "\U00010000"]
+                     if args.mode == "bad-version":
+                         capability["extension_protocol_version"] = 2
+                     elif args.mode == "bad-digest":
+diff --git a/sdks/python/tests/test_protocol_host.py b/sdks/python/tests/test_protocol_host.py
+index 38621c1..55eb096 100644
+--- a/sdks/python/tests/test_protocol_host.py
++++ b/sdks/python/tests/test_protocol_host.py
+@@ -34,12 +34,34 @@ async def scenario(mode):
+             yield client
+ 
+ 
+-@pytest.mark.parametrize("mode", ["bad-version", "bad-digest", "bad-acp-version"])
++@pytest.mark.parametrize(
++    "mode",
++    [
++        "bad-version",
++        "bad-digest",
++        "bad-acp-version",
++        "overflow-acp-version",
++        "overflow-extension-version",
++        "nontext-feature",
++        "null-capability",
++        "empty-capabilities",
++        "missing-limits",
++        "duplicate-feature",
++        "unsorted-features",
++        "duplicate-capability",
++        "zero-limit",
++        "overflow-limit",
++        "numeric-limit",
++        "invalid-timeout",
++    ],
++)
+ async def test_negotiation_rejects(mode):
+     with pytest.raises(EchoAgentError) as error:
+         async with scenario(mode):
+             pytest.fail("must reject")
+     assert error.value.code == "extension_capability_mismatch"
++    assert error.value.operation == "initialize"
++    assert error.value.retryable == "never"
+ 
+ 
+ async def test_real_host_typed_error_and_independent_sessions():
+@@ -311,3 +333,8 @@ async def test_cancelled_tool_waits_for_interrupted_callback_side_effect():
+         await model.close()
+         await callback.close()
+         await agent.close()
++
++
++async def test_negotiation_accepts_rust_unicode_feature_order():
++    async with scenario("unicode-features") as sdk:
++        assert sdk.capability["features"] == ["\ue000", "\U00010000"]
+diff --git a/sdks/python/tests/test_protocol_integrity.py b/sdks/python/tests/test_protocol_integrity.py
+index 3422abd..1f7564e 100644
+--- a/sdks/python/tests/test_protocol_integrity.py
++++ b/sdks/python/tests/test_protocol_integrity.py
+@@ -276,13 +276,38 @@ async def test_generator_negotiation_validates_the_exact_sent_hello(monkeypatch,
+ 
+     sent = []
+     catalog = FacadeCatalog()
++    limits = {
++        name: "16"
++        for name in (
++            "max_message_bytes",
++            "max_stream_buffer_events",
++            "max_replay_events",
++            "max_structured_output_bytes",
++            "max_outstanding_live_events",
++            "max_stream_buffer_bytes",
++            "max_replay_bytes",
++            "max_open_handles",
++            "max_registered_extensions",
++            "max_extension_descriptor_bytes",
++            "max_extension_payload_bytes",
++            "max_extension_stream_bytes",
++            "max_inflight_extension_invocations",
++            "max_facade_resources",
++            "max_facade_streams",
++            "max_facade_page_items",
++            "max_facade_operation_args",
++        )
++    }
++    limits.update(
++        max_callback_concurrency=4, callback_timeout={"seconds": "30", "nanos": 0}
++    )
+     capability = {
+         "extension_protocol_version": 1,
+         "contract_digest": catalog.contract_digest,
+         "source_contract_digest": catalog.source_contract_digest,
+         "features": [],
+-        "capabilities": [],
+-        "limits": {},
++        "capabilities": [{"capability": "agent_lifecycle", "required": False}],
++        "limits": limits,
+     }
+ 
+     class Connection:
+diff --git a/sdks/typescript/src/client.ts b/sdks/typescript/src/client.ts
+index 95c6340..75fb784 100644
+--- a/sdks/typescript/src/client.ts
++++ b/sdks/typescript/src/client.ts
+@@ -191,7 +191,7 @@ function boundedQueueCapacity(capability: EchoAgentCapability): number {
+       const parsed = BigInt(raw);
+       if (parsed > 0n) return Number(parsed > BigInt(MAX_QUEUE_CAPACITY) ? MAX_QUEUE_CAPACITY : parsed);
+     } catch {
+-      // A malformed advertisement is rejected by the Host capability check;
++      // A malformed advertisement is rejected during client negotiation;
+       // retain a bounded local default until that check completes.
+     }
+   }
+@@ -541,10 +541,10 @@ export class EchoAgentClient {
+           _meta: { echo_agent: hello },
+         },
+       });
+-      if ((initialized as { protocolVersion?: number }).protocolVersion !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported ACP protocol version");
++      if ((initialized as { protocolVersion?: number }).protocolVersion !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize");
+       const capability = (initialized as unknown as { agentCapabilities?: { _meta?: { echo_agent?: EchoAgentCapability } } })
+         .agentCapabilities?._meta?.echo_agent;
+-      if (!capability) throw new EchoAgentError("extension_capability_mismatch", "Host did not advertise echo-agent extension");
++      if (!capability) throw new EchoAgentError("extension_capability_mismatch", "Host did not advertise echo-agent extension", "never", "initialize");
+       validateCapability(capability, { ...options, contractDigest: hello.contract_digest, sourceContractDigest: hello.source_contract_digest });
+       queueCapacity = boundedQueueCapacity(capability);
+       const result = new EchoAgentClient(
+@@ -579,9 +579,15 @@ export class EchoAgentClient {
+       });
+       return result;
+     } catch (error) {
+-      connection.close(error);
+-      child.kill();
+-      throw EchoAgentError.fromUnknown(error);
++      const failure = EchoAgentError.fromUnknown(error, "initialize");
++      try {
++        await EchoAgentClient.closeStdioOwned(child, connection, error);
++      } catch (cleanupError) {
++        // Preserve the initialization rejection; cleanup failure remains its
++        // explicit cause rather than replacing the negotiated error contract.
++        failure.cause = cleanupError;
++      }
++      throw failure;
+     }
+   }
+ 
+@@ -1023,7 +1029,17 @@ export class EchoAgentClient {
+   }
+ 
+   private async closeOwned(): Promise<void> {
+-    const child = this.process;
++    for (const controller of this.invocationControllers.values()) controller.abort();
++    this.invocationControllers.clear(); this.extensionStreamRoutes.clear();
++    this.extensionHandlers.clear();
++    for (const feed of this.events.values()) feed.queue.end();
++    for (const queue of this.updates.values()) queue.end();
++    await EchoAgentClient.closeStdioOwned(this.process, this.connection);
++  }
++
++  // Both normal close and a rejected handshake settle the same original child.
++  // Its existing EOF callback and native exit obligations are unchanged.
++  private static async closeStdioOwned(child: ChildProcessWithoutNullStreams, connection: ClientConnection, cause?: unknown): Promise<void> {
+     const hasExited = () => child.exitCode !== null || child.signalCode !== null;
+     let onExit: () => void = () => {};
+     const exited = new Promise<void>((resolve) => {
+@@ -1031,18 +1047,13 @@ export class EchoAgentClient {
+       if (hasExited()) resolve();
+       else child.once("exit", onExit);
+     });
+-    for (const controller of this.invocationControllers.values()) controller.abort();
+-    this.invocationControllers.clear(); this.extensionStreamRoutes.clear();
+-    this.extensionHandlers.clear();
+-    for (const feed of this.events.values()) feed.queue.end();
+-    for (const queue of this.updates.values()) queue.end();
+     let timer: ReturnType<typeof setTimeout> | undefined;
+     let inputSettled = false;
+     let inputError: unknown;
+     let onInputError: (error: Error & { code?: string }) => void = () => {};
+     let onInputFinish: () => void = () => {};
+     try {
+-      this.connection.close();
++      connection.close(cause);
+       const inputComplete = new Promise<void>((resolve) => {
+         onInputError = (error) => {
+           if (error.code !== "EPIPE" && error.code !== "ERR_STREAM_DESTROYED") inputError = error;
+@@ -1530,26 +1541,70 @@ function isTerminalStatus(status: string): boolean {
+   return status === "completed" || status === "cancelled" || status === "failed" || status === "interrupted" || status === "closed";
+ }
+ 
++function advertisedU64(value: unknown, field: string): bigint {
++  if (typeof value !== "string" || !/^(0|[1-9][0-9]{0,19})$/u.test(value)) {
++    throw new EchoAgentError("extension_capability_mismatch", `malformed Host limit ${field}`, "never", "initialize");
++  }
++  const parsed = BigInt(value);
++  if (parsed > 18446744073709551615n) throw new EchoAgentError("extension_capability_mismatch", `Host limit exceeds u64 ${field}`, "never", "initialize");
++  return parsed;
++}
++
++function validateAdvertisedLimits(limits: Record<string, unknown>): void {
++  for (const name of ["max_message_bytes", "max_stream_buffer_events", "max_replay_events", "max_structured_output_bytes", "max_outstanding_live_events", "max_stream_buffer_bytes", "max_replay_bytes", "max_open_handles", "max_registered_extensions", "max_extension_descriptor_bytes", "max_extension_payload_bytes", "max_extension_stream_bytes", "max_inflight_extension_invocations", "max_facade_resources", "max_facade_streams", "max_facade_page_items", "max_facade_operation_args"]) {
++    if (advertisedU64(limits[name], name) === 0n) throw new EchoAgentError("extension_capability_mismatch", `Host limit must be positive ${name}`, "never", "initialize");
++  }
++  const concurrency = limits.max_callback_concurrency;
++  if (typeof concurrency !== "number" || !Number.isInteger(concurrency) || concurrency <= 0 || concurrency > 4294967295) {
++    throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback concurrency", "never", "initialize");
++  }
++  const timeout = limits.callback_timeout;
++  if (!timeout || typeof timeout !== "object" || Array.isArray(timeout)) throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback timeout", "never", "initialize");
++  const fields = timeout as Record<string, unknown>;
++  advertisedU64(fields.seconds, "callback_timeout.seconds");
++  if (typeof fields.nanos !== "number" || !Number.isInteger(fields.nanos) || fields.nanos < 0 || fields.nanos >= 1000000000) {
++    throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback timeout nanos", "never", "initialize");
++  }
++}
++
++// Rust String order follows Unicode scalar values, unlike UTF-16 default sort.
++function compareFeatureNames(left: string, right: string): number {
++  const lhs = left[Symbol.iterator](), rhs = right[Symbol.iterator]();
++  for (;;) {
++    const l = lhs.next(), r = rhs.next();
++    if (l.done || r.done) return l.done ? (r.done ? 0 : -1) : 1;
++    const lc = l.value.codePointAt(0) ?? 0, rc = r.value.codePointAt(0) ?? 0;
++    if (lc !== rc) return lc < rc ? -1 : 1;
++  }
++}
++
+ function validateCapability(capability: EchoAgentCapability, options: SpawnOptions): void {
+-  if (capability.extension_protocol_version !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported extension protocol version");
++  if (capability.extension_protocol_version !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported extension protocol version", "never", "initialize");
+   if (!Array.isArray(capability.features) || !capability.features.every(value => typeof value === "string")
+-    || !Array.isArray(capability.capabilities) || !capability.capabilities.every(value => value && typeof value.capability === "string")
++    || !Array.isArray(capability.capabilities) || !capability.capabilities.every(value => value && typeof value.capability === "string" && typeof value.required === "boolean")
+     || typeof capability.limits !== "object" || capability.limits === null || Array.isArray(capability.limits)) {
+-    throw new EchoAgentError("extension_capability_mismatch", "malformed Host capability advertisement");
++    throw new EchoAgentError("extension_capability_mismatch", "malformed Host capability advertisement", "never", "initialize");
++  }
++  if (capability.features.some((value, index) => index > 0 && compareFeatureNames(capability.features[index - 1] ?? "", value) >= 0)) {
++    throw new EchoAgentError("extension_capability_mismatch", "Host features must be sorted and distinct", "never", "initialize");
++  }
++  if (capability.capabilities.length === 0 || new Set(capability.capabilities.map(value => value.capability)).size !== capability.capabilities.length) {
++    throw new EchoAgentError("extension_capability_mismatch", "Host must declare distinct capabilities", "never", "initialize");
+   }
++  validateAdvertisedLimits(capability.limits);
+   for (const feature of options.requiredFeatures ?? []) {
+-    if (!capability.features.includes(feature)) throw new EchoAgentError("feature_unavailable", `Host lacks feature ${feature}`);
++    if (!capability.features.includes(feature)) throw new EchoAgentError("feature_unavailable", `Host lacks feature ${feature}`, "never", "initialize");
+   }
+   for (const required of options.requiredCapabilities ?? []) {
+     if (!capability.capabilities.some((entry) => entry.capability === required)) {
+-      throw new EchoAgentError("extension_capability_mismatch", `Host lacks capability ${required}`);
++      throw new EchoAgentError("extension_capability_mismatch", `Host lacks capability ${required}`, "never", "initialize");
+     }
+   }
+   if (options.contractDigest && capability.contract_digest !== options.contractDigest) {
+-    throw new EchoAgentError("extension_capability_mismatch", "contract digest mismatch");
++    throw new EchoAgentError("extension_capability_mismatch", "contract digest mismatch", "never", "initialize");
+   }
+   if (options.sourceContractDigest && capability.source_contract_digest !== options.sourceContractDigest) {
+-    throw new EchoAgentError("extension_capability_mismatch", "source contract digest mismatch");
++    throw new EchoAgentError("extension_capability_mismatch", "source contract digest mismatch", "never", "initialize");
+   }
+ }
+ 
+diff --git a/sdks/typescript/test/client-stdio-close.test.js b/sdks/typescript/test/client-stdio-close.test.js
+index 1ba9f35..76d5cae 100644
+--- a/sdks/typescript/test/client-stdio-close.test.js
++++ b/sdks/typescript/test/client-stdio-close.test.js
+@@ -10,8 +10,10 @@ import {EchoAgentClient} from '../dist/index.js';
+ const CHILD=String.raw`
+ const fs=require('node:fs'),path=require('node:path');
+ const work=process.argv[1],mode=process.argv[2];let input='';
+-fs.writeFileSync(path.join(work,'pid'),String(process.pid));if(mode==='ignore-signal')process.on('SIGTERM',()=>{});
+-process.stdin.setEncoding('utf8');process.stdin.on('data',chunk=>{input+=chunk;let n;while((n=input.indexOf('\n'))>=0){const row=JSON.parse(input.slice(0,n));input=input.slice(n+1);if(row.method==='initialize'){const hello=row.params.clientCapabilities._meta.echo_agent;process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:row.id,result:{protocolVersion:1,agentCapabilities:{_meta:{echo_agent:{extension_protocol_version:1,contract_digest:hello.contract_digest,source_contract_digest:hello.source_contract_digest,features:[],capabilities:[],limits:{max_outstanding_live_events:16}}}}}})+'\n');}}});
++const limits=Object.fromEntries(["max_message_bytes", "max_stream_buffer_events", "max_replay_events", "max_structured_output_bytes", "max_outstanding_live_events", "max_stream_buffer_bytes", "max_replay_bytes", "max_open_handles", "max_registered_extensions", "max_extension_descriptor_bytes", "max_extension_payload_bytes", "max_extension_stream_bytes", "max_inflight_extension_invocations", "max_facade_resources", "max_facade_streams", "max_facade_page_items", "max_facade_operation_args"].map(name=>[name,'16']));limits.max_callback_concurrency=4;limits.callback_timeout={seconds:'30',nanos:0};
++
++fs.writeFileSync(path.join(work,'pid'),String(process.pid));if(mode==='ignore-signal'||mode==='init-fail-ignore-signal')process.on('SIGTERM',()=>{});
++process.stdin.setEncoding('utf8');process.stdin.on('data',chunk=>{input+=chunk;let n;while((n=input.indexOf('\n'))>=0){const row=JSON.parse(input.slice(0,n));input=input.slice(n+1);if(row.method==='initialize'){const hello=row.params.clientCapabilities._meta.echo_agent;process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:row.id,result:{protocolVersion:1,agentCapabilities:{_meta:{echo_agent:{extension_protocol_version:1,contract_digest:hello.contract_digest,source_contract_digest:hello.source_contract_digest,features:[],capabilities:mode.startsWith('init-fail-')?[]:[{capability:'agent_lifecycle',required:false}],limits}}}}})+'\n');}}});
+ process.stdin.on('end',()=>{fs.writeFileSync(path.join(work,'eof'),'observed');if(mode==='exit'){process.exit(0);}const timer=setInterval(()=>{if(fs.existsSync(path.join(work,'release'))){clearInterval(timer);process.exit(0);}},10);});
+ `;
+ const ROOT=fileURLToPath(new URL('../../../target/typescript-stdio-close/',import.meta.url));
+@@ -62,3 +64,25 @@ test('expected EPIPE completion is harmless but still waits for native exit',{ti
+ test('a signal-sent flag is not an exit receipt for an original child still alive',{timeout:10000},async()=>{
+  const c=await setup('ignore-signal');let closing,settled=false;try{c.child.kill('SIGTERM');assert.equal(c.child.killed,true);assert.equal(exited(c.child),false);closing=c.sdk.close().then(()=>{settled=true;});await until(()=>existsSync(join(c.work,'eof')));assert.equal(settled,false);assert.equal(exited(c.child),false);writeFileSync(join(c.work,'release'),'exit');await closing;assert.equal(c.child.exitCode,0);facts(c,{signal_sent_while_still_live:true});}finally{await clean(c,closing?[closing]:[]);}
+ });
++
++
++for(const mode of ['init-fail-held','init-fail-ignore-signal']) test(`initialization failure retains original child until EOF and native exit: ${mode}`,{timeout:10000},async()=>{
++ mkdirSync(ROOT,{recursive:true});const work=mkdtempSync(join(ROOT,mode+'-'));let settled=false,error,forcedCleanup=false,pid;
++ const alive=()=>{try{process.kill(pid,0);return true;}catch{return false;}};
++ const pending=EchoAgentClient.spawn({hostCommand:process.execPath,args:['-e',CHILD,work,mode]}).then(()=>{settled=true;throw Error('malformed advertisement unexpectedly accepted');},failure=>{error=failure;settled=true;});
++ try {
++  await until(()=>existsSync(join(work,'pid')));pid=Number(readFileSync(join(work,'pid'),'utf8'));
++  await until(()=>settled||existsSync(join(work,'eof')));
++  assert.equal(settled,false,'initialization error must await the original child exit');
++  assert.equal(existsSync(join(work,'eof')),true,'initialization cleanup must deliver actual stdin EOF');
++  assert.equal(alive(),true,'held fixture must still be physically alive');
++  writeFileSync(join(work,'release'),'exit');await pending;
++  assert.equal(error.code,'extension_capability_mismatch');assert.equal(error.operation,'initialize');assert.equal(error.retryable,'never');
++  assert.equal(alive(),false,'initialization rejection leaked the original child');
++ } finally {
++  writeFileSync(join(work,'release'),'cleanup');
++  if(pid&&alive()){await new Promise(resolve=>setTimeout(resolve,100));if(alive()){forcedCleanup=true;process.kill(pid,'SIGKILL');}}
++  await pending.catch(()=>{});
++  writeFileSync(join(work,'observed.json'),JSON.stringify({mode,pid,settled,error:error?{code:error.code,operation:error.operation,retryable:error.retryable}:null,stdin_eof:existsSync(join(work,'eof')),forced_cleanup:forcedCleanup},null,2));
++ }
++});
+diff --git a/sdks/typescript/test/protocol-host.test.js b/sdks/typescript/test/protocol-host.test.js
+index 55a7406..34dc06d 100644
+--- a/sdks/typescript/test/protocol-host.test.js
++++ b/sdks/typescript/test/protocol-host.test.js
+@@ -17,8 +17,8 @@ async function scenario(mode, run) {
+  } catch(error){process.stderr.write(`Protocol Host failure evidence: ${work}\n`);throw error;
+  } finally {await sdk?.close();if(passed)rmSync(work,{recursive:true,force:true});}
+ }
+-for(const mode of ["bad-version","bad-digest","bad-acp-version"]) test(`Host ${mode} negotiation fails`,{skip:!host},async()=>{
+- await assert.rejects(scenario(mode,async()=>assert.fail("must reject")),error=>error.code==="extension_capability_mismatch");
++for(const mode of ["bad-version","bad-digest","bad-acp-version","overflow-acp-version","overflow-extension-version","nontext-feature","null-capability","empty-capabilities","missing-limits","duplicate-feature", "unsorted-features", "duplicate-capability", "zero-limit", "overflow-limit", "numeric-limit", "invalid-timeout"]) test(`Host ${mode} negotiation fails`,{skip:!host},async()=>{
++ await assert.rejects(scenario(mode,async()=>assert.fail("must reject")),error=>error.code==="extension_capability_mismatch"&&error.operation==="initialize"&&error.retryable==="never");
+ });
+ test("real Host errors remain typed with opaque handles and independent Sessions",{skip:!host},async()=>scenario("normal",async sdk=>{
+  const agent=await sdk.createAgent();
+@@ -111,3 +111,7 @@ test("cancelled tool waits for connection-scoped interrupted callback side effec
+  assert.deepEqual(interrupted.input,{kind:"map",value:[{key:{kind:"string",value:"key"},value:{kind:"string",value:"中文🙂"}}]});
+  await run.close();await session.close();await tool.close();await model.close();await callback.close();await agent.close();
+ }));
++
++test("Host Rust Unicode feature order is accepted", {skip:!host}, async()=>scenario("unicode-features",async sdk=>{
++ assert.deepEqual(sdk.capability.features,["\ue000","\u{10000}"]);
++}));

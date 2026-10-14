@@ -33,6 +33,30 @@ class ProtocolHostTest {
             assertEquals("extension_capability_mismatch", typed.code());
         }
     }
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"overflow-acp-version", "overflow-extension-version", "nontext-feature", "null-capability", "empty-capabilities", "missing-limits", "duplicate-feature", "unsorted-features", "duplicate-capability", "zero-limit", "overflow-limit", "numeric-limit", "invalid-timeout"})
+    void negotiationRejectsLossyVersionAndMalformedMembers(String mode) throws Exception {
+        EchoAgentClient accepted = null;
+        try {
+            try {
+                accepted = spawn(mode);
+            } catch (java.util.concurrent.ExecutionException failure) {
+                var error = assertInstanceOf(EchoAgentException.class, failure.getCause());
+                assertEquals("extension_capability_mismatch", error.code());
+                assertEquals("initialize", error.operation());
+                return;
+            }
+            fail("malformed negotiation advertisement was accepted: " + mode);
+        } finally {
+            if (accepted != null) accepted.close();
+        }
+    }
+    @Test void negotiationAcceptsRustUnicodeFeatureOrder() throws Exception {
+        try (var sdk = spawn("unicode-features")) {
+            assertEquals("\uE000", sdk.capability().path("features").get(0).asText());
+            assertEquals("\uD800\uDC00", sdk.capability().path("features").get(1).asText());
+        }
+    }
     @Test void errorsPreserveHandlesAndIndependentSessions() throws Exception {
         try (var sdk = spawn("normal")) {
             var agent = sdk.createAgent().toCompletableFuture().get(5, TimeUnit.SECONDS);

@@ -1,0 +1,11 @@
+{
+  "source": "actual same-session tool results and attached original logs; not generated command stdout",
+  "attempts": [
+    "Python initial test command omitted PYTHONPATH and asyncio plugin, collection ModuleNotFoundError+PytestConfigWarning; corrected to official command",
+    "Ruff I001 import sort failed, corrected imports and repeated original relevant checks",
+    "Metadata edit script omitted Python comma; formatter caught SyntaxError; corrected only syntax before rerun",
+    "TypeScript new initialization metadata assertion exposed missing operation on original bad-digest error; fixed that local error path and reran whole affected test file",
+    "Two formatter invocations used wrong root/cwd and reported no-project/path errors; repeated correct Python cwd commands with zero warnings",
+    "A suspected JavaScript regex newline acceptance was disproved by actual Node run; no source/fault change was made for that hypothesis"
+  ]
+}

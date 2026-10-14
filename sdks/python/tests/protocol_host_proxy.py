@@ -128,6 +128,36 @@ def main() -> None:
                     ]
                     if args.mode == "bad-acp-version":
                         frame["result"]["protocolVersion"] = 2
+                    elif args.mode == "overflow-acp-version":
+                        frame["result"]["protocolVersion"] = 4294967297
+                    if args.mode == "overflow-extension-version":
+                        capability["extension_protocol_version"] = 4294967297
+                    elif args.mode == "nontext-feature":
+                        capability["features"].append(17)
+                    elif args.mode == "null-capability":
+                        capability["capabilities"].append(None)
+                    elif args.mode == "empty-capabilities":
+                        capability["capabilities"] = []
+                    elif args.mode == "missing-limits":
+                        capability["limits"] = {}
+                    elif args.mode == "duplicate-feature":
+                        capability["features"] = ["same", "same"]
+                    elif args.mode == "unsorted-features":
+                        capability["features"] = ["z", "a"]
+                    elif args.mode == "duplicate-capability":
+                        capability["capabilities"].append(capability["capabilities"][0])
+                    elif args.mode == "zero-limit":
+                        capability["limits"]["max_outstanding_live_events"] = "0"
+                    elif args.mode == "overflow-limit":
+                        capability["limits"]["max_message_bytes"] = (
+                            "18446744073709551616"
+                        )
+                    elif args.mode == "numeric-limit":
+                        capability["limits"]["max_message_bytes"] = 100
+                    elif args.mode == "invalid-timeout":
+                        capability["limits"]["callback_timeout"]["nanos"] = 1000000000
+                    elif args.mode == "unicode-features":
+                        capability["features"] = ["\ue000", "\U00010000"]
                     if args.mode == "bad-version":
                         capability["extension_protocol_version"] = 2
                     elif args.mode == "bad-digest":

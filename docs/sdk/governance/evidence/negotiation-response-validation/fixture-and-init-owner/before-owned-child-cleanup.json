@@ -1,0 +1,13 @@
+{
+  "action": "released own existing fixture barrier after failed setup; no source/input/expected-result change",
+  "pid": 43316,
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/ignore-signal-ZOJAx6",
+  "reason": "ignore-signal child intentionally awaited release after EOF; invalid advertisement prevented setup/finally cleanup",
+  "followup": {
+    "action": "SIGKILL only the exact owned failed-diagnostic child after release could not trigger without EOF",
+    "pid": 43316,
+    "verifiedCommand": "/opt/homebrew/Cellar/node@22/22.22.0/bin/node -e \\012const fs=require('node:fs'),path=require('node:path');\\012const work=process.argv[1],mode=process.argv[2];let input='';\\012fs.writeFileSync(path.join(work,'pid'),String(process.pid));if(mode==='ignore-signal')process.on('SIGTERM',()=>{});\\012process.stdin.setEncoding('utf8');process.stdin.on('data',chunk=>{input+=chunk;let n;while((n=input.indexOf('\\n'))>=0){const row=JSON.parse(input.slice(0,n));input=input.slice(n+1);if(row.method==='initialize'){const hello=row.params.clientCapabilities._meta.echo_agent;process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:row.id,result:{protocolVersion:1,agentCapabilities:{_meta:{echo_agent:{extension_protocol_version:1,contract_digest:hello.contract_digest,source_contract_digest:hello.source_contract_digest,features:[],capabilities:[],limits:{max_outstanding_live_events:16}}}}}})+'\\n');}}});\\012process.stdin.on('end',()=>{fs.writeFileSync(path.join(work,'eof'),'observed');if(mode==='exit'){process.exit(0);}const timer=setInterval(()=>{if(fs.existsSync(path.join(work,'release'))){clearInterval(timer);process.exit(0);}},10);});\\012 /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/ignore-signal-ZOJAx6 ignore-signal\n",
+    "reason": "original initialization catch had returned failure after soft kill only, without stdin end or exit await; no EOF was delivered",
+    "runOutcome": "preserve test failure; this cleanup is not validation success"
+  }
+}

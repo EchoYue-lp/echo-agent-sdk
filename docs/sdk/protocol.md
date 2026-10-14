@@ -107,6 +107,23 @@ digest, required capability or feature set does not match — the Host stays
 Standard and extension calls answer method-not-found; it never silently
 degrades to partial parity (design §10.2).
 
+SDK clients also validate the advertisement itself during initialization:
+versions must equal 1 without integer narrowing; feature names are sorted and
+distinct in Rust Unicode scalar order; capability declarations are nonempty,
+distinct and retain their boolean `required` field. Every advertised WireU64
+limit must be present as canonical positive decimal text within u64 range;
+callback concurrency is a positive u32 and callback timeout retains valid
+seconds/nanos. Malformed advertisements return
+`extension_capability_mismatch` for `initialize` with retryability `never`,
+instead of dropping members or supplying queue defaults. This SDK validation
+does not change the plain ACP profile's `_meta` behavior.
+A rejected TypeScript handshake also uses the original stdio close owner:
+it sends stdin EOF and waits for the original EOF callback and native child
+exit before delivering the initialization error. A sent termination signal
+alone is not an exit receipt; the existing close deadline policy is unchanged.
+The initialization classification remains the primary error, with any cleanup
+failure retained as its cause.
+
 ## Extension namespace
 
 All custom methods live under `_echo_agent/*` (leading underscore per ACP

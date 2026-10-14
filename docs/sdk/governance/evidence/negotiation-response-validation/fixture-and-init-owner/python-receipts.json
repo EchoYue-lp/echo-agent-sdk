@@ -1,0 +1,48 @@
+[
+  {
+    "args": [
+      "uv",
+      "run",
+      "--no-project",
+      "--with",
+      "ruff",
+      "ruff",
+      "check",
+      "tests/test_protocol_integrity.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "uv",
+      "run",
+      "--no-project",
+      "--with",
+      "ruff",
+      "ruff",
+      "format",
+      "--check",
+      "tests/test_protocol_integrity.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "uv",
+      "run",
+      "--no-project",
+      "--with",
+      "pytest",
+      "--with",
+      "pytest-asyncio",
+      "--with",
+      "agent-client-protocol==0.12.1",
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_protocol_integrity.py"
+    ],
+    "exitCode": 0
+  }
+]

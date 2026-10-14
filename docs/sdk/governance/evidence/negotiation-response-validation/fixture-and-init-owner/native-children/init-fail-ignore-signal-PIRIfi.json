@@ -1,0 +1,12 @@
+{
+  "mode": "init-fail-ignore-signal",
+  "pid": 46727,
+  "settled": true,
+  "error": {
+    "code": "extension_capability_mismatch",
+    "operation": "initialize",
+    "retryable": "never"
+  },
+  "stdin_eof": true,
+  "forced_cleanup": false
+}

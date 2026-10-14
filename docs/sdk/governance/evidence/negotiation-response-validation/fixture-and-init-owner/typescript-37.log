@@ -1,0 +1,253 @@
+TAP version 13
+# stdio EOF evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/exit-sJG4kC
+# Subtest: public close sends native stdin EOF and awaits normal original child exit
+ok 1 - public close sends native stdin EOF and awaits normal original child exit
+  ---
+  duration_ms: 76.587
+  type: 'test'
+  ...
+# stdio coalesced close evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-A0ofAz
+# Subtest: concurrent and repeated close wait for the same child held after EOF
+ok 2 - concurrent and repeated close wait for the same child held after EOF
+  ---
+  duration_ms: 79.108459
+  type: 'test'
+  ...
+# Subtest: closing an already signalled child observes existing exit without a new waiter
+ok 3 - closing an already signalled child observes existing exit without a new waiter
+  ---
+  duration_ms: 65.263291
+  type: 'test'
+  ...
+# stdio fallback evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-IL4861
+# Subtest: five second fallback terminates a child that observes EOF but never exits
+ok 4 - five second fallback terminates a child that observes EOF but never exits
+  ---
+  duration_ms: 5062.339542
+  type: 'test'
+  ...
+# stdio same-owner retry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/exit-U9AEd3
+# Subtest: a failed connection close remains observable and retries the same original child
+ok 5 - a failed connection close remains observable and retries the same original child
+  ---
+  duration_ms: 75.003667
+  type: 'test'
+  ...
+# stdio synchronous reentry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-moplkt
+# Subtest: synchronous cancellation callback reentry shares the already published close owner
+ok 6 - synchronous cancellation callback reentry shares the already published close owner
+  ---
+  duration_ms: 75.013625
+  type: 'test'
+  ...
+# Subtest: close synchronously rejects same-tick public request admission
+ok 7 - close synchronously rejects same-tick public request admission
+  ---
+  duration_ms: 72.849042
+  type: 'test'
+  ...
+# Subtest: unexpected stdin end callback error after actual child exit rejects the shared close owner
+ok 8 - unexpected stdin end callback error after actual child exit rejects the shared close owner
+  ---
+  duration_ms: 70.291375
+  type: 'test'
+  ...
+# Subtest: expected EPIPE completion is harmless but still waits for native exit
+ok 9 - expected EPIPE completion is harmless but still waits for native exit
+  ---
+  duration_ms: 72.619708
+  type: 'test'
+  ...
+# Subtest: a signal-sent flag is not an exit receipt for an original child still alive
+ok 10 - a signal-sent flag is not an exit receipt for an original child still alive
+  ---
+  duration_ms: 82.746
+  type: 'test'
+  ...
+# Subtest: initialization failure retains original child until EOF and native exit: init-fail-held
+ok 11 - initialization failure retains original child until EOF and native exit: init-fail-held
+  ---
+  duration_ms: 71.065209
+  type: 'test'
+  ...
+# Subtest: initialization failure retains original child until EOF and native exit: init-fail-ignore-signal
+ok 12 - initialization failure retains original child until EOF and native exit: init-fail-ignore-signal
+  ---
+  duration_ms: 71.095792
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-VClVQY
+# Subtest: Host bad-version negotiation fails
+ok 13 - Host bad-version negotiation fails
+  ---
+  duration_ms: 342.264041
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-AdWbSx
+# Subtest: Host bad-digest negotiation fails
+ok 14 - Host bad-digest negotiation fails
+  ---
+  duration_ms: 168.933666
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-KWhvvb
+# Subtest: Host bad-acp-version negotiation fails
+ok 15 - Host bad-acp-version negotiation fails
+  ---
+  duration_ms: 162.546084
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-1ArvvY
+# Subtest: Host overflow-acp-version negotiation fails
+ok 16 - Host overflow-acp-version negotiation fails
+  ---
+  duration_ms: 171.8995
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-OeIUgn
+# Subtest: Host overflow-extension-version negotiation fails
+ok 17 - Host overflow-extension-version negotiation fails
+  ---
+  duration_ms: 169.05875
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-fASIN8
+# Subtest: Host nontext-feature negotiation fails
+ok 18 - Host nontext-feature negotiation fails
+  ---
+  duration_ms: 164.433792
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-kInJHq
+# Subtest: Host null-capability negotiation fails
+ok 19 - Host null-capability negotiation fails
+  ---
+  duration_ms: 172.709125
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-PP0lHy
+# Subtest: Host empty-capabilities negotiation fails
+ok 20 - Host empty-capabilities negotiation fails
+  ---
+  duration_ms: 171.479667
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-kl7J3l
+# Subtest: Host missing-limits negotiation fails
+ok 21 - Host missing-limits negotiation fails
+  ---
+  duration_ms: 173.622
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-wjzaxU
+# Subtest: Host duplicate-feature negotiation fails
+ok 22 - Host duplicate-feature negotiation fails
+  ---
+  duration_ms: 165.004833
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-ucD70Y
+# Subtest: Host unsorted-features negotiation fails
+ok 23 - Host unsorted-features negotiation fails
+  ---
+  duration_ms: 172.128208
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-pTFEuS
+# Subtest: Host duplicate-capability negotiation fails
+ok 24 - Host duplicate-capability negotiation fails
+  ---
+  duration_ms: 165.222833
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-sTxVzA
+# Subtest: Host zero-limit negotiation fails
+ok 25 - Host zero-limit negotiation fails
+  ---
+  duration_ms: 162.159292
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-TJMr8I
+# Subtest: Host overflow-limit negotiation fails
+ok 26 - Host overflow-limit negotiation fails
+  ---
+  duration_ms: 164.703167
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-SPTbMq
+# Subtest: Host numeric-limit negotiation fails
+ok 27 - Host numeric-limit negotiation fails
+  ---
+  duration_ms: 170.873708
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-GvMGdA
+# Subtest: Host invalid-timeout negotiation fails
+ok 28 - Host invalid-timeout negotiation fails
+  ---
+  duration_ms: 162.197375
+  type: 'test'
+  ...
+# Subtest: real Host errors remain typed with opaque handles and independent Sessions
+ok 29 - real Host errors remain typed with opaque handles and independent Sessions
+  ---
+  duration_ms: 313.387042
+  type: 'test'
+  ...
+# Subtest: real Host facade missing envelope is an explicit failure
+ok 30 - real Host facade missing envelope is an explicit failure
+  ---
+  duration_ms: 215.90375
+  type: 'test'
+  ...
+# Subtest: Session close retries after an ACP failure
+ok 31 - Session close retries after an ACP failure
+  ---
+  duration_ms: 191.103625
+  type: 'test'
+  ...
+# Subtest: real Host unregister-retry retains usable lifecycle
+ok 32 - real Host unregister-retry retains usable lifecycle
+  ---
+  duration_ms: 406.216125
+  type: 'test'
+  ...
+# Subtest: real Host run-close-retry retains usable lifecycle
+ok 33 - real Host run-close-retry retains usable lifecycle
+  ---
+  duration_ms: 268.112167
+  type: 'test'
+  ...
+# Subtest: Agent close retries after an ACP failure
+ok 34 - Agent close retries after an ACP failure
+  ---
+  duration_ms: 167.987875
+  type: 'test'
+  ...
+# Subtest: async callback exception settles through the real Host
+ok 35 - async callback exception settles through the real Host
+  ---
+  duration_ms: 368.756125
+  type: 'test'
+  ...
+# Subtest: cancelled tool waits for connection-scoped interrupted callback side effect
+ok 36 - cancelled tool waits for connection-scoped interrupted callback side effect
+  ---
+  duration_ms: 666.904
+  type: 'test'
+  ...
+# Subtest: Host Rust Unicode feature order is accepted
+ok 37 - Host Rust Unicode feature order is accepted
+  ---
+  duration_ms: 169.984916
+  type: 'test'
+  ...
+1..37
+# tests 37
+# suites 0
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10181.676208

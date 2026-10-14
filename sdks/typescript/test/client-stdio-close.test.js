@@ -10,8 +10,10 @@ import {EchoAgentClient} from '../dist/index.js';
 const CHILD=String.raw`
 const fs=require('node:fs'),path=require('node:path');
 const work=process.argv[1],mode=process.argv[2];let input='';
-fs.writeFileSync(path.join(work,'pid'),String(process.pid));if(mode==='ignore-signal')process.on('SIGTERM',()=>{});
-process.stdin.setEncoding('utf8');process.stdin.on('data',chunk=>{input+=chunk;let n;while((n=input.indexOf('\n'))>=0){const row=JSON.parse(input.slice(0,n));input=input.slice(n+1);if(row.method==='initialize'){const hello=row.params.clientCapabilities._meta.echo_agent;process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:row.id,result:{protocolVersion:1,agentCapabilities:{_meta:{echo_agent:{extension_protocol_version:1,contract_digest:hello.contract_digest,source_contract_digest:hello.source_contract_digest,features:[],capabilities:[],limits:{max_outstanding_live_events:16}}}}}})+'\n');}}});
+const limits=Object.fromEntries(["max_message_bytes", "max_stream_buffer_events", "max_replay_events", "max_structured_output_bytes", "max_outstanding_live_events", "max_stream_buffer_bytes", "max_replay_bytes", "max_open_handles", "max_registered_extensions", "max_extension_descriptor_bytes", "max_extension_payload_bytes", "max_extension_stream_bytes", "max_inflight_extension_invocations", "max_facade_resources", "max_facade_streams", "max_facade_page_items", "max_facade_operation_args"].map(name=>[name,'16']));limits.max_callback_concurrency=4;limits.callback_timeout={seconds:'30',nanos:0};
+
+fs.writeFileSync(path.join(work,'pid'),String(process.pid));if(mode==='ignore-signal'||mode==='init-fail-ignore-signal')process.on('SIGTERM',()=>{});
+process.stdin.setEncoding('utf8');process.stdin.on('data',chunk=>{input+=chunk;let n;while((n=input.indexOf('\n'))>=0){const row=JSON.parse(input.slice(0,n));input=input.slice(n+1);if(row.method==='initialize'){const hello=row.params.clientCapabilities._meta.echo_agent;process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:row.id,result:{protocolVersion:1,agentCapabilities:{_meta:{echo_agent:{extension_protocol_version:1,contract_digest:hello.contract_digest,source_contract_digest:hello.source_contract_digest,features:[],capabilities:mode.startsWith('init-fail-')?[]:[{capability:'agent_lifecycle',required:false}],limits}}}}})+'\n');}}});
 process.stdin.on('end',()=>{fs.writeFileSync(path.join(work,'eof'),'observed');if(mode==='exit'){process.exit(0);}const timer=setInterval(()=>{if(fs.existsSync(path.join(work,'release'))){clearInterval(timer);process.exit(0);}},10);});
 `;
 const ROOT=fileURLToPath(new URL('../../../target/typescript-stdio-close/',import.meta.url));
@@ -61,4 +63,26 @@ test('expected EPIPE completion is harmless but still waits for native exit',{ti
 
 test('a signal-sent flag is not an exit receipt for an original child still alive',{timeout:10000},async()=>{
  const c=await setup('ignore-signal');let closing,settled=false;try{c.child.kill('SIGTERM');assert.equal(c.child.killed,true);assert.equal(exited(c.child),false);closing=c.sdk.close().then(()=>{settled=true;});await until(()=>existsSync(join(c.work,'eof')));assert.equal(settled,false);assert.equal(exited(c.child),false);writeFileSync(join(c.work,'release'),'exit');await closing;assert.equal(c.child.exitCode,0);facts(c,{signal_sent_while_still_live:true});}finally{await clean(c,closing?[closing]:[]);}
+});
+
+
+for(const mode of ['init-fail-held','init-fail-ignore-signal']) test(`initialization failure retains original child until EOF and native exit: ${mode}`,{timeout:10000},async()=>{
+ mkdirSync(ROOT,{recursive:true});const work=mkdtempSync(join(ROOT,mode+'-'));let settled=false,error,forcedCleanup=false,pid;
+ const alive=()=>{try{process.kill(pid,0);return true;}catch{return false;}};
+ const pending=EchoAgentClient.spawn({hostCommand:process.execPath,args:['-e',CHILD,work,mode]}).then(()=>{settled=true;throw Error('malformed advertisement unexpectedly accepted');},failure=>{error=failure;settled=true;});
+ try {
+  await until(()=>existsSync(join(work,'pid')));pid=Number(readFileSync(join(work,'pid'),'utf8'));
+  await until(()=>settled||existsSync(join(work,'eof')));
+  assert.equal(settled,false,'initialization error must await the original child exit');
+  assert.equal(existsSync(join(work,'eof')),true,'initialization cleanup must deliver actual stdin EOF');
+  assert.equal(alive(),true,'held fixture must still be physically alive');
+  writeFileSync(join(work,'release'),'exit');await pending;
+  assert.equal(error.code,'extension_capability_mismatch');assert.equal(error.operation,'initialize');assert.equal(error.retryable,'never');
+  assert.equal(alive(),false,'initialization rejection leaked the original child');
+ } finally {
+  writeFileSync(join(work,'release'),'cleanup');
+  if(pid&&alive()){await new Promise(resolve=>setTimeout(resolve,100));if(alive()){forcedCleanup=true;process.kill(pid,'SIGKILL');}}
+  await pending.catch(()=>{});
+  writeFileSync(join(work,'observed.json'),JSON.stringify({mode,pid,settled,error:error?{code:error.code,operation:error.operation,retryable:error.retryable}:null,stdin_eof:existsSync(join(work,'eof')),forced_cleanup:forcedCleanup},null,2));
+ }
 });

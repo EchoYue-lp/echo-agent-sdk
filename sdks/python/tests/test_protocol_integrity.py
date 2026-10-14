@@ -276,13 +276,38 @@ async def test_generator_negotiation_validates_the_exact_sent_hello(monkeypatch,
 
     sent = []
     catalog = FacadeCatalog()
+    limits = {
+        name: "16"
+        for name in (
+            "max_message_bytes",
+            "max_stream_buffer_events",
+            "max_replay_events",
+            "max_structured_output_bytes",
+            "max_outstanding_live_events",
+            "max_stream_buffer_bytes",
+            "max_replay_bytes",
+            "max_open_handles",
+            "max_registered_extensions",
+            "max_extension_descriptor_bytes",
+            "max_extension_payload_bytes",
+            "max_extension_stream_bytes",
+            "max_inflight_extension_invocations",
+            "max_facade_resources",
+            "max_facade_streams",
+            "max_facade_page_items",
+            "max_facade_operation_args",
+        )
+    }
+    limits.update(
+        max_callback_concurrency=4, callback_timeout={"seconds": "30", "nanos": 0}
+    )
     capability = {
         "extension_protocol_version": 1,
         "contract_digest": catalog.contract_digest,
         "source_contract_digest": catalog.source_contract_digest,
         "features": [],
-        "capabilities": [],
-        "limits": {},
+        "capabilities": [{"capability": "agent_lifecycle", "required": False}],
+        "limits": limits,
     }
 
     class Connection:

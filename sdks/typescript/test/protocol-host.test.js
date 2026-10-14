@@ -17,8 +17,8 @@ async function scenario(mode, run) {
  } catch(error){process.stderr.write(`Protocol Host failure evidence: ${work}\n`);throw error;
  } finally {await sdk?.close();if(passed)rmSync(work,{recursive:true,force:true});}
 }
-for(const mode of ["bad-version","bad-digest","bad-acp-version"]) test(`Host ${mode} negotiation fails`,{skip:!host},async()=>{
- await assert.rejects(scenario(mode,async()=>assert.fail("must reject")),error=>error.code==="extension_capability_mismatch");
+for(const mode of ["bad-version","bad-digest","bad-acp-version","overflow-acp-version","overflow-extension-version","nontext-feature","null-capability","empty-capabilities","missing-limits","duplicate-feature", "unsorted-features", "duplicate-capability", "zero-limit", "overflow-limit", "numeric-limit", "invalid-timeout"]) test(`Host ${mode} negotiation fails`,{skip:!host},async()=>{
+ await assert.rejects(scenario(mode,async()=>assert.fail("must reject")),error=>error.code==="extension_capability_mismatch"&&error.operation==="initialize"&&error.retryable==="never");
 });
 test("real Host errors remain typed with opaque handles and independent Sessions",{skip:!host},async()=>scenario("normal",async sdk=>{
  const agent=await sdk.createAgent();
@@ -110,4 +110,8 @@ test("cancelled tool waits for connection-scoped interrupted callback side effec
  assert.ok(canonical);assert.equal(interrupted.call_id,canonical);assert.equal(interrupted.tool,"hung_fixture");
  assert.deepEqual(interrupted.input,{kind:"map",value:[{key:{kind:"string",value:"key"},value:{kind:"string",value:"中文🙂"}}]});
  await run.close();await session.close();await tool.close();await model.close();await callback.close();await agent.close();
+}));
+
+test("Host Rust Unicode feature order is accepted", {skip:!host}, async()=>scenario("unicode-features",async sdk=>{
+ assert.deepEqual(sdk.capability.features,["\ue000","\u{10000}"]);
 }));

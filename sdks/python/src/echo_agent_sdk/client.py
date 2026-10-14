@@ -17,6 +17,7 @@ from typing import Any, Literal, Protocol, TypedDict, cast
 from acp.connection import StreamDirection, StreamEvent
 from acp.schema import ClientCapabilities, Implementation
 from acp.stdio import spawn_agent_process
+from pydantic import ValidationError
 from typing_extensions import Self
 
 from .catalog import FacadeCatalog
@@ -3326,18 +3327,27 @@ class EchoAgentClient:
                 "required_features": sorted(set(required_features)),
                 "required_capabilities": sorted(set(required_capabilities)),
             }
-            initialized = await connection.initialize(
-                1,
-                client_capabilities=ClientCapabilities.model_validate(
-                    {"_meta": {"echo_agent": hello}}
-                ),
-                client_info=Implementation(
-                    name="echo-agent-sdk-python", version="0.1.0"
-                ),
-            )
+            try:
+                initialized = await connection.initialize(
+                    1,
+                    client_capabilities=ClientCapabilities.model_validate(
+                        {"_meta": {"echo_agent": hello}}
+                    ),
+                    client_info=Implementation(
+                        name="echo-agent-sdk-python", version="0.1.0"
+                    ),
+                )
+            except ValidationError as error:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    "malformed ACP initialization response",
+                    operation="initialize",
+                ) from error
             if initialized.protocol_version != 1:
                 raise EchoAgentError(
-                    "extension_capability_mismatch", "unsupported ACP protocol version"
+                    "extension_capability_mismatch",
+                    "unsupported ACP protocol version",
+                    operation="initialize",
                 )
             raw_capability = (
                 initialized.agent_capabilities.field_meta.get("echo_agent")
@@ -3348,6 +3358,7 @@ class EchoAgentClient:
                 raise EchoAgentError(
                     "extension_capability_mismatch",
                     "Host did not advertise echo-agent extension",
+                    operation="initialize",
                 )
             cls._validate_capability(
                 raw_capability, required_features, required_capabilities, catalog
@@ -3392,21 +3403,28 @@ class EchoAgentClient:
             raise EchoAgentError(
                 "extension_capability_mismatch",
                 "unsupported extension protocol version",
+                operation="initialize",
             )
         if capability.get("contract_digest") != catalog.contract_digest:
             raise EchoAgentError(
-                "extension_capability_mismatch", "contract digest mismatch"
+                "extension_capability_mismatch",
+                "contract digest mismatch",
+                operation="initialize",
             )
         if capability.get("source_contract_digest") != catalog.source_contract_digest:
             raise EchoAgentError(
-                "extension_capability_mismatch", "source contract digest mismatch"
+                "extension_capability_mismatch",
+                "source contract digest mismatch",
+                operation="initialize",
             )
         if (
             not isinstance(capability.get("features"), list)
             or not all(isinstance(value, str) for value in capability["features"])
             or not isinstance(capability.get("capabilities"), list)
             or not all(
-                isinstance(value, dict) and isinstance(value.get("capability"), str)
+                isinstance(value, dict)
+                and isinstance(value.get("capability"), str)
+                and type(value.get("required")) is bool
                 for value in capability["capabilities"]
             )
             or not isinstance(capability.get("limits"), dict)
@@ -3414,6 +3432,87 @@ class EchoAgentClient:
             raise EchoAgentError(
                 "extension_capability_mismatch",
                 "malformed Host capability advertisement",
+                operation="initialize",
+            )
+        if capability["features"] != sorted(set(capability["features"])):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "Host features must be sorted and distinct",
+                operation="initialize",
+            )
+        declarations = capability["capabilities"]
+        if not declarations or len(
+            {value["capability"] for value in declarations}
+        ) != len(declarations):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "Host must declare distinct capabilities",
+                operation="initialize",
+            )
+        limits = capability["limits"]
+
+        def advertised_u64(value: Any, field: str) -> int:
+            if not isinstance(value, str) or len(value) > 20:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    f"malformed Host limit {field}",
+                    operation="initialize",
+                )
+            try:
+                return int(_canonical_u64_text(value, field))
+            except (TypeError, ValueError) as error:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    f"malformed Host limit {field}",
+                    operation="initialize",
+                ) from error
+
+        for name in (
+            "max_message_bytes",
+            "max_stream_buffer_events",
+            "max_replay_events",
+            "max_structured_output_bytes",
+            "max_outstanding_live_events",
+            "max_stream_buffer_bytes",
+            "max_replay_bytes",
+            "max_open_handles",
+            "max_registered_extensions",
+            "max_extension_descriptor_bytes",
+            "max_extension_payload_bytes",
+            "max_extension_stream_bytes",
+            "max_inflight_extension_invocations",
+            "max_facade_resources",
+            "max_facade_streams",
+            "max_facade_page_items",
+            "max_facade_operation_args",
+        ):
+            if advertised_u64(limits.get(name), name) == 0:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    f"Host limit must be positive {name}",
+                    operation="initialize",
+                )
+        concurrency = limits.get("max_callback_concurrency")
+        if type(concurrency) is not int or not 0 < concurrency <= 4294967295:
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "malformed Host callback concurrency",
+                operation="initialize",
+            )
+        timeout = limits.get("callback_timeout")
+        if not isinstance(timeout, dict):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "malformed Host callback timeout",
+                operation="initialize",
+            )
+        advertised_u64(timeout.get("seconds"), "callback_timeout.seconds")
+        nanos = timeout.get("nanos")
+        if type(nanos) is not int or not 0 <= nanos < 1000000000:
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "malformed Host callback timeout nanos",
+                operation="initialize",
             )
         features = capability.get("features", [])
         declared = (
@@ -3422,7 +3521,9 @@ class EchoAgentClient:
         for feature in required_features:
             if feature not in declared:
                 raise EchoAgentError(
-                    "feature_unavailable", f"Host lacks feature {feature}"
+                    "feature_unavailable",
+                    f"Host lacks feature {feature}",
+                    operation="initialize",
                 )
         capabilities = capability.get("capabilities", [])
         names = {
@@ -3433,7 +3534,9 @@ class EchoAgentClient:
         for name in required_capabilities:
             if name not in names:
                 raise EchoAgentError(
-                    "extension_capability_mismatch", f"Host lacks capability {name}"
+                    "extension_capability_mismatch",
+                    f"Host lacks capability {name}",
+                    operation="initialize",
                 )
 
     async def request(self, method: str, params: Any = None) -> Any:

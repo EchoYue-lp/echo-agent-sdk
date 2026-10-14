@@ -191,7 +191,7 @@ function boundedQueueCapacity(capability: EchoAgentCapability): number {
       const parsed = BigInt(raw);
       if (parsed > 0n) return Number(parsed > BigInt(MAX_QUEUE_CAPACITY) ? MAX_QUEUE_CAPACITY : parsed);
     } catch {
-      // A malformed advertisement is rejected by the Host capability check;
+      // A malformed advertisement is rejected during client negotiation;
       // retain a bounded local default until that check completes.
     }
   }
@@ -541,10 +541,10 @@ export class EchoAgentClient {
           _meta: { echo_agent: hello },
         },
       });
-      if ((initialized as { protocolVersion?: number }).protocolVersion !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported ACP protocol version");
+      if ((initialized as { protocolVersion?: number }).protocolVersion !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize");
       const capability = (initialized as unknown as { agentCapabilities?: { _meta?: { echo_agent?: EchoAgentCapability } } })
         .agentCapabilities?._meta?.echo_agent;
-      if (!capability) throw new EchoAgentError("extension_capability_mismatch", "Host did not advertise echo-agent extension");
+      if (!capability) throw new EchoAgentError("extension_capability_mismatch", "Host did not advertise echo-agent extension", "never", "initialize");
       validateCapability(capability, { ...options, contractDigest: hello.contract_digest, sourceContractDigest: hello.source_contract_digest });
       queueCapacity = boundedQueueCapacity(capability);
       const result = new EchoAgentClient(
@@ -579,9 +579,15 @@ export class EchoAgentClient {
       });
       return result;
     } catch (error) {
-      connection.close(error);
-      child.kill();
-      throw EchoAgentError.fromUnknown(error);
+      const failure = EchoAgentError.fromUnknown(error, "initialize");
+      try {
+        await EchoAgentClient.closeStdioOwned(child, connection, error);
+      } catch (cleanupError) {
+        // Preserve the initialization rejection; cleanup failure remains its
+        // explicit cause rather than replacing the negotiated error contract.
+        failure.cause = cleanupError;
+      }
+      throw failure;
     }
   }
 
@@ -1023,7 +1029,17 @@ export class EchoAgentClient {
   }
 
   private async closeOwned(): Promise<void> {
-    const child = this.process;
+    for (const controller of this.invocationControllers.values()) controller.abort();
+    this.invocationControllers.clear(); this.extensionStreamRoutes.clear();
+    this.extensionHandlers.clear();
+    for (const feed of this.events.values()) feed.queue.end();
+    for (const queue of this.updates.values()) queue.end();
+    await EchoAgentClient.closeStdioOwned(this.process, this.connection);
+  }
+
+  // Both normal close and a rejected handshake settle the same original child.
+  // Its existing EOF callback and native exit obligations are unchanged.
+  private static async closeStdioOwned(child: ChildProcessWithoutNullStreams, connection: ClientConnection, cause?: unknown): Promise<void> {
     const hasExited = () => child.exitCode !== null || child.signalCode !== null;
     let onExit: () => void = () => {};
     const exited = new Promise<void>((resolve) => {
@@ -1031,18 +1047,13 @@ export class EchoAgentClient {
       if (hasExited()) resolve();
       else child.once("exit", onExit);
     });
-    for (const controller of this.invocationControllers.values()) controller.abort();
-    this.invocationControllers.clear(); this.extensionStreamRoutes.clear();
-    this.extensionHandlers.clear();
-    for (const feed of this.events.values()) feed.queue.end();
-    for (const queue of this.updates.values()) queue.end();
     let timer: ReturnType<typeof setTimeout> | undefined;
     let inputSettled = false;
     let inputError: unknown;
     let onInputError: (error: Error & { code?: string }) => void = () => {};
     let onInputFinish: () => void = () => {};
     try {
-      this.connection.close();
+      connection.close(cause);
       const inputComplete = new Promise<void>((resolve) => {
         onInputError = (error) => {
           if (error.code !== "EPIPE" && error.code !== "ERR_STREAM_DESTROYED") inputError = error;
@@ -1530,26 +1541,70 @@ function isTerminalStatus(status: string): boolean {
   return status === "completed" || status === "cancelled" || status === "failed" || status === "interrupted" || status === "closed";
 }
 
-function validateCapability(capability: EchoAgentCapability, options: SpawnOptions): void {
-  if (capability.extension_protocol_version !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported extension protocol version");
-  if (!Array.isArray(capability.features) || !capability.features.every(value => typeof value === "string")
-    || !Array.isArray(capability.capabilities) || !capability.capabilities.every(value => value && typeof value.capability === "string")
-    || typeof capability.limits !== "object" || capability.limits === null || Array.isArray(capability.limits)) {
-    throw new EchoAgentError("extension_capability_mismatch", "malformed Host capability advertisement");
+function advertisedU64(value: unknown, field: string): bigint {
+  if (typeof value !== "string" || !/^(0|[1-9][0-9]{0,19})$/u.test(value)) {
+    throw new EchoAgentError("extension_capability_mismatch", `malformed Host limit ${field}`, "never", "initialize");
   }
+  const parsed = BigInt(value);
+  if (parsed > 18446744073709551615n) throw new EchoAgentError("extension_capability_mismatch", `Host limit exceeds u64 ${field}`, "never", "initialize");
+  return parsed;
+}
+
+function validateAdvertisedLimits(limits: Record<string, unknown>): void {
+  for (const name of ["max_message_bytes", "max_stream_buffer_events", "max_replay_events", "max_structured_output_bytes", "max_outstanding_live_events", "max_stream_buffer_bytes", "max_replay_bytes", "max_open_handles", "max_registered_extensions", "max_extension_descriptor_bytes", "max_extension_payload_bytes", "max_extension_stream_bytes", "max_inflight_extension_invocations", "max_facade_resources", "max_facade_streams", "max_facade_page_items", "max_facade_operation_args"]) {
+    if (advertisedU64(limits[name], name) === 0n) throw new EchoAgentError("extension_capability_mismatch", `Host limit must be positive ${name}`, "never", "initialize");
+  }
+  const concurrency = limits.max_callback_concurrency;
+  if (typeof concurrency !== "number" || !Number.isInteger(concurrency) || concurrency <= 0 || concurrency > 4294967295) {
+    throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback concurrency", "never", "initialize");
+  }
+  const timeout = limits.callback_timeout;
+  if (!timeout || typeof timeout !== "object" || Array.isArray(timeout)) throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback timeout", "never", "initialize");
+  const fields = timeout as Record<string, unknown>;
+  advertisedU64(fields.seconds, "callback_timeout.seconds");
+  if (typeof fields.nanos !== "number" || !Number.isInteger(fields.nanos) || fields.nanos < 0 || fields.nanos >= 1000000000) {
+    throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback timeout nanos", "never", "initialize");
+  }
+}
+
+// Rust String order follows Unicode scalar values, unlike UTF-16 default sort.
+function compareFeatureNames(left: string, right: string): number {
+  const lhs = left[Symbol.iterator](), rhs = right[Symbol.iterator]();
+  for (;;) {
+    const l = lhs.next(), r = rhs.next();
+    if (l.done || r.done) return l.done ? (r.done ? 0 : -1) : 1;
+    const lc = l.value.codePointAt(0) ?? 0, rc = r.value.codePointAt(0) ?? 0;
+    if (lc !== rc) return lc < rc ? -1 : 1;
+  }
+}
+
+function validateCapability(capability: EchoAgentCapability, options: SpawnOptions): void {
+  if (capability.extension_protocol_version !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported extension protocol version", "never", "initialize");
+  if (!Array.isArray(capability.features) || !capability.features.every(value => typeof value === "string")
+    || !Array.isArray(capability.capabilities) || !capability.capabilities.every(value => value && typeof value.capability === "string" && typeof value.required === "boolean")
+    || typeof capability.limits !== "object" || capability.limits === null || Array.isArray(capability.limits)) {
+    throw new EchoAgentError("extension_capability_mismatch", "malformed Host capability advertisement", "never", "initialize");
+  }
+  if (capability.features.some((value, index) => index > 0 && compareFeatureNames(capability.features[index - 1] ?? "", value) >= 0)) {
+    throw new EchoAgentError("extension_capability_mismatch", "Host features must be sorted and distinct", "never", "initialize");
+  }
+  if (capability.capabilities.length === 0 || new Set(capability.capabilities.map(value => value.capability)).size !== capability.capabilities.length) {
+    throw new EchoAgentError("extension_capability_mismatch", "Host must declare distinct capabilities", "never", "initialize");
+  }
+  validateAdvertisedLimits(capability.limits);
   for (const feature of options.requiredFeatures ?? []) {
-    if (!capability.features.includes(feature)) throw new EchoAgentError("feature_unavailable", `Host lacks feature ${feature}`);
+    if (!capability.features.includes(feature)) throw new EchoAgentError("feature_unavailable", `Host lacks feature ${feature}`, "never", "initialize");
   }
   for (const required of options.requiredCapabilities ?? []) {
     if (!capability.capabilities.some((entry) => entry.capability === required)) {
-      throw new EchoAgentError("extension_capability_mismatch", `Host lacks capability ${required}`);
+      throw new EchoAgentError("extension_capability_mismatch", `Host lacks capability ${required}`, "never", "initialize");
     }
   }
   if (options.contractDigest && capability.contract_digest !== options.contractDigest) {
-    throw new EchoAgentError("extension_capability_mismatch", "contract digest mismatch");
+    throw new EchoAgentError("extension_capability_mismatch", "contract digest mismatch", "never", "initialize");
   }
   if (options.sourceContractDigest && capability.source_contract_digest !== options.sourceContractDigest) {
-    throw new EchoAgentError("extension_capability_mismatch", "source contract digest mismatch");
+    throw new EchoAgentError("extension_capability_mismatch", "source contract digest mismatch", "never", "initialize");
   }
 }
 

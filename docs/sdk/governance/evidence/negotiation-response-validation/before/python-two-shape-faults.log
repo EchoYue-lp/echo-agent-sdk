@@ -1,0 +1,30 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________________ test_negotiation_rejects[empty-capabilities] _________________
+
+mode = 'empty-capabilities'
+
+    @pytest.mark.parametrize("mode", ["bad-version", "bad-digest", "bad-acp-version","overflow-acp-version","overflow-extension-version","nontext-feature","null-capability","empty-capabilities","missing-limits"])
+    async def test_negotiation_rejects(mode):
+        with pytest.raises(EchoAgentError) as error:
+            async with scenario(mode):
+>               pytest.fail("must reject")
+E               Failed: must reject
+
+tests/test_protocol_host.py:41: Failed
+___________________ test_negotiation_rejects[missing-limits] ___________________
+
+mode = 'missing-limits'
+
+    @pytest.mark.parametrize("mode", ["bad-version", "bad-digest", "bad-acp-version","overflow-acp-version","overflow-extension-version","nontext-feature","null-capability","empty-capabilities","missing-limits"])
+    async def test_negotiation_rejects(mode):
+        with pytest.raises(EchoAgentError) as error:
+            async with scenario(mode):
+>               pytest.fail("must reject")
+E               Failed: must reject
+
+tests/test_protocol_host.py:41: Failed
+=========================== short test summary info ============================
+FAILED tests/test_protocol_host.py::test_negotiation_rejects[empty-capabilities]
+FAILED tests/test_protocol_host.py::test_negotiation_rejects[missing-limits]
+2 failed, 15 deselected in 1.02s

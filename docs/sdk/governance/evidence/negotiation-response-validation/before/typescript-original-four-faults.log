@@ -1,0 +1,59 @@
+TAP version 13
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-jJlZ9p
+# Subtest: Host bad-version negotiation fails
+ok 1 - Host bad-version negotiation fails
+  ---
+  duration_ms: 628.206375
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-VgOsEi
+# Subtest: Host bad-digest negotiation fails
+ok 2 - Host bad-digest negotiation fails
+  ---
+  duration_ms: 203.468666
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-PQzBW9
+# Subtest: Host bad-acp-version negotiation fails
+ok 3 - Host bad-acp-version negotiation fails
+  ---
+  duration_ms: 205.257792
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-gqswiQ
+# Subtest: Host overflow-acp-version negotiation fails
+ok 4 - Host overflow-acp-version negotiation fails
+  ---
+  duration_ms: 206.354875
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-DTjsKf
+# Subtest: Host overflow-extension-version negotiation fails
+ok 5 - Host overflow-extension-version negotiation fails
+  ---
+  duration_ms: 172.669083
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-tHb9qU
+# Subtest: Host nontext-feature negotiation fails
+ok 6 - Host nontext-feature negotiation fails
+  ---
+  duration_ms: 164.391792
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-protocol-T8C6Ks
+# Subtest: Host null-capability negotiation fails
+ok 7 - Host null-capability negotiation fails
+  ---
+  duration_ms: 165.662417
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1968.999792

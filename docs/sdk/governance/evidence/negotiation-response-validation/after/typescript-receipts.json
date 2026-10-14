@@ -1,0 +1,18 @@
+[
+  {
+    "args": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "node",
+      "--test",
+      "test/protocol-host.test.js"
+    ],
+    "exitCode": 0
+  }
+]

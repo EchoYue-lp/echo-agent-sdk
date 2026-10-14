@@ -361,7 +361,7 @@ public final class EchoAgentClient implements AutoCloseable {
                     new AcpSchema.Implementation("echo-agent-sdk-java", "0.1.0"), Map.of());
             var initializeSubmission=transport.untilExit(session.sendRequest("initialize", initialize, JSON_NODE), "initialize").toFuture();
             var initialization=initializeSubmission.thenApply(result -> {
-                        if (!result.path("protocolVersion").isIntegralNumber() || result.path("protocolVersion").intValue() != 1) throw new EchoAgentException("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize", result);
+                        if (!isProtocolVersionOne(result.path("protocolVersion"))) throw new EchoAgentException("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize", result);
                         JsonNode advertised = result.path("agentCapabilities")
                                 .path("_meta").path("echo_agent");
                         if (!advertised.isObject()) {
@@ -703,16 +703,71 @@ public final class EchoAgentClient implements AutoCloseable {
         return result.stream().distinct().toList();
     }
 
+    private static boolean isProtocolVersionOne(JsonNode value) {
+        return value.isIntegralNumber() && value.bigIntegerValue().equals(java.math.BigInteger.ONE);
+    }
+
+    private static java.math.BigInteger advertisedU64(JsonNode value, String field) {
+        if (!value.isTextual() || !value.textValue().matches("0|[1-9][0-9]{0,19}")) {
+            throw new EchoAgentException("extension_capability_mismatch", "malformed Host limit " + field, "never", "initialize", value);
+        }
+        var parsed = new java.math.BigInteger(value.textValue());
+        if (parsed.compareTo(new java.math.BigInteger("18446744073709551615")) > 0) {
+            throw new EchoAgentException("extension_capability_mismatch", "Host limit exceeds u64 " + field, "never", "initialize", value);
+        }
+        return parsed;
+    }
+
+    private static void validateAdvertisedLimits(JsonNode limits) {
+        for (String name : List.of("max_message_bytes", "max_stream_buffer_events", "max_replay_events", "max_structured_output_bytes", "max_outstanding_live_events", "max_stream_buffer_bytes", "max_replay_bytes", "max_open_handles", "max_registered_extensions", "max_extension_descriptor_bytes", "max_extension_payload_bytes", "max_extension_stream_bytes", "max_inflight_extension_invocations", "max_facade_resources", "max_facade_streams", "max_facade_page_items", "max_facade_operation_args")) {
+            if (advertisedU64(limits.path(name), name).signum() == 0) {
+                throw new EchoAgentException("extension_capability_mismatch", "Host limit must be positive " + name, "never", "initialize", limits);
+            }
+        }
+        var concurrency = limits.path("max_callback_concurrency");
+        if (!concurrency.isIntegralNumber() || concurrency.bigIntegerValue().signum() <= 0
+                || concurrency.bigIntegerValue().compareTo(new java.math.BigInteger("4294967295")) > 0) {
+            throw new EchoAgentException("extension_capability_mismatch", "malformed Host callback concurrency", "never", "initialize", limits);
+        }
+        var timeout = limits.path("callback_timeout");
+        if (!timeout.isObject()) throw new EchoAgentException("extension_capability_mismatch", "malformed Host callback timeout", "never", "initialize", limits);
+        advertisedU64(timeout.path("seconds"), "callback_timeout.seconds");
+        var nanos = timeout.path("nanos");
+        if (!nanos.isIntegralNumber() || nanos.bigIntegerValue().signum() < 0
+                || nanos.bigIntegerValue().compareTo(java.math.BigInteger.valueOf(999999999)) > 0) {
+            throw new EchoAgentException("extension_capability_mismatch", "malformed Host callback timeout nanos", "never", "initialize", timeout);
+        }
+    }
+
+    // Match Rust UTF-8 String ordering by Unicode scalar values, not UTF-16 units.
+    private static int compareFeatureNames(String left, String right) {
+        var lhs = left.codePoints().iterator();
+        var rhs = right.codePoints().iterator();
+        while (lhs.hasNext() && rhs.hasNext()) {
+            int result = Integer.compare(lhs.nextInt(), rhs.nextInt());
+            if (result != 0) return result;
+        }
+        return lhs.hasNext() ? 1 : rhs.hasNext() ? -1 : 0;
+    }
+
     private static void validateCapability(
             JsonNode advertised, Collection<String> requiredFeatures, Collection<String> requiredCapabilities) {
-        if (!advertised.path("extension_protocol_version").isIntegralNumber() || advertised.path("extension_protocol_version").intValue() != 1) {
+        if (!isProtocolVersionOne(advertised.path("extension_protocol_version"))) {
             throw new EchoAgentException("extension_capability_mismatch", "unsupported extension protocol version", "never", "initialize", advertised);
         }
         if (!advertised.path("features").isArray() || !advertised.path("capabilities").isArray() || !advertised.path("limits").isObject()) throw new EchoAgentException("extension_capability_mismatch", "malformed Host capability advertisement", "never", "initialize", advertised);
         var features = new java.util.HashSet<String>();
         advertised.path("features").elements().forEachRemaining(value -> {
-            if (value.isTextual()) features.add(value.textValue());
+            if (!value.isTextual()) throw new EchoAgentException("extension_capability_mismatch", "malformed Host feature member", "never", "initialize", advertised);
+            features.add(value.textValue());
         });
+        String previousFeature = null;
+        for (JsonNode feature : advertised.path("features")) {
+            if (previousFeature != null && compareFeatureNames(previousFeature, feature.textValue()) >= 0) {
+                throw new EchoAgentException("extension_capability_mismatch", "Host features must be sorted and distinct", "never", "initialize", advertised);
+            }
+            previousFeature = feature.textValue();
+        }
         for (String required : sortedDistinct(requiredFeatures)) {
             if (!features.contains(required)) {
                 throw new EchoAgentException("feature_unavailable", "Host lacks feature " + required,
@@ -720,9 +775,14 @@ public final class EchoAgentClient implements AutoCloseable {
             }
         }
         var capabilities = new java.util.HashSet<String>();
+        if (advertised.path("capabilities").isEmpty()) throw new EchoAgentException("extension_capability_mismatch", "Host must declare a capability", "never", "initialize", advertised);
         advertised.path("capabilities").elements().forEachRemaining(value -> {
-            if (value.path("capability").isTextual()) capabilities.add(value.path("capability").textValue());
+            if (!value.isObject() || !value.path("capability").isTextual() || !value.path("required").isBoolean()
+                    || !capabilities.add(value.path("capability").textValue())) {
+                throw new EchoAgentException("extension_capability_mismatch", "malformed or duplicate Host capability member", "never", "initialize", advertised);
+            }
         });
+        validateAdvertisedLimits(advertised.path("limits"));
         for (String required : sortedDistinct(requiredCapabilities)) {
             if (!capabilities.contains(required)) {
                 throw new EchoAgentException("extension_capability_mismatch", "Host lacks capability " + required,
