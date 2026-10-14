@@ -1,0 +1,9 @@
+# negotiation 修复后的完整官方语言门禁
+
+一次完整 bash scripts/check-language-sdks.sh 于2026-10-14 15:33:38–15:38:23 UTC真实退出0，原日志108274字节未删改：TypeScript328tests全通过、0fail/cancel/skip；Python393passed加18subtests；Java74份XML合计350tests、0failures/errors/skipped。三quickstart实际完成，Ruff check/format通过。这是广告协商、失败初始化、secret场景与cfg-only live LLM证据修复后的完整入口，未借用先前历史782-source门禁。
+
+787项输入before/after完全相同，逐项与执行Git b7e6c68fbaa91cc97ad5fef4ff3d5a61b187345a blob摘要及归档时当前文件匹配。framework精确a634，实际Host da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444。只归档5原文件（完整log/receipt/两map/java-summary）和74XML，不复制787源码树或旧完整证据包。
+
+java-summary持久保存每个原target报告复制前的originalMtimeNs；74项均落在本次whole start/finish内、逐XMLSHA及测试计数完全匹配。归档目标mtime只是复制事实，不充当执行时间；这次有持久原mtimeNs证据，与此前只有主线程观察的历史包区分。原XMLprops与路径保持字节不变。
+
+编译warning与SLF4J provider warning为0，22条负例RPC运行时WARN按原日志保留并单列，未抑制或计成编译warning。这个门禁仅证明该源码切点的完整语言测试与examples通过，不能由testcounts推导每类能力的全部失败/恢复路径已闭合。十二项accepted-source连续性、完整生成、B物理结算选择、适用CI与精确SDKmain验收仍独立开放。本次没有运行新Cargo/Maven/npm/uv测试或改动运行源码/模型/生成物。

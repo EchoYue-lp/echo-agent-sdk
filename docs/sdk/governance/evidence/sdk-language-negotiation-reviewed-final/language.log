@@ -1,0 +1,2186 @@
+ok: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/facade-operation-catalog.json matches canonical facade catalog
+SDK scopes (telemetry only, canonical): external=5622 host_or_rust_only=1774 language_intrinsic=790 internal_helper=90 deferred=1448
+    Finished `test` profile [unoptimized] target(s) in 0.32s
+
+added 5 packages in 654ms
+
+1 package is looking for funding
+  run `npm fund` for details
+
+> @echo-agent/sdk-typescript-source@0.1.0 test
+> npm run build && npm run build:examples && node --test test/*.test.js
+
+
+> @echo-agent/sdk-typescript-source@0.1.0 build
+> tsc -p tsconfig.json
+
+
+> @echo-agent/sdk-typescript-source@0.1.0 build:examples
+> tsc -p tsconfig.examples.json
+
+TAP version 13
+# A2A evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/a2a-native/typescript-VwAQd4
+# Subtest: accepted A2A operations reach real HTTP/SSE with typed owner and error behavior
+ok 1 - accepted A2A operations reach real HTTP/SSE with typed owner and error behavior
+  ---
+  duration_ms: 1450.197542
+  type: 'test'
+  ...
+# Subtest: A2A TaskState matches the Rust terminal and transition table
+ok 2 - A2A TaskState matches the Rust terminal and transition table
+  ---
+  duration_ms: 2.791042
+  type: 'test'
+  ...
+# Subtest: A2A TaskState intrinsic identities have completed TypeScript mappings
+ok 3 - A2A TaskState intrinsic identities have completed TypeScript mappings
+  ---
+  duration_ms: 304.15
+  type: 'test'
+  ...
+# Subtest: A2A value constructors preserve text, status, provider and skill semantics
+ok 4 - A2A value constructors preserve text, status, provider and skill semantics
+  ---
+  duration_ms: 7.917042
+  type: 'test'
+  ...
+# Subtest: A2A Agent Card builder preserves local value semantics
+ok 5 - A2A Agent Card builder preserves local value semantics
+  ---
+  duration_ms: 0.256125
+  type: 'test'
+  ...
+# Subtest: A2A Agent Card identities have completed TypeScript mappings
+ok 6 - A2A Agent Card identities have completed TypeScript mappings
+  ---
+  duration_ms: 464.016459
+  type: 'test'
+  ...
+# Subtest: A2A artifact and error values preserve wire fields and immutability
+ok 7 - A2A artifact and error values preserve wire fields and immutability
+  ---
+  duration_ms: 1.695
+  type: 'test'
+  ...
+# Subtest: A2A wire values have completed TypeScript mappings
+ok 8 - A2A wire values have completed TypeScript mappings
+  ---
+  duration_ms: 177.969792
+  type: 'test'
+  ...
+# Subtest: A2A stream values preserve event and response semantics
+ok 9 - A2A stream values preserve event and response semantics
+  ---
+  duration_ms: 0.400917
+  type: 'test'
+  ...
+# Subtest: A2A stream values have completed TypeScript mappings
+ok 10 - A2A stream values have completed TypeScript mappings
+  ---
+  duration_ms: 126.600167
+  type: 'test'
+  ...
+# Subtest: A2A task envelopes preserve nested value semantics
+ok 11 - A2A task envelopes preserve nested value semantics
+  ---
+  duration_ms: 0.621875
+  type: 'test'
+  ...
+# Subtest: A2A task envelope values have completed TypeScript mappings
+ok 12 - A2A task envelope values have completed TypeScript mappings
+  ---
+  duration_ms: 167.41575
+  type: 'test'
+  ...
+# Subtest: official serialized writer: low successful ACK cannot commit pending terminal ACK
+ok 13 - official serialized writer: low successful ACK cannot commit pending terminal ACK
+  ---
+  duration_ms: 11.30525
+  type: 'test'
+  ...
+# Subtest: official writer 2 success then other ACK failure retains exact successful floor
+ok 14 - official writer 2 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 0.863166
+  type: 'test'
+  ...
+# Subtest: official writer 10 success then other ACK failure retains exact successful floor
+ok 15 - official writer 10 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 0.669917
+  type: 'test'
+  ...
+# Subtest: official failed send preserves queue prefix and does not accept a future ACK
+ok 16 - official failed send preserves queue prefix and does not accept a future ACK
+  ---
+  duration_ms: 1.36925
+  type: 'test'
+  ...
+# Subtest: official writer sends the same immutable stream identity that it commits
+ok 17 - official writer sends the same immutable stream identity that it commits
+  ---
+  duration_ms: 0.786875
+  type: 'test'
+  ...
+# Subtest: official replay retention bridge commits only a successful returned cursor
+ok 18 - official replay retention bridge commits only a successful returned cursor
+  ---
+  duration_ms: 12.855875
+  type: 'test'
+  ...
+# Subtest: gap plus empty after-gap page never grants an absent ACK cursor
+ok 19 - gap plus empty after-gap page never grants an absent ACK cursor
+  ---
+  duration_ms: 4.04025
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage empty_gap_tail
+ok 20 - public replay connected coverage empty_gap_tail
+  ---
+  duration_ms: 4.858375
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_gap
+ok 21 - public replay connected coverage reverse_gap
+  ---
+  duration_ms: 3.750208
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_plain
+ok 22 - public replay connected coverage reverse_plain
+  ---
+  duration_ms: 2.155709
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage disconnected
+ok 23 - public replay connected coverage disconnected
+  ---
+  duration_ms: 2.083125
+  type: 'test'
+  ...
+# Subtest: successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+ok 24 - successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+  ---
+  duration_ms: 0.702458
+  type: 'test'
+  ...
+# Subtest: ACP runtime values preserve settlement and bounded ledger semantics
+ok 25 - ACP runtime values preserve settlement and bounded ledger semantics
+  ---
+  duration_ms: 4.465125
+  type: 'test'
+  ...
+# Subtest: ACP runtime value mappings are complete
+ok 26 - ACP runtime value mappings are complete
+  ---
+  duration_ms: 355.321333
+  type: 'test'
+  ...
+# Subtest: ACP adapter config mappings are complete
+ok 27 - ACP adapter config mappings are complete
+  ---
+  duration_ms: 481.891667
+  type: 'test'
+  ...
+# Subtest: ACP lease error mappings are complete
+ok 28 - ACP lease error mappings are complete
+  ---
+  duration_ms: 170.454542
+  type: 'test'
+  ...
+# Subtest: canonical resolver selects source and family routes
+ok 29 - canonical resolver selects source and family routes
+  ---
+  duration_ms: 17.95175
+  type: 'test'
+  ...
+# Subtest: operations enumerate every canonical source and family operation
+ok 30 - operations enumerate every canonical source and family operation
+  ---
+  duration_ms: 7.588458
+  type: 'test'
+  ...
+# Subtest: families group the same canonical operation identities
+ok 31 - families group the same canonical operation identities
+  ---
+  duration_ms: 3.477208
+  type: 'test'
+  ...
+# Subtest: every external SDK contract has a completed TypeScript mapping
+ok 32 - every external SDK contract has a completed TypeScript mapping
+  ---
+  duration_ms: 2.936042
+  type: 'test'
+  ...
+# Subtest: Channel forward native single/stream/reply, typed fidelity, explicit failures and metadata
+ok 33 - Channel forward native single/stream/reply, typed fidelity, explicit failures and metadata
+  ---
+  duration_ms: 361.936042
+  type: 'test'
+  ...
+# Subtest: Channel forward exact Session/manager/stream generation and batch binding before effects
+ok 34 - Channel forward exact Session/manager/stream generation and batch binding before effects
+  ---
+  duration_ms: 334.111708
+  type: 'test'
+  ...
+# Subtest: Channel forward rejects unstarted/starting/start rollback before native handler
+ok 35 - Channel forward rejects unstarted/starting/start rollback before native handler
+  ---
+  duration_ms: 384.673
+  type: 'test'
+  ...
+# Subtest: Channel stream cancellation waits actual callback finally while independent work survives
+ok 36 - Channel stream cancellation waits actual callback finally while independent work survives
+  ---
+  duration_ms: 555.051083
+  type: 'test'
+  ...
+# Subtest: Channel unconsumed full buffer stop cancels before write permit
+ok 37 - Channel unconsumed full buffer stop cancels before write permit
+  ---
+  duration_ms: 398.390583
+  type: 'test'
+  ...
+# Subtest: Channel unconsumed full buffer resource cancels before write permit
+ok 38 - Channel unconsumed full buffer resource cancels before write permit
+  ---
+  duration_ms: 490.31625
+  type: 'test'
+  ...
+# Subtest: Channel unconsumed full buffer session cancels before write permit
+ok 39 - Channel unconsumed full buffer session cancels before write permit
+  ---
+  duration_ms: 348.305125
+  type: 'test'
+  ...
+# Subtest: Channel resource close retains real cancelled callback and failed stop retry owner
+ok 40 - Channel resource close retains real cancelled callback and failed stop retry owner
+  ---
+  duration_ms: 300.970334
+  type: 'test'
+  ...
+# Subtest: Channel forward wrong family/digest/argument shape reject before callback
+ok 41 - Channel forward wrong family/digest/argument shape reject before callback
+  ---
+  duration_ms: 267.977291
+  type: 'test'
+  ...
+# Subtest: Channel genuine transport disconnect cancels callback and waits actual local finally
+ok 42 - Channel genuine transport disconnect cancels callback and waits actual local finally
+  ---
+  duration_ms: 299.650375
+  type: 'test'
+  ...
+# stdio EOF evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/exit-MUSEvD
+# Subtest: public close sends native stdin EOF and awaits normal original child exit
+ok 43 - public close sends native stdin EOF and awaits normal original child exit
+  ---
+  duration_ms: 140.623041
+  type: 'test'
+  ...
+# stdio coalesced close evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-qzxypi
+# Subtest: concurrent and repeated close wait for the same child held after EOF
+ok 44 - concurrent and repeated close wait for the same child held after EOF
+  ---
+  duration_ms: 245.156333
+  type: 'test'
+  ...
+# Subtest: closing an already signalled child observes existing exit without a new waiter
+ok 45 - closing an already signalled child observes existing exit without a new waiter
+  ---
+  duration_ms: 182.646042
+  type: 'test'
+  ...
+# stdio fallback evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-5iuG5K
+# Subtest: five second fallback terminates a child that observes EOF but never exits
+ok 46 - five second fallback terminates a child that observes EOF but never exits
+  ---
+  duration_ms: 5144.071541
+  type: 'test'
+  ...
+# stdio same-owner retry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/exit-IsAFuE
+# Subtest: a failed connection close remains observable and retries the same original child
+ok 47 - a failed connection close remains observable and retries the same original child
+  ---
+  duration_ms: 88.243167
+  type: 'test'
+  ...
+# stdio synchronous reentry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-qIeJR6
+# Subtest: synchronous cancellation callback reentry shares the already published close owner
+ok 48 - synchronous cancellation callback reentry shares the already published close owner
+  ---
+  duration_ms: 108.78575
+  type: 'test'
+  ...
+# Subtest: close synchronously rejects same-tick public request admission
+ok 49 - close synchronously rejects same-tick public request admission
+  ---
+  duration_ms: 94.272917
+  type: 'test'
+  ...
+# Subtest: unexpected stdin end callback error after actual child exit rejects the shared close owner
+ok 50 - unexpected stdin end callback error after actual child exit rejects the shared close owner
+  ---
+  duration_ms: 90.7515
+  type: 'test'
+  ...
+# Subtest: expected EPIPE completion is harmless but still waits for native exit
+ok 51 - expected EPIPE completion is harmless but still waits for native exit
+  ---
+  duration_ms: 84.134959
+  type: 'test'
+  ...
+# Subtest: a signal-sent flag is not an exit receipt for an original child still alive
+ok 52 - a signal-sent flag is not an exit receipt for an original child still alive
+  ---
+  duration_ms: 92.590542
+  type: 'test'
+  ...
+# Subtest: initialization failure retains original child until EOF and native exit: init-fail-held
+ok 53 - initialization failure retains original child until EOF and native exit: init-fail-held
+  ---
+  duration_ms: 105.757
+  type: 'test'
+  ...
+# Subtest: initialization failure retains original child until EOF and native exit: init-fail-ignore-signal
+ok 54 - initialization failure retains original child until EOF and native exit: init-fail-ignore-signal
+  ---
+  duration_ms: 98.677583
+  type: 'test'
+  ...
+# Subtest: command cell terminal/artifact values preserve spellings
+ok 55 - command cell terminal/artifact values preserve spellings
+  ---
+  duration_ms: 0.881416
+  type: 'test'
+  ...
+# Subtest: command cell terminal/artifact mappings are complete
+ok 56 - command cell terminal/artifact mappings are complete
+  ---
+  duration_ms: 458.059958
+  type: 'test'
+  ...
+# Subtest: command cell phases preserve stable spelling and terminal semantics
+ok 57 - command cell phases preserve stable spelling and terminal semantics
+  ---
+  duration_ms: 0.827083
+  type: 'test'
+  ...
+# Subtest: command cell phase mappings are complete
+ok 58 - command cell phase mappings are complete
+  ---
+  duration_ms: 432.070167
+  type: 'test'
+  ...
+# TS native public corpus 61 work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-computation-native-typescript-t6bL0n
+# Computation verified: {"native_calls": 61, "typed_errors": 25, "oracle_groups": 11, "final_pivot_boundaries": 5, "protected_files": 8, "host_sha256": "da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444"} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-computation-native-typescript-t6bL0n
+# Subtest: computation exact values, errors and protected effects
+ok 59 - computation exact values, errors and protected effects
+  ---
+  duration_ms: 3361.253667
+  type: 'test'
+  ...
+# Subtest: content guard values preserve variant payloads
+ok 60 - content guard values preserve variant payloads
+  ---
+  duration_ms: 1.385708
+  type: 'test'
+  ...
+# Subtest: content guard value mappings are complete
+ok 61 - content guard value mappings are complete
+  ---
+  duration_ms: 177.828167
+  type: 'test'
+  ...
+# Subtest: context inheritance preserves Rust defaults
+ok 62 - context inheritance preserves Rust defaults
+  ---
+  duration_ms: 1.482791
+  type: 'test'
+  ...
+# Subtest: context inheritance mappings are complete
+ok 63 - context inheritance mappings are complete
+  ---
+  duration_ms: 192.42
+  type: 'test'
+  ...
+# Subtest: delivery values preserve stable snake-case spellings
+ok 64 - delivery values preserve stable snake-case spellings
+  ---
+  duration_ms: 0.750834
+  type: 'test'
+  ...
+# Subtest: delivery value mappings are complete
+ok 65 - delivery value mappings are complete
+  ---
+  duration_ms: 188.068625
+  type: 'test'
+  ...
+# Subtest: dependency and skill source values preserve stable spellings
+ok 66 - dependency and skill source values preserve stable spellings
+  ---
+  duration_ms: 0.731875
+  type: 'test'
+  ...
+# Subtest: dependency value mappings are complete
+ok 67 - dependency value mappings are complete
+  ---
+  duration_ms: 204.094208
+  type: 'test'
+  ...
+# Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/typescript-eval-QCxsOt
+# {"group": "eval", "verified": true, "factory_created": 3, "factory_closed": 3, "rows": 23}
+# Subtest: native eval accepted consumers
+ok 68 - native eval accepted consumers
+  ---
+  duration_ms: 1622.669583
+  type: 'test'
+  ...
+# Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/typescript-improve-uWBTdr
+# {"group": "improve", "verified": true, "factory_created": 12, "factory_closed": 12, "rows": 27}
+# Subtest: native improve accepted consumers
+ok 69 - native improve accepted consumers
+  ---
+  duration_ms: 902.907291
+  type: 'test'
+  ...
+# Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/typescript-topology-wD8S5z
+# {"group": "topology", "verified": true, "factory_created": 0, "factory_closed": 0, "rows": 18}
+# Subtest: native topology accepted consumers
+ok 70 - native topology accepted consumers
+  ---
+  duration_ms: 489.781375
+  type: 'test'
+  ...
+# Subtest: event identities preserve validation, UUID-backed constructors and immutable updates
+ok 71 - event identities preserve validation, UUID-backed constructors and immutable updates
+  ---
+  duration_ms: 1.347458
+  type: 'test'
+  ...
+# Subtest: event identity mappings are complete
+ok 72 - event identity mappings are complete
+  ---
+  duration_ms: 197.409
+  type: 'test'
+  ...
+# Subtest: execution usage duration defaults to zero when absent
+ok 73 - execution usage duration defaults to zero when absent
+  ---
+  duration_ms: 0.747584
+  type: 'test'
+  ...
+# Subtest: execution usage mapping is complete
+ok 74 - execution usage mapping is complete
+  ---
+  duration_ms: 178.624625
+  type: 'test'
+  ...
+# Subtest: factory preallocated children preserve two distinct constructed objects through Host evaluation
+ok 75 - factory preallocated children preserve two distinct constructed objects through Host evaluation
+  ---
+  duration_ms: 407.763708
+  type: 'test'
+  ...
+# 2026-10-14T15:34:31.255221Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(6) method=_echo_agent/extension/unregister error=Error { code: -32050: Unknown error, message: "factory still owns live CustomAgent instances", data: Some(Object {"code": String("extension_conflict"), "message": String("factory still owns live CustomAgent instances"), "retryable": String("never"), "operation": String("_echo_agent/extension/unregister"), "handle": Object {"id": String("extension-49a39a91-834d-4a6a-8fa7-1266ae311c0a"), "generation": String("1"), "kind": String("extension")}}) }
+# Subtest: late factory construction remains owned until same reserved child cleanup settles
+ok 76 - late factory construction remains owned until same reserved child cleanup settles
+  ---
+  duration_ms: 522.408875
+  type: 'test'
+  ...
+# Subtest: native family calls use the catalog's hyphenated wire method
+ok 77 - native family calls use the catalog's hyphenated wire method
+  ---
+  duration_ms: 282.5495
+  type: 'test'
+  ...
+# FileAuthority identity: {"native_calls": 10, "same_length_replacement_rejections": 2, "both_files_unchanged_on_each_rejection": true, "new_guard_can_append": true, "authority": "original framework file descriptor identity, not content snapshot", "platform_scope": "actual native filesystem identity observed on current host"} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/typescript-qMBeuV
+# Subtest: FileAuthority rejects same-length path replacement before append
+ok 78 - FileAuthority rejects same-length path replacement before append
+  ---
+  duration_ms: 1850.487625
+  type: 'test'
+  ...
+# Subtest: real Host window raw gap ACK resumes strictly after snapshot watermark
+ok 79 - real Host window raw gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 1148.057458
+  type: 'test'
+  ...
+# Subtest: real Host window consumer gap ACK resumes strictly after snapshot watermark
+ok 80 - real Host window consumer gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 914.571583
+  type: 'test'
+  ...
+# Subtest: real Host oversized raw gap ACK resumes strictly after snapshot watermark
+ok 81 - real Host oversized raw gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 716.086917
+  type: 'test'
+  ...
+# Subtest: real Host oversized consumer gap ACK resumes strictly after snapshot watermark
+ok 82 - real Host oversized consumer gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 805.878583
+  type: 'test'
+  ...
+# Subtest: real Host replay-consumed cursor ACK page size 1
+ok 83 - real Host replay-consumed cursor ACK page size 1
+  ---
+  duration_ms: 963.903542
+  type: 'test'
+  ...
+# Subtest: real Host replay-consumed cursor ACK page size 64
+ok 84 - real Host replay-consumed cursor ACK page size 64
+  ---
+  duration_ms: 909.6825
+  type: 'test'
+  ...
+# Subtest: paused consumer window 1 external replay ACK merges queued gap without covered re-delivery
+ok 85 - paused consumer window 1 external replay ACK merges queued gap without covered re-delivery
+  ---
+  duration_ms: 852.100458
+  type: 'test'
+  ...
+# Subtest: paused consumer window 2 external replay ACK merges queued gap without covered re-delivery
+ok 86 - paused consumer window 2 external replay ACK merges queued gap without covered re-delivery
+  ---
+  duration_ms: 751.156458
+  type: 'test'
+  ...
+# Subtest: replayed terminal explicit ACK ends live iterator without covered re-delivery
+ok 87 - replayed terminal explicit ACK ends live iterator without covered re-delivery
+  ---
+  duration_ms: 670.43725
+  type: 'test'
+  ...
+# Subtest: real Host gap before official ACK completion success=false
+ok 88 - real Host gap before official ACK completion success=false
+  ---
+  duration_ms: 628.653542
+  type: 'test'
+  ...
+# Subtest: real Host gap before official ACK completion success=true
+ok 89 - real Host gap before official ACK completion success=true
+  ---
+  duration_ms: 653.086583
+  type: 'test'
+  ...
+# Subtest: live journal directory replacement returns typed error and isolates the other Session
+ok 90 - live journal directory replacement returns typed error and isolates the other Session
+  ---
+  duration_ms: 1311.656584
+  type: 'test'
+  ...
+# Subtest: guard decisions preserve variant payloads
+ok 91 - guard decisions preserve variant payloads
+  ---
+  duration_ms: 2.574833
+  type: 'test'
+  ...
+# Subtest: guard decision mappings are complete
+ok 92 - guard decision mappings are complete
+  ---
+  duration_ms: 270.603041
+  type: 'test'
+  ...
+# Subtest: splitUtf8Chunks caps encoded bytes without splitting scalar values
+ok 93 - splitUtf8Chunks caps encoded bytes without splitting scalar values
+  ---
+  duration_ms: 1.910375
+  type: 'test'
+  ...
+# Subtest: IncrementalUtf8Decoder preserves scalars split across pushes
+ok 94 - IncrementalUtf8Decoder preserves scalars split across pushes
+  ---
+  duration_ms: 3.376333
+  type: 'test'
+  ...
+# Subtest: IncrementalUtf8Decoder replaces malformed bytes and flushes suffixes
+ok 95 - IncrementalUtf8Decoder replaces malformed bytes and flushes suffixes
+  ---
+  duration_ms: 1.199375
+  type: 'test'
+  ...
+# Subtest: IncrementalUtf8Decoder preserves a UTF-8 BOM like Rust
+ok 96 - IncrementalUtf8Decoder preserves a UTF-8 BOM like Rust
+  ---
+  duration_ms: 0.7525
+  type: 'test'
+  ...
+# Subtest: extractJsonFromMarkdown handles fenced and bare JSON
+ok 97 - extractJsonFromMarkdown handles fenced and bare JSON
+  ---
+  duration_ms: 0.229084
+  type: 'test'
+  ...
+# Subtest: cleanJson removes structural trailing commas only
+ok 98 - cleanJson removes structural trailing commas only
+  ---
+  duration_ms: 0.140667
+  type: 'test'
+  ...
+# Subtest: text helpers reject non-text and non-byte inputs
+ok 99 - text helpers reject non-text and non-byte inputs
+  ---
+  duration_ms: 0.315709
+  type: 'test'
+  ...
+# Subtest: hook actions preserve tagged values and configuration validation
+ok 100 - hook actions preserve tagged values and configuration validation
+  ---
+  duration_ms: 1.023292
+  type: 'test'
+  ...
+# Subtest: hook action mappings are complete
+ok 101 - hook action mappings are complete
+  ---
+  duration_ms: 255.651709
+  type: 'test'
+  ...
+# Subtest: hook events preserve names, categories and matcher semantics
+ok 102 - hook events preserve names, categories and matcher semantics
+  ---
+  duration_ms: 0.803792
+  type: 'test'
+  ...
+# Subtest: hook event mappings are complete
+ok 103 - hook event mappings are complete
+  ---
+  duration_ms: 185.65225
+  type: 'test'
+  ...
+# Subtest: source SDK reaches a real Host when configured
+ok 104 - source SDK reaches a real Host when configured
+  ---
+  duration_ms: 714.047416
+  type: 'test'
+  ...
+# Subtest: parallel Agent feeds isolate cancellation and preserve B natural terminal
+ok 105 - parallel Agent feeds isolate cancellation and preserve B natural terminal
+  ---
+  duration_ms: 629.183791
+  type: 'test'
+  ...
+# Subtest: intervention result factories preserve local decision fields
+ok 106 - intervention result factories preserve local decision fields
+  ---
+  duration_ms: 1.9305
+  type: 'test'
+  ...
+# Subtest: intervention result mappings are complete
+ok 107 - intervention result mappings are complete
+  ---
+  duration_ms: 162.549209
+  type: 'test'
+  ...
+# Subtest: ToolCallParams preserves Rust parameter typing and validation
+ok 108 - ToolCallParams preserves Rust parameter typing and validation
+  ---
+  duration_ms: 1.607916
+  type: 'test'
+  ...
+# Subtest: ToolResult constructors and immutable modifiers match Rust semantics
+ok 109 - ToolResult constructors and immutable modifiers match Rust semantics
+  ---
+  duration_ms: 0.678125
+  type: 'test'
+  ...
+# Subtest: language-local tool value routes have completed TypeScript mappings
+ok 110 - language-local tool value routes have completed TypeScript mappings
+  ---
+  duration_ms: 144.186833
+  type: 'test'
+  ...
+# Subtest: JSON-RPC values preserve MCP constructors
+ok 111 - JSON-RPC values preserve MCP constructors
+  ---
+  duration_ms: 1.451667
+  type: 'test'
+  ...
+# Subtest: JSON-RPC value mappings are complete
+ok 112 - JSON-RPC value mappings are complete
+  ---
+  duration_ms: 168.863833
+  type: 'test'
+  ...
+# Subtest: JWT config and claims preserve local value semantics
+ok 113 - JWT config and claims preserve local value semantics
+  ---
+  duration_ms: 0.99775
+  type: 'test'
+  ...
+# Subtest: JWT mappings are complete
+ok 114 - JWT mappings are complete
+  ---
+  duration_ms: 176.670792
+  type: 'test'
+  ...
+# Subtest: endpoint helpers preserve Rust protocol detection
+ok 115 - endpoint helpers preserve Rust protocol detection
+  ---
+  duration_ms: 0.842292
+  type: 'test'
+  ...
+# Subtest: protocol mappings are complete
+ok 116 - protocol mappings are complete
+  ---
+  duration_ms: 166.413334
+  type: 'test'
+  ...
+# LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/typescript-llm-iXfWRG
+# {"group": "llm", "verified": true}
+# Subtest: registered LLM requests usage terminal error and cancellation
+ok 117 - registered LLM requests usage terminal error and cancellation
+  ---
+  duration_ms: 2228.615334
+  type: 'test'
+  ...
+# LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/typescript-workflow-EfFuML
+# {"group": "workflow", "verified": true}
+# Subtest: Workflow extension streams preserve node error owner cancel and close
+ok 118 - Workflow extension streams preserve node error owner cancel and close
+  ---
+  duration_ms: 419.704958
+  type: 'test'
+  ...
+# LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/typescript-graph-CCp0mP
+# {"group": "graph", "verified": true}
+# Subtest: pure Workflow graph streams owner fence and canonical cancellation
+ok 119 - pure Workflow graph streams owner fence and canonical cancellation
+  ---
+  duration_ms: 385.253916
+  type: 'test'
+  ...
+# LSP diagnostics evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-lsp-diagnostics-XvmK5V
+# Subtest: real Host diagnostic notification replacement, error isolation and runtime settlement
+ok 120 - real Host diagnostic notification replacement, error isolation and runtime settlement
+  ---
+  duration_ms: 835.896084
+  type: 'test'
+  ...
+# LSP evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-lsp-NdLbr8
+# Subtest: real Host LSP common values, failure and manager-owned lifecycle
+ok 121 - real Host LSP common values, failure and manager-owned lifecycle
+  ---
+  duration_ms: 570.084625
+  type: 'test'
+  ...
+# managed actual callback conversation_apply_transcript_projection_with_context: {"code":"extension_failed","message":"projection committed; acknowledgement deliberately lost","retryable":"never","details":{"fields":[{"key":"persistence_error_class","value":"outcome_unknown"}]}}
+# Subtest: managed lose_first_apply_response preserves backend commit authority through real Host
+ok 122 - managed lose_first_apply_response preserves backend commit authority through real Host
+  ---
+  duration_ms: 986.868625
+  type: 'test'
+  ...
+# Subtest: managed expire_before_work_once preserves backend commit authority through real Host
+ok 123 - managed expire_before_work_once preserves backend commit authority through real Host
+  ---
+  duration_ms: 10447.550125
+  type: 'test'
+  ...
+# echo-agent-sdk-host: Internal error: {
+#   "spawned_at": "/Users/ls/.cargo/registry/src/rsproxy.cn-e3de039b2554c837/agent-client-protocol-2.1.0/src/jsonrpc.rs:1931:39",
+#   "data": "Broken pipe (os error 32)"
+# }
+# Subtest: managed committed held response survives real Host restart with the same receipt
+ok 124 - managed committed held response survives real Host restart with the same receipt
+  ---
+  duration_ms: 1017.594333
+  type: 'test'
+  ...
+# Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/managed-retirement/typescript-retirement-false-nFz3LB
+# Subtest: accepted managed exact clear retirement enabled=false
+ok 125 - accepted managed exact clear retirement enabled=false
+  ---
+  duration_ms: 774.576
+  type: 'test'
+  ...
+# Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/managed-retirement/typescript-retirement-true-drvcwX
+# Subtest: accepted managed exact clear retirement enabled=true
+ok 126 - accepted managed exact clear retirement enabled=true
+  ---
+  duration_ms: 993.007458
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-mcp-stdio-5JZfiz
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-mcp-transport-retry-1YNZfc
+# Subtest: MCP real stdio metadata/resources/prompts and same-name owner cleanup
+ok 127 - MCP real stdio metadata/resources/prompts and same-name owner cleanup
+  ---
+  duration_ms: 645.005708
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-channels-normal-oxs49W
+# Subtest: MCP registered transport failed close retains exact client/quota for retry
+ok 128 - MCP registered transport failed close retains exact client/quota for retry
+  ---
+  duration_ms: 383.532875
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-channels-retry-Pidlpx
+# Subtest: Channels attachments/exact stop normal
+ok 129 - Channels attachments/exact stop normal
+  ---
+  duration_ms: 382.714209
+  type: 'test'
+  ...
+# MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-channels-owned-reentry-gUToPB
+# Subtest: Channels attachments/exact stop retry
+ok 130 - Channels attachments/exact stop retry
+  ---
+  duration_ms: 377.127292
+  type: 'test'
+  ...
+# Subtest: Channel owned callbacks reenter metadata and preserve exact close owner
+ok 131 - Channel owned callbacks reenter metadata and preserve exact close owner
+  ---
+  duration_ms: 416.91425
+  type: 'test'
+  ...
+# TS actual memory/permission evidence rows 59 work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-memory-permission-typescript-gCAVZD
+# Subtest: memory and permission retain live authorities, context and actual effects
+ok 132 - memory and permission retain live authorities, context and actual effects
+  ---
+  duration_ms: 3260.422042
+  type: 'test'
+  ...
+# Subtest: memory type policies preserve Rust stability and promotion eligibility
+ok 133 - memory type policies preserve Rust stability and promotion eligibility
+  ---
+  duration_ms: 0.8685
+  type: 'test'
+  ...
+# Subtest: memory source policies preserve confidence and recall weights
+ok 134 - memory source policies preserve confidence and recall weights
+  ---
+  duration_ms: 0.088209
+  type: 'test'
+  ...
+# Subtest: memory scopes preserve Rust order, names and persistence
+ok 135 - memory scopes preserve Rust order, names and persistence
+  ---
+  duration_ms: 1.598875
+  type: 'test'
+  ...
+# Subtest: memory scope parser preserves aliases and rejects unknown values
+ok 136 - memory scope parser preserves aliases and rejects unknown values
+  ---
+  duration_ms: 0.135625
+  type: 'test'
+  ...
+# Subtest: modality defaults preserve Rust order and spellings
+ok 137 - modality defaults preserve Rust order and spellings
+  ---
+  duration_ms: 1.385708
+  type: 'test'
+  ...
+# Subtest: modality mappings are complete
+ok 138 - modality mappings are complete
+  ---
+  duration_ms: 387.948291
+  type: 'test'
+  ...
+# Subtest: model profiles preserve Rust provider and model policy semantics
+ok 139 - model profiles preserve Rust provider and model policy semantics
+  ---
+  duration_ms: 1.024417
+  type: 'test'
+  ...
+# Subtest: model profile resolver applies provider defaults before exact overrides
+ok 140 - model profile resolver applies provider defaults before exact overrides
+  ---
+  duration_ms: 0.923541
+  type: 'test'
+  ...
+# Subtest: model profile mappings are complete
+ok 141 - model profile mappings are complete
+  ---
+  duration_ms: 401.8885
+  type: 'test'
+  ...
+# Subtest: observed isolation preserves trim, default and Unicode bounds
+ok 142 - observed isolation preserves trim, default and Unicode bounds
+  ---
+  duration_ms: 1.56975
+  type: 'test'
+  ...
+# Subtest: observed isolation mappings are complete
+ok 143 - observed isolation mappings are complete
+  ---
+  duration_ms: 199.316334
+  type: 'test'
+  ...
+# Subtest: page info applies metadata, truncation and continuation
+ok 144 - page info applies metadata, truncation and continuation
+  ---
+  duration_ms: 0.984834
+  type: 'test'
+  ...
+# Subtest: page info mappings are complete
+ok 145 - page info mappings are complete
+  ---
+  duration_ms: 222.885292
+  type: 'test'
+  ...
+# Subtest: permission modes preserve aliases and helper semantics
+ok 146 - permission modes preserve aliases and helper semantics
+  ---
+  duration_ms: 1.257625
+  type: 'test'
+  ...
+# Subtest: permission mode helper mappings are complete
+ok 147 - permission mode helper mappings are complete
+  ---
+  duration_ms: 237.985625
+  type: 'test'
+  ...
+# Subtest: permission rule behavior preserves parse defaults and decisions
+ok 148 - permission rule behavior preserves parse defaults and decisions
+  ---
+  duration_ms: 1.648333
+  type: 'test'
+  ...
+# Subtest: permission rule behavior mappings are complete
+ok 149 - permission rule behavior mappings are complete
+  ---
+  duration_ms: 188.612666
+  type: 'test'
+  ...
+# Subtest: permission rule matchers preserve parse/display/matching semantics
+ok 150 - permission rule matchers preserve parse/display/matching semantics
+  ---
+  duration_ms: 0.998708
+  type: 'test'
+  ...
+# Subtest: permission rule matcher mappings are complete
+ok 151 - permission rule matcher mappings are complete
+  ---
+  duration_ms: 203.56525
+  type: 'test'
+  ...
+# Subtest: permission rule sources preserve canonical and alias parsing
+ok 152 - permission rule sources preserve canonical and alias parsing
+  ---
+  duration_ms: 0.917959
+  type: 'test'
+  ...
+# Subtest: permission rule source mappings are complete
+ok 153 - permission rule source mappings are complete
+  ---
+  duration_ms: 219.348292
+  type: 'test'
+  ...
+# Subtest: PromptCacheLayout projects Rust cache segments and ranges
+ok 154 - PromptCacheLayout projects Rust cache segments and ranges
+  ---
+  duration_ms: 1.698292
+  type: 'test'
+  ...
+# Subtest: PromptCacheLayout leaves canonical empty when no marker exists
+ok 155 - PromptCacheLayout leaves canonical empty when no marker exists
+  ---
+  duration_ms: 0.096792
+  type: 'test'
+  ...
+# Subtest: prompt diagnostics preserve record and count semantics
+ok 156 - prompt diagnostics preserve record and count semantics
+  ---
+  duration_ms: 0.7695
+  type: 'test'
+  ...
+# Subtest: prompt diagnostics mappings are complete
+ok 157 - prompt diagnostics mappings are complete
+  ---
+  duration_ms: 159.057625
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-hQtnZS
+# Subtest: Host bad-version negotiation fails
+ok 158 - Host bad-version negotiation fails
+  ---
+  duration_ms: 207.232042
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-5EcoAN
+# Subtest: Host bad-digest negotiation fails
+ok 159 - Host bad-digest negotiation fails
+  ---
+  duration_ms: 229.915083
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-n34X4x
+# Subtest: Host bad-acp-version negotiation fails
+ok 160 - Host bad-acp-version negotiation fails
+  ---
+  duration_ms: 168.699167
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-6ULtYm
+# Subtest: Host overflow-acp-version negotiation fails
+ok 161 - Host overflow-acp-version negotiation fails
+  ---
+  duration_ms: 208.0695
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-Wf69Qn
+# Subtest: Host overflow-extension-version negotiation fails
+ok 162 - Host overflow-extension-version negotiation fails
+  ---
+  duration_ms: 234.923667
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-AsAJSW
+# Subtest: Host nontext-feature negotiation fails
+ok 163 - Host nontext-feature negotiation fails
+  ---
+  duration_ms: 191.567458
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-Whb5E1
+# Subtest: Host null-capability negotiation fails
+ok 164 - Host null-capability negotiation fails
+  ---
+  duration_ms: 218.325667
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-oM0PeI
+# Subtest: Host empty-capabilities negotiation fails
+ok 165 - Host empty-capabilities negotiation fails
+  ---
+  duration_ms: 172.840833
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-Y5uoVZ
+# Subtest: Host missing-limits negotiation fails
+ok 166 - Host missing-limits negotiation fails
+  ---
+  duration_ms: 266.049167
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-VxWqQ6
+# Subtest: Host duplicate-feature negotiation fails
+ok 167 - Host duplicate-feature negotiation fails
+  ---
+  duration_ms: 209.548458
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-bdMpUI
+# Subtest: Host unsorted-features negotiation fails
+ok 168 - Host unsorted-features negotiation fails
+  ---
+  duration_ms: 214.200208
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-YZNkgK
+# Subtest: Host duplicate-capability negotiation fails
+ok 169 - Host duplicate-capability negotiation fails
+  ---
+  duration_ms: 213.827375
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-Gjd1bN
+# Subtest: Host zero-limit negotiation fails
+ok 170 - Host zero-limit negotiation fails
+  ---
+  duration_ms: 236.817583
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-1rg2Sn
+# Subtest: Host overflow-limit negotiation fails
+ok 171 - Host overflow-limit negotiation fails
+  ---
+  duration_ms: 220.456083
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-YUD5Os
+# Subtest: Host numeric-limit negotiation fails
+ok 172 - Host numeric-limit negotiation fails
+  ---
+  duration_ms: 228.732875
+  type: 'test'
+  ...
+# Protocol Host failure evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-protocol-E2jiHv
+# Subtest: Host invalid-timeout negotiation fails
+ok 173 - Host invalid-timeout negotiation fails
+  ---
+  duration_ms: 224.27875
+  type: 'test'
+  ...
+# Subtest: real Host errors remain typed with opaque handles and independent Sessions
+ok 174 - real Host errors remain typed with opaque handles and independent Sessions
+  ---
+  duration_ms: 295.491458
+  type: 'test'
+  ...
+# Subtest: real Host facade missing envelope is an explicit failure
+ok 175 - real Host facade missing envelope is an explicit failure
+  ---
+  duration_ms: 267.072125
+  type: 'test'
+  ...
+# Subtest: Session close retries after an ACP failure
+ok 176 - Session close retries after an ACP failure
+  ---
+  duration_ms: 227.779583
+  type: 'test'
+  ...
+# Subtest: real Host unregister-retry retains usable lifecycle
+ok 177 - real Host unregister-retry retains usable lifecycle
+  ---
+  duration_ms: 474.42625
+  type: 'test'
+  ...
+# Subtest: real Host run-close-retry retains usable lifecycle
+ok 178 - real Host run-close-retry retains usable lifecycle
+  ---
+  duration_ms: 405.4315
+  type: 'test'
+  ...
+# Subtest: Agent close retries after an ACP failure
+ok 179 - Agent close retries after an ACP failure
+  ---
+  duration_ms: 238.549208
+  type: 'test'
+  ...
+# Subtest: async callback exception settles through the real Host
+ok 180 - async callback exception settles through the real Host
+  ---
+  duration_ms: 457.994708
+  type: 'test'
+  ...
+# Subtest: cancelled tool waits for connection-scoped interrupted callback side effect
+ok 181 - cancelled tool waits for connection-scoped interrupted callback side effect
+  ---
+  duration_ms: 851.7495
+  type: 'test'
+  ...
+# Subtest: Host Rust Unicode feature order is accepted
+ok 182 - Host Rust Unicode feature order is accepted
+  ---
+  duration_ms: 256.607625
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_missing
+ok 183 - native projection rejects map_missing
+  ---
+  duration_ms: 1.062459
+  type: 'test'
+  ...
+# Subtest: native projection rejects list_missing
+ok 184 - native projection rejects list_missing
+  ---
+  duration_ms: 0.117875
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_not_list
+ok 185 - native projection rejects map_not_list
+  ---
+  duration_ms: 0.044292
+  type: 'test'
+  ...
+# Subtest: native projection rejects list_not_list
+ok 186 - native projection rejects list_not_list
+  ---
+  duration_ms: 0.041667
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_non_string
+ok 187 - native projection rejects map_non_string
+  ---
+  duration_ms: 0.04775
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_duplicate
+ok 188 - native projection rejects map_duplicate
+  ---
+  duration_ms: 0.05925
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_missing_value
+ok 189 - native projection rejects map_missing_value
+  ---
+  duration_ms: 0.037416
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_wrong_key_value
+ok 190 - native projection rejects map_wrong_key_value
+  ---
+  duration_ms: 0.039583
+  type: 'test'
+  ...
+# Subtest: native projection rejects bool_wrong
+ok 191 - native projection rejects bool_wrong
+  ---
+  duration_ms: 0.369334
+  type: 'test'
+  ...
+# Subtest: native projection rejects string_missing
+ok 192 - native projection rejects string_missing
+  ---
+  duration_ms: 0.315375
+  type: 'test'
+  ...
+# Subtest: native projection rejects f64_wrong
+ok 193 - native projection rejects f64_wrong
+  ---
+  duration_ms: 0.109417
+  type: 'test'
+  ...
+# Subtest: native projection rejects list_child_missing_kind
+ok 194 - native projection rejects list_child_missing_kind
+  ---
+  duration_ms: 0.038375
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_value_missing_kind
+ok 195 - native projection rejects map_value_missing_kind
+  ---
+  duration_ms: 0.035375
+  type: 'test'
+  ...
+# Subtest: special native keys survive without prototype mutation
+ok 196 - special native keys survive without prototype mutation
+  ---
+  duration_ms: 0.822208
+  type: 'test'
+  ...
+# Subtest: SDK errors retain the opaque Host handle
+ok 197 - SDK errors retain the opaque Host handle
+  ---
+  duration_ms: 0.070375
+  type: 'test'
+  ...
+# Subtest: facade responses require their value envelope
+ok 198 - facade responses require their value envelope
+  ---
+  duration_ms: 0.190292
+  type: 'test'
+  ...
+# Subtest: extension close remains retryable after unregister failure
+ok 199 - extension close remains retryable after unregister failure
+  ---
+  duration_ms: 0.159334
+  type: 'test'
+  ...
+# Subtest: execute uses the accepted task input field
+ok 200 - execute uses the accepted task input field
+  ---
+  duration_ms: 0.110166
+  type: 'test'
+  ...
+# Subtest: canonical retention gap remains plain EventGap on replay wire
+ok 201 - canonical retention gap remains plain EventGap on replay wire
+  ---
+  duration_ms: 0.838958
+  type: 'test'
+  ...
+# Subtest: managed callback requests and receipts cross the accepted typed adapter
+ok 202 - managed callback requests and receipts cross the accepted typed adapter
+  ---
+  duration_ms: 1.0095
+  type: 'test'
+  ...
+# Subtest: tool effect facts and canonical callback IDs survive native APIs
+ok 203 - tool effect facts and canonical callback IDs survive native APIs
+  ---
+  duration_ms: 1.109917
+  type: 'test'
+  ...
+# Subtest: all eleven managed context operations preserve the same shared typed corpus
+ok 204 - all eleven managed context operations preserve the same shared typed corpus
+  ---
+  duration_ms: 1.793541
+  type: 'test'
+  ...
+# Subtest: managed checkpoints reject unknown path encoding and non-absolute native paths
+ok 205 - managed checkpoints reject unknown path encoding and non-absolute native paths
+  ---
+  duration_ms: 0.933916
+  type: 'test'
+  ...
+# Subtest: managed error outcome preserves unknown commit facts through the typed adapter
+ok 206 - managed error outcome preserves unknown commit facts through the typed adapter
+  ---
+  duration_ms: 0.384959
+  type: 'test'
+  ...
+# Subtest: live window 128 reserves one coalesced gap control
+ok 207 - live window 128 reserves one coalesced gap control
+  ---
+  duration_ms: 1.586084
+  type: 'test'
+  ...
+# Subtest: live window 256 reserves one coalesced gap control
+ok 208 - live window 256 reserves one coalesced gap control
+  ---
+  duration_ms: 2.490875
+  type: 'test'
+  ...
+# Subtest: native domain IDs remain maps while explicit handle wrappers stay strict
+ok 209 - native domain IDs remain maps while explicit handle wrappers stay strict
+  ---
+  duration_ms: 0.368
+  type: 'test'
+  ...
+# Subtest: coalesced gap keeps original range and replaces only snapshot-covered tail
+ok 210 - coalesced gap keeps original range and replaces only snapshot-covered tail
+  ---
+  duration_ms: 0.152
+  type: 'test'
+  ...
+# Subtest: explicit observed snapshot ACK filters covered queue values without accepting a future ACK
+ok 211 - explicit observed snapshot ACK filters covered queue values without accepting a future ACK
+  ---
+  duration_ms: 0.416875
+  type: 'test'
+  ...
+# Subtest: typed settlement event preserves raw u64 contract while checking its u32 attempt
+ok 212 - typed settlement event preserves raw u64 contract while checking its u32 attempt
+  ---
+  duration_ms: 0.512166
+  type: 'test'
+  ...
+# Subtest: provider capabilities preserve default dialect snapshots
+ok 213 - provider capabilities preserve default dialect snapshots
+  ---
+  duration_ms: 0.773209
+  type: 'test'
+  ...
+# Subtest: provider capability mappings are complete
+ok 214 - provider capability mappings are complete
+  ---
+  duration_ms: 155.72775
+  type: 'test'
+  ...
+# RAG/project-rules verified: {"calls": 32, "embedding_posts": 13, "ranked_chunks": 3, "proof": "Session-local memory; no durable restart guarantee"} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/typescript-UoDgPh
+# RAG/project-rules retained: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/typescript-UoDgPh
+# Subtest: RAG and project rules retain original Session authority, failures and files
+ok 215 - RAG and project rules retain original Session authority, failures and files
+  ---
+  duration_ms: 1971.288
+  type: 'test'
+  ...
+# Subtest: response formats preserve Rust tagged values
+ok 216 - response formats preserve Rust tagged values
+  ---
+  duration_ms: 1.423125
+  type: 'test'
+  ...
+# Subtest: response format mappings are complete
+ok 217 - response format mappings are complete
+  ---
+  duration_ms: 164.264792
+  type: 'test'
+  ...
+# Subtest: retry policy preserves exponential backoff and immutable configuration
+ok 218 - retry policy preserves exponential backoff and immutable configuration
+  ---
+  duration_ms: 0.890916
+  type: 'test'
+  ...
+# Subtest: retry policy mappings are complete
+ok 219 - retry policy mappings are complete
+  ---
+  duration_ms: 158.816959
+  type: 'test'
+  ...
+# Subtest: RunHandle receipt helpers call canonical operations with the Run handle
+ok 220 - RunHandle receipt helpers call canonical operations with the Run handle
+  ---
+  duration_ms: 1.451833
+  type: 'test'
+  ...
+# Subtest: RunHandle receipt helpers reject a closed handle
+ok 221 - RunHandle receipt helpers reject a closed handle
+  ---
+  duration_ms: 0.312875
+  type: 'test'
+  ...
+# steer acceptance evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-run-steer-ts-D90jOu
+# Run steer native evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-run-steer-ts-D90jOu
+# Subtest: accepted steering reaches original model and concurrent waits share one Run receipt
+ok 222 - accepted steering reaches original model and concurrent waits share one Run receipt
+  ---
+  duration_ms: 647.8245
+  type: 'test'
+  ...
+# Subtest: sandbox resource limits preserve default, strict and unrestricted policies
+ok 223 - sandbox resource limits preserve default, strict and unrestricted policies
+  ---
+  duration_ms: 0.794167
+  type: 'test'
+  ...
+# Subtest: sandbox resource limit mappings are complete
+ok 224 - sandbox resource limit mappings are complete
+  ---
+  duration_ms: 154.042542
+  type: 'test'
+  ...
+# Security native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/typescript-mfa3Aq {
+#   source_operations: 3,
+#   value_calls: 9,
+#   negative_calls: 6,
+#   raw_scan_calls: 1,
+#   provider_calls: 0,
+#   position_encoding: 'canonical decimal text in dynamic-map string at UTF-8 byte offset 11'
+# }
+# Subtest: accepted Security root aliases preserve Unicode secret span and byte offset without model effects
+ok 225 - accepted Security root aliases preserve Unicode secret span and byte offset without model effects
+  ---
+  duration_ms: 439.471542
+  type: 'test'
+  ...
+# Subtest: segment ranges preserve saturating half-open length
+ok 226 - segment ranges preserve saturating half-open length
+  ---
+  duration_ms: 0.746459
+  type: 'test'
+  ...
+# Subtest: segment range mappings are complete
+ok 227 - segment range mappings are complete
+  ---
+  duration_ms: 161.3965
+  type: 'test'
+  ...
+# {"work":"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/session-rules-prompt/typescript-pZwvix","cases":3,"provider_requests":3,"normalized":[{"id":"a1","outcome":"completed","answer":"RULES_OBSERVED_a1 中文🙂","system_contains":["CUSTOM_SYSTEM_KEEP 中文😀","A_ROOT_RULE","A_NESTED_V1"],"system_excludes":["B_ROOT_RULE","B_NESTED_RULE","A_NESTED_V2"],"user_preserved":true},{"id":"b1","outcome":"completed","answer":"RULES_OBSERVED_b1 中文🙂","system_contains":["CUSTOM_SYSTEM_KEEP 中文😀","B_ROOT_RULE","B_NESTED_RULE"],"system_excludes":["A_ROOT_RULE","A_NESTED_V1","A_NESTED_V2"],"user_preserved":true},{"id":"a2","outcome":"completed","answer":"RULES_OBSERVED_a2 中文🙂","system_contains":["CUSTOM_SYSTEM_KEEP 中文😀","A_ROOT_RULE","A_NESTED_V2"],"system_excludes":["B_ROOT_RULE","B_NESTED_RULE","A_NESTED_V1"],"user_preserved":true}]}
+# Subtest: Session cwd rules reach actual model and isolate new Session reload
+ok 228 - Session cwd rules reach actual model and isolate new Session reload
+  ---
+  duration_ms: 1260.957292
+  type: 'test'
+  ...
+# idempotency evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/typescript-codxCo {"groups": 5, "provider_calls": 4, "session_creations": 2, "all_complete_publication_responses_equal": true, "duplicate_notices": 0}
+# Subtest: Session and Run keys replay one real publication and release pre-effect busy admission
+ok 229 - Session and Run keys replay one real publication and release pre-effect busy admission
+  ---
+  duration_ms: 1499.590167
+  type: 'test'
+  ...
+# Subtest: skill content preserves the structured prompt block
+ok 230 - skill content preserves the structured prompt block
+  ---
+  duration_ms: 0.873041
+  type: 'test'
+  ...
+# Subtest: skill content mappings are complete
+ok 231 - skill content mappings are complete
+  ---
+  duration_ms: 149.350292
+  type: 'test'
+  ...
+# Subtest: skill validation reports preserve violation gate semantics
+ok 232 - skill validation reports preserve violation gate semantics
+  ---
+  duration_ms: 0.745875
+  type: 'test'
+  ...
+# Subtest: skill validation mappings are complete
+ok 233 - skill validation mappings are complete
+  ---
+  duration_ms: 151.694375
+  type: 'test'
+  ...
+# State/Trace/Delivery evidence state: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-typescript-state-2PlpiV
+# State/Trace/Delivery evidence trace: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-typescript-trace-ePF2NE
+# Subtest: real Host state full fields, failure and authority
+ok 234 - real Host state full fields, failure and authority
+  ---
+  duration_ms: 707.661583
+  type: 'test'
+  ...
+# State/Trace/Delivery evidence delivery: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-typescript-delivery-eFoDbG
+# Subtest: real Host trace full fields, failure and authority
+ok 235 - real Host trace full fields, failure and authority
+  ---
+  duration_ms: 614.506417
+  type: 'test'
+  ...
+# Subtest: real Host delivery full fields, failure and authority
+ok 236 - real Host delivery full fields, failure and authority
+  ---
+  duration_ms: 285.762667
+  type: 'test'
+  ...
+# Subtest: steering values preserve lifecycle and terminal semantics
+ok 237 - steering values preserve lifecycle and terminal semantics
+  ---
+  duration_ms: 0.798167
+  type: 'test'
+  ...
+# Subtest: steering value mappings are complete
+ok 238 - steering value mappings are complete
+  ---
+  duration_ms: 153.06775
+  type: 'test'
+  ...
+# Subtest: real Host cancellation after setup ACK reaches retained native stream producer
+ok 239 - real Host cancellation after setup ACK reaches retained native stream producer
+  ---
+  duration_ms: 260.735208
+  type: 'test'
+  ...
+# Subtest: official writer wrong stream identity cannot retire original cancellation address
+ok 240 - official writer wrong stream identity cannot retire original cancellation address
+  ---
+  duration_ms: 7.657417
+  type: 'test'
+  ...
+# Subtest: official failed terminal writer preserves cancellation address and immutable request identity
+ok 241 - official failed terminal writer preserves cancellation address and immutable request identity
+  ---
+  duration_ms: 1.213709
+  type: 'test'
+  ...
+# Subtest: Subagent command identities preserve validation and attempt projection
+ok 242 - Subagent command identities preserve validation and attempt projection
+  ---
+  duration_ms: 0.839083
+  type: 'test'
+  ...
+# Subtest: Subagent command identity mappings are complete
+ok 243 - Subagent command identity mappings are complete
+  ---
+  duration_ms: 175.933584
+  type: 'test'
+  ...
+# Subtest: Subagent context preserves empty and content semantics
+ok 244 - Subagent context preserves empty and content semantics
+  ---
+  duration_ms: 0.761083
+  type: 'test'
+  ...
+# Subtest: Subagent context mappings are complete
+ok 245 - Subagent context mappings are complete
+  ---
+  duration_ms: 169.332
+  type: 'test'
+  ...
+# Subtest: Subagent stop statuses preserve stable hook spellings
+ok 246 - Subagent stop statuses preserve stable hook spellings
+  ---
+  duration_ms: 0.755083
+  type: 'test'
+  ...
+# Subtest: Subagent stop value mappings are complete
+ok 247 - Subagent stop value mappings are complete
+  ---
+  duration_ms: 177.881792
+  type: 'test'
+  ...
+# Subtest: Subagent usage accumulates and emits the canonical payload
+ok 248 - Subagent usage accumulates and emits the canonical payload
+  ---
+  duration_ms: 0.746459
+  type: 'test'
+  ...
+# Subtest: Subagent usage mappings are complete
+ok 249 - Subagent usage mappings are complete
+  ---
+  duration_ms: 183.0335
+  type: 'test'
+  ...
+# Subtest: Subagent values preserve stable phase and status semantics
+ok 250 - Subagent values preserve stable phase and status semantics
+  ---
+  duration_ms: 0.898292
+  type: 'test'
+  ...
+# Subtest: Subagent value mappings are complete
+ok 251 - Subagent value mappings are complete
+  ---
+  duration_ms: 179.438792
+  type: 'test'
+  ...
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-task-pause-MbSgPS
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-task-cancel-x6KQcY
+# Subtest: exact Task pause preserves independent B/C
+ok 252 - exact Task pause preserves independent B/C
+  ---
+  duration_ms: 800.2575
+  type: 'test'
+  ...
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-task-subagent-await-TpTbla
+# Subtest: exact Task cancel preserves independent B/C
+ok 253 - exact Task cancel preserves independent B/C
+  ---
+  duration_ms: 535.662958
+  type: 'test'
+  ...
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-task-crud-only-mtFkI5
+# Subtest: real Task/Subagent subagent-await
+ok 254 - real Task/Subagent subagent-await
+  ---
+  duration_ms: 320.816542
+  type: 'test'
+  ...
+# Subtest: real Task/Subagent crud-only
+ok 255 - real Task/Subagent crud-only
+  ---
+  duration_ms: 265.520083
+  type: 'test'
+  ...
+# Subtest: task terminal statuses preserve stable hook spellings
+ok 256 - task terminal statuses preserve stable hook spellings
+  ---
+  duration_ms: 0.732833
+  type: 'test'
+  ...
+# Subtest: task terminal value mappings are complete
+ok 257 - task terminal value mappings are complete
+  ---
+  duration_ms: 165.83475
+  type: 'test'
+  ...
+# Subtest: team strategies preserve values and descriptions
+ok 258 - team strategies preserve values and descriptions
+  ---
+  duration_ms: 1.421416
+  type: 'test'
+  ...
+# Subtest: team strategy mappings are complete
+ok 259 - team strategy mappings are complete
+  ---
+  duration_ms: 175.012541
+  type: 'test'
+  ...
+# Telemetry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/typescript-Lyi8OM
+# Subtest: accepted telemetry exports real business records and flushes (console=false)
+ok 260 - accepted telemetry exports real business records and flushes (console=false)
+  ---
+  duration_ms: 1592.459167
+  type: 'test'
+  ...
+# Telemetry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/typescript-mZF5oK
+# Subtest: accepted telemetry exports real business records and flushes (console=true)
+ok 261 - accepted telemetry exports real business records and flushes (console=true)
+  ---
+  duration_ms: 1543.455584
+  type: 'test'
+  ...
+# Telemetry wire evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/typescript-wire-rpc_cancel-XAoerv
+# Subtest: telemetry slow flush retains original Host owner (rpc_cancel)
+ok 262 - telemetry slow flush retains original Host owner (rpc_cancel)
+  ---
+  duration_ms: 1627.986959
+  type: 'test'
+  ...
+# Telemetry wire evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/typescript-wire-input_eof-omgD1L
+# Subtest: telemetry slow flush retains original Host owner (input_eof)
+ok 263 - telemetry slow flush retains original Host owner (input_eof)
+  ---
+  duration_ms: 2462.386167
+  type: 'test'
+  ...
+# Telemetry wire evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/typescript-wire-public_close-gjGDzN
+# Subtest: telemetry slow flush retains original Host owner (public_close)
+ok 264 - telemetry slow flush retains original Host owner (public_close)
+  ---
+  duration_ms: 1776.510708
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: context-all-identities
+ok 265 - testing accepted value payload round-trip: context-all-identities
+  ---
+  duration_ms: 1.801
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: context-null-identities
+ok 266 - testing accepted value payload round-trip: context-null-identities
+  ---
+  duration_ms: 0.331084
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: context-absence-distinct
+ok 267 - testing accepted value payload round-trip: context-absence-distinct
+  ---
+  duration_ms: 0.068208
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: delay-large-subsecond
+ok 268 - testing accepted value payload round-trip: delay-large-subsecond
+  ---
+  duration_ms: 0.049834
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: agent-error-unicode
+ok 269 - testing accepted value payload round-trip: agent-error-unicode
+  ---
+  duration_ms: 0.132166
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: agent-event-final-answer
+ok 270 - testing accepted value payload round-trip: agent-event-final-answer
+  ---
+  duration_ms: 0.048708
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: delta-role-content-option
+ok 271 - testing accepted value payload round-trip: delta-role-content-option
+  ---
+  duration_ms: 0.118875
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: stream-error-cause-value
+ok 272 - testing accepted value payload round-trip: stream-error-cause-value
+  ---
+  duration_ms: 0.043125
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: terminal-finish-usage
+ok 273 - testing accepted value payload round-trip: terminal-finish-usage
+  ---
+  duration_ms: 0.380333
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: terminal-null-option
+ok 274 - testing accepted value payload round-trip: terminal-null-option
+  ---
+  duration_ms: 0.318375
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: typed-context-record
+ok 275 - testing accepted value payload round-trip: typed-context-record
+  ---
+  duration_ms: 0.110542
+  type: 'test'
+  ...
+# Subtest: testing accepted value payload round-trip: future-variant-preserved
+ok 276 - testing accepted value payload round-trip: future-variant-preserved
+  ---
+  duration_ms: 0.041666
+  type: 'test'
+  ...
+# Subtest: testing malformed value projection fails explicitly: boolean-not-number
+ok 277 - testing malformed value projection fails explicitly: boolean-not-number
+  ---
+  duration_ms: 0.220125
+  type: 'test'
+  ...
+# Subtest: testing malformed value projection fails explicitly: error-text-not-object
+ok 278 - testing malformed value projection fails explicitly: error-text-not-object
+  ---
+  duration_ms: 0.035
+  type: 'test'
+  ...
+# Subtest: testing malformed value projection fails explicitly: noncanonical-delay-seconds
+ok 279 - testing malformed value projection fails explicitly: noncanonical-delay-seconds
+  ---
+  duration_ms: 0.038791
+  type: 'test'
+  ...
+# Subtest: testing malformed value projection fails explicitly: overflow-delay-seconds
+ok 280 - testing malformed value projection fails explicitly: overflow-delay-seconds
+  ---
+  duration_ms: 0.03025
+  type: 'test'
+  ...
+# Subtest: testing malformed value projection fails explicitly: missing-nested-discriminator
+ok 281 - testing malformed value projection fails explicitly: missing-nested-discriminator
+  ---
+  duration_ms: 0.034459
+  type: 'test'
+  ...
+# Subtest: testing malformed value projection fails explicitly: duplicate-context-fields
+ok 282 - testing malformed value projection fails explicitly: duplicate-context-fields
+  ---
+  duration_ms: 0.036458
+  type: 'test'
+  ...
+# Subtest: testing malformed value projection fails explicitly: nonstring-context-field-name
+ok 283 - testing malformed value projection fails explicitly: nonstring-context-field-name
+  ---
+  duration_ms: 0.03275
+  type: 'test'
+  ...
+# Subtest: thinking config preserves provider projections and parsing
+ok 284 - thinking config preserves provider projections and parsing
+  ---
+  duration_ms: 1.109208
+  type: 'test'
+  ...
+# Subtest: thinking config mappings are complete
+ok 285 - thinking config mappings are complete
+  ---
+  duration_ms: 285.7085
+  type: 'test'
+  ...
+# Subtest: thinking profiles preserve provider/model dialect selection
+ok 286 - thinking profiles preserve provider/model dialect selection
+  ---
+  duration_ms: 2.21275
+  type: 'test'
+  ...
+# Subtest: thinking profile mappings are complete
+ok 287 - thinking profile mappings are complete
+  ---
+  duration_ms: 262.376417
+  type: 'test'
+  ...
+# Subtest: thinking protocols preserve wire names and field emission semantics
+ok 288 - thinking protocols preserve wire names and field emission semantics
+  ---
+  duration_ms: 0.763166
+  type: 'test'
+  ...
+# Subtest: thinking protocol mappings are complete
+ok 289 - thinking protocol mappings are complete
+  ---
+  duration_ms: 178.252875
+  type: 'test'
+  ...
+# Subtest: ThinkingLevel parses Rust aliases and preserves wire values
+ok 290 - ThinkingLevel parses Rust aliases and preserves wire values
+  ---
+  duration_ms: 0.790208
+  type: 'test'
+  ...
+# Subtest: ThinkingLevel mappings are complete
+ok 291 - ThinkingLevel mappings are complete
+  ---
+  duration_ms: 181.824916
+  type: 'test'
+  ...
+# Subtest: time helpers preserve instant and null serialization semantics
+ok 292 - time helpers preserve instant and null serialization semantics
+  ---
+  duration_ms: 1.961209
+  type: 'test'
+  ...
+# Subtest: time helper mappings are complete
+ok 293 - time helper mappings are complete
+  ---
+  duration_ms: 141.901083
+  type: 'test'
+  ...
+# Subtest: token budget and timeout policies preserve allocation semantics
+ok 294 - token budget and timeout policies preserve allocation semantics
+  ---
+  duration_ms: 1.060833
+  type: 'test'
+  ...
+# Subtest: token budget mappings are complete
+ok 295 - token budget mappings are complete
+  ---
+  duration_ms: 168.080792
+  type: 'test'
+  ...
+# 2026-10-14T15:34:44.700081Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(6) method=_echo_agent/data/op error=Error { code: -32050: Unknown error, message: "Tool Error: Tool 'data_tools' execution failed: Transform execution failed: not found: unable to find column \\"not_a_column\\"; valid columns: [\\"label\\", \\"value\\", \\"group\\"]\\n\\nResolved plan until failure:\\n\\n\\t---> FAILED HERE RESOLVING 'select' <---\\nCsv SCAN [/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-tool-behaviors-e4iKfj/input.csv]\\nPROJECT */3 COLUMNS\\nESTIMATED ROWS: 5: 'select'", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Tool 'data_tools' execution failed: Transform execution failed: not found: unable to find column \\"not_a_column\\"; valid columns: [\\"label\\", \\"value\\", \\"group\\"]\\n\\nResolved plan until failure:\\n\\n\\t---> FAILED HERE RESOLVING 'select' <---\\nCsv SCAN [/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-tool-behaviors-e4iKfj/input.csv]\\nPROJECT */3 COLUMNS\\nESTIMATED ROWS: 5: 'select'"), "retryable": String("never"), "operation": String("transform_data"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.709114Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(8) method=_echo_agent/data/op error=Error { code: -32050: Unknown error, message: "Tool Error: Invalid parameter 'format': Unsupported export format: 'not_a_format'", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Invalid parameter 'format': Unsupported export format: 'not_a_format'"), "retryable": String("never"), "operation": String("export_data"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.712407Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(10) method=_echo_agent/chart/op error=Error { code: -32050: Unknown error, message: "Tool Error: Invalid parameter 'generate_chart': \\"data\\" is a required property", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Invalid parameter 'generate_chart': \\"data\\" is a required property"), "retryable": String("never"), "operation": String("generate_chart"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.773424Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(17) method=_echo_agent/git/op error=Error { code: -32050: Unknown error, message: "Tool Error: Tool 'git' execution failed: fatal: 'invalid branch' is not a valid branch name\\nhint: See `man git check-ref-format`\\nhint: Disable this message with \\"git config set advice.refSyntax false\\"", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Tool 'git' execution failed: fatal: 'invalid branch' is not a valid branch name\\nhint: See `man git check-ref-format`\\nhint: Disable this message with \\"git config set advice.refSyntax false\\""), "retryable": String("never"), "operation": String("git_branch"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.788338Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(22) method=_echo_agent/media/op error=Error { code: -32050: Unknown error, message: "Tool Error: Invalid path: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-tool-behaviors-e4iKfj/missing.txt (Path does not exist or cannot be accessed: No such file or directory (os error 2))", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Invalid path: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-ts-tool-behaviors-e4iKfj/missing.txt (Path does not exist or cannot be accessed: No such file or directory (os error 2))"), "retryable": String("never"), "operation": String("export_text"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.811459Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(25) method=_echo_agent/research/op error=Error { code: -32050: Unknown error, message: "Tool Error: Tool 'pdf_fetch' execution failed: HTTP error: 503 Service Unavailable", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Tool 'pdf_fetch' execution failed: HTTP error: 503 Service Unavailable"), "retryable": String("never"), "operation": String("pdf_fetch"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.815674Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(26) method=_echo_agent/research/op error=Error { code: -32050: Unknown error, message: "Tool Error: Invalid parameter 'url': Response is not a PDF file", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Invalid parameter 'url': Response is not a PDF file"), "retryable": String("never"), "operation": String("pdf_fetch"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.818507Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(27) method=_echo_agent/research/op error=Error { code: -32050: Unknown error, message: "Tool Error: Tool 'pdf_fetch' execution failed: Failed to parse PDF: failed parsing cross reference table: invalid start value", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Tool 'pdf_fetch' execution failed: Failed to parse PDF: failed parsing cross reference table: invalid start value"), "retryable": String("never"), "operation": String("pdf_fetch"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.822480Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(29) method=_echo_agent/research/op error=Error { code: -32050: Unknown error, message: "Tool Error: Invalid parameter 'papers': At least one paper is required", data: Some(Object {"code": String("framework_error"), "message": String("Tool Error: Invalid parameter 'papers': At least one paper is required"), "retryable": String("never"), "operation": String("bibtex_generate"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("tool")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("tool")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:44.824322Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(31) method=_echo_agent/git/op error=Error { code: -32050: Unknown error, message: "handle was already released by this Host generation", data: Some(Object {"code": String("closed_handle"), "message": String("handle was already released by this Host generation"), "retryable": String("never"), "operation": String("_echo_agent/session"), "handle": Object {"id": String("session-7ddb1a4b-eb0c-4e68-b101-2d0ddeb75cd6"), "generation": String("1"), "kind": String("session")}}) }
+# Tool behavior verified: {"capability_families":6,"native_calls":29,"failure_paths":10,"reported_effects":"empty","actual_file_and_ref_effects_checked":true,"uncovered":["fixed-official-endpoint scholarly search providers","other accepted media parsers/data transforms","runtime effect-ledger interpretation"]}
+# Subtest: six tool families preserve native results, failures and real local effects
+ok 296 - six tool families preserve native results, failures and real local effects
+  ---
+  duration_ms: 959.673208
+  type: 'test'
+  ...
+# Subtest: artifact config preserves defaults and immutable builders
+ok 297 - artifact config preserves defaults and immutable builders
+  ---
+  duration_ms: 0.807959
+  type: 'test'
+  ...
+# Subtest: artifact config mappings are complete
+ok 298 - artifact config mappings are complete
+  ---
+  duration_ms: 117.055708
+  type: 'test'
+  ...
+# Tool value/effects: {"families": ["files", "shell", "web", "database", "research"], "rows": 49, "native_calls": 48, "protected_file_count": 3, "external_observations": {"research-arxiv_search": "success", "research-semantic_scholar_search": "framework_error", "research-pubmed_search": "success", "research-clinical_trials_search": "success"}, "residual": ["Shell default policy cannot directly execute script; native tail timeout has one observed process, descendant cleanup needs separate framework evidence", "Fixed official research search results are external observations, not a deterministic common result corpus", "WebSearch custom provider and Sandbox reverse stream have separate consumer tests"]} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/typescript-V5fr5l
+# Subtest: accepted tool exact values, errors and actual effects
+ok 299 - accepted tool exact values, errors and actual effects
+  ---
+  duration_ms: 9173.078
+  type: 'test'
+  ...
+# SearchProvider verified: {"provider_calls": 4, "success_calls": 1, "failure_attempts": 3, "title_url_snippet_exact": true, "canonical_agent_run_count": 2} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/typescript-search-P51Opr
+# Subtest: SearchProvider exact title/url/snippet and real Agent tool failure
+ok 300 - SearchProvider exact title/url/snippet and real Agent tool failure
+  ---
+  duration_ms: 3862.129541
+  type: 'test'
+  ...
+# Sandbox verified: {"producer_processes": 3, "physically_joined": 3, "cancel_and_close_pending_invocation": 2, "post_answer_cancel": false} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/typescript-sandbox-03Z9KP
+# Subtest: Sandbox stream real process completion, pending cancel and repeated close
+ok 301 - Sandbox stream real process completion, pending cancel and repeated close
+  ---
+  duration_ms: 1013.56975
+  type: 'test'
+  ...
+# Subtest: turn modes preserve stable stream flavors
+ok 302 - turn modes preserve stable stream flavors
+  ---
+  duration_ms: 0.748917
+  type: 'test'
+  ...
+# Subtest: turn mode mappings are complete
+ok 303 - turn mode mappings are complete
+  ---
+  duration_ms: 174.641375
+  type: 'test'
+  ...
+# Subtest: classifyTurnOutcome delegates with no receiver and preserves Variant/Null
+ok 304 - classifyTurnOutcome delegates with no receiver and preserves Variant/Null
+  ---
+  duration_ms: 1.515333
+  type: 'test'
+  ...
+# Subtest: typed bridge decoder preserves operation-discriminated inputs
+ok 305 - typed bridge decoder preserves operation-discriminated inputs
+  ---
+  duration_ms: 3.72375
+  type: 'test'
+  ...
+# Subtest: typed bridge decoder rejects cross-kind and malformed reverse calls
+ok 306 - typed bridge decoder rejects cross-kind and malformed reverse calls
+  ---
+  duration_ms: 0.682
+  type: 'test'
+  ...
+# Subtest: critic typed bridge preserves the critique wire shape
+ok 307 - critic typed bridge preserves the critique wire shape
+  ---
+  duration_ms: 0.174208
+  type: 'test'
+  ...
+# Subtest: critic typed bridge rejects unrelated operations and malformed inputs
+ok 308 - critic typed bridge rejects unrelated operations and malformed inputs
+  ---
+  duration_ms: 0.172666
+  type: 'test'
+  ...
+# Subtest: registerCritic adapts callbacks through the generic extension registration
+ok 309 - registerCritic adapts callbacks through the generic extension registration
+  ---
+  duration_ms: 1.002959
+  type: 'test'
+  ...
+# Subtest: context compressor typed bridge preserves compression semantics
+ok 310 - context compressor typed bridge preserves compression semantics
+  ---
+  duration_ms: 0.566667
+  type: 'test'
+  ...
+# Subtest: context compressor decoder rejects noncanonical token limits
+ok 311 - context compressor decoder rejects noncanonical token limits
+  ---
+  duration_ms: 0.213292
+  type: 'test'
+  ...
+# Subtest: agent component registration preserves component operation discriminators
+ok 312 - agent component registration preserves component operation discriminators
+  ---
+  duration_ms: 0.522667
+  type: 'test'
+  ...
+# Subtest: agent component decoder rejects invalid discriminated variants
+ok 313 - agent component decoder rejects invalid discriminated variants
+  ---
+  duration_ms: 1.438292
+  type: 'test'
+  ...
+# Subtest: agent component decoder covers extended variants and unit inputs
+ok 314 - agent component decoder covers extended variants and unit inputs
+  ---
+  duration_ms: 2.016292
+  type: 'test'
+  ...
+# Subtest: workflow checkpoint Agent component keeps generation and claim settlement typed
+ok 315 - workflow checkpoint Agent component keeps generation and claim settlement typed
+  ---
+  duration_ms: 0.697917
+  type: 'test'
+  ...
+# Subtest: streaming Agent components preserve nested and outer discriminators
+ok 316 - streaming Agent components preserve nested and outer discriminators
+  ---
+  duration_ms: 0.696708
+  type: 'test'
+  ...
+# Subtest: SkillLoadPolicy calls and component stream terminals stay typed
+ok 317 - SkillLoadPolicy calls and component stream terminals stay typed
+  ---
+  duration_ms: 0.3975
+  type: 'test'
+  ...
+# Subtest: usage preserves cache priority and effective totals
+ok 318 - usage preserves cache priority and effective totals
+  ---
+  duration_ms: 1.365833
+  type: 'test'
+  ...
+# Subtest: usage mappings are complete
+ok 319 - usage mappings are complete
+  ---
+  duration_ms: 262.214541
+  type: 'test'
+  ...
+# Subtest: handles are encoded as handles, not as enum-like values
+ok 320 - handles are encoded as handles, not as enum-like values
+  ---
+  duration_ms: 1.810042
+  type: 'test'
+  ...
+# Subtest: large integers stay textual on the extension wire
+ok 321 - large integers stay textual on the extension wire
+  ---
+  duration_ms: 0.125459
+  type: 'test'
+  ...
+# Subtest: bigints cover the complete signed and unsigned wire ranges
+ok 322 - bigints cover the complete signed and unsigned wire ranges
+  ---
+  duration_ms: 0.299167
+  type: 'test'
+  ...
+# Subtest: nested maps and lists round-trip through the closed wire algebra
+ok 323 - nested maps and lists round-trip through the closed wire algebra
+  ---
+  duration_ms: 0.179625
+  type: 'test'
+  ...
+# Subtest: typed and unknown variants retain their discriminator
+ok 324 - typed and unknown variants retain their discriminator
+  ---
+  duration_ms: 0.216834
+  type: 'test'
+  ...
+# Subtest: scalar helpers emit canonical lossless shapes
+ok 325 - scalar helpers emit canonical lossless shapes
+  ---
+  duration_ms: 0.318791
+  type: 'test'
+  ...
+# Subtest: decoding rejects malformed handles and integer text
+ok 326 - decoding rejects malformed handles and integer text
+  ---
+  duration_ms: 1.903
+  type: 'test'
+  ...
+# Subtest: integer helpers reject unsafe numbers and non-canonical strings
+ok 327 - integer helpers reject unsafe numbers and non-canonical strings
+  ---
+  duration_ms: 0.231875
+  type: 'test'
+  ...
+# 2026-10-14T15:34:46.238433Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(16) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "Checkpoint is missing or consumed", data: Some(Object {"code": String("framework_error"), "message": String("Checkpoint is missing or consumed"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op"), "details": Object {"fields": Array [Object {"key": String("framework_failure_category"), "value": String("other")}, Object {"key": String("framework_terminal_kind"), "value": String("failed")}, Object {"key": String("framework_failure_code"), "value": String("other")}, Object {"key": String("framework_retryable"), "value": String("false")}]}}) }
+# 2026-10-14T15:34:46.336284Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(18) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "unknown checkpoint 02cbcc3e-8788-426f-af94-3990122b3422", data: Some(Object {"code": String("invalid_value"), "message": String("unknown checkpoint 02cbcc3e-8788-426f-af94-3990122b3422"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-14T15:34:47.190036Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(29) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "unknown checkpoint 5d7aa5e4-29c5-4d28-b5eb-a5c01da05920", data: Some(Object {"code": String("invalid_value"), "message": String("unknown checkpoint 5d7aa5e4-29c5-4d28-b5eb-a5c01da05920"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-14T15:34:47.461819Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(32) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "facade resource belongs to another session", data: Some(Object {"code": String("invalid_value"), "message": String("facade resource belongs to another session"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-14T15:34:47.868367Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(38) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "facade resource belongs to another session", data: Some(Object {"code": String("invalid_value"), "message": String("facade resource belongs to another session"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-14T15:34:47.910892Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(39) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "open facade resource limit 2 reached", data: Some(Object {"code": String("payload_too_large"), "message": String("open facade resource limit 2 reached"), "retryable": String("after_delay"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-14T15:34:48.000552Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(41) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "workflow checkpoint at argument 1 must be an object", data: Some(Object {"code": String("invalid_value"), "message": String("workflow checkpoint at argument 1 must be an object"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-14T15:34:48.133027Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(44) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "workflow checkpoint at argument 1 must be an object", data: Some(Object {"code": String("invalid_value"), "message": String("workflow checkpoint at argument 1 must be an object"), "retryable": String("never"), "operation": String("_echo_agent/workflow/op")}) }
+# 2026-10-14T15:34:48.222163Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(47) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "handle was already released by this Host generation", data: Some(Object {"code": String("closed_handle"), "message": String("handle was already released by this Host generation"), "retryable": String("never"), "operation": String("_echo_agent/session"), "handle": Object {"id": String("session-d22a0d76-1afb-477d-b0bb-848c0aa21c02"), "generation": String("1"), "kind": String("session")}}) }
+# 2026-10-14T15:34:48.274633Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(48) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "handle was already released by this Host generation", data: Some(Object {"code": String("closed_handle"), "message": String("handle was already released by this Host generation"), "retryable": String("never"), "operation": String("_echo_agent/session"), "handle": Object {"id": String("session-d22a0d76-1afb-477d-b0bb-848c0aa21c02"), "generation": String("1"), "kind": String("session")}}) }
+# 2026-10-14T15:34:48.405904Z  WARN agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(51) method=_echo_agent/workflow/op error=Error { code: -32050: Unknown error, message: "open facade resource limit 2 reached", data: Some(Object {"code": String("payload_too_large"), "message": String("open facade resource limit 2 reached"), "retryable": String("after_delay"), "operation": String("_echo_agent/workflow/op")}) }
+# Workflow evidence: Workflow shape observations: {"tuple-resume": {"outcome": "error", "code": "invalid_value", "after": {"id": "c392cd71-fac3-4cc3-bf5e-06027507d60b", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "1eaf9ae9-ffcf-4a11-8426-1c5c3f46f2c1", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"context": {"optional": null, "list": ["a", "b"]}, "approved": true, "memo": "checkpoint 中文🙂"}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T23:34:47.957253+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}, "tuple-with-state": {"outcome": "error", "code": "invalid_value", "after": {"id": "24bce8a9-8ffd-44d5-85f3-bcf73832b914", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "2f25bc0f-42e3-4cb0-852c-2a355c6a2df2", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"context": {"optional": null, "list": ["a", "b"]}, "approved": true, "memo": "checkpoint 中文🙂"}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T23:34:48.089121+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}}
+# {"rows": 48, "scope": "routing/checkpoint/decision/branch/state/owner/close/quota", "not_proved": ["cross-process MemoryStore persistence", "all 24 accepted workflow operations", "extension workflow callbacks and stream cancellation"]}
+# Subtest: workflow routing/checkpoint/claims/branch/owner and shape boundary
+ok 328 - workflow routing/checkpoint/claims/branch/owner and shape boundary
+  ---
+  duration_ms: 3049.447042
+  type: 'test'
+  ...
+1..328
+# tests 328
+# suites 0
+# pass 328
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 30120.130125
+echo-agent
+All checks passed!
+190 files already formatted
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 54%]
+........................................................................ [ 73%]
+........................................................................ [ 91%]
+.................................                      [100%]
+393 passed, 18 subtests passed in 94.86s (0:01:34)
+echo-agent
+session-rules-prompt work=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/session-rules-prompt/java-13864659824963886841 {"cases":3,"provider_requests":3,"normalized":[{"id":"a1","outcome":"completed","answer":"RULES_OBSERVED_a1 中文🙂","system_contains":["CUSTOM_SYSTEM_KEEP 中文😀","A_ROOT_RULE","A_NESTED_V1"],"system_excludes":["B_ROOT_RULE","B_NESTED_RULE","A_NESTED_V2"],"user_preserved":true},{"id":"b1","outcome":"completed","answer":"RULES_OBSERVED_b1 中文🙂","system_contains":["CUSTOM_SYSTEM_KEEP 中文😀","B_ROOT_RULE","B_NESTED_RULE"],"system_excludes":["A_ROOT_RULE","A_NESTED_V1","A_NESTED_V2"],"user_preserved":true},{"id":"a2","outcome":"completed","answer":"RULES_OBSERVED_a2 中文🙂","system_contains":["CUSTOM_SYSTEM_KEEP 中文😀","A_ROOT_RULE","A_NESTED_V2"],"system_excludes":["B_ROOT_RULE","B_NESTED_RULE","A_NESTED_V1"],"user_preserved":true}]}
+Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/managed-retirement/java-retirement-true-17308225232108811917
+Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/managed-retirement/java-retirement-false-2130455819539432443
+idempotency evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/java-11652649335465133852 {"groups": 5, "provider_calls": 4, "session_creations": 2, "all_complete_publication_responses_equal": true, "duplicate_notices": 0}
+
+LSP diagnostics evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-diagnostics-14116382069577907086
+A2A evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/a2a-native/java-11454508744709497196
+State/Trace/Delivery evidence delivery: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-delivery-1071464358249219771
+State/Trace/Delivery evidence state: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-state-17125082087523662782
+State/Trace/Delivery evidence trace: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-trace-7429497311556004194
+Workflow evidence: Workflow shape observations: {"tuple-resume": {"outcome": "error", "code": "invalid_value", "after": {"id": "6b54443b-8747-4d4f-b5d0-3224d85ae176", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "9620310f-6864-49d2-a902-06b66829a640", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"memo": "checkpoint 中文🙂", "context": {"optional": null, "list": ["a", "b"]}, "approved": true}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T23:36:45.278798+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}, "tuple-with-state": {"outcome": "error", "code": "invalid_value", "after": {"id": "9144d1f2-da21-4f11-8c1a-9cc136468862", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "57f700de-9bde-4a92-afe9-84c4e46458c5", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"approved": true, "context": {"optional": null, "list": ["a", "b"]}, "memo": "checkpoint 中文🙂"}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T23:36:45.399072+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}}
+{"rows": 48, "scope": "routing/checkpoint/decision/branch/state/owner/close/quota", "not_proved": ["cross-process MemoryStore persistence", "all 24 accepted workflow operations", "extension workflow callbacks and stream cancellation"]}
+
+FileAuthority identity: {"native_calls": 10, "same_length_replacement_rejections": 2, "both_files_unchanged_on_each_rejection": true, "new_guard_can_append": true, "authority": "original framework file descriptor identity, not content snapshot", "platform_scope": "actual native filesystem identity observed on current host"}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/file-authority-identity/java-11268737686501899475
+Java actual memory/permission evidence rows 59 work /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-memory-permission-java-8623220145431890665
+Channel forward Java receipt: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/channel-forward/java-channel-forward-3457169727061165776/receipt.json
+Telemetry Java publicclose evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/java-public-close-3725979145661592850
+Telemetry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/java-3660574275980166465
+Telemetry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/telemetry-host/java-10545016243431771345
+late factory lifecycle evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-late-factory-504237242178139739
+late factory lifecycle evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-late-factory-3613457527505663696
+Tool behavior verified: {"capability_families":6,"native_calls":29,"failure_paths":10,"reported_effects":"empty","actual_file_and_ref_effects_checked":true,"uncovered":["fixed-official-endpoint scholarly search providers","other accepted media parsers/data transforms","runtime effect-ledger interpretation"]}
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-pause-4247234069215775015
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-cancel-6377772124344022932
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-subagent-await-5203824464914052523
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-crud-only-8753927525220945964
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/java-topology-6339637228290859263
+{"group": "topology", "verified": true, "factory_created": 0, "factory_closed": 0, "rows": 18}
+
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/java-eval-18318536738332292072
+{"group": "eval", "verified": true, "factory_created": 3, "factory_closed": 3, "rows": 23}
+
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/java-improve-9405332001032461309
+{"group": "improve", "verified": true, "factory_created": 12, "factory_closed": 12, "rows": 27}
+
+Tool value/effects: {"families": ["files", "shell", "web", "database", "research"], "rows": 49, "native_calls": 48, "protected_file_count": 3, "external_observations": {"research-arxiv_search": "success", "research-semantic_scholar_search": "framework_error", "research-pubmed_search": "success", "research-clinical_trials_search": "success"}, "residual": ["Shell default policy cannot directly execute script; native tail timeout has one observed process, descendant cleanup needs separate framework evidence", "Fixed official research search results are external observations, not a deterministic common result corpus", "WebSearch custom provider and Sandbox reverse stream have separate consumer tests"]}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/java-1964639015712798916
+SearchProvider verified: {"provider_calls": 4, "success_calls": 1, "failure_attempts": 3, "title_url_snippet_exact": true, "canonical_agent_run_count": 2}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/java-search-9725596492347666360
+Sandbox verified: {"producer_processes": 3, "physically_joined": 3, "cancel_and_close_pending_invocation": 2, "post_answer_cancel": false}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/java-sandbox-14085663638208061142
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-workflow-4216183264565501434
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-workflow-4216183264565501434
+{"group": "workflow", "verified": true}
+
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-llm-14210995938916936420
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-llm-14210995938916936420
+{"group": "llm", "verified": true}
+
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-graph-8530747408174420920
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-graph-8530747408174420920
+{"group": "graph", "verified": true}
+
+Run steer acceptance evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-run-steer-java-4102943270560261726
+Run steer native evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-run-steer-java-4102943270560261726
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-stdio-5742969571706482558
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-owned-reentry-14640327388169256087
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-normal-13638159298122070224
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-retry-1387809316304030869
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-transport-retry-14615110001894964283
+LSP evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-14363932627208202799
+RAG/project-rules verified: {"calls": 32, "embedding_posts": 13, "ranked_chunks": 3, "proof": "Session-local memory; no durable restart guarantee"}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-3816618263985504481
+RAG/project-rules retained: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-3816618263985504481
+Security native evidence: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/java-12946434299944717839 {"source_operations":3,"value_calls":9,"negative_calls":6,"raw_scan_calls":1,"provider_calls":0,"position_encoding":"canonical decimal text in dynamic-map string at UTF-8 byte offset 11"}
+Computation verified: {"native_calls": 61, "typed_errors": 25, "oracle_groups": 11, "final_pivot_boundaries": 5, "protected_files": 8, "host_sha256": "da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444"}
+
+Java native public corpus 61 work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-negotiation-reviewed-final/work/sdk-computation-native-java-1677336307726892329
+echo-agent Java SDK connected: agent-2
+language SDK source checks passed
