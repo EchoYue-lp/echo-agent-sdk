@@ -129,3 +129,19 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 [正式框架main后验](../../docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/README.md)保留原八个Admin文件字节及清单。实际commit response签名valid、main与已审ca702树同为b77ee48、main运行38614384013七个job成功；source receipt的570项构建输入没有改变，精确main官方strict exit0，当前/Git摘要同399c6b119。完整570输入表及六工程门禁仍在published framework原包；本最小SDK归档不声称包含或重新执行它们。原main-acceptance-source及旧pin包里的CI pending是原时点文字，不被覆盖。
 
 这些是框架signature/tree/CI/source/strict的后验，并非SDK平台、完整生成或main通过。SDK自身00782 Rust14、793输入完整语言及Git84消费者由各已审正式包单独证明；完整合同只读检查真实exit1/13及12待答、B物理结算残余、Windows原生SDK和registry范围保持。supports仍限既有仓库归属/框架唯一权威/源码产品资产，不据框架七CI提升41族verified。
+
+
+## 已验收治理摘要的同期维护范围
+
+本段只记录六份维护文稿在SDK eebd切点本地语义验收后的事实同步；Evidence主观察91c50及原framework收据/command_results均保持原版本，不将新文稿放进旧Git source_refs或称新执行。当前六文稿候选逐路径和字节如下，均只替页首一处旧“库存/摘要等待”文字，原历史正文不变：
+
+- `docs/sdk/governance/capability-map.md`，SHA256 `0267041d1c4aa2a20ab5627d25e36371dd71e96a09e981be7e82f034abba4f53`。
+- `docs/sdk/governance/behavior-evidence-matrix.md`，SHA256 `4fba125182e0b867acaf7cad077b61c09404a8ad2b965d2b62a94cbb58da87db`。
+- `docs/sdk/governance/finding-ledger.md`，SHA256 `85a20621b3e218a653d23036bf18b867434dd4adb35ab35d8453a61ee1cd2a84`。
+- `docs/sdk/governance/capability-review-remaining.md`，SHA256 `b6bcc7349b4e90b422de69816b04e46e2e385119f9b42bdf1a353e7cfd08708c`。
+- `docs/sdk/governance/capability-review-dispositions.md`，SHA256 `2ccf4db5d7f4d1b756a9c0dc4a9c607ba301df01d56f02051020f6ffa6565da9`。
+- `docs/sdk/governance/deferred-capabilities.md`，SHA256 `e9bca3d11d6e9c7c496c3224a225ec840a8832d117b7cf37941bfec3935e315c`。
+
+原eebd本地官方全项目strict退出0、source473与Git一致及308正式语义文件对账仍只属于eebd保存切点。此次文稿及baseline摘要c75是后继候选，须按真实当前任务基准重新执行完整strict；先前因缺少同次语义对象依据的exit1保留为真实失败。库存建模closed/行为open、52resolved4open/B3共享物理B与12连续性、人类例外边界、SDK main/Windows native限制均没有改变；不新增能力/接受身份/状态权威。
+
+后继CI设计和固定工具版本尚待实现及实跑，现有工程CI成功不证明执行语义校验。本文只是这些既有维护文稿的精确变更依据，不充当新runtime行为证明或未来CI结果。
