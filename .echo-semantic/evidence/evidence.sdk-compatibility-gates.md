@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-compatibility-gates
 kind: evidence
-observed_at: source:18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
+observed_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 source_refs:
   - docs/adr/0001-sdk-repository-boundary.md
   - docs/sdk/README.md
@@ -59,3 +59,7 @@ committed source document 不变，而 accepted rule 变化会确定性产生不
 ## 已知缺口
 
 不声称 npm/PyPI/Maven 发布完成，也不关闭 SDK 全能力治理范围。
+
+## 历史证据锚点
+
+本证据绑定已提交 SDK `30d7e219`；不支持本轮新增治理代码、目标 pin 或修改后合同的验证结论。原工作树 digest 不作为不可恢复的现有证据锚点。
