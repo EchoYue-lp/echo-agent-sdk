@@ -1,0 +1,20 @@
+[
+  {
+    "session_id": "sess_7e15ffa7-761f-4fe7-958d-7a6c51eea31b",
+    "agent_handle_id": "agent-2",
+    "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+    "cwd": {
+      "encoding": "utf8",
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript"
+    }
+  },
+  {
+    "session_id": "sess_33b97cfb-7583-4dc7-9a8a-b063759afc37",
+    "agent_handle_id": "agent-2",
+    "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+    "cwd": {
+      "encoding": "utf8",
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript"
+    }
+  }
+]

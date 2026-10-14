@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.echoagent.sdk.ToolValueEffectHostTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 10.58 s <<< FAILURE! -- in com.echoagent.sdk.ToolValueEffectHostTest
+com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects -- Time elapsed: 5.940 s <<< FAILURE!
+java.lang.AssertionError: tool oracle failed: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/java-2104497347045292380
+	at com.echoagent.sdk.ToolValueEffectHostTest.acceptedToolValuesAndActualEffects(ToolValueEffectHostTest.java:39)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

@@ -1,0 +1,71 @@
+{
+  "scope": "formal Channel and Sandbox documentation and executable example discovery; no runtime/API/generated contract/ADR changes",
+  "documentation": {
+    "docs/sdk/channel-handler-consumption.md": "0930caf34b71febb994cc6c78aaa88a680adb760aaf96ea4be568374d69c1f03",
+    "docs/sdk/facade-feature-adapters.md": "379f3ede4b99093f6115fbb812b904acc219dc7e7cf8bde8fbfef95e5a97c5e3",
+    "docs/sdk/sdk-extension-bridge.md": "07ce0fa2a0bcb9c308120deb9f8ffb50e544f3e16182e436c3f407c77e6b51bf",
+    "docs/sdk/README.md": "1bdb5fc8a1167dcab6dc0778cfeaa9dc976b398a1e76a4d716fd61a9aee2959a",
+    "sdks/typescript/README.md": "538243d436be63a3963f3b4cc9e7bb96202d095e1cc4593d6e7e3d8613f190da",
+    "sdks/python/README.md": "87bf09f3385bd3f8d123d2a9500097df5ac3969dcc446643f09f82e33c34ae99",
+    "sdks/java/README.md": "defa6fb4b60f293b1c773e5ff924b6262a27f41e77832723d5871978357bd66e"
+  },
+  "examples": {
+    "typescript": {
+      "existing": "sdks/typescript/examples/quickstart.ts",
+      "reason": "general Agent/Session smoke stays minimal; native Channel forward test supplies real registered callback consumption example",
+      "verification_entry": "npm test builds examples via build:examples and tests all native files; check-language-sdks executes quickstart"
+    },
+    "python": {
+      "existing": "sdks/python/examples/quickstart.py",
+      "reason": "general Agent/Session smoke stays minimal; native Channel forward test supplies real callback/cleanup example",
+      "verification_entry": "check-language-sdks lints/formats examples, runs all tests and executes quickstart"
+    },
+    "java": {
+      "existing": "sdks/java/src/main/java/com/echoagent/sdk/Example.java",
+      "reason": "general source-built lifecycle smoke retained; ChannelHandlerForwardHostTest supplies actual native consumer example",
+      "verification_entry": "mvn test compiles Example and discovers Channel JUnit test; check-language-sdks runs Example"
+    }
+  },
+  "website": "read-only search found framework IM/API docs and links to independent SDK, but no SDK six-operation page; no SDK wire description to synchronize in this slice; parent framework website delivery scope remains separate",
+  "validation": {
+    "relative_links_checked": 7,
+    "missing_relative_links": 0,
+    "diff_whitespace_check": 0,
+    "new_compile_or_runtime_checks": "none: document-only changes; root will run language final gates after exact published pin"
+  },
+  "compile_source_changed": false,
+  "existing_runtime_evidence": "162 Host tests and immutable 6cae prefix epoch remain source-bound; document verification does not claim published final acceptance",
+  "early_setup_ack_document_delta": {
+    "scope": "four existing callback documents only; no runtime, tests, generated contract or ADR changes",
+    "sources": {
+      "docs/sdk/sdk-extension-bridge.md": "c49a6d5c94e6ab9cd47a48efeb806787fa25aac315df2104ae2cf320fde95c26",
+      "sdks/typescript/README.md": "538243d436be63a3963f3b4cc9e7bb96202d095e1cc4593d6e7e3d8613f190da",
+      "sdks/python/README.md": "87bf09f3385bd3f8d123d2a9500097df5ac3969dcc446643f09f82e33c34ae99",
+      "sdks/java/README.md": "c05a54c4ec6be31fdff5a5bfa1f0655c62718a7ff01155d965b99dae9e2a9c77"
+    },
+    "observable_contract": "valid producer early Stream ACK retains cancellation forwarding to original signal until matching terminal is successfully sent; cleanup before declaration; cancel-before-ACK/terminal-before-ACK preserve identity; wrong generation and failed terminal/close keep route for retry",
+    "validation": {
+      "relative_document_links_checked": 4,
+      "missing_links": 0,
+      "diff_whitespace_check": 0,
+      "runtime_or_language_script_execution": "not performed by this document delta; root final Task/ACK and complete language script remain pending"
+    },
+    "accepted_source_continuity": "twelve choices still proposed; this documentation does not authorize seed changes or claim SDK main acceptance"
+  },
+  "java_process_exit_document_delta": {
+    "scope": "two existing failure-boundary documents only; no runtime, tests, generated contract or ADR changes",
+    "sources": {
+      "docs/sdk/sdk-extension-bridge.md": "07ce0fa2a0bcb9c308120deb9f8ffb50e544f3e16182e436c3f407c77e6b51bf",
+      "sdks/java/README.md": "defa6fb4b60f293b1c773e5ff924b6262a27f41e77832723d5871978357bd66e"
+    },
+    "observable_contract": "actual Host process exit promptly terminates pending Java requests and event/update subscriptions with transport_error; initialize caller cancellation closes same spawned Host; failed close retains retry owner",
+    "not_proven": "stdout EOF while child remains alive; transport_error does not imply Run terminal or foreign producer cleanup",
+    "validation": {
+      "local_links_checked": 2,
+      "missing_links": 0,
+      "diff_whitespace_check": 0,
+      "runtime_checks": "none; root final language script still running, not claimed passed"
+    },
+    "final_acceptance_pending": "twelve accepted-source continuity choices and five previously recorded dispositions remain pending; no seed or SDK main acceptance changes"
+  }
+}

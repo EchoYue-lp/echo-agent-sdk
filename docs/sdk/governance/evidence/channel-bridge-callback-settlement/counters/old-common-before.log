@@ -1,0 +1,30 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/gap-watermark-red-evidence/source/echo-sdk-host)
+warning: unused variable: `connection`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:8846:25
+     |
+8846 |                     let connection = callback_connection;
+     |                         ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_connection`
+     |
+     = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `echo-sdk-host` (lib test) generated 1 warning (run `cargo fix --lib -p echo-sdk-host --tests` to apply 1 suggestion)
+    Finished `test` profile [unoptimized] target(s) in 43.96s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-6d8b8adb0d80813f)
+
+running 1 test
+
+thread 'core_profile::extension_bridge::tests::channel_once_public_helper_keeps_real_callback_after_cancel' (129254361) panicked at echo-sdk-host/src/core_profile/extension_bridge.rs:8917:21:
+assertion `left == right` failed
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test core_profile::extension_bridge::tests::channel_once_public_helper_keeps_real_callback_after_cancel ... FAILED
+
+failures:
+
+failures:
+    core_profile::extension_bridge::tests::channel_once_public_helper_keeps_real_callback_after_cancel
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 152 filtered out; finished in 0.40s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

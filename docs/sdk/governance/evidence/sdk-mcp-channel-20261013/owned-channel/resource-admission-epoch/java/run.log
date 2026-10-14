@@ -1,0 +1,46 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.echoagent:echo-agent-sdk-source >-----------------
+[INFO] Building echo-agent Java SDK (source) 0.1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ echo-agent-sdk-source ---
+[INFO] skip non existing resourceDirectory /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ echo-agent-sdk-source ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ echo-agent-sdk-source ---
+[INFO] skip non existing resourceDirectory /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ echo-agent-sdk-source ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ echo-agent-sdk-source ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.echoagent.sdk.McpChannelHostTest
+MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-mcp-stdio-5925876722793237596
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-channels-owned-reentry-971777644845922802
+MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-channels-normal-17652726703730220555
+MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-channels-retry-9783348022098305573
+MCP/channel evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-mcp-transport-retry-15614628737761213204
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.110 s -- in com.echoagent.sdk.McpChannelHostTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.353 s
+[INFO] Finished at: 2026-10-13T22:55:51+08:00
+[INFO] ------------------------------------------------------------------------

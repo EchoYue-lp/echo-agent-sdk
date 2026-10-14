@@ -1,0 +1,72 @@
+{
+  "scope": "facade stream transport producer completion; no framework Run terminal authority changes",
+  "worktree": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "branch": "refactor/Echoyue/sdk-semantic-governance",
+  "framework_validation": {
+    "kind": "temporary local combined ACP + Task source patch; not published pin proof",
+    "root": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity",
+    "base": "95ec66c6083a8feb17a1c28de0d01e1a24ca8a28",
+    "tracked_diff_sha256": "36e3c8c43428fd557c1e04c17bb44dddd73df6cec79c3ec825855e7b23392d67"
+  },
+  "results": {
+    "initial_test_fixture_compile": {
+      "exit_code": 101,
+      "cause": "test fixture needed explicit EchoSdkError conversion; corrected without production fix"
+    },
+    "red_behavior": {
+      "exit_code": 101,
+      "passed": 1,
+      "failed": 3,
+      "ignored": 0,
+      "causes": [
+        "unwind incorrectly complete",
+        "abort incorrectly complete",
+        "EOF prematurely complete before producer settlement"
+      ]
+    },
+    "green_behavior": {
+      "exit_code": 0,
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "compile_warnings": 0
+    },
+    "workspace_fmt_check": {
+      "exit_code": 0
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    }
+  },
+  "files": {
+    "baseline": {
+      "path": "/tmp/sdk-stream-producer-before.rs",
+      "sha256": "8c7c619cad26e38794032d591f4c7cf3b05ce93f782d0f5aa9146017d1a6fa43"
+    },
+    "red_source": {
+      "path": "/tmp/sdk-stream-producer-red.rs",
+      "sha256": "9e24351c4e047ee2cf181e1c00b92c69cc9cd1d12df5eaabe297d2391b9ca0d9"
+    },
+    "green_source": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/stream.rs",
+      "sha256": "42d0ed5c6aaf4b2605a77976d856cd4b90243437bb2f740266addeec2d26b5d1"
+    },
+    "initial_fixture_compile": {
+      "path": "/tmp/sdk-stream-producer-red.log",
+      "sha256": "1c0114f77e2ee7a08444f91f65380ca667dd964ce3634081e35f16dda5cc95b0"
+    },
+    "red_behavior": {
+      "path": "/tmp/sdk-stream-producer-red-behavior.log",
+      "sha256": "2febe1d4e4e0eabf83a608921308efb635979b41e7b53f17064db089cd2f8aae"
+    },
+    "green_behavior": {
+      "path": "/tmp/sdk-stream-producer-green.log",
+      "sha256": "d8ff835ba83ba848f39ac7c309f8eb93c00301a40e20bf38f3901ae71fda2e1d"
+    },
+    "fmt_check": {
+      "path": "/tmp/sdk-stream-producer-fmt-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "full_host_library_gate": "not run here; coordinator will combine stream and facade-error source scopes"
+}

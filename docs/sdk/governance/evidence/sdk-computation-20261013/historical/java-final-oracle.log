@@ -1,0 +1,14 @@
+test_chart_all_seven_mark_mappings (verify_corpus.ExactGreenObservations) ... ok
+test_data_aggregate_join_and_quality_exact (verify_corpus.ExactGreenObservations) ... ok
+test_error_fidelity_and_unchanged_failure_sentinel (verify_corpus.ExactGreenObservations) ... ok
+test_generic_validation_preserves_outputs_before_failed_effects (verify_corpus.ExactGreenObservations) ... ok
+test_guard_exact_unicode_bytes_and_modes (verify_corpus.ExactGreenObservations) ... ok
+test_statistics_known_sample_and_no_inference (verify_corpus.ExactGreenObservations) ... ok
+test_structured_errors_paths_missing_null_and_limit (verify_corpus.ExactGreenObservations) ... ok
+test_overlap_should_redact_complete_card_once (verify_corpus.OriginalSemanticCounterexamples) ... ok
+test_pivot_should_preserve_every_input_cell (verify_corpus.OriginalSemanticCounterexamples) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.001s
+
+OK

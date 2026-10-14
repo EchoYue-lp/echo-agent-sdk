@@ -1,0 +1,268 @@
+{
+  "channels-normal": {
+    "inbound_handler_calls": 0,
+    "running": {
+      "a": false,
+      "b": false
+    },
+    "send": {
+      "id": "a",
+      "input": {
+        "message": {
+          "attachments": [
+            {
+              "data_base64": "AP8AgA==",
+              "filename": "文件-image-🙂.bin",
+              "kind": "image"
+            },
+            {
+              "data_base64": "AP8BgA==",
+              "filename": "文件-file-🙂.bin",
+              "kind": "file"
+            },
+            {
+              "data_base64": "AP8CgA==",
+              "filename": "文件-audio-🙂.bin",
+              "kind": "audio"
+            },
+            {
+              "data_base64": "AP8DgA==",
+              "filename": "文件-video-🙂.bin",
+              "kind": "video"
+            }
+          ],
+          "channel_id": "a",
+          "chat_type": "direct",
+          "reply_to": "原消息🙂",
+          "text": "hello 中文🧪",
+          "to": "收件人🙂"
+        }
+      },
+      "operation": "channel_send"
+    },
+    "starts": [
+      {
+        "id": "a",
+        "input": {
+          "handler_id": "handler"
+        }
+      },
+      {
+        "id": "b",
+        "input": {
+          "handler_id": "handler"
+        }
+      }
+    ],
+    "stops": {
+      "a": 1,
+      "b": 1
+    }
+  },
+  "channels-retry": {
+    "inbound_handler_calls": 0,
+    "running": {
+      "a": false,
+      "b": false
+    },
+    "send": {
+      "id": "a",
+      "input": {
+        "message": {
+          "attachments": [
+            {
+              "data_base64": "AP8AgA==",
+              "filename": "文件-image-🙂.bin",
+              "kind": "image"
+            },
+            {
+              "data_base64": "AP8BgA==",
+              "filename": "文件-file-🙂.bin",
+              "kind": "file"
+            },
+            {
+              "data_base64": "AP8CgA==",
+              "filename": "文件-audio-🙂.bin",
+              "kind": "audio"
+            },
+            {
+              "data_base64": "AP8DgA==",
+              "filename": "文件-video-🙂.bin",
+              "kind": "video"
+            }
+          ],
+          "channel_id": "a",
+          "chat_type": "direct",
+          "reply_to": "原消息🙂",
+          "text": "hello 中文🧪",
+          "to": "收件人🙂"
+        }
+      },
+      "operation": "channel_send"
+    },
+    "starts": [
+      {
+        "id": "a",
+        "input": {
+          "handler_id": "handler"
+        }
+      },
+      {
+        "id": "b",
+        "input": {
+          "handler_id": "handler"
+        }
+      }
+    ],
+    "stops": {
+      "a": 2,
+      "b": 1
+    }
+  },
+  "mcp-stdio": {
+    "process_cleanup": {
+      "a_dead": true,
+      "b_dead_after_own_close": true,
+      "b_survived_a_close": true
+    },
+    "results": [
+      {
+        "operation": "echo_agent::mcp::McpClient::server_capabilities",
+        "value": {
+          "prompts": {
+            "listChanged": false
+          },
+          "resources": {
+            "listChanged": false,
+            "subscribe": false
+          },
+          "tools": {}
+        }
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::tools",
+        "value": [
+          {
+            "description": "echo Unicode",
+            "inputSchema": {
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "type": "object"
+            },
+            "name": "echo"
+          }
+        ]
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::resources",
+        "value": [
+          {
+            "description": "text meta",
+            "mimeType": "text/plain",
+            "name": "中文🙂",
+            "uri": "fixture://中文/text"
+          },
+          {
+            "mimeType": "application/octet-stream",
+            "name": "binary",
+            "uri": "fixture://binary"
+          }
+        ]
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::list_resources",
+        "value": [
+          {
+            "description": "text meta",
+            "mimeType": "text/plain",
+            "name": "中文🙂",
+            "uri": "fixture://中文/text"
+          },
+          {
+            "mimeType": "application/octet-stream",
+            "name": "binary",
+            "uri": "fixture://binary"
+          }
+        ]
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::list_resource_templates",
+        "value": [
+          {
+            "description": "template",
+            "mimeType": "text/plain",
+            "name": "模板🙂",
+            "uriTemplate": "fixture://item/{id}"
+          }
+        ]
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::read_resource",
+        "value": {
+          "contents": [
+            {
+              "blob": "AP9BgA==",
+              "mimeType": "application/octet-stream",
+              "uri": "fixture://binary"
+            }
+          ]
+        }
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::read_resource",
+        "value": {
+          "contents": [
+            {
+              "mimeType": "text/plain",
+              "text": "资源 中文🙂",
+              "uri": "fixture://中文/text"
+            }
+          ]
+        }
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::get_prompt",
+        "value": {
+          "description": "topic prompt",
+          "messages": [
+            {
+              "content": {
+                "text": "主题 无损🧪",
+                "type": "text"
+              },
+              "role": "user"
+            }
+          ]
+        }
+      },
+      {
+        "operation": "echo_agent::mcp::McpClient::call_tool",
+        "value": {
+          "content": [
+            {
+              "text": "工具🙂",
+              "type": "text"
+            }
+          ],
+          "isError": false
+        }
+      }
+    ]
+  },
+  "mcp-transport-retry": {
+    "closeCount": 2,
+    "operation_order": [
+      "mcp_transport_send",
+      "mcp_transport_notify",
+      "mcp_transport_close",
+      "mcp_transport_close"
+    ],
+    "released_quota_refilled": 4
+  }
+}

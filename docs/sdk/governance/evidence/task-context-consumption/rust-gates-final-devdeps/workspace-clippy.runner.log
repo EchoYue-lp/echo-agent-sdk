@@ -1,0 +1,24 @@
+{
+  "label": "workspace-clippy",
+  "command": [
+    "cargo",
+    "clippy",
+    "--workspace",
+    "--all-targets",
+    "--all-features",
+    "--locked",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/rust-gates-final-devdeps/workspace-clippy.log",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 383,
+  "bytesWritten": 383,
+  "startedAt": "2026-10-13T21:54:43.041Z",
+  "finishedAt": "2026-10-13T21:55:07.399Z"
+}

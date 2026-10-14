@@ -1,0 +1,5 @@
+{
+  "sdks/typescript/src/client.ts": "ded47f340ee3de942442e93ae45aa7909ee5e70d2da914825b01002840333ca4",
+  "sdks/python/src/echo_agent_sdk/client.py": "d1589b1c05b1642a9f8c2160d419c27ea85c87a92f9dc4669d33c8894b7a2c31",
+  "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "866aa24fbd95a2cf7a8ddbfe19329ca954048a3d1353890205cae7b7e9018599"
+}

@@ -1,0 +1,2754 @@
+{
+  "host": "/tmp/echo-sdk-governance-tool-validation-host",
+  "host_sha256": "c52da2d346d8848074b646e5442ecc83890cd68991f08287780280f871b59f89",
+  "work": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43",
+  "rows": [
+    {
+      "id": "stats-exact",
+      "operation": "exploratory_statistics",
+      "arguments": [
+        "value",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/stats.csv"
+      ],
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"contract_version\":1,\"analysis_kind\":\"exploratory_descriptive\",\"inference\":false,\"file\":\"/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/stats.csv\",\"columns\":[{\"name\":\"value\",\"total_count\":4,\"valid_count\":4,\"missing_or_non_finite_count\":0,\"mean\":2.5,\"sample_std_dev\":1.2909944487358056,\"min\":1.0,\"p25\":1.75,\"median\":2.5,\"p75\":3.25,\"max\":4.0,\"skewness_moment\":0.0,\"excess_kurtosis_moment\":-1.36}],\"limitations\":[\"Moment skewness and kurtosis are exploratory estimators.\",\"No p-values, confidence intervals, causal claims, or significance decisions are produced.\",\"Use a persisted SciPy/statsmodels/R script through run_code for formal inference.\"]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "contract_version"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "analysis_kind"
+              },
+              "value": {
+                "kind": "string",
+                "value": "exploratory_descriptive"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "inference"
+              },
+              "value": {
+                "kind": "bool",
+                "value": false
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "file"
+              },
+              "value": {
+                "kind": "string",
+                "value": "/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/stats.csv"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "value"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "total_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "valid_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "missing_or_non_finite_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "mean"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 2.5
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "sample_std_dev"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 1.2909944487358056
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "min"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 1.0
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "p25"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 1.75
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "median"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 2.5
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "p75"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 3.25
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "max"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 4.0
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "skewness_moment"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 0.0
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "excess_kurtosis_moment"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": -1.36
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "limitations"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "Moment skewness and kurtosis are exploratory estimators."
+                  },
+                  {
+                    "kind": "string",
+                    "value": "No p-values, confidence intervals, causal claims, or significance decisions are produced."
+                  },
+                  {
+                    "kind": "string",
+                    "value": "Use a persisted SciPy/statsmodels/R script through run_code for formal inference."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      }
+    },
+    {
+      "id": "stats-nonnumeric",
+      "operation": "exploratory_statistics",
+      "arguments": [
+        "label",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/stats.csv"
+      ],
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"contract_version\":1,\"analysis_kind\":\"exploratory_descriptive\",\"inference\":false,\"file\":\"/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/stats.csv\",\"columns\":[{\"name\":\"label\",\"error\":\"Non-numeric column\"}],\"limitations\":[\"Moment skewness and kurtosis are exploratory estimators.\",\"No p-values, confidence intervals, causal claims, or significance decisions are produced.\",\"Use a persisted SciPy/statsmodels/R script through run_code for formal inference.\"]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "contract_version"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "analysis_kind"
+              },
+              "value": {
+                "kind": "string",
+                "value": "exploratory_descriptive"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "inference"
+              },
+              "value": {
+                "kind": "bool",
+                "value": false
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "file"
+              },
+              "value": {
+                "kind": "string",
+                "value": "/private/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/stats.csv"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "label"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "error"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "Non-numeric column"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "limitations"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "Moment skewness and kurtosis are exploratory estimators."
+                  },
+                  {
+                    "kind": "string",
+                    "value": "No p-values, confidence intervals, causal claims, or significance decisions are produced."
+                  },
+                  {
+                    "kind": "string",
+                    "value": "Use a persisted SciPy/statsmodels/R script through run_code for formal inference."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      }
+    },
+    {
+      "id": "stats-unknowncolumn",
+      "operation": "exploratory_statistics",
+      "arguments": [
+        "unknown",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/stats.csv"
+      ],
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Tool 'exploratory_statistics' execution failed: Column 'unknown' not found: not found: \"unknown\" not found",
+        "retryable": "never",
+        "operation": "exploratory_statistics",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "structured-valid",
+      "operation": "structured_output.validate",
+      "arguments": [
+        {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "count"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "count": 2,
+          "name": "中文😀"
+        }
+      ],
+      "result": {
+        "valid": true,
+        "errors": []
+      }
+    },
+    {
+      "id": "structured-invalid",
+      "operation": "structured_output.validate",
+      "arguments": [
+        {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "count"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "count": 0,
+          "name": 3
+        }
+      ],
+      "result": {
+        "valid": false,
+        "errors": [
+          {
+            "instance_path": "/count",
+            "message": "0 is less than the minimum of 1"
+          },
+          {
+            "instance_path": "/name",
+            "message": "3 is not of type \"string\""
+          }
+        ]
+      }
+    },
+    {
+      "id": "structured-no-sample",
+      "operation": "structured_output.validate",
+      "arguments": [
+        {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "count"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "result": {
+        "valid": true,
+        "errors": []
+      }
+    },
+    {
+      "id": "structured-null-sample",
+      "operation": "structured_output.validate",
+      "arguments": [
+        {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "count"
+          ],
+          "additionalProperties": false
+        },
+        null
+      ],
+      "result": {
+        "valid": false,
+        "errors": [
+          {
+            "instance_path": "",
+            "message": "null is not of type \"object\""
+          }
+        ]
+      }
+    },
+    {
+      "id": "structured-bad-schema",
+      "operation": "structured_output.validate",
+      "error": {
+        "code": "invalid_value",
+        "message": "schema does not compile: \"not-a-schema\" is not of types \"boolean\", \"object\"",
+        "retryable": "never",
+        "operation": "_echo_agent/structured_output/validate",
+        "details": null
+      }
+    },
+    {
+      "id": "structured-too-large",
+      "operation": "structured_output.validate",
+      "error": {
+        "code": "payload_too_large",
+        "message": "structured output schema exceeds the payload bound",
+        "retryable": "never",
+        "operation": "_echo_agent/structured_output/validate",
+        "details": null
+      }
+    },
+    {
+      "id": "structured-error-bound",
+      "operation": "structured_output.validate",
+      "arguments": [
+        {
+          "type": "object",
+          "properties": {
+            "p0": {
+              "type": "integer"
+            },
+            "p1": {
+              "type": "integer"
+            },
+            "p2": {
+              "type": "integer"
+            },
+            "p3": {
+              "type": "integer"
+            },
+            "p4": {
+              "type": "integer"
+            },
+            "p5": {
+              "type": "integer"
+            },
+            "p6": {
+              "type": "integer"
+            },
+            "p7": {
+              "type": "integer"
+            },
+            "p8": {
+              "type": "integer"
+            },
+            "p9": {
+              "type": "integer"
+            },
+            "p10": {
+              "type": "integer"
+            },
+            "p11": {
+              "type": "integer"
+            },
+            "p12": {
+              "type": "integer"
+            },
+            "p13": {
+              "type": "integer"
+            },
+            "p14": {
+              "type": "integer"
+            },
+            "p15": {
+              "type": "integer"
+            },
+            "p16": {
+              "type": "integer"
+            },
+            "p17": {
+              "type": "integer"
+            },
+            "p18": {
+              "type": "integer"
+            },
+            "p19": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "p0",
+            "p1",
+            "p2",
+            "p3",
+            "p4",
+            "p5",
+            "p6",
+            "p7",
+            "p8",
+            "p9",
+            "p10",
+            "p11",
+            "p12",
+            "p13",
+            "p14",
+            "p15",
+            "p16",
+            "p17",
+            "p18",
+            "p19"
+          ]
+        },
+        {}
+      ],
+      "result": {
+        "valid": false,
+        "errors": [
+          {
+            "instance_path": "",
+            "message": "\"p0\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p1\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p2\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p3\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p4\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p5\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p6\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p7\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p8\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p9\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p10\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p11\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p12\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p13\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p14\" is a required property"
+          },
+          {
+            "instance_path": "",
+            "message": "\"p15\" is a required property"
+          }
+        ]
+      }
+    },
+    {
+      "id": "guard-utf8-detect",
+      "operation": "content-guard.detect",
+      "arguments": [
+        "中😀 alice@example.com 尾"
+      ],
+      "result": {
+        "matches": [
+          {
+            "pii_type": "Email",
+            "start": "8",
+            "end": "25",
+            "matched": "alice@example.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "guard-utf8-redact",
+      "operation": "content-guard.redact",
+      "arguments": [
+        "中😀 alice@example.com 尾"
+      ],
+      "result": {
+        "redacted": "中😀 [REDACTED:EMAIL] 尾"
+      }
+    },
+    {
+      "id": "guard-clean",
+      "operation": "content-guard.is_clean",
+      "arguments": [
+        "中😀清洁尾"
+      ],
+      "result": {
+        "clean": true
+      }
+    },
+    {
+      "id": "guard-detect",
+      "operation": "content-guard.check",
+      "arguments": [
+        "detect",
+        "中😀 alice@example.com 尾"
+      ],
+      "result": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_core::guard::content::ContentGuardResult",
+          "variant": "detected",
+          "fields": [
+            {
+              "name": "pii_types",
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "email"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guard-reject",
+      "operation": "content-guard.check",
+      "arguments": [
+        "reject",
+        "中😀 alice@example.com 尾"
+      ],
+      "result": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_core::guard::content::ContentGuardResult",
+          "variant": "rejected",
+          "fields": [
+            {
+              "name": "pii_types",
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "email"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guard-redact",
+      "operation": "content-guard.check",
+      "arguments": [
+        "redact",
+        "中😀 alice@example.com 尾"
+      ],
+      "result": {
+        "kind": "variant",
+        "value": {
+          "type_id": "echo_core::guard::content::ContentGuardResult",
+          "variant": "redacted",
+          "fields": [
+            {
+              "name": "content",
+              "value": {
+                "kind": "string",
+                "value": "中😀 [REDACTED:EMAIL] 尾"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guard-illegalmode",
+      "operation": "content-guard.check",
+      "arguments": [
+        "illegal",
+        "中😀 alice@example.com 尾"
+      ],
+      "error": {
+        "code": "invalid_value",
+        "message": "content guard mode is invalid",
+        "retryable": "never",
+        "operation": "content-guard.check",
+        "handle": null,
+        "details": null
+      }
+    },
+    {
+      "id": "chart-line",
+      "operation": "generate_chart",
+      "arguments": [
+        "line",
+        "中😀标题",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"width\": 321,\n  \"height\": 123,\n  \"data\": {\n    \"values\": [\n      {\n        \"label\": \"中文😀\",\n        \"value\": 1\n      },\n      {\n        \"label\": \"尾\",\n        \"value\": 4\n      }\n    ]\n  },\n  \"mark\": \"line\",\n  \"title\": \"中😀标题\",\n  \"encoding\": {\n    \"x\": {\n      \"field\": \"label\",\n      \"type\": \"nominal\"\n    },\n    \"y\": {\n      \"field\": \"value\",\n      \"type\": \"quantitative\"\n    }\n  }\n}",
+        "truncated": false
+      }
+    },
+    {
+      "id": "chart-bar",
+      "operation": "generate_chart",
+      "arguments": [
+        "bar",
+        "中😀标题",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"width\": 321,\n  \"height\": 123,\n  \"data\": {\n    \"values\": [\n      {\n        \"label\": \"中文😀\",\n        \"value\": 1\n      },\n      {\n        \"label\": \"尾\",\n        \"value\": 4\n      }\n    ]\n  },\n  \"mark\": \"bar\",\n  \"title\": \"中😀标题\",\n  \"encoding\": {\n    \"x\": {\n      \"field\": \"label\",\n      \"type\": \"nominal\"\n    },\n    \"y\": {\n      \"field\": \"value\",\n      \"type\": \"quantitative\"\n    }\n  }\n}",
+        "truncated": false
+      }
+    },
+    {
+      "id": "chart-pie",
+      "operation": "generate_chart",
+      "arguments": [
+        "pie",
+        "中😀标题",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"width\": 321,\n  \"height\": 123,\n  \"data\": {\n    \"values\": [\n      {\n        \"label\": \"中文😀\",\n        \"value\": 1\n      },\n      {\n        \"label\": \"尾\",\n        \"value\": 4\n      }\n    ]\n  },\n  \"mark\": \"arc\",\n  \"title\": \"中😀标题\",\n  \"encoding\": {\n    \"theta\": {\n      \"field\": \"value\",\n      \"type\": \"quantitative\"\n    },\n    \"color\": {\n      \"field\": \"label\",\n      \"type\": \"nominal\"\n    }\n  }\n}",
+        "truncated": false
+      }
+    },
+    {
+      "id": "chart-scatter",
+      "operation": "generate_chart",
+      "arguments": [
+        "scatter",
+        "中😀标题",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"width\": 321,\n  \"height\": 123,\n  \"data\": {\n    \"values\": [\n      {\n        \"label\": \"中文😀\",\n        \"value\": 1\n      },\n      {\n        \"label\": \"尾\",\n        \"value\": 4\n      }\n    ]\n  },\n  \"mark\": \"point\",\n  \"title\": \"中😀标题\",\n  \"encoding\": {\n    \"x\": {\n      \"field\": \"label\",\n      \"type\": \"nominal\"\n    },\n    \"y\": {\n      \"field\": \"value\",\n      \"type\": \"quantitative\"\n    }\n  }\n}",
+        "truncated": false
+      }
+    },
+    {
+      "id": "chart-area",
+      "operation": "generate_chart",
+      "arguments": [
+        "area",
+        "中😀标题",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"width\": 321,\n  \"height\": 123,\n  \"data\": {\n    \"values\": [\n      {\n        \"label\": \"中文😀\",\n        \"value\": 1\n      },\n      {\n        \"label\": \"尾\",\n        \"value\": 4\n      }\n    ]\n  },\n  \"mark\": \"area\",\n  \"title\": \"中😀标题\",\n  \"encoding\": {\n    \"x\": {\n      \"field\": \"label\",\n      \"type\": \"nominal\"\n    },\n    \"y\": {\n      \"field\": \"value\",\n      \"type\": \"quantitative\"\n    }\n  }\n}",
+        "truncated": false
+      }
+    },
+    {
+      "id": "chart-heatmap",
+      "operation": "generate_chart",
+      "arguments": [
+        "heatmap",
+        "中😀标题",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"width\": 321,\n  \"height\": 123,\n  \"data\": {\n    \"values\": [\n      {\n        \"label\": \"中文😀\",\n        \"value\": 1\n      },\n      {\n        \"label\": \"尾\",\n        \"value\": 4\n      }\n    ]\n  },\n  \"mark\": \"rect\",\n  \"title\": \"中😀标题\",\n  \"encoding\": {\n    \"x\": {\n      \"field\": \"label\",\n      \"type\": \"nominal\"\n    },\n    \"y\": {\n      \"field\": \"value\",\n      \"type\": \"nominal\"\n    },\n    \"color\": {\n      \"field\": \"value\",\n      \"type\": \"quantitative\"\n    }\n  }\n}",
+        "truncated": false
+      }
+    },
+    {
+      "id": "chart-boxplot",
+      "operation": "generate_chart",
+      "arguments": [
+        "boxplot",
+        "中😀标题",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "result": {
+        "kind": {
+          "kind": "text"
+        },
+        "success": true,
+        "output": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v5.json\",\n  \"width\": 321,\n  \"height\": 123,\n  \"data\": {\n    \"values\": [\n      {\n        \"label\": \"中文😀\",\n        \"value\": 1\n      },\n      {\n        \"label\": \"尾\",\n        \"value\": 4\n      }\n    ]\n  },\n  \"mark\": \"boxplot\",\n  \"title\": \"中😀标题\",\n  \"encoding\": {\n    \"x\": {\n      \"field\": \"label\",\n      \"type\": \"nominal\"\n    },\n    \"y\": {\n      \"field\": \"value\",\n      \"type\": \"quantitative\",\n      \"scale\": {\n        \"zero\": false\n      }\n    }\n  }\n}",
+        "truncated": false
+      }
+    },
+    {
+      "id": "chart-unknown",
+      "operation": "generate_chart",
+      "arguments": [
+        "illegal",
+        "bad",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json"
+      ],
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"illegal\" is not one of \"line\", \"bar\" or 5 other candidates",
+        "retryable": "never",
+        "operation": "generate_chart",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "chart-wrongformat",
+      "operation": "generate_chart",
+      "arguments": [
+        "bar",
+        "bad",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "png"
+      ],
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'generate_chart': \"png\" is not one of \"json\" or \"html\"",
+        "retryable": "never",
+        "operation": "generate_chart",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "chart-trailingnullarity",
+      "operation": "generate_chart",
+      "arguments": [
+        "bar",
+        "bad",
+        "label",
+        "value",
+        null,
+        [
+          {
+            "label": "中文😀",
+            "value": 1
+          },
+          {
+            "label": "尾",
+            "value": 4
+          }
+        ],
+        321,
+        123,
+        "json",
+        null
+      ],
+      "error": {
+        "code": "invalid_value",
+        "message": "more arguments than the tool's schema declares",
+        "retryable": "never",
+        "operation": "generate_chart",
+        "handle": null,
+        "details": null
+      }
+    },
+    {
+      "id": "data-aggregate",
+      "operation": "aggregate_data",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv",
+        "group",
+        "value:sum,value:mean,value:count"
+      ],
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"tool\":\"aggregate_data\",\"rows\":2,\"columns\":4,\"column_names\":[\"group\",\"value_sum\",\"value_mean\",\"value_count\"],\"truncated\":false,\"data\":[{\"group\":\"a\",\"value_sum\":3,\"value_mean\":1.5,\"value_count\":2},{\"group\":\"b\",\"value_sum\":7,\"value_mean\":3.5,\"value_count\":2}],\"group_by\":\"group\"}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "tool"
+              },
+              "value": {
+                "kind": "string",
+                "value": "aggregate_data"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "rows"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "2"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "4"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "column_names"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "group"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "value_sum"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "value_mean"
+                  },
+                  {
+                    "kind": "string",
+                    "value": "value_count"
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "truncated"
+              },
+              "value": {
+                "kind": "bool",
+                "value": false
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "data"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "group"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "a"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value_sum"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "3"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value_mean"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 1.5
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "2"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "group"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "b"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value_sum"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "7"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value_mean"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 3.5
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "2"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "group_by"
+              },
+              "value": {
+                "kind": "string",
+                "value": "group"
+              }
+            }
+          ]
+        },
+        "truncated": false
+      }
+    },
+    {
+      "id": "data-join",
+      "operation": "join_data",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/lookup.csv",
+        [
+          "id"
+        ],
+        "left",
+        null,
+        null,
+        null,
+        10
+      ],
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"left_file\":\"/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv\",\"right_file\":\"/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/lookup.csv\",\"join_keys\":[\"id\"],\"join_type\":\"left\",\"total_rows\":4,\"columns\":5,\"column_info\":[{\"name\":\"id\",\"dtype\":\"i64\"},{\"name\":\"group\",\"dtype\":\"str\"},{\"name\":\"quarter\",\"dtype\":\"str\"},{\"name\":\"value\",\"dtype\":\"i64\"},{\"name\":\"label\",\"dtype\":\"str\"}],\"renamed_columns\":{},\"preview_rows\":10,\"preview\":[{\"id\":1,\"group\":\"a\",\"quarter\":\"q1\",\"value\":1,\"label\":\"中文\"},{\"id\":2,\"group\":\"a\",\"quarter\":\"q2\",\"value\":2,\"label\":null},{\"id\":3,\"group\":\"b\",\"quarter\":\"q1\",\"value\":3,\"label\":\"emoji😀\"},{\"id\":4,\"group\":\"b\",\"quarter\":\"q2\",\"value\":4,\"label\":null}]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "left_file"
+              },
+              "value": {
+                "kind": "string",
+                "value": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "right_file"
+              },
+              "value": {
+                "kind": "string",
+                "value": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/lookup.csv"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "join_keys"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "string",
+                    "value": "id"
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "join_type"
+              },
+              "value": {
+                "kind": "string",
+                "value": "left"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_rows"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "4"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "5"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "column_info"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "id"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "i64"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "group"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "str"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "quarter"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "str"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "value"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "i64"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "label"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "str"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "renamed_columns"
+              },
+              "value": {
+                "kind": "map",
+                "value": []
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "preview_rows"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "10"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "preview"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "id"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "1"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "group"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "a"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "quarter"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "q1"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "1"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "label"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "中文"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "id"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "2"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "group"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "a"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "quarter"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "q2"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "2"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "label"
+                        },
+                        "value": {
+                          "kind": "null"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "id"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "3"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "group"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "b"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "quarter"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "q1"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "3"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "label"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "emoji😀"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "id"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "group"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "b"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "quarter"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "q2"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "value"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "label"
+                        },
+                        "value": {
+                          "kind": "null"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      }
+    },
+    {
+      "id": "data-pivot",
+      "operation": "pivot_data",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv",
+        "group",
+        "quarter",
+        "value",
+        "sum"
+      ],
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"pivot_result\":{\"index\":[\"group\"],\"columns\":\"quarter\",\"pivot_values\":[\"\\\"q2\\\"\",\"\\\"q1\\\"\"],\"values\":[\"value\"],\"agg_function\":\"sum\",\"shape\":[2,3],\"data\":[{\"group\":\"a\",\"\\\"q2\\\"\":null,\"\\\"q1\\\"\":null},{\"group\":\"b\",\"\\\"q2\\\"\":null,\"\\\"q1\\\"\":null}]}}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "pivot_result"
+              },
+              "value": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "index"
+                    },
+                    "value": {
+                      "kind": "list",
+                      "value": [
+                        {
+                          "kind": "string",
+                          "value": "group"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "columns"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "quarter"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "pivot_values"
+                    },
+                    "value": {
+                      "kind": "list",
+                      "value": [
+                        {
+                          "kind": "string",
+                          "value": "\"q2\""
+                        },
+                        {
+                          "kind": "string",
+                          "value": "\"q1\""
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "values"
+                    },
+                    "value": {
+                      "kind": "list",
+                      "value": [
+                        {
+                          "kind": "string",
+                          "value": "value"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "agg_function"
+                    },
+                    "value": {
+                      "kind": "string",
+                      "value": "sum"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "shape"
+                    },
+                    "value": {
+                      "kind": "list",
+                      "value": [
+                        {
+                          "kind": "u64",
+                          "value": "2"
+                        },
+                        {
+                          "kind": "u64",
+                          "value": "3"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "data"
+                    },
+                    "value": {
+                      "kind": "list",
+                      "value": [
+                        {
+                          "kind": "map",
+                          "value": [
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "group"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "a"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "\"q2\""
+                              },
+                              "value": {
+                                "kind": "null"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "\"q1\""
+                              },
+                              "value": {
+                                "kind": "null"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "map",
+                          "value": [
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "group"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "b"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "\"q2\""
+                              },
+                              "value": {
+                                "kind": "null"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "\"q1\""
+                              },
+                              "value": {
+                                "kind": "null"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      }
+    },
+    {
+      "id": "data-missing",
+      "operation": "missing_value_analysis",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/quality.csv"
+      ],
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"file\":\"/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/quality.csv\",\"rows\":4,\"columns\":3,\"total_missing_cells\":1,\"overall_missing_pct\":8.33,\"per_column\":[{\"name\":\"id\",\"dtype\":\"i64\",\"total\":4,\"non_null\":4,\"missing_count\":0,\"missing_pct\":0.0,\"pattern\":\"no_missing\",\"suggestion\":\"No imputation needed\"},{\"name\":\"value\",\"dtype\":\"i64\",\"total\":4,\"non_null\":3,\"missing_count\":1,\"missing_pct\":25.0,\"pattern\":\"monotonic_missing\",\"suggestion\":\"Median or interpolation imputation\"},{\"name\":\"label\",\"dtype\":\"str\",\"total\":4,\"non_null\":4,\"missing_count\":0,\"missing_pct\":0.0,\"pattern\":\"no_missing\",\"suggestion\":\"No imputation needed\"}]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "file"
+              },
+              "value": {
+                "kind": "string",
+                "value": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/quality.csv"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "rows"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "4"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "columns"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "3"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_missing_cells"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "overall_missing_pct"
+              },
+              "value": {
+                "kind": "f64",
+                "value": 8.33
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "per_column"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "id"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "i64"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "total"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "non_null"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "missing_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "missing_pct"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 0.0
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "pattern"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "no_missing"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "suggestion"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "No imputation needed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "value"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "i64"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "total"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "non_null"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "3"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "missing_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "1"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "missing_pct"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 25.0
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "pattern"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "monotonic_missing"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "suggestion"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "Median or interpolation imputation"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "name"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "label"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "dtype"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "str"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "total"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "non_null"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "4"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "missing_count"
+                        },
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "missing_pct"
+                        },
+                        "value": {
+                          "kind": "f64",
+                          "value": 0.0
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "pattern"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "no_missing"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "suggestion"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "No imputation needed"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      }
+    },
+    {
+      "id": "data-consistency",
+      "operation": "consistency_check",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/quality.csv",
+        "[{\"column\": \"value\", \"type\": \"range\", \"min\": 0, \"max\": 50}]"
+      ],
+      "result": {
+        "kind": {
+          "kind": "json"
+        },
+        "success": true,
+        "output": "{\"file\":\"/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/quality.csv\",\"total_issues\":1,\"severity_counts\":{\"high\":1,\"medium\":0,\"low\":0},\"issues\":[{\"column\":\"value\",\"type\":\"range_violation\",\"detail\":\"2 values outside range\",\"severity\":\"high\",\"rule\":{\"column\":\"value\",\"type\":\"range\",\"min\":0,\"max\":50}}]}",
+        "data": {
+          "kind": "map",
+          "value": [
+            {
+              "key": {
+                "kind": "string",
+                "value": "file"
+              },
+              "value": {
+                "kind": "string",
+                "value": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/quality.csv"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "total_issues"
+              },
+              "value": {
+                "kind": "u64",
+                "value": "1"
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "severity_counts"
+              },
+              "value": {
+                "kind": "map",
+                "value": [
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "high"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "1"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "medium"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  },
+                  {
+                    "key": {
+                      "kind": "string",
+                      "value": "low"
+                    },
+                    "value": {
+                      "kind": "u64",
+                      "value": "0"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": {
+                "kind": "string",
+                "value": "issues"
+              },
+              "value": {
+                "kind": "list",
+                "value": [
+                  {
+                    "kind": "map",
+                    "value": [
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "column"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "value"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "type"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "range_violation"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "detail"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "2 values outside range"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "severity"
+                        },
+                        "value": {
+                          "kind": "string",
+                          "value": "high"
+                        }
+                      },
+                      {
+                        "key": {
+                          "kind": "string",
+                          "value": "rule"
+                        },
+                        "value": {
+                          "kind": "map",
+                          "value": [
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "column"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "value"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "type"
+                              },
+                              "value": {
+                                "kind": "string",
+                                "value": "range"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "min"
+                              },
+                              "value": {
+                                "kind": "u64",
+                                "value": "0"
+                              }
+                            },
+                            {
+                              "key": {
+                                "kind": "string",
+                                "value": "max"
+                              },
+                              "value": {
+                                "kind": "u64",
+                                "value": "50"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "truncated": false
+      }
+    },
+    {
+      "id": "data-join-keyfail",
+      "operation": "join_data",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/lookup.csv",
+        [
+          "unknown"
+        ],
+        "inner"
+      ],
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'join_keys': Column 'unknown' not found in left file",
+        "retryable": "never",
+        "operation": "join_data",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "data-pivot-colfail",
+      "operation": "pivot_data",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv",
+        "group",
+        "quarter",
+        "unknown",
+        "sum"
+      ],
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'columns': Column 'unknown' not found in data",
+        "retryable": "never",
+        "operation": "pivot_data",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "data-export-preserve-sentinel",
+      "operation": "export_data",
+      "arguments": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/input.csv",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-computation-python-kjwdqc43/sentinel.txt",
+        "illegal"
+      ],
+      "error": {
+        "code": "framework_error",
+        "message": "Tool Error: Invalid parameter 'format': Unsupported export format: 'illegal'",
+        "retryable": "never",
+        "operation": "export_data",
+        "handle": null,
+        "details": {
+          "fields": [
+            {
+              "key": "framework_failure_category",
+              "value": "tool"
+            },
+            {
+              "key": "framework_terminal_kind",
+              "value": "failed"
+            },
+            {
+              "key": "framework_failure_code",
+              "value": "tool"
+            },
+            {
+              "key": "framework_retryable",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guard-overlap-detect",
+      "operation": "content-guard.detect",
+      "arguments": [
+        "4513812345678111"
+      ],
+      "result": {
+        "matches": [
+          {
+            "pii_type": "CreditCard",
+            "start": "0",
+            "end": "16",
+            "matched": "4513812345678111"
+          },
+          {
+            "pii_type": "PhoneCn",
+            "start": "2",
+            "end": "13",
+            "matched": "13812345678"
+          }
+        ]
+      }
+    },
+    {
+      "id": "guard-overlap-redact",
+      "operation": "content-guard.redact",
+      "arguments": [
+        "4513812345678111"
+      ],
+      "result": {
+        "redacted": "[REDACTED:CARD]E]111"
+      },
+      "expected": "one covering card replacement; no raw prefix remains"
+    }
+  ],
+  "actual_side_effects": {
+    "sentinel_sha256": "1cd263f1102656dd6b6cf1d626d1a96f9eba0406af3cb2a52560d473d4801052",
+    "sentinel_contents": "unchanged\n"
+  },
+  "classification": "temporaryactualconsumer nativecalculations/errors/sideeffects, overlap not validatedgreen"
+}

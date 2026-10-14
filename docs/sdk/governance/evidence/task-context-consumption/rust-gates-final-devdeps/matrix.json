@@ -1,0 +1,168 @@
+{
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "environment": {
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "steps": [
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fmt-check",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "workspace-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "80ec265a06512212589472b00e0d0b497140842960ea40f26f7f9a5ac1fedbad"
+    },
+    {
+      "label": "production-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--lib",
+        "--bins",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "clippy::unwrap_used",
+        "-D",
+        "clippy::expect_used",
+        "-D",
+        "clippy::panic",
+        "-D",
+        "clippy::unreachable"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "457a197d9685fab117d42d22eef69c47436752ccb6832826437c0e7064848380"
+    },
+    {
+      "label": "workspace-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "3421ee746d4c672ba144c5bc8da95a46a5e7900d0cfdb3fb40f8d56b62d2a980"
+    },
+    {
+      "label": "featureless-check",
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--lib",
+        "--no-default-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "fe368598dee37a838fc947bb61fdf7683a67dd9c56d87bf1c158f0d080cf0571"
+    },
+    {
+      "label": "workspace-doctests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--all-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "6a8faac827278258da59fdb217cc0122d2b44a06b5f6f7abc6094c59d1c5f036"
+    },
+    {
+      "label": "ci-default-protocol",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-protocol",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "59665556e433d7e0c38aa86e1e12523d260cf3188018fda7b22f20ee2815c4f4"
+    },
+    {
+      "label": "ci-default-host",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "d62c93412a1ac54f742b1e47d6c01604e84d5220d6645ec1f6bd247de19a3a87"
+    },
+    {
+      "label": "ci-core-profile",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-core-profile",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 101,
+      "logSha256": "50b4bfa0dd9a822e367696c72b3d551f56da53cb0ba18afc6c2db43a6c1ff364"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "sdks/java/src/test/java/com/echoagent/sdk/ChannelHandlerForwardHostTest.java": {
+    "before_sha256": "586b14a1d8fba4155cd90ed9d1ce9aa4d13242cae30546ed0f9f8cbf194cbd34",
+    "after_sha256": "f8ac15231d902abbbd8fd39af4c7a84b5e278998eed9bcb3d3b9c27ffe667fb4",
+    "assertion_text_preserved": true,
+    "change": "root path toAbsolutePath normalize only"
+  },
+  "sdks/java/src/test/java/com/echoagent/sdk/EvalImproveTopologyHostTest.java": {
+    "before_sha256": "9d72e0891afc40d063557475a0878ebd29eeee739395bbe6509cee45b935ae8c",
+    "after_sha256": "a12a785f80302f0104e47eaeadb7e31919a0f228023ec64ed7b142d173e37a69",
+    "assertion_text_preserved": true,
+    "change": "root path toAbsolutePath normalize only"
+  },
+  "sdks/java/src/test/java/com/echoagent/sdk/ToolValueEffectHostTest.java": {
+    "before_sha256": "da75ee81df5afc5ae911e04bfe297bbbcf9ca58bd49b5f1c02b29f0d4b8a9785",
+    "after_sha256": "461c613be19862bacecf7e238fa0d3e80c1e98127a11279999f36453d1bb2d5b",
+    "assertion_text_preserved": true,
+    "change": "root path toAbsolutePath normalize only"
+  },
+  "sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java": {
+    "before_sha256": "468e8de51ed7fa5d18b909d3a44af44479957b66e503e425327e58c2e8652f59",
+    "after_sha256": "ddd4827d47ff0329039ad11fc1f0241f9185647fdb37db06a122112d0f38b301",
+    "assertion_text_preserved": true,
+    "change": "root path toAbsolutePath normalize only"
+  },
+  "sdks/java/src/test/java/com/echoagent/sdk/ManagedRetirementHostTest.java": {
+    "before_sha256": "6c103962c7f98f6b620923c082f9dc1b1792c99c7d39019f5999697ec00577db",
+    "after_sha256": "b635517906e348deeadf19d5849a6a51a873654ba18648e258e2b342d452e695",
+    "assertion_text_preserved": true,
+    "change": "root path toAbsolutePath normalize only"
+  },
+  "sdks/java/src/test/java/com/echoagent/sdk/RagProjectRulesHostTest.java": {
+    "before_sha256": "d45befd9fc709964ee1d90016f810b1b6528b2c8bcabeadaea5691f5a8e1acdb",
+    "after_sha256": "e2a917b10dd677825a189b544973eaf18ea52cd014b9f12734801c169837e690",
+    "assertion_text_preserved": true,
+    "change": "root path toAbsolutePath normalize only"
+  }
+}

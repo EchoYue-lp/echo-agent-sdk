@@ -1,0 +1,22 @@
+{
+  "label": "default-host-devdeps-repaired",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--lib",
+    "--tests",
+    "--locked"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/task-context-consumption/default-host-devdeps-repaired.log",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 5426,
+  "bytesWritten": 5426,
+  "startedAt": "2026-10-13T21:54:08.639Z",
+  "finishedAt": "2026-10-13T21:54:16.277Z"
+}

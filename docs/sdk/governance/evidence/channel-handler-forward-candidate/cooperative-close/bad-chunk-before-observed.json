@@ -1,0 +1,80 @@
+{
+  "early_response": {
+    "kind": "variant",
+    "value": {
+      "type_id": "echo_sdk::FacadeStreamEvent",
+      "variant": "failed",
+      "fields": [
+        {
+          "name": "stream",
+          "value": {
+            "kind": "handle",
+            "value": {
+              "id": "stream-435c6a7a-0e08-4db6-9469-e993de6ae609",
+              "generation": "1",
+              "kind": "stream"
+            }
+          }
+        },
+        {
+          "name": "sequence",
+          "value": {
+            "kind": "u64",
+            "value": "1"
+          }
+        },
+        {
+          "name": "value",
+          "value": {
+            "kind": "map",
+            "value": [
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "code"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "framework_error"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "message"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "channel attachment base64: Invalid symbol 33, offset 0."
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "retryable"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "never"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "operation"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "_echo_agent/integration/op"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "error_code": null,
+  "finally_count": 0,
+  "callback_held": true
+}

@@ -1,0 +1,25 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/gap-watermark-red-evidence/source/echo-sdk-host)
+warning: unused imports: `Agent as AcpAgent` and `Responder`
+    --> echo-sdk-host/src/core_profile/extension_bridge.rs:9816:37
+     |
+9816 |         use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
+     |                                     ^^^^^^^^^^^^^^^^^                                  ^^^^^^^^^
+     |
+     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `echo-sdk-host` (lib test) generated 1 warning (run `cargo fix --lib -p echo-sdk-host --tests` to apply 1 suggestion)
+    Finished `test` profile [unoptimized] target(s) in 46.58s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-6d8b8adb0d80813f)
+
+running 1 test
+Error: "Internal error: \"ACP connection requires caller to retain a close owner via adapter.close_owner()\""
+test core_profile::extension_bridge::tests::teardown_admitted_prefix_keeps_original_remote_watermark ... FAILED
+
+failures:
+
+failures:
+    core_profile::extension_bridge::tests::teardown_admitted_prefix_keeps_original_remote_watermark
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.26s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

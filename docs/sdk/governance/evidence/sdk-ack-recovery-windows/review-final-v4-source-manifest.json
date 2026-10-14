@@ -1,0 +1,19 @@
+{
+  "epoch": "review-final-v4-fixture-corrected",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "baseRevision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "hostBinary": "/tmp/echo-sdk-governance-tool-validation-host",
+  "hostSha256": "c52da2d346d8848074b646e5442ecc83890cd68991f08287780280f871b59f89",
+  "files": {
+    "sdks/typescript/src/client.ts": "ded47f340ee3de942442e93ae45aa7909ee5e70d2da914825b01002840333ca4",
+    "sdks/python/src/echo_agent_sdk/client.py": "b5f5029e587bcee3a88d853d101e6e92766f5cb28c5d623552d5d00e6a015579",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "866aa24fbd95a2cf7a8ddbfe19329ca954048a3d1353890205cae7b7e9018599",
+    "sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java": "1d261d814400bbc08111ce496dd0a8112364bec23f9be1677ae8c6c448ed0625",
+    "sdks/typescript/test/ack-submission.test.js": "a2d74349fa44fd7d371284af35d54470335cfe35275699d2059a5c89356a252c",
+    "sdks/python/tests/test_ack_submission.py": "e61b00e422c4db8a72b3a6df72fb0e1a3eb1c69d3d8ba7f18ac41c614fc8b98a",
+    "sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java": "1de3387cb29c7e77796daf1ef52a70480f3f83d82080e4a157ab7f4f75af1c36",
+    "sdks/typescript/test/gap-ack-host.test.js": "f2952ef16b389121a96059465f5b442f68b7c6d565c64b15da93aa57d3b8bc54",
+    "sdks/python/tests/test_gap_ack_host.py": "e0f2a590097940e26cc0d9598ffcbf45a2fa8366c27827e08e852096357e0d5e",
+    "sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java": "d94c26f8b14ada9c8d2641266a1856426951d9a38913ceca8f20b7deca2c2505"
+  }
+}

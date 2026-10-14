@@ -1,0 +1,303 @@
+{
+  "host": "/tmp/echo-sdk-governance-workflow-shape-host",
+  "host_sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2",
+  "runs": [
+    {
+      "language": "typescript",
+      "exit_code": 0,
+      "actual_scenarios": 4,
+      "execution_kind": "native public SDK test4passed0skip",
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-stdio-fH3XH3",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-mcp-transport-retry-nfiGLs",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-normal-XCDOE0",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-channels-retry-nqNXrE"
+      ],
+      "log_sha256": "a5d7b5d96420bedbee3a3e6b6abbdfa0397695f8598937006083e5bae9f46eab",
+      "raw_files": [
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-stdio/b.pid",
+          "sha256": "e4e58c5f153cae8d80443ffb50b750f764f6b6074a379c1115302a0645ba8c92"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-stdio/a.pid",
+          "sha256": "822297523d7d908f3423153aa392e9689a4e47238d0ea793484bc48c1a9f830d"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-stdio/a.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-stdio/a-requests.jsonl",
+          "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-stdio/b.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-stdio/b-requests.jsonl",
+          "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-stdio/observed.json",
+          "sha256": "46d5b0b6d6171120bfadff6c89af6bba28d914d51c407d39103a48265e3f01e5"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/mcp-transport-retry/observed.json",
+          "sha256": "eb874825966eb7759d414d4e559db5bd3a31199194198544b0d2eee13f181a06"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/channels-normal/b.pid",
+          "sha256": "af137765317c80fd7446b4e7c3a0a2a752b758b57d1ae192907897460e1bbe28"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/channels-normal/a.pid",
+          "sha256": "863887203d297f0cebe535d2b47b9bd53c2e464cd821865bbfb0ef5ae4a32c6d"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/channels-normal/observed.json",
+          "sha256": "a25eedc703aab9460d63743a6d5340cbb3414fc2dcbb3363a6c636c98d2c9b8c"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/channels-retry/b.pid",
+          "sha256": "88c387db3e4a19f1cb08b28d4f6b1fe3f71e63ba801a8d02fefc95494436d16e"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/channels-retry/a.pid",
+          "sha256": "01eace1df9cc372e0fa4f76e10a2004ef830a1f525010e9c0ee74307dd3ab116"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/typescript/channels-retry/observed.json",
+          "sha256": "48a5d4035e68f4757d2cdcc5a49ef65158c164fe6a1dcbe51755a2766eea8b2d"
+        }
+      ],
+      "normalized_sha256": "381e02e69018880cb5266e3bf97b5cd442beccb6689d80a576792c6d619450e1"
+    },
+    {
+      "language": "python",
+      "exit_code": 0,
+      "actual_scenarios": 4,
+      "execution_kind": "native public SDK test4passed0skip",
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-mcp-stdio-_5ulubcq",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-mcp-transport-retry-yhgbqvrp",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-channels-normal-sszdux47",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-channels-retry-fu9p8xb0"
+      ],
+      "log_sha256": "fca7236d5ec92435b05f64fba3ff391edcdae8a41098b08ef059e18ab3070ae2",
+      "raw_files": [
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/b.pid",
+          "sha256": "3d3de3c277a649532bfa24935e375f1c85d727939700b848249d8f4075023443"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/a.pid",
+          "sha256": "eaa393e8949c085cdda1f6c1f49bbe65881436284b56779876e39b78fc633d05"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/a.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/a-requests.jsonl",
+          "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/b.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/b-requests.jsonl",
+          "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/errors.jsonl",
+          "sha256": "fac23280582eee5e8d50f33599ad8e37e0adb8b2d9d96cbfaa2d56635813e066"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-stdio/observed.json",
+          "sha256": "46065f68d6d4356975ad9ccae338b38adc466cf7c60d404316b9a24d14289932"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-transport-retry/errors.jsonl",
+          "sha256": "b2b76e387c592de637f005b15c82de966153b2dc2a06123759cb3af2f94cf6bc"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/mcp-transport-retry/observed.json",
+          "sha256": "a40cda1243390bd50d67d5255f03a21ce29b5a1d4005680ffc3204e700b622f3"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/channels-normal/b.pid",
+          "sha256": "326c51e4ab74a570c61a1e84ea204e0030786d13706982cdf464c90e1c56e4a4"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/channels-normal/a.pid",
+          "sha256": "1b8c795088d76588f8ca0cc6b8315c594988215f3f7f7957fccbbd2bbd4986c5"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/channels-normal/observed.json",
+          "sha256": "bbcae67c64b3487e3a5b61dacdcea1429aff9cf57b58d6ff7242c4f3441be562"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/channels-retry/b.pid",
+          "sha256": "267dab634f08cce7436437de4b219bee5a94c40f1aa37d0d1d035cd6a51872ee"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/channels-retry/a.pid",
+          "sha256": "672242795704dcba4378ed98d66a1a0b254f6a79a0377f7c32fadea945076e0b"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/channels-retry/errors.jsonl",
+          "sha256": "c9272f1271b90ae94179be13df5591ad074ccf875f48be522b89a4248e56773b"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/python/channels-retry/observed.json",
+          "sha256": "903d1e6f6d283db81693d6d3e3b87b4c0518d259692a1c3807ffa761c6cb1477"
+        }
+      ],
+      "normalized_sha256": "381e02e69018880cb5266e3bf97b5cd442beccb6689d80a576792c6d619450e1"
+    },
+    {
+      "language": "java",
+      "exit_code": 0,
+      "actual_scenarios": 4,
+      "execution_kind": "public SDK native client calls; public JUnit class 4 cases zero failure/error/skip",
+      "roots": [
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-stdio-531093589023930201",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-normal-4154550880022185826",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-retry-10674733268860682238",
+        "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-transport-retry-2026901935594767128"
+      ],
+      "log_sha256": "9eaa7f6a76bee7acc9f681c0fe50131d78474d6b41730c2a66ae603c03fd81ef",
+      "raw_files": [
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-stdio/b.pid",
+          "sha256": "d2557d18de87f85f4429026a8cf797aae2336c4cd620a9ef1c7fa9ffdf2ebff4"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-stdio/a.pid",
+          "sha256": "de2a0144009fa3698ae32704eaaeca90e67fd2c3c48c1bd57e7ba1feca787ef6"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-stdio/a.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-stdio/a-requests.jsonl",
+          "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-stdio/b.stdin-eof",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-stdio/b-requests.jsonl",
+          "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-stdio/observed.json",
+          "sha256": "0cb888e9560f92af2826e83b033e1b91519e7be0fc4f32443eb61cb330a35247"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-normal/summary.json",
+          "sha256": "99aff8d3d921f4e8133158a75b958016dab2b7a6d1e7659f2ab81d236fd1d5f7"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-normal/b.pid",
+          "sha256": "20badf766cb49c5d37bc6ff5f8cc655626b5465fbda95915024a5313e7553b2d"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-normal/a.pid",
+          "sha256": "a553b6b4cdab144b2c57238a099b949b5b4bbafd8fbcd3b21237960617c719d4"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-normal/observed.json",
+          "sha256": "ed2ce2ac0189455ce5a1b3e8ed73361ed3a70b0740eeb2756cff2e0e72df044a"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-retry/summary.json",
+          "sha256": "b7388afdb0808afc4ca12dc7a1831328165eec10d543ee226e77aff5e3239500"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-retry/b.pid",
+          "sha256": "2540151b13a518106743849c2beeeba93885dc1e34b793ece858ab9a583d4429"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-retry/a.pid",
+          "sha256": "95c87684f7d7e40c0ec106ef6b6b8d598cdd9afdc83f15ba736a6fc610919027"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/channels-retry/observed.json",
+          "sha256": "e45e74626c534de86fb34d01b421c1626615329420a82bfea9c192b864396bad"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-transport-retry/summary.json",
+          "sha256": "300d5c1c7cefb3b79ff29182f92a082ab0fc38588c09ce69d666ee230d678caf"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/java/mcp-transport-retry/observed.json",
+          "sha256": "891f8dcc35c556c34fc5a446a3d6a1f57381d73e25403cd3901e582d95315b3f"
+        }
+      ],
+      "normalized_sha256": "381e02e69018880cb5266e3bf97b5cd442beccb6689d80a576792c6d619450e1"
+    }
+  ],
+  "all_three_common_projection_match": true,
+  "common_projection": "Exact 9 MCP metadata/resource/template/prompt/tool result values and process cleanup facts; transport close callback count/order+quota reuse; exact channel start/send attachments and stop counts/running/inbound0. PID/handles/times retained raw, not compared as cross-process identifiers.",
+  "sources": [],
+  "known_red": "real ChannelHealth callback→manager.ids same-manager circular wait; candidate-proof.json retained1red not green",
+  "scope_limits": [
+    "4scenarios only, not all accepted operations",
+    "MessageHandler accepted inbound consumer unresolved, never fake input",
+    "held-close/caller-cancel cleanup and all aliases publication fault not yet proved",
+    "framework owned channel read lease design pending root; production unmodified",
+    "local patched framework/Host not published pin/main"
+  ],
+  "formal_sources": [
+    {
+      "path": "sdks/shared/testing/mcp_channel_stdio_fixture.py",
+      "sha256": "52f80f9435b26b8cf1b87fa4cea9f51e14fcf93ce286f491331aeb391689ebba"
+    },
+    {
+      "path": "sdks/shared/testing/mcp_channel_config_fixture.py",
+      "sha256": "e1d52385f7892a18dca897efa13eab6aa9fdaee27d414f4369ed78573ad500c1"
+    },
+    {
+      "path": "sdks/typescript/test/mcp-channel-host.test.js",
+      "sha256": "e2c44e3ca6d26d5668fe66ffba14167bddaec35d636276e8ff2e9eb3bc890b72"
+    },
+    {
+      "path": "sdks/python/tests/test_mcp_channel_host.py",
+      "sha256": "805c8d82a318a04d5c7cd16c0bfc1d676d774ea9a89fe1d83cc6fb262961903c"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/McpChannelHostTest.java",
+      "sha256": "cd4a2b8daea397c72d3ab2c63573ce44f63241c5abd3b5001092252c54a5f679"
+    },
+    {
+      "path": "docs/sdk/governance/mcp-channel-evidence.md",
+      "sha256": "dcd363219495b511ccb57da1ec095546cca8977a9864d5ed88b50f76347b0fb5"
+    }
+  ],
+  "java_xml": {
+    "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/formal/TEST-com.echoagent.sdk.McpChannelHostTest.xml",
+    "sha256": "c038e284c712f6d8859d56068147edaaedfaed3ea8cbc6783542ba097d0a1e1e",
+    "tests": 4,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "cases": [
+      "stdioMcpResourcesPromptsToolsAndExactOwnerCleanup",
+      "channelAttachmentsAndExactStop",
+      "channelFailedStopRetainsOwnerForRetry",
+      "registeredTransportCloseFailureRetainsOwnerAndQuota"
+    ]
+  },
+  "source_adaptation": "Only paths/imports, optional skip with requireHost nonempty guards, JUnit public4 cases and Python formatting/import cleanup; original four inputs/expected/fixture behavior unchanged.",
+  "required_host_guard": {
+    "six_actual_failures": true,
+    "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/required-host-guard/proof.json",
+    "sha256": "c114a489e53473e7a6b9cdbfee5059f285f878356d9f21ceada5e48b1bdf2b7d"
+  }
+}

@@ -1,0 +1,61 @@
+TAP version 13
+# Subtest: official serialized writer: low successful ACK cannot commit pending terminal ACK
+ok 1 - official serialized writer: low successful ACK cannot commit pending terminal ACK
+  ---
+  duration_ms: 8.526834
+  type: 'test'
+  ...
+# Subtest: official writer 2 success then other ACK failure retains exact successful floor
+ok 2 - official writer 2 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 2.198167
+  type: 'test'
+  ...
+# Subtest: official writer 10 success then other ACK failure retains exact successful floor
+ok 3 - official writer 10 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 0.806792
+  type: 'test'
+  ...
+# Subtest: official failed send preserves queue prefix and does not accept a future ACK
+ok 4 - official failed send preserves queue prefix and does not accept a future ACK
+  ---
+  duration_ms: 1.267458
+  type: 'test'
+  ...
+# Subtest: official writer sends the same immutable stream identity that it commits
+ok 5 - official writer sends the same immutable stream identity that it commits
+  ---
+  duration_ms: 0.619708
+  type: 'test'
+  ...
+# Subtest: official replay retention bridge commits only a successful returned cursor
+not ok 6 - official replay retention bridge commits only a successful returned cursor
+  ---
+  duration_ms: 3.226875
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/ack-submission.test.js:71:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    undefined !== 6n
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 6n
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/ack-submission.test.js:84:45)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 5
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 165.405

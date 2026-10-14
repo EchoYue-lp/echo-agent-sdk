@@ -1,0 +1,33 @@
+{
+  "scope": "Python native only; hold actual reverse transport close, cancel forward await, retained exactalias/globalresource quota, actual release then no duplicate close+quota refill",
+  "host_sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2",
+  "exit_code": 0,
+  "tests": 1,
+  "deselected": 4,
+  "files": [
+    {
+      "original": "/tmp/sdk-mcp-held-close-caller-cancel.log",
+      "archived": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/held-close-python-candidate/sdk-mcp-held-close-caller-cancel.log",
+      "sha256": "40fdbcd91f692ba6b6630fefa74a21a53dd1d0a338eb7e18246af125020ff95a"
+    },
+    {
+      "original": "/tmp/sdk-mcp-channel-candidate-fixture/test_mcp_channel_host.py",
+      "archived": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/held-close-python-candidate/test_mcp_channel_host.py",
+      "sha256": "5e0bb921dfac2795408cf3c8711d6ac795947c61db370d9df7b0aad684504b10"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-mcp-held-close-vmn10xxn/errors.jsonl",
+      "archived": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/held-close-python-candidate/errors.jsonl",
+      "sha256": "de19be584a929ed1d972a2a50e54bdf20449125fd9a3298336f734e290a28b0e"
+    },
+    {
+      "original": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-mcp-held-close-vmn10xxn/observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/held-close-python-candidate/observed.json",
+      "sha256": "e5a6f28e4e070c671f80c7e4eff9d929c8eb41544c4f4b16bc1d1a2fd33c822a"
+    }
+  ],
+  "not_claimed": [
+    "TS/Java cancellation equivalence",
+    "all callback teardown or published-main proof"
+  ]
+}

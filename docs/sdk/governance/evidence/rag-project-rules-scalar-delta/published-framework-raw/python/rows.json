@@ -1,0 +1,2614 @@
+[
+  {
+    "id": "chunk",
+    "operation": "rag_chunk_document",
+    "arguments": [
+      "中文😀甲乙丙丁戊己庚辛",
+      4,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"chunk_size\":4,\"overlap\":0,\"total_chunks\":3,\"chunks\":[{\"index\":1,\"char_count\":4,\"preview\":\"中文😀甲\",\"truncated\":false},{\"index\":2,\"char_count\":4,\"preview\":\"乙丙丁戊\",\"truncated\":false},{\"index\":3,\"char_count\":3,\"preview\":\"己庚辛\",\"truncated\":false}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunk_size"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "4"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "overlap"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "0"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_chunks"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "3"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunks"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "char_count"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "preview"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中文😀甲"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "char_count"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "preview"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "乙丙丁戊"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "char_count"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "preview"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "己庚辛"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "chunk-70-chinese",
+    "operation": "rag_chunk_document",
+    "arguments": [
+      "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中",
+      300,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"chunk_size\":300,\"overlap\":0,\"total_chunks\":1,\"chunks\":[{\"index\":1,\"char_count\":70,\"preview\":\"中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中\",\"truncated\":false}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunk_size"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "300"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "overlap"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "0"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_chunks"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "1"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunks"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "char_count"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "70"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "preview"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "chunk-200-scalars",
+    "operation": "rag_chunk_document",
+    "arguments": [
+      "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中😀",
+      300,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"chunk_size\":300,\"overlap\":0,\"total_chunks\":1,\"chunks\":[{\"index\":1,\"char_count\":200,\"preview\":\"中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中😀\",\"truncated\":false}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunk_size"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "300"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "overlap"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "0"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_chunks"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "1"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunks"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "char_count"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "200"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "preview"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中😀"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "chunk-201-scalars",
+    "operation": "rag_chunk_document",
+    "arguments": [
+      "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中😀",
+      300,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"chunk_size\":300,\"overlap\":0,\"total_chunks\":1,\"chunks\":[{\"index\":1,\"char_count\":201,\"preview\":\"中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中\",\"truncated\":true}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunk_size"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "300"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "overlap"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "0"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_chunks"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "1"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "chunks"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "char_count"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "201"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "preview"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "index",
+    "operation": "rag_index",
+    "arguments": [
+      "中文😀甲乙丙丁戊己庚辛",
+      "来源😀.txt",
+      4,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "text"
+      },
+      "success": true,
+      "output": "Successfully indexed 3 document chunks (source: 来源😀.txt)",
+      "truncated": false,
+      "metadata": {
+        "evicted_chunks": "0"
+      }
+    }
+  },
+  {
+    "id": "search",
+    "operation": "rag_search",
+    "arguments": [
+      "查询😀第一块",
+      8
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"query\":\"查询😀第一块\",\"total_results\":3,\"results\":[{\"rank\":1,\"similarity_pct\":\"100.0\",\"chunk_index\":0,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"中文😀甲\"},{\"rank\":2,\"similarity_pct\":\"0.0\",\"chunk_index\":1,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"乙丙丁戊\"},{\"rank\":3,\"similarity_pct\":\"0.0\",\"chunk_index\":2,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"己庚辛\"}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "query"
+            },
+            "value": {
+              "kind": "string",
+              "value": "查询😀第一块"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_results"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "3"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "results"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "100.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中文😀甲"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "乙丙丁戊"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "己庚辛"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "isolated",
+    "operation": "rag_search",
+    "arguments": [
+      "查询😀第一块",
+      8
+    ],
+    "result": {
+      "kind": {
+        "kind": "text"
+      },
+      "success": true,
+      "output": "No relevant documents found. Please use rag_index to index documents first.",
+      "truncated": false
+    }
+  },
+  {
+    "id": "failed-index-second-503",
+    "operation": "rag_index",
+    "arguments": [
+      "失败😀文档甲乙丙丁戊",
+      "failed",
+      4,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "structured_error",
+        "error_code": "tool_error"
+      },
+      "success": false,
+      "output": "",
+      "error": "Embedding generation failed: Tool Error: Tool 'rag' execution failed: Embedding generation failed: Memory Error: IO error: Embedding API error 503 Service Unavailable: {\"error\": \"fixture unavailable\"}",
+      "failure": {
+        "category": "permanent",
+        "recovery": "stop",
+        "side_effect": "none"
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "unchanged-second-503",
+    "operation": "rag_search",
+    "arguments": [
+      "查询😀第一块",
+      8
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"query\":\"查询😀第一块\",\"total_results\":3,\"results\":[{\"rank\":1,\"similarity_pct\":\"100.0\",\"chunk_index\":0,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"中文😀甲\"},{\"rank\":2,\"similarity_pct\":\"0.0\",\"chunk_index\":1,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"乙丙丁戊\"},{\"rank\":3,\"similarity_pct\":\"0.0\",\"chunk_index\":2,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"己庚辛\"}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "query"
+            },
+            "value": {
+              "kind": "string",
+              "value": "查询😀第一块"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_results"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "3"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "results"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "100.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中文😀甲"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "乙丙丁戊"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "己庚辛"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "failed-index-bad-json",
+    "operation": "rag_index",
+    "arguments": [
+      "失败😀文档甲乙丙丁戊",
+      "failed",
+      4,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "structured_error",
+        "error_code": "tool_error"
+      },
+      "success": false,
+      "output": "",
+      "error": "Embedding generation failed: Tool Error: Tool 'rag' execution failed: Embedding generation failed: Memory Error: Serialization error: Failed to parse embedding response: error decoding response body",
+      "failure": {
+        "category": "permanent",
+        "recovery": "stop",
+        "side_effect": "none"
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "unchanged-bad-json",
+    "operation": "rag_search",
+    "arguments": [
+      "查询😀第一块",
+      8
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"query\":\"查询😀第一块\",\"total_results\":3,\"results\":[{\"rank\":1,\"similarity_pct\":\"100.0\",\"chunk_index\":0,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"中文😀甲\"},{\"rank\":2,\"similarity_pct\":\"0.0\",\"chunk_index\":1,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"乙丙丁戊\"},{\"rank\":3,\"similarity_pct\":\"0.0\",\"chunk_index\":2,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"己庚辛\"}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "query"
+            },
+            "value": {
+              "kind": "string",
+              "value": "查询😀第一块"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_results"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "3"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "results"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "100.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中文😀甲"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "乙丙丁戊"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "己庚辛"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "failed-index-empty-data",
+    "operation": "rag_index",
+    "arguments": [
+      "失败😀文档甲乙丙丁戊",
+      "failed",
+      4,
+      0
+    ],
+    "result": {
+      "kind": {
+        "kind": "structured_error",
+        "error_code": "tool_error"
+      },
+      "success": false,
+      "output": "",
+      "error": "Embedding generation failed: Tool Error: Tool 'rag' execution failed: Embedding generation failed: Memory Error: IO error: Embedding API returned empty result",
+      "failure": {
+        "category": "permanent",
+        "recovery": "stop",
+        "side_effect": "none"
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "unchanged-empty-data",
+    "operation": "rag_search",
+    "arguments": [
+      "查询😀第一块",
+      8
+    ],
+    "result": {
+      "kind": {
+        "kind": "json"
+      },
+      "success": true,
+      "output": "{\"query\":\"查询😀第一块\",\"total_results\":3,\"results\":[{\"rank\":1,\"similarity_pct\":\"100.0\",\"chunk_index\":0,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"中文😀甲\"},{\"rank\":2,\"similarity_pct\":\"0.0\",\"chunk_index\":1,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"乙丙丁戊\"},{\"rank\":3,\"similarity_pct\":\"0.0\",\"chunk_index\":2,\"total_chunks\":3,\"source\":\"来源😀.txt\",\"content\":\"己庚辛\"}]}",
+      "data": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "query"
+            },
+            "value": {
+              "kind": "string",
+              "value": "查询😀第一块"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "total_results"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "3"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "results"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "100.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "中文😀甲"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "乙丙丁戊"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "rank"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "similarity_pct"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "0.0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk_index"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "total_chunks"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "3"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "source"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "来源😀.txt"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "content"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "己庚辛"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "truncated": false
+    }
+  },
+  {
+    "id": "invalid-chunks",
+    "operation": "rag_index",
+    "arguments": [
+      "中文😀甲乙丙丁戊己庚辛",
+      "invalid",
+      4,
+      4
+    ],
+    "error": {
+      "code": "framework_error",
+      "message": "Tool Error: Invalid parameter 'overlap': chunk_size must be positive and overlap must be smaller than chunk_size",
+      "operation": "rag_index",
+      "retryable": "never",
+      "details": {
+        "fields": [
+          {
+            "key": "framework_failure_category",
+            "value": "tool"
+          },
+          {
+            "key": "framework_terminal_kind",
+            "value": "failed"
+          },
+          {
+            "key": "framework_failure_code",
+            "value": "tool"
+          },
+          {
+            "key": "framework_retryable",
+            "value": "false"
+          }
+        ]
+      },
+      "handle": null
+    }
+  },
+  {
+    "id": "resolver",
+    "operation": "echo_core::project_rules::InstructionResolver::new",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "path",
+        "value": {
+          "encoding": "utf8",
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf"
+        }
+      }
+    ],
+    "result": {
+      "kind": "handle",
+      "value": {
+        "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    }
+  },
+  {
+    "id": "set-root",
+    "operation": "echo_core::project_rules::InstructionResolver::project_root",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      },
+      {
+        "kind": "path",
+        "value": {
+          "encoding": "utf8",
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo"
+        }
+      }
+    ],
+    "result": {
+      "kind": "handle",
+      "value": {
+        "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    }
+  },
+  {
+    "id": "resolved-all",
+    "operation": "echo_core::project_rules::InstructionResolver::resolve",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "result": {
+      "kind": "record",
+      "value": {
+        "type_id": "echo_core::project_rules::ResolvedInstructions",
+        "fields": [
+          {
+            "name": "content",
+            "value": {
+              "kind": "string",
+              "value": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/CLAUDE.md -->\nnested claude 中文\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md -->\nleaf override 😀\n<!-- END PROJECT INSTRUCTIONS -->"
+            }
+          },
+          {
+            "name": "sources",
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/CLAUDE.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "claude"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "1"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents_override"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "2"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "project_root",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "core::option::Option<PathBuf>",
+                "variant": "some",
+                "fields": [
+                  {
+                    "name": "value",
+                    "value": {
+                      "kind": "path",
+                      "value": {
+                        "encoding": "utf8",
+                        "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "resolved-family",
+    "operation": "project-rules.resolve",
+    "arguments": [],
+    "result": {
+      "content": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/CLAUDE.md -->\nnested claude 中文\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md -->\nleaf override 😀\n<!-- END PROJECT INSTRUCTIONS -->",
+      "sources": [
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md",
+          "kind": "agents",
+          "precedence": "0"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/CLAUDE.md",
+          "kind": "claude",
+          "precedence": "1"
+        },
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md",
+          "kind": "agents_override",
+          "precedence": "2"
+        }
+      ],
+      "is_empty": false
+    }
+  },
+  {
+    "id": "load-family",
+    "operation": "project-rules.load",
+    "arguments": [],
+    "result": {
+      "kind": "variant",
+      "value": {
+        "type_id": "core::option::Option<(Path,String)>",
+        "variant": "some",
+        "fields": [
+          {
+            "name": "path",
+            "value": {
+              "kind": "path",
+              "value": {
+                "encoding": "utf8",
+                "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md"
+              }
+            }
+          },
+          {
+            "name": "content",
+            "value": {
+              "kind": "string",
+              "value": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/CLAUDE.md -->\nnested claude 中文\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md -->\nleaf override 😀\n<!-- END PROJECT INSTRUCTIONS -->"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "cross-session",
+    "operation": "echo_core::project_rules::InstructionResolver::resolve",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-553dada3-e447-40f0-b751-9b18dae2f7ad",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "error": {
+      "code": "invalid_value",
+      "message": "facade resource belongs to another session",
+      "operation": "echo_core::project_rules::InstructionResolver::resolve",
+      "retryable": "never",
+      "details": null,
+      "handle": null
+    }
+  },
+  {
+    "id": "agents-only",
+    "operation": "echo_core::project_rules::InstructionResolver::agents_files_only",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "result": {
+      "kind": "handle",
+      "value": {
+        "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    }
+  },
+  {
+    "id": "resolved-agents",
+    "operation": "echo_core::project_rules::InstructionResolver::resolve",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "result": {
+      "kind": "record",
+      "value": {
+        "type_id": "echo_core::project_rules::ResolvedInstructions",
+        "fields": [
+          {
+            "name": "content",
+            "value": {
+              "kind": "string",
+              "value": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md -->\nleaf override 😀\n<!-- END PROJECT INSTRUCTIONS -->"
+            }
+          },
+          {
+            "name": "sources",
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents_override"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "1"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "project_root",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "core::option::Option<PathBuf>",
+                "variant": "some",
+                "fields": [
+                  {
+                    "name": "value",
+                    "value": {
+                      "kind": "path",
+                      "value": {
+                        "encoding": "utf8",
+                        "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "dynamic",
+    "operation": "echo_core::project_rules::InstructionResolver::resolve",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "result": {
+      "kind": "record",
+      "value": {
+        "type_id": "echo_core::project_rules::ResolvedInstructions",
+        "fields": [
+          {
+            "name": "content",
+            "value": {
+              "kind": "string",
+              "value": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md -->\nchanged 中文🌊\n<!-- END PROJECT INSTRUCTIONS -->"
+            }
+          },
+          {
+            "name": "sources",
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.override.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents_override"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "1"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "project_root",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "core::option::Option<PathBuf>",
+                "variant": "some",
+                "fields": [
+                  {
+                    "name": "value",
+                    "value": {
+                      "kind": "path",
+                      "value": {
+                        "encoding": "utf8",
+                        "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "fallback",
+    "operation": "echo_core::project_rules::InstructionResolver::resolve",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "result": {
+      "kind": "record",
+      "value": {
+        "type_id": "echo_core::project_rules::ResolvedInstructions",
+        "fields": [
+          {
+            "name": "content",
+            "value": {
+              "kind": "string",
+              "value": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->\n\n<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.md -->\nignored leaf AGENTS\n<!-- END PROJECT INSTRUCTIONS -->"
+            }
+          },
+          {
+            "name": "sources",
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/nested/leaf/AGENTS.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "1"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "project_root",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "core::option::Option<PathBuf>",
+                "variant": "some",
+                "fields": [
+                  {
+                    "name": "value",
+                    "value": {
+                      "kind": "path",
+                      "value": {
+                        "encoding": "utf8",
+                        "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "directory-skip",
+    "operation": "echo_core::project_rules::InstructionResolver::resolve",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "result": {
+      "kind": "record",
+      "value": {
+        "type_id": "echo_core::project_rules::ResolvedInstructions",
+        "fields": [
+          {
+            "name": "content",
+            "value": {
+              "kind": "string",
+              "value": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md -->\n根规则 中文😀\n<!-- END PROJECT INSTRUCTIONS -->"
+            }
+          },
+          {
+            "name": "sources",
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "record",
+                  "value": {
+                    "type_id": "echo_core::project_rules::InstructionSource",
+                    "fields": [
+                      {
+                        "name": "path",
+                        "value": {
+                          "kind": "path",
+                          "value": {
+                            "encoding": "utf8",
+                            "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo/AGENTS.md"
+                          }
+                        }
+                      },
+                      {
+                        "name": "kind",
+                        "value": {
+                          "kind": "string",
+                          "value": "agents"
+                        }
+                      },
+                      {
+                        "name": "precedence",
+                        "value": {
+                          "kind": "u64",
+                          "value": "0"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "project_root",
+            "value": {
+              "kind": "variant",
+              "value": {
+                "type_id": "core::option::Option<PathBuf>",
+                "variant": "some",
+                "fields": [
+                  {
+                    "name": "value",
+                    "value": {
+                      "kind": "path",
+                      "value": {
+                        "encoding": "utf8",
+                        "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/repo"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "other-rules",
+    "operation": "project-rules.resolve",
+    "arguments": [],
+    "result": {
+      "content": "<!-- PROJECT INSTRUCTIONS: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/other/AGENTS.md -->\nother isolated rules\n<!-- END PROJECT INSTRUCTIONS -->",
+      "sources": [
+        {
+          "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules-b909/python-gyrrbj40/other/AGENTS.md",
+          "kind": "agents",
+          "precedence": "0"
+        }
+      ],
+      "is_empty": false
+    }
+  },
+  {
+    "id": "empty-rules",
+    "operation": "project-rules.resolve",
+    "arguments": [],
+    "result": {
+      "content": "",
+      "sources": [],
+      "is_empty": true
+    }
+  },
+  {
+    "id": "empty-load",
+    "operation": "project-rules.load",
+    "arguments": [],
+    "result": {
+      "kind": "variant",
+      "value": {
+        "type_id": "core::option::Option<(Path,String)>",
+        "variant": "none",
+        "fields": []
+      }
+    }
+  },
+  {
+    "id": "closed-rag",
+    "operation": "rag_search",
+    "arguments": [
+      "查询😀第一块",
+      8
+    ],
+    "error": {
+      "code": "closed_handle",
+      "message": "handle was already released by this Host generation",
+      "operation": "_echo_agent/session",
+      "retryable": "never",
+      "details": null,
+      "handle": {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      }
+    }
+  },
+  {
+    "id": "closed-resolver",
+    "operation": "echo_core::project_rules::InstructionResolver::resolve",
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      },
+      {
+        "kind": "handle",
+        "value": {
+          "id": "facade_resource-29212a9d-a6c3-4eb0-8959-a08055907fea",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    ],
+    "error": {
+      "code": "closed_handle",
+      "message": "handle was already released by this Host generation",
+      "operation": "_echo_agent/session",
+      "retryable": "never",
+      "details": null,
+      "handle": {
+        "kind": "handle",
+        "value": {
+          "id": "session-d52214d8-ec20-4df6-b51e-2559ae5503e9",
+          "generation": "1",
+          "kind": "session"
+        }
+      }
+    }
+  },
+  {
+    "id": "new-session-empty",
+    "operation": "rag_search",
+    "arguments": [
+      "查询😀第一块",
+      8
+    ],
+    "result": {
+      "kind": {
+        "kind": "text"
+      },
+      "success": true,
+      "output": "No relevant documents found. Please use rag_index to index documents first.",
+      "truncated": false
+    }
+  }
+]

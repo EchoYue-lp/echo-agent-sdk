@@ -1,0 +1,25 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 38.20s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-e1cde4efcace38ae)
+
+running 17 tests
+test core_profile::extension_bridge::tests::full_stream_mailbox_retains_a_failed_terminal_without_a_gap ... ok
+test core_profile::extension_bridge::tests::dropped_pending_stream_releases_sink_and_session_reentry_guard ... ok
+test core_profile::extension_bridge::tests::duplicate_stream_sequence_settles_a_failed_terminal ... ok
+test core_profile::extension_bridge::tests::custom_agent_tool_stream_chunk_stays_non_terminal ... ok
+test core_profile::facade::stream::cleanup_tests::cancelled_stream_close_retains_producer_until_collector_settles ... ok
+test core_profile::facade::stream::cleanup_tests::cancel_after_registry_terminal_commit_is_not_accepted ... ok
+test core_profile::facade::stream::cleanup_tests::close_deadline_aborts_producer_and_collector_retains_abort_fact ... ok
+test core_profile::facade::stream::cleanup_tests::cancellation_wakes_initial_receive_while_external_source_keeps_sender ... ok
+test core_profile::facade::stream::cleanup_tests::accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled ... ok
+test core_profile::handles::tests::facade_stream_uses_registry_generation_owner_and_sequence_ladder ... ok
+test core_profile::handles::tests::facade_stream_resource_cascade_does_not_touch_other_resources ... ok
+test core_profile::handles::tests::closing_facade_resource_atomically_closes_associated_streams ... ok
+test core_profile::handles::tests::resource_close_preserves_stale_generation_classification_for_old_streams ... ok
+test core_profile::facade::stream::cleanup_tests::producer_abort_yields_failed_terminal_not_complete ... ok
+test core_profile::facade::stream::cleanup_tests::cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence ... ok
+test core_profile::facade::stream::cleanup_tests::eof_waits_for_producer_failure_and_cancelled_pull_retries_same_cause ... ok
+test core_profile::facade::stream::cleanup_tests::producer_unwind_yields_failed_terminal_not_complete ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 116 filtered out; finished in 0.17s
+

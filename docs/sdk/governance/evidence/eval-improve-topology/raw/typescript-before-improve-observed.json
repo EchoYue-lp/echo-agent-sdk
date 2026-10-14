@@ -1,0 +1,1676 @@
+{
+  "language": "typescript",
+  "group": "improve",
+  "created": [
+    "extension-6c4c57b2-09c5-48db-8ff3-26e396ab474f",
+    "extension-e7579b1c-f25b-4c27-8127-7aa9ce249768",
+    "extension-e802c776-f86e-4b48-aa3d-059a98dca992",
+    "extension-2e514d7e-ab4b-4135-b9a8-839e3fd0341b",
+    "extension-7ea6ae9b-bdd6-4a39-a072-b2fd8183388e",
+    "extension-2d15cf24-3221-42f3-b1a4-95d269c833a8",
+    "extension-d9ecfbbc-67e7-4a39-869d-1c0c248e3197",
+    "extension-42f5c225-80d4-4a57-a562-2f9cf357d4eb",
+    "extension-fa3a66bd-394b-47df-b138-14791c053292",
+    "extension-2eae4b4d-c82f-4681-b92d-1da84f921320",
+    "extension-43d53d41-57b2-48bd-af2b-ce8e5079c801",
+    "extension-0fdfb33f-036a-48e7-baaf-1c82e2fddf1f"
+  ],
+  "closed": [
+    "extension-6c4c57b2-09c5-48db-8ff3-26e396ab474f",
+    "extension-e7579b1c-f25b-4c27-8127-7aa9ce249768",
+    "extension-e802c776-f86e-4b48-aa3d-059a98dca992",
+    "extension-2e514d7e-ab4b-4135-b9a8-839e3fd0341b",
+    "extension-7ea6ae9b-bdd6-4a39-a072-b2fd8183388e",
+    "extension-2d15cf24-3221-42f3-b1a4-95d269c833a8",
+    "extension-d9ecfbbc-67e7-4a39-869d-1c0c248e3197",
+    "extension-42f5c225-80d4-4a57-a562-2f9cf357d4eb",
+    "extension-fa3a66bd-394b-47df-b138-14791c053292",
+    "extension-2eae4b4d-c82f-4681-b92d-1da84f921320",
+    "extension-43d53d41-57b2-48bd-af2b-ce8e5079c801",
+    "extension-0fdfb33f-036a-48e7-baaf-1c82e2fddf1f"
+  ],
+  "executed": [
+    "extension-6c4c57b2-09c5-48db-8ff3-26e396ab474f",
+    "extension-e7579b1c-f25b-4c27-8127-7aa9ce249768",
+    "extension-e802c776-f86e-4b48-aa3d-059a98dca992",
+    "extension-2e514d7e-ab4b-4135-b9a8-839e3fd0341b",
+    "extension-7ea6ae9b-bdd6-4a39-a072-b2fd8183388e",
+    "extension-2d15cf24-3221-42f3-b1a4-95d269c833a8",
+    "extension-d9ecfbbc-67e7-4a39-869d-1c0c248e3197",
+    "extension-42f5c225-80d4-4a57-a562-2f9cf357d4eb",
+    "extension-fa3a66bd-394b-47df-b138-14791c053292",
+    "extension-2eae4b4d-c82f-4681-b92d-1da84f921320",
+    "extension-43d53d41-57b2-48bd-af2b-ce8e5079c801",
+    "extension-0fdfb33f-036a-48e7-baaf-1c82e2fddf1f"
+  ],
+  "callbacks": [
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-0",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-6c4c57b2-09c5-48db-8ff3-26e396ab474f",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-6c4c57b2-09c5-48db-8ff3-26e396ab474f",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-1",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-f3b872a7-83bc-41df-8cc1-e273f18c3d95",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-6c4c57b2-09c5-48db-8ff3-26e396ab474f",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-2",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-3",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-e7579b1c-f25b-4c27-8127-7aa9ce249768",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-e7579b1c-f25b-4c27-8127-7aa9ce249768",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-4",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-34ae58b1-dcd9-4bbd-aa8a-f8f01ff7f244",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-e7579b1c-f25b-4c27-8127-7aa9ce249768",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-5",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-6",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-e802c776-f86e-4b48-aa3d-059a98dca992",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-e802c776-f86e-4b48-aa3d-059a98dca992",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-7",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-4ad36c04-713d-479a-8704-ee574119c91d",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-e802c776-f86e-4b48-aa3d-059a98dca992",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-8",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-9",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-2e514d7e-ab4b-4135-b9a8-839e3fd0341b",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-2e514d7e-ab4b-4135-b9a8-839e3fd0341b",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-10",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-49299b14-c069-4ceb-bfb3-c506df5b070f",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-2e514d7e-ab4b-4135-b9a8-839e3fd0341b",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-11",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-12",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-7ea6ae9b-bdd6-4a39-a072-b2fd8183388e",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-7ea6ae9b-bdd6-4a39-a072-b2fd8183388e",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-13",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-24d4898e-cc03-4abe-8a1a-6334bcd9b918",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-7ea6ae9b-bdd6-4a39-a072-b2fd8183388e",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-14",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-15",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-2d15cf24-3221-42f3-b1a4-95d269c833a8",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-2d15cf24-3221-42f3-b1a4-95d269c833a8",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-16",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-2434de61-ad6c-4c8e-a97d-027a88529a30",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-2d15cf24-3221-42f3-b1a4-95d269c833a8",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-17",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-18",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-d9ecfbbc-67e7-4a39-869d-1c0c248e3197",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-d9ecfbbc-67e7-4a39-869d-1c0c248e3197",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-19",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-f30fc872-821d-4c5b-a740-21f953898a6a",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-d9ecfbbc-67e7-4a39-869d-1c0c248e3197",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-20",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-21",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-42f5c225-80d4-4a57-a562-2f9cf357d4eb",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-42f5c225-80d4-4a57-a562-2f9cf357d4eb",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-22",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-ba0930e4-7dbb-4923-b7bc-b24e5af7ce0d",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-42f5c225-80d4-4a57-a562-2f9cf357d4eb",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-23",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-24",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-fa3a66bd-394b-47df-b138-14791c053292",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-fa3a66bd-394b-47df-b138-14791c053292",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-25",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-4f20fced-760c-4d6e-b9c6-c08470a5585e",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-fa3a66bd-394b-47df-b138-14791c053292",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-26",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-27",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-2eae4b4d-c82f-4681-b92d-1da84f921320",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-2eae4b4d-c82f-4681-b92d-1da84f921320",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-28",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-1c4f44e6-4ca5-4cbd-a913-62183e525f9e",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-2eae4b4d-c82f-4681-b92d-1da84f921320",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-29",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-30",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-43d53d41-57b2-48bd-af2b-ce8e5079c801",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-43d53d41-57b2-48bd-af2b-ce8e5079c801",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-31",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-e5de5d0b-8773-4069-bd5a-ea787120c04a",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-43d53d41-57b2-48bd-af2b-ce8e5079c801",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-32",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "extension": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-33",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "factory_create_agent",
+        "input": {
+          "instance": {
+            "id": "extension-0fdfb33f-036a-48e7-baaf-1c82e2fddf1f",
+            "generation": "1",
+            "kind": "extension"
+          },
+          "model": "",
+          "name": "analysis-factory",
+          "system_prompt": "",
+          "tool_count": "0"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-0fdfb33f-036a-48e7-baaf-1c82e2fddf1f",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-34",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_execute_stream",
+        "input": {
+          "task": "good"
+        }
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      },
+      "stream": {
+        "id": "stream-052fe8a8-46ff-4f9c-922b-bc6f3d7150c0",
+        "generation": "1",
+        "kind": "stream"
+      }
+    },
+    {
+      "factory_origin": {
+        "id": "extension-309425a1-f56e-4bf4-8a4a-c730b2fae9f1",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "extension": {
+        "id": "extension-0fdfb33f-036a-48e7-baaf-1c82e2fddf1f",
+        "generation": "1",
+        "kind": "extension"
+      },
+      "invocation_id": "invocation-2184c95c0d3444ae9b71ed5aab2a9cc8-35",
+      "context": {
+        "session_id": "sess_0274b22f-ee9a-4093-9e69-4f1a755fd81e"
+      },
+      "invocation": {
+        "operation": "agent_close",
+        "input": null
+      },
+      "deadline": {
+        "seconds": "30",
+        "nanos": 0
+      }
+    }
+  ],
+  "factory_finally": 12,
+  "cancel_observed": 0,
+  "rows": [
+    {
+      "id": "loop",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-a13d532d-d01b-43f6-9517-5c7c00827586",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "max",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-78b1900a-3101-41cc-bfaa-f907f723e218",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "holdout",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-a19a78d4-d1e3-45e8-b349-98de5775c94f",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "threshold",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-5b448b1d-4598-4602-ac25-9578c49f07d6",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "early",
+      "outcome": "result",
+      "value": {
+        "iterations": [
+          {
+            "iteration": "0",
+            "eval_report": {
+              "total": "2",
+              "passed": "2",
+              "failed": "0",
+              "avg_score": 1,
+              "std_dev": 0,
+              "min_score": 1,
+              "max_score": 1,
+              "delta_vs_baseline": null,
+              "total_tool_calls": "0",
+              "total_tokens_in": "0",
+              "total_tokens_out": "0",
+              "total_cached_tokens_in": "0",
+              "total_cache_creation_tokens_in": "0",
+              "cache_hit_rate": null,
+              "total_tool_errors": "0",
+              "max_protected_context_tokens": "0",
+              "total_file_changes": "0",
+              "results": [
+                {
+                  "case_id": "case-2",
+                  "success": true,
+                  "score": 1,
+                  "metrics": [
+                    {
+                      "name": "output_contains",
+                      "score": 1,
+                      "detail": "Looking for: OK 中文🙂"
+                    }
+                  ],
+                  "violations": [],
+                  "run_id": null,
+                  "duration_ms": "1",
+                  "tool_calls": "0",
+                  "tokens_in": "0",
+                  "tokens_out": "0",
+                  "cached_tokens_in": "0",
+                  "cache_creation_tokens_in": "0",
+                  "cache_hit_rate": null,
+                  "tool_errors": "0",
+                  "max_protected_context_tokens": "0",
+                  "file_changes": "0",
+                  "compile_ok": null,
+                  "tests_pass": null
+                },
+                {
+                  "case_id": "case-3",
+                  "success": true,
+                  "score": 1,
+                  "metrics": [
+                    {
+                      "name": "output_contains",
+                      "score": 1,
+                      "detail": "Looking for: OK 中文🙂"
+                    }
+                  ],
+                  "violations": [],
+                  "run_id": null,
+                  "duration_ms": "1",
+                  "tool_calls": "0",
+                  "tokens_in": "0",
+                  "tokens_out": "0",
+                  "cached_tokens_in": "0",
+                  "cache_creation_tokens_in": "0",
+                  "cache_hit_rate": null,
+                  "tool_errors": "0",
+                  "max_protected_context_tokens": "0",
+                  "file_changes": "0",
+                  "compile_ok": null,
+                  "tests_pass": null
+                }
+              ]
+            },
+            "train_score": 1,
+            "critiques": [],
+            "suggestions": [],
+            "duration_ms": "8"
+          }
+        ],
+        "best_score": 1,
+        "best_iteration": "0",
+        "total_duration_ms": "8"
+      }
+    },
+    {
+      "id": "max-threshold",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-76296c0d-b026-4513-881c-8681d83692ba",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "maximum",
+      "outcome": "result",
+      "value": {
+        "iterations": [
+          {
+            "iteration": "0",
+            "eval_report": {
+              "total": "2",
+              "passed": "2",
+              "failed": "0",
+              "avg_score": 1,
+              "std_dev": 0,
+              "min_score": 1,
+              "max_score": 1,
+              "delta_vs_baseline": null,
+              "total_tool_calls": "0",
+              "total_tokens_in": "0",
+              "total_tokens_out": "0",
+              "total_cached_tokens_in": "0",
+              "total_cache_creation_tokens_in": "0",
+              "cache_hit_rate": null,
+              "total_tool_errors": "0",
+              "max_protected_context_tokens": "0",
+              "total_file_changes": "0",
+              "results": [
+                {
+                  "case_id": "case-2",
+                  "success": true,
+                  "score": 1,
+                  "metrics": [
+                    {
+                      "name": "output_contains",
+                      "score": 1,
+                      "detail": "Looking for: OK 中文🙂"
+                    }
+                  ],
+                  "violations": [],
+                  "run_id": null,
+                  "duration_ms": "1",
+                  "tool_calls": "0",
+                  "tokens_in": "0",
+                  "tokens_out": "0",
+                  "cached_tokens_in": "0",
+                  "cache_creation_tokens_in": "0",
+                  "cache_hit_rate": null,
+                  "tool_errors": "0",
+                  "max_protected_context_tokens": "0",
+                  "file_changes": "0",
+                  "compile_ok": null,
+                  "tests_pass": null
+                },
+                {
+                  "case_id": "case-3",
+                  "success": true,
+                  "score": 1,
+                  "metrics": [
+                    {
+                      "name": "output_contains",
+                      "score": 1,
+                      "detail": "Looking for: OK 中文🙂"
+                    }
+                  ],
+                  "violations": [],
+                  "run_id": null,
+                  "duration_ms": "1",
+                  "tool_calls": "0",
+                  "tokens_in": "0",
+                  "tokens_out": "0",
+                  "cached_tokens_in": "0",
+                  "cache_creation_tokens_in": "0",
+                  "cache_hit_rate": null,
+                  "tool_errors": "0",
+                  "max_protected_context_tokens": "0",
+                  "file_changes": "0",
+                  "compile_ok": null,
+                  "tests_pass": null
+                }
+              ]
+            },
+            "train_score": 1,
+            "critiques": [],
+            "suggestions": [],
+            "duration_ms": "7"
+          },
+          {
+            "iteration": "1",
+            "eval_report": {
+              "total": "2",
+              "passed": "2",
+              "failed": "0",
+              "avg_score": 1,
+              "std_dev": 0,
+              "min_score": 1,
+              "max_score": 1,
+              "delta_vs_baseline": null,
+              "total_tool_calls": "0",
+              "total_tokens_in": "0",
+              "total_tokens_out": "0",
+              "total_cached_tokens_in": "0",
+              "total_cache_creation_tokens_in": "0",
+              "cache_hit_rate": null,
+              "total_tool_errors": "0",
+              "max_protected_context_tokens": "0",
+              "total_file_changes": "0",
+              "results": [
+                {
+                  "case_id": "case-2",
+                  "success": true,
+                  "score": 1,
+                  "metrics": [
+                    {
+                      "name": "output_contains",
+                      "score": 1,
+                      "detail": "Looking for: OK 中文🙂"
+                    }
+                  ],
+                  "violations": [],
+                  "run_id": null,
+                  "duration_ms": "1",
+                  "tool_calls": "0",
+                  "tokens_in": "0",
+                  "tokens_out": "0",
+                  "cached_tokens_in": "0",
+                  "cache_creation_tokens_in": "0",
+                  "cache_hit_rate": null,
+                  "tool_errors": "0",
+                  "max_protected_context_tokens": "0",
+                  "file_changes": "0",
+                  "compile_ok": null,
+                  "tests_pass": null
+                },
+                {
+                  "case_id": "case-3",
+                  "success": true,
+                  "score": 1,
+                  "metrics": [
+                    {
+                      "name": "output_contains",
+                      "score": 1,
+                      "detail": "Looking for: OK 中文🙂"
+                    }
+                  ],
+                  "violations": [],
+                  "run_id": null,
+                  "duration_ms": "0",
+                  "tool_calls": "0",
+                  "tokens_in": "0",
+                  "tokens_out": "0",
+                  "cached_tokens_in": "0",
+                  "cache_creation_tokens_in": "0",
+                  "cache_hit_rate": null,
+                  "tool_errors": "0",
+                  "max_protected_context_tokens": "0",
+                  "file_changes": "0",
+                  "compile_ok": null,
+                  "tests_pass": null
+                }
+              ]
+            },
+            "train_score": 1,
+            "critiques": [],
+            "suggestions": [],
+            "duration_ms": "6"
+          }
+        ],
+        "best_score": 1,
+        "best_iteration": "0",
+        "total_duration_ms": "13"
+      }
+    },
+    {
+      "id": "max-get",
+      "outcome": "result",
+      "value": "2"
+    },
+    {
+      "id": "holdout-get",
+      "outcome": "result",
+      "value": 0.5
+    },
+    {
+      "id": "threshold-get",
+      "outcome": "result",
+      "value": 1.1
+    },
+    {
+      "id": "store",
+      "outcome": "result",
+      "value": {
+        "resource": {
+          "id": "facade_resource-e1474784-96ba-4fbe-99f1-08e410871644",
+          "generation": "1",
+          "kind": "facade_resource"
+        }
+      }
+    },
+    {
+      "id": "save-run",
+      "outcome": "result",
+      "value": {
+        "ok": true
+      }
+    },
+    {
+      "id": "load-run",
+      "outcome": "result",
+      "value": {
+        "run": {
+          "run_id": "trajectory-中文🙂",
+          "parent_run_id": "parent🙂",
+          "agent_name": "native-agent🙂",
+          "model": "fixed-model",
+          "provider": null,
+          "turn_id": "turn🙂",
+          "execution_id": "execute🙂",
+          "session_id": "session🙂",
+          "status": "completed",
+          "input": "读写中文🙂",
+          "events": [
+            {
+              "type": "tool_call",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "args": {
+                "path": "file🙂",
+                "content": "written🙂"
+              },
+              "risk": "write",
+              "duration_ms": "11"
+            },
+            {
+              "type": "file_edit",
+              "tool": "write_file",
+              "path": "file🙂"
+            },
+            {
+              "type": "tool_result",
+              "call_id": "call🙂",
+              "name": "write_file",
+              "success": true,
+              "output_preview": "写入🙂",
+              "output_truncated": false,
+              "duration_ms": "11",
+              "original_bytes": "9",
+              "returned_bytes": "9",
+              "estimated_tokens": "3",
+              "output_handling": null
+            }
+          ],
+          "final_output": "完成🙂",
+          "error": null,
+          "token_usage": {
+            "prompt_tokens": "17",
+            "completion_tokens": "5",
+            "total_tokens": "22",
+            "cached_prompt_tokens": "3",
+            "cache_creation_prompt_tokens": "0",
+            "usage_reported_calls": "1",
+            "usage_missing_calls": "0"
+          },
+          "timings": {
+            "total_duration_ms": "123",
+            "llm_duration_ms": "112",
+            "tool_duration_ms": "11"
+          },
+          "started_at": "2026-10-13T08:00:00.123456789+08:00",
+          "finished_at": "2026-10-13T08:00:00.246456789+08:00"
+        }
+      }
+    },
+    {
+      "id": "sharegpt",
+      "outcome": "result",
+      "value": [
+        {
+          "from": "human",
+          "value": "读写中文🙂"
+        },
+        {
+          "from": "gpt",
+          "value": "🔧 Tool Call: write_file\n{\n  \"path\": \"file🙂\",\n  \"content\": \"written🙂\"\n}"
+        },
+        {
+          "from": "tool",
+          "value": "✅ write_file: 写入🙂"
+        },
+        {
+          "from": "gpt",
+          "value": "完成🙂"
+        }
+      ]
+    },
+    {
+      "id": "analyze",
+      "outcome": "result",
+      "value": {
+        "run_id": "trajectory-中文🙂",
+        "success": true,
+        "score": 0.6666666666666667,
+        "issues": [
+          {
+            "WriteWithoutRead": {
+              "tool": "write",
+              "count": "1"
+            }
+          }
+        ],
+        "suggestions": [
+          {
+            "type": "prompt_change",
+            "section": "tools",
+            "suggestion": "Add instruction: 'Always read a file with read_file before editing it. This was violated 1 time(s).'"
+          },
+          {
+            "type": "policy_change",
+            "rule": "force_read_before_edit: true",
+            "reason": "Agent wrote files without reading first 1 time(s)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "saver",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-323a3f54-1df1-4cc3-b2f2-4cad14faed81",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "save",
+      "outcome": "result",
+      "value": true
+    },
+    {
+      "id": "list",
+      "outcome": "result",
+      "value": [
+        {
+          "id": "trajectory-中文🙂",
+          "session_id": "session🙂",
+          "conversations": [
+            {
+              "from": "human",
+              "value": "读写中文🙂"
+            },
+            {
+              "from": "gpt",
+              "value": "🔧 Tool Call: write_file\n{\n  \"path\": \"file🙂\",\n  \"content\": \"written🙂\"\n}"
+            },
+            {
+              "from": "tool",
+              "value": "✅ write_file: 写入🙂"
+            },
+            {
+              "from": "gpt",
+              "value": "完成🙂"
+            }
+          ],
+          "model": "model🙂",
+          "completed": true,
+          "timestamp": "2026-10-14T00:37:21.393999+08:00",
+          "token_usage": "22",
+          "tool_call_count": "1",
+          "duration_ms": "123"
+        }
+      ]
+    },
+    {
+      "id": "stats",
+      "outcome": "result",
+      "value": {
+        "total": "1",
+        "completed": "1",
+        "failed": "0",
+        "total_tokens": "22",
+        "total_tool_calls": "1",
+        "avg_duration_ms": "123"
+      }
+    },
+    {
+      "id": "block",
+      "outcome": "result",
+      "value": true
+    },
+    {
+      "id": "failed-save",
+      "outcome": "error",
+      "code": "framework_error",
+      "message": "IO Error: Not a directory (os error 20)",
+      "details": {
+        "fields": [
+          {
+            "key": "framework_failure_category",
+            "value": "io"
+          },
+          {
+            "key": "framework_terminal_kind",
+            "value": "failed"
+          },
+          {
+            "key": "framework_failure_code",
+            "value": "io"
+          },
+          {
+            "key": "framework_retryable",
+            "value": "true"
+          }
+        ]
+      },
+      "operation": "echo_agent::improve::trajectory::TrajectorySaver::save"
+    },
+    {
+      "id": "restore",
+      "outcome": "result",
+      "value": true
+    },
+    {
+      "id": "saver-reopen",
+      "outcome": "result",
+      "value": {
+        "id": "facade_resource-f5497c97-f2c4-42a6-95c4-cf3a62b60e92",
+        "generation": "1",
+        "kind": "facade_resource"
+      }
+    },
+    {
+      "id": "reopened-list",
+      "outcome": "result",
+      "value": [
+        {
+          "id": "trajectory-中文🙂",
+          "session_id": "session🙂",
+          "conversations": [
+            {
+              "from": "human",
+              "value": "读写中文🙂"
+            },
+            {
+              "from": "gpt",
+              "value": "🔧 Tool Call: write_file\n{\n  \"path\": \"file🙂\",\n  \"content\": \"written🙂\"\n}"
+            },
+            {
+              "from": "tool",
+              "value": "✅ write_file: 写入🙂"
+            },
+            {
+              "from": "gpt",
+              "value": "完成🙂"
+            }
+          ],
+          "model": "model🙂",
+          "completed": true,
+          "timestamp": "2026-10-14T00:37:21.393999+08:00",
+          "token_usage": "22",
+          "tool_call_count": "1",
+          "duration_ms": "123"
+        }
+      ]
+    },
+    {
+      "id": "reopened-stats",
+      "outcome": "result",
+      "value": {
+        "total": "1",
+        "completed": "1",
+        "failed": "0",
+        "total_tokens": "22",
+        "total_tool_calls": "1",
+        "avg_duration_ms": "123"
+      }
+    }
+  ],
+  "trajectory_bytes_before": [
+    "eyJpZCI6InRyYWplY3Rvcnkt5Lit5paH8J+ZgiIsInNlc3Npb25faWQiOiJzZXNzaW9u8J+ZgiIsImNvbnZlcnNhdGlvbnMiOlt7ImZyb20iOiJodW1hbiIsInZhbHVlIjoi6K+75YaZ5Lit5paH8J+ZgiJ9LHsiZnJvbSI6ImdwdCIsInZhbHVlIjoi8J+UpyBUb29sIENhbGw6IHdyaXRlX2ZpbGVcbntcbiAgXCJwYXRoXCI6IFwiZmlsZfCfmYJcIixcbiAgXCJjb250ZW50XCI6IFwid3JpdHRlbvCfmYJcIlxufSJ9LHsiZnJvbSI6InRvb2wiLCJ2YWx1ZSI6IuKchSB3cml0ZV9maWxlOiDlhpnlhaXwn5mCIn0seyJmcm9tIjoiZ3B0IiwidmFsdWUiOiLlrozmiJDwn5mCIn1dLCJtb2RlbCI6Im1vZGVs8J+ZgiIsImNvbXBsZXRlZCI6dHJ1ZSwidGltZXN0YW1wIjoiMjAyNi0xMC0xNFQwMDozNzoyMS4zOTM5OTkrMDg6MDAiLCJ0b2tlbl91c2FnZSI6MjIsInRvb2xfY2FsbF9jb3VudCI6MSwiZHVyYXRpb25fbXMiOjEyM30K"
+  ],
+  "trajectory_bytes_after": [
+    "eyJpZCI6InRyYWplY3Rvcnkt5Lit5paH8J+ZgiIsInNlc3Npb25faWQiOiJzZXNzaW9u8J+ZgiIsImNvbnZlcnNhdGlvbnMiOlt7ImZyb20iOiJodW1hbiIsInZhbHVlIjoi6K+75YaZ5Lit5paH8J+ZgiJ9LHsiZnJvbSI6ImdwdCIsInZhbHVlIjoi8J+UpyBUb29sIENhbGw6IHdyaXRlX2ZpbGVcbntcbiAgXCJwYXRoXCI6IFwiZmlsZfCfmYJcIixcbiAgXCJjb250ZW50XCI6IFwid3JpdHRlbvCfmYJcIlxufSJ9LHsiZnJvbSI6InRvb2wiLCJ2YWx1ZSI6IuKchSB3cml0ZV9maWxlOiDlhpnlhaXwn5mCIn0seyJmcm9tIjoiZ3B0IiwidmFsdWUiOiLlrozmiJDwn5mCIn1dLCJtb2RlbCI6Im1vZGVs8J+ZgiIsImNvbXBsZXRlZCI6dHJ1ZSwidGltZXN0YW1wIjoiMjAyNi0xMC0xNFQwMDozNzoyMS4zOTM5OTkrMDg6MDAiLCJ0b2tlbl91c2FnZSI6MjIsInRvb2xfY2FsbF9jb3VudCI6MSwiZHVyYXRpb25fbXMiOjEyM30K"
+  ]
+}

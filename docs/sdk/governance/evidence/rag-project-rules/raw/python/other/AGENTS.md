@@ -1,0 +1,1 @@
+other isolated rules

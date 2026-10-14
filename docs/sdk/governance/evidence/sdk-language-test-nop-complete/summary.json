@@ -1,0 +1,25 @@
+{
+  "command_exit": 0,
+  "typescript": {
+    "pass": 290,
+    "fail": 0,
+    "skip": 0
+  },
+  "python": {
+    "pass": 357,
+    "subtests_passed": 18
+  },
+  "java": {
+    "tests": 320,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "suites": 67
+  },
+  "all_three_quickstarts": "passed",
+  "ruff_check": "passed",
+  "ruff_format_files": 175,
+  "slf4j_missing_provider_warnings": 0,
+  "framework_pin": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "scope": "full official current candidate gate after test-scope NOP; not accepted-source full generation/final main"
+}

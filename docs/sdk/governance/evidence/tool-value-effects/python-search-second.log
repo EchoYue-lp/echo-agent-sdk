@@ -1,0 +1,319 @@
+F
+=================================== FAILURES ===================================
+______________ test_search_provider_real_agent_result_and_failure ______________
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x103989070>
+method = 'echo_agent/run/cancel'
+params = {'run': {'id': 'sess_4ba9c2e5-05f5-43dc-976c-eb4a1f9389cf:turn:1', 'generation': '1', 'kind': 'run'}}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+>           return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+
+sdks/python/src/echo_agent_sdk/client.py:3387: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/.venv/lib/python3.12/site-packages/acp/client/connection.py:340: in ext_method
+    return await self._conn.send_request(f"_{method}", params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <acp.connection.Connection object at 0x103988410>
+method = '_echo_agent/run/cancel'
+params = {'run': {'id': 'sess_4ba9c2e5-05f5-43dc-976c-eb4a1f9389cf:turn:1', 'generation': '1', 'kind': 'run'}}
+
+    async def send_request(self, method: str, params: JsonValue | None = None) -> Any:
+        self._raise_if_unavailable()
+        request_id = self._next_request_id
+        self._next_request_id += 1
+        future: asyncio.Future[Any] = asyncio.get_running_loop().create_future()
+        self._pending[request_id] = future
+        payload = {"jsonrpc": "2.0", "id": request_id, "method": method, "params": params}
+        try:
+            await self._transport.send(payload)
+        except BaseException:
+            self._pending.pop(request_id, None)
+            future.cancel()
+            raise
+        self._notify_observers(StreamDirection.OUTGOING, payload)
+        try:
+>           return await future
+                   ^^^^^^^^^^^^
+E           ConnectionError: Connection closed
+
+sdks/python/.venv/lib/python3.12/site-packages/acp/connection.py:126: ConnectionError
+
+The above exception was the direct cause of the following exception:
+
+    async def test_search_provider_real_agent_result_and_failure():
+        from echo_agent_sdk import (
+            AgentComponentDescriptor,
+            AgentComponentOutcome,
+            SearchProviderResult,
+            to_wire,
+        )
+    
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-search-", dir=ROOT))
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, str(Path(fixture.__file__)), "--work", str(work)
+        )
+        sdk = None
+        rows = []
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert proc.returncode is None
+                    await asyncio.sleep(0.01)
+            sdk = await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json"))
+            calls = []
+    
+            async def provider(call, cancellation):
+                row = {
+                    "operation": call.operation,
+                    "request": dict(call.request),
+                    "invocation_id": call.invocation_id,
+                    "deadline": dict(call.deadline),
+                    "cancelled": cancellation.is_set(),
+                }
+                calls.append(row)
+                if call.request["query"].startswith("failure"):
+                    raise RuntimeError("provider failed 中文🙂")
+                values = [
+                    {
+                        "title": "标题中文🙂",
+                        "url": "https://example.invalid/paper",
+                        "snippet": "摘要 β🙂",
+                    },
+                    {
+                        "title": "Second",
+                        "url": "https://example.invalid/other",
+                        "snippet": "",
+                    },
+                ]
+                row["sent"] = values
+                return AgentComponentOutcome(
+                    SearchProviderResult.searched(to_wire(value) for value in values)
+                )
+    
+            registration = await sdk.register_typed_extension(
+                "tool-search-proof",
+                AgentComponentDescriptor("search_provider", "controlled-search"),
+                provider,
+            )
+            agent = await sdk.create_agent()
+            session = await agent.create_session(str(work))
+            for prompt in ["search-success", "search-error"]:
+                before = fixture.snapshot(work)
+                run = await session.start_run(prompt)
+                settled = await run.wait(timeout=15)
+                replay = await run.replay("0", 512)
+                rows.append(
+                    {
+                        "prompt": prompt,
+                        "settled": settled,
+                        "replay": replay,
+                        "protected_before": before,
+                        "protected_after": fixture.snapshot(work),
+                    }
+                )
+>               await run.close()
+
+sdks/python/tests/test_tool_value_effect_host.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+sdks/python/src/echo_agent_sdk/client.py:4484: in close
+    await self.client.request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x103989070>
+method = 'echo_agent/run/cancel'
+params = {'run': {'id': 'sess_4ba9c2e5-05f5-43dc-976c-eb4a1f9389cf:turn:1', 'generation': '1', 'kind': 'run'}}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+            return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+>           raise EchoAgentError.from_exception(error, method) from error
+E           echo_agent_sdk.errors.EchoAgentError: Connection closed
+
+sdks/python/src/echo_agent_sdk/client.py:3393: EchoAgentError
+------------------------------ Captured log call -------------------------------
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 340, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 1 column 8 (char 7)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 340, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 1 column 14 (char 13)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR    root:_transport.py:85 Error parsing JSON-RPC message
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/lib/python3.12/site-packages/acp/_transport.py", line 83, in receive
+    message: dict[str, Any] = json.loads(line)
+                              ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+=========================== short test summary info ============================
+FAILED sdks/python/tests/test_tool_value_effect_host.py::test_search_provider_real_agent_result_and_failure
+1 failed, 1 deselected in 84.63s (0:01:24)

@@ -1,0 +1,10 @@
+--- a/echo-sdk-host/src/core_profile/events.rs
++++ b/echo-sdk-host/src/core_profile/events.rs
+@@ -67,7 +67,6 @@
+         self.outstanding_bytes = self.outstanding_bytes.saturating_sub(released_bytes);
+         // An accepted snapshot ACK covers journal facts just like a processed
+         // live event. Late/duplicate ACKs must never move this cursor backwards.
+-        self.last_sent_sequence = self.last_sent_sequence.max(acked);
+         // A gap is recovered by ACKing its watermark or a later consumed replay
+         // page. Earlier live ACKs cannot retract the already announced gap.
+         if self.paused && acked >= self.paused_sequence && self.outstanding() < max_outstanding {

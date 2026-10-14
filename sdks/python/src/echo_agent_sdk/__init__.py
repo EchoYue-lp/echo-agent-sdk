@@ -26,6 +26,7 @@ from .acp_values import (
     ExtensionLeaseError,
     ExtensionSettlement,
 )
+from .callbacks import AgentCallbackCall
 from .catalog import FacadeCatalog, ResolvedOperation
 from .client import (
     AgentComponent,
@@ -146,7 +147,7 @@ from .guard_values import GuardDecision, GuardDecisionKind
 from .hook_action_values import HookAction
 from .hook_event_values import HOOK_EVENT_ALL, HookEvent, HookEventCategory
 from .intervention_values import InterventionResult
-from .intrinsics import ParamValue, ToolCallParams, ToolResult
+from .intrinsics import ParamValue, ToolCallParams, ToolEffect, ToolResult
 from .jsonrpc_values import JsonRpcNotification, JsonRpcRequest
 from .jwt_values import JwtClaims, JwtConfig
 from .llm_api_protocol_values import LlmApiProtocol
@@ -255,6 +256,7 @@ __all__ = [
     "AcpDuration",
     "AcpLedgerLimits",
     "AgentAuthentication",
+    "AgentCallbackCall",
     "AgentCapabilities",
     "AgentCard",
     "AgentCardBuilder",
@@ -440,6 +442,7 @@ __all__ = [
     "ToolCall",
     "ToolCallParams",
     "ToolDescriptor",
+    "ToolEffect",
     "ToolOutputArtifactConfig",
     "ToolPermission",
     "ToolResult",
@@ -490,3 +493,5 @@ __all__ = [
     "wire_u64",
     "wire_utf8_path",
 ]
+
+from . import managed as managed

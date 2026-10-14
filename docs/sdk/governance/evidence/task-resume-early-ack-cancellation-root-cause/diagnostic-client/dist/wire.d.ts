@@ -1,0 +1,13 @@
+import type { JsonValue, WireHandle, WireValue } from "./types.js";
+export declare function wireU64(value: bigint | number | string): WireValue;
+export declare function wireI64(value: bigint | number | string): WireValue;
+export declare function wireBytes(value: Uint8Array): WireValue;
+export declare function wireUtf8Path(path: string): WireValue;
+export declare function wireDuration(seconds: bigint | number | string, nanos: number): WireValue;
+export declare function wireTimestamp(unixSeconds: bigint | number | string, nanos: number, rfc3339?: string): WireValue;
+export declare function toWireValue(value: unknown): WireValue;
+export declare function fromWireValue(value: unknown): unknown;
+export declare function isWireHandle(value: unknown): value is WireHandle;
+export declare function parseWireHandle(value: unknown): WireHandle;
+export declare function isWireValue(value: unknown): value is WireValue;
+export declare function asJson(value: unknown): JsonValue;

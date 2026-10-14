@@ -1,0 +1,19 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 45.76s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-7c7b8032facc7b43)
+
+running 1 test
+
+thread 'core_profile::facade::tests::sandbox_natural_eof_preserves_queued_complete_without_cleanup_cancellation' (130207780) panicked at echo-sdk-host/src/core_profile/facade/mod.rs:2342:9:
+natural EOF must not cancel cleanup while Complete is still queued
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test core_profile::facade::tests::sandbox_natural_eof_preserves_queued_complete_without_cleanup_cancellation ... FAILED
+
+failures:
+
+failures:
+    core_profile::facade::tests::sandbox_natural_eof_preserves_queued_complete_without_cleanup_cancellation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.18s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

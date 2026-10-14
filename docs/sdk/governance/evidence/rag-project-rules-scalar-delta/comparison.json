@@ -1,0 +1,36 @@
+{
+  "native_comparison": "equal",
+  "consumers": [
+    {
+      "calls": 32,
+      "embedding_posts": 13,
+      "ranked_chunks": 3,
+      "proof": "Session-local memory; no durable restart guarantee"
+    },
+    {
+      "calls": 32,
+      "embedding_posts": 13,
+      "ranked_chunks": 3,
+      "proof": "Session-local memory; no durable restart guarantee"
+    },
+    {
+      "calls": 32,
+      "embedding_posts": 13,
+      "ranked_chunks": 3,
+      "proof": "Session-local memory; no durable restart guarantee"
+    }
+  ],
+  "normalization": [
+    "isolated working root",
+    "Host opaque handle IDs by first use",
+    "typed handle wrapper and native handle projection",
+    "map association order"
+  ],
+  "preserved": [
+    "error code/message/operation/retryability/details/generation",
+    "ToolResult failure and raw output",
+    "typed instruction record/path/Option",
+    "UTF-8 content",
+    "ordered sources and ranks"
+  ]
+}

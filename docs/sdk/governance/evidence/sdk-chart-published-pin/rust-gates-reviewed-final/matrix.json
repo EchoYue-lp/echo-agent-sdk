@@ -1,0 +1,244 @@
+{
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "environment": {
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "steps": [
+    {
+      "label": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fmt-check",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "workspace-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "9fcb2eb8942e0e250243ac2b39376fd6b38119033cd84d89cd55e2de2d56048f"
+    },
+    {
+      "label": "production-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--lib",
+        "--bins",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings",
+        "-D",
+        "clippy::unwrap_used",
+        "-D",
+        "clippy::expect_used",
+        "-D",
+        "clippy::panic",
+        "-D",
+        "clippy::unreachable"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "51a279d6dc7cfd8774d1522bec802780cd11c6f10ffa6f234aa87db92c94cf91"
+    },
+    {
+      "label": "workspace-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--all-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "4ecd238c36ffbce954381f74231c86c2d035a18af727dabdf1a8b1659d12d6b7"
+    },
+    {
+      "label": "featureless-check",
+      "command": [
+        "cargo",
+        "check",
+        "--workspace",
+        "--lib",
+        "--no-default-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "730d7034d351385f934ff35d183a8ca7d410913100a279d5f29b316bffafafb9"
+    },
+    {
+      "label": "workspace-doctests",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--all-features",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "2d3c074283db322da8acdbd55d2799f447752daa17153c58f0720d572c200568"
+    },
+    {
+      "label": "ci-default-protocol",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-protocol",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "cb058b3e1fa0a8992a14a956682fc3b2d8f91f96aabcb66eea2d3c14108c5274"
+    },
+    {
+      "label": "ci-default-host",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "5db7ad01a53504ff69b81f1f87e1b414dc0a7e14704321db2fc66b8523c8ba39"
+    },
+    {
+      "label": "ci-core-profile",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-core-profile",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "df13a4733f3abe1b46a7cbc9fc6b7216e6b1129a3cd54e7c8906c13ca18e6725"
+    },
+    {
+      "label": "ci-bridge-no-run",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-extension-bridge",
+        "--tests",
+        "--no-run",
+        "--locked"
+      ],
+      "environmentOverrides": {
+        "RUSTFLAGS": "-A linker_messages -D warnings"
+      },
+      "exitCode": 0,
+      "logSha256": "c7a54022766444d0c10fa72f0507214c36a3b188eecc65dc24e189453e950aef"
+    },
+    {
+      "label": "ci-bridge-e2e",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-extension-bridge",
+        "--locked",
+        "--test",
+        "extension_bridge_e2e"
+      ],
+      "environmentOverrides": {
+        "RUSTFLAGS": "-A linker_messages -D warnings"
+      },
+      "exitCode": 0,
+      "logSha256": "e4bd416338772c27f263f665a85a5c39114e5548f77efc5af3d9fa7749b77202"
+    },
+    {
+      "label": "ci-facade-e2e",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-facade-all",
+        "--locked",
+        "--test",
+        "facade_feature_adapters_e2e",
+        "--test",
+        "core_profile_e2e"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "e1f41819c3a467ae3273df0522b8f4f2080f5541e560aebcf8f79b71cb8e0780"
+    },
+    {
+      "label": "ci-no-bridge-source-admission",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--no-default-features",
+        "--features",
+        "sdk-facade-adapters,framework-eval,framework-improve,framework-sqlite",
+        "--locked",
+        "--test",
+        "core_profile_e2e",
+        "every_canonical_source_operation_reaches_a_host_adapter"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "b0cd27b57608880083dd70154364fc3cea8ae59883f78ef6a7f10a8d33638284"
+    }
+  ]
+}

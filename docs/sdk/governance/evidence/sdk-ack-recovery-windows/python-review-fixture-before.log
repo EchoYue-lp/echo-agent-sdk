@@ -1,0 +1,221 @@
+..................FFF.F                                                  [100%]
+=================================== FAILURES ===================================
+_ test_public_replay_coverage_closure_is_order_independent[empty_gap_tail-True] _
+
+order = 'empty_gap_tail', expected = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,expected",
+        [
+            ("empty_gap_tail", True),
+            ("reverse_gap", True),
+            ("reverse_plain", True),
+            ("disconnected", False),
+        ],
+    )
+    async def test_public_replay_coverage_closure_is_order_independent(order, expected):
+        from echo_agent_sdk.client import RunHandle
+    
+        client, stream, feed, _ = fixture()
+        await client.connection.close()
+        transport = ReplayTransport({})
+        client.connection = ClientSideConnection(_Callbacks({}, 8), transport)
+        client._replay_ranges.clear()
+        feed.replay_terminal_sequence = None
+        run = RunHandle(client, WireHandle("run", "1", "run"), stream)
+        pages = {
+            "empty_gap_tail": [
+                ordinary_page(stream, 6, 6),
+                recovery_page(stream),
+                ordinary_page(stream, 6, 7, True),
+            ],
+            "reverse_gap": [ordinary_page(stream, 6, 8, True), recovery_page(stream)],
+            "reverse_plain": [
+                ordinary_page(stream, 3, 5, True),
+                ordinary_page(stream, 1, 3),
+            ],
+            "disconnected": [ordinary_page(stream, 8, 10, True), recovery_page(stream)],
+        }[order]
+        target = {
+            "empty_gap_tail": 7,
+            "reverse_gap": 8,
+            "reverse_plain": 5,
+            "disconnected": 10,
+        }[order]
+        try:
+            for page in pages:
+                transport.response = page
+                await run.replay(page["requested_after_sequence"])
+            assert feed.last_sequence == 1
+            pending = asyncio.create_task(ack(client, stream, target))
+            send = await transport.entered.get()
+            assert stream not in client._event_cursors
+            assert not feed.queue._closed
+            send.set_result(None)
+            await pending
+            if expected:
+>               assert client._event_cursors[stream] == target
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               KeyError: WireHandle(id='stream', generation='1', kind='stream')
+
+tests/test_ack_submission.py:545: KeyError
+__ test_public_replay_coverage_closure_is_order_independent[reverse_gap-True] __
+
+order = 'reverse_gap', expected = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,expected",
+        [
+            ("empty_gap_tail", True),
+            ("reverse_gap", True),
+            ("reverse_plain", True),
+            ("disconnected", False),
+        ],
+    )
+    async def test_public_replay_coverage_closure_is_order_independent(order, expected):
+        from echo_agent_sdk.client import RunHandle
+    
+        client, stream, feed, _ = fixture()
+        await client.connection.close()
+        transport = ReplayTransport({})
+        client.connection = ClientSideConnection(_Callbacks({}, 8), transport)
+        client._replay_ranges.clear()
+        feed.replay_terminal_sequence = None
+        run = RunHandle(client, WireHandle("run", "1", "run"), stream)
+        pages = {
+            "empty_gap_tail": [
+                ordinary_page(stream, 6, 6),
+                recovery_page(stream),
+                ordinary_page(stream, 6, 7, True),
+            ],
+            "reverse_gap": [ordinary_page(stream, 6, 8, True), recovery_page(stream)],
+            "reverse_plain": [
+                ordinary_page(stream, 3, 5, True),
+                ordinary_page(stream, 1, 3),
+            ],
+            "disconnected": [ordinary_page(stream, 8, 10, True), recovery_page(stream)],
+        }[order]
+        target = {
+            "empty_gap_tail": 7,
+            "reverse_gap": 8,
+            "reverse_plain": 5,
+            "disconnected": 10,
+        }[order]
+        try:
+            for page in pages:
+                transport.response = page
+                await run.replay(page["requested_after_sequence"])
+            assert feed.last_sequence == 1
+            pending = asyncio.create_task(ack(client, stream, target))
+            send = await transport.entered.get()
+            assert stream not in client._event_cursors
+            assert not feed.queue._closed
+            send.set_result(None)
+            await pending
+            if expected:
+>               assert client._event_cursors[stream] == target
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               KeyError: WireHandle(id='stream', generation='1', kind='stream')
+
+tests/test_ack_submission.py:545: KeyError
+_ test_public_replay_coverage_closure_is_order_independent[reverse_plain-True] _
+
+order = 'reverse_plain', expected = True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "order,expected",
+        [
+            ("empty_gap_tail", True),
+            ("reverse_gap", True),
+            ("reverse_plain", True),
+            ("disconnected", False),
+        ],
+    )
+    async def test_public_replay_coverage_closure_is_order_independent(order, expected):
+        from echo_agent_sdk.client import RunHandle
+    
+        client, stream, feed, _ = fixture()
+        await client.connection.close()
+        transport = ReplayTransport({})
+        client.connection = ClientSideConnection(_Callbacks({}, 8), transport)
+        client._replay_ranges.clear()
+        feed.replay_terminal_sequence = None
+        run = RunHandle(client, WireHandle("run", "1", "run"), stream)
+        pages = {
+            "empty_gap_tail": [
+                ordinary_page(stream, 6, 6),
+                recovery_page(stream),
+                ordinary_page(stream, 6, 7, True),
+            ],
+            "reverse_gap": [ordinary_page(stream, 6, 8, True), recovery_page(stream)],
+            "reverse_plain": [
+                ordinary_page(stream, 3, 5, True),
+                ordinary_page(stream, 1, 3),
+            ],
+            "disconnected": [ordinary_page(stream, 8, 10, True), recovery_page(stream)],
+        }[order]
+        target = {
+            "empty_gap_tail": 7,
+            "reverse_gap": 8,
+            "reverse_plain": 5,
+            "disconnected": 10,
+        }[order]
+        try:
+            for page in pages:
+                transport.response = page
+                await run.replay(page["requested_after_sequence"])
+            assert feed.last_sequence == 1
+            pending = asyncio.create_task(ack(client, stream, target))
+            send = await transport.entered.get()
+            assert stream not in client._event_cursors
+            assert not feed.queue._closed
+            send.set_result(None)
+            await pending
+            if expected:
+>               assert client._event_cursors[stream] == target
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               KeyError: WireHandle(id='stream', generation='1', kind='stream')
+
+tests/test_ack_submission.py:545: KeyError
+____ test_pending_recovery_live_continuation_cannot_authorize_absent_prefix ____
+
+    @pytest.mark.asyncio
+    async def test_pending_recovery_live_continuation_cannot_authorize_absent_prefix():
+        from echo_agent_sdk.client import RunHandle
+    
+        client, stream, feed, _ = fixture()
+        await client.connection.close()
+        transport = ReplayTransport(recovery_page(stream))
+        client.connection = ClientSideConnection(_Callbacks({}, 8), transport)
+        client._replay_ranges.clear()
+        feed.replay_terminal_sequence = None
+        try:
+            await RunHandle(client, WireHandle("run", "1", "run"), stream).replay("1")
+            pending = asyncio.create_task(ack(client, stream, 6))
+            send = await transport.entered.get()
+            assert feed.accept_event(
+                {
+                    "stream": stream.to_dict(),
+                    "envelope": {"stream_id": stream.id, "sequence": "7"},
+                }
+            )
+            send.set_exception(ConnectionError("unknown outcome after peer continued"))
+            with pytest.raises(EchoAgentError):
+                await pending
+            interior = asyncio.create_task(ack(client, stream, 3))
+            (await transport.entered.get()).set_result(None)
+            await interior
+>           assert stream not in client._event_cursors
+E           AssertionError: assert WireHandle(id='stream', generation='1', kind='stream') not in {WireHandle(id='stream', generation='1', kind='stream'): 3}
+E            +  where {WireHandle(id='stream', generation='1', kind='stream'): 3} = <echo_agent_sdk.client.EchoAgentClient object at 0x105c89d60>._event_cursors
+
+tests/test_ack_submission.py:581: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_ack_submission.py::test_public_replay_coverage_closure_is_order_independent[empty_gap_tail-True]
+FAILED tests/test_ack_submission.py::test_public_replay_coverage_closure_is_order_independent[reverse_gap-True]
+FAILED tests/test_ack_submission.py::test_public_replay_coverage_closure_is_order_independent[reverse_plain-True]
+FAILED tests/test_ack_submission.py::test_pending_recovery_live_continuation_cannot_authorize_absent_prefix
+4 failed, 19 passed in 0.59s

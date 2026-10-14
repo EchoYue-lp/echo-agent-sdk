@@ -1,0 +1,11 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/before/sdks/java/src/test/java/com/echoagent/sdk/RagProjectRulesHostTest.java	2026-10-14 01:45:38
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/after/sdks/java/src/test/java/com/echoagent/sdk/RagProjectRulesHostTest.java	2026-10-14 04:36:23
+@@ -51,7 +51,7 @@
+         String host = System.getenv("ECHO_AGENT_SDK_HOST");
+         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank(), "required RAG/project-rules Host missing");
+         assumeTrue(host != null && !host.isBlank(), "real Host required");
+-        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_RAG_RULES_ROOT", "../../target/rag-project-rules")).toAbsolutePath();
++        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_RAG_RULES_ROOT", "../../target/rag-project-rules")).toAbsolutePath().normalize();
+         Files.createDirectories(root);
+         Path work = Files.createTempDirectory(root, "java-");
+         helper(work);

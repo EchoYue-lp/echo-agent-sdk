@@ -1,0 +1,36 @@
+{
+  "classification": "temporary actual-language consumers with real immutableHost; not repository testgate adoption",
+  "source_files": [
+    {
+      "path": "docs/sdk/governance/evidence/sdk-task-subagent-candidate-20261013/files/task_subagent_fixture.py.txt",
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/task_subagent_fixture.py",
+      "sha256": "381503435c515b7609008809f9d7f98d0e00fee6a0f5c2700472ee7a6c6b8e16"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-task-subagent-candidate-20261013/files/task-subagent-host.test.js.txt",
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/task-subagent-host.test.js",
+      "sha256": "d216108adda823b93604aad5646960e905413c5d0ef2689f7ab30e88f8f36a4f"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-task-subagent-candidate-20261013/files/test_task_subagent_host.py.txt",
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/test_task_subagent_host.py",
+      "sha256": "4f1c4d4be47727863644698eb10977e744c8e550a60893bd14afbe0e2c8be837"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-task-subagent-candidate-20261013/files/TaskSubagentCandidate.java.txt",
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/TaskSubagentCandidate.java",
+      "sha256": "6f680de1db27db451259d94594bc7a1650757344b5984ca717bdcd6c6848d833"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-task-subagent-candidate-20261013/files/scenario-plan.md.txt",
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/scenario-plan.md",
+      "sha256": "45ce26a5a04d9e4bb0bb76d7b4253c347a38085cf0253420571ca461f4d4c546"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-task-subagent-candidate-20261013/files/README.md.txt",
+      "original": "/tmp/sdk-task-subagent-candidate-fixture/README.md",
+      "sha256": "51d91e90e3d3d6796cb6342fb6ca13e7e89198d2ca3f1637828dea02e65a39ca"
+    }
+  ],
+  "proof_sha256": "765c4c97f57aa224e9771591a6dbb8ec54759d89669a2934f2b8b6341a0b56fc"
+}

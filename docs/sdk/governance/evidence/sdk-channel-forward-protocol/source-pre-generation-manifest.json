@@ -1,0 +1,9 @@
+{
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "phase": "source-prepared-locked-build-blocked-before-compile",
+  "files": {
+    "echo-sdk-protocol/src/facade.rs": "5f0c44138d8a595145735c2c7b6b5e5bf836b6a615cb1487fa47b5373461a24b",
+    "echo-sdk-protocol/src/schema.rs": "dce4395a1987304f34c85aa4b72b1cda35163e866b4a4f4c7ae749712c6f545d",
+    "echo-sdk-protocol/tests/extension_contract.rs": "ee311c6a7e0d4d7ff2c48e67167a4c8448e5d982994f3586eae04d0f15d0edf2"
+  }
+}

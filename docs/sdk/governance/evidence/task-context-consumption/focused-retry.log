@@ -1,0 +1,34 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 44.02s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-7c7b8032facc7b43)
+
+running 4 tests
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nonwaived_completed_dependency_without_result_rejects_before_agent ... FAILED
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nondefault_delegation_policy_survives_actual_dispatch_binding ... FAILED
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_run_id_selects_the_original_graph_and_exact_claim_lineage ... FAILED
+test core_profile::facade::task_runtime::task_context_consumption_tests::task_context_waived_skipped_dependency_and_completed_output_reach_actual_prompt ... FAILED
+
+failures:
+
+---- core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nonwaived_completed_dependency_without_result_rejects_before_agent stdout ----
+Error: Rejected { message: "invalid next task graph revision: expected 1, got 7" }
+
+---- core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nondefault_delegation_policy_survives_actual_dispatch_binding stdout ----
+Error: Rejected { message: "invalid next task graph revision: expected 1, got 7" }
+
+---- core_profile::facade::task_runtime::task_context_consumption_tests::task_context_run_id_selects_the_original_graph_and_exact_claim_lineage stdout ----
+Error: Rejected { message: "invalid next task graph revision: expected 1, got 7" }
+
+---- core_profile::facade::task_runtime::task_context_consumption_tests::task_context_waived_skipped_dependency_and_completed_output_reach_actual_prompt stdout ----
+Error: Rejected { message: "invalid next task graph revision: expected 1, got 7" }
+
+
+failures:
+    core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nondefault_delegation_policy_survives_actual_dispatch_binding
+    core_profile::facade::task_runtime::task_context_consumption_tests::task_context_nonwaived_completed_dependency_without_result_rejects_before_agent
+    core_profile::facade::task_runtime::task_context_consumption_tests::task_context_run_id_selects_the_original_graph_and_exact_claim_lineage
+    core_profile::facade::task_runtime::task_context_consumption_tests::task_context_waived_skipped_dependency_and_completed_output_reach_actual_prompt
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 163 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

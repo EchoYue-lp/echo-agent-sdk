@@ -1,0 +1,11 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python-entry-repair/check-language-sdks.before.sh	2026-10-12 12:42:07
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python-entry-repair/check-language-sdks.after.sh	2026-10-14 04:29:17
+@@ -69,7 +69,7 @@
+ (cd "$repo_root/sdks/python" && \
+   PYTHONPATH=src uv run --no-project --with ruff ruff check src tests examples ../shared/testing && \
+   PYTHONPATH=src uv run --no-project --with ruff ruff format --check src tests examples ../shared/testing && \
+-  PYTHONPATH=src uv run --no-project --with pytest --with pytest-asyncio --with agent-client-protocol==0.12.1 pytest -q tests ../shared/testing && \
++  PYTHONPATH=src uv run --no-project --with pytest --with pytest-asyncio --with agent-client-protocol==0.12.1 python -m pytest -q tests ../shared/testing && \
+   PYTHONPATH=src uv run python examples/quickstart.py)
+ (cd "$repo_root/sdks/java" && mvn -q test && mvn -q dependency:build-classpath -Dmdep.outputFile="$host_state/java.cp" && java -cp "target/classes:$(cat "$host_state/java.cp")" com.echoagent.sdk.Example "$ECHO_AGENT_SDK_HOST" "$ECHO_AGENT_SDK_CONFIG" "$repo_root/sdks/shared/facade-operation-catalog.json")
+ 

@@ -1,0 +1,147 @@
+[
+  {
+    "name": "map_missing",
+    "wire": {
+      "kind": "map"
+    }
+  },
+  {
+    "name": "list_missing",
+    "wire": {
+      "kind": "list"
+    }
+  },
+  {
+    "name": "map_not_list",
+    "wire": {
+      "kind": "map",
+      "value": {}
+    }
+  },
+  {
+    "name": "list_not_list",
+    "wire": {
+      "kind": "list",
+      "value": {}
+    }
+  },
+  {
+    "name": "map_non_string",
+    "wire": {
+      "kind": "map",
+      "value": [
+        {
+          "key": {
+            "kind": "u64",
+            "value": "1"
+          },
+          "value": {
+            "kind": "null"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "map_duplicate",
+    "wire": {
+      "kind": "map",
+      "value": [
+        {
+          "key": {
+            "kind": "string",
+            "value": "a"
+          },
+          "value": {
+            "kind": "null"
+          }
+        },
+        {
+          "key": {
+            "kind": "string",
+            "value": "a"
+          },
+          "value": {
+            "kind": "string",
+            "value": "overwrite"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "map_missing_value",
+    "wire": {
+      "kind": "map",
+      "value": [
+        {
+          "key": {
+            "kind": "string",
+            "value": "a"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "map_wrong_key_value",
+    "wire": {
+      "kind": "map",
+      "value": [
+        {
+          "key": {
+            "kind": "string",
+            "value": 7
+          },
+          "value": {
+            "kind": "null"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "bool_wrong",
+    "wire": {
+      "kind": "bool",
+      "value": "true"
+    }
+  },
+  {
+    "name": "string_missing",
+    "wire": {
+      "kind": "string"
+    }
+  },
+  {
+    "name": "f64_wrong",
+    "wire": {
+      "kind": "f64",
+      "value": "1"
+    }
+  },
+  {
+    "name": "list_child_missing_kind",
+    "wire": {
+      "kind": "list",
+      "value": [
+        {}
+      ]
+    }
+  },
+  {
+    "name": "map_value_missing_kind",
+    "wire": {
+      "kind": "map",
+      "value": [
+        {
+          "key": {
+            "kind": "string",
+            "value": "key"
+          },
+          "value": {}
+        }
+      ]
+    }
+  }
+]

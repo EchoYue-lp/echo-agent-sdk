@@ -1,0 +1,65 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance
+plugins: asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items / 1 deselected / 1 selected
+
+../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py::test_channel_bad_chunk_retains_original_failure_and_cleanup_owner FAILED
+
+=================================== FAILURES ===================================
+______ test_channel_bad_chunk_retains_original_failure_and_cleanup_owner _______
+
+    @pytest.mark.asyncio
+    async def test_channel_bad_chunk_retains_original_failure_and_cleanup_owner():
+        work = Path(os.environ["ECHO_AGENT_SDK_COOPERATIVE_CLOSE_ROOT"]) / "bad-chunk"
+        work.mkdir(parents=True, exist_ok=True)
+        process = await asyncio.create_subprocess_exec("python3", str(fixture.SHARED / "mcp_channel_config_fixture.py"), str(work))
+        assert await process.wait() == 0
+        config = json.loads((work / "host.json").read_text())
+        config["sdk_profile"]["limits"]["shutdown_timeout_secs"] = 1
+        (work / "host.json").write_text(json.dumps(config))
+        sdk = await fixture.EchoAgentClient.spawn(fixture.HOST, "--config", str(work / "host.json"))
+        release, cancelled = asyncio.Event(), asyncio.Event()
+        finally_count = 0
+        stream = None
+        try:
+            async def handler(call, cancel):
+                nonlocal finally_count
+                writer = sdk.stream_writer(fixture.WireHandle.from_dict(call["stream"]))
+                message = {**fixture.SPEC["outbound"], "attachments": [{"kind":"image", "data_base64":"!"}]}
+                try:
+                    await writer.chunk({"kind":"channel", "value":message})
+                    await cancel.wait()
+                    cancelled.set()
+                    await release.wait()
+                    return {"outcome":"stream", "stream":call["stream"]}
+                finally:
+                    finally_count += 1
+            reg = await sdk.register_channel_message_handler("bad-handler", {"kind":"channel_message_handler", "descriptor_version":1, "handler_id":"bad-handler"}, handler)
+            async def plugin(call, cancel):
+                return fixture.result(call["invocation"]["operation"])
+            plugin_reg = await sdk.register_channel_plugin("bad-plugin", {"kind":"channel_plugin", "descriptor_version":1, "channel_id":fixture.SPEC["channel_id"], "label":"badchunk", "handler_id":"bad-handler", "capabilities":{"chat_types":["direct"],"supports_media":True,"supports_threads":False}}, plugin)
+            agent = await sdk.create_agent()
+            session = await agent.create_session()
+            manager = (await sdk.call("channels.manager.open", session.wire, []))["resource"]
+            await sdk.call("channels.plugin.register", session.wire, [manager,plugin_reg.wire,reg.wire])
+            await sdk.call("channels.manager.start", session.wire, [manager,reg.wire])
+            stream = await sdk.call("channels.handler.handle_stream", session.wire, [manager,fixture.SPEC["channel_id"],fixture.business_wire(fixture.SPEC["inbound"])])
+            stream = fixture.WireHandle.from_dict(stream) if isinstance(stream,dict) else stream
+            response, error = None, None
+            try:
+                response = await asyncio.wait_for(sdk.call("channels.stream.next",session.wire,[stream]),2)
+            except fixture.EchoAgentError as caught:
+                error = caught
+            await asyncio.wait_for(cancelled.wait(),2)
+            (work/"observed.json").write_text(json.dumps({"early_response":response,"error_code":error.code if error else None,"finally_count":finally_count,"callback_held":not release.is_set()},indent=2))
+>           assert error and error.code == "framework_error" and error.retryable == "after_delay", "stream returned failed/closed before the original bad-chunk callback finished"
+E           AssertionError: stream returned failed/closed before the original bad-chunk callback finished
+E           assert (None)
+
+../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py:112: AssertionError
+=========================== short test summary info ============================
+FAILED ../../docs/sdk/governance/evidence/channel-handler-forward-candidate/cooperative-close/test_cooperative_close.py::test_channel_bad_chunk_retains_original_failure_and_cleanup_owner
+======================= 1 failed, 1 deselected in 1.07s ========================

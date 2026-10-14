@@ -44,14 +44,28 @@ The source history is merged as a second parent rather than copied only as
 prose. This preserves both the new repository's initial commit and the filtered
 framework SDK history without rewriting either history.
 
-## Clean-Pin State
+## Historical Extraction Pin
 
-The framework extraction revision is now pushed and pinned by the SDK Host:
-`27c7701e1eb116db1076da7f84bb68898544a44c`. The protocol crate is framework
-free, the accepted external contract is separated from the complete Rust
-inventory telemetry, and generated artifacts are reproducible from an
-independent clone. The exact blocking/non-blocking boundary is recorded in
-`contracts/sdk/source-contract.json` and `contracts/sdk/inventory-telemetry.json`.
+The initial independent-repository extraction pinned the pushed framework
+revision `27c7701e1eb116db1076da7f84bb68898544a44c`. That revision belongs to the
+historical migration above; it is not the current Host dependency. The protocol
+crate was made framework-free, and accepted external contracts were separated
+from the complete Rust inventory telemetry. The exact blocking/non-blocking
+boundary remains recorded in `contracts/sdk/source-contract.json` and
+`contracts/sdk/inventory-telemetry.json`.
+
+## Current Governance Candidate Pin
+
+The current Host resolves the published framework revision
+`be5f0a8405b593c4ef964cd6fd2df4beabf4956c`. Its exact dependency and build evidence
+are recorded in [published-pin provenance](docs/sdk/governance/evidence/sdk-chart-published-pin/published-pin-provenance.json).
+This changes the current build input, not the initial import archive, filtered
+history or extraction ancestry hashes recorded above.
+
+The [twelve accepted-source continuity choices](docs/sdk/governance/accepted-source-continuity-proposal.md)
+remain proposed. Complete accepted contract generation, final SDK gates and SDK
+main acceptance are pending. Bounded runtime and language evidence on this pin
+does not replace those requirements or claim a binary/registry release.
 
 The source continuity history above remains the ancestry authority; this file
 does not claim a published binary or registry release. The cross-repository

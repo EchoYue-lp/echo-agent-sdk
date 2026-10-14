@@ -1,0 +1,42 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 48.13s
+     Running tests/extension_bridge_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/extension_bridge_e2e-4a6d4877e2246c9b)
+
+running 34 tests
+test channel_plugin_facade_round_trip ... ok
+test crud_only_task_store_rejects_execute_before_runtime_side_effects ... ok
+test context_compressor_registration_drives_session_compression ... ok
+test critic_registration_preserves_default_verifier_disabled_behavior ... ok
+test cancelled_initial_stream_response_releases_session_callback_owner ... ok
+test cancelled_tool_waits_for_canonical_interrupted_callback ... ok
+test eval_and_improve_source_adapters_invoke_agent_factory_lazily ... ok
+test factory_presubmit_failure_releases_unseen_child ... ok
+test directly_registered_custom_agent_round_trips_and_unregisters ... ok
+test llm_client_stream_extension_answers_prompts ... ok
+test malformed_stream_kind_fails_without_waiting_for_deadline ... ok
+test mcp_transport_is_closed_when_handle_publication_exceeds_quota ... ok
+test missing_managed_capability_fails_before_store_mutation ... ok
+test managed_commit_disconnect_restart_replays_same_receipt ... ok
+test factory_and_custom_agent_extensions_round_trip ... ok
+test non_streaming_llm_extension_adapts_chat_to_framework_stream ... ok
+test non_streaming_llm_without_finish_reason_fails_closed ... ok
+test out_of_order_stream_fails_without_waiting_for_deadline ... ok
+test oversized_stream_chunk_fails_without_waiting_for_deadline ... ok
+test agent_components_are_consumed_by_new_session_agents ... ok
+test revisioned_task_extension_is_shared_by_crud_and_execution ... ok
+test same_factory_constructs_independent_instances_across_concurrent_sessions ... ok
+test deadline_and_cancellation_settle_typed_outcomes ... ok
+test cancelled_factory_stream_closes_and_releases_instance ... ok
+test task_execution_backend_failure_remains_queryable_as_typed_error ... ok
+test sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_terminal ... ok
+test stream_flood_hits_bounded_host_backpressure ... ok
+test workflow_agent_component_stream_flows_through_facade_pull_stream ... ok
+test tool_bridge_round_trip_with_callbacks_intervention_and_hook ... ok
+test store_and_human_loop_extensions_round_trip ... ok
+test tool_manager_timeout_before_stream_ack_releases_callback_owner ... ok
+test sdk_disconnect_cancels_an_unterminated_stream_and_exits_host ... ok
+test managed_persistence_deadline_and_lost_ack_preserve_commit_authority ... ok
+test plain_clients_get_method_not_found_for_the_bridge ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.77s
+

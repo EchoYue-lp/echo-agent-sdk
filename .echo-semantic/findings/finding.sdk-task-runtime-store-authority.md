@@ -1,0 +1,49 @@
+---
+{
+  "schema_version": 1,
+  "id": "finding.sdk-task-runtime-store-authority",
+  "kind": "finding",
+  "type": "authority_conflict",
+  "status": "open",
+  "severity": "high",
+  "primary_focus": "state_authority",
+  "focus": [
+    "time_lifecycle",
+    "contract_evidence",
+    "data_durability"
+  ],
+  "boundary_ref": "boundary.sdk-task-subagent",
+  "behavior_refs": [
+    "behavior.sdk-task-subagent"
+  ],
+  "rule_refs": [
+    "rule.framework-runtime-authority"
+  ],
+  "evidence_refs": [],
+  "audit_refs": [],
+  "decision_refs": [],
+  "repair_evidence_refs": [],
+  "verification_evidence_refs": [],
+  "rereview_audit_refs": [],
+  "discovered_at": "30d7e219cc7d3aef0f75a19217c82898c363f50d"
+}
+---
+
+# RevisionedTaskStore 扩展 CRUD/runtime 双图权威
+
+## 触发条件与影响
+
+当前源码路径：`echo-sdk-host/src/factory.rs`。具体触发序列与审查记录见 `docs/sdk/governance/finding-ledger.md`。
+
+## 证据
+
+框架通用 executionCAS边界补齐中；SDK必须切同一store/service，禁止fallbackInMemory。
+
+本 Finding 保持 open；静态取证、代码修补或旧 pin focused 通过不能替代最终快照验证与独立复审。
+## 问题
+
+RevisionedTaskStore 扩展 CRUD/runtime 双图权威。
+
+## 处理记录
+
+修复与最新直接验证进行中；尚未完成最终精确 snapshot 独立复审，保持 open。

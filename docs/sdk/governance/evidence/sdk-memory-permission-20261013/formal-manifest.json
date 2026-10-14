@@ -1,0 +1,306 @@
+{
+  "classification": "three formal native Host tests each1passed/0failure/0skip; archive candidates historical separate",
+  "host": {
+    "path": "/tmp/echo-sdk-governance-workflow-shape-host",
+    "sha256": "cb9b7fcad3946d9428cdef5a7b7258a334ee387ed34ca0612b4f40b262ef20a2"
+  },
+  "source_files": [
+    {
+      "path": "sdks/shared/testing/memory_permission_fixture.py",
+      "sha256": "60004dc5e0febe2d81c5ec870e413a3c4dbd6e3b66c76b67996e5718e1e73f58"
+    },
+    {
+      "path": "sdks/python/tests/test_memory_permission_host.py",
+      "sha256": "15727acace09bdcf945d53f406819bd705917a9826bd390e86dc0ad550f2d801"
+    },
+    {
+      "path": "sdks/typescript/test/memory-permission-host.test.js",
+      "sha256": "68eadc1a375fe6ea37071edc7b90e75b07f3d6786c127be234b87d61c10e9764"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/MemoryPermissionHostTest.java",
+      "sha256": "b074934bbcdde899365a3cc9279881e040cd84d189ac890aa3e633646ed7b203"
+    },
+    {
+      "path": "docs/sdk/governance/memory-permission-evidence.md",
+      "sha256": "552fed3fe1545919cdefb9ba4d50e532ca610d69bbdf17c80b7d2ef60836a1d6"
+    }
+  ],
+  "archived_files": [
+    {
+      "path": "formal/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml",
+      "sha256": "07df10f13df041c6d39ccae32718e4ddae8cf669856773a2d1be953c97d54bd5"
+    },
+    {
+      "path": "formal/compare_evidence.py",
+      "sha256": "8feb3e8da0543b1f3c4e54394d86faf37a87a2b9b1b3325ca8c473a44d5be937"
+    },
+    {
+      "path": "formal/cross-language-comparison.json",
+      "sha256": "d4d3fb8516a0855fc5df0972ec773364b12c6e41b32503ff63a85524555dd9f8"
+    },
+    {
+      "path": "formal/java-real-evidence.json",
+      "sha256": "220c8c6d591ac7b96e71528585f51fe6255039f69565c0671f29f3ef7d730b14"
+    },
+    {
+      "path": "formal/python-real-evidence.json",
+      "sha256": "7d52df0776d850d7f8a9029c3aa44c6c265719556be130747e84c04f53ae348e"
+    },
+    {
+      "path": "formal/sdk-memory-permission-formal-comparison.log",
+      "sha256": "baa2b4e13218319ada746988d125402f6bb4d419e47da06de3b8e62cc6e2fd83"
+    },
+    {
+      "path": "formal/sdk-memory-permission-formal-java.log",
+      "sha256": "cc094d09df6f43dd71e1589dba864b8e51d8a11f59c77cb7562d17ed4a327625"
+    },
+    {
+      "path": "formal/sdk-memory-permission-formal-python.log",
+      "sha256": "18ec7a0d5beb9e8603df56b2aa9ecc95fb5f9a51a488fd7c1b9fac15f198a632"
+    },
+    {
+      "path": "formal/sdk-memory-permission-formal-style.log",
+      "sha256": "9e0549591b09c0baf4fd9e5f573ed434dcc5f2cfd67f74134bf5a0cb74b5af3a"
+    },
+    {
+      "path": "formal/sdk-memory-permission-formal-typescript.log",
+      "sha256": "7dd7c2c715decd8c56fb0d3e4179393dd1dddeedee718b084c66980d20ce7053"
+    },
+    {
+      "path": "formal/sdk-memory-permission-guard-proof.json",
+      "sha256": "38e925b367c5a46111bd1269b6e5dd7092490fd036557b7e9deadf2ab35207dd"
+    },
+    {
+      "path": "formal/sdk-memory-permission-guard-python-blank.log",
+      "sha256": "bc047c525d1d4333d384ada33ed15a1bc41301f1c0ee56cfb80663e44e14b7da"
+    },
+    {
+      "path": "formal/sdk-memory-permission-guard-python-missing.log",
+      "sha256": "28d7adff7612f4be6101f124f3c5fa05bef2233fcfd30dc26c44eba9f48c8c27"
+    },
+    {
+      "path": "formal/sdk-memory-permission-guard-typescript-blank.log",
+      "sha256": "33c02bef2bb851a820cb447664f8dc79f5d2c66078f4e005f7359d3e880c0d6c"
+    },
+    {
+      "path": "formal/sdk-memory-permission-guard-typescript-missing.log",
+      "sha256": "a6aaa02e00447cc984c2095bd4efca2e964bcaa6d4b460a012fc8fc70b54b16c"
+    },
+    {
+      "path": "formal/typescript-real-evidence.json",
+      "sha256": "b0318c65b9bc612b46478dbc5caca3c84a2385a63c3b4ab7ee6d294d7fafaa86"
+    },
+    {
+      "path": "temporary-consumer/ACTUAL-RESULTS.md",
+      "sha256": "7eb9ba4c44817b14bf43dbe55ed2ab3c9b3eb1ec920e4f83d8a603793b152212"
+    },
+    {
+      "path": "temporary-consumer/MemoryPermissionConsumer.java",
+      "sha256": "c969a3afcbd2bb08ca0d6fc2d18b91a520415c62d81b3345ca5409d25bf7d636"
+    },
+    {
+      "path": "temporary-consumer/README.md",
+      "sha256": "03cb79e127b6570f0b2e6eff1829e32e4f326848d5d429eef784f811603d7d31"
+    },
+    {
+      "path": "temporary-consumer/catalog-check.log",
+      "sha256": "1749170e6ffb707baf05842d1671e35b1e7acec7654d7573224a2cb4a77ea71e"
+    },
+    {
+      "path": "temporary-consumer/compare_evidence.py",
+      "sha256": "394b9b7bfdff8d703d16e3f8cc091ace4f7d25c8ac4640e5722634f6019c6f78"
+    },
+    {
+      "path": "temporary-consumer/cross-language-comparison.json",
+      "sha256": "5a8661153b387d16aa6aa795296fb1f4102930a8032f228e00bb2e533b8f4fac"
+    },
+    {
+      "path": "temporary-consumer/cross-language-comparison.log",
+      "sha256": "baa2b4e13218319ada746988d125402f6bb4d419e47da06de3b8e62cc6e2fd83"
+    },
+    {
+      "path": "temporary-consumer/first-cross-language-mismatch.log",
+      "sha256": "b981ca42e398d386a1aa24c941767c660bd7c0d5ac63d67f8b997a2142f65c26"
+    },
+    {
+      "path": "temporary-consumer/fixture.py",
+      "sha256": "7308966f8e85a90527dff18aa33f27ceadc88932efd0031b11b4580b6e2b3737"
+    },
+    {
+      "path": "temporary-consumer/java-classes/com/echoagent/sdk/MemoryPermissionConsumer.class",
+      "sha256": "4fc2b5d248a6ceccf6ea8960f8b5318279de7c4b9c38c8d7ec796c64198517cf"
+    },
+    {
+      "path": "temporary-consumer/java-compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "temporary-consumer/java-plain-jsonnode-argument-failure.log",
+      "sha256": "d9504677509a8ea0e5aec26b1bb8b125f8af2bcd7490547b342f36e23a3112bd"
+    },
+    {
+      "path": "temporary-consumer/java-real-evidence.json",
+      "sha256": "846abb025a506ad588da144a6ddb0cfe2525cc414ab90c6cf1ff459bd69fe1d7"
+    },
+    {
+      "path": "temporary-consumer/java-real-run.log",
+      "sha256": "01abe1b05798c22ee776b6ba8b32192575344dd10ccb544f5f37dfad50f62b0b"
+    },
+    {
+      "path": "temporary-consumer/local-http-smoke.log",
+      "sha256": "72d26abb91c9f69ede9f45a3263e0d00767e69c4831f7e72598c419c3def0ed4"
+    },
+    {
+      "path": "temporary-consumer/local-unit.log",
+      "sha256": "d25d7e31420854314f463848e40986e1da1ce5b39b1eaac1433cc42f0d72202a"
+    },
+    {
+      "path": "temporary-consumer/manifest.json",
+      "sha256": "060cb7f1465d8f8ef58996bd1ec621cc73c07fec6426b39b1932401547d2ea32"
+    },
+    {
+      "path": "temporary-consumer/prepare_scenarios.py",
+      "sha256": "d1598d8bfee94803ba9a7357974180fd76aa4bbb89d2363ceb4afed37c3b52ab"
+    },
+    {
+      "path": "temporary-consumer/python-first-recall-failure.log",
+      "sha256": "e9022ff0f11f9c2f56df1647c9b512719776913315d5bf90308e924114a58e40"
+    },
+    {
+      "path": "temporary-consumer/python-first-registration-failure.log",
+      "sha256": "d4c1eaf04f9b955d44e962e406616d2a9e2c52269119d163ec69373f26baf238"
+    },
+    {
+      "path": "temporary-consumer/python-real-evidence.json",
+      "sha256": "89f12714aece5d6269ffd324cc9cf1c4596698dafbd2c7667495612b0081e0a7"
+    },
+    {
+      "path": "temporary-consumer/python-real-run.log",
+      "sha256": "903e312f17a8d56d7481da01d65aaa9a936641ce08b893a47bb793d05fc8e94c"
+    },
+    {
+      "path": "temporary-consumer/python-second-recall-failure.log",
+      "sha256": "a65e066ee0ae6bada56944161886cffe58836a11431cf4a5cb4f3b4908ed6af7"
+    },
+    {
+      "path": "temporary-consumer/python-second-registration-failure.log",
+      "sha256": "c87267abe77fd5998e7836272595ab2f76ff184d8b7f962a86573c113d939283"
+    },
+    {
+      "path": "temporary-consumer/python-strict-mode-spelling-failure.log",
+      "sha256": "709f200d948f185c02f37cf15b742757a49784b3efa7f2a40dcb06db43d78253"
+    },
+    {
+      "path": "temporary-consumer/run_python.py",
+      "sha256": "e75715ff82e6f1f9fd80147a23cf389b1d61e8e6ce6747eacb9fd6a20df5cc7a"
+    },
+    {
+      "path": "temporary-consumer/run_typescript.mjs",
+      "sha256": "294dc99911936eae9fcca16eb6c56cd24951ca3badebb46fe62fcbe52990a3e6"
+    },
+    {
+      "path": "temporary-consumer/scenarios.json",
+      "sha256": "8e7c5c878c4313d6ae41706a941aeb90bb107390e0d8927e76a4ce6ffbf4c576"
+    },
+    {
+      "path": "temporary-consumer/scope-disposition.json",
+      "sha256": "9cdfc8a355648bdccf35110d413fcc5966d8f523e9f9c549ab57957c2fe1a426"
+    },
+    {
+      "path": "temporary-consumer/smoke_http.py",
+      "sha256": "8b366ac0e688baddc4867e4d8986383fa86dc2284f0d6a05516d2073e43faf32"
+    },
+    {
+      "path": "temporary-consumer/store_adapter.py",
+      "sha256": "8b2b8298407420ecd7ddd05379bc66a8348995f2edfc1f614bab8c7b41380d40"
+    },
+    {
+      "path": "temporary-consumer/test_adapter.py",
+      "sha256": "64d5b2e6aa450011d57a7ac44da90fdfa972b981f8d34cabc77ed2b7a91682ce"
+    },
+    {
+      "path": "temporary-consumer/test_fixture.py",
+      "sha256": "de773afe8a1a2439417e0af6fa564bf9cb95156df6c803992c39a4c89aa06bda"
+    },
+    {
+      "path": "temporary-consumer/typescript-real-evidence.json",
+      "sha256": "34b6adc44ded02aa2598f9b8bd9508cb61d871db163241e3ba2a11b20f7e4496"
+    },
+    {
+      "path": "temporary-consumer/typescript-real-run.log",
+      "sha256": "a20af84493daaf1812c77da972a3960373c1f809eb609f42474ab7fa619602ae"
+    }
+  ],
+  "focused_commands": [
+    {
+      "language": "Python",
+      "command": "ECHO_AGENT_SDK_HOST=workflow-shape immutable ECHO_AGENT_SDK_REQUIRE_HOST_E2E=1 PYTHONPATH=src uv run --no-project --with pytest --with pytest-asyncio --with agent-client-protocol==0.12.1 pytest tests/test_memory_permission_host.py -q",
+      "tool_session_id": 1615,
+      "exit_code": 0,
+      "tests": 1,
+      "skipped": 0
+    },
+    {
+      "language": "TypeScript",
+      "command": "sameHost+require1 node --test test/memory-permission-host.test.js",
+      "tool_session_id": 71481,
+      "exit_code": 0,
+      "tests": 1,
+      "skipped": 0
+    },
+    {
+      "language": "Java",
+      "command": "sameHost+require1 mvn -q -Dtest=MemoryPermissionHostTest test",
+      "tool_session_id": 72743,
+      "exit_code": 0,
+      "tests": 1,
+      "skipped": 0
+    }
+  ],
+  "additional_checks": [
+    "Ruffcheck/format",
+    "node--check",
+    "actualPY/TS missing/blanknegativeguards4 expectedfailures",
+    "formalcomparisonexactresults/errors/context/effects/journal",
+    "Java publicSDKmethods no reflection"
+  ],
+  "runtime_input_hashes": [
+    {
+      "path": "sdks/python/src/echo_agent_sdk/client.py",
+      "sha256": "61e61202c914b111951714de559c4d3efe74bfce29c4e62f14b292142f8ed021"
+    },
+    {
+      "path": "sdks/python/src/echo_agent_sdk/wire.py",
+      "sha256": "50d132ec93ebc09110ed52e549335ff6c789bf198a1cfc94253023d75966c374"
+    },
+    {
+      "path": "sdks/typescript/dist/client.js",
+      "sha256": "803355980a85a30d9111519e09e9ad648b51d6bf8fe0f6bd246c3522f51646f1"
+    },
+    {
+      "path": "sdks/typescript/dist/wire.js",
+      "sha256": "f5566cc584a59e158fb47cccf86deaddb43d5a3079cdf80569847a08dc2afc66"
+    },
+    {
+      "path": "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient.class",
+      "sha256": "a5e9556af2c3ca8c6610ea9ad820eb87fbd83a25cf8513da00e8089e755c94d7"
+    },
+    {
+      "path": "sdks/java/target/classes/com/echoagent/sdk/WireValues.class",
+      "sha256": "aa2c9f9746f0f309b3e0fac3ab7e34f2d630c2783fa2f11545ec72c0a0f5d02b"
+    },
+    {
+      "path": "contracts/sdk/accepted-facade-operation-catalog.json",
+      "sha256": "ecca20dc7eb2921b76bb9db23c45fbc4dab27eb510f2d80f4fdd6d76ab321cc0"
+    },
+    {
+      "path": "contracts/sdk/accepted-external-contract.json",
+      "sha256": "901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45"
+    },
+    {
+      "path": "sdks/shared/contract-digests.json",
+      "sha256": "e4b3d2548b360c0fc20cbaa959dd61b53961a263a2c6712dfdd7a6c48635fd31"
+    }
+  ]
+}

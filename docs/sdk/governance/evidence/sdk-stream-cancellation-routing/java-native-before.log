@@ -1,0 +1,64 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.495 s <<< FAILURE! -- in com.echoagent.sdk.StreamCancellationRouteHostTest
+[ERROR] com.echoagent.sdk.StreamCancellationRouteHostTest.setupAckRetainsRealHostCancelRoute -- Time elapsed: 0.483 s <<< ERROR!
+java.util.concurrent.ExecutionException: com.echoagent.sdk.EchoAgentException: subagent dispatch input is malformed or unsupported: invalid type: sequence, expected a string
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2096)
+	at com.echoagent.sdk.StreamCancellationRouteHostTest.setupAckRetainsRealHostCancelRoute(StreamCancellationRouteHostTest.java:30)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: com.echoagent.sdk.EchoAgentException: subagent dispatch input is malformed or unsupported: invalid type: sequence, expected a string
+	at com.echoagent.sdk.EchoAgentException.from(EchoAgentException.java:41)
+	at com.echoagent.sdk.EchoAgentException.from(EchoAgentException.java:50)
+	at com.echoagent.sdk.EchoAgentClient.lambda$request$27(EchoAgentClient.java:524)
+	at java.base/java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:934)
+	at java.base/java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:911)
+	at java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:510)
+	at java.base/java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2194)
+	at reactor.core.publisher.MonoToCompletableFuture.onError(MonoToCompletableFuture.java:78)
+	at reactor.core.publisher.FluxHandle$HandleSubscriber.onError(FluxHandle.java:216)
+	at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:138)
+	at reactor.core.publisher.SerializedSubscriber.onNext(SerializedSubscriber.java:100)
+	at reactor.core.publisher.FluxTimeout$TimeoutMainSubscriber.onNext(FluxTimeout.java:182)
+	at reactor.core.publisher.MonoCreate$DefaultMonoSink.success(MonoCreate.java:177)
+	at com.agentclientprotocol.sdk.spec.AcpClientSession.handle(AcpClientSession.java:195)
+	at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.onNext(FluxPeekFuseable.java:197)
+	at reactor.core.publisher.Operators$ScalarSubscription.request(Operators.java:2564)
+	at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.request(FluxPeekFuseable.java:144)
+	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onSubscribe(MonoIgnoreThen.java:135)
+	at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.onSubscribe(FluxPeekFuseable.java:178)
+	at reactor.core.publisher.MonoJust.subscribe(MonoJust.java:56)
+	at reactor.core.publisher.Mono.subscribe(Mono.java:4569)
+	at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:268)
+	at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51)
+	at reactor.core.publisher.Mono.subscribe(Mono.java:4569)
+	at reactor.core.publisher.FluxFlatMap$FlatMapMain.onNext(FluxFlatMap.java:431)
+	at reactor.core.publisher.SinkManyUnicast.drainRegular(SinkManyUnicast.java:288)
+	at reactor.core.publisher.SinkManyUnicast.drain(SinkManyUnicast.java:370)
+	at reactor.core.publisher.SinkManyUnicast.tryEmitNext(SinkManyUnicast.java:243)
+	at reactor.core.publisher.SinkManySerialized.tryEmitNext(SinkManySerialized.java:100)
+	at com.agentclientprotocol.sdk.client.transport.StdioAcpClientTransport.lambda$startInboundProcessing$9(StdioAcpClientTransport.java:280)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:72)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+[ERROR] Errors: 
+[ERROR]   StreamCancellationRouteHostTest.setupAckRetainsRealHostCancelRoute:30 » Execution com.echoagent.sdk.EchoAgentException: subagent dispatch input is malformed or unsupported: invalid type: sequence, expected a string
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project echo-agent-sdk-source: 
+[ERROR] 
+[ERROR] See /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

@@ -1,0 +1,46 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.40s
+     Running tests/extension_contract.rs (target/debug/deps/extension_contract-e543308886cdfd90)
+
+running 39 tests
+test agent_component_extended_methods_and_stream_capabilities_are_closed ... ok
+test agent_component_stream_rejects_inner_terminal_confusion ... ok
+test catalog_passes_mechanical_validation ... ok
+test catalog_helper_detects_violations ... ok
+test authoritative_tool_facts_and_interruption_identity_are_lossless ... ok
+test critic_invocation_and_result_are_typed_and_bounded ... ok
+test boundary_fixtures_reject_standard_and_foreign_methods ... ok
+test capability_fixtures_validate_shape_rules ... ok
+test bridge_register_fixtures_enforce_typed_descriptors ... ok
+test binary_and_unknown_fixtures_enforce_bounds ... ok
+test bridge_invoke_and_cancel_fixtures_enforce_identity_rules ... ok
+test execution_cas_capability_requires_explicit_opt_in_and_matching_component ... ok
+test extension_operation_taxonomy_is_closed_and_kind_bound ... ok
+test event_fixtures_preserve_every_envelope_fact ... ok
+test extension_rpc_types_bind_the_official_jsonrpc_surface ... ok
+test error_fixtures_round_trip_typed_codes ... ok
+test factory_create_binds_construction_to_the_reserved_instance ... ok
+test factory_origin_requires_distinct_same_generation_agent_target ... ok
+test delivery_claim_wire_shape_changes_its_admission_signature ... ok
+test every_invalid_fixture_declares_a_stable_error_code ... ok
+test facade_operation_fixtures_round_trip_and_reject ... ok
+test handle_fixtures_enforce_non_empty_identities ... ok
+test extension_outcome_and_stream_are_tagged ... ok
+test channels_forward_result_shapes_preserve_the_existing_stream_envelope ... ok
+test fixtures_directory_content_matches_in_memory_set ... ok
+test managed_projection_authority_and_deadline_preserve_full_integer_range ... ok
+test invalid_scalar_fixtures_are_rejected ... ok
+test generated_channels_forward_fixtures_retain_session_and_full_owner_handles ... ok
+test reverse_callback_stream_directions_are_consistent ... ok
+test live_gap_identifies_its_stream ... ok
+test task_store_execution_facts_preserve_claim_revision_and_absent_result ... ok
+test channels_forward_operations_freeze_typed_admission_shapes ... ok
+test replay_requests_validate_stream_and_bounds ... ok
+test path_fixtures_round_trip_across_encodings ... ok
+test replay_fixtures_round_trip_with_gap ... ok
+test valid_scalar_fixtures_round_trip_losslessly ... ok
+test schema_document_is_deterministic_and_within_boundaries ... ok
+test digest_covers_schema_and_catalog ... ok
+test schema_rejects_structurally_invalid_fixtures ... ok
+
+test result: ok. 39 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+

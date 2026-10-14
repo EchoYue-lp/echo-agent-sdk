@@ -1,0 +1,62 @@
+{
+  "scope": "the remaining two confirmed callback lifecycle paths, no new public operations",
+  "prefix": {
+    "before": {
+      "log": "prefix-before-corrected.log",
+      "exitCode": 101,
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "failure": "extension stream remote sequence is not contiguous"
+    },
+    "after": {
+      "log": "prefix-after.log",
+      "exitCode": 0,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "runtimePath": "official ACP Initialize -> original framework AcpAgentAdapter negotiated Extended mode -> same Profile state/registry -> close_admission -> actual SDK extension_stream handler receives original Chunk(seq1), Complete(seq2)",
+    "delta": "remove terminal-only teardown filter while retaining full stream/generation/extension ownership and existing bounded delivery/sequence ledger"
+  },
+  "missingTerminal": {
+    "before": {
+      "log": "missing-terminal-before.log",
+      "exitCode": 101,
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "failure": "actual RPC returned but missing terminal leaves source pending; enclosing official ACP scenario times out at 10 seconds after inner 200ms source observation fails"
+    },
+    "after": {
+      "log": "missing-terminal-after-fresh.log",
+      "exitCode": 0,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "recompiled": true
+    },
+    "delta": "only restore the Channel actual-response missing-terminal failure block; CustomAgent setup-ACK contract remains intact"
+  },
+  "attempts": {
+    "prefix-before.log": "fixture_error: no retained adapter close owner, plus unused imports; not behavior counterexample",
+    "prefix-before-final.log": "terminated compile attempt, wrong env omitted CARGO_TARGET_DIR; no behavior result",
+    "missing-terminal-after.log": "stale build artifact: source restored with older mtime by copy2, Cargo skipped compilation and ran before artifact; not after behavior evidence"
+  },
+  "sourceRestoreRule": "write bytes/touch source before Cargo; corrected after log explicitly compiles the SDK experiment Host crate",
+  "latestSharedBridge": "43ecf356e4deb1004158540708b664e6e022ddf4afc9f545d240903c4758fefe",
+  "latestSharedHandler": "fa6a744e6300c3be3c509b6cfaf88b40301e40a8f8746122c6e0109d074ff2cd",
+  "limits": [
+    "Individual official ACP counterexamples only; latest full combined Host suite/binary still pending",
+    "No published exact-main acceptance in these counterexample receipts"
+  ],
+  "independentReview": {
+    "result": "pass",
+    "actionableFindings": 0,
+    "scope": "four previously confirmed callback lifecycle findings and teardown prefix closure",
+    "sourceBridge": "43ecf356e4deb1004158540708b664e6e022ddf4afc9f545d240903c4758fefe",
+    "sourceHandler": "fa6a744e6300c3be3c509b6cfaf88b40301e40a8f8746122c6e0109d074ff2cd",
+    "evidence": "17 final counterexample archive file SHA digests matched the reviewer read; original setup-ACK and remote terminal facts preserve the accepted boundary",
+    "limits": "Does not replace the final whole SDK gates, published framework pin or exact-main acceptance"
+  }
+}

@@ -1,0 +1,732 @@
+{
+  "status": "focused-passed-awaiting-independent-review-public-pin-and-full-final-gates",
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-channel-resource-admission-host",
+    "sha256": "07442919df0108592f93585a76f6a9cbc429f279a81876a70b56b959f53c6c2b"
+  },
+  "sources": {
+    "echo-sdk-host/src/core_profile/facade/integrations.rs": "20c9080c08cd239a0f7e97e8c8278382388f8c0bdc8cbb763e152bfb0a4b9ea2",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "51a6e402717187cfaafe702f5ae77201bcdd16da73871067daf575afebd91c5c",
+    "echo-sdk-host/src/core_profile/handles.rs": "4562d730adcee62c4ef6e8a04dfbb4b5cdfc2144b3646c54c7994c27de7e5a8f",
+    "sdks/python/tests/test_mcp_channel_host.py": "c721bac29e17b7635aa0ab0cbf159a4af167884e597f43b71a1ae1dc55d5d8ea",
+    "sdks/typescript/test/mcp-channel-host.test.js": "0fa284e146f8b0b4e494271153f0e47388ade02180251007e2655d867bf70128",
+    "sdks/java/src/test/java/com/echoagent/sdk/McpChannelHostTest.java": "90033f01a7c26af4e4bd2c9e447beca1176337c57a612a8a7dd13485b1723e6c",
+    "docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md": "dc7781e17b2a0dd24ef4349c44d840791286fd5cbbe5507025c34f865fb894e0",
+    "docs/sdk/facade-feature-adapters.md": "0b6bde4b5101bb986eae3ef89fcc00b7411cd0e29a48e03a80aae8abc87d174d",
+    "docs/sdk/governance/mcp-channel-evidence.md": "1bcf1c227a39cb1abb77bc88056b870b09b9bd54df8dbfc2dd4ff2ccbf83f906"
+  },
+  "before": {
+    "exit_code": 101,
+    "passed": 0,
+    "failed": 1,
+    "tests": 1,
+    "native_plugin_starts": 1,
+    "native_plugin_stops": 1,
+    "resource_tombstoned": true,
+    "native_plugin_running_after_resource_tombstone": true,
+    "scope": "actual native ChannelPlugin owned-future + real SessionFacadeRuntime resource close composition; not a sixth public three-language wire scenario"
+  },
+  "regression_after": {
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "scope": "same captured operation uses production resource admission helper; actual SDK dispatch start and close queue; lock-wait tombstone recheck"
+  },
+  "host_library": {
+    "passed": 140,
+    "failed": 0,
+    "ignored": 0
+  },
+  "gates": {
+    "all_target_all_feature_host_clippy": 0,
+    "production_panic_four_lints": 0,
+    "all_feature_host_build": 0,
+    "fmt": 0
+  },
+  "runtime_runs": [
+    {
+      "language": "typescript",
+      "actual_tests": 5,
+      "exit_code": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime_roots": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-ts-mcp-stdio-m7oRDm",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-ts-mcp-transport-retry-FNQ0c9",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-ts-channels-normal-TclwSl",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-ts-channels-retry-FPWgXJ",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-ts-channels-owned-reentry-vkYiRw"
+      ],
+      "log_sha256": "a60332a08e2df1b1e9bcb0152b776dc7239e4bbb5cb8b33a35bdc440f258b5c7"
+    },
+    {
+      "language": "python",
+      "actual_tests": 5,
+      "exit_code": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime_roots": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-py-mcp-stdio-axgah9xy",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-py-mcp-transport-retry-rm1cl5yk",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-py-channels-normal-hf0lsf4v",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-py-channels-retry-ctdiheed",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-py-channels-owned-reentry-jfpumi57"
+      ],
+      "log_sha256": "1a553abcc77756557dbf218e1c550b3babd85b1e6a699aa4d5848cfd76e0b894"
+    },
+    {
+      "language": "java",
+      "actual_tests": 5,
+      "exit_code": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime_roots": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-mcp-stdio-5925876722793237596",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-channels-owned-reentry-971777644845922802",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-channels-normal-17652726703730220555",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-channels-retry-9783348022098305573",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-resource-native/runtime/sdk-java-mcp-transport-retry-15614628737761213204"
+      ],
+      "log_sha256": "7c57ea9306c0d5d28186de380cc3f46ee8f8ed6ad31faadff8ddf63c6d2f2151"
+    }
+  ],
+  "common_projection_match": true,
+  "metadata_observations": 40,
+  "stop_counts": {
+    "a": 4,
+    "b": 3,
+    "other": 1
+  },
+  "settled_children": [
+    {
+      "language": "typescript",
+      "scenario": "mcp-stdio",
+      "pid": 74399,
+      "alive_after_tests": false
+    },
+    {
+      "language": "typescript",
+      "scenario": "mcp-stdio",
+      "pid": 74383,
+      "alive_after_tests": false
+    },
+    {
+      "language": "typescript",
+      "scenario": "channels-normal",
+      "pid": 75528,
+      "alive_after_tests": false
+    },
+    {
+      "language": "typescript",
+      "scenario": "channels-normal",
+      "pid": 75523,
+      "alive_after_tests": false
+    },
+    {
+      "language": "typescript",
+      "scenario": "channels-retry",
+      "pid": 75861,
+      "alive_after_tests": false
+    },
+    {
+      "language": "typescript",
+      "scenario": "channels-retry",
+      "pid": 75856,
+      "alive_after_tests": false
+    },
+    {
+      "language": "python",
+      "scenario": "mcp-stdio",
+      "pid": 74428,
+      "alive_after_tests": false
+    },
+    {
+      "language": "python",
+      "scenario": "mcp-stdio",
+      "pid": 74425,
+      "alive_after_tests": false
+    },
+    {
+      "language": "python",
+      "scenario": "channels-normal",
+      "pid": 74500,
+      "alive_after_tests": false
+    },
+    {
+      "language": "python",
+      "scenario": "channels-normal",
+      "pid": 74501,
+      "alive_after_tests": false
+    },
+    {
+      "language": "python",
+      "scenario": "channels-retry",
+      "pid": 74547,
+      "alive_after_tests": false
+    },
+    {
+      "language": "python",
+      "scenario": "channels-retry",
+      "pid": 74546,
+      "alive_after_tests": false
+    },
+    {
+      "language": "java",
+      "scenario": "mcp-stdio",
+      "pid": 74684,
+      "alive_after_tests": false
+    },
+    {
+      "language": "java",
+      "scenario": "mcp-stdio",
+      "pid": 74672,
+      "alive_after_tests": false
+    },
+    {
+      "language": "java",
+      "scenario": "channels-normal",
+      "pid": 74770,
+      "alive_after_tests": false
+    },
+    {
+      "language": "java",
+      "scenario": "channels-normal",
+      "pid": 74769,
+      "alive_after_tests": false
+    },
+    {
+      "language": "java",
+      "scenario": "channels-retry",
+      "pid": 74801,
+      "alive_after_tests": false
+    },
+    {
+      "language": "java",
+      "scenario": "channels-retry",
+      "pid": 74802,
+      "alive_after_tests": false
+    }
+  ],
+  "test_source_compile_errors_preserved": [
+    "WireValue.to_json missing; used actual into_json",
+    "WireU64 generation moved; cloned original generation"
+  ],
+  "remaining": [
+    "independent review and full final SDK/framework gates",
+    "published framework revision and SDK pin/main exact delivery",
+    "newly approved MessageHandler inbound wire is separate parent work; this slice adds none"
+  ],
+  "raw_files": [
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-after.log",
+      "sha256": "6f28790c52cf0a052e69fd1a30f836547ebaa6fe06eeff4b0220d0d68aa2cb15"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-build.log",
+      "sha256": "0da0113c6f115f35fe286211bb4c634b833291fc30d448eec29c382c82576d38"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-after-v3.log",
+      "sha256": "a51633ccd8246012242762a5fff7bb581300d486e934d9bab42c48a677710baa"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-before.log",
+      "sha256": "34cccd53ac562c20d7b67631d08c37a90ce8b8a95d2265ca0e20b0862a5c4917"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-after-final.log",
+      "sha256": "e2b53f368a2ed0c971fca72b360c14a2504748325b6a27d4429a12425ff46cb7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/TEST-com.echoagent.sdk.McpChannelHostTest.xml",
+      "sha256": "6f12ae17ef9c0adcab4b1dbf33c0109c3c8708a0ee70608e71b54534e6da0c8c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-hostlib-all.log",
+      "sha256": "efcf5b4f640980648cff5284f0258b624b208137356ace72061c2ca94278ac7a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-prod-panic-clippy.log",
+      "sha256": "6ee7f814695fa9e2d3c4ab337466a91ea54bdd32cd611b7a2a5484f265fb2bf7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/channel-resource-clippy.log",
+      "sha256": "c190e3554ebbc41eef34d8bd4710a879fc9df0a5e15bf1c6de3aa7ef7041d73e"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/run.log",
+      "sha256": "1a553abcc77756557dbf218e1c550b3babd85b1e6a699aa4d5848cfd76e0b894"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/normalized-owned.json",
+      "sha256": "94a4dca141ceb49e280d028a5b460a0274f2abb755a79934223dc4dc83cdc341"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-owned-reentry/host.json",
+      "sha256": "90a2378ab80125b54483efac62f854dc214e5ce8321ed4e68644030cbd8e37e7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-owned-reentry/errors.jsonl",
+      "sha256": "43c022b8dcc882d10f5cbb9dbc6b51c6ed2ea97d046d0104ab168d243b2bd40a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-owned-reentry/observed.json",
+      "sha256": "2db05a965d1dc57c6af98a3ab849846f2c41b1fbff72c8b6744ffbb2d396ba61"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-owned-reentry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-owned-reentry/state/host/session-index.json",
+      "sha256": "90398f7c3c6207e170a4e52de36f838270f151e6b93271f09b664d71d60d19a9"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-owned-reentry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/host.json",
+      "sha256": "6708ee0da3b17083b0ceca9099f2476ed16bd9d338911814a1947ba2bb12ad16"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/b.pid",
+      "sha256": "00258fde8465d42bc7a68c6367ef77974d2a477407fdfd3590b49d101910ff14"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/a.pid",
+      "sha256": "91e80ce18dd4b997bcdd6bf34f109c7e27b0c516a7756ee253ab541c415aa2ef"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/a.stdin-eof",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/a-requests.jsonl",
+      "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/b.stdin-eof",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/b-requests.jsonl",
+      "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/errors.jsonl",
+      "sha256": "fac23280582eee5e8d50f33599ad8e37e0adb8b2d9d96cbfaa2d56635813e066"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/observed.json",
+      "sha256": "1736cca40dc05f83a7de1bde69ef05e317df5da80a836d4df5b2edf94d67c0d6"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/state/host/session-index.json",
+      "sha256": "28d473d9ee57661b54090928d95f81cf771cb7a63eae11f03dcafb242cd2dd98"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-stdio/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/host.json",
+      "sha256": "71aed2ceae3066b58dd76e6eaeeefd9ddf15a379a06a7604b2362d2b2511990a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/b.pid",
+      "sha256": "f5f8845b2edc72eb33df6cf15c335e904697fe6ef433791b1edef58db70ffb09"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/a.pid",
+      "sha256": "34ea92079d24d75d9a186831114b48fab632f4fd657ea7fbfca8fdc35dffc054"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/errors.jsonl",
+      "sha256": "c9272f1271b90ae94179be13df5591ad074ccf875f48be522b89a4248e56773b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/observed.json",
+      "sha256": "fbecc024e5ebcac32bd6fae708f26a996f5aec01b48d9356afaefd5fafafbb13"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/state/host/session-index.json",
+      "sha256": "ca7e50c7ec6c246f26f35cc3e93021aa791ee1a844d848fc48230ed39dea2512"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-retry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-normal/host.json",
+      "sha256": "b0325b349589cae5479d6ad55ee597ff14b7976447803baa8d15444ea8455ec3"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-normal/b.pid",
+      "sha256": "260f368894134cc141ac9c8d37d6ad053830b415352c7edfcb485fb70d132977"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-normal/a.pid",
+      "sha256": "0ef688ba35c6e145b514830df30bccc62cede5a98875f79a91eda29f8da4f3d5"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-normal/observed.json",
+      "sha256": "bbcae67c64b3487e3a5b61dacdcea1429aff9cf57b58d6ff7242c4f3441be562"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-normal/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-normal/state/host/session-index.json",
+      "sha256": "1c9850a4616b177d21712d8b0b612fb81d5d9faa14e2fa7a8a09f44fdeee22d6"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/channels-normal/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-transport-retry/host.json",
+      "sha256": "dba0fe8d0f90b9e959fab6745669fc0a0e18f0d5d4d341105cb84e029d371138"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-transport-retry/errors.jsonl",
+      "sha256": "b2b76e387c592de637f005b15c82de966153b2dc2a06123759cb3af2f94cf6bc"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-transport-retry/observed.json",
+      "sha256": "a40cda1243390bd50d67d5255f03a21ce29b5a1d4005680ffc3204e700b622f3"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-transport-retry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-transport-retry/state/host/session-index.json",
+      "sha256": "a4e10c437838b036dea745255116079bc8c713c837281a961122d2861a57c4a0"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/python/mcp-transport-retry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/run.log",
+      "sha256": "a60332a08e2df1b1e9bcb0152b776dc7239e4bbb5cb8b33a35bdc440f258b5c7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/normalized-owned.json",
+      "sha256": "94a4dca141ceb49e280d028a5b460a0274f2abb755a79934223dc4dc83cdc341"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-owned-reentry/host.json",
+      "sha256": "9727c9b4e4f034d1c10a7c789c386a00f81fcd06e085126a9c861adb928f8d6c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-owned-reentry/observed.json",
+      "sha256": "6eed06a30d5c76c47f3802ba1f40617b1ce671076dfa00ccbaee5469b08cb906"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-owned-reentry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-owned-reentry/state/host/session-index.json",
+      "sha256": "3e2d37ce898e77f8dfbe1062ff1f5d2eaff602894654a092319236e7424d087d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-owned-reentry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/host.json",
+      "sha256": "1babae6f5534fdbc28c8b0cf153fabf8b0b0b2cd366004a5394d3e709e427a64"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/b.pid",
+      "sha256": "2f4d2736c55f9b7b46f340c4b3b486db1ba71edfdeafa8a2ce0cfa8705436b5c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/a.pid",
+      "sha256": "88ee8d0823c65cb2dda998192d64b1681071bce60e02e4e0caf008c54ff93bc5"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/a.stdin-eof",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/a-requests.jsonl",
+      "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/b.stdin-eof",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/b-requests.jsonl",
+      "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/observed.json",
+      "sha256": "211289886771c7904ca6cc2aca3fb580e1984d2a6d25834f4ac71c2b9446946d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/state/host/session-index.json",
+      "sha256": "af4e5de11075d66ae3274a213442840bd5d9284fa341dd541377a97bbdd89607"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-stdio/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-retry/host.json",
+      "sha256": "0103d014a40736f553740e13fea450e008b81ed4fe19d0d0975324cc573995b8"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-retry/b.pid",
+      "sha256": "429d8fc34566da3744961f89ccc79796a23967e751fce7555d46ec391545043c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-retry/a.pid",
+      "sha256": "f64ce1110ea0b6abe76eeba0e5b41098a0d58373ce59b87c58c87c69aa195650"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-retry/observed.json",
+      "sha256": "92e023e3c5cc2f98ecffb0eb91758330296e6fd63128f3091adcceaea00e7e4c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-retry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-retry/state/host/session-index.json",
+      "sha256": "e2486c728ed6dbe5ee5ae54262f370559bc0449fe2b7645aa6deaeab8e7c571b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-retry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-normal/host.json",
+      "sha256": "2652977a7aaa1eb78eee95d64bcb9d027f64fe2c176edb0db801325ee803c75b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-normal/b.pid",
+      "sha256": "b16d38aa188915e74709bacbc5394cef8940b4241517db71f5b4e6ea15b36fcf"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-normal/a.pid",
+      "sha256": "080b91c1c89a5db5a95b103f9ca0a7835bdf2c22643300bc3ecf1603d35c0055"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-normal/observed.json",
+      "sha256": "d953612a33093af9d8d827ffef55924274681c0f6bb6c97718f7683f4f065474"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-normal/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-normal/state/host/session-index.json",
+      "sha256": "c65e7cbf232416914d9b5ec3f78c833d23b5200b5ffffd70e45b73ae19e56d67"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/channels-normal/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-transport-retry/host.json",
+      "sha256": "6bec03c8a0e1a765bd89cf065ad73788678c9278f768b11275ea2821c289ce7b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-transport-retry/observed.json",
+      "sha256": "eb874825966eb7759d414d4e559db5bd3a31199194198544b0d2eee13f181a06"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-transport-retry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-transport-retry/state/host/session-index.json",
+      "sha256": "d775d0dfcd7ab3c0b6e4c3dc427623344181ac7622788b79b447be2a1154b043"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/typescript/mcp-transport-retry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/run.log",
+      "sha256": "7c57ea9306c0d5d28186de380cc3f46ee8f8ed6ad31faadff8ddf63c6d2f2151"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/normalized-owned.json",
+      "sha256": "e287ca60684118c50308e43f597ab3ac66b8b26f32371ee52d8070d46f28edcd"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-owned-reentry/host.json",
+      "sha256": "05caabbbe7c7805d7692bd2bbde91be3e72197ae3bf3f9a604ecd9c729274b4d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-owned-reentry/observed.json",
+      "sha256": "a3f6972afdc9703fed8ef34d08f7a1d964d96c5b92a2eaacea5cdb796ab13424"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-owned-reentry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-owned-reentry/state/host/session-index.json",
+      "sha256": "9fdbe69691b0671bf518e039c2b2fc1df6560f7932c943e411b8689b159ae957"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-owned-reentry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/host.json",
+      "sha256": "3c7afb5da50dca1f8527dc06a76f9b9aa2b1929faa720d6072a1332ed902cf9d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/b.pid",
+      "sha256": "e98d0c9f21cc522b7cb7992ae930401063c63a0fe88c2aca855472cf76679f35"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/a.pid",
+      "sha256": "e86910cc9d006fcd2a5e60d735ad611fb2258f55178587f13d858c18c50ca953"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/a.stdin-eof",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/a-requests.jsonl",
+      "sha256": "db5323cbcb828c7674b0299b93089295fe442c52d45cdc9780eb74bab3ed5805"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/b.stdin-eof",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/b-requests.jsonl",
+      "sha256": "65d26c20d800ee1ae93f25c2099d6d414dd75a6e29ec641f3ca969bb04ee5513"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/observed.json",
+      "sha256": "d3def276d0a84548abda160e37f3cf664b0eecdc89ae5099e2086f41d84520e9"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/state/host/session-index.json",
+      "sha256": "9e638884c79732913e67bbc2c0c5566a2efaf2dae9f9a54f15ab11441a74aa85"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-stdio/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/summary.json",
+      "sha256": "777a68b2a349a79fbe1c7a8fe8a3a99b95625c2695c601d802ec0bf9ba09597d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/host.json",
+      "sha256": "f7908578825f6f7a78f05ea06aff7bd4836a0db78709de652c82f8823bedc9ac"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/b.pid",
+      "sha256": "17ecc991a880d65b689ea59a800b3b555bfefdac486843426693c1ca3b78eb4c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/a.pid",
+      "sha256": "4f710223506fd94dd6337d370305b7fbfbb968d62301d8fbffeeb0a78127ffe9"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/observed.json",
+      "sha256": "6f23b675cd2bd7dd2695feed3f44d29488ac4aade20c836a3d774943f08c4bac"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/state/host/session-index.json",
+      "sha256": "1edba04d8e7ee76c41f5dac063f2e5f97828f2b3f17d9dba58c875d978c53f22"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-retry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/summary.json",
+      "sha256": "59ba6cd56dd82bd69ee8706b9c9519d3996c222ef06ff8564d32029932585f61"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/host.json",
+      "sha256": "3c169679476705188946464b6843e4b84cdbf81aaa3c574b7373e67ceaba9988"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/b.pid",
+      "sha256": "cf3ab4cf71f3839f72403b738d48f25dffc8aec9c1955abe9f7cdc79a100940e"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/a.pid",
+      "sha256": "e3647d2dd2859312d563319c5337b0d2018136f3d10abd5ab014ad0104eefd60"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/observed.json",
+      "sha256": "ed2ce2ac0189455ce5a1b3e8ed73361ed3a70b0740eeb2756cff2e0e72df044a"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/state/host/session-index.json",
+      "sha256": "3942353b4480a9e8793c99b895286cd36bd127d566baaadb1eae5ea363bed56f"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/channels-normal/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-transport-retry/summary.json",
+      "sha256": "9268f5f52a60036a6c19ebb0012fd30fb6f49b439676644181869b09644cc887"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-transport-retry/host.json",
+      "sha256": "f4d4b6e16c5dade1abca2f1b737a2836ce427cf13c983ffdf8bc7361229090f7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-transport-retry/observed.json",
+      "sha256": "891f8dcc35c556c34fc5a446a3d6a1f57381d73e25403cd3901e582d95315b3f"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-transport-retry/state/.runtime_state.lease",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-transport-retry/state/host/session-index.json",
+      "sha256": "a04a81613cc98c648cd6fec04aa338018c704c756b2daba34ab4244d86a897e7"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-mcp-channel-20261013/owned-channel/resource-admission-epoch/java/mcp-transport-retry/state/host/generation",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    }
+  ]
+}

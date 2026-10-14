@@ -1,0 +1,11 @@
+test_chart_all_seven_mark_mappings (verify_corpus.ExactGreenObservations) ... ok
+test_data_aggregate_join_and_quality_exact (verify_corpus.ExactGreenObservations) ... ok
+test_error_fidelity_and_unchanged_failure_sentinel (verify_corpus.ExactGreenObservations) ... ok
+test_guard_exact_unicode_bytes_and_modes (verify_corpus.ExactGreenObservations) ... ok
+test_statistics_known_sample_and_no_inference (verify_corpus.ExactGreenObservations) ... ok
+test_structured_errors_paths_missing_null_and_limit (verify_corpus.ExactGreenObservations) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.000s
+
+OK

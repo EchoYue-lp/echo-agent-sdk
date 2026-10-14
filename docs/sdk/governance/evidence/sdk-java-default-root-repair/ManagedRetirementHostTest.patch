@@ -1,0 +1,11 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/before/sdks/java/src/test/java/com/echoagent/sdk/ManagedRetirementHostTest.java	2026-10-13 17:56:05
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/after/sdks/java/src/test/java/com/echoagent/sdk/ManagedRetirementHostTest.java	2026-10-14 04:36:23
+@@ -60,7 +60,7 @@
+         final CopyOnWriteArrayList<JsonNode> returnedReceipts = new CopyOnWriteArrayList<>();
+         Backend(boolean enabled) throws Exception {
+             String configured = System.getenv("ECHO_AGENT_SDK_RETIREMENT_RUNTIME_ROOT");
+-            Path root = configured == null ? Path.of("../../target/managed-retirement") : Path.of(configured);
++            Path root = (configured == null ? Path.of("../../target/managed-retirement") : Path.of(configured)).toAbsolutePath().normalize();
+             Files.createDirectories(root);
+             work = Files.createTempDirectory(root, "java-retirement-" + enabled + "-");
+             var command = new ArrayList<>(List.of("python3", Path.of("../shared/testing/managed_persistence_backend.py").toAbsolutePath().toString(), "--work", work.toString()));

@@ -1,0 +1,342 @@
+TAP version 13
+# Subtest: official serialized writer: low successful ACK cannot commit pending terminal ACK
+ok 1 - official serialized writer: low successful ACK cannot commit pending terminal ACK
+  ---
+  duration_ms: 14.474875
+  type: 'test'
+  ...
+# Subtest: official writer 2 success then other ACK failure retains exact successful floor
+ok 2 - official writer 2 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 15.305542
+  type: 'test'
+  ...
+# Subtest: official writer 10 success then other ACK failure retains exact successful floor
+ok 3 - official writer 10 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 2.511958
+  type: 'test'
+  ...
+# Subtest: official failed send preserves queue prefix and does not accept a future ACK
+ok 4 - official failed send preserves queue prefix and does not accept a future ACK
+  ---
+  duration_ms: 1.853084
+  type: 'test'
+  ...
+# Subtest: official writer sends the same immutable stream identity that it commits
+ok 5 - official writer sends the same immutable stream identity that it commits
+  ---
+  duration_ms: 1.710875
+  type: 'test'
+  ...
+# Subtest: official replay retention bridge commits only a successful returned cursor
+ok 6 - official replay retention bridge commits only a successful returned cursor
+  ---
+  duration_ms: 3.0175
+  type: 'test'
+  ...
+# Subtest: gap plus empty after-gap page never grants an absent ACK cursor
+ok 7 - gap plus empty after-gap page never grants an absent ACK cursor
+  ---
+  duration_ms: 0.917916
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage empty_gap_tail
+ok 8 - public replay connected coverage empty_gap_tail
+  ---
+  duration_ms: 3.898333
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_gap
+ok 9 - public replay connected coverage reverse_gap
+  ---
+  duration_ms: 2.395166
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_plain
+ok 10 - public replay connected coverage reverse_plain
+  ---
+  duration_ms: 4.623833
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage disconnected
+ok 11 - public replay connected coverage disconnected
+  ---
+  duration_ms: 3.3695
+  type: 'test'
+  ...
+# Subtest: successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+ok 12 - successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+  ---
+  duration_ms: 1.036708
+  type: 'test'
+  ...
+# Subtest: real Host window raw gap ACK resumes strictly after snapshot watermark
+ok 13 - real Host window raw gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 5870.22275
+  type: 'test'
+  ...
+# Subtest: real Host window consumer gap ACK resumes strictly after snapshot watermark
+ok 14 - real Host window consumer gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 5697.013583
+  type: 'test'
+  ...
+# Subtest: real Host oversized raw gap ACK resumes strictly after snapshot watermark
+ok 15 - real Host oversized raw gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 5611.719542
+  type: 'test'
+  ...
+# Subtest: real Host oversized consumer gap ACK resumes strictly after snapshot watermark
+ok 16 - real Host oversized consumer gap ACK resumes strictly after snapshot watermark
+  ---
+  duration_ms: 5559.153209
+  type: 'test'
+  ...
+# Subtest: real Host replay-consumed cursor ACK page size 1
+ok 17 - real Host replay-consumed cursor ACK page size 1
+  ---
+  duration_ms: 5564.709417
+  type: 'test'
+  ...
+# Subtest: real Host replay-consumed cursor ACK page size 64
+ok 18 - real Host replay-consumed cursor ACK page size 64
+  ---
+  duration_ms: 5561.829375
+  type: 'test'
+  ...
+# Subtest: paused consumer window 1 external replay ACK merges queued gap without covered re-delivery
+ok 19 - paused consumer window 1 external replay ACK merges queued gap without covered re-delivery
+  ---
+  duration_ms: 5572.683417
+  type: 'test'
+  ...
+# Subtest: paused consumer window 2 external replay ACK merges queued gap without covered re-delivery
+ok 20 - paused consumer window 2 external replay ACK merges queued gap without covered re-delivery
+  ---
+  duration_ms: 5577.905958
+  type: 'test'
+  ...
+# Subtest: replayed terminal explicit ACK ends live iterator without covered re-delivery
+ok 21 - replayed terminal explicit ACK ends live iterator without covered re-delivery
+  ---
+  duration_ms: 5555.282125
+  type: 'test'
+  ...
+# Subtest: real Host gap before official ACK completion success=false
+ok 22 - real Host gap before official ACK completion success=false
+  ---
+  duration_ms: 5579.612125
+  type: 'test'
+  ...
+# Subtest: real Host gap before official ACK completion success=true
+ok 23 - real Host gap before official ACK completion success=true
+  ---
+  duration_ms: 5567.703
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_missing
+ok 24 - native projection rejects map_missing
+  ---
+  duration_ms: 1.112333
+  type: 'test'
+  ...
+# Subtest: native projection rejects list_missing
+ok 25 - native projection rejects list_missing
+  ---
+  duration_ms: 0.124834
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_not_list
+ok 26 - native projection rejects map_not_list
+  ---
+  duration_ms: 0.053416
+  type: 'test'
+  ...
+# Subtest: native projection rejects list_not_list
+ok 27 - native projection rejects list_not_list
+  ---
+  duration_ms: 0.042583
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_non_string
+ok 28 - native projection rejects map_non_string
+  ---
+  duration_ms: 0.048583
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_duplicate
+ok 29 - native projection rejects map_duplicate
+  ---
+  duration_ms: 0.060125
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_missing_value
+ok 30 - native projection rejects map_missing_value
+  ---
+  duration_ms: 0.040959
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_wrong_key_value
+ok 31 - native projection rejects map_wrong_key_value
+  ---
+  duration_ms: 0.039125
+  type: 'test'
+  ...
+# Subtest: native projection rejects bool_wrong
+ok 32 - native projection rejects bool_wrong
+  ---
+  duration_ms: 0.372667
+  type: 'test'
+  ...
+# Subtest: native projection rejects string_missing
+ok 33 - native projection rejects string_missing
+  ---
+  duration_ms: 0.309125
+  type: 'test'
+  ...
+# Subtest: native projection rejects f64_wrong
+ok 34 - native projection rejects f64_wrong
+  ---
+  duration_ms: 0.110416
+  type: 'test'
+  ...
+# Subtest: native projection rejects list_child_missing_kind
+ok 35 - native projection rejects list_child_missing_kind
+  ---
+  duration_ms: 0.036459
+  type: 'test'
+  ...
+# Subtest: native projection rejects map_value_missing_kind
+ok 36 - native projection rejects map_value_missing_kind
+  ---
+  duration_ms: 0.037083
+  type: 'test'
+  ...
+# Subtest: special native keys survive without prototype mutation
+ok 37 - special native keys survive without prototype mutation
+  ---
+  duration_ms: 0.846041
+  type: 'test'
+  ...
+# Subtest: SDK errors retain the opaque Host handle
+ok 38 - SDK errors retain the opaque Host handle
+  ---
+  duration_ms: 0.077
+  type: 'test'
+  ...
+# Subtest: facade responses require their value envelope
+not ok 39 - facade responses require their value envelope
+  ---
+  duration_ms: 0.764375
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/protocol-integrity.test.js:21:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    TypeError: this.catalog.resolve is not a function
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    async TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/protocol-integrity.test.js:26:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: extension close remains retryable after unregister failure
+ok 40 - extension close remains retryable after unregister failure
+  ---
+  duration_ms: 0.102583
+  type: 'test'
+  ...
+# Subtest: execute uses the accepted task input field
+ok 41 - execute uses the accepted task input field
+  ---
+  duration_ms: 0.116875
+  type: 'test'
+  ...
+# Subtest: canonical retention gap remains plain EventGap on replay wire
+ok 42 - canonical retention gap remains plain EventGap on replay wire
+  ---
+  duration_ms: 1.302541
+  type: 'test'
+  ...
+# Subtest: managed callback requests and receipts cross the accepted typed adapter
+ok 43 - managed callback requests and receipts cross the accepted typed adapter
+  ---
+  duration_ms: 0.999042
+  type: 'test'
+  ...
+# Subtest: tool effect facts and canonical callback IDs survive native APIs
+ok 44 - tool effect facts and canonical callback IDs survive native APIs
+  ---
+  duration_ms: 2.37525
+  type: 'test'
+  ...
+# Subtest: all eleven managed context operations preserve the same shared typed corpus
+ok 45 - all eleven managed context operations preserve the same shared typed corpus
+  ---
+  duration_ms: 2.152084
+  type: 'test'
+  ...
+# Subtest: managed checkpoints reject unknown path encoding and non-absolute native paths
+ok 46 - managed checkpoints reject unknown path encoding and non-absolute native paths
+  ---
+  duration_ms: 0.275375
+  type: 'test'
+  ...
+# Subtest: managed error outcome preserves unknown commit facts through the typed adapter
+ok 47 - managed error outcome preserves unknown commit facts through the typed adapter
+  ---
+  duration_ms: 0.350708
+  type: 'test'
+  ...
+# Subtest: live window 128 reserves one coalesced gap control
+ok 48 - live window 128 reserves one coalesced gap control
+  ---
+  duration_ms: 1.590875
+  type: 'test'
+  ...
+# Subtest: live window 256 reserves one coalesced gap control
+ok 49 - live window 256 reserves one coalesced gap control
+  ---
+  duration_ms: 2.793792
+  type: 'test'
+  ...
+# Subtest: native domain IDs remain maps while explicit handle wrappers stay strict
+ok 50 - native domain IDs remain maps while explicit handle wrappers stay strict
+  ---
+  duration_ms: 0.371875
+  type: 'test'
+  ...
+# Subtest: coalesced gap keeps original range and replaces only snapshot-covered tail
+ok 51 - coalesced gap keeps original range and replaces only snapshot-covered tail
+  ---
+  duration_ms: 0.169791
+  type: 'test'
+  ...
+# Subtest: explicit observed snapshot ACK filters covered queue values without accepting a future ACK
+ok 52 - explicit observed snapshot ACK filters covered queue values without accepting a future ACK
+  ---
+  duration_ms: 0.286916
+  type: 'test'
+  ...
+# Subtest: typed settlement event preserves raw u64 contract while checking its u32 attempt
+ok 53 - typed settlement event preserves raw u64 contract while checking its u32 attempt
+  ---
+  duration_ms: 0.454125
+  type: 'test'
+  ...
+1..53
+# tests 53
+# suites 0
+# pass 52
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 61966.120167

@@ -1,0 +1,36 @@
+--- before-retry-fixed-bridge.rs
++++ after-bridge.rs
+@@ -7641,14 +7641,14 @@
+     bridge: Arc<ExtensionBridge>,
+     extension: WireHandle,
+     session_id: String,
+-    close_result: tokio::sync::OnceCell<std::result::Result<(), String>>,
++    close_result: tokio::sync::OnceCell<()>,
+     construction_submitted: AtomicBool,
+ }
+ 
+ impl FactoryInstanceLease {
+     async fn close(&self) -> echo_agent::error::Result<()> {
+         self.close_result
+-            .get_or_init(|| async {
++            .get_or_try_init(|| async {
+                 if !self.construction_submitted.load(Ordering::Acquire) {
+                     self.bridge.release_extension(&self.extension);
+                     return Ok(());
+@@ -7663,14 +7663,14 @@
+                 .map_err(|error| error.to_string())
+             })
+             .await
+-            .clone()
++            .copied()
+             .map_err(ReactError::Other)
+     }
+ }
+ 
+ impl Drop for FactoryInstanceLease {
+     fn drop(&mut self) {
+-        if self.close_result.get().is_some_and(Result::is_ok) {
++        if self.close_result.get().is_some() {
+             return;
+         }
+         if !self.construction_submitted.load(Ordering::Acquire) {

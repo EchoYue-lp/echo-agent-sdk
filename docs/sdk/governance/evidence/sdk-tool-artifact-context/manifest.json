@@ -1,0 +1,71 @@
+{
+  "status": "compiled-and-host-library-validated-native-tool-scope-pending",
+  "source_hashes": {
+    "echo-sdk-host/src/core_profile/facade/tools.rs": "77c1d305a55e8320692929efca4f48a6d6dc7a4370cd33c9b403da996dcc15c3",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "273a1868bed3f7d3119c55319937330f0a8f7cb9e1ec4dfc88e8a9db2b1ee587"
+  },
+  "actual_before": {
+    "host_sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802",
+    "web_route": "web_fetch",
+    "input_max_length": 8,
+    "returned_full_chars": 1200089,
+    "truncated": false,
+    "artifact": null,
+    "logs": [
+      "docs/sdk/governance/evidence/tool-value-effects/python-fifth.log",
+      "docs/sdk/governance/evidence/tool-value-effects/typescript-first.log"
+    ],
+    "actual_results": [
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-s9mx5k2c/results.json",
+      "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-Wesh4N/results.json"
+    ]
+  },
+  "implementation": "All existing tool families share ToolContext that captures the actual Session Agent artifact policy and original conversation identity under a short Agent read guard; absent conversation uses the original Session address as grouping metadata, one UUID call id; original working directory and tool arguments preserved. Agent Some/None artifact policy is not overridden. The framework owns artifact persistence, threshold, retention, Unicode truncation and max_length behavior.",
+  "sandbox_routing": "Canonical accepted sandbox.extension.run_stream maps to existing SandboxExecutor branch; existing sandbox.stream next/cancel/close already route to shell-family existing stream controls. No schema or acceptance was hand edited.",
+  "remaining": [
+    "native full web/artifact content digest/readback and Sandbox callback consumer on new immutable Host",
+    "independent review and final published framework pin"
+  ],
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-callback-context-candidate-host",
+    "sha256": "0a0fe4bd910fd0995b1b4cc30f4ccaa79ddc4c194116397127bec12ba6e89a17"
+  },
+  "host_library": {
+    "passed": 158,
+    "failed": 0,
+    "ignored": 0
+  },
+  "gates": {
+    "clippy_all_targets_all_features": 0,
+    "clippy_production_panic_four": 0,
+    "fmt_check": 0,
+    "all_feature_host_build": 0
+  },
+  "sandbox_routing_after": "ToolValue native three languages confirmed canonical start route and output/complete works on 0a0f, but setup cancellation remains a separate real bug; the scoped Sandbox bridge cancellation fix is pending.",
+  "pending_sandbox_cancel_source": {
+    "status": "combined_host_library_passed_strict_build_and_native_after_pending",
+    "implementation": "Sandbox uses existing typed scoped reverse execute_stream_with_cancel from setup; same producer cleanup token cancellation; bounded output send observes it; every exit drains actual source; ephemeral external callback uses cooperative deadline retaining original resource/stream address",
+    "sources": {
+      "echo-sdk-host/src/core_profile/facade/mod.rs": "165bf922ef433c1bf80c36f6c782eb6600acb0d874bc416f167aa90e405e270d",
+      "echo-sdk-host/src/core_profile/facade/stream.rs": "1defec3e27aade8fdb906841280a5a7a62dc85b8d2770eceffcbbc3ea2fcdfa6",
+      "echo-sdk-host/src/core_profile/handler.rs": "cca0f365a12d9d7bea2dce82a57e71386803f2cfb123077b0d8423fee7052562"
+    },
+    "known_public_before": "ToolValue actual 0a0f TypeScript/Python/Java callback cancellation remained false after public sandbox.stream.cancel true; fixture5second cleanup is not proof of Host cancellation",
+    "host_library": {
+      "passed": 160,
+      "failed": 0,
+      "ignored": 0,
+      "scope": "bridge owner actual whole Host library combined with handler existing stream teardown admission and scoped Sandbox setup cancellation"
+    }
+  },
+  "sandbox_normal_eof_followup": {
+    "status": "minimal_source_frozen_combined_host_verification_running",
+    "failure": "normal remote output and complete were followed by failed producer_panic: Unfold must not be polled after Ready(None); later closed_handle was secondary",
+    "fix": "the original Sandbox source is wrapped by existing futures StreamExt.fuse so normal EOF followed by cleanup drain remains EOF, while cancellation continues to drain the same real producer",
+    "source": {
+      "path": "echo-sdk-host/src/core_profile/facade/mod.rs",
+      "sha256": "ea4ecd447745701d27beb5f0ad194b1a04f383583771911b94e497662c36355f"
+    },
+    "focused_regression": "sandbox_producer_eof_and_cleanup_drain_share_a_fused_actual_source"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "sdks/typescript/test/ack-submission.test.js": "a27ba473c966fcbc76157c24ca76b5226316b8fac2592c635cccffa3b98b13d6",
+  "sdks/python/tests/test_ack_submission.py": "9ac8494010084d78c7a69d59cfdce4b4c8226a8b28c3f5dcd478ff74bd172e1e",
+  "sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java": "0e5c9455e02b65392926529fe5c7ea857cf891ee2d1ab56e2dabf0e10fc17f71"
+}

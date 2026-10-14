@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 1065, in <module>
+    main()
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 919, in main
+    json.dumps(compare_result_sets(args.compare), ensure_ascii=False, indent=2)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 770, in compare_result_sets
+    assert all(r[field] == rows[0][field] for r in rows), (name, field)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('file-create', 'protected_before')

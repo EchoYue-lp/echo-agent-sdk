@@ -1,0 +1,11 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/before/sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java	2026-10-13 23:20:27
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/after/sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java	2026-10-14 04:36:23
+@@ -30,7 +30,7 @@
+     private record Setup(Path work, JsonNode spec, EchoAgentClient sdk) {}
+     private static Setup setup(String group) throws Exception {
+         String configured = System.getenv("ECHO_AGENT_SDK_LLM_WORKFLOW_ROOT");
+-        Path root = configured == null ? Path.of("../../target/llm-workflow-stream") : Path.of(configured);
++        Path root = (configured == null ? Path.of("../../target/llm-workflow-stream") : Path.of(configured)).toAbsolutePath().normalize();
+         Files.createDirectories(root); Path work = Files.createTempDirectory(root, "java-" + group + "-");
+         helper(work, "--prepare"); var spec = JsonSupport.MAPPER.readTree(work.resolve("scenario.json").toFile());
+         var sdk = await(EchoAgentClient.spawn(System.getenv("ECHO_AGENT_SDK_HOST"), List.of("--config", work.resolve("host.json").toString()),

@@ -1,0 +1,42 @@
+package com.echoagent.sdk;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.node.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.security.MessageDigest;
+
+/** Native accepted tools, no fixture ACP traffic and no mocked Host. */
+class ToolValueEffectHostTest {
+ static final ObjectMapper JSON=new ObjectMapper();
+ static final Path FIXTURE=Path.of("../shared/testing/tool_value_effect_fixture.py").toAbsolutePath();
+ static final String HOST=System.getenv("ECHO_AGENT_SDK_HOST");
+ static <T>T await(CompletionStage<T> s)throws Exception{return s.toCompletableFuture().get(90,TimeUnit.SECONDS);}
+ static String hash(Path p)throws Exception{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(p)));}
+ static ObjectNode snapshot(Path work)throws Exception{var o=JSON.createObjectNode();for(String n:List.of("sentinel.txt","fixture.db","src/main.py"))o.put(n,hash(work.resolve(n)));return o;}
+ static ObjectNode files(Path work)throws Exception{var o=JSON.createObjectNode();for(String n:List.of("中文🙂/note.txt","中文🙂/moved.txt")){if(Files.isRegularFile(work.resolve(n)))o.put(n,Files.readString(work.resolve(n)));else o.putNull(n);}return o;}
+ static JsonNode unrecord(JsonNode v){if(!v.path("kind").asText().equals("record"))return v;var o=JSON.createObjectNode();for(var f:v.path("value").path("fields"))o.set(f.path("name").asText(),f.path("value").path("value"));return o;}
+ static JsonNode decode(JsonNode v){return switch(v.path("kind").asText()){case "null"->NullNode.instance;case "list"->{var a=JSON.createArrayNode();for(var n:v.path("value"))a.add(decode(n));yield a;}case "map"->{var o=JSON.createObjectNode();for(var n:v.path("value"))o.set(decode(n.path("key")).asText(),decode(n.path("value")));yield o;}default->v.path("value");};}
+ static JsonNode resolve(JsonNode v,Map<String,ObjectNode> results){if(v.isArray()){var a=JSON.createArrayNode();for(var n:v)a.add(resolve(n,results));return a;}if(v.isObject()){if(v.has("$artifact"))return results.get(v.path("$artifact").asText()).path("result");String key=v.has("$ref")?"$ref":v.has("$jsonref")?"$jsonref":null;if(key!=null){String[] path=v.path(key).asText().split("\\.");JsonNode result=results.get(path[0]).path("result");if(key.equals("$jsonref"))result=decode(result.path("data"));result=unrecord(result);for(int n=1;n<path.length;n++)result=result.path(path[n]);return result;}var o=JSON.createObjectNode();v.fields().forEachRemaining(e->o.set(e.getKey(),resolve(e.getValue(),results)));return o;}return v;}
+ static ArrayNode processes(Path work)throws Exception{var p=new ProcessBuilder("ps","-axo","pid=,ppid=,command=").start();String text=new String(p.getInputStream().readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);if(p.waitFor()!=0)throw new AssertionError("ps failed");var a=JSON.createArrayNode();for(String line:text.split("\n")){String[] parts=line.strip().split("\\s+",3);if(parts.length==3&&parts[2].startsWith("tail -f "+work.resolve("tail.txt")))a.addObject().put("pid",Long.parseLong(parts[0])).put("ppid",Long.parseLong(parts[1])).put("command",parts[2]);}return a;}
+ static Path artifactPath(JsonNode result){var p=unrecord(result).path("path");return switch(p.path("encoding").asText()){case "utf8"->Path.of(p.path("path").asText());case "unix"->Path.of(new String(Base64.getDecoder().decode(p.path("bytes_base64").asText()),java.nio.charset.StandardCharsets.UTF_8));default->Path.of(new String(Base64.getDecoder().decode(p.path("utf16_base64").asText()),java.nio.charset.StandardCharsets.UTF_16LE));};}
+ @org.junit.jupiter.api.Test void acceptedToolValuesAndActualEffects()throws Exception{
+  if("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))&&(HOST==null||HOST.isBlank()))throw new AssertionError("required Tool value/effect Host missing");org.junit.jupiter.api.Assumptions.assumeTrue(HOST!=null&&!HOST.isBlank(),"real Host required");Path root=Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TOOL_EFFECT_ROOT","../../target/tool-value-effects"));Files.createDirectories(root);Path work=Files.createTempDirectory(root,"java-");var fixture=new ProcessBuilder("python3",FIXTURE.toString(),"--work",work.toString()).inheritIO().start();var rows=JSON.createArrayNode();var results=new HashMap<String,ObjectNode>();
+  try{
+   long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(10);while(!Files.exists(work.resolve("ready"))){if(!fixture.isAlive()||System.nanoTime()>deadline)throw new AssertionError("fixture unavailable");Thread.sleep(10);}
+   try(var sdk=await(EchoAgentClient.spawn(HOST,List.of("--config",work.resolve("host.json").toString()),Path.of("../shared/facade-operation-catalog.json"),Path.of("../shared/contract-digests.json"),Map.of("TMPDIR",work.resolve("artifact-temp").toString())))){
+    var agent=await(sdk.createAgent());var session=await(agent.createSession(work.toString()));var identity=JSON.createObjectNode();identity.set("agent",agent.wire().toJson());identity.set("session",session.wire().toJson());identity.set("capability",sdk.capability());
+    for(var step:JSON.readTree(work.resolve("scenario.json").toFile()).path("rows")){var row=(ObjectNode)step.deepCopy();row.set("protected_before",snapshot(work));row.set("files_before",files(work));
+     if(step.path("action").asText().equals("mutate_artifact"))Files.writeString(artifactPath(results.get(step.path("ref").asText()).path("result")),"mutated 中文🙂\n");
+     else{String operation=step.path("operation").asText();var arguments=resolve(step.path("arguments"),results);row.set("arguments",arguments);List<Object> nativeArguments=new ArrayList<>();for(var a:arguments)nativeArguments.add(JSON.convertValue(a,Object.class));
+      try{JsonNode result;if(step.path("watch_process").asBoolean()){var call=session.invoke(operation,nativeArguments);ArrayNode pids=JSON.createArrayNode();for(int n=0;n<50;n++){pids=processes(work);if(!pids.isEmpty()||call.toCompletableFuture().isDone())break;Thread.sleep(10);}row.set("process_before",pids);result=await(call);row.set("process_after",processes(work));}else result=await(session.invoke(operation,nativeArguments));row.set("result",result);}
+      catch(ExecutionException failure){if(!(failure.getCause() instanceof EchoAgentException e))throw failure;var error=row.putObject("error").put("code",e.code()).put("message",e.getMessage()).put("operation",e.operation()).put("retryable",e.retryable());error.set("handle",e.handle()==null?NullNode.instance:e.handle().toJson());error.set("details",e.details()==null?NullNode.instance:e.details());}
+     }
+     row.set("protected_after",snapshot(work));row.set("files_after",files(work));rows.add(row);results.put(row.path("id").asText(),row);
+    }
+    await(session.closeAsync());await(agent.closeAsync());var data=JSON.createObjectNode().put("work",work.toString()).put("host",HOST).put("host_sha256",hash(Path.of(HOST)));data.set("rows",rows);data.set("raw_identity",identity);JSON.writerWithDefaultPrettyPrinter().writeValue(work.resolve("results.json").toFile(),data);
+   }
+   var oracle=new ProcessBuilder("python3",FIXTURE.toString(),"--work",work.toString(),"--verify",work.resolve("results.json").toString()).redirectErrorStream(true).start();String summary=new String(oracle.getInputStream().readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);System.out.println("Tool value/effects: "+summary+" evidence: "+work);if(oracle.waitFor()!=0)throw new AssertionError("tool oracle failed: "+work);
+  }finally{if(!rows.isEmpty()&&!Files.exists(work.resolve("results.json")))JSON.writerWithDefaultPrettyPrinter().writeValue(work.resolve("partial-results.json").toFile(),rows);fixture.destroy();if(!fixture.waitFor(5,TimeUnit.SECONDS)){fixture.destroyForcibly();fixture.waitFor();}}
+ }
+}

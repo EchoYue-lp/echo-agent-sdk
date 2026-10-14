@@ -1,0 +1,48 @@
+{
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "environment": {
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "steps": [
+    {
+      "label": "ci-core-profile",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-core-profile",
+        "--lib",
+        "--tests",
+        "--locked"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "logSha256": "bc14b7025f5d6f2b24d6c2b3dbf5ae3c90ba753eccd8bdc51134f7f19c28bece"
+    },
+    {
+      "label": "ci-bridge-no-run",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "echo-sdk-host",
+        "--features",
+        "sdk-extension-bridge",
+        "--tests",
+        "--no-run",
+        "--locked"
+      ],
+      "environmentOverrides": {
+        "RUSTFLAGS": "-A linker_messages -D warnings"
+      },
+      "exitCode": 101,
+      "logSha256": "e1e611f4d803e1bb944d6e06537011d37ae9b780a50106eadd2a634a436ed298"
+    }
+  ]
+}

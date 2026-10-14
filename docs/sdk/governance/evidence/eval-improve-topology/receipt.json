@@ -1,0 +1,458 @@
+{
+  "recorded_at_utc": "2026-10-13T17:12:31.797490+00:00",
+  "status": "finite-native-consumers-passed-on-exact-callback-context-binary-final-published-pin-and-full-sdk-gates-separate",
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-callback-context-candidate-host",
+    "sha256": "0a0fe4bd910fd0995b1b4cc30f4ccaa79ddc4c194116397127bec12ba6e89a17",
+    "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6",
+    "compiled_bridge_sha256": "93de426a08832e74edde789dda596644c0fa95bf7140e4659582251a433c51ac"
+  },
+  "tests": {
+    "python": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "typescript": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "java": {
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "native_scenarios": [
+    {
+      "language": "python",
+      "group": "eval",
+      "rows": 23,
+      "created": 3,
+      "closed": 3,
+      "executed": 3,
+      "factory_finally": 3,
+      "timeout_ms": "1004",
+      "timeout_violations": [
+        "Timeout",
+        "Turn settled after timeout: cancelled"
+      ],
+      "cancel_observed": 1,
+      "request_pending_during_cleanup": true,
+      "workspace_exists_during_cleanup": true,
+      "exact_unique_runtime_identity_triplets_verified": 3
+    },
+    {
+      "language": "python",
+      "group": "improve",
+      "rows": 27,
+      "created": 12,
+      "closed": 12,
+      "executed": 12,
+      "factory_finally": 12
+    },
+    {
+      "language": "python",
+      "group": "topology",
+      "rows": 18,
+      "created": 0,
+      "closed": 0,
+      "executed": 0,
+      "factory_finally": 0,
+      "json_export_exact_snapshot_verified": true
+    },
+    {
+      "language": "typescript",
+      "group": "eval",
+      "rows": 23,
+      "created": 3,
+      "closed": 3,
+      "executed": 3,
+      "factory_finally": 3,
+      "timeout_ms": "1007",
+      "timeout_violations": [
+        "Timeout",
+        "Turn settled after timeout: cancelled"
+      ],
+      "cancel_observed": 1,
+      "request_pending_during_cleanup": true,
+      "workspace_exists_during_cleanup": true,
+      "exact_unique_runtime_identity_triplets_verified": 3
+    },
+    {
+      "language": "typescript",
+      "group": "improve",
+      "rows": 27,
+      "created": 12,
+      "closed": 12,
+      "executed": 12,
+      "factory_finally": 12
+    },
+    {
+      "language": "typescript",
+      "group": "topology",
+      "rows": 18,
+      "created": 0,
+      "closed": 0,
+      "executed": 0,
+      "factory_finally": 0,
+      "json_export_exact_snapshot_verified": true
+    },
+    {
+      "language": "java",
+      "group": "eval",
+      "rows": 23,
+      "created": 3,
+      "closed": 3,
+      "executed": 3,
+      "factory_finally": 3,
+      "timeout_ms": "1012",
+      "timeout_violations": [
+        "Timeout",
+        "Turn settled after timeout: cancelled"
+      ],
+      "cancel_observed": 1,
+      "request_pending_during_cleanup": true,
+      "workspace_exists_during_cleanup": true,
+      "exact_unique_runtime_identity_triplets_verified": 3
+    },
+    {
+      "language": "java",
+      "group": "improve",
+      "rows": 27,
+      "created": 12,
+      "closed": 12,
+      "executed": 12,
+      "factory_finally": 12
+    },
+    {
+      "language": "java",
+      "group": "topology",
+      "rows": 18,
+      "created": 0,
+      "closed": 0,
+      "executed": 0,
+      "factory_finally": 0,
+      "json_export_exact_snapshot_verified": true
+    }
+  ],
+  "source_references": [
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/eval_improve_topology_fixture.py",
+      "sha256": "351fbfc2ddb630d12ad7596aee9aee6c8508ca8568bc4ab211246261cb629872"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_eval_improve_topology_host.py",
+      "sha256": "65e65f63588277a7aae4d74a7efcb94b74dcccc5b06f24b1d7e0dcfbfd37bc27"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/eval-improve-topology-host.test.js",
+      "sha256": "fd3ccfe4e623f1b0d349e82dfb1618fd95225c2d58cb5002b5d78f9289a96790"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/EvalImproveTopologyHostTest.java",
+      "sha256": "9d72e0891afc40d063557475a0878ebd29eeee739395bbe6509cee45b935ae8c"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "sha256": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/observability.rs",
+      "sha256": "2875aafb87d6543a43135c635e065899f8b58c6325b6a9497e5d07903e1cf8e9"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/integrations.rs",
+      "sha256": "c54a17d83b6ee7e148576deef18f45fac13acb0c47c01d5e9daac15f676ce070"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/extension_bridge.rs",
+      "sha256": "93de426a08832e74edde789dda596644c0fa95bf7140e4659582251a433c51ac"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/client.py",
+      "sha256": "d1589b1c05b1642a9f8c2160d419c27ea85c87a92f9dc4669d33c8894b7a2c31"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/src/client.ts",
+      "sha256": "ded47f340ee3de942442e93ae45aa7909ee5e70d2da914825b01002840333ca4"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "sha256": "866aa24fbd95a2cf7a8ddbfe19329ca954048a3d1353890205cae7b7e9018599"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/facade-operation-catalog.json",
+      "sha256": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/contract-digests.json",
+      "sha256": "2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/channel-bridge-callback-settlement/combined-callback-ownership-93de/receipt.json",
+      "sha256": "02f0c31f5773992d10027fbade7449b0dfbeff375ad2ef3716b6c5ca2a2324e1"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/channel-bridge-callback-settlement/combined-callback-ownership-93de/extension_bridge.rs",
+      "sha256": "93de426a08832e74edde789dda596644c0fa95bf7140e4659582251a433c51ac"
+    }
+  ],
+  "raw_files": [
+    {
+      "path": "README.md",
+      "sha256": "91192c147b603d64a5c3140b56266fd3736f1da0d2a7c84c7ae7b54184ce7c61"
+    },
+    {
+      "path": "raw/TEST-com.echoagent.sdk.EvalImproveTopologyHostTest.xml",
+      "sha256": "c652a83310a2f23d7acad3bbd9a6813e99c583361415e9f5c36b4b39567302f8"
+    },
+    {
+      "path": "raw/archived-exact-field-verification.json",
+      "sha256": "f14c47d06f8330ecc8f90f146262a23ed3ff56e0c111b4d25559fa87c3f650a6"
+    },
+    {
+      "path": "raw/before-manifest.json",
+      "sha256": "4cf1df4a9c9a9ca4ab594b63a5415f0ae6c7e9d10b3ed4e319c3e0ee8c5db097"
+    },
+    {
+      "path": "raw/comparison-final.log",
+      "sha256": "decdfc708c56e7885ad06a93ed3cf39543c401db917cfffc656648b1bf0bf7e8"
+    },
+    {
+      "path": "raw/deadline-before-receipt.json",
+      "sha256": "ec5b34536c7e7c222c4684e323fc9bc1a463665bbbdbd2d449dbf35ea6d7e6b9"
+    },
+    {
+      "path": "raw/java-after-eval-observed.json",
+      "sha256": "9e0558d3170a06e9ed064eeb81365fd3041c9a9b43635d96a74f15b531f5cfcb"
+    },
+    {
+      "path": "raw/java-after-eval-scenario.json",
+      "sha256": "4fe9ef7f3094f4eb8ecff8278cd97d6a1661e80be3bf375131ff7e82783720e8"
+    },
+    {
+      "path": "raw/java-after-first.log",
+      "sha256": "66a032781ef4604e7f5ee03396ea7fcdbcd528d3e9c43b6f07e3ceb67a615b1f"
+    },
+    {
+      "path": "raw/java-after-improve-observed.json",
+      "sha256": "d9cbe9894bb5e7c8765d351cbc3319f7e664b0fa4f3e5868cbb6e2449342e2fc"
+    },
+    {
+      "path": "raw/java-after-improve-scenario.json",
+      "sha256": "e440c61e593786f26edef6a554c893dbe5c8ea30b57c1c47199cd0f240f8d9ea"
+    },
+    {
+      "path": "raw/java-after-topology-observed.json",
+      "sha256": "cab70dd5a4d1b7811eceb81373838b137bc57d14e8e151e1eecdb58a2c76abe8"
+    },
+    {
+      "path": "raw/java-after-topology-scenario.json",
+      "sha256": "6afcfd65a7613004856d8e0d264256a45bcb0831d4ba11b616055f95cdb06069"
+    },
+    {
+      "path": "raw/java-before-eval-observed.json",
+      "sha256": "6a856c98de407de79b37c68ed0268f9a0cea81c462d1e6af468f7871d572a7e5"
+    },
+    {
+      "path": "raw/java-before-eval-scenario.json",
+      "sha256": "8daf41a411e34c60ee4d60cb4315320e9d85ffb767dd67ef0f6d1f8abf7ebfba"
+    },
+    {
+      "path": "raw/java-before-improve-observed.json",
+      "sha256": "e8b424b5ad7ebba17c9f14a80fa53be05f1366b9ec3621711d140bbf22d9d583"
+    },
+    {
+      "path": "raw/java-before-improve-scenario.json",
+      "sha256": "f5c3a230fbf7d17da6a0281772292424c8217325e048ae59b67e12fe27656cce"
+    },
+    {
+      "path": "raw/java-before-topology-observed.json",
+      "sha256": "c0ec9181a534a0f5133414c5c4323b7955add0509d23777bbeeb1e9202b9f644"
+    },
+    {
+      "path": "raw/java-before-topology-scenario.json",
+      "sha256": "6afcfd65a7613004856d8e0d264256a45bcb0831d4ba11b616055f95cdb06069"
+    },
+    {
+      "path": "raw/java-before.log",
+      "sha256": "ede9f554d8bb9242b17d685e2e922f8b070d2a11e3c15fc883354f201e3f4d05"
+    },
+    {
+      "path": "raw/java-before.xml",
+      "sha256": "504a4abb6485e0cada328b111d2216b2c16a873d9d2b4574fdf09443cb71867b"
+    },
+    {
+      "path": "raw/java-final.log",
+      "sha256": "66a032781ef4604e7f5ee03396ea7fcdbcd528d3e9c43b6f07e3ceb67a615b1f"
+    },
+    {
+      "path": "raw/prepared-final-input-source.json",
+      "sha256": "a2e742d54c2866e7dda5c3a6f921412a20404b15d9feedee7a8da5570fc381a6"
+    },
+    {
+      "path": "raw/python-after-eval-observed.json",
+      "sha256": "a988966f14281238f1eb83482ed337cf67fce2bfacf85668e2c44e445203443d"
+    },
+    {
+      "path": "raw/python-after-eval-scenario.json",
+      "sha256": "4fe9ef7f3094f4eb8ecff8278cd97d6a1661e80be3bf375131ff7e82783720e8"
+    },
+    {
+      "path": "raw/python-after-first.log",
+      "sha256": "aea04efc4662e135e9fea4a07aff6bf7c7e97c405da506ffe5f6acd55468219c"
+    },
+    {
+      "path": "raw/python-after-improve-observed.json",
+      "sha256": "6f7c56c4fbbe9c3317aef7603c42492e612798aee2a7d2ac9a9af0eee1b33dfc"
+    },
+    {
+      "path": "raw/python-after-improve-scenario.json",
+      "sha256": "e440c61e593786f26edef6a554c893dbe5c8ea30b57c1c47199cd0f240f8d9ea"
+    },
+    {
+      "path": "raw/python-after-topology-observed.json",
+      "sha256": "2c1803ee4ab2134526fdff1120b399732b6d4ea232b29a6a5ea573ad1717badb"
+    },
+    {
+      "path": "raw/python-after-topology-scenario.json",
+      "sha256": "6afcfd65a7613004856d8e0d264256a45bcb0831d4ba11b616055f95cdb06069"
+    },
+    {
+      "path": "raw/python-before-eval-observed.json",
+      "sha256": "35ec91b9f7327ec47b34557fdf542955aa1a5029df3f9bb2bbef927972a1b371"
+    },
+    {
+      "path": "raw/python-before-eval-scenario.json",
+      "sha256": "8daf41a411e34c60ee4d60cb4315320e9d85ffb767dd67ef0f6d1f8abf7ebfba"
+    },
+    {
+      "path": "raw/python-before-improve-observed.json",
+      "sha256": "8e1bbb9c202f681c5193e53f37a472addb618e2bca70f038eb65a11b08ac36fe"
+    },
+    {
+      "path": "raw/python-before-improve-scenario.json",
+      "sha256": "f5c3a230fbf7d17da6a0281772292424c8217325e048ae59b67e12fe27656cce"
+    },
+    {
+      "path": "raw/python-before-topology-observed.json",
+      "sha256": "806ab2bb8b63939fafb20f39dfa6d009607f18aebdd4da8f0c3fde52ead22efd"
+    },
+    {
+      "path": "raw/python-before-topology-scenario.json",
+      "sha256": "6afcfd65a7613004856d8e0d264256a45bcb0831d4ba11b616055f95cdb06069"
+    },
+    {
+      "path": "raw/python-deadline-before-observed.json",
+      "sha256": "3b3735e4032979ac2dcc81411d28e7330b2aada9d25f238a181bf2f3c5de87c0"
+    },
+    {
+      "path": "raw/python-deadline-before-scenario.json",
+      "sha256": "8daf41a411e34c60ee4d60cb4315320e9d85ffb767dd67ef0f6d1f8abf7ebfba"
+    },
+    {
+      "path": "raw/python-expanded-before.log",
+      "sha256": "429e76ec7b1faf048aa27ce9aecbc65f9dd2363e0788672cb96c89bd259ee5fa"
+    },
+    {
+      "path": "raw/python-final.log",
+      "sha256": "aea04efc4662e135e9fea4a07aff6bf7c7e97c405da506ffe5f6acd55468219c"
+    },
+    {
+      "path": "raw/python-first.log",
+      "sha256": "1ecbc18ad1a5d64cf6170515a6d75a1cad8d33b48456fd488f5cf79202f4e84d"
+    },
+    {
+      "path": "raw/python-held-finally-before.log",
+      "sha256": "6bc741db955fec1da79498a6f5a1cdbcefd790ccf6b6f0553073ab46a8b3c110"
+    },
+    {
+      "path": "raw/python-second.log",
+      "sha256": "0b2df66e1ddcaa101ea51157887e5332588b06e7891a516ad4984c686c7fee16"
+    },
+    {
+      "path": "raw/style-final.log",
+      "sha256": "afa20b27dacc9bf0aba3c1d265964c21e04ab42f6e39e2dd4769718ceded003a"
+    },
+    {
+      "path": "raw/typescript-after-eval-observed.json",
+      "sha256": "93693bf7cc7099380fd161b208b2c84ef2d7595f73166923a419886a656abff1"
+    },
+    {
+      "path": "raw/typescript-after-eval-scenario.json",
+      "sha256": "4fe9ef7f3094f4eb8ecff8278cd97d6a1661e80be3bf375131ff7e82783720e8"
+    },
+    {
+      "path": "raw/typescript-after-first.log",
+      "sha256": "f577c9d360b458c56552ca00581fef83892a368bf31289e687eb79d60ea64fe5"
+    },
+    {
+      "path": "raw/typescript-after-improve-observed.json",
+      "sha256": "6f5845bf58d21251a8fa0329b62b4a3324d5bb5812320a6a8b1167bfe426a78d"
+    },
+    {
+      "path": "raw/typescript-after-improve-scenario.json",
+      "sha256": "e440c61e593786f26edef6a554c893dbe5c8ea30b57c1c47199cd0f240f8d9ea"
+    },
+    {
+      "path": "raw/typescript-after-topology-observed.json",
+      "sha256": "f38b082fdd62448e6576921808c42beeb1ddd9b2d5da87a7c69206ca4b6f86cd"
+    },
+    {
+      "path": "raw/typescript-after-topology-scenario.json",
+      "sha256": "6afcfd65a7613004856d8e0d264256a45bcb0831d4ba11b616055f95cdb06069"
+    },
+    {
+      "path": "raw/typescript-before-eval-observed.json",
+      "sha256": "f7d0a3e7d32a7f6fe391a16b6ab05d5db1bed73db46f8cf81a170104aacd375c"
+    },
+    {
+      "path": "raw/typescript-before-eval-scenario.json",
+      "sha256": "8daf41a411e34c60ee4d60cb4315320e9d85ffb767dd67ef0f6d1f8abf7ebfba"
+    },
+    {
+      "path": "raw/typescript-before-improve-observed.json",
+      "sha256": "ea02522398abf61df22bfecbff2e96f0e2d164391e38c9439cf8414122459d86"
+    },
+    {
+      "path": "raw/typescript-before-improve-scenario.json",
+      "sha256": "f5c3a230fbf7d17da6a0281772292424c8217325e048ae59b67e12fe27656cce"
+    },
+    {
+      "path": "raw/typescript-before-topology-observed.json",
+      "sha256": "267529087cc24774dd676bae2388f4bee34c269ce039faf2cbcb5a1c93f5fefb"
+    },
+    {
+      "path": "raw/typescript-before-topology-scenario.json",
+      "sha256": "6afcfd65a7613004856d8e0d264256a45bcb0831d4ba11b616055f95cdb06069"
+    },
+    {
+      "path": "raw/typescript-deadline-before-observed.json",
+      "sha256": "f7d0a3e7d32a7f6fe391a16b6ab05d5db1bed73db46f8cf81a170104aacd375c"
+    },
+    {
+      "path": "raw/typescript-deadline-before-scenario.json",
+      "sha256": "8daf41a411e34c60ee4d60cb4315320e9d85ffb767dd67ef0f6d1f8abf7ebfba"
+    },
+    {
+      "path": "raw/typescript-final.log",
+      "sha256": "f577c9d360b458c56552ca00581fef83892a368bf31289e687eb79d60ea64fe5"
+    },
+    {
+      "path": "raw/typescript-first-strengthened-oracle.log",
+      "sha256": "6d36d58537480bfdafc0f48d08eea6fa178752a9ee064a89674a7ba38a497c28"
+    },
+    {
+      "path": "raw/typescript-first.log",
+      "sha256": "43f841a326c7326d1fe61931b34297d10a9c559766301598fa77c000096558c1"
+    }
+  ]
+}

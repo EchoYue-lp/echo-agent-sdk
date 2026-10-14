@@ -36,10 +36,8 @@ use echo_sdk_protocol::methods::{
     RunCancelRequest, TaskCreateRequest, TaskListRequest, TaskUpdateRequest,
 };
 #[cfg(feature = "sdk-facade-adapters")]
-use echo_sdk_protocol::scalar::{
-    WireBytes, WireDuration, WireField, WireMapEntry, WirePath, WireValue,
-};
-use echo_sdk_protocol::scalar::{WireNonZeroU64, WireU64};
+use echo_sdk_protocol::scalar::{WireBytes, WireDuration, WireField, WireMapEntry, WireValue};
+use echo_sdk_protocol::scalar::{WireNonZeroU64, WirePath, WireU64};
 use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
@@ -740,7 +738,56 @@ async fn valid_hello_completes_full_core_lifecycle() -> Result<(), Box<dyn std::
 #[tokio::test]
 async fn tiny_live_window_emits_a_valid_gap_until_acknowledged()
 -> Result<(), Box<dyn std::error::Error>> {
-    let (endpoint, request_seen) = start_model_server("backpressure").await?;
+    verify_gap_ack_continuation(1, None).await
+}
+
+#[tokio::test]
+async fn ack_window_snapshot_ack_resumes_strictly_after_watermark()
+-> Result<(), Box<dyn std::error::Error>> {
+    verify_gap_ack_continuation(1024 * 1024, None).await
+}
+
+#[tokio::test]
+async fn consumed_single_replay_page_ack_resumes_live_after_page_cursor()
+-> Result<(), Box<dyn std::error::Error>> {
+    verify_gap_ack_continuation(1024 * 1024, Some(64)).await
+}
+
+#[tokio::test]
+async fn consumed_multiple_replay_page_ack_resumes_live_after_page_cursor()
+-> Result<(), Box<dyn std::error::Error>> {
+    verify_gap_ack_continuation(1024 * 1024, Some(1)).await
+}
+
+async fn verify_gap_ack_continuation(
+    max_event_bytes: usize,
+    consumed_page_size: Option<u64>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let listener = TcpListener::bind("127.0.0.1:0").await?;
+    let endpoint = format!("http://{}/v1/chat/completions", listener.local_addr()?);
+    let request_seen = Arc::new(tokio::sync::Notify::new());
+    let request_notify = request_seen.clone();
+    let (release, released) = tokio::sync::oneshot::channel::<()>();
+    tokio::spawn(async move {
+        let serve = async {
+            let (mut socket, _) = listener.accept().await?;
+            support::read_http_request(&mut socket).await?;
+            let body = concat!(
+                "data: {\"id\":\"fixture\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"tool_calls\":[{\"index\":0,\"id\":\"call-gap\",\"type\":\"function\",\"function\":{\"name\":\"missing_fixture_tool\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\n",
+                "data: [DONE]\n\n"
+            );
+            socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len()).as_bytes()).await?;
+            socket.shutdown().await?;
+            let (mut socket, _) = listener.accept().await?;
+            support::read_http_request(&mut socket).await?;
+            request_notify.notify_one();
+            released.await.map_err(std::io::Error::other)?;
+            let body = "data: {\"id\":\"fixture\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"continued\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n";
+            socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len()).as_bytes()).await?;
+            Ok::<(), std::io::Error>(())
+        };
+        serve.await
+    });
     let work = tempfile::tempdir()?;
     let state_root = tempfile::tempdir()?;
     let config = write_config(
@@ -749,7 +796,7 @@ async fn tiny_live_window_emits_a_valid_gap_until_acknowledged()
         state_root.path(),
         Some(serde_json::json!({
             "max_outstanding_live_events": 1,
-            "max_event_bytes": 1
+            "max_event_bytes": max_event_bytes
         })),
     )?;
     let mut host = spawn_host(&config).await?;
@@ -818,24 +865,135 @@ async fn tiny_live_window_emits_a_valid_gap_until_acknowledged()
                 .map_err(|_| agent_client_protocol::Error::internal_error().data("gap lock poisoned"))?
                 .len();
             assert_eq!(initial_gap_count, 1, "live oversized events must coalesce behind one gap");
+            let initial_event_count = events.lock()
+                .map_err(|_| agent_client_protocol::Error::internal_error().data("event lock poisoned"))?
+                .len();
+            let watermark = gap.gap.snapshot_watermark.to_u64().ok_or_else(|| {
+                agent_client_protocol::Error::invalid_params().data("invalid watermark")
+            })?;
+            let snapshot = connection.send_request(RunGetRequest {
+                run: started.run.clone(),
+            }).block_task().await?;
+            assert!(snapshot.last_sequence.to_u64().unwrap_or_default() >= watermark,
+                "gap ACK must cover a snapshot observed at or beyond its watermark");
+            if let Some(page_size) = consumed_page_size {
+                let parked_tail = snapshot.last_sequence.to_u64().ok_or_else(|| agent_client_protocol::Error::invalid_params().data("invalid snapshot tail"))?;
+                let mut cursor = 0u64;
+                let mut consumed_ids = Vec::new();
+                let mut pages = 0usize;
+                while cursor < parked_tail {
+                    let page = connection.send_request(ReplayRequest {
+                        stream: started.stream.clone(), after_sequence: WireU64::from_u64(cursor), max_events: Some(nonzero(page_size)),
+                    }).block_task().await?;
+                    page.validate().map_err(|error| agent_client_protocol::Error::invalid_params().data(error.to_string()))?;
+                    assert!(!page.events.is_empty());
+                    for event in page.events {
+                        let sequence = event.sequence.to_u64().ok_or_else(|| agent_client_protocol::Error::invalid_params().data("invalid replay sequence"))?;
+                        assert_eq!(Some(sequence), cursor.checked_add(1));
+                        cursor = sequence;
+                        consumed_ids.push(event.event_id);
+                    }
+                    pages = pages.saturating_add(1);
+                }
+                assert!(cursor > watermark);
+                assert_eq!(pages > 1, page_size == 1);
+                let empty = connection.send_request(ReplayRequest {
+                    stream: started.stream.clone(), after_sequence: WireU64::from_u64(parked_tail.saturating_add(100)), max_events: Some(nonzero(page_size)),
+                }).block_task().await?;
+                assert!(empty.events.is_empty());
+                connection.send_notification(EventAckNotification { ack: EventAck {
+                    stream: started.stream.clone(), last_processed_sequence: nonzero(parked_tail.saturating_add(100)),
+                } })?;
+                connection.send_request(RunGetRequest { run: started.run.clone() }).block_task().await?;
+                assert_eq!(events.lock().map_err(|_| agent_client_protocol::Error::internal_error())?.len(), initial_event_count);
+                assert_eq!(gaps.lock().map_err(|_| agent_client_protocol::Error::internal_error())?.len(), initial_gap_count);
+                connection.send_notification(EventAckNotification { ack: EventAck {
+                    stream: started.stream.clone(), last_processed_sequence: nonzero(cursor),
+                } })?;
+                connection.send_request(RunGetRequest { run: started.run.clone() }).block_task().await?;
+                release.send(()).map_err(|_| agent_client_protocol::Error::internal_error().data("model continuation dropped"))?;
+                wait_until(|| events.lock().map(|items| items.len() > initial_event_count).unwrap_or(false)
+                    || gaps.lock().map(|items| items.len() > initial_gap_count).unwrap_or(false)).await
+                    .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                assert!(events.lock().map_err(|_| agent_client_protocol::Error::internal_error())?.iter().skip(initial_event_count)
+                    .all(|event| event.envelope.sequence.to_u64().unwrap_or_default() > cursor));
+                assert!(gaps.lock().map_err(|_| agent_client_protocol::Error::internal_error())?.iter().skip(initial_gap_count)
+                    .all(|gap| gap.gap.from_sequence.to_u64().unwrap_or_default() > cursor));
+                assert!(connection.send_request(RunWaitRequest { run: started.run.clone(), timeout: None }).block_task().await?.settled);
+                let terminal_tail = connection.send_request(RunGetRequest { run: started.run.clone() }).block_task().await?.last_sequence.to_u64()
+                    .ok_or_else(|| agent_client_protocol::Error::invalid_params().data("invalid terminal tail"))?;
+                while cursor < terminal_tail {
+                    let page = connection.send_request(ReplayRequest { stream: started.stream.clone(), after_sequence: WireU64::from_u64(cursor), max_events: Some(nonzero(page_size)) }).block_task().await?;
+                    page.validate().map_err(|error| agent_client_protocol::Error::invalid_params().data(error.to_string()))?;
+                    assert!(!page.events.is_empty());
+                    for event in page.events {
+                        let sequence = event.sequence.to_u64().ok_or_else(|| agent_client_protocol::Error::invalid_params().data("invalid tail sequence"))?;
+                        assert_eq!(Some(sequence), cursor.checked_add(1));
+                        cursor = sequence;
+                        consumed_ids.push(event.event_id);
+                    }
+                }
+                let all = connection.send_request(ReplayRequest { stream: started.stream.clone(), after_sequence: WireU64::from_u64(0), max_events: Some(nonzero(64)) }).block_task().await?;
+                assert_eq!(all.events.iter().filter(|event| event.payload.event_type == "final_answer").count(), 1);
+                assert_eq!(all.events.iter().map(|event| event.event_id.clone()).collect::<Vec<_>>(), consumed_ids);
+                assert_eq!(u64::try_from(consumed_ids.len()).ok(), Some(terminal_tail));
+                return Ok(());
+            }
             connection.send_notification(EventAckNotification {
                 ack: EventAck {
                     stream: started.stream.clone(),
                     last_processed_sequence: gap.gap.snapshot_watermark.clone(),
                 },
             })?;
-            if let Some(first) = events
-                .lock()
+            wait_until(|| {
+                gaps.lock().map(|items| items.len() > initial_gap_count).unwrap_or(false)
+                    || events.lock().map(|items| items.len() > initial_event_count).unwrap_or(false)
+            })
+            .await
+            .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            let resumed_events = events.lock()
                 .map_err(|_| agent_client_protocol::Error::internal_error().data("event lock poisoned"))?
-                .first()
-            {
-                connection.send_notification(EventAckNotification {
-                    ack: EventAck {
-                        stream: started.stream,
-                        last_processed_sequence: first.envelope.sequence.clone(),
-                    },
+                .clone();
+            for event in resumed_events.iter().skip(initial_event_count) {
+                event.validate().map_err(|error| {
+                    agent_client_protocol::Error::invalid_params().data(error.to_string())
                 })?;
+                assert!(event.envelope.sequence.to_u64().unwrap_or_default() > watermark);
             }
+            let resumed_gaps = gaps.lock()
+                .map_err(|_| agent_client_protocol::Error::internal_error().data("gap lock poisoned"))?
+                .clone();
+            for resumed in resumed_gaps.iter().skip(initial_gap_count) {
+                resumed.validate().map_err(|error| {
+                    agent_client_protocol::Error::invalid_params().data(error.to_string())
+                })?;
+                assert!(resumed.gap.from_sequence.to_u64().unwrap_or_default() > watermark);
+            }
+            let replay = connection.send_request(ReplayRequest {
+                stream: started.stream.clone(),
+                after_sequence: WireU64::from_u64(watermark),
+                max_events: Some(nonzero(64)),
+            }).block_task().await?;
+            replay.validate().map_err(|error| {
+                agent_client_protocol::Error::invalid_params().data(error.to_string())
+            })?;
+            assert!(!replay.events.is_empty());
+            assert!(replay.events.iter().all(|event| {
+                event.sequence.to_u64().unwrap_or_default() > watermark
+            }));
+            release.send(()).map_err(|_| agent_client_protocol::Error::internal_error().data("model continuation dropped"))?;
+            let settled = connection.send_request(RunWaitRequest { run: started.run.clone(), timeout: None }).block_task().await?;
+            assert!(settled.settled);
+            let continuation = connection.send_request(ReplayRequest {
+                stream: started.stream.clone(),
+                after_sequence: replay.next_cursor.last_processed_sequence,
+                max_events: Some(nonzero(64)),
+            }).block_task().await?;
+            continuation.validate().map_err(|error| agent_client_protocol::Error::invalid_params().data(error.to_string()))?;
+            assert!(!continuation.events.is_empty());
+            assert!(continuation.events.iter().all(|event| event.sequence.to_u64().unwrap_or_default() > watermark));
+            assert!(events.lock().map_err(|_| agent_client_protocol::Error::internal_error())?.iter()
+                .skip(initial_event_count).all(|event| event.envelope.sequence.to_u64().unwrap_or_default() > watermark));
             Ok(())
         })
     };
@@ -5019,7 +5177,27 @@ async fn workflow_family_runs_declarative_graphs_over_the_framework_engine()
                 .await
                 .expect_err("a cancelled graph must refuse further runs");
             let typed = typed_error(&refused)?;
-            assert_eq!(typed.code, ExtensionErrorCode::FrameworkError);
+            assert_eq!(typed.code, ExtensionErrorCode::Cancelled);
+            assert_eq!(typed.operation.as_deref(), Some("_echo_agent/workflow/op"));
+            let fields = typed
+                .details
+                .and_then(|details| details.fields)
+                .ok_or_else(|| {
+                    agent_client_protocol::Error::internal_error()
+                        .data("cancelled workflow lost canonical cause")
+                })?;
+            for (key, expected) in [
+                ("framework_failure_category", "agent"),
+                ("framework_terminal_kind", "cancelled"),
+                ("framework_failure_code", "agent_cancelled"),
+                ("framework_retryable", "false"),
+            ] {
+                assert_eq!(
+                    fields.iter().find(|field| field.key == key)
+                        .map(|field| field.value.as_str()),
+                    Some(expected)
+                );
+            }
 
             // The family surface is closed: unknown operations and unknown
             // resources fail with typed invalid-value errors.
@@ -5312,6 +5490,9 @@ async fn state_delivery_and_trace_families_use_framework_services()
                 claim.get("claim").and_then(|value| value.get("message_id")),
                 Some(&serde_json::json!("m-1"))
             );
+            let exact_claim = claim.get("claim").cloned().ok_or_else(|| {
+                agent_client_protocol::Error::internal_error().data("missing exact delivery claim")
+            })?;
             let transitioned = decode(
                 connection
                     .send_request(family_request(
@@ -5319,7 +5500,7 @@ async fn state_delivery_and_trace_families_use_framework_services()
                         "delivery.transition",
                         vec![
                             serde_json::json!(ledger_id),
-                            serde_json::json!("m-1"),
+                            exact_claim.clone(),
                             serde_json::json!("effect_started"),
                             serde_json::json!("turn-1"),
                         ],
@@ -5335,8 +5516,10 @@ async fn state_delivery_and_trace_families_use_framework_services()
                         "delivery.settle",
                         vec![
                             serde_json::json!(ledger_id),
-                            serde_json::json!("m-1"),
+                            exact_claim,
                             serde_json::json!("completed"),
+                            serde_json::Value::Null,
+                            serde_json::Value::Null,
                         ],
                     )?)
                     .block_task()
@@ -6852,6 +7035,313 @@ async fn remaining_tool_families_execute_framework_tools_locally()
 
 // ── Subagent RPC success path (plan 07 todo 6) ──────────────────────────────
 
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    feature = "sdk-extension-bridge",
+    feature = "framework-subagent"
+))]
+#[tokio::test]
+async fn task_pause_is_exact_and_resume_reuses_canonical_dependency_result()
+-> Result<(), Box<dyn std::error::Error>> {
+    task_control_preserves_siblings(echo_sdk_protocol::methods::ControlAction::Pause).await
+}
+
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    feature = "sdk-extension-bridge",
+    feature = "framework-subagent"
+))]
+#[tokio::test]
+async fn task_cancel_is_exact_and_pending_sibling_continues()
+-> Result<(), Box<dyn std::error::Error>> {
+    task_control_preserves_siblings(echo_sdk_protocol::methods::ControlAction::Cancel).await
+}
+
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    feature = "sdk-extension-bridge",
+    feature = "framework-subagent"
+))]
+async fn task_control_preserves_siblings(
+    action: echo_sdk_protocol::methods::ControlAction,
+) -> Result<(), Box<dyn std::error::Error>> {
+    use echo_sdk_protocol::methods::{
+        ControlAction, ExtensionDescriptor, ExtensionKind, ExtensionRegisterRequest,
+        TaskControlRequest, TaskExecuteRequest, WireTaskStatus,
+    };
+    let (endpoint, _) = start_model_server("unused").await?;
+    let work = tempfile::tempdir()?;
+    let root = tempfile::tempdir()?;
+    let config = write_config(work.path(), &endpoint, root.path(), None)?;
+    let mut host = spawn_host(&config).await?;
+    let gate = Arc::new(SubagentReverseGate {
+        block_first: 2,
+        ..Default::default()
+    });
+    drive_answering_gated(&mut host, Arc::new(Mutex::new(false)), Some(gate.clone()), move |connection| {
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            // One registered custom Agent is an exclusive callback target.
+            // Independent tasks use independent Agent instances so this
+            // fixture exercises DAG concurrency rather than proxy exclusion.
+            for target in ["task-local-a", "task-local-b", "task-local-c", "task-local-d"] {
+                connection.send_request(ExtensionRegisterRequest {
+                    kind: ExtensionKind::CustomAgent, implementation_id: target.to_string(),
+                    descriptor: ExtensionDescriptor::CustomAgent { descriptor_version: 1, name: target.to_string(), model_name: "fixture".to_string(), system_prompt: "fixture".to_string(), tool_names: Vec::new() }, timeout: None,
+                }).block_task().await?;
+            }
+            let session = connection.send_request(SessionCreateRequest { agent, working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            let mut tasks = vec![
+                serde_json::json!({"id":"a","title":"A","description":"controlled A","extension":{"subagent":"task-local-a"}}),
+                serde_json::json!({"id":"b","title":"B","description":"independent B","extension":{"subagent":"task-local-b"}}),
+                serde_json::json!({"id":"c","title":"C","description":"after B","depends_on":["b"],"extension":{"subagent":"task-local-c"}}),
+            ];
+            if action == ControlAction::Pause {
+                tasks.push(serde_json::json!({"id":"d","title":"D","description":"after resume A and B","depends_on":["a","b"],"extension":{"subagent":"task-local-d"}}));
+            }
+            let created = connection.send_request(TaskCreateRequest {
+                task_run: session.task_run.clone(), spec: WireValue::from_json(serde_json::json!({"execution_mode":"parallel","tasks":tasks})).map_err(|error| agent_client_protocol::Error::invalid_params().data(error.to_string()))?,
+            }).block_task().await?;
+            let a = created.tasks.first().cloned().ok_or_else(|| agent_client_protocol::Error::internal_error().data("missing A handle"))?;
+            let b = created.tasks.get(1).cloned().ok_or_else(|| agent_client_protocol::Error::internal_error().data("missing B handle"))?;
+            let c_task = created.tasks.get(2).cloned().ok_or_else(|| agent_client_protocol::Error::internal_error().data("missing C handle"))?;
+            connection.send_request(TaskExecuteRequest { task_run: session.task_run.clone() }).block_task().await?;
+            let admitted = tokio::time::timeout(Duration::from_secs(5), async {
+                while gate.invocations.load(std::sync::atomic::Ordering::SeqCst) < 2 { tokio::time::sleep(Duration::from_millis(5)).await; }
+            }).await;
+            if admitted.is_err() {
+                let snapshot = connection.send_request(TaskListRequest { task_run: session.task_run.clone() }).block_task().await?;
+                eprintln!("no concurrent dispatch: {snapshot:?}, invocation count {}", gate.invocations.load(std::sync::atomic::Ordering::SeqCst));
+                return Err(agent_client_protocol::Error::internal_error().data("A/B did not dispatch concurrently"));
+            }
+
+            let controlled = connection.send_request(TaskControlRequest { task_run: session.task_run.clone(), task: a.clone(), action }).block_task().await?;
+            assert!(controlled.accepted);
+            let expected_a = if action == ControlAction::Pause { WireTaskStatus::Paused { reason: "paused by rpc task control".to_string() } } else { WireTaskStatus::Cancelled };
+            let snapshot = tokio::time::timeout(Duration::from_secs(5), async {
+                loop {
+                    let snapshot = connection.send_request(TaskListRequest { task_run: session.task_run.clone() }).block_task().await?;
+                    if snapshot.tasks.iter().any(|entry| entry.task == a && entry.status == expected_a) { return Ok::<_, agent_client_protocol::Error>(snapshot); }
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            }).await.map_err(|_| agent_client_protocol::Error::internal_error().data("exact A control did not settle"))??;
+            assert!(snapshot.tasks.iter().any(|entry| entry.task == b && entry.status == WireTaskStatus::Running), "controlling A changed running B: {snapshot:?}");
+            assert!(snapshot.tasks.iter().any(|entry| entry.task == c_task && entry.status == WireTaskStatus::Pending), "controlling A changed pending C: {snapshot:?}");
+            gate.release.notify_waiters();
+            tokio::time::timeout(Duration::from_secs(5), async {
+                loop {
+                    let snapshot = connection.send_request(TaskListRequest { task_run: session.task_run.clone() }).block_task().await?;
+                    if [&b,&c_task].iter().all(|handle| snapshot.tasks.iter().any(|entry| &entry.task == *handle && entry.status == WireTaskStatus::Completed)) { break Ok::<_, agent_client_protocol::Error>(()); }
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            }).await.map_err(|_| agent_client_protocol::Error::internal_error().data("B/C did not continue after exact A control"))??;
+            if action == ControlAction::Pause {
+                // The first RuntimeTaskService must settle before the second
+                // controller starts; B's completed output lives in the graph.
+                tokio::time::sleep(Duration::from_millis(300)).await;
+                let resumed = connection.send_request(TaskControlRequest { task_run: session.task_run.clone(), task: a, action: ControlAction::Resume }).block_task().await?;
+                assert!(resumed.accepted);
+                connection.send_request(TaskExecuteRequest { task_run: session.task_run.clone() }).block_task().await?;
+                tokio::time::timeout(Duration::from_secs(5), async {
+                    loop {
+                        let snapshot = connection.send_request(TaskListRequest { task_run: session.task_run.clone() }).block_task().await?;
+                        if snapshot.tasks.iter().all(|entry| entry.status == WireTaskStatus::Completed) { break Ok::<_, agent_client_protocol::Error>(()); }
+                        tokio::time::sleep(Duration::from_millis(10)).await;
+                    }
+                }).await.map_err(|_| agent_client_protocol::Error::internal_error().data("resumed graph did not reuse canonical results"))??;
+                let prompts = gate.prompts.lock().map_err(|_| agent_client_protocol::Error::internal_error().data("prompt lock poisoned"))?;
+                assert!(prompts.iter().any(|prompt| prompt.contains("after resume A and B") && prompt.contains("Completed dependency b") && prompt.contains("SDK subagent executed")), "new controller lost B output: {prompts:?}");
+            }
+            let closed = connection.send_request(SessionCloseRequest { session: session.session, }).block_task().await?;
+            assert!(closed.released, "Session teardown must settle its owned attempts");
+            Ok(())
+        })
+    }).await?;
+    let _ = host.child.kill().await;
+    Ok(())
+}
+
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    feature = "sdk-extension-bridge",
+    feature = "framework-subagent"
+))]
+#[tokio::test]
+async fn subagent_short_await_preserves_result_and_dispatch_receipt()
+-> Result<(), Box<dyn std::error::Error>> {
+    use echo_sdk_protocol::methods::{
+        ExtensionDescriptor, ExtensionKind, ExtensionRegisterRequest, SubagentAwaitRequest,
+        SubagentControlAction, SubagentControlRequest, SubagentDispatchRequest,
+    };
+    let (endpoint, _) = start_model_server("unused").await?;
+    let work = tempfile::tempdir()?;
+    let root = tempfile::tempdir()?;
+    let config = write_config(work.path(), &endpoint, root.path(), None)?;
+    let mut host = spawn_host(&config).await?;
+    let gate = Arc::new(SubagentReverseGate::default());
+    drive_answering_gated(
+        &mut host,
+        Arc::new(Mutex::new(false)),
+        Some(gate.clone()),
+        move |connection| {
+            Box::pin(async move {
+                connection
+                    .send_request(initialize_request(Some(client_hello())))
+                    .block_task()
+                    .await?;
+                let agent = connection
+                    .send_request(AgentCreateRequest {
+                        config: AgentConfigWire::HostDefault,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?
+                    .agent;
+                connection
+                    .send_request(ExtensionRegisterRequest {
+                        kind: ExtensionKind::CustomAgent,
+                        implementation_id: "await-target".to_string(),
+                        descriptor: ExtensionDescriptor::CustomAgent {
+                            descriptor_version: 1,
+                            name: "await-target".to_string(),
+                            model_name: "fixture".to_string(),
+                            system_prompt: "fixture".to_string(),
+                            tool_names: Vec::new(),
+                        },
+                        timeout: None,
+                    })
+                    .block_task()
+                    .await?;
+                let session = connection
+                    .send_request(SessionCreateRequest {
+                        agent,
+                        working_dir: None,
+                        session_id: None,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?
+                    .session;
+                let request = SubagentDispatchRequest {
+                    session: session.clone(),
+                    request: WireValue::from_json(serde_json::json!({
+                        "agent_name": "await-target", "task": "结果保留 🧪",
+                        "mode_override": "sync", "constraints": ["必须保留约束 🧪"],
+                        "prompt_context": {"acceptance_criteria": ["字段无损"]}
+                    }))
+                    .map_err(|error| {
+                        agent_client_protocol::Error::invalid_params().data(error.to_string())
+                    })?,
+                    idempotency_id: Some("dispatch-once".to_string()),
+                };
+                let (first, second) = tokio::join!(
+                    connection.send_request(request.clone()).block_task(),
+                    connection.send_request(request.clone()).block_task(),
+                );
+                let first = first?;
+                let second = second?;
+                assert_eq!(
+                    first.subagent, second.subagent,
+                    "same receipt must address exactly one attempt"
+                );
+                let timed = connection
+                    .send_request(SubagentAwaitRequest {
+                        subagent: first.subagent.clone(),
+                        timeout: Some(WireDuration {
+                            seconds: WireU64::from_u64(0),
+                            nanos: 5_000_000,
+                        }),
+                    })
+                    .block_task()
+                    .await?;
+                assert!(
+                    !timed.settled,
+                    "fixture release gate must keep dispatch pending"
+                );
+                assert!(timed.result.is_none());
+                gate.release.notify_one();
+                let result = connection
+                    .send_request(SubagentAwaitRequest {
+                        subagent: first.subagent.clone(),
+                        timeout: None,
+                    })
+                    .block_task()
+                    .await?;
+                assert!(
+                    result.settled,
+                    "RPC timeout must not consume background join"
+                );
+                assert!(result.result.is_some());
+                let repeated = connection
+                    .send_request(SubagentAwaitRequest {
+                        subagent: first.subagent.clone(),
+                        timeout: None,
+                    })
+                    .block_task()
+                    .await?;
+                assert_eq!(result, repeated, "await result must remain repeatable");
+                assert!(
+                    gate.prompts
+                        .lock()
+                        .map_err(|_| agent_client_protocol::Error::internal_error()
+                            .data("prompt lock poisoned"))?
+                        .iter()
+                        .any(|prompt| prompt.contains("必须保留约束 🧪")),
+                    "rich dispatch fields were dropped"
+                );
+                let late_guidance = connection
+                    .send_request(SubagentControlRequest {
+                        subagent: first.subagent.clone(),
+                        action: SubagentControlAction::Guidance,
+                        payload: Some("late instruction".to_string()),
+                    })
+                    .block_task()
+                    .await?;
+                assert!(
+                    !late_guidance.accepted,
+                    "settled attempt must not accept guidance for an unreachable future attempt"
+                );
+                assert_eq!(
+                    gate.invocations.load(std::sync::atomic::Ordering::SeqCst),
+                    1,
+                    "idempotent retry must not invoke a second Agent"
+                );
+                let mut conflicting = request;
+                conflicting.request = WireValue::from_json(serde_json::json!({
+                    "agent_name": "await-target", "task": "different work"
+                }))
+                .map_err(|error| {
+                    agent_client_protocol::Error::invalid_params().data(error.to_string())
+                })?;
+                let rejected = match connection.send_request(conflicting).block_task().await {
+                    Ok(_) => {
+                        return Err(agent_client_protocol::Error::internal_error()
+                            .data("different payload reused dispatch identity"));
+                    }
+                    Err(error) => error,
+                };
+                let typed = typed_facade_error(&rejected).map_err(|error| {
+                    agent_client_protocol::Error::internal_error().data(error.to_string())
+                })?;
+                assert_eq!(typed.code, ExtensionErrorCode::InvalidValue);
+                let closed = connection
+                    .send_request(SessionCloseRequest { session })
+                    .block_task()
+                    .await?;
+                assert!(
+                    closed.released,
+                    "Session teardown must settle its owned attempts"
+                );
+                Ok(())
+            })
+        },
+    )
+    .await?;
+    let _ = host.child.kill().await;
+    Ok(())
+}
+
 /// Drive helper variant whose client answers reverse extension calls:
 /// `agent_execute` resolves immediately unless the hang flag is set (the
 /// responder is parked silently, exercising control on a live attempt).
@@ -6873,6 +7363,56 @@ where
         + Send
         + 'static,
 {
+    drive_answering_gated(host, hang_agent_execute, None, scenario).await
+}
+
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    feature = "sdk-extension-bridge",
+    feature = "framework-subagent"
+))]
+struct SubagentReverseGate {
+    release: tokio::sync::Notify,
+    invocations: std::sync::atomic::AtomicUsize,
+    block_first: usize,
+    prompts: Mutex<Vec<String>>,
+}
+
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    feature = "sdk-extension-bridge",
+    feature = "framework-subagent"
+))]
+impl Default for SubagentReverseGate {
+    fn default() -> Self {
+        Self {
+            release: tokio::sync::Notify::new(),
+            invocations: std::sync::atomic::AtomicUsize::new(0),
+            block_first: usize::MAX,
+            prompts: Mutex::new(Vec::new()),
+        }
+    }
+}
+
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    feature = "sdk-extension-bridge",
+    feature = "framework-subagent"
+))]
+async fn drive_answering_gated<T, F>(
+    host: &mut HostProcess,
+    hang_agent_execute: Arc<Mutex<bool>>,
+    gate: Option<Arc<SubagentReverseGate>>,
+    scenario: F,
+) -> Result<T, Box<dyn std::error::Error>>
+where
+    T: Send + 'static,
+    F: FnOnce(
+            ConnectionTo<agent_client_protocol::Agent>,
+        ) -> BoxFuture<'static, agent_client_protocol::Result<T>>
+        + Send
+        + 'static,
+{
     use agent_client_protocol::Responder;
     use echo_sdk_protocol::methods::{
         AgentStreamChunkWire, AgentStreamTerminalWire, ExtensionInvocation, ExtensionInvokeCall,
@@ -6881,6 +7421,8 @@ where
     };
     let _process_lock = acquire_e2e_process_lock();
     let transport = host_transport(&mut host.child);
+    let scenario_done = Arc::new(tokio::sync::Notify::new());
+    let done = scenario_done.clone();
     let connect = Client
         .builder()
         .on_receive_request(
@@ -6888,21 +7430,26 @@ where
                   responder: Responder<ExtensionInvokeOutcome>,
                   connection: ConnectionTo<agent_client_protocol::Agent>| {
                 let hang = hang_agent_execute.clone();
+                let gate = gate.clone();
                 async move {
                     match call.invocation {
-                        ExtensionInvocation::AgentExecute(_) => {
-                            if *hang.lock().expect("hang flag") {
-                                // Park the responder: the attempt stays live.
-                                std::mem::forget(responder);
-                                return Ok(());
-                            }
-                            responder.respond(ExtensionInvokeOutcome::Result {
-                                result: ExtensionResult::AgentExecute(
-                                    "SDK subagent executed".to_string(),
-                                ),
-                            })
+                        ExtensionInvocation::AgentExecute(input) => {
+                            let parked = *hang.lock().map_err(|_| agent_client_protocol::Error::internal_error().data("hang lock poisoned"))?;
+                            tokio::spawn(async move {
+                                if let Some(gate) = gate {
+                                    gate.prompts.lock().unwrap_or_else(|error| error.into_inner()).push(input.task);
+                                    let released = gate.release.notified();
+                                    tokio::pin!(released);
+                                    released.as_mut().enable();
+                                    let invocation = gate.invocations.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                                    if invocation < gate.block_first { released.await; }
+                                }
+                                if parked { std::future::pending::<()>().await; }
+                                let _ = responder.respond(ExtensionInvokeOutcome::Result { result: ExtensionResult::AgentExecute("SDK subagent executed".to_string()) });
+                            });
+                            Ok(())
                         }
-                        ExtensionInvocation::AgentExecuteStream(_) => {
+                        ExtensionInvocation::AgentExecuteStream(input) => {
                             let Some(stream) = call.stream.clone() else {
                                 return responder.respond(ExtensionInvokeOutcome::Error {
                                     error: echo_sdk_protocol::error::EchoSdkError::new(
@@ -6915,7 +7462,17 @@ where
                             responder.respond(ExtensionInvokeOutcome::Stream {
                                 stream: stream.clone(),
                             })?;
+                            let parked = *hang.lock().map_err(|_| agent_client_protocol::Error::internal_error().data("hang lock poisoned"))?;
                             tokio::spawn(async move {
+                                if let Some(gate) = gate {
+                                    gate.prompts.lock().unwrap_or_else(|error| error.into_inner()).push(input.task);
+                                    let released = gate.release.notified();
+                                    tokio::pin!(released);
+                                    released.as_mut().enable();
+                                    let invocation = gate.invocations.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                                    if invocation < gate.block_first { released.await; }
+                                }
+                                if parked { std::future::pending::<()>().await; }
                                 let _ = connection.send_notification(ExtensionStreamEvent::Chunk {
                                     stream: stream.clone(),
                                     sequence: nonzero(1),
@@ -6950,10 +7507,36 @@ where
             },
             agent_client_protocol::on_receive_request!(),
         )
-        .connect_with(transport, async move |connection| scenario(connection).await);
-    let outcome = tokio::time::timeout(Duration::from_secs(60), connect)
-        .await
-        .map_err(|_| "client scenario timed out")??;
+        .connect_with(transport, async move |connection| {
+            let result = scenario(connection).await;
+            done.notify_one();
+            result
+        });
+    tokio::pin!(connect);
+    let outcome = tokio::time::timeout(Duration::from_secs(60), async {
+        tokio::select! {
+            result = &mut connect => result,
+            _ = scenario_done.notified() => {
+                // Scenarios close their Session and assert settled outcomes
+                // before ending. Terminate the idle stdio transport only
+                // after that explicit cleanup, as the ordinary drive does.
+                let _ = host.child.kill().await;
+                (&mut connect).await
+            }
+        }
+    })
+    .await;
+    let outcome = match outcome {
+        Ok(Ok(outcome)) => outcome,
+        Ok(Err(error)) => return Err(format!("{error}; host stderr: {}", stderr_text(host)).into()),
+        Err(_) => {
+            return Err(format!(
+                "client scenario timed out; host stderr: {}",
+                stderr_text(host)
+            )
+            .into());
+        }
+    };
     Ok(outcome)
 }
 
@@ -7112,14 +7695,35 @@ async fn subagent_family_dispatches_and_controls_live_attempts()
                 .block_task()
                 .await?;
             assert!(cancelled.accepted, "cancel must be accepted");
-            let settled: echo_sdk_protocol::methods::SubagentAwaitResponse = connection
+            let settled = connection
                 .send_request(SubagentAwaitRequest {
                     subagent: second.subagent.clone(),
                     timeout: None,
                 })
                 .block_task()
-                .await?;
-            assert!(settled.settled, "cancelled attempt must settle");
+                .await;
+            let cancelled_error = match settled {
+                Err(error) => typed_facade_error(&error).map_err(|error| {
+                    agent_client_protocol::Error::internal_error().data(error.to_string())
+                })?,
+                Ok(value) => {
+                    return Err(agent_client_protocol::Error::internal_error().data(format!(
+                        "cancelled executor error became a successful result: {value:?}"
+                    )));
+                }
+            };
+            assert_eq!(cancelled_error.code, ExtensionErrorCode::Cancelled);
+            assert!(
+                cancelled_error
+                    .details
+                    .as_ref()
+                    .and_then(|details| details.fields.as_ref())
+                    .is_some_and(|fields| fields
+                        .iter()
+                        .any(|field| field.key == "framework_terminal_kind"
+                            && field.value == "cancelled")),
+                "exact framework cancellation cause must survive Host conversion"
+            );
 
             // Stale generation addresses fail closed with a typed error.
             let stale = echo_sdk_protocol::handle::WireHandle {
@@ -7141,6 +7745,16 @@ async fn subagent_family_dispatches_and_controls_live_attempts()
             assert_eq!(
                 typed.code,
                 echo_sdk_protocol::error::ExtensionErrorCode::InvalidValue
+            );
+            let closed = connection
+                .send_request(SessionCloseRequest {
+                    session: session.session,
+                })
+                .block_task()
+                .await?;
+            assert!(
+                closed.released,
+                "Session teardown must settle its owned attempts"
             );
             Ok(())
         })
@@ -7461,5 +8075,230 @@ async fn task_execute_and_control_settle_through_the_runtime()
     })
     .await?;
     let _ = host.child.kill().await;
+    Ok(())
+}
+
+// The fixture is installed in a fresh temporary root before the Host opens it.
+// No existing event journal or historical receipt is rewritten.
+fn seed_recovered_identity_fixture(
+    root: &Path,
+    cwd: &Path,
+    session_id: &str,
+    run_id: &str,
+) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let directory = root.join("host");
+    std::fs::create_dir_all(&directory)?;
+    let cwd = WirePath::Utf8 {
+        path: cwd
+            .to_str()
+            .ok_or("fixture working directory must be UTF-8")?
+            .to_string(),
+    };
+    let bytes = serde_json::to_vec_pretty(&serde_json::json!([{
+        "run_id": run_id, "stream_id": "recovery-fixture-stream",
+        "session_id": session_id, "agent_handle_id": "historical-agent",
+        "status": "running", "last_sequence": 0, "input_kind": "chat",
+        "agent_config_fingerprint": "", "cwd": cwd
+    }]))?;
+    std::fs::write(directory.join("run-index.json"), &bytes)?;
+    Ok(bytes)
+}
+
+async fn verify_recovered_identity_admission(load: bool) -> Result<(), Box<dyn std::error::Error>> {
+    let work = tempfile::tempdir()?;
+    let state_root = tempfile::tempdir()?;
+    let stable_id = "恢复-session-🦀".to_string();
+    let historical_id = format!("{stable_id}:turn:7");
+    seed_recovered_identity_fixture(state_root.path(), work.path(), &stable_id, &historical_id)?;
+    let (endpoint, _) = start_model_server("new-recovered-run").await?;
+    let config = write_config(work.path(), &endpoint, state_root.path(), None)?;
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors();
+    drive(&mut host, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = if load {
+                let recovered = connection
+                    .send_request(SessionLoadRequest {
+                        agent,
+                        session_id: stable_id.clone(),
+                        working_dir: None,
+                    })
+                    .block_task()
+                    .await?;
+                assert_eq!(recovered.runs.len(), 1);
+                assert_eq!(
+                    recovered.runs.first().map(|run| run.run.id.as_str()),
+                    Some(historical_id.as_str())
+                );
+                recovered.session
+            } else {
+                connection
+                    .send_request(SessionCreateRequest {
+                        agent,
+                        session_id: Some(stable_id.clone()),
+                        working_dir: None,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?
+                    .session
+            };
+            let started = connection
+                .send_request(RunStartRequest {
+                    session,
+                    input: RunInput::Chat {
+                        text: "continue after recovery".to_string(),
+                    },
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            assert_eq!(started.run.id, format!("{stable_id}:turn:8"));
+            let wait = connection
+                .send_request(RunWaitRequest {
+                    run: started.run,
+                    timeout: None,
+                })
+                .block_task()
+                .await?;
+            assert!(wait.settled);
+            assert!(matches!(
+                wait.terminal,
+                Some(echo_sdk_protocol::methods::RunTerminal::Completed { .. })
+            ));
+            Ok(())
+        })
+    })
+    .await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn explicit_session_create_reserves_persisted_turn_identity_before_new_run()
+-> Result<(), Box<dyn std::error::Error>> {
+    verify_recovered_identity_admission(false).await
+}
+
+#[tokio::test]
+async fn session_load_reserves_persisted_turn_identity_before_new_run()
+-> Result<(), Box<dyn std::error::Error>> {
+    verify_recovered_identity_admission(true).await
+}
+
+#[tokio::test]
+async fn malformed_recovered_identity_rejects_actual_method_without_handle_publication()
+-> Result<(), Box<dyn std::error::Error>> {
+    let work = tempfile::tempdir()?;
+    let state_root = tempfile::tempdir()?;
+    let stable_id = "invalid-history-session".to_string();
+    let original = seed_recovered_identity_fixture(
+        state_root.path(),
+        work.path(),
+        &stable_id,
+        "invalid-history-session:turn:01",
+    )?;
+    let (endpoint, _) = start_model_server("unused").await?;
+    // Default Agent + requested Agent + one later Agent exhaust the budget.
+    // Any published Session/TaskRun from a failed request would prevent the
+    // final Agent creation, so this observes the real handle registry.
+    let config = write_config(
+        work.path(),
+        &endpoint,
+        state_root.path(),
+        Some(serde_json::json!({"max_open_handles":3})),
+    )?;
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors();
+    drive(&mut host, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            for _ in 0..2 {
+                let create = connection
+                    .send_request(SessionCreateRequest {
+                        agent: agent.clone(),
+                        session_id: Some(stable_id.clone()),
+                        working_dir: None,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await;
+                let error = match create {
+                    Err(error) => error,
+                    Ok(_) => {
+                        return Err(agent_client_protocol::Error::internal_error()
+                            .data("malformed recovery created a Session"));
+                    }
+                };
+                let typed =
+                    echo_sdk_protocol::error::EchoSdkError::from_jsonrpc_data(error.data.as_ref())
+                        .map_err(|error| {
+                            agent_client_protocol::Error::internal_error().data(error.to_string())
+                        })?;
+                assert_eq!(
+                    typed.operation.as_deref(),
+                    Some("_echo_agent/session/create")
+                );
+                assert!(typed.message.contains("Recovered ACP Turn identity"));
+                let loaded = connection
+                    .send_request(SessionLoadRequest {
+                        agent: agent.clone(),
+                        session_id: stable_id.clone(),
+                        working_dir: None,
+                    })
+                    .block_task()
+                    .await;
+                let error = match loaded {
+                    Err(error) => error,
+                    Ok(_) => {
+                        return Err(agent_client_protocol::Error::internal_error()
+                            .data("malformed recovery loaded a Session"));
+                    }
+                };
+                let typed =
+                    echo_sdk_protocol::error::EchoSdkError::from_jsonrpc_data(error.data.as_ref())
+                        .map_err(|error| {
+                            agent_client_protocol::Error::internal_error().data(error.to_string())
+                        })?;
+                assert_eq!(typed.operation.as_deref(), Some("_echo_agent/session/load"));
+                assert!(typed.message.contains("Recovered ACP Turn identity"));
+            }
+            connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            Ok(())
+        })
+    })
+    .await?;
+    assert_eq!(
+        std::fs::read(state_root.path().join("host/run-index.json"))?,
+        original
+    );
     Ok(())
 }

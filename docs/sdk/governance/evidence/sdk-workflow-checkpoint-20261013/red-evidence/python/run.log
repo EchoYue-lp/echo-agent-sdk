@@ -1,0 +1,61 @@
+Workflow evidence retained: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-ab7tjtww
+F
+=================================== FAILURES ===================================
+___________ test_workflow_checkpoint_branch_owner_and_shape_boundary ___________
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(not HOST,reason="real Host binary required")
+    async def test_workflow_checkpoint_branch_owner_and_shape_boundary():
+        work=Path(tempfile.mkdtemp(prefix="sdk-py-workflow-"));sdk=None;passed=False
+        try:
+            await helper(work,"--prepare")
+            scenario=json.loads((work/"scenario.json").read_text())
+            sdk=await EchoAgentClient.spawn(HOST,"--config",str(work/"host.json"))
+            agent=await sdk.create_agent()
+            sessions={"a":await agent.create_session(),"b":await agent.create_session()}
+            rows=[];results={}
+            for step in scenario["steps"]:
+                session=sessions[step["session"]]
+                if step.get("action")=="close":
+                    await session.close();row={"id":step["id"],"outcome":"closed"};rows.append(row);results[step["id"]]=row;(work/"results.json").write_text(json.dumps(rows,ensure_ascii=False));continue
+                resolution=work/"resolve.json";resolution.write_text(json.dumps({"value":step["arguments"],"results":results},ensure_ascii=False))
+                arguments=json.loads(await helper(work,"--resolve",str(resolution)));(work/f"call-{step['id']}.json").write_text(json.dumps({"operation":step["operation"],"arguments":arguments},ensure_ascii=False))
+                try:
+                    row={"id":step["id"],"outcome":"result","value":await sdk.call(step["operation"],session.wire,arguments)}
+                except EchoAgentError as error:
+                    row={"id":step["id"],"outcome":"error","code":error.code,"message":str(error),"operation":error.operation,"retryable":error.retryable,"details":error.details}
+                rows.append(row);results[step["id"]]=row;(work/"results.json").write_text(json.dumps(rows,ensure_ascii=False))
+            await sessions["b"].close();await agent.close();await sdk.close();sdk=None
+            path=work/"results.json";path.write_text(json.dumps(rows,ensure_ascii=False))
+>           print("Workflow evidence: "+(await helper(work,"--verify",str(path))).decode());passed=True
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tmp/sdk-workflow-candidate-fixture/test_workflow_host.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-ab7tjtww')
+arguments = ('--verify', '/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-py-workflow-ab7tjtww/results.json')
+
+    async def helper(work, *arguments):
+        process=await asyncio.create_subprocess_exec(sys.executable,str(FIXTURE),"--work",str(work),*arguments,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE)
+        output,diagnostics=await process.communicate()
+>       assert process.returncode==0,diagnostics.decode()
+E       AssertionError: Traceback (most recent call last):
+E           File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 239, in <module>
+E             if __name__ == "__main__": main()
+E                                        ^^^^^^
+E           File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 236, in main
+E             print(json.dumps(verify(args.work, json.loads(args.verify.read_text()))))
+E                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/tmp/sdk-workflow-candidate-fixture/workflow_fixture.py", line 215, in verify
+E             assert tuple_result["outcome"] == "error" and tuple_result["code"] == "invalid_value", ("tuple shape accepted; positive routing/checkpoint/state assertions above all passed", tuple_result)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         AssertionError: ('tuple shape accepted; positive routing/checkpoint/state assertions above all passed', {'id': 'tuple-resume', 'outcome': 'result', 'value': {'outcome': 'interrupted', 'pending_node': 'end', 'prompt': "Node 'end' requires confirmation before execution", 'checkpoint': {'id': '260496cd-a080-48b7-b455-eb4c8a01580d', 'graph_name': 'shared-workflow-中文🙂', 'workflow_run_id': '81a270b6-d9dd-4a45-9e4c-9c99d56c83ea', 'graph_revision': 'e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa', 'generation': '1', 'resume_attempt_id': None, 'current_node': 'end', 'state_snapshot': {'values': {'memo': 'checkpoint 中文🙂', 'context': {'optional': None, 'list': ['a', 'b']}, 'approved': True}, 'messages': [], 'current_node': 'yes'}, 'path': ['start', 'gate', 'yes'], 'step_count': '3', 'created_at': '2026-10-13T13:37:45.119704+08:00', 'continuation': {'kind': 'node'}, 'interrupt_type': 'beforenode', 'parent_checkpoint_id': 'feb6094b-48f2-4792-a06f-8801093d24fd', 'label': None, 'tags': [], 'branch': None}}})
+E         
+E       assert 1 == 0
+E        +  where 1 = <Process 19588>.returncode
+
+/tmp/sdk-workflow-candidate-fixture/test_workflow_host.py:21: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../../../../../../tmp/sdk-workflow-candidate-fixture/test_workflow_host.py::test_workflow_checkpoint_branch_owner_and_shape_boundary
+1 failed in 2.24s

@@ -1,0 +1,79 @@
+{
+  "status": "fresh-host-and-focused-gates-passed-not-public-delivery",
+  "sources": {
+    "echo-sdk-host/src/core_profile/facade/integrations.rs": "1ddd9ff366621eda03ced1f6089eeae80f151635dbb8d42cb6321d8a9623e3ab",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "33c327b50f513e1e7ca9afb0247ccc6e282204d9b865d62c757747c64fd27fae",
+    "echo-sdk-host/src/core_profile/facade/stream.rs": "ade4f9b8f7ccaab2566242f2f893af80418a076cd69aa2b1e360eed9aac7a44d",
+    "echo-sdk-host/src/core_profile/handles.rs": "8c66cab1884085c2d0591fd8d909623d0c3a07a588c21e0334a098a3e273dca1",
+    "echo-sdk-host/src/core_profile/extension_bridge.rs": "ed5f3446bdca72cdbc324ff0fe7fbbfdf2cdd6c4ea7430a6070aa2580732b0a6",
+    "echo-sdk-host/src/core_profile/facade/workflow.rs": "f6314db954f6ba83af44eba2987822e728859bd7089e33ed519bb5d98e04fcbe",
+    "echo-sdk-protocol/src/facade.rs": "5f0c44138d8a595145735c2c7b6b5e5bf836b6a615cb1487fa47b5373461a24b",
+    "echo-sdk-protocol/src/methods.rs": "9e9deb481eb7850a039fc930971a2f9363db6e7905490165121dd28a57641000",
+    "contracts/sdk/source-contract.json": "e689bb8fee5e8aabbf517264bb608f47a0bd19e6ef665b54b5d26ea2c248d394",
+    "contracts/sdk/facade-operation-catalog.json": "87fe186ea7812b82b064e999969837bd83edf6fede8a756725c819ce1c657bb6",
+    "sdks/shared/facade-operation-catalog.json": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+    ".cargo/config.toml": "65e87a54d615e7cc202c662b03dda190e770a1eb6474429db06c20922081ab6b",
+    "Cargo.lock": "a4f93d36245e4c6367b8050abef7d61e175f2c39e94b931a813bd06174eb01ae"
+  },
+  "source_contract_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6",
+  "sdk_head": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "framework_runtime_owner": "lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward",
+  "framework_channel_manager_sha256": "bab117d7d2284cd7632051a76bcae1109dc0d16a5199ac7b32126eff27db5e3d",
+  "gates": {
+    "host_library": {
+      "passed": 151,
+      "failed": 0,
+      "ignored": 0
+    },
+    "clippy_alltargets_allfeatures": 0,
+    "clippy_prod_panic4": 0,
+    "fmt_check": 0,
+    "host_all_feature_build": 0
+  },
+  "remaining": [
+    "three-language real forward consumer twelvegroups",
+    "independent review/fullfinalgates/published exact framework pin"
+  ],
+  "host": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-channel-forward-candidate-host",
+    "sha256": "0435e0b57fb26184dc98fe69f9d071826bee1c597e4182a89feead4dfef9f802"
+  },
+  "logs": [
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-stream-before.log",
+      "sha256": "84089637acb677e0623761e4fa581d942125202ca47a0ad9b701b771c54ab9f9"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-stream-before-v2.log",
+      "sha256": "dba14af85237579f2d4203325c31721ebbe79128022ac0802318e675b1af3249"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-stream-after.log",
+      "sha256": "f8913b8e62f7854c1094d12de7a2383eec79dc8feae5d4b9b6bdd0febaa897cb"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-hostlib-all.log",
+      "sha256": "d5336a47ae11ae9992d2b6ae768ef71af68514485095d0abb6836efae9d19b4c"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-hostlib-all-final.log",
+      "sha256": "ea7eab255420c55af69c9089223bcc81df2ae0a8030aa3638389ba33c17f541e"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-clippy-all.log",
+      "sha256": "b3f171f62d232e04d9966d1c2b5f433266a855abd3595163e2600e44467b9b8d"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-clippy-prod-panic.log",
+      "sha256": "7077814f22a5d22d53dbaae32283c824de4b1638b60d52b11266640be7637c4b"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-forward-host-build.log",
+      "sha256": "9d7784846d488975feac26720816f5d4fcc86d649e4da777fc3c9927647fb012"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/channel-handler-forward-candidate/channel-bridge-six-actual-response.log",
+      "sha256": "908a7a43e79ee88f669f23d723496cfc7f167c30dcc5f9423c3778f54da87914"
+    }
+  ]
+}

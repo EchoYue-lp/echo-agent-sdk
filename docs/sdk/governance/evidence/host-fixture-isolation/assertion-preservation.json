@@ -1,0 +1,14 @@
+{
+  "host.test.js": {
+    "assertions_preserved_exact_text": true,
+    "assertion_lines": 33,
+    "node_default_file_concurrency_preserved": true,
+    "scope": "only native Host config/state and optional memory path; cleanup after successful SDK close"
+  },
+  "family-route-host.test.js": {
+    "assertions_preserved_exact_text": true,
+    "assertion_lines": 3,
+    "node_default_file_concurrency_preserved": true,
+    "scope": "only native Host config/state and optional memory path; cleanup after successful SDK close"
+  }
+}

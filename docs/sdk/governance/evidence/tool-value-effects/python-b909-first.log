@@ -1,0 +1,5 @@
+Tool value/effects: {"families": ["files", "shell", "web", "database", "research"], "rows": 49, "native_calls": 48, "protected_file_count": 3, "external_observations": {"research-arxiv_search": "success", "research-semantic_scholar_search": "rpc_error", "research-pubmed_search": "success", "research-clinical_trials_search": "success"}, "residual": ["Shell default policy cannot directly execute script; native tail timeout has one observed process, descendant cleanup needs separate framework evidence", "Fixed official research search results are external observations, not a deterministic common result corpus", "WebSearch custom provider and Sandbox reverse stream have separate consumer tests"]} evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-tt49wcwh
+.SearchProvider true Agent exact title/url/snippet/failure: evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-search-rzbad8nr
+.Sandbox true process complete/cancel/close: evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/python-sandbox-1ck483rx
+.
+3 passed in 11.26s

@@ -1,0 +1,19 @@
+{
+  "label": "host-fixture-after",
+  "command": [
+    "node",
+    "--test",
+    "sdks/typescript/test/host.test.js",
+    "sdks/typescript/test/family-route-host.test.js"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-fixture-isolation/after-parallel.log",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 699,
+  "bytesWritten": 699,
+  "startedAt": "2026-10-13T19:51:29.780Z",
+  "finishedAt": "2026-10-13T19:51:41.286Z"
+}

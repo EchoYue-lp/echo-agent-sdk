@@ -1,0 +1,26 @@
+{
+  "python": {
+    "actual_rows": 45,
+    "typed_errors": 16,
+    "oldsemanticcases_green": 2,
+    "oracle_groups_passed": 9,
+    "actual_export_bytes_match": true,
+    "sentinel_preserved": true
+  },
+  "typescript": {
+    "actual_rows": 45,
+    "typed_errors": 16,
+    "oldsemanticcases_green": 2,
+    "oracle_groups_passed": 9,
+    "actual_export_bytes_match": true,
+    "sentinel_preserved": true
+  },
+  "java": {
+    "actual_rows": 45,
+    "typed_errors": 16,
+    "oldsemanticcases_green": 2,
+    "oracle_groups_passed": 9,
+    "actual_export_bytes_match": true,
+    "sentinel_preserved": true
+  }
+}

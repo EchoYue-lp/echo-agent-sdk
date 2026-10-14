@@ -1,0 +1,7 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-java-task-pause-5238770990115633241
+Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-java-task-cancel-1629866349589997242
+Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-java-task-subagent-await-11706056225733886284
+Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-java-task-crud-only-15915120539042749914

@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: official serialized writer: low successful ACK cannot commit pending terminal ACK
+ok 1 - official serialized writer: low successful ACK cannot commit pending terminal ACK
+  ---
+  duration_ms: 16.578042
+  type: 'test'
+  ...
+# Subtest: official writer 2 success then other ACK failure retains exact successful floor
+ok 2 - official writer 2 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 11.395792
+  type: 'test'
+  ...
+# Subtest: official writer 10 success then other ACK failure retains exact successful floor
+ok 3 - official writer 10 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 1.5725
+  type: 'test'
+  ...
+# Subtest: official failed send preserves queue prefix and does not accept a future ACK
+ok 4 - official failed send preserves queue prefix and does not accept a future ACK
+  ---
+  duration_ms: 3.042625
+  type: 'test'
+  ...
+# Subtest: official writer sends the same immutable stream identity that it commits
+ok 5 - official writer sends the same immutable stream identity that it commits
+  ---
+  duration_ms: 3.159
+  type: 'test'
+  ...
+# Subtest: official replay retention bridge commits only a successful returned cursor
+ok 6 - official replay retention bridge commits only a successful returned cursor
+  ---
+  duration_ms: 9.262791
+  type: 'test'
+  ...
+# Subtest: gap plus empty after-gap page never grants an absent ACK cursor
+ok 7 - gap plus empty after-gap page never grants an absent ACK cursor
+  ---
+  duration_ms: 1.658041
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage empty_gap_tail
+not ok 8 - public replay connected coverage empty_gap_tail
+  ---
+  duration_ms: 4.526
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:99:84'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    undefined !== 7n
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 7n
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:109:130)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: public replay connected coverage reverse_gap
+not ok 9 - public replay connected coverage reverse_gap
+  ---
+  duration_ms: 2.306292
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:99:84'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    undefined !== 8n
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 8n
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:109:130)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: public replay connected coverage reverse_plain
+not ok 10 - public replay connected coverage reverse_plain
+  ---
+  duration_ms: 2.580667
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:99:84'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    undefined !== 5n
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 5n
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:109:130)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: public replay connected coverage disconnected
+ok 11 - public replay connected coverage disconnected
+  ---
+  duration_ms: 3.904792
+  type: 'test'
+  ...
+# Subtest: successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+not ok 12 - successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+  ---
+  duration_ms: 6.272
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:114:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    3n !== undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: 3n
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ack-recovery-work/review-before-v3/sdks/typescript/test/ack-submission.test.js:123:97)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 8
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 285.956167

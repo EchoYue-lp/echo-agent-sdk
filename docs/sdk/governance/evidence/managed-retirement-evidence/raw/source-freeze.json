@@ -1,0 +1,53 @@
+{
+  "recorded_at_utc": "2026-10-13T09:59:23.355912+00:00",
+  "sdk_root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "sdk_head": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "framework_root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control",
+  "framework_head": "95ec66c6083a8feb17a1c28de0d01e1a24ca8a28",
+  "artifacts": [
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/managed_persistence_backend.py",
+      "sha256": "7f1a458cd9e81f0a338ff39483b38d46585e5e01363ac153a41127f8e3789eee"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/test_managed_retirement_backend.py",
+      "sha256": "5c04f59611c7d043af04d4dbbbf2d38faa8320dd07cd9004d90ef9a3a1d29247"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/test_managed_persistence_backend.py",
+      "sha256": "8de9ad316bdf7204e9a6e8fa0b7a09f18a5c79e0dfa6ae421993ec8fe7b1eb50"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_managed_retirement_host.py",
+      "sha256": "0fcd9f084513d3c5f66a4619549d9d257298626150072b148570d632d93167c6"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_managed_host.py",
+      "sha256": "75a76fb7a6516a3c86e13369dbd07ffc79e3be5aea728aa5598a80080fdfae08"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/managed-retirement-host.test.js",
+      "sha256": "40970705a96c3b2f35db94840f25e3034c94d85b74b134a4d7047df8f0448e59"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/ManagedRetirementHostTest.java",
+      "sha256": "6c103962c7f98f6b620923c082f9dc1b1792c99c7d39019f5999697ec00577db"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "sha256": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/state/mod.rs",
+      "sha256": "cac9b348d528361593d13675cd269b9ef8ff7d341f86de47eb884fb25644fc88"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/state/file.rs",
+      "sha256": "0b4d6949d9868f44664fe395fb6d51a5bdf82f7cab7ac78fbc8ddeb48000d5e9"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-owned-channel-host",
+      "sha256": "7bbd1569367b0b1004fbe1cbc537b6869a2bc685bb1ca14e63228b1746aee3b2"
+    }
+  ]
+}

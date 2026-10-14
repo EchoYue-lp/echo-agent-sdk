@@ -1,0 +1,34 @@
+   Compiling echo-sdk-protocol v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-protocol)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 49.90s
+     Running unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-e1cde4efcace38ae)
+
+running 9 tests
+test core_profile::facade::stream::cleanup_tests::cancelled_stream_close_retains_producer_until_collector_settles ... ok
+
+thread 'core_profile::facade::stream::cleanup_tests::cancel_after_registry_terminal_commit_is_not_accepted' (126758316) panicked at echo-sdk-host/src/core_profile/facade/stream.rs:1186:9:
+cancel cannot mutate a terminal that was committed first
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'core_profile::facade::stream::cleanup_tests::accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled' (126758315) panicked at echo-sdk-host/src/core_profile/facade/stream.rs:1148:9:
+assertion `left == right` failed: terminal must project the state committed under Registry's lock, not a pre-commit snapshot
+  left: "complete"
+ right: "cancelled"
+test core_profile::facade::stream::cleanup_tests::close_deadline_aborts_producer_and_collector_retains_abort_fact ... ok
+test core_profile::facade::stream::cleanup_tests::cancellation_wakes_initial_receive_while_external_source_keeps_sender ... ok
+test core_profile::facade::stream::cleanup_tests::producer_abort_yields_failed_terminal_not_complete ... ok
+test core_profile::facade::stream::cleanup_tests::cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence ... ok
+test core_profile::facade::stream::cleanup_tests::eof_waits_for_producer_failure_and_cancelled_pull_retries_same_cause ... ok
+test core_profile::facade::stream::cleanup_tests::producer_unwind_yields_failed_terminal_not_complete ... ok
+test core_profile::facade::stream::cleanup_tests::cancel_after_registry_terminal_commit_is_not_accepted ... FAILED
+test core_profile::facade::stream::cleanup_tests::accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled ... FAILED
+
+failures:
+
+failures:
+    core_profile::facade::stream::cleanup_tests::accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled
+    core_profile::facade::stream::cleanup_tests::cancel_after_registry_terminal_commit_is_not_accepted
+
+test result: FAILED. 7 passed; 2 failed; 0 ignored; 0 measured; 124 filtered out; finished in 0.18s
+
+error: test failed, to rerun pass `-p echo-sdk-host --lib`

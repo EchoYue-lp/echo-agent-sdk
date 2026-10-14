@@ -1,0 +1,221 @@
+{
+  "scope": "actual missing path declaration inspection; not runtime verification",
+  "paths": [
+    {
+      "path": "contracts/sdk/accepted-facade-operation-catalog.json",
+      "sha256": "ecca20dc7eb2921b76bb9db23c45fbc4dab27eb510f2d80f4fdd6d76ab321cc0",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/facade-operation-catalog.json",
+      "sha256": "89c0cb64237cd1550147ce2732021cfe7b7ff88a48a2278bd8ee154cfeac6037",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/delivery-complete-claim-valid.json",
+      "sha256": "6c9a50bd11bf18bc1b50962212c519ffa81fa8f0004fb3c115a77d6bfab2ce8d",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/delivery-id-only-claim-invalid.json",
+      "sha256": "07cccd34df6d82256766af6d3c76a5e61a905cd861291c235c6757d3f5cb3d32",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/extension-callback-interrupted-canonical-id-valid.json",
+      "sha256": "242eefb636718086e3032527387eb0f8c56ac990e432af67bc3a9eded5afba67",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/extension-factory-instance-origin-valid.json",
+      "sha256": "fe38c62962ac25f371bbe6016d16ff43774b64793adcd4060b747e872658fb15",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/factory-create-missing-instance-invalid.json",
+      "sha256": "230c3f12d8b45211c7f4aa3309fa2815241cbc03a9eeefa44a059cc713375296",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/factory-create-reserved-instance-valid.json",
+      "sha256": "3c5f35cb430bdc10016f9fb7e9415f64604443df9205115ba9b727897dd6d900",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/managed-deadline-context-i64-valid.json",
+      "sha256": "4d751d982d361bd948214679859f11a9acfb4a92804f9a725aa7bcb4dbbe9b51",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/managed-deadline-context-number-invalid.json",
+      "sha256": "92d494b97bd5135639e3ab2b327361e6ab45828eb6ba0de48060886d4baa5232",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/managed-projection-authority-u64-valid.json",
+      "sha256": "3b91f7e32dde84d8b7d062fcdecc8d0ba67f41e2dbf8da9fba8e74ee13df6060",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/task-execution-claim-result-null-valid.json",
+      "sha256": "e12da1e3feb76e3f3bd0dcc76a58131e76f910ea56a36061698396a6132715c4",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/task-execution-unsafe-claim-revision-invalid.json",
+      "sha256": "dc74354c1916be5dd5abba0f5d2fd7f950bf37572504b65517e2c0c09d685ba5",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/task-store-execution-cas-opt-in-valid.json",
+      "sha256": "ca2d4bcab68b1277eb187aad3a47115b592150325e68818ddc1da9f777e8caa1",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/task-store-execution-cas-string-invalid.json",
+      "sha256": "770f85d1c796c93ef08d6788d8c929f103fa02fc98902c891746e1e0af4b1646",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/tool-result-authoritative-effects-valid.json",
+      "sha256": "13988b247e2c2d03dc1772e433e4a1ed107aac5de30e358a10fe4ccf099e183e",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/tool-result-unknown-effect-invalid.json",
+      "sha256": "1e32046b745e51cbf486676902ba87a3716e2a1c6fbfffd24247a068473679fc",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/fixtures/extension/v1/transcript-projection-settlement-observation-valid.json",
+      "sha256": "edc7b5f23da6acfa8fc79bd685c25610055e7498aa4ca109bf7e54a00880a31e",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "contracts/sdk/schema/echo-agent-extension-v1.schema.json",
+      "sha256": "df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61",
+      "role": "protocol fixture/schema",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "docs/sdk/governance/evidence/sdk-parent-driver-20261013/current-production-observation.json",
+      "sha256": "0c866683cd68f5cff78c5c6170eb25df646a6d994526898b806066fd5f509c01",
+      "role": "source observation receipt",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "echo-sdk-protocol/tests/extension_contract.rs",
+      "sha256": "e73076c8b7e2a12b47c0f8bfdc10729c2bdc8a9311661f0a94712fe053beafbf",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/WorkflowCheckpointHostTest.java",
+      "sha256": "ca55760361fc12cdab5769a3c1bae6697cc0dd8fda9f183c3e641e60a90457ad",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/protocol_host_proxy.py",
+      "sha256": "e3f76136a9e784b775548e74ed49c3c7f3693c7173db0f1c8aeac4773e0cccb8",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/test_ack_submission.py",
+      "sha256": "91f081f4c0780c5569bf30a7abf2a9053348993c011e1b73a342d12e89a6cc81",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/test_client_close_callbacks.py",
+      "sha256": "533da5a10bb886915584b654a3175276443b1c162606a0e6866f4abca8ddfb8d",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/test_factory_host.py",
+      "sha256": "e7ffc2ccc9ffcf98930d24fb0bb781090f6533873639a0d2301411c343f9c96b",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/test_managed_host.py",
+      "sha256": "75a76fb7a6516a3c86e13369dbd07ffc79e3be5aea728aa5598a80080fdfae08",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/test_managed_values.py",
+      "sha256": "5fe04de73e27dd23273e60400bcc29f41f676d5ddffb21c9d669351655ca3dee",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/test_protocol_host.py",
+      "sha256": "bb6345a14cf550523554c414185aeb4bd75bd42c8714484f09106edec9da54fe",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/python/tests/test_workflow_checkpoint_host.py",
+      "sha256": "823ed4d54c43cfad181dd771d4badd432ded29cec994eea4b9da4f8ccc204663",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/shared/testing/gap_ack_host_proxy.py",
+      "sha256": "66ecb3feb5099394ef52a37c84a1df9baa260699a6fa7336f3e2a052603889c5",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/shared/testing/lsp_diagnostic_server.py",
+      "sha256": "3e0ebc71165d9f180ccd4f42c887f135216b3d2b5e45fc00a500534d0e3f3886",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/shared/testing/lsp_fault_server.py",
+      "sha256": "f34261346b786812b0fd7ea0d8042aae009d7cdc801da2c438dd47671bf64d10",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/shared/testing/parallel_session_fixture.py",
+      "sha256": "55e8e20b181d23433bbdc8dec9e54eaf66d5cfac9a5dce574dda0937730603cd",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/shared/testing/test_managed_persistence_backend.py",
+      "sha256": "8de9ad316bdf7204e9a6e8fa0b7a09f18a5c79e0dfa6ae421993ec8fe7b1eb50",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    },
+    {
+      "path": "sdks/shared/testing/workflow_checkpoint_fixture.py",
+      "sha256": "2f3f9c9cdd5e5ece1e9f99e520d2d321ef01f396faffbbe7150a89167fe77cb4",
+      "role": "consumer/test/fixture",
+      "runtime_claim": "none; relevant original runtime receipts stay bounded"
+    }
+  ]
+}

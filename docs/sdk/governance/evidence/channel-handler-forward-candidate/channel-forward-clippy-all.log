@@ -1,0 +1,52 @@
+    Checking tokio-util v0.7.19
+    Checking tempfile v3.27.0
+    Checking native-tls v0.2.18
+    Checking tokio-native-tls v0.3.1
+    Checking h2 v0.4.16
+    Checking tower v0.4.13
+    Checking tungstenite v0.24.0
+    Checking tokio-tungstenite v0.24.0
+    Checking echo-sdk-protocol v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-protocol)
+    Checking hyper v1.11.0
+    Checking hyper-util v0.1.20
+    Checking hyper-tls v0.6.0
+    Checking hyper-rustls v0.27.9
+    Checking reqwest v0.12.28
+    Checking object_store v0.13.2
+    Checking polars-error v0.55.2
+    Checking polars-config v0.55.2
+    Checking polars-utils v0.55.2
+    Checking polars-schema v0.55.2
+    Checking polars-buffer v0.55.2
+    Checking polars-arrow v0.55.2
+    Checking polars-async v0.55.2
+    Checking echo_core v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-core)
+    Checking polars-compute v0.55.2
+    Checking polars-dtype v0.55.2
+    Checking polars-row v0.55.2
+    Checking polars-core v0.55.2
+    Checking polars-json v0.55.2
+    Checking polars-parquet v0.55.2
+    Checking axum v0.7.9
+    Checking polars-ops v0.55.2
+    Checking hyper-timeout v0.5.2
+    Checking tonic v0.12.3
+    Checking opentelemetry-proto v0.27.0
+    Checking polars-time v0.55.2
+    Checking echo_state v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-state)
+    Checking polars-io v0.55.2
+    Checking polars-plan v0.55.2
+    Checking polars-ooc v0.55.2
+    Checking echo_orchestration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-orchestration)
+    Checking polars-expr v0.55.2
+    Checking opentelemetry-otlp v0.27.0
+    Checking echo_integration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-integration)
+    Checking polars-mem-engine v0.55.2
+    Checking polars-stream v0.55.2
+    Checking polars-lazy v0.55.2
+    Checking polars v0.55.2
+    Checking echo_tools v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-tools)
+    Checking echo_execution v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward/echo-execution)
+    Checking echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/channel-handler-forward)
+    Checking echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `dev` profile [unoptimized] target(s) in 1m 02s

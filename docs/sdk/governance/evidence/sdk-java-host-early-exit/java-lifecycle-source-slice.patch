@@ -1,0 +1,147 @@
+--- before/EchoAgentClient.java
++++ after/EchoAgentClient.java
+@@ -28,6 +28,49 @@
+ /** Source-built ACP v1 client. The official ACP Java transport owns JSON-RPC and stdio. */
+ public final class EchoAgentClient implements AutoCloseable {
+     private static final TypeRef<JsonNode> JSON_NODE = new TypeRef<>() {};
++
++    /** Observe the official transport's original Process without changing its I/O ownership. */
++    private static final class OwnedStdioTransport extends StdioAcpClientTransport {
++        private final CompletableFuture<Throwable> failure = new CompletableFuture<>();
++        private final java.util.concurrent.atomic.AtomicBoolean watching = new java.util.concurrent.atomic.AtomicBoolean();
++        private final java.util.concurrent.atomic.AtomicBoolean expectedClose = new java.util.concurrent.atomic.AtomicBoolean();
++        private final java.util.concurrent.atomic.AtomicReference<Throwable> observedExit = new java.util.concurrent.atomic.AtomicReference<>();
++
++        OwnedStdioTransport(AgentParameters parameters, AcpJsonMapper mapper) { super(parameters, mapper); }
++
++        @Override public Mono<Void> connect(Function<Mono<AcpSchema.JSONRPCMessage>,Mono<AcpSchema.JSONRPCMessage>> handler) {
++            return super.connect(handler)
++                    .doOnError(this::failed)
++                    .doOnSuccess(ignored -> {
++                        if(watching.compareAndSet(false,true)) {
++                            // One wait for this actual child runs off the caller/UI thread.
++                            // The official transport owns the Process and all stdio cleanup.
++                            Mono.fromRunnable(this::awaitForExit)
++                                    .subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic())
++                                    .subscribe(unused -> {}, this::failed, () -> failed(new IllegalStateException("Host process exited before the ACP connection closed")));
++                        }
++                    });
++        }
++
++        private void failed(Throwable error) {
++            observedExit.compareAndSet(null,error);
++            if(!expectedClose.get())failure.complete(observedExit.get()); // Keep the first observed cause.
++        }
++
++        void expectClose() { expectedClose.set(true); }
++        void closeFailed() {
++            expectedClose.set(false);
++            var cause=observedExit.get();
++            if(cause!=null)failure.complete(cause);
++        }
++
++        <T> Mono<T> untilExit(Mono<T> response, String operation) {
++            Mono<T> exited = Mono.fromFuture(failure,true).flatMap(error -> Mono.error(new EchoAgentException(
++                    "transport_error", "Host transport ended: " + (error.getMessage()==null?error.getClass().getSimpleName():error.getMessage()),
++                    "never", operation, null)));
++            return Mono.firstWithSignal(response,exited);
++        }
++    }
+ 
+     private final AcpClientSession session;
+     private final AcpClientTransport transport;
+@@ -65,6 +108,18 @@
+         this.session = session;
+         this.transport=transport;
+         this.catalog = catalog;
++        if(transport instanceof OwnedStdioTransport owned) {
++            owned.failure.thenAccept(error->{
++                var failure=new EchoAgentException("transport_error","Host process exited before ACP transport cleanup completed","never",null,null);
++                invocationCancellations.values().forEach(ExtensionCancellation::cancel);
++                invocationCancellations.clear();extensionStreamRoutes.clear();
++                failEventPublishers(failure);updatePublishers.values().forEach(publisher->publisher.fail(failure));
++                // Actual child exit ends this local transport. Dismiss original
++                // pending RPC slots off the caller thread after exit signalling.
++                Mono.fromRunnable(session::close).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic())
++                        .subscribe(ignored->{},ignored->{});
++            });
++        }
+     }
+ 
+     public static CompletionStage<EchoAgentClient> spawn(
+@@ -93,7 +148,7 @@
+                     .args(args == null ? List.of() : args);
+             if (environment != null && !environment.isEmpty()) parameters.env(environment);
+             AcpJsonMapper mapper = AcpJsonMapper.createDefault();
+-            StdioAcpClientTransport transport = new StdioAcpClientTransport(parameters.build(), mapper);
++            OwnedStdioTransport transport = new OwnedStdioTransport(parameters.build(), mapper);
+             var requestHandlers = new ConcurrentHashMap<String, AcpClientSession.RequestHandler<?>>();
+             var notificationHandlers = new ConcurrentHashMap<String, AcpClientSession.NotificationHandler>();
+             FacadeCatalog catalog = new FacadeCatalog(catalogPath, digestPath);
+@@ -176,9 +231,8 @@
+             var initialize = new AcpSchema.InitializeRequest(
+                     1, capabilities,
+                     new AcpSchema.Implementation("echo-agent-sdk-java", "0.1.0"), Map.of());
+-            return session.sendRequest("initialize", initialize, JSON_NODE)
+-                    .toFuture()
+-                    .thenApply(result -> {
++            var initializeSubmission=transport.untilExit(session.sendRequest("initialize", initialize, JSON_NODE), "initialize").toFuture();
++            var initialization=initializeSubmission.thenApply(result -> {
+                         if (!result.path("protocolVersion").isIntegralNumber() || result.path("protocolVersion").intValue() != 1) throw new EchoAgentException("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize", result);
+                         JsonNode advertised = result.path("agentCapabilities")
+                                 .path("_meta").path("echo_agent");
+@@ -198,9 +252,18 @@
+                         validateCapability(advertised, requiredFeatures, requiredCapabilities);
+                         client.capability = advertised;
+                         return client;
+-                    }).exceptionallyCompose(error->CompletableFuture.failedFuture(standardFailure(error,"initialize"))).whenComplete((value, error) -> {
+-                        if (error != null) client.closeAsync();
+-                    });
++                    }).exceptionallyCompose(error->CompletableFuture.failedFuture(standardFailure(error,"initialize")));
++            // The handshake observer owns cleanup even when its caller cancels
++            // only the returned wait. The same official child is closed once.
++            var result=new CompletableFuture<EchoAgentClient>();
++            initialization.whenComplete((value,error)->{
++                if(error!=null){client.closeAsync();result.completeExceptionally(error);}
++                else if(!result.complete(value))client.closeAsync();
++            });
++            result.whenComplete((value,error)->{
++                if(result.isCancelled()){client.closeAsync();initializeSubmission.cancel(true);}
++            });
++            return result;
+         } catch (IOException | RuntimeException error) {
+             return CompletableFuture.failedFuture(new EchoAgentException(
+                     "transport_error", error.getMessage(), "never", null, null));
+@@ -546,7 +609,9 @@
+                     "host_exited", "ACP connection is closed", "never", method, null));
+         }
+         try {
+-            return session.sendRequest(method, params, JSON_NODE).toFuture()
++            Mono<JsonNode> response=session.sendRequest(method, params, JSON_NODE);
++            if(transport instanceof OwnedStdioTransport owned)response=owned.untilExit(response,method);
++            return response.toFuture()
+                     .handle((result, error) -> {
+                         if (error != null) throw EchoAgentException.from(error, method);
+                         return result;
+@@ -1175,6 +1240,9 @@
+                     factoryConstructionJobs.clear();pendingFactoryConstruction.clear();
+                     extensionHandlers.clear();extensionRegistrations.clear();
+                     factoryChildren.clear();closedFactoryChildren.clear();
++                    // Expected exit begins only when original transport close
++                    // starts, after all cleanup prerequisites actually succeed.
++                    if(transport instanceof OwnedStdioTransport owned)owned.expectClose();
+                     // Session owns ACP draining; the official transport owns
+                     // its native process. Neither decides factory cleanup facts.
+                     return session.closeGracefully().timeout(Duration.ofSeconds(5))
+@@ -1184,7 +1252,10 @@
+                 .toFuture().whenComplete((ignored,error)->{
+                     synchronized(this){
+                         if(error==null){invocationCancellations.clear();extensionStreamRoutes.clear();closed=true;closing=false;}
+-                        else closeStage=null;
++                        else {
++                            closeStage=null;
++                            if(transport instanceof OwnedStdioTransport owned)owned.closeFailed();
++                        }
+                     }
+                     if(error==null)result.complete(null);
+                     else result.completeExceptionally(error);

@@ -1,0 +1,42 @@
+{
+  "classification": "actual temporary consumer; not final189ff3adjacent fixes/parentfullgates",
+  "host_sha256": "64c7b4966e26acd573ddc440297e443518fc4afef60efbd39aac94da24519fda",
+  "languages": {
+    "python": {
+      "actual_rows": 45,
+      "typed_errors": 16,
+      "oldsemanticcases_green": 2,
+      "oracle_groups_passed": 9,
+      "actual_export_bytes_match": true,
+      "sentinel_preserved": true
+    },
+    "typescript": {
+      "actual_rows": 45,
+      "typed_errors": 16,
+      "oldsemanticcases_green": 2,
+      "oracle_groups_passed": 9,
+      "actual_export_bytes_match": true,
+      "sentinel_preserved": true
+    },
+    "java": {
+      "actual_rows": 45,
+      "typed_errors": 16,
+      "oldsemanticcases_green": 2,
+      "oracle_groups_passed": 9,
+      "actual_export_bytes_match": true,
+      "sentinel_preserved": true
+    }
+  },
+  "comparison": [
+    "exactorderedoperations/arguments/results/errors includingcode/retryable/method/handle/details",
+    "all ToolResult flags/output schema/fieldvalues",
+    "actualUTF8textandJSONexports",
+    "same unchanged sentinelbytes"
+  ],
+  "normalization": [
+    "isolatedtemporaryroot",
+    "WireValue map association ordering",
+    "Polars grouped row/pivotcolumn ordering without promised tieorder"
+  ],
+  "omission_in_comparison": "ToolResult rawdata separately checked against parsedoutput by nativeoracle before onlysemanticroworderingnormalize; original rawdata remains archived"
+}

@@ -1,0 +1,3 @@
+Tool behavior verified: {"capability_families": 6, "native_calls": 29, "failure_paths": 10, "reported_effects": "empty", "actual_file_and_ref_effects_checked": true, "uncovered": ["fixed-official-endpoint scholarly search providers", "other accepted media parsers/data transforms", "runtime effect-ledger interpretation"]}
+.
+1 passed in 1.07s

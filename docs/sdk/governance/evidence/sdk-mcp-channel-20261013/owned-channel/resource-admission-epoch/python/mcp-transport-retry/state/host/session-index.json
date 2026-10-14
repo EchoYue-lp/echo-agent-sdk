@@ -1,0 +1,11 @@
+[
+  {
+    "session_id": "sess_08630100-f48b-47f4-944a-2fc58876d38d",
+    "agent_handle_id": "agent-2",
+    "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+    "cwd": {
+      "encoding": "utf8",
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python"
+    }
+  }
+]

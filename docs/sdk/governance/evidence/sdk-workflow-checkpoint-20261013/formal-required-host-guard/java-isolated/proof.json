@@ -1,0 +1,21 @@
+{
+  "source": "/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/WorkflowCheckpointHostTest.java",
+  "source_sha256": "ca55760361fc12cdab5769a3c1bae6697cc0dd8fda9f183c3e641e60a90457ad",
+  "scope": "required-Host guard only, isolated javac/test-method invocation; no Maven/shared target writes and no Host started",
+  "results": [
+    {
+      "mode": "absent",
+      "exit_code": 1,
+      "explicit_assertion": true,
+      "skipped": false,
+      "log_sha256": "d15a61c533095c0a902b4203773d320d8fbc58fb4b791715ce559d7281c897c5"
+    },
+    {
+      "mode": "blank",
+      "exit_code": 1,
+      "explicit_assertion": true,
+      "skipped": false,
+      "log_sha256": "d15a61c533095c0a902b4203773d320d8fbc58fb4b791715ce559d7281c897c5"
+    }
+  ]
+}

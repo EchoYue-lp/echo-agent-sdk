@@ -1,0 +1,16 @@
+    Checking tempfile v3.27.0
+    Checking hyper-util v0.1.20
+    Checking native-tls v0.2.18
+    Checking tokio-native-tls v0.3.1
+    Checking echo-sdk-protocol v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-protocol)
+    Checking hyper-tls v0.6.0
+    Checking reqwest v0.12.28
+    Checking echo_core v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+    Checking echo_state v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+    Checking echo_orchestration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+    Checking echo_execution v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+    Checking echo_integration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+    Checking echo_tools v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+    Checking echo_agent v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=b9099558620f5f9693c736c85c214db14f62a8cb#b9099558)
+    Checking echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `dev` profile [unoptimized] target(s) in 16.05s

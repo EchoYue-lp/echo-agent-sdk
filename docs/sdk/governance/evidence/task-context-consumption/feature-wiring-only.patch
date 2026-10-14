@@ -1,0 +1,141 @@
+--- before/echo-sdk-host/Cargo.toml
++++ current/echo-sdk-host/Cargo.toml
+@@ -139,6 +139,10 @@
+ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+ 
+ [dev-dependencies]
++# Standard runtime ownership tests also exercise streams/cancellation when the
++# optional SDK core profile is disabled; production feature wiring is unchanged.
++futures = "0.3"
++tokio-util = { version = "0.7", features = ["compat"] }
+ static_assertions = "1.1.0"
+ tempfile = "3.27.0"
+ tokio = { version = "1.53.1", features = ["io-util", "net", "process", "sync", "time"] }
+--- before/echo-sdk-host/src/core_profile/handles.rs
++++ current/echo-sdk-host/src/core_profile/handles.rs
+@@ -723,6 +723,7 @@
+     /// Reserve the child address before dispatching the remote factory.
+     /// It consumes the same handle/extension quota and retains parent cleanup
+     /// ownership; only bridge close may resolve an uncommitted reservation.
++    #[cfg(any(feature = "sdk-extension-bridge", test))]
+     pub(crate) fn reserve_factory_instance(
+         &self,
+         limits: ExtensionRegistrationLimits,
+@@ -756,6 +757,7 @@
+ 
+     /// Commit exactly the reserved identity; failure leaves the reservation
+     /// issued so remote close can still address its partially created child.
++    #[cfg(any(feature = "sdk-extension-bridge", test))]
+     pub(crate) fn complete_factory_instance_reserved(
+         &self,
+         limits: ExtensionRegistrationLimits,
+@@ -1325,6 +1327,7 @@
+         found.ok_or_else(|| self.resolve_error(handle, HandleKind::FacadeResource, operation))
+     }
+ 
++    #[cfg(all(feature = "sdk-facade-adapters", feature = "framework-mcp"))]
+     pub(crate) fn commit_mcp_preparation(&self, handle: &WireHandle) -> Result<(), EchoSdkError> {
+         const OPERATION: &str = "_echo_agent/mcp/op";
+         self.check_shape_and_generation(handle, HandleKind::FacadeResource, OPERATION)?;
+@@ -1744,6 +1747,7 @@
+             .collect()
+     }
+ 
++    #[cfg(feature = "sdk-facade-adapters")]
+     pub fn close_facade_resources_of(&self, owner: &str) -> Vec<String> {
+         let mut inner = self.lock();
+         let owned: Vec<String> = inner
+--- before/echo-sdk-host/src/core_profile/wire.rs
++++ current/echo-sdk-host/src/core_profile/wire.rs
+@@ -20,9 +20,14 @@
+ use echo_sdk_protocol::handle::{HandleKind, WireHandle};
+ use echo_sdk_protocol::methods::{
+     LlmMessageWire, LlmReasoningBlockWire, RunReceiptWire, RunStatus, RunTerminal, ToolEffectWire,
+-    ToolFailureWire, ToolOutputArtifactRefWire, ToolResultContentWire, ToolResultKindWire,
+-    ToolResultWire,
++    ToolResultContentWire, ToolResultKindWire, ToolResultWire,
+ };
++#[cfg(any(
++    feature = "sdk-extension-bridge",
++    feature = "sdk-facade-adapters",
++    test
++))]
++use echo_sdk_protocol::methods::{ToolFailureWire, ToolOutputArtifactRefWire};
+ use echo_sdk_protocol::scalar::{WireI64, WireNonZeroU64, WireTimestamp, WireU64, WireValue};
+ 
+ /// Wire handle of a live object issued by this Host generation.
+@@ -269,6 +274,11 @@
+ }
+ 
+ /// Share one complete tool projection across core and reverse-extension paths.
++#[cfg(any(
++    feature = "sdk-extension-bridge",
++    feature = "sdk-facade-adapters",
++    test
++))]
+ pub(crate) fn tool_result_to_wire(
+     result: &ToolResult,
+ ) -> std::result::Result<ToolResultWire, String> {
+@@ -1125,7 +1135,10 @@
+ /// Explicit field projections for the framework's managed persistence facts.
+ /// The adapter transports requests and receipts; it never computes CAS,
+ /// fencing, retries or receipt settlement itself.
+-#[cfg(feature = "sdk-facade-adapters")]
++#[cfg(all(
++    feature = "sdk-facade-adapters",
++    any(feature = "sdk-extension-bridge", test)
++))]
+ pub(crate) mod managed {
+     use echo_agent::tasks;
+     use echo_agent::{memory, state};
+--- before/echo-sdk-host/src/core_profile/facade/source_operations.rs
++++ current/echo-sdk-host/src/core_profile/facade/source_operations.rs
+@@ -7621,6 +7621,7 @@
+ // Keep source-operation futures on private capability boundaries so an
+ // unrelated lightweight operation does not inherit every analysis future's
+ // stack frame. All addressing and authority remain in the original dispatcher.
++#[cfg(any(feature = "framework-eval", feature = "framework-improve"))]
+ fn dispatch_analysis_source<'a>(
+     state: &'a CoreProfileState,
+     _handles: &'a HandleRegistry,
+--- before/echo-sdk-host/src/core_profile/facade/stream.rs
++++ current/echo-sdk-host/src/core_profile/facade/stream.rs
+@@ -44,6 +44,7 @@
+     pub handle: WireHandle,
+     pub sender: tokio::sync::mpsc::Sender<FacadeStreamItem>,
+     /// Semantic cancellation shared with the registry's state commit.
++    #[cfg(any(feature = "framework-channels", test))]
+     pub cancel: tokio_util::sync::CancellationToken,
+     /// Local producer shutdown also wakes on parent cancellation, while
+     /// cleanup after a source failure never rewrites its terminal cause.
+@@ -85,6 +86,7 @@
+ 
+     /// Channel producers retain a framework callback/driver owner after a
+     /// local task abort; only their actual cooperative exit proves cleanup.
++    #[cfg(any(feature = "framework-channels", test))]
+     pub fn open_cooperative(
+         &self,
+         handles: &HandleRegistry,
+@@ -172,6 +174,7 @@
+         Ok(FacadeStreamProducer {
+             handle,
+             sender,
++            #[cfg(any(feature = "framework-channels", test))]
+             cancel,
+             cleanup,
+             record,
+--- before/echo-sdk-host/tests/core_profile_e2e.rs
++++ current/echo-sdk-host/tests/core_profile_e2e.rs
+@@ -36,10 +36,8 @@
+     RunCancelRequest, TaskCreateRequest, TaskListRequest, TaskUpdateRequest,
+ };
+ #[cfg(feature = "sdk-facade-adapters")]
+-use echo_sdk_protocol::scalar::{
+-    WireBytes, WireDuration, WireField, WireMapEntry, WirePath, WireValue,
+-};
+-use echo_sdk_protocol::scalar::{WireNonZeroU64, WireU64};
++use echo_sdk_protocol::scalar::{WireBytes, WireDuration, WireField, WireMapEntry, WireValue};
++use echo_sdk_protocol::scalar::{WireNonZeroU64, WirePath, WireU64};
+ use std::fs::OpenOptions;
+ use std::path::{Path, PathBuf};
+ use std::process::Stdio;

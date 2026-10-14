@@ -1,0 +1,7 @@
+{
+  "provenance": "completed independent reviewer message relayed by parent in current goal; not invented tool report",
+  "reviewer": "sdk_capability_acceptance_audit",
+  "conclusion": "bounded PASS/action0",
+  "scope": "sdk_capability_acceptance_audit原独立limitedpass0，由parent回收：0744冻结输入，26raw/19source SHA核；18LLMcallback/finally、3cancel，15Workflowfinally/6producer、3graphguard0、剩7Workflowverbs真实可达。另发现Python typed AgentComponentCall丢stream，独立SpecificFinding保open，不以raw回调绿代typedhelper。",
+  "does_not_claim": "fresh new audit execution or whole currentSDK/finalpin/main"
+}

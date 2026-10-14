@@ -1,0 +1,30 @@
+{
+  "classification": "SDK full local Rust candidate gates on temporary canonical framework combination; not published-pin/independent-build/main proof",
+  "binary": "/tmp/echo-sdk-governance-parent-driver-host",
+  "binary_sha256": "6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5",
+  "source_digest": "07b6916a733a11a7bdf967d330c88d895120a81be4afb420df4591576601bfef",
+  "manifest": "/tmp/sdk-parent-driver-local-gates/manifest.json",
+  "manifest_sha256": "ce6ff4c33cac7d3e58069b2b234754454395261fc5d20a234acc421e30677349",
+  "summary": {
+    "passed": 418,
+    "failed": 0,
+    "ignored": 0,
+    "targets": 13
+  },
+  "actual_host_groups": {
+    "lib": 136,
+    "core": 31,
+    "bridge": 34,
+    "facade": 12,
+    "stdio": 4,
+    "tool_governance": 1
+  },
+  "production_source_changed": false,
+  "test_helper_repair": "canonical-only accepted reconstruction; no source-contract/input JSON edit",
+  "check_config": 0,
+  "parent_driver_source": {
+    "runtime_executor": "c24e7e1b80e0356e5681542682f4bb584d31a6343b6bf23e17c4d56f66adcdaa",
+    "runtime_service": "4d85b9493ae1ae08b288f20a1fef939c36b9a852e9790aaee998fbf61aad8a5d"
+  },
+  "publication_complete": false
+}

@@ -1,0 +1,58 @@
+Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/managed-retirement/java-retirement-true-6726504679336659420
+Managed retirement evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/managed-retirement/java-retirement-false-12623095122615227479
+LSP diagnostics evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-diagnostics-3644414630290652526
+State/Trace/Delivery evidence delivery: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-delivery-18013392341683358838
+State/Trace/Delivery evidence state: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-state-4334562626796950580
+State/Trace/Delivery evidence trace: /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-trace-6482276727430013788
+Workflow evidence: Workflow shape observations: {"tuple-resume": {"outcome": "error", "code": "invalid_value", "after": {"id": "ef624ce0-1e06-47f1-9a61-a5dc31fa3708", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "6dcd84a1-360d-4ff5-89f3-baaf61a4bdb6", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"approved": true, "memo": "checkpoint 中文🙂", "context": {"optional": null, "list": ["a", "b"]}}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T05:08:25.656072+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}, "tuple-with-state": {"outcome": "error", "code": "invalid_value", "after": {"id": "fe836ab1-9598-4920-9774-d15bc24750c7", "graph_name": "shared-workflow-中文🙂", "workflow_run_id": "b4593798-8e66-44a1-ba7f-0d69f5c192dc", "graph_revision": "e6db5dd161cfd0205176c9bb4890c39c13e71f53e9ee360360ac774261096baa", "generation": "0", "resume_attempt_id": null, "current_node": "gate", "state_snapshot": {"values": {"context": {"optional": null, "list": ["a", "b"]}, "memo": "checkpoint 中文🙂", "approved": true}, "messages": [], "current_node": "start"}, "path": ["start"], "step_count": "1", "created_at": "2026-10-14T05:08:25.794118+08:00", "continuation": {"kind": "node"}, "interrupt_type": "beforenode", "parent_checkpoint_id": null, "label": null, "tags": [], "branch": null}}}
+{"rows": 48, "scope": "routing/checkpoint/decision/branch/state/owner/close/quota", "not_proved": ["cross-process MemoryStore persistence", "all 24 accepted workflow operations", "extension workflow callbacks and stream cancellation"]}
+
+Java actual memory/permission evidence rows 59 work /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-memory-permission-java-4429566036508477928
+Channel forward Java receipt: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/channel-forward/java-channel-forward-9015444122064342224/receipt.json
+late factory lifecycle evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-late-factory-11270550145520710411
+late factory lifecycle evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-late-factory-2097272347140498508
+Tool behavior verified: {"capability_families":6,"native_calls":29,"failure_paths":10,"reported_effects":"empty","actual_file_and_ref_effects_checked":true,"uncovered":["fixed-official-endpoint scholarly search providers","other accepted media parsers/data transforms","runtime effect-ledger interpretation"]}
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-pause-3248149924210323037
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-cancel-12760515191049004232
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-subagent-await-12940306556544954100
+Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-task-crud-only-9683824778622032572
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/java-topology-5676318599580566026
+{"group": "topology", "verified": true, "factory_created": 0, "factory_closed": 0, "rows": 18}
+
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/java-eval-9542934238231328870
+{"group": "eval", "verified": true, "factory_created": 3, "factory_closed": 3, "rows": 23}
+
+Analysis native evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/analysis-native/java-improve-14533640776394253282
+{"group": "improve", "verified": true, "factory_created": 12, "factory_closed": 12, "rows": 27}
+
+Tool value/effects: {"families": ["files", "shell", "web", "database", "research"], "rows": 49, "native_calls": 48, "protected_file_count": 3, "external_observations": {"research-arxiv_search": "success", "research-semantic_scholar_search": "rpc_error", "research-pubmed_search": "success", "research-clinical_trials_search": "success"}, "residual": ["Shell default policy cannot directly execute script; native tail timeout has one observed process, descendant cleanup needs separate framework evidence", "Fixed official research search results are external observations, not a deterministic common result corpus", "WebSearch custom provider and Sandbox reverse stream have separate consumer tests"]}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/java-4086097265717466547
+SearchProvider verified: {"provider_calls": 4, "success_calls": 1, "failure_attempts": 3, "title_url_snippet_exact": true, "canonical_agent_run_count": 2}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/java-search-13740562663250254340
+Sandbox verified: {"producer_processes": 3, "physically_joined": 3, "cancel_and_close_pending_invocation": 2, "post_answer_cancel": false}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/tool-value-effects/java-sandbox-9646500975173551435
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-workflow-4226090062232589784
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-workflow-4226090062232589784
+{"group": "workflow", "verified": true}
+
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-llm-16427551490016432041
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-llm-16427551490016432041
+{"group": "llm", "verified": true}
+
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-graph-7969909873656123498
+LLM/Workflow evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/llm-workflow-stream/java-graph-7969909873656123498
+{"group": "graph", "verified": true}
+
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-stdio-13075951940004241436
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-owned-reentry-4278917268553466051
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-normal-15103416353902382171
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-channels-retry-13433021960962873998
+MCP/channel evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-mcp-transport-retry-11084338565328007094
+LSP evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-lsp-16146052097439662676
+RAG/project-rules verified: {"calls": 32, "embedding_posts": 13, "ranked_chunks": 3, "proof": "Session-local memory; no durable restart guarantee"}
+ evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-16746823391693150335
+RAG/project-rules retained: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/rag-project-rules/java-16746823391693150335
+Computation verified: {"native_calls": 50, "typed_errors": 19, "oracle_groups": 9, "final_pivot_boundaries": 5, "protected_files": 8, "host_sha256": "8d81900442aaf97de4a4287a1cc9d11aae63b15f8f3b5a89b6811347806fdc10"}
+
+Java native public corpus 50 work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-current-preflight-tmp/sdk-computation-native-java-203714822101677394
+echo-agent Java SDK connected: agent-2

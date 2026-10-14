@@ -1,0 +1,38 @@
+TAP version 13
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-pause-O51UBG
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-cancel-lC09Qt
+# Subtest: exact Task pause preserves independent B/C
+ok 1 - exact Task pause preserves independent B/C
+  ---
+  duration_ms: 5778.674125
+  type: 'test'
+  ...
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-subagent-await-G62PnX
+# Subtest: exact Task cancel preserves independent B/C
+ok 2 - exact Task cancel preserves independent B/C
+  ---
+  duration_ms: 5397.475
+  type: 'test'
+  ...
+# Task evidence /var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-ts-task-crud-only-UTDD0a
+# Subtest: real Task/Subagent subagent-await
+ok 3 - real Task/Subagent subagent-await
+  ---
+  duration_ms: 5313.104792
+  type: 'test'
+  ...
+# Subtest: real Task/Subagent crud-only
+ok 4 - real Task/Subagent crud-only
+  ---
+  duration_ms: 5281.168708
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21890.611833

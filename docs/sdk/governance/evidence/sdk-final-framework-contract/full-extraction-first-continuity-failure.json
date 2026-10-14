@@ -1,0 +1,123 @@
+{
+  "frameworkRevision": "b9099558620f5f9693c736c85c214db14f62a8cb",
+  "toolchain": "nightly-2026-08-06",
+  "profileCount": 28,
+  "profiles": [
+    {
+      "profile": "default",
+      "rawPublicItems": 23552
+    },
+    {
+      "profile": "full",
+      "rawPublicItems": 36519
+    },
+    {
+      "profile": "feature:a2a",
+      "rawPublicItems": 23959
+    },
+    {
+      "profile": "feature:acp",
+      "rawPublicItems": 23776
+    },
+    {
+      "profile": "feature:channels",
+      "rawPublicItems": 24836
+    },
+    {
+      "profile": "feature:chart",
+      "rawPublicItems": 23555
+    },
+    {
+      "profile": "feature:content-guard",
+      "rawPublicItems": 23708
+    },
+    {
+      "profile": "feature:data",
+      "rawPublicItems": 23593
+    },
+    {
+      "profile": "feature:database",
+      "rawPublicItems": 23559
+    },
+    {
+      "profile": "feature:eval",
+      "rawPublicItems": 23862
+    },
+    {
+      "profile": "feature:files",
+      "rawPublicItems": 23690
+    },
+    {
+      "profile": "feature:git",
+      "rawPublicItems": 23597
+    },
+    {
+      "profile": "feature:human-loop",
+      "rawPublicItems": 25125
+    },
+    {
+      "profile": "feature:improve",
+      "rawPublicItems": 24069
+    },
+    {
+      "profile": "feature:lsp",
+      "rawPublicItems": 23976
+    },
+    {
+      "profile": "feature:mcp",
+      "rawPublicItems": 24918
+    },
+    {
+      "profile": "feature:media",
+      "rawPublicItems": 23607
+    },
+    {
+      "profile": "feature:project-rules",
+      "rawPublicItems": 23588
+    },
+    {
+      "profile": "feature:rag",
+      "rawPublicItems": 23565
+    },
+    {
+      "profile": "feature:research",
+      "rawPublicItems": 23896
+    },
+    {
+      "profile": "feature:shell",
+      "rawPublicItems": 23583
+    },
+    {
+      "profile": "feature:sqlite",
+      "rawPublicItems": 24431
+    },
+    {
+      "profile": "feature:statistics",
+      "rawPublicItems": 23563
+    },
+    {
+      "profile": "feature:subagent",
+      "rawPublicItems": 28501
+    },
+    {
+      "profile": "feature:telemetry",
+      "rawPublicItems": 23589
+    },
+    {
+      "profile": "feature:testing",
+      "rawPublicItems": 23744
+    },
+    {
+      "profile": "feature:topology",
+      "rawPublicItems": 23689
+    },
+    {
+      "profile": "feature:web",
+      "rawPublicItems": 23636
+    }
+  ],
+  "exitCode": 1,
+  "failure": "accepted source disappeared: echo_agent::agent::snapshot::AgentRunSnapshot::skill_curator (StructField)",
+  "artifactsWritten": false,
+  "logSha256": "66a681b912b91c36122cb774e75a2e8d6a0987fceab0a041560cc4cc92f184e9"
+}

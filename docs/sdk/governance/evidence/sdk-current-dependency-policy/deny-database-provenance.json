@@ -1,0 +1,8 @@
+{
+  "cache_path": "/Users/ls/.cargo/advisory-dbs/advisory-db-3157b0e258782691",
+  "revision": "6aed84668c23d7f535077a9fe918bf1fa0f6a5bc",
+  "matches_fresh_official_remote_HEAD": true,
+  "git_status": "",
+  "official_remote": "origin\thttps://github.com/RustSec/advisory-db (fetch)\norigin\thttps://github.com/RustSec/advisory-db (push)\n",
+  "advisory_markdown_count": 1310
+}

@@ -1,0 +1,89 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-external-timeout-oracle/fixture.before.py	2026-10-14 10:20:22
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-external-timeout-oracle/fixture.after.py	2026-10-14 10:21:12
+@@ -7,6 +7,7 @@
+ import hashlib
+ import json
+ import os
++import re
+ import sqlite3
+ import threading
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+@@ -341,8 +342,57 @@
+             return v
+         return {k: resolve(v, results) for k, v in value.items()}
+     return value
++
++
++_EXTERNAL_OPERATIONS = frozenset(
++    {
++        "arxiv_search",
++        "semantic_scholar_search",
++        "pubmed_search",
++        "clinical_trials_search",
++    }
++)
++_OFFICIAL_ACP_TIMEOUT = re.compile(
++    r"Did not observe any item or terminal signal within ([1-9][0-9]*)ms in 'source\(MonoDeferContextual\)' \(and no fallback has been configured\)"
++)
+ 
+ 
++def _verify_external_error(row, step):
++    """Classify the original bounded external observation, never arbitrary transport errors."""
++    assert (
++        step["expected"] == "external" and step["operation"] in _EXTERNAL_OPERATIONS
++    ), step
++    assert "result" not in row and isinstance(row.get("error"), dict), row
++    error = row["error"]
++    assert isinstance(error.get("message"), str) and error["message"], row
++    assert (
++        error.get("retryable") == "never"
++        and "handle" in error
++        and error["handle"] is None
++    ), row
++    if error.get("code") == "framework_error":
++        assert error.get("operation") == step["operation"], row
++        assert isinstance(error.get("details"), dict), row
++        fields = error["details"].get("fields")
++        assert isinstance(fields, list) and len(fields) == 4, row
++        assert {item["key"]: item["value"] for item in fields} == {
++            "framework_failure_category": "tool",
++            "framework_terminal_kind": "failed",
++            "framework_failure_code": "tool",
++            "framework_retryable": "false",
++        }, row
++        return "framework_error"
++    assert (
++        error.get("code") == "transport_error"
++        and error.get("operation") == "_echo_agent/research/op"
++    ), row
++    assert "details" in error and error["details"] is None, row
++    match = _OFFICIAL_ACP_TIMEOUT.fullmatch(error["message"])
++    assert match is not None, row
++    assert int(match.group(1)) == 30000, row
++    return "transport_timeout"
++
++
+ def verify(work, data):
+     rows = data["rows"]
+     expected = json.loads((work / "scenario.json").read_text())["rows"]
+@@ -375,10 +425,7 @@
+                 assert e["details"] is None, e
+         elif expectation == "external":
+             if "error" in row:
+-                assert (
+-                    row["error"]["message"]
+-                    and row["error"]["code"] == "framework_error"
+-                ), row
++                _verify_external_error(row, step)
+             else:
+                 assert isinstance(row["result"]["output"], str) and isinstance(
+                     row["result"]["success"], bool
+@@ -638,7 +685,7 @@
+         "protected_file_count": len(PROTECTED),
+         "external_observations": {
+             r["id"]: (
+-                "rpc_error"
++                _verify_external_error(r, r)
+                 if "error" in r
+                 else "success"
+                 if r["result"]["success"]

@@ -1,0 +1,13 @@
+{
+  "phase": "native-source-prepared-no-compatible-Host-executed",
+  "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "files": {
+    "sdks/shared/testing/channel_forward_scenarios.json": "9920c8b8ae82c3cda7d156c8971579b6ed52ec1e704ec24f09da381d596fdcd7",
+    "sdks/shared/testing/compare_channel_forward_results.py": "9f1eb0c8c6e3d7c956bd252703c7597a0bdc827097cd5f7540b22a9407e0a7c8",
+    "sdks/typescript/test/channel-handler-forward-host.test.js": "02b6235ce4c78f0dd599bd204c34cdc0f3c2194a2b47c197f2ce5613135898e5"
+  },
+  "reusedConfigurationFixture": {
+    "path": "sdks/shared/testing/mcp_channel_config_fixture.py",
+    "sha256": "e1d52385f7892a18dca897efa13eab6aa9fdaee27d414f4369ed78573ad500c1"
+  }
+}

@@ -1,0 +1,14 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+error[E0382]: borrow of partially moved value: `resource`
+    --> echo-sdk-host/src/core_profile/facade/integrations.rs:2915:35
+     |
+2908 |             generation: resource.generation,
+     |                         ------------------- value partially moved here
+...
+2915 |                 WireValue::Handle(resource.clone()),
+     |                                   ^^^^^^^^ value borrowed here after partial move
+     |
+     = note: partial move occurs because `resource.generation` has type `echo_sdk_protocol::scalar::WireU64`, which does not implement the `Copy` trait
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `echo-sdk-host` (lib test) due to 1 previous error

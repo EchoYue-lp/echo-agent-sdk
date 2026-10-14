@@ -1,0 +1,709 @@
+{
+  "base": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "actual_tracked_changed_production_count": 54,
+  "paths": [
+    {
+      "path": "echo-sdk-host/src/core_profile/events.rs",
+      "sha256": "e4ae808abb8f916a7318faec3643c5a56cd1bbd143e9e88cb447e0cf7127f7de",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! is admission-controlled — the durable journal is the authority, not the",
+        "//! outgoing queue. A single event whose serialized size exceeds the live",
+        ".data(\"replay stream identity or generation mismatch\"));",
+        "\"ACK stream identity or generation mismatch\".to_string(),",
+        "// the recovery authority; failed publication advances no cursor.",
+        "generation: echo_sdk_protocol::scalar::WireU64::from_u64(1),",
+        "generation: echo_sdk_protocol::scalar::WireU64::from_u64(7),"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/extension_bridge.rs",
+      "sha256": "862c7cd6f9d6657cc517c4d5dc0aa5a18717fb49546c9d98f2c3ca5279d2c560",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//!   lease from the shared [`ExtensionInvocationAuthority`], send one typed",
+        "//!   and settle exactly once. Deadline, cancellation and disconnect all",
+        "//! arguments to the canonical per-operation payload selected by",
+        "use echo_agent::agent::{Agent, AgentEvent, CancellationToken};",
+        "ConversationProjectionCapabilityWire, PersistenceCallCapabilityWire,",
+        "PersistenceCallContextWire, RuntimeStateCapabilityWire,",
+        "ExtensionStreamEvent::Failed { .. } | ExtensionStreamEvent::Cancelled { .. } => None,",
+        "self.terminate(|sequence| ExtensionStreamEvent::Cancelled {"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/integrations.rs",
+      "sha256": "0175774dce4d6eadc7ac7f640da6da6711f53880f9ebaa8940ef85b416ddce85",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "/// cleanup ownership even when the invoking RPC future is dropped.",
+        "owner: &str,",
+        "// Reserve under the one resource authority before calling any",
+        "Some(owner),",
+        ".insert(ticket.clone(), (owner.to_string(), cleanup.clone()));",
+        ".insert(ticket.clone(), (owner.to_string(), client.clone()));",
+        "owner: Option<&str>,",
+        ".filter(|(_, (scope, _))| owner.is_none_or(|owner| owner == scope))"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/memory.rs",
+      "sha256": "1532ab8b88dc82af92f15ea334ea1cbe64cf7c8aa7248f9315b3387eeda4fa0f",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! Session Agent's own [`echo_agent::memory::Store`] authority — the same",
+        "use super::source_operations::MemoryStoreAuthority;",
+        "use crate::factory::SessionAuthorityServices;",
+        "authorities: &Arc<SessionAuthorityServices>,",
+        "resource_stores: &std::sync::Mutex<HashMap<String, Arc<MemoryStoreAuthority>>>,",
+        "owner: &str,",
+        "// Resolve the live Agent authority: accepted set_store operations can",
+        "// replace the factory-time store without creating a second authority."
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/mod.rs",
+      "sha256": "39144d4615852e06027a95dbb9228457a65ffa6e6b7db458a56d14b6e076d260",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! 2. capability gate — `feature_surfaces` must be advertised;",
+        "//!    through the embedded canonical catalog; unknown operations fail",
+        "use echo_sdk_protocol::capability::ExtensionCapability;",
+        "/// The resulting DTO still passes the unified generation/owner/issuance ladder;",
+        "/// only (design §8): shape, kind, generation and issuance are checked by",
+        "/// the unified authority on every access.",
+        "/// Resolve one facade resource through the unified authority and prove it",
+        "owner: &str,"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/observability.rs",
+      "sha256": "2875aafb87d6543a43135c635e065899f8b58c6325b6a9497e5d07903e1cf8e9",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "owner: &str,",
+        "super::owned_resource(handles, resource, owner, TRACE_METHOD)?;",
+        "owner: &str,",
+        "Some(owner),",
+        "let record = store_record(handles, stores, &resource, owner)?;",
+        "let record = store_record(handles, stores, &resource, owner)?;",
+        "let record = store_record(handles, stores, &resource, owner)?;",
+        "let record = store_record(handles, stores, &resource, owner)?;"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "sha256": "afac5c4f8da6ccda7b99626d7bb26ce6f80b873fd6807d13db133c36ca581a73",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! Canonical source-identity operation adapter.",
+        "use echo_sdk_protocol::capability::ExtensionCapability;",
+        "/// resolve its handle and call the canonical `echo_core::utils::fs` function.",
+        "pub(crate) enum FileAuthorityRecord {",
+        "pub(crate) enum MemoryStoreAuthority {",
+        "impl MemoryStoreAuthority {",
+        "// original construction error to the one canonical framework turn.",
+        "pub(crate) struct ContentGuardAuthorityRecord {"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/state_delivery.rs",
+      "sha256": "21ce0c4f56c85691aa461d22a3e2b6837a0e335073c8a136bda916597201c728",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! authority the core profile checkpoints session state through. The Host",
+        "/// state store (the same authority session checkpoints flow through).",
+        "/// Resolve one ledger resource, owner-checked against the session.",
+        "owner: &str,",
+        "super::owned_resource(handles, resource, owner, DELIVERY_METHOD)?;",
+        "\"cancelled\" => Ok(DeliveryOutcome::Cancelled),",
+        "\"unknown delivery outcome {other}; expected completed|failed|cancelled|dropped|outcome_unknown\"",
+        "owner: &str,"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/stream.rs",
+      "sha256": "0b660a6a0a5a12e5fdc29f6bb52048ece12a038934a4850cc30f331e327dc885",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! Framework stream producers run against their existing Rust authority and",
+        "//! unbounded response. Handle identity, owner, generation, sequence,",
+        "//! cancellation and close state remain exclusively in `HandleRegistry`;",
+        "owner_session: String,",
+        "cancel: tokio_util::sync::CancellationToken,",
+        "pub cancel: tokio_util::sync::CancellationToken,",
+        "owner_session: &str,",
+        "self.open_with_ownership(handles, resource, owner_session, operation, false)"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/subagent.rs",
+      "sha256": "7c7a9d698eb9e1ecfc41cd3e78dac27b0a3f02b5650f45b9464ea596f2b55b5d",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! [`crate::factory::SessionAuthorityServices`]) — so RPC dispatches, the",
+        "//! (message / guidance / interrupt / cancel); there is deliberately no",
+        "//! memoized per record because a background join is single-consumption.",
+        "use echo_sdk_protocol::capability::ExtensionCapability;",
+        "use super::super::handler::{require_capability, require_extended};",
+        "/// Memoized terminal result (a background join is single-consumption).",
+        "pub owner_session: String,",
+        "/// (a parent Store and cancellation token) cannot be recreated from JSON."
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/task.rs",
+      "sha256": "fe70c3a998a67b9c5da6350fe78d63f6e47681fc458dc147547bf46297aa6222",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! [`crate::factory::SessionAuthorityServices`]). The Host never rebuilds",
+        "//! typed RPC onto the framework authority and maps results back.",
+        "use echo_sdk_protocol::capability::ExtensionCapability;",
+        "use super::super::handler::{require_capability, require_extended};",
+        "use crate::factory::SessionAuthorityServices;",
+        "generation: task_run.generation.clone(),",
+        "/// Resolve the session authority services for one issued TaskRun handle.",
+        ") -> Result<Arc<SessionAuthorityServices>, EchoSdkError> {"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/task_runtime.rs",
+      "sha256": "87102f582db182bbd0ac2d29ba9f91f1ba8f6262d71c664bf272bac323a45bac",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! terminals all settle through the canonical store mutations — the Host",
+        "//! claim through the same store: pause keeps the task resumable, cancel is",
+        "use echo_sdk_protocol::capability::ExtensionCapability;",
+        "use super::super::handler::{require_capability, require_extended};",
+        ".ok_or_else(|| ReactError::Other(format!(\"completed dependency '{dependency}' has no reusable output in its canonical task result\")))?;",
+        "cancel: context.cancellation_token().clone(),",
+        "Ok(output) if output.outcome.status == SubagentStatus::Cancelled => {",
+        "RuntimeTaskResolutionRequest::Cancelled"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/telemetry.rs",
+      "sha256": "1cb40ac5ff8e6a76b6c9d57f75ecd807612f9629261fdaa47d34433215c04705",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! create a second metrics or tracing authority."
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/tools.rs",
+      "sha256": "f1aed97fde97185218d8babdedf914da8564b9a8c9be05d721f17357dd96c7c1",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "use crate::factory::SessionAuthorityServices;",
+        "/// the framework's actual capability menu.",
+        "/// parameter order. The schema is the tool's single source of truth; the",
+        "authorities: &SessionAuthorityServices,",
+        "owner: &str,",
+        "// The canonical catalog uses the framework tool name (`git_status`),",
+        "// single framework Tool instance.",
+        "let rag_tools = facade.rag_tools_for_session(owner, operation)?;"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/facade/workflow.rs",
+      "sha256": "f5c72f5e132d0de1e2fd6b9a17fb892201026838cff72db4b5a802bed02e7701",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! The Host owns addressing and lifecycle only (resource ids, the cancel",
+        "//! fan-out, interrupts, checkpoints, claim/resume CAS — stays the single",
+        "//! authority in `echo_orchestration::workflow`. Closures and callbacks are",
+        "use crate::factory::SessionAuthorityServices;",
+        "/// One compiled graph resource: the graph itself, its cooperative cancel",
+        "/// token and the owning ACP session. Cancelling the token makes every",
+        "/// `with_cancel_token`.",
+        "pub cancel: tokio_util::sync::CancellationToken,"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/handler.rs",
+      "sha256": "0c20bdb092e0498e0ab6a88cb2ac7fad367f5f0f5933daed8ebd8d573a2bf7bf",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! 2. capability gate — negotiated but unadvertised families answer with a",
+        "//!    typed capability mismatch;",
+        "//! 3. handle resolution — shape → kind → generation → issued/closed;",
+        "use echo_sdk_protocol::capability::ExtensionCapability;",
+        "EventAckNotification, RecoveredRunWire, RunCancelRequest, RunCancelResponse, RunGetRequest,",
+        "/// Admission step 2: capability gate with typed mismatch errors.",
+        "pub(crate) fn require_capability(",
+        "capability: ExtensionCapability,"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/handles.rs",
+      "sha256": "e155ffd659d468840679855d17ecc0df96213500de2c506e52214781e9b75d39",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! Generation-fenced handle registry for the core profile.",
+        "//! generation → issued/closed. A well-shaped id that was never issued at the",
+        "//! current generation is `invalid_value`; an old-generation handle is",
+        "/// all execution authority while this gate covers Host ownership only.",
+        "/// Canonical config JSON used for idempotent create comparison.",
+        "pub cancel_operations: tokio_util::sync::CancellationToken,",
+        "pub owner_session: Option<String>,",
+        "cancelled: bool,"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/mod.rs",
+      "sha256": "2ea96ccc3830be01c54703497fff890b80aca1262a3329b641d14b0c961013f7",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! hello negotiation, typed handlers, generation-fenced handles, ACK-gated",
+        "use echo_sdk_protocol::capability::{ECHO_AGENT_META_KEY, EchoAgentClientHello};",
+        "AgentCloseRequest, AgentCreateRequest, AgentDescribeRequest, RunCancelRequest, RunGetRequest,",
+        "/// there is one reader, one writer and one framework execution authority.",
+        "/// [`crate::run_stdio_with_close_owner`] (or construct directly for tests) and",
+        "/// advance the generation and prepare the default Agent definition",
+        "/// Handle generation of this Host incarnation.",
+        "pub fn generation(&self) -> u64 {"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/state.rs",
+      "sha256": "2579686d9af3c57a08e81742844f1b88142713d849ba0f780b4033721784da56",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! The state owns the durable stores (generation, state root, run index),",
+        "use echo_sdk_protocol::capability::{",
+        "CapabilityDeclaration, ECHO_AGENT_META_KEY, EchoAgentCapability, EchoLimits,",
+        "ExtensionCapability,",
+        "pub advertisement: EchoAgentCapability,",
+        "/// advance the generation, and load recovered runs with their journals.",
+        "let handles = HandleRegistry::new(persistence.generation(), limits.max_open_handles);",
+        "// from the durable projection instead of reserving another owner."
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/wire.rs",
+      "sha256": "47cafb0e9b836e007adad2ac1e805e6ad7ef4f7ff85dc30dac1afbde3ca082c5",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! DTOs, plus the single extension-error construction helpers.",
+        "/// Wire handle of a live object issued by this Host generation.",
+        "pub(crate) fn handle(id: impl Into<String>, kind: HandleKind, generation: u64) -> WireHandle {",
+        "generation: WireU64::from_u64(generation),",
+        "let code = if failure.terminal_kind == echo_agent::error::AgentTerminalKind::Cancelled {",
+        "ExtensionErrorCode::Cancelled",
+        "// timeouts keep their domain and canonical terminal cause below.",
+        "\"cancelled\" => Ok(ToolFailureCategory::Cancelled),"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/factory.rs",
+      "sha256": "fb19aada11141dbbc139539ca3c18523771729fd2b10808ed01e871cc9764d5f",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "/// Typed capability snapshot served by `_echo_agent/agent/describe`.",
+        "/// Per-Session authority services captured before boxing; the task and",
+        "Arc<std::sync::Mutex<std::collections::HashMap<String, Arc<SessionAuthorityServices>>>>,",
+        "/// Framework authority services captured from one Session's concrete",
+        "pub(crate) struct SessionAuthorityServices {",
+        "/// source operations; this is one authority, not a second Agent state.",
+        "/// Session-scoped RPC publication receipts, never an execution authority.",
+        "impl SessionAuthorityServices {"
+      ]
+    },
+    {
+      "path": "echo-sdk-host/src/lib.rs",
+      "sha256": "182240a61b6e062ae885fec7fa9b6ad09b8cdad6a43440f710435adcf64de64e",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! framework adapter remains the authority for ACP methods, Session state,",
+        "//! cancellation, event projection, and bounded shutdown.",
+        "//! profile over the same connection: generation-fenced Agent/Session/Run/",
+        "// hot loop and the process is local and single-tenant.",
+        "/// Compiled feature authority: the initialize advertisement derives from",
+        "/// Cleanup ownership for one in-process Host connection.",
+        "/// Create and retain this owner before polling `run_stdio_with_close_owner`.",
+        "/// owner. Call `close` until it succeeds. An owner is single-use; repeated"
+      ]
+    },
+    {
+      "path": "echo-sdk-protocol/src/bin/export_schema.rs",
+      "sha256": "569ea658c267d505d0c20369dbdb384eb2022ea12e0bb6fabb70c398cc13ca0c",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "// This mode has no authority to change inventory or accepted source scope.",
+        "echo_sdk_protocol::schema::canonical_json(&source_contract),",
+        "/// One producer shared by full target generation and staged wire candidates.",
+        "let full = echo_sdk_protocol::schema::canonical_json(&catalog);",
+        ".filter(|entry| entry.canonical && entry.sdk_scope == inv::SdkScope::ExternalContract)",
+        "let accepted = echo_sdk_protocol::schema::canonical_json(",
+        "echo_sdk_protocol::schema::canonical_json(&source),",
+        "return Err(\"--wire-candidate-update cannot be combined with full generation/check modes\");"
+      ]
+    },
+    {
+      "path": "echo-sdk-protocol/src/catalog.rs",
+      "sha256": "b0df342bca7d273cd524b796bf8412b996493ee280c575141a249661ad0cb765",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! Canonical `_echo_agent/*` operation catalog.",
+        "//! The catalog is the single authority for the extension method surface",
+        "//! (design §10.4): every method name, direction, required capability and the",
+        "//! - every method's required capability exists in the capability taxonomy;",
+        "//! does not authorize another cross-language API. Accepted capability and",
+        "use crate::capability::ExtensionCapability;",
+        "/// Capability that must be declared for the method to be callable.",
+        "pub capability: ExtensionCapability,"
+      ]
+    },
+    {
+      "path": "echo-sdk-protocol/src/facade.rs",
+      "sha256": "dd9beced710b11502d9f97a4b5b3e0c77613b1f28f87548f821cab5a6f77a8c5",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! Canonical, executable facade adapter catalog (plan 07, todo 1).",
+        "//! This module replaces those heuristics with one canonical route table:",
+        "//! - every facade item resolves to **exactly one** [`CanonicalRoute`] derived",
+        "//!   from its canonical *source identity* (the rustdoc source path of the",
+        "//!   manifest marks them `alias_of` the canonical member;",
+        "//!   capability, required root leaf feature, canonical source prefixes and",
+        "use crate::capability::ExtensionCapability;",
+        "let mut canonical = serde_json::json!({ \"family\": family, \"operation\": operation });"
+      ]
+    },
+    {
+      "path": "echo-sdk-protocol/src/inventory.rs",
+      "sha256": "ebca8cb1235a6ab78924f702c7bf8660d8f49816e8f4d54407b60f326907694e",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "/// Canonical rustdoc shape with unstable item ids and child-id lists removed.",
+        "/// Canonical source path for re-exported items.",
+        "/// Canonical adapter obligation of one facade item: exactly one route from",
+        "/// Canonical route id (`family:memory`, `core:task`,",
+        "/// Complete feature requirement inherited from the canonical inventory",
+        "/// Whether this facade path is the canonical member of its alias group",
+        "/// (same canonical source identity). Aliases carry `alias_of` instead.",
+        "pub canonical: bool,"
+      ]
+    },
+    {
+      "path": "echo-sdk-protocol/src/lib.rs",
+      "sha256": "d88cde4e300555d47c208f3ff3221046833383fb0be79cb0b646a4617d4f7767",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//!   crates are the *only* wire authority for JSON-RPC framing,",
+        "//!   namespaced capability published under `initialize` `_meta`, the",
+        "//!   plus the deterministic generation of the extension JSON Schema and the",
+        "pub mod capability;",
+        "/// leading underscore and a capability declaration)."
+      ]
+    },
+    {
+      "path": "echo-sdk-protocol/src/methods.rs",
+      "sha256": "9e9deb481eb7850a039fc930971a2f9363db6e7905490165121dd28a57641000",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! asserts that each method is declared in the capability.",
+        "//! states, retries and recovery belong to the Rust authority (design §10.4).",
+        "Cancelled,",
+        "Cancel,",
+        "Cancelled,",
+        "/// The same id plus the same canonical config returns the same handle;",
+        "/// Literal token passed inline. Only for local, single-user machines.",
+        "/// Immutable construction facts and capability snapshot of the agent."
+      ]
+    },
+    {
+      "path": "echo-sdk-protocol/src/schema.rs",
+      "sha256": "e16a8d4a05a958f319158c4990c60f50cbadd1d50beb29938769062481dd61a0",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "//! same canonical JSON, the same sha256 contract digest and the same",
+        "//! fixture bytes (design §20.2: regeneration leaves the worktree clean).",
+        "use crate::capability::{EchoAgentCapability, EchoAgentClientHello};",
+        "/// Canonical JSON rendering: `serde_json` maps are BTree-ordered here (the",
+        "pub fn canonical_json(value: &serde_json::Value) -> String {",
+        "/// sha256 digest over the canonical document, hex-encoded.",
+        "let canonical = canonical_json(value);",
+        "hasher.update(canonical.as_bytes());"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentComponentCall.java",
+      "sha256": "c4cba8016d54c1a3a8dbbbe0891ce95560e4b34789b093fa8c66c9345b51e32a",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": []
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentComponentDescriptor.java",
+      "sha256": "e27a5e4b3625ae192e52d62f8ecf137817f24b26791a5735514edc1edc2d5a44",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "private final ManagedPersistence.ConversationProjectionCapability conversationProjection;",
+        "private final ManagedPersistence.RuntimeStateCapability runtimeState;",
+        "private final ManagedPersistence.PersistenceCallCapability persistenceCall;",
+        "ManagedPersistence.ConversationProjectionCapability.unsupported,",
+        "ManagedPersistence.RuntimeStateCapability.unsupported,",
+        "ManagedPersistence.PersistenceCallCapability.unsupported);",
+        "ManagedPersistence.ConversationProjectionCapability conversationProjection,",
+        "ManagedPersistence.RuntimeStateCapability runtimeState,"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentComponentRequest.java",
+      "sha256": "e7a6920c243a648909f2ec23faa3017faf437df60309c5f07c960953df93ed00",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "AgentComponentRequest.ConversationGetProjectionAuthorityWithContext,",
+        "AgentComponentRequest.RuntimeLoadScopeAuthorityWithContext,",
+        "AgentComponentRequest.RuntimeRetireGenerationWithContext,",
+        "AgentComponentRequest.WorkflowCheckpointSaveIfGeneration,",
+        "AgentComponentRequest.SandboxExecuteWithLimitsAndCancel,",
+        "record ConversationGetProjectionAuthorityWithContext(String conversationId, ManagedPersistence.PersistenceCallContext context) implements AgentComponentRequest {",
+        "public ConversationGetProjectionAuthorityWithContext {",
+        "@Override public String operation() { return \"conversation_get_projection_authority_with_context\"; }"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentComponentResult.java",
+      "sha256": "39f6f40fc7c7897deb8322eca387edf3476f36f56f6b2bba7ac9e528a28140cb",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "AgentComponentResult.ConversationProjectionAuthorityLoaded,",
+        "AgentComponentResult.RuntimeScopeAuthorityLoaded,",
+        "AgentComponentResult.RuntimeGenerationRetired,",
+        "AgentComponentResult.WorkflowCheckpointSavedIfGeneration,",
+        "AgentComponentResult.SandboxExecutedWithLimitsAndCancel,",
+        "record ConversationProjectionAuthorityLoaded(ManagedPersistence.ConversationProjectionAuthority authority) implements AgentComponentResult {",
+        "@Override public String operation() { return \"conversation_get_projection_authority_with_context\"; }",
+        "@Override public JsonNode value() { return nullableObject(\"authority\", authority == null ? null : authority.toJson()); }"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentHandle.java",
+      "sha256": "389bf5260a4a9a9b2bb1f6bf1e692b12f711c42fb762006191814a011732f3a7",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": []
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java",
+      "sha256": "e709ae1ead76682174eea02eaee72d3af649a383249daf5d196df1ecc860bf9d",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "// These are bounded-delivery projections, not framework replay authority.",
+        "fail(new EchoAgentException(\"handle_mismatch\", \"event stream handle changed generation\",",
+        "catch (Throwable error) { subscription.cancel(); return; }",
+        "private boolean cancelled;",
+        "if (cancelled) return;",
+        "@Override public void cancel() {",
+        "cancelled = true; queue.clear(); subscriptions.remove(this);",
+        "if (!started || cancelled || draining) return;"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "sha256": "2bad1f8a4ec4ba0a84f2c6faa63007364b5be874303bec0fbb332ab33f55c223",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "private record FactoryConstructionExecution(CompletionStage<JsonNode> stage, ExtensionCancellation cancellation,",
+        "private record FactoryCleanupExecution(CompletionStage<JsonNode> stage, ExtensionCancellation cancellation) {}",
+        "private final Map<String, ExtensionCancellation> invocationCancellations = new ConcurrentHashMap<>();",
+        "private volatile JsonNode capability;",
+        "* compile-time feature or negotiated extension capability.",
+        "notificationHandlers.put(\"_echo_agent/extension/cancel\", params -> {",
+        "ExtensionCancellation cancellation = holder[0].invocationCancellations.get(invocationId);",
+        "if (cancellation != null) cancellation.cancel();"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentException.java",
+      "sha256": "db36303657fbb122e886575bbb921eae576b377a71e04a482a249331fefbb8f4",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": []
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/ExtensionRegistration.java",
+      "sha256": "d17fab37f60f75c2a033ddac908971b468932845c457f2774c15366194286c44",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": []
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/JsonSupport.java",
+      "sha256": "56d05f02022141827f5f942dd3d390aa336dc2243453210ee9cec68c9980e745",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "if (value instanceof JsonNode node && node.isObject() && node.has(\"kind\") && (java.util.Set.of(\"null\",\"bool\",\"string\",\"i64\",\"u64\",\"f64\",\"bytes\",\"duration\",\"timestamp\",\"path\",\"handle\",\"list\",\"map\",\"record\",\"variant\",\"unknown\").contains(node.path(\"kind\").asText()) || !node.has(\"id\") && !node.has(\"generation\"))) {",
+        "// Handle generations are WireU64 on the Rust side. Keep the",
+        "// opaque generation text, but reject non-canonical or",
+        "WireValues.u64(handle.generation());",
+        "throw new IllegalArgumentException(kind + \" wire value must be canonical decimal text\");"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/RunHandle.java",
+      "sha256": "710e30d1d3d873f1bba1c205c16c4af07012be35a2ee5ab1b040df9da8a2a6c4",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "public CompletionStage<JsonNode> cancel() {",
+        "if (closed.get()) return failedClosed(\"_echo_agent/run/cancel\");",
+        "return cancelInternal();",
+        "* Requests cancellation, waits for the bounded Host settlement, and then",
+        "cancelInternal().thenCompose(ignored -> waitInternal(Duration.ofSeconds(5))).thenApply(wait -> {",
+        "\"cancellation_timeout\", \"run did not settle before close timeout\", \"after_delay\", \"_echo_agent/run/wait\", wire.toJson());",
+        "private CompletionStage<JsonNode> cancelInternal() {",
+        "return client.request(\"_echo_agent/run/cancel\", requestParams());"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/SessionHandle.java",
+      "sha256": "9dd7fbf0fec12e095317fb5acbc000189dc7e720fd1ce951467744ec5a57b208",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "public CompletionStage<Void> cancel() {",
+        "if (closed.get()) return failedClosed(\"session/cancel\");",
+        "return client.request(\"session/cancel\", params).thenApply(ignored -> null);"
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/ToolResult.java",
+      "sha256": "0efc891825be2d9df54b61e68edb62cfa082e7cf1893093d561603e753c14d67",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "\"invalid_arguments\", \"unavailable\", \"timeout\", \"cancelled\","
+      ]
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/WireHandle.java",
+      "sha256": "42f6a6e9a202d4172e0db6c3eb36d4e37ca6292a2bfa925ea6b8c1a9dc17595e",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "/** Opaque Host-issued handle. The generation is retained as a string so u64 values stay lossless. */",
+        "public record WireHandle(String id, String generation, String kind) {",
+        "|| generation == null || kind == null || kind.isBlank()) {",
+        "throw new IllegalArgumentException(\"handle id, generation and kind must be non-empty\");",
+        "WireValues.u64(generation);",
+        "if (value == null || !value.isObject() || value.size()!=3 || !value.has(\"id\") || !value.has(\"generation\") || !value.has(\"kind\")) {",
+        "required(value, \"generation\"),",
+        "object.put(\"generation\", generation);"
+      ]
+    },
+    {
+      "path": "sdks/python/src/echo_agent_sdk/__init__.py",
+      "sha256": "3aa3ecab92bfda895cb4c9c67ec5aac707d8cc283e4c66bcb16f4005f91ccd94",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "WorkflowCheckpointSaveIfGenerationRequest,",
+        "\"WorkflowCheckpointSaveIfGenerationRequest\","
+      ]
+    },
+    {
+      "path": "sdks/python/src/echo_agent_sdk/client.py",
+      "sha256": "61e61202c914b111951714de559c4d3efe74bfce29c4e62f14b292142f8ed021",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "\"workflow_checkpoint_save_if_generation\",",
+        "\"sandbox_execute_with_limits_and_cancel\",",
+        "\"workflow_checkpoint_save_if_generation\": frozenset(",
+        "{\"checkpoint\", \"expected_generation\"}",
+        "\"sandbox_execute_with_limits_and_cancel\": frozenset({\"command\", \"limits\"}),",
+        "\"extension_capability_mismatch\",",
+        "\"cancelled\",",
+        "def _canonical_u64_text(value: Any, name: str) -> str:"
+      ]
+    },
+    {
+      "path": "sdks/python/src/echo_agent_sdk/errors.py",
+      "sha256": "cb89d4f032045a4adb90ccbf78685c5b5ca82c46d383f27ca3e9e8341fdbdbff",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": []
+    },
+    {
+      "path": "sdks/python/src/echo_agent_sdk/intrinsics.py",
+      "sha256": "9af5dfec2998da4c05368a160f293ecd7b23fe67d48fca1c22c2bc9399c6ee56",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "\"cancelled\",",
+        "\"cancelled\","
+      ]
+    },
+    {
+      "path": "sdks/python/src/echo_agent_sdk/wire.py",
+      "sha256": "50d132ec93ebc09110ed52e549335ff6c789bf198a1cfc94253023d75966c374",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "as a single chunk because splitting it would make invalid UTF-8.",
+        "raise TypeError(\"wire integer must be a canonical decimal value\")",
+        "raise TypeError(\"wire integer must be a canonical decimal value\") from error",
+        "raise ValueError(\"wire integer string must be canonical decimal text\")",
+        "generation: str",
+        "if not isinstance(self.generation, str):",
+        "raise TypeError(\"handle generation must be canonical decimal text\")",
+        "_integer_text(self.generation, signed=False)"
+      ]
+    },
+    {
+      "path": "sdks/typescript/src/client.ts",
+      "sha256": "97629fa8d9eb36ccbb9d62cfa72204fdf80ec71696f328311eda03fd1da44387",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "EchoAgentCapability,",
+        "RunCancelResult,",
+        "function boundedQueueCapacity(capability: EchoAgentCapability): number {",
+        "const raw = capability.limits.max_outstanding_live_events",
+        "?? capability.limits.max_stream_buffer_events;",
+        "// A malformed advertisement is rejected by the Host capability check;",
+        "readonly capability: EchoAgentCapability;",
+        "capability: EchoAgentCapability,"
+      ]
+    },
+    {
+      "path": "sdks/typescript/src/errors.ts",
+      "sha256": "9cb5285885a6c8c7bc293d83f020a9d9ac3d8b20afb48cfc02132822e7d2ef26",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": []
+    },
+    {
+      "path": "sdks/typescript/src/helpers.ts",
+      "sha256": "732287d5a6c3ae1fbe1f5e5e296ba99d22fa11aab03db9058f4709c3478e034a",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "\"cancelled\","
+      ]
+    },
+    {
+      "path": "sdks/typescript/src/index.ts",
+      "sha256": "64a3cbcbdebc700fcf56100fcd76d14d832caf1529de7db0fb52186c1ec38874",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": []
+    },
+    {
+      "path": "sdks/typescript/src/types.ts",
+      "sha256": "9d7169f8869126f4f82ced489dd99ae7da8a520ca5c3b4c64228dd58dfd91bd1",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "readonly generation: string;",
+        "| \"cancelled\"",
+        "readonly owner_session_id: string;",
+        "| \"workflow_checkpoint_save_if_generation\"",
+        "| \"sandbox_execute_with_limits_and_cancel\"",
+        "readonly execution_cas_v1?: boolean;",
+        "| { readonly operation: \"workflow_checkpoint_save_if_generation\"; readonly input: { readonly checkpoint: WireValue; readonly expected_generation: WireU64 } }",
+        "| { readonly operation: \"sandbox_execute_with_limits_and_cancel\"; readonly input: { readonly command: WireValue; readonly limits: WireValue } }"
+      ]
+    },
+    {
+      "path": "sdks/typescript/src/wire.ts",
+      "sha256": "99d2dd237af4abffd6b17c013dcbb46d3c640ecc62fc496babdcb4df3f35ec70",
+      "scope": "current definition/registration/authority correspondence inspection; independent runtime audit not claimed",
+      "authority_lines": [
+        "throw new TypeError(\"wire integer must be a canonical decimal value\");",
+        "throw new TypeError(\"wire integer string must be canonical decimal text\");",
+        "// Native domain maps may contain id/generation fields. Only the exact",
+        "if (isRecord(value) && Object.keys(value).length === 3 && \"id\" in value && \"generation\" in value && typeof value.kind === \"string\" && HANDLE_KINDS.has(value.kind)) {",
+        "&& Object.keys(value).every(key => [\"id\", \"generation\", \"kind\"].includes(key))",
+        "&& typeof value.generation === \"string\"",
+        "&& isCanonicalIntegerText(value.generation, false)",
+        "throw new TypeError(\"wire handle id, generation and kind must be valid\");"
+      ]
+    }
+  ],
+  "limits": "source declaration observation, not all possible callpaths or a pass; new Workflow and other subsequent proof archived separately"
+}

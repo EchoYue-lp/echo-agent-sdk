@@ -1,0 +1,133 @@
+   Compiling echo_core v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-core)
+   Compiling echo_macros v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-macros)
+   Compiling echo_state v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-state)
+   Compiling echo_integration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-integration)
+   Compiling echo_orchestration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-orchestration)
+   Compiling echo_execution v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-execution)
+   Compiling echo_tools v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity/echo-tools)
+   Compiling echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-worktrees/acp-recovered-turn-identity)
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:560:85
+    |
+542 |       fn owned_fixture() -> Result<
+    |  ___________________________-
+543 | |         (HandleRegistry, FacadeStreamRuntime, FacadeStreamProducer),
+544 | |         Box<dyn std::error::Error>,
+545 | |     > {
+    | |_____- required `echo_sdk_protocol::error::EchoSdkError: StdError` because of this
+...
+560 |           let (agent, _) = handles.register_agent(Arc::new(definition), String::new())?;
+    |                                    ---------------------------------------------------^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    |                                    |
+    |                                    this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:561:83
+    |
+542 |       fn owned_fixture() -> Result<
+    |  ___________________________-
+543 | |         (HandleRegistry, FacadeStreamRuntime, FacadeStreamProducer),
+544 | |         Box<dyn std::error::Error>,
+545 | |     > {
+    | |_____- required `echo_sdk_protocol::error::EchoSdkError: StdError` because of this
+...
+561 |           handles.register_session_with_cwd("session-a".to_string(), agent.id, None)?;
+    |                   ------------------------------------------------------------------^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    |                   |
+    |                   this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:568:10
+    |
+542 |       fn owned_fixture() -> Result<
+    |  ___________________________-
+543 | |         (HandleRegistry, FacadeStreamRuntime, FacadeStreamProducer),
+544 | |         Box<dyn std::error::Error>,
+545 | |     > {
+    | |_____- required `echo_sdk_protocol::error::EchoSdkError: StdError` because of this
+...
+562 |           let (resource, _) = handles.register_facade_resource(
+    |  _____________________________________-
+563 | |             4,
+564 | |             "fixture",
+565 | |             "fixture.resource",
+566 | |             Some("session-a"),
+567 | |             "fixture.open",
+568 | |         )?;
+    | |         -^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    | |_________|
+    |           this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:570:86
+    |
+542 |       fn owned_fixture() -> Result<
+    |  ___________________________-
+543 | |         (HandleRegistry, FacadeStreamRuntime, FacadeStreamProducer),
+544 | |         Box<dyn std::error::Error>,
+545 | |     > {
+    | |_____- required `echo_sdk_protocol::error::EchoSdkError: StdError` because of this
+...
+570 |           let producer = runtime.open(&handles, &resource, "session-a", "fixture.open")?;
+    |                                  ------------------------------------------------------^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    |                                  |
+    |                                  this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:634:23
+    |
+626 | /             runtime
+627 | |                 .next(
+628 | |                     &handles,
+629 | |                     &handle,
+...   |
+634 | |                 .await?,
+    | |                      -^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    | |______________________|
+    |                        this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:687:23
+    |
+679 | /             runtime
+680 | |                 .next(
+681 | |                     &handles,
+682 | |                     &handle,
+...   |
+687 | |                 .await?,
+    | |                      -^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    | |______________________|
+    |                        this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+error[E0277]: `?` couldn't convert the error: `echo_sdk_protocol::error::EchoSdkError: StdError` is not satisfied
+   --> echo-sdk-host/src/core_profile/facade/stream.rs:732:84
+    |
+732 |             handles.facade_stream_state(&handle, Some("session-a"), "fixture.next")?,
+    |                     ---------------------------------------------------------------^ the trait `StdError` is not implemented for `echo_sdk_protocol::error::EchoSdkError`
+    |                     |
+    |                     this has type `Result<_, echo_sdk_protocol::error::EchoSdkError>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<echo_sdk_protocol::error::EchoSdkError>`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `echo-sdk-host` (lib test) due to 7 previous errors

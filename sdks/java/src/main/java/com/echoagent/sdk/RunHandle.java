@@ -16,6 +16,7 @@ public final class RunHandle implements AutoCloseable {
     private final WireHandle wire;
     private final WireHandle stream;
     private final AtomicBoolean closed = new AtomicBoolean();
+    private CompletionStage<Void> closeStage;
 
     RunHandle(EchoAgentClient client, WireHandle wire, WireHandle stream) {
         this.client = client;
@@ -80,27 +81,38 @@ public final class RunHandle implements AutoCloseable {
         params.set("stream", stream.toJson());
         params.put("after_sequence", afterSequence == null ? "0" : afterSequence);
         params.put("max_events", Integer.toString(maxEvents));
-        return client.request("_echo_agent/run/replay", params);
+        return client.request("_echo_agent/run/replay", params).thenApply(response -> {
+            var checked=ReplayResponse.validate(response,stream,afterSequence == null ? "0" : afterSequence);
+            client.observeReplay(stream,checked);
+            return checked;
+        });
     }
     /**
      * Requests cancellation, waits for the bounded Host settlement, and then
      * closes the event publisher. A timeout is surfaced as a typed failure;
-     * the local publisher is still released in all cases.
+     * the local publisher remains usable so a failed close can be retried.
      */
-    public CompletionStage<Void> closeAsync() {
-        if (!closed.compareAndSet(false, true)) return CompletableFuture.completedFuture(null);
-        return cancelInternal()
-                .thenCompose(ignored -> waitInternal(Duration.ofSeconds(5)))
-                .handle((wait, error) -> {
+    public synchronized CompletionStage<Void> closeAsync() {
+        if (closed.get()) return CompletableFuture.completedFuture(null);
+        if (closeStage != null) return closeStage;
+        var result = new CompletableFuture<Void>();
+        closeStage = result;
+        cancelInternal().thenCompose(ignored -> waitInternal(Duration.ofSeconds(5))).thenApply(wait -> {
+            if (wait == null || !wait.path("settled").asBoolean(false)) throw new EchoAgentException(
+                    "cancellation_timeout", "run did not settle before close timeout", "after_delay", "_echo_agent/run/wait", wire.toJson());
+            return null;
+        }).whenComplete((ignored, error) -> {
+            synchronized (this) {
+                if (error == null) {
+                    closed.set(true);
                     client.closeEvents(stream);
-                    if (error != null) throw new CompletionException(error);
-                    if (wait == null || !wait.path("settled").asBoolean(false)) {
-                        throw new CompletionException(new EchoAgentException(
-                                "cancellation_timeout", "run did not settle before close timeout",
-                                "after_delay", "_echo_agent/run/wait", wire.toJson()));
-                    }
-                    return null;
-                });
+                }
+                closeStage = null;
+            }
+            if (error == null) result.complete(null);
+            else result.completeExceptionally(error);
+        });
+        return result;
     }
 
     @Override public void close() {

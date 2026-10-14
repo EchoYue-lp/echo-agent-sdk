@@ -1,0 +1,14 @@
+{
+  "classes": [
+    "ChannelHandlerForwardHostTest",
+    "EvalImproveTopologyHostTest",
+    "ToolValueEffectHostTest",
+    "LlmWorkflowStreamHostTest",
+    "ManagedRetirementHostTest",
+    "RagProjectRulesHostTest"
+  ],
+  "root_changes": 8,
+  "fixture_only": true,
+  "environment_root_overrides": false,
+  "known_before": "Full311tests1failure8errors0skip; default relative/unnormalized roots"
+}

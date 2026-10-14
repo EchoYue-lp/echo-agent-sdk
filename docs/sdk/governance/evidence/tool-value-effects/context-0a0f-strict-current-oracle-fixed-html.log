@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 868, in <module>
+    main()
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 730, in main
+    {"tools": verify, "search": verify_search, "sandbox": verify_sandbox}[
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/tool_value_effect_fixture.py", line 550, in verify
+    assert describe["rows"] == [
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'columns': ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], 'rows': [[None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None], [None, None, None, None, None, None]], 'total_rows': 4}

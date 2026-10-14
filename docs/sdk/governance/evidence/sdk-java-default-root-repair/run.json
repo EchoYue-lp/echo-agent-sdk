@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+  "steps": [
+    {
+      "label": "java-default-root-after",
+      "command": [
+        "mvn",
+        "-q",
+        "-Dtest=ChannelHandlerForwardHostTest,EvalImproveTopologyHostTest,ToolValueEffectHostTest,LlmWorkflowStreamHostTest,ManagedRetirementHostTest,RagProjectRulesHostTest",
+        "test"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/after-default-classes.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 4932,
+      "bytesWritten": 4932,
+      "startedAt": "2026-10-13T20:36:24.051Z",
+      "finishedAt": "2026-10-13T20:36:48.027Z"
+    },
+    {
+      "label": "full-java-default-roots-after",
+      "command": [
+        "bash",
+        "-c",
+        "mvn -q test && mvn -q dependency:build-classpath -Dmdep.outputFile=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/java.cp && java -cp \"target/classes:$(cat /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/java.cp)\" com.echoagent.sdk.Example \"$ECHO_AGENT_SDK_HOST\" \"$ECHO_AGENT_SDK_CONFIG\" /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/facade-operation-catalog.json"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-java-default-root-repair/full-java-after.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 9708,
+      "bytesWritten": 9708,
+      "startedAt": "2026-10-13T20:38:03.706Z",
+      "finishedAt": "2026-10-13T20:39:27.291Z"
+    }
+  ],
+  "updatedAt": "2026-10-13T20:39:27.291Z"
+}

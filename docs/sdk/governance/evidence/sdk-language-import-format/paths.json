@@ -1,0 +1,9 @@
+[
+  "sdks/python/tests/test_channel_handler_forward_host.py",
+  "sdks/python/tests/test_computation_host.py",
+  "sdks/python/tests/test_eval_improve_topology_host.py",
+  "sdks/python/tests/test_llm_workflow_stream_host.py",
+  "sdks/python/tests/test_managed_retirement_host.py",
+  "sdks/python/tests/test_tool_value_effect_host.py",
+  "sdks/shared/testing/compare_channel_forward_results.py"
+]

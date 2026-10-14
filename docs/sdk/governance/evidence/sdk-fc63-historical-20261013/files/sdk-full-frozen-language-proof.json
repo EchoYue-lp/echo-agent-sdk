@@ -1,0 +1,275 @@
+{
+  "commands": "exact three language commands and examples from scripts/check-language-sdks.sh after Host build; separate immutable Host avoids concurrent Cargo producer",
+  "classification": "local combined candidate, not final published dependency/source inventory/main proof",
+  "host": "/tmp/echo-sdk-governance-family-handle-host",
+  "host_sha256": "fc63c0815b319424ea2c64a94d3fc6a365a3dff6b70882a23b9edd1266d2f6eb",
+  "typescript_passed": [
+    219
+  ],
+  "python_results": [
+    [
+      "279",
+      "18"
+    ]
+  ],
+  "java": {
+    "tests": 233,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "java_suites": [
+    {
+      "name": "com.echoagent.sdk.A2ATaskStateTest",
+      "tests": 2,
+      "sha256": "8a7d4d1820fec9347115be0fd41dea2572a63eab7c5b41acbaf326212ee35b29"
+    },
+    {
+      "name": "com.echoagent.sdk.A2AValueTest",
+      "tests": 78,
+      "sha256": "2f23aedd391cc9618b7d4b5412d54a9ff20faa8c0a0ae5c3146d44d37c0dd3cd"
+    },
+    {
+      "name": "com.echoagent.sdk.AckSubmissionTest",
+      "tests": 9,
+      "sha256": "638211cf6780ce0d1a1d8c407513957812e578102445fbeab93022a8c2af34a7"
+    },
+    {
+      "name": "com.echoagent.sdk.CallbackAndEffectsTest",
+      "tests": 3,
+      "sha256": "5468458e17f008342778f8c6aff3359b024371199b170c2753180e222b08c548"
+    },
+    {
+      "name": "com.echoagent.sdk.CallbackHostTest",
+      "tests": 1,
+      "sha256": "b1dd56ea333a44ca493faf44449b9ae12fc470844a097a19a9b039c226f4f26f"
+    },
+    {
+      "name": "com.echoagent.sdk.DelayedSubscriberHostTest",
+      "tests": 2,
+      "sha256": "4c8329f45aede89a7b842f265def8040293d6854625672e75961c18b8c676373"
+    },
+    {
+      "name": "com.echoagent.sdk.EventIdentityTest",
+      "tests": 2,
+      "sha256": "f74ed34492984764681b08d665f46a33cf5c7cc504449473cb65c5b9e98e039f"
+    },
+    {
+      "name": "com.echoagent.sdk.ExecutionUsageTest",
+      "tests": 2,
+      "sha256": "1a76f40f84dadd24854d5e3c9027318f9f257315bc8c51ac6f8f5e3b8c43122f"
+    },
+    {
+      "name": "com.echoagent.sdk.ExternalAckHostTest",
+      "tests": 4,
+      "sha256": "2938ac10024e5f17d23d7053716a5df2c5ffdfdd20d8923c984e50229d396b0d"
+    },
+    {
+      "name": "com.echoagent.sdk.FacadeParityTest",
+      "tests": 2,
+      "sha256": "8c9ac63fe12d70c3679a946f91074fea8727caa53686e87147624c3225bbf9d8"
+    },
+    {
+      "name": "com.echoagent.sdk.FactoryHostTest",
+      "tests": 1,
+      "sha256": "b211621c03b89072c647692ba3a59ec20a22d4821cf09d42ab50331e8f1287a6"
+    },
+    {
+      "name": "com.echoagent.sdk.GapAckHostTest",
+      "tests": 6,
+      "sha256": "8508f2073fbba173046d4e1399051300064e2e8ea3ade20bc995da1e0bbfd632"
+    },
+    {
+      "name": "com.echoagent.sdk.HookEventTest",
+      "tests": 2,
+      "sha256": "10fb067182952d2402c41a2bbe7442b58f0093caf07f4a5bd063e36fbd7bf0e3"
+    },
+    {
+      "name": "com.echoagent.sdk.InterventionResultTest",
+      "tests": 2,
+      "sha256": "df06ec39d1bdcaa810be9a2715449ae5694f24469f157ff67c6564225af5872c"
+    },
+    {
+      "name": "com.echoagent.sdk.IntrinsicToolValueTest",
+      "tests": 3,
+      "sha256": "7df7c6664d204d9c4beec718207f980b2ed20d41a1d8b8c28d11f6aa7a017338"
+    },
+    {
+      "name": "com.echoagent.sdk.JavaClientCloseLifecycleTest",
+      "tests": 2,
+      "sha256": "dcc9e017de26576ed23bd9c12f097f98f11c2cf07cf22d91413dd07c4c567ff6"
+    },
+    {
+      "name": "com.echoagent.sdk.JsonSupportTest",
+      "tests": 10,
+      "sha256": "60543554d4ffe988ea45c5743162bcd6b4d9c276c2e0487e6fbfcfaa8c3bd8f4"
+    },
+    {
+      "name": "com.echoagent.sdk.LateFactoryHostTest",
+      "tests": 1,
+      "sha256": "1c10b4c102c16a58ec93e50052128c269a0eed07b05489338d1f33c2686fd5c0"
+    },
+    {
+      "name": "com.echoagent.sdk.LifecycleTest",
+      "tests": 17,
+      "sha256": "4cf0a0df19c3751f62363c60d6f90ca97e80f814c081c6801553f65857b3bbb4"
+    },
+    {
+      "name": "com.echoagent.sdk.LlmApiProtocolTest",
+      "tests": 2,
+      "sha256": "e2d41727cfacd059ff7496806f06f888e5c75e6a6f1dd765007e97ea0a9e4e20"
+    },
+    {
+      "name": "com.echoagent.sdk.LspHostTest",
+      "tests": 1,
+      "sha256": "3675868c5c7239c0845fd3d055446b1faf99cbe4c72eb21b371666d9ec21ef32"
+    },
+    {
+      "name": "com.echoagent.sdk.ManagedComponentOperationsTest",
+      "tests": 3,
+      "sha256": "2ada038f16233ba4feba751719e20570fd694a56b4c09581ca723d24b3cf20d7"
+    },
+    {
+      "name": "com.echoagent.sdk.ManagedPersistenceTest",
+      "tests": 10,
+      "sha256": "2e4f4b61a8a1063cc5d52bc5be239f390e4f2ad11d46054db93b09951455726f"
+    },
+    {
+      "name": "com.echoagent.sdk.ManagedStoreHostTest",
+      "tests": 3,
+      "sha256": "d2e3f1497df994ee6797d99fe00dd01ced3141be084f7c8ef2134bb1cdd0e99c"
+    },
+    {
+      "name": "com.echoagent.sdk.MemoryPolicyValuesTest",
+      "tests": 2,
+      "sha256": "f19825a831aea3aa9ddf18df9b0c8135152c30ee80f955fc8375ce7adb77edc7"
+    },
+    {
+      "name": "com.echoagent.sdk.MemoryScopeTest",
+      "tests": 2,
+      "sha256": "726edd03520ba7812d6826f53e2d00bdc143891e698aeda18988bc4ddba4a9af"
+    },
+    {
+      "name": "com.echoagent.sdk.ModelInputModalityTest",
+      "tests": 2,
+      "sha256": "694ad7dde7058183d00e1da4f8fcdd711bf17d3dd31a21c4db5d5ca5c56b625b"
+    },
+    {
+      "name": "com.echoagent.sdk.ModelProfileTest",
+      "tests": 3,
+      "sha256": "277b11b94787ba80f8a9b3b54be8bc24b785c78a9c807d88d5831e6ad0c8930a"
+    },
+    {
+      "name": "com.echoagent.sdk.ParallelSessionHostTest",
+      "tests": 1,
+      "sha256": "a168663bb835fd739c5f16e455a71f7e61f08898919ee1d8cef9117f7708ef8f"
+    },
+    {
+      "name": "com.echoagent.sdk.PromptCacheLayoutTest",
+      "tests": 2,
+      "sha256": "49b5670b6c270885131ad507514e615b5a1b901041bc3719026221ef50a4b5e7"
+    },
+    {
+      "name": "com.echoagent.sdk.ProtocolHostTest",
+      "tests": 7,
+      "sha256": "b6193471c91824b8c284b8e1e4d004450d972c226913f8d406f20a5e8b1e96ac"
+    },
+    {
+      "name": "com.echoagent.sdk.ProtocolIntegrityTest",
+      "tests": 9,
+      "sha256": "e47a631626075b01cda09fcfb4c2f21912403c487c7cbec9507648935af42e3b"
+    },
+    {
+      "name": "com.echoagent.sdk.ProviderCapabilitiesTest",
+      "tests": 2,
+      "sha256": "5479c605dc70a9eb3a6dd5d92086d62bfa3f58021da01c6c54324c2b80161629"
+    },
+    {
+      "name": "com.echoagent.sdk.ReplayTerminalHostTest",
+      "tests": 1,
+      "sha256": "16dcff56bf0070b077a27d880d563cf5810a9a853ff6a393a083873725f06fde"
+    },
+    {
+      "name": "com.echoagent.sdk.ResourceLimitsTest",
+      "tests": 2,
+      "sha256": "95ebea5b970a0ad36b65d1fd3b35dfd9b076c8e600ec19f6261aae935731caed"
+    },
+    {
+      "name": "com.echoagent.sdk.ResponseFormatTest",
+      "tests": 2,
+      "sha256": "e392205edb701fb430c16b7e0877b6d37c597fec807f3676dd452372a7de5641"
+    },
+    {
+      "name": "com.echoagent.sdk.RetryPolicyTest",
+      "tests": 2,
+      "sha256": "4b27fef873572be20b2db108b42f086d6be058cf55c2a539d487d9710aa00779"
+    },
+    {
+      "name": "com.echoagent.sdk.RunReceiptApiTest",
+      "tests": 3,
+      "sha256": "561b0da44829de9386c46e0a7be9184b63951b2a95fd24527b8e5f2c07dd2d41"
+    },
+    {
+      "name": "com.echoagent.sdk.TaskStoreTest",
+      "tests": 3,
+      "sha256": "cf21b28cd1313a3db3f6bb5868207ea8aadd850136e7ee25ccf916d42f38d40a"
+    },
+    {
+      "name": "com.echoagent.sdk.ThinkingConfigTest",
+      "tests": 2,
+      "sha256": "1a5aaa6be02258af2c4b71fab2a6f89496993e107d0de261b53e27a5bec2cb75"
+    },
+    {
+      "name": "com.echoagent.sdk.ThinkingProfileTest",
+      "tests": 2,
+      "sha256": "422e3caa6635a68b9ecbf0373d35342d9819ba1fabdaec55a64e8b6a9d6b2e54"
+    },
+    {
+      "name": "com.echoagent.sdk.ThinkingProtocolTest",
+      "tests": 2,
+      "sha256": "672638ef3a26b05116ff2d8a268a45e5e14905b77b90696ff57e18dba8bd7dc7"
+    },
+    {
+      "name": "com.echoagent.sdk.TimeValuesTest",
+      "tests": 2,
+      "sha256": "e8f93d1decf8035169cff7fd3cd8492cc15409940659339b0a21c72198b8b1bc"
+    },
+    {
+      "name": "com.echoagent.sdk.TokenBudgetTest",
+      "tests": 2,
+      "sha256": "c37709e0ef1fdb85e0923429e97d545e74e47233b61e7e91dff15db8f6cf6d09"
+    },
+    {
+      "name": "com.echoagent.sdk.TurnModeTest",
+      "tests": 2,
+      "sha256": "e702b85d5d5408d8ebc52a62ec603f98b76399a7d2d5a9a6ac26635cd457deb5"
+    },
+    {
+      "name": "com.echoagent.sdk.TypedExtensionTest",
+      "tests": 5,
+      "sha256": "748f5cf137e8b7abcdc25232927881e886a75094f4d8c6fc47f1148882bed68a"
+    },
+    {
+      "name": "com.echoagent.sdk.Utf8SupportTest",
+      "tests": 5,
+      "sha256": "64733fd10e47791a2db90262b9a1dc679cd6ae6dd31fd8ea2ea06c2d9880dcc0"
+    }
+  ],
+  "zero_skip": true,
+  "all_examples_success": true,
+  "log": "/tmp/sdk-full-frozen-language-gates-corrected.log",
+  "log_sha256": "c4af37edd548db47b65a40378ec710015d724082e9cefb75b271e0b914a39adf",
+  "source_files": {
+    "sdks/typescript/src/client.ts": "97629fa8d9eb36ccbb9d62cfa72204fdf80ec71696f328311eda03fd1da44387",
+    "sdks/python/src/echo_agent_sdk/client.py": "61e61202c914b111951714de559c4d3efe74bfce29c4e62f14b292142f8ed021",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "7d4338978e75599415c3ef2d946f6b038263f088606aa134faa606e4e8d3af6c",
+    "sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java": "e709ae1ead76682174eea02eaee72d3af649a383249daf5d196df1ecc860bf9d",
+    "sdks/shared/contract-digests.json": "e4b3d2548b360c0fc20cbaa959dd61b53961a263a2c6712dfdd7a6c48635fd31"
+  },
+  "residual": [
+    "LSP diagnostics notification missing proof/repair, in preparation",
+    "final published framework successor and full generated inventory not yet accepted",
+    "final Rust workspace/semantic closure/main gates not completed"
+  ],
+  "runtime_diagnostics": "existing Java SLF4J no-provider notice retained; no compile warning disguised"
+}

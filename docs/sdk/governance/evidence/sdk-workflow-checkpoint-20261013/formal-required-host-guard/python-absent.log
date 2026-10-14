@@ -1,0 +1,10 @@
+
+==================================== ERRORS ====================================
+___________ ERROR collecting tests/test_workflow_checkpoint_host.py ____________
+tests/test_workflow_checkpoint_host.py:15: in <module>
+    raise RuntimeError("required Workflow Host missing")
+E   RuntimeError: required Workflow Host missing
+=========================== short test summary info ============================
+ERROR tests/test_workflow_checkpoint_host.py - RuntimeError: required Workflo...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.47s

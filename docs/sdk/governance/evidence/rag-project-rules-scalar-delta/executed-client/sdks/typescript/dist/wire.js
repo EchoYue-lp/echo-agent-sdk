@@ -1,0 +1,237 @@
+import { EchoAgentError } from "./errors.js";
+const MAX_SAFE_U64 = BigInt(Number.MAX_SAFE_INTEGER);
+const MAX_U64 = (1n << 64n) - 1n;
+const MIN_I64 = -(1n << 63n);
+const HANDLE_KINDS = new Set([
+    "agent",
+    "session",
+    "run",
+    "stream",
+    "task_run",
+    "plan_task",
+    "subagent",
+    "extension",
+    "facade_resource",
+]);
+const WIRE_VALUE_KINDS = new Set([
+    "null",
+    "bool",
+    "string",
+    "i64",
+    "u64",
+    "f64",
+    "bytes",
+    "duration",
+    "timestamp",
+    "path",
+    "handle",
+    "list",
+    "map",
+    "record",
+    "variant",
+    "unknown",
+]);
+function integerText(value, signed) {
+    if (typeof value === "number" && !Number.isSafeInteger(value)) {
+        throw new RangeError("integer exceeds the safe JavaScript wire range; pass a string or bigint");
+    }
+    let parsed;
+    try {
+        parsed = typeof value === "bigint" ? value : BigInt(value);
+    }
+    catch {
+        throw new TypeError("wire integer must be a canonical decimal value");
+    }
+    const upper = signed ? (1n << 63n) - 1n : MAX_U64;
+    if (signed ? parsed < MIN_I64 || parsed > upper : parsed < 0n || parsed > upper) {
+        throw new RangeError("integer is outside the i64/u64 wire range");
+    }
+    const text = parsed.toString();
+    if (typeof value === "string" && value !== text) {
+        throw new TypeError("wire integer string must be canonical decimal text");
+    }
+    return text;
+}
+export function wireU64(value) {
+    return { kind: "u64", value: integerText(value, false) };
+}
+export function wireI64(value) {
+    return { kind: "i64", value: integerText(value, true) };
+}
+export function wireBytes(value) {
+    return { kind: "bytes", value: { base64: Buffer.from(value).toString("base64").replace(/=+$/u, "") } };
+}
+export function wireUtf8Path(path) {
+    if (path.includes("\0") || !(path.startsWith("/") || path.startsWith("\\\\") || /^[A-Za-z]:[\\/]/u.test(path))) {
+        throw new TypeError("wire UTF-8 path must be absolute and NUL-free");
+    }
+    return { kind: "path", value: { encoding: "utf8", path } };
+}
+export function wireDuration(seconds, nanos) {
+    if (!Number.isInteger(nanos) || nanos < 0 || nanos >= 1_000_000_000) {
+        throw new RangeError("wire duration nanos must be in [0, 1_000_000_000)");
+    }
+    return { kind: "duration", value: { seconds: integerText(seconds, false), nanos } };
+}
+export function wireTimestamp(unixSeconds, nanos, rfc3339) {
+    if (!Number.isInteger(nanos) || nanos < 0 || nanos >= 1_000_000_000) {
+        throw new RangeError("wire timestamp nanos must be in [0, 1_000_000_000)");
+    }
+    return {
+        kind: "timestamp",
+        value: { unix_seconds: integerText(unixSeconds, true), nanos, ...(rfc3339 === undefined ? {} : { rfc3339 }) },
+    };
+}
+export function toWireValue(value) {
+    if (value === null || value === undefined)
+        return { kind: "null" };
+    if (typeof value === "boolean")
+        return { kind: "bool", value };
+    if (typeof value === "string")
+        return { kind: "string", value };
+    if (typeof value === "number") {
+        if (!Number.isFinite(value))
+            throw new TypeError("wire numbers must be finite");
+        if (Number.isInteger(value)) {
+            if (!Number.isSafeInteger(value) || BigInt(value) > MAX_SAFE_U64) {
+                throw new RangeError("integer exceeds the safe JavaScript wire range; pass a string");
+            }
+            return value < 0
+                ? { kind: "i64", value: String(value) }
+                : { kind: "u64", value: String(value) };
+        }
+        return { kind: "f64", value };
+    }
+    if (typeof value === "bigint") {
+        if (value < MIN_I64 || value > MAX_U64) {
+            throw new RangeError("integer is outside the i64/u64 wire range");
+        }
+        return value < 0n
+            ? { kind: "i64", value: value.toString() }
+            : { kind: "u64", value: value.toString() };
+    }
+    if (Array.isArray(value))
+        return { kind: "list", value: value.map(toWireValue) };
+    // Native domain maps may contain id/generation fields. Only the exact
+    // three-field handle shape is interpreted implicitly; extra fields stay maps.
+    if (isRecord(value) && Object.keys(value).length === 3 && "id" in value && "generation" in value && typeof value.kind === "string" && HANDLE_KINDS.has(value.kind)) {
+        return { kind: "handle", value: parseWireHandle(value) };
+    }
+    if (isWireValue(value)) {
+        if (value.kind === "handle")
+            parseWireHandle(value.value);
+        return value;
+    }
+    if (typeof value === "object") {
+        const entries = Object.entries(value).map(([key, entry]) => ({
+            key: { kind: "string", value: key },
+            value: toWireValue(entry),
+        }));
+        return { kind: "map", value: entries };
+    }
+    throw new TypeError(`unsupported wire value type: ${typeof value}`);
+}
+export function fromWireValue(value) {
+    if (!isRecord(value) || typeof value.kind !== "string")
+        return value;
+    switch (value.kind) {
+        case "null": return null;
+        case "bool":
+            if (typeof value.value !== "boolean")
+                throw projectionError("wire bool must be boolean");
+            return value.value;
+        case "string":
+            if (typeof value.value !== "string")
+                throw projectionError("wire string must be text");
+            return value.value;
+        case "f64":
+            if (typeof value.value !== "number" || !Number.isFinite(value.value))
+                throw projectionError("wire f64 must be finite numeric data");
+            return value.value;
+        case "i64": return decodeInteger(value, true);
+        case "u64": return decodeInteger(value, false);
+        case "handle": return parseWireHandle(value.value);
+        case "list":
+            if (!Array.isArray(value.value))
+                throw projectionError("wire list requires an array value");
+            return value.value.map(decodeWireChild);
+        case "map": {
+            if (!Array.isArray(value.value))
+                throw projectionError("wire map requires an entry array");
+            const object = {};
+            for (const entry of value.value) {
+                if (!isRecord(entry) || !isRecord(entry.key) || entry.key.kind !== "string" || typeof entry.key.value !== "string" || !("value" in entry)) {
+                    throw projectionError("native map projection requires string keys and explicit values");
+                }
+                const key = entry.key.value;
+                if (Object.hasOwn(object, key))
+                    throw projectionError("native map projection cannot preserve duplicate keys");
+                // Define an own data property: __proto__ is legal map data, not a setter.
+                Object.defineProperty(object, key, { value: decodeWireChild(entry.value), enumerable: true, writable: true, configurable: true });
+            }
+            return object;
+        }
+        // Preserve typed and future additive variants with their discriminator;
+        // dropping the wrapper would make unknown values impossible to round-trip.
+        default: return value;
+    }
+}
+export function isWireHandle(value) {
+    return isRecord(value)
+        && Object.keys(value).every(key => ["id", "generation", "kind"].includes(key))
+        && typeof value.id === "string"
+        && value.id.trim().length > 0
+        && Array.from(value.id).length <= 256
+        && typeof value.generation === "string"
+        && isCanonicalIntegerText(value.generation, false)
+        && typeof value.kind === "string"
+        && HANDLE_KINDS.has(value.kind);
+}
+export function parseWireHandle(value) {
+    if (!isWireHandle(value)) {
+        throw new TypeError("wire handle id, generation and kind must be valid");
+    }
+    return value;
+}
+export function isWireValue(value) {
+    if (!isRecord(value) || typeof value.kind !== "string")
+        return false;
+    if (!WIRE_VALUE_KINDS.has(value.kind))
+        return !hasWireHandleFields(value);
+    return value.kind === "null" || "value" in value;
+}
+function hasWireHandleFields(value) {
+    return "id" in value || "generation" in value;
+}
+function isCanonicalIntegerText(value, signed) {
+    if (typeof value !== "string")
+        return false;
+    try {
+        integerText(value, signed);
+        return true;
+    }
+    catch {
+        return false;
+    }
+}
+function decodeInteger(value, signed) {
+    if (typeof value.value !== "string") {
+        throw new TypeError("wire integer value must be canonical decimal text");
+    }
+    return integerText(value.value, signed);
+}
+function isRecord(value) {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+export function asJson(value) {
+    return value;
+}
+function projectionError(message) {
+    return new EchoAgentError("serialization_violation", message);
+}
+function decodeWireChild(value) {
+    if (!isRecord(value) || typeof value.kind !== "string")
+        throw projectionError("wire container child requires its discriminator");
+    return fromWireValue(value);
+}
+//# sourceMappingURL=wire.js.map

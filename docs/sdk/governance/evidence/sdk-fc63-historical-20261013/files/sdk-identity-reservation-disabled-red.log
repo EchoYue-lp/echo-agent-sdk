@@ -1,0 +1,33 @@
+   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
+    Finished `test` profile [unoptimized] target(s) in 47.69s
+     Running tests/core_profile_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/core_profile_e2e-bf95be7797833fb9)
+
+running 2 tests
+test explicit_session_create_reserves_persisted_turn_identity_before_new_run ... FAILED
+test session_load_reserves_persisted_turn_identity_before_new_run ... FAILED
+
+failures:
+
+---- explicit_session_create_reserves_persisted_turn_identity_before_new_run stdout ----
+
+thread 'explicit_session_create_reserves_persisted_turn_identity_before_new_run' (127488566) panicked at echo-sdk-host/tests/core_profile_e2e.rs:8170:13:
+assertion `left == right` failed
+  left: "恢复-session-🦀:turn:1"
+ right: "恢复-session-🦀:turn:8"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- session_load_reserves_persisted_turn_identity_before_new_run stdout ----
+
+thread 'session_load_reserves_persisted_turn_identity_before_new_run' (127488585) panicked at echo-sdk-host/tests/core_profile_e2e.rs:8170:13:
+assertion `left == right` failed
+  left: "恢复-session-🦀:turn:1"
+ right: "恢复-session-🦀:turn:8"
+
+
+failures:
+    explicit_session_create_reserves_persisted_turn_identity_before_new_run
+    session_load_reserves_persisted_turn_identity_before_new_run
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 29 filtered out; finished in 0.53s
+
+error: test failed, to rerun pass `-p echo-sdk-host --test core_profile_e2e`

@@ -23,7 +23,7 @@ final class JsonSupport {
             result.set("value", handle.toJson());
             return result;
         }
-        if (value instanceof JsonNode node && node.isObject() && node.has("kind")) {
+        if (value instanceof JsonNode node && node.isObject() && node.has("kind") && (java.util.Set.of("null","bool","string","i64","u64","f64","bytes","duration","timestamp","path","handle","list","map","record","variant","unknown").contains(node.path("kind").asText()) || !node.has("id") && !node.has("generation"))) {
             return (ObjectNode) node;
         }
         if (value instanceof Boolean bool) return result.put("kind", "bool").put("value", bool);
@@ -69,7 +69,18 @@ final class JsonSupport {
         if (value == null || !value.isObject() || !value.has("kind") || !value.get("kind").isTextual()) return value;
         return switch (value.get("kind").textValue()) {
             case "null" -> com.fasterxml.jackson.databind.node.NullNode.instance;
-            case "bool", "string", "f64" -> value.get("value");
+            case "bool" -> {
+                if (!value.path("value").isBoolean()) throw projectionError("wire bool must be boolean");
+                yield value.get("value");
+            }
+            case "string" -> {
+                if (!value.path("value").isTextual()) throw projectionError("wire string must be text");
+                yield value.get("value");
+            }
+            case "f64" -> {
+                if (!value.path("value").isNumber() || !Double.isFinite(value.path("value").doubleValue())) throw projectionError("wire f64 must be finite numeric data");
+                yield value.get("value");
+            }
             case "i64" -> {
                 WireValues.i64(requiredText(value, "value", "i64"));
                 yield value.get("value");
@@ -87,23 +98,60 @@ final class JsonSupport {
                 yield value.get("value");
             }
             case "list" -> {
+                if (!value.path("value").isArray()) throw projectionError("wire list requires an array value");
                 var values = MAPPER.createArrayNode();
-                for (JsonNode item : value.path("value")) values.add(fromWire(item));
+                for (JsonNode item : value.get("value")) values.add(decodeWireChild(item));
                 yield values;
             }
             case "map" -> {
+                if (!value.path("value").isArray()) throw projectionError("wire map requires an entry array");
                 var object = MAPPER.createObjectNode();
-                for (JsonNode entry : value.path("value")) {
-                    JsonNode key = entry.path("key");
-                    if (key.path("kind").asText().equals("string") && key.has("value")) {
-                        object.set(key.get("value").asText(), fromWire(entry.get("value")));
+                for (JsonNode entry : value.get("value")) {
+                    var key = entry.path("key");
+                    if (!entry.isObject() || !entry.has("value") || !"string".equals(key.path("kind").asText()) || !key.path("value").isTextual()) {
+                        throw projectionError("native map projection requires string keys and explicit values");
                     }
+                    var name = key.get("value").textValue();
+                    if (object.has(name)) throw projectionError("native map projection cannot preserve duplicate keys");
+                    object.set(name, decodeWireChild(entry.get("value")));
                 }
                 yield object;
             }
             // Preserve typed and future additive variants with their discriminator.
             default -> value;
         };
+    }
+
+    private static JsonNode decodeWireChild(JsonNode value){
+        if(value==null||!value.isObject()||!value.path("kind").isTextual())throw projectionError("wire container child requires its discriminator");
+        return fromWire(value);
+    }
+
+    /** Preserve raw typed/future variants; native projection rules do not restrict raw WireValue maps. */
+    static JsonNode validateWire(JsonNode value) {
+        if(value == null || !value.isObject() || !value.path("kind").isTextual())throw projectionError("WireValue requires its discriminator");
+        var kind=value.path("kind").textValue();
+        if(java.util.Set.of("bool","string","f64","i64","u64","handle").contains(kind))fromWire(value);
+        else if("list".equals(kind)){
+            if(!value.path("value").isArray())throw projectionError("wire list requires array value");
+            value.path("value").forEach(JsonSupport::validateWire);
+        } else if("map".equals(kind)){
+            if(!value.path("value").isArray())throw projectionError("wire map requires entry array");
+            for(var entry:value.path("value")){
+                if(!entry.isObject()||!entry.has("key")||!entry.has("value"))throw projectionError("wire map entry requires key/value");
+                validateWire(entry.get("key"));validateWire(entry.get("value"));
+            }
+        } else if(!"null".equals(kind)&&!value.has("value"))throw projectionError("typed wire value requires payload");
+        return value.deepCopy();
+    }
+
+    static JsonNode responseValue(JsonNode response) {
+        if (response == null || !response.isObject() || !response.path("value").isObject() || !response.path("value").path("kind").isTextual()) throw projectionError("facade response requires a value envelope");
+        return fromWire(response.get("value"));
+    }
+
+    private static EchoAgentException projectionError(String message) {
+        return new EchoAgentException("serialization_violation", message, "never", null, null);
     }
 
     private static String requiredText(JsonNode object, String field, String kind) {

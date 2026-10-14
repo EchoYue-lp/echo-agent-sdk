@@ -1,0 +1,490 @@
+{
+  "tests": {
+    "backend": {
+      "passed": 20,
+      "original": 13,
+      "retirement": 7
+    },
+    "typescript": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "python": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "java": {
+      "passed": 2,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "scenarios": [
+    {
+      "language": "typescript",
+      "enabled": false,
+      "proof": "typescript-unsupported-observed.json",
+      "counter_delta": {
+        "mutations": 0,
+        "projected_items": 0,
+        "duplicate_applies": 0
+      },
+      "retirement_callback_count": 1,
+      "callback_counts": {
+        "conversation_get_projection_authority_with_context": 2,
+        "runtime_load_scope_authority_with_context": 6,
+        "runtime_load_managed_state_with_context": 8,
+        "conversation_ensure_projection_epoch_with_context": 2,
+        "runtime_compare_and_save_checkpoint_with_context": 2,
+        "conversation_apply_transcript_projection_with_context": 2,
+        "runtime_acknowledge_transcript_projection_with_context": 2,
+        "runtime_retire_generation_with_context": 1
+      },
+      "host_generations": null,
+      "delete_callback_delta": 0,
+      "accepted_source_operation_calls": 2,
+      "error_codes": [
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::delete_persisted_conversation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        },
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::clear_persisted_runtime_incarnation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "language": "typescript",
+      "enabled": true,
+      "proof": "typescript-enabled-observed.json",
+      "counter_delta": {
+        "mutations": 1,
+        "projected_items": 0,
+        "duplicate_applies": 0
+      },
+      "retirement_callback_count": 1,
+      "callback_counts": {
+        "conversation_get_projection_authority_with_context": 2,
+        "runtime_load_scope_authority_with_context": 6,
+        "runtime_load_managed_state_with_context": 8,
+        "conversation_ensure_projection_epoch_with_context": 2,
+        "runtime_compare_and_save_checkpoint_with_context": 2,
+        "conversation_apply_transcript_projection_with_context": 2,
+        "runtime_acknowledge_transcript_projection_with_context": 2,
+        "runtime_retire_generation_with_context": 1
+      },
+      "host_generations": [
+        "1",
+        "2"
+      ],
+      "delete_callback_delta": 0,
+      "accepted_source_operation_calls": 4,
+      "error_codes": [
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::delete_persisted_conversation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "language": "python",
+      "enabled": false,
+      "proof": "python-unsupported-observed.json",
+      "counter_delta": {
+        "mutations": 0,
+        "projected_items": 0,
+        "duplicate_applies": 0
+      },
+      "retirement_callback_count": 1,
+      "callback_counts": {
+        "conversation_get_projection_authority_with_context": 2,
+        "runtime_load_scope_authority_with_context": 6,
+        "runtime_load_managed_state_with_context": 8,
+        "conversation_ensure_projection_epoch_with_context": 2,
+        "runtime_compare_and_save_checkpoint_with_context": 2,
+        "conversation_apply_transcript_projection_with_context": 2,
+        "runtime_acknowledge_transcript_projection_with_context": 2,
+        "runtime_retire_generation_with_context": 1
+      },
+      "host_generations": null,
+      "delete_callback_delta": 0,
+      "accepted_source_operation_calls": 2,
+      "error_codes": [
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::delete_persisted_conversation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        },
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::clear_persisted_runtime_incarnation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "language": "python",
+      "enabled": true,
+      "proof": "python-enabled-observed.json",
+      "counter_delta": {
+        "mutations": 1,
+        "projected_items": 0,
+        "duplicate_applies": 0
+      },
+      "retirement_callback_count": 1,
+      "callback_counts": {
+        "conversation_get_projection_authority_with_context": 2,
+        "runtime_load_scope_authority_with_context": 6,
+        "runtime_load_managed_state_with_context": 8,
+        "conversation_ensure_projection_epoch_with_context": 2,
+        "runtime_compare_and_save_checkpoint_with_context": 2,
+        "conversation_apply_transcript_projection_with_context": 2,
+        "runtime_acknowledge_transcript_projection_with_context": 2,
+        "runtime_retire_generation_with_context": 1
+      },
+      "host_generations": [
+        "1",
+        "2"
+      ],
+      "delete_callback_delta": 0,
+      "accepted_source_operation_calls": 4,
+      "error_codes": [
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::delete_persisted_conversation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "language": "java",
+      "enabled": false,
+      "proof": "java-unsupported-observed.json",
+      "counter_delta": {
+        "mutations": 0,
+        "projected_items": 0,
+        "duplicate_applies": 0
+      },
+      "retirement_callback_count": 1,
+      "callback_counts": {
+        "conversation_get_projection_authority_with_context": 2,
+        "runtime_load_scope_authority_with_context": 6,
+        "runtime_load_managed_state_with_context": 8,
+        "conversation_ensure_projection_epoch_with_context": 2,
+        "runtime_compare_and_save_checkpoint_with_context": 2,
+        "conversation_apply_transcript_projection_with_context": 2,
+        "runtime_acknowledge_transcript_projection_with_context": 2,
+        "runtime_retire_generation_with_context": 1
+      },
+      "host_generations": null,
+      "delete_callback_delta": 0,
+      "accepted_source_operation_calls": 2,
+      "error_codes": [
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::delete_persisted_conversation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        },
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::clear_persisted_runtime_incarnation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "language": "java",
+      "enabled": true,
+      "proof": "java-enabled-observed.json",
+      "counter_delta": {
+        "mutations": 1,
+        "projected_items": 0,
+        "duplicate_applies": 0
+      },
+      "retirement_callback_count": 1,
+      "callback_counts": {
+        "conversation_get_projection_authority_with_context": 2,
+        "runtime_load_scope_authority_with_context": 6,
+        "runtime_load_managed_state_with_context": 8,
+        "conversation_ensure_projection_epoch_with_context": 2,
+        "runtime_compare_and_save_checkpoint_with_context": 2,
+        "conversation_apply_transcript_projection_with_context": 2,
+        "runtime_acknowledge_transcript_projection_with_context": 2,
+        "runtime_retire_generation_with_context": 1
+      },
+      "host_generations": [
+        "1",
+        "2"
+      ],
+      "delete_callback_delta": 0,
+      "accepted_source_operation_calls": 4,
+      "error_codes": [
+        {
+          "code": "framework_error",
+          "operation": "echo_agent::state::delete_persisted_conversation",
+          "details": {
+            "fields": [
+              {
+                "key": "framework_failure_category",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_terminal_kind",
+                "value": "failed"
+              },
+              {
+                "key": "framework_failure_code",
+                "value": "runtime_state"
+              },
+              {
+                "key": "framework_retryable",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "raw_files": [
+    {
+      "path": "TEST-com.echoagent.sdk.ManagedRetirementHostTest.xml",
+      "sha256": "7704651079e52ca7a0d15d347e7f5b4aa48569628e02b15c6b7b7174667c4a97"
+    },
+    {
+      "path": "backend-final.log",
+      "sha256": "52c49a6d079d703d1edbaddcd1aaf807a1f710da137beaf143244fdb03f60d90"
+    },
+    {
+      "path": "java-enabled-durable-state.json",
+      "sha256": "28908f036b500b1cf61eaf93554e097f444d89fbe243ce79514e207f972391e5"
+    },
+    {
+      "path": "java-enabled-observed.json",
+      "sha256": "53556bd22689f70fcf0804b57636536a2e621820aa3bfb58261e0fce4d183140"
+    },
+    {
+      "path": "java-final.log",
+      "sha256": "63a2883f81c16228f8b7fbe0d36f91c596eed8daf84b7cde611a3d4821f8c295"
+    },
+    {
+      "path": "java-initial-test-assertion-failure.xml",
+      "sha256": "7fd0db4ab9d04341647c776517b620e1ed84b3a3b202febf76b7e367323f64b6"
+    },
+    {
+      "path": "java-unsupported-durable-state.json",
+      "sha256": "152f9318c9bbd1119a2a355f9c11dc79684074437d8705ba96c11346fa3327c9"
+    },
+    {
+      "path": "java-unsupported-observed.json",
+      "sha256": "6b974c1abaf6a9bb2415e1a416e07aa1cb862b5f6f1e16641bb493ed351657d9"
+    },
+    {
+      "path": "python-enabled-durable-state.json",
+      "sha256": "01a57dff219e0ba0fef1a1c34ccfe80ebda7e8501902723afd430bb43ce66a0e"
+    },
+    {
+      "path": "python-enabled-observed.json",
+      "sha256": "359d1c5fad906c16d51be3cf4e84ae3b6b5150c813494089d09e816b3da87daa"
+    },
+    {
+      "path": "python-final.log",
+      "sha256": "1d8c05be7bb467463a2abb004b80cd79dfc2c9ec8813cddcf60cbb0d3d064d11"
+    },
+    {
+      "path": "python-style.log",
+      "sha256": "c6486b51f483249343d4a4bdb91c41be31f0bdc28887b2f4cd4800e174f8bd6b"
+    },
+    {
+      "path": "python-unsupported-durable-state.json",
+      "sha256": "6d10a13e24d042603974a206c760cef51bdd7e231f52e6747d795297f7eefc9a"
+    },
+    {
+      "path": "python-unsupported-observed.json",
+      "sha256": "5e79b71d5b10ae7d3201bf06ea2eff5fe555a186a9e0b6324503bb9c6a78b80f"
+    },
+    {
+      "path": "source-freeze.json",
+      "sha256": "9c794988b68140d3a0e87a5f43b8a2f9dd2310aa5c70822d6ffa98e8f26f3f46"
+    },
+    {
+      "path": "typescript-enabled-durable-state.json",
+      "sha256": "6f3d58bd4e8831b286840c2a10f2134deef7a18ba5132962c1e2202fb5bece4a"
+    },
+    {
+      "path": "typescript-enabled-observed.json",
+      "sha256": "532dd3044f98c053d0af37f36b805e115e5e8d6becd17646f1ff7adaf7aa033f"
+    },
+    {
+      "path": "typescript-final.log",
+      "sha256": "36e7cd81751e8b914d5bbcf887113a91d303402fcc9b46e913be63a1df366098"
+    },
+    {
+      "path": "typescript-unsupported-durable-state.json",
+      "sha256": "906a9263b357313289119385abd522527f7035d4c8f36dc544b09b0052bc5524"
+    },
+    {
+      "path": "typescript-unsupported-observed.json",
+      "sha256": "141c3f060770c93f567109718358cc68d9176d4eaeb1c671fdf14eb5d758f353"
+    }
+  ]
+}

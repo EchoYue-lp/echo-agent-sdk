@@ -1,0 +1,33 @@
+{
+  "phase": "red",
+  "case": "host",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "echo-sdk-host",
+    "--all-features",
+    "--locked",
+    "--test",
+    "core_profile_e2e",
+    "ack_window_snapshot_ack_resumes_strictly_after_watermark",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/gap-watermark-red-evidence/source",
+  "environment": {
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "startedAt": "2026-10-13T16:19:35.837947+00:00",
+  "finishedAt": "2026-10-13T16:19:48.840297+00:00",
+  "exitCode": 101,
+  "eventsSha256": "2b372ce338a031cdd39723e98f1716b25a2986ccfb205709b787ad534ea04218",
+  "logSha256": "5aa34750c4ba7e19d3b4362409b2331e8333544899efb550c31ca6205c63af8b",
+  "productionSdkEventsUnchanged": true,
+  "frameworkSourcesUnchanged": true
+}
