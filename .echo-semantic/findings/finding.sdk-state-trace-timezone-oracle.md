@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-state-trace-timezone-oracle
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: medium
 primary_focus: contract_evidence
 focus:
@@ -13,12 +13,17 @@ behavior_refs:
 - behavior.sdk-language-clients
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
-audit_refs: []
+evidence_refs:
+- evidence.sdk-state-trace-timezone-oracle-closure
+audit_refs:
+- audit.sdk-state-trace-timezone-oracle-closure
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-state-trace-timezone-oracle-closure
+verification_evidence_refs:
+- evidence.sdk-state-trace-timezone-oracle-closure
+rereview_audit_refs:
+- audit.sdk-state-trace-timezone-oracle-closure
 discovered_at: 9a59943e70da06b1af231b1fb22bddc879885f28
 ---
 
@@ -49,3 +54,16 @@ discovered_at: 9a59943e70da06b1af231b1fb22bddc879885f28
 ## 后继CI状态观察（原候选之后）
 
 原上文“38643983612仍live”是候选准备当时的状态。Root后续已确认该运行终态failure；本Finding尚未读取其新原始失败日志，不据结果名推断它与旧eebd反例同cause，也不声称修复已验证。原执行版本、发现观察和旧日志Hash不改变。
+
+
+## 后继具名局部闭合候选
+
+原LinuxState/Trace expected+08与actual+00是同瞬时纳秒，原raw保而非serializer bug。Time5只显式checkpoint timestamp/TraceSummary started_at finished_at按signed integer秒+nanos比较；UTC/+00与Shanghai/+08输出格式强断言，non-time完整DTO/未知字段/absent-null/Bigint9007199254740993/rawredaction/IOretry/冷恢复及Deliverysameinstance边界保。pure14和3语各4=12真实native/84rawtimestamps全部0，12真实Hostgeneration2；Java实际JDK21非远端17。SDKcap实际源/native/99档材料独审PASS0。
+
+第四次原官方完整入口已真实exit0：TS336/PY415+18/Java355与76份freshXML/3quickstarts；800输入前后相同，原Host0f1。执行HEAD9dd只有client399961当时未提交，之后b0保存同字节，不假9dd已含after。此前三次完整失败receipt均保：前两次分别因launcher和nonAtomicGap止于TS，PY/Java未达；第三次TS336通过，Python414通过/1失败（另18子测试通过），Java未达。Gap只是独立测试oracle：GET旧水位与稍后REPLAY不是原子equal，9dd具名before红/连续真实序号+terminal独立upperbound after已审，不新生产Finding、不默认ACK缺陷。第四whole整体证据与正式95件归档均已独立复审PASS C0/I0/M0，随后原字节提交为b315f03；本次当期观察只增该真实Git正式引用，候选仍待元材料最后refs轻核及Root授权安装。
+原before正文、discovered_at和所有旧raw时间保；resolved仅Admin候选，Root整体/正式新包独审PASS和最终版本绑定后才准安装，B/12残余不关。
+
+
+## 正式完整入口出处的当期复核
+
+本次当期观察Git b315f03保存新whole正式包及各原修复源码；source refs旧focused修复链与其运行时间保持，b315不是原执行日期。原第四whole执行HEAD9dd含一未提交client399961，b0继承保存同字节；800before/after/sourceGitBindings逐byte/mode匹配，不假9dd含修后生产源。

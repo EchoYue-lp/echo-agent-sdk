@@ -19,6 +19,7 @@ evidence_refs:
 - evidence.sdk-extension-teardown-prefix-verification
 - evidence.sdk-factory-child-settlement-verification
 - evidence.sdk-tools-bridge-finite-observation
+- evidence.sdk-python310-factory-timeout-closure
 finding_refs:
 - finding.sdk-extension-pending-stream-owner
 - finding.sdk-factory-instance-routing
@@ -31,6 +32,7 @@ finding_refs:
 - finding.sdk-extension-teardown-stream-prefix
 - finding.sdk-task-resume-extension-invocation-conflict
 - finding.sdk-factory-terminal-close-settlement
+- finding.sdk-python310-factory-cleanup-timeout-classification
 audit_refs:
 - audit.sdk-managed-retirement-rereview
 - audit.sdk-tools-bridge-finite-trigger-input
@@ -41,6 +43,7 @@ audit_refs:
 - audit.sdk-tools-bridge-finite-failure-concurrency
 - audit.sdk-tools-bridge-finite-permission-external
 - audit.sdk-tools-bridge-finite-contract-evidence
+- audit.sdk-python310-factory-timeout-closure
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -313,3 +316,8 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## 当前有界Tools与reverse角色
 
 sharedEvidence/8Audit对应真实5bcb与原runtime69b；原failurecause两个remote子scope已sourceconsumer修复，不推全Workflow/Memory/Eval。框架仍唯一schema/ToolFailure/LLMterminal authority，Hostthin。各旧原packet与after3focused本体保持，原whole790不冒afterpatch新whole；状态mapped仅建模examined。
+
+
+## Python3.10 Factory cleanup typed超时局部闭合
+
+新具名Finding finding.sdk-python310-factory-cleanup-timeout-classification承接受支持3.10真实wait_for异常被builtin捕获漏掉而返回extension_failed的单行生产缺陷。修后asyncio.TimeoutError恢复原extension_timeout/after_delay，shield/pendingchild owner/retry和cleanup权威不变；原测试不改、两版本各31及第四whole按各sourcecut读取，三链由上述specificEvidence/Audit承接。原map观察/场景source_refs与所有旧义务保，不因本局部closed提升Bridge/LanguageBehavior或B物理/12连续性。SDKmain/平台另验，不新增状态/contract/API。
