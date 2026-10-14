@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+  "steps": [
+    {
+      "label": "node20-system-python3-computation-launcher-after",
+      "command": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-hash-streaming/node20-npm-cache/_npx/185e25162edaacfb/node_modules/node/bin/node",
+        "--test",
+        "test/computation-host.test.js"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/computation-after.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 849,
+      "bytesWritten": 849,
+      "startedAt": "2026-10-14T23:20:02.142Z",
+      "finishedAt": "2026-10-14T23:20:04.624Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T23:20:04.624Z"
+}

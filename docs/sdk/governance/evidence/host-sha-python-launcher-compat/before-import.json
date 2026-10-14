@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-c",
+    "import sys; sys.path.insert(0,sys.argv[1]); from file_sha256 import file_sha256; print(file_sha256(sys.argv[2]))",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/file_sha256.py"
+  ],
+  "exitCode": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/file_sha256.py\", line 7, in <module>\n    def file_sha256(path: Path | str) -> str:\nTypeError: unsupported operand type(s) for |: 'type' and 'type'\n",
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+  "python3Version": "Python 3.9.6",
+  "python3Executable": "/Library/Developer/CommandLineTools/usr/bin/python3",
+  "sourceBeforeSHA256": "e0902802828617dbaa98a93f16e8dceb538a989adcd813a6a4612a5b926c7ba8",
+  "sourceGit": "65c2c304b9a232f7a0bddc44c12cd8e9057db05f",
+  "rootCause": "TS explicitly execs python3, system3.9 evaluates Path|str on helper import; UV Python3.10 choice does not replace this subprocess launcher",
+  "existingPattern": "computation_fixture.py already uses from __future__ import annotations"
+}

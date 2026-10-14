@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "-c",
+    "import sys; sys.path.insert(0,sys.argv[1]); from file_sha256 import file_sha256; print(file_sha256(sys.argv[2]))",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/file_sha256.py"
+  ],
+  "exitCode": 0,
+  "stdout": "0aa3acef4d3bb87f94ce521ac48c0b92b9102256b359ca00d9459ec27e31dc0b\n",
+  "stderr": "",
+  "sourceAfterSHA256": "0aa3acef4d3bb87f94ce521ac48c0b92b9102256b359ca00d9459ec27e31dc0b"
+}

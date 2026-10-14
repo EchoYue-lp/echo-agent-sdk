@@ -1,5 +1,7 @@
 """固定分块计算测试证据摘要，不把大型 Host 二进制整体载入内存。"""
 
+from __future__ import annotations
+
 import hashlib
 from pathlib import Path
 

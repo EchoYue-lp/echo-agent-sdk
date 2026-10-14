@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "scope": "test helper annotation import compatibility only; no PythonSDK minimum change or whole-gate claim",
+  "sourcePath": "sdks/shared/testing/file_sha256.py",
+  "beforeSHA256": "e0902802828617dbaa98a93f16e8dceb538a989adcd813a6a4612a5b926c7ba8",
+  "afterSHA256": "0aa3acef4d3bb87f94ce521ac48c0b92b9102256b359ca00d9459ec27e31dc0b",
+  "onlyFutureImportAddedAndFunctionASTUnchanged": true,
+  "originalMemberCount": 16,
+  "originals": [
+    {
+      "path": "before-import.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/before-import.json",
+      "sha256": "387c5d68ca6d81848eb9baee3101df6b08cac88f1a14a2494d22140e73fa3b37",
+      "bytes": 1516
+    },
+    {
+      "path": "before-import.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/before-import.log",
+      "sha256": "68f27afd6d0236e5869e5382aa6ffa73fd233135667d60ad5e459e7902a5dee8",
+      "bytes": 356
+    },
+    {
+      "path": "after-import.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/after-import.json",
+      "sha256": "ac71ba6ed165ec5837168cc83c95e51de716d2867328d8adf1d4e1dd7afb2fed",
+      "bytes": 656
+    },
+    {
+      "path": "after-import.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/after-import.log",
+      "sha256": "93248027c7b4fb20de66f345953d79632fa2836e9350dbe64144f31b97575ec1",
+      "bytes": 65
+    },
+    {
+      "path": "file_sha256-before.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/file_sha256-before.py",
+      "sha256": "e0902802828617dbaa98a93f16e8dceb538a989adcd813a6a4612a5b926c7ba8",
+      "bytes": 363
+    },
+    {
+      "path": "file_sha256-after.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/file_sha256-after.py",
+      "sha256": "0aa3acef4d3bb87f94ce521ac48c0b92b9102256b359ca00d9459ec27e31dc0b",
+      "bytes": 399
+    },
+    {
+      "path": "fix.patch",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/fix.patch",
+      "sha256": "f0540ef3ead92a2d743550df0e67a47c9b255700281da64ca693bd772eaa44e2",
+      "bytes": 275
+    },
+    {
+      "path": "computation-after.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/computation-after.log",
+      "sha256": "e44c1baabd0e7c9ccbd691679f2ee7746f26c3d72f6fda193dece8b84fb5e9e6",
+      "bytes": 849
+    },
+    {
+      "path": "computation-after-run.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/computation-after-run.json",
+      "sha256": "873fa21085ccbb06f34826586d498e3b02b38d0f8fff98eb6346bd6c65a59dca",
+      "bytes": 1078
+    },
+    {
+      "path": "python310-after.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/python310-after.log",
+      "sha256": "a7e6f1875e58f375e62b28e33ebea6ccaf11e3f35f1d805b3e645c1b2171117e",
+      "bytes": 98
+    },
+    {
+      "path": "python310-after-run.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/python310-after-run.json",
+      "sha256": "bcfe1f91e33b9a09a363d2a67f2c936c0e4838a5a9b8830516fa9f7053e8b362",
+      "bytes": 1079
+    },
+    {
+      "path": "source-and-result-receipt.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/source-and-result-receipt.json",
+      "sha256": "681be91f85d6bc470ab803ed9013aca376c82d8f5a0b1aa46ab4fee9a4924eb9",
+      "bytes": 3883
+    },
+    {
+      "path": "native/results.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/native/results.json",
+      "sha256": "5c7f1ed394e4313662a8d05e627d16ee47bde609176679c2c1b558d1db59c260",
+      "bytes": 509619
+    },
+    {
+      "path": "native/scenario.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/native/scenario.json",
+      "sha256": "5a54de24800b76bd3c3b874bd61a54af237c570152004ca63adb8be713e4710b",
+      "bytes": 279059
+    },
+    {
+      "path": "history/full-language-failed.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-ci-repairs-final/full-language.log",
+      "sha256": "bceaedfdb43d224a3cda60846a0706c51fad87715bffc132245257924617a1ee",
+      "bytes": 93853
+    },
+    {
+      "path": "history/full-language-failed-receipt.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-ci-repairs-final/receipt.json",
+      "sha256": "91db9d267ee13a6a4cda15fabff1d4d7d53caa157e041b23b0f0b6bb05af607d",
+      "bytes": 2910
+    }
+  ],
+  "actualFocusedCounts": {
+    "systemPython39ImportBeforeExit": 1,
+    "systemPython39ImportAfterExit": 0,
+    "typescriptTestMethods": 1,
+    "nativeCalls": 61,
+    "typedErrors": 25,
+    "oracleGroups": 11,
+    "protectedFiles": 8,
+    "python310UnitTests": 6
+  },
+  "old40FilePacketModified": false,
+  "fullLanguageGatePerformedByThisSlice": false,
+  "independentReview": "pending after seal"
+}

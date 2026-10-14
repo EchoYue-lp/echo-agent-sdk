@@ -1,0 +1,58 @@
+{
+  "sourceAfterSHA256": "0aa3acef4d3bb87f94ce521ac48c0b92b9102256b359ca00d9459ec27e31dc0b",
+  "sourceBeforeSHA256": "e0902802828617dbaa98a93f16e8dceb538a989adcd813a6a4612a5b926c7ba8",
+  "functionBodyAndAllASTExceptFutureImportIdentical": true,
+  "actualPython3Version": "Python 3.9.6",
+  "actualPython3Executable": "/Library/Developer/CommandLineTools/usr/bin/python3",
+  "nodeVersion": "v20.20.2",
+  "nativeEnvironmentOverrides": {
+    "TZ": "UTC",
+    "UV_PYTHON": "3.10",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-sha-python-launcher-compat/runtime",
+    "ECHO_AGENT_SDK_REQUIRE_HOST_E2E": "1",
+    "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host"
+  },
+  "PATHNotOverridden": true,
+  "originalWholeEnvironment": {
+    "PATH": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-hash-streaming/node20-npm-cache/_npx/185e25162edaacfb/node_modules/node/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/ls/.codex/tmp/arg0/codex-arg0XUB7fe:/Users/ls/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/ls/.local/bin:/Users/ls/.nvm/versions/node/v22.19.0/bin:/Users/ls/MyWork/code/go/go_path:/Users/ls/MyWork/kits/apache-maven-3.9.0/bin:/Users/ls/MyWork/kits/scala-2.12.17/bin:/usr/local/protobuf/bin:/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home/bin:/Users/ls/MyWork/kits/gradle-6.4/bin:/opt/homebrew/opt/node@18/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/Users/ls/.cargo/bin:/Users/ls/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "CARGO_TARGET_DIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-ci-repairs-final/runtime",
+    "UV_PYTHON": "3.10.19",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TZ": "UTC"
+  },
+  "wholeFailureRetained": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-ci-repairs-final/full-language.log",
+    "sha256": "bceaedfdb43d224a3cda60846a0706c51fad87715bffc132245257924617a1ee",
+    "bytes": 93853,
+    "exitCode": 1,
+    "sourceInputsUnchanged": true,
+    "TS": {
+      "tests": 336,
+      "pass": 335,
+      "fail": 1
+    },
+    "PythonJavaAndQuickstartsReached": false,
+    "staleJavaReceiptCountersAreNotThisExecutionProof": true
+  },
+  "focusedAfter": {
+    "typescriptTestMethods": 1,
+    "nativeCalls": 61,
+    "typedErrors": 25,
+    "oracleGroups": 11,
+    "protectedFiles": 8,
+    "python310UnitTests": 6
+  },
+  "hostSHA256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "publicPythonSDKMinimumChanged": false,
+  "fullLanguageGatePerformedByThisSlice": false,
+  "ruffCheckAndFormatCheckObservedExit0": true,
+  "ruffObservations": "actual tool-call result All checks passed!/1 file already formatted; no fabricated run receipt",
+  "workResultsSHA256": "5c7f1ed394e4313662a8d05e627d16ee47bde609176679c2c1b558d1db59c260",
+  "scenarioSHA256": "5a54de24800b76bd3c3b874bd61a54af237c570152004ca63adb8be713e4710b"
+}

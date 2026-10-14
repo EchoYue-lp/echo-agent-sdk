@@ -258,3 +258,7 @@ docs/sdk/governance/evidence/state-trace-timezone-oracle/native/typescript-build
 docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/history/language-cancelled.log -diff
 docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/source-review-v2/implementation.patch -diff
 docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/source-review/implementation.patch -diff
+
+# Immutable Python launcher regression witnesses.
+docs/sdk/governance/evidence/host-sha-python-launcher-compat/fix.patch -diff
+docs/sdk/governance/evidence/host-sha-python-launcher-compat/history/full-language-failed.log -diff
