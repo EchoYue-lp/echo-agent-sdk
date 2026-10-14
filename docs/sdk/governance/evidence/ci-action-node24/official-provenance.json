@@ -1,0 +1,143 @@
+{
+  "sdk_head": "9a59943e70da06b1af231b1fb22bddc879885f28",
+  "actions": [
+    {
+      "repository": "actions/setup-node",
+      "tag": "v6.5.0",
+      "sha": "249970729cb0ef3589644e2896645e5dc5ba9c38"
+    },
+    {
+      "repository": "actions/setup-java",
+      "tag": "v5.6.0",
+      "sha": "03ad4de0992f5dab5e18fcb136590ce7c4a0ac95"
+    },
+    {
+      "repository": "astral-sh/setup-uv",
+      "tag": "v7.6.0",
+      "sha": "37802adc94f370d6bfd71619e3f0bf239e1f3b78"
+    }
+  ],
+  "responses_and_entities": [
+    {
+      "url": "https://api.github.com/repos/actions/setup-node/commits/v6.5.0",
+      "status": 200,
+      "path": "actions-setup-node/tag-commit.response.json",
+      "sha256": "ce4aab9df9f7c42c495471fa9ef7935a87bfc8228695f664a4ce3c9123421b9e",
+      "bytes": 52965
+    },
+    {
+      "url": "https://api.github.com/repos/actions/setup-node/releases/tags/v6.5.0",
+      "status": 200,
+      "path": "actions-setup-node/release.response.json",
+      "sha256": "a1723e43946c0481a2b6c8b9c4513aafd73e14e5d41098cb49386b423d57bea5",
+      "bytes": 2349
+    },
+    {
+      "url": "https://api.github.com/repos/actions/setup-node/contents/README.md?ref=249970729cb0ef3589644e2896645e5dc5ba9c38",
+      "status": 200,
+      "path": "actions-setup-node/README.md.response.json",
+      "sha256": "34d6c867722654b8a6eb375fec54d643488244355201a37ea5871b99c79edf60",
+      "bytes": 20281
+    },
+    {
+      "path": "actions-setup-node/README.md",
+      "sha256": "cc9b4c3d047fc8cd194be182981e693aa169cd8a87647cea6d90e4adff04ead1",
+      "bytes": 14029,
+      "source": "exact base64-decoded GitHub Contents response at pinned commit; not reformatted"
+    },
+    {
+      "url": "https://api.github.com/repos/actions/setup-node/contents/action.yml?ref=249970729cb0ef3589644e2896645e5dc5ba9c38",
+      "status": 200,
+      "path": "actions-setup-node/action.yml.response.json",
+      "sha256": "56e321faa27479306bfbb9347535bf52fadbd6ab13462d08caa7f6994cf8bff2",
+      "bytes": 4813
+    },
+    {
+      "path": "actions-setup-node/action.yml",
+      "sha256": "ad45f1922115116fb4706651d0a9262332bc4e4f11eb2021e09789dd1af18085",
+      "bytes": 2797,
+      "source": "exact base64-decoded GitHub Contents response at pinned commit; not reformatted"
+    },
+    {
+      "url": "https://api.github.com/repos/actions/setup-java/commits/v5.6.0",
+      "status": 200,
+      "path": "actions-setup-java/tag-commit.response.json",
+      "sha256": "bbd146fba2451551a6781ca7261d8b104a777d5fc89ab2f32b555cd2223763a1",
+      "bytes": 49281
+    },
+    {
+      "url": "https://api.github.com/repos/actions/setup-java/releases/tags/v5.6.0",
+      "status": 200,
+      "path": "actions-setup-java/release.response.json",
+      "sha256": "0d992f7404dd0dbbb032dd5d9222969fc53389c8f8d72c408381f857ea7e5210",
+      "bytes": 2802
+    },
+    {
+      "url": "https://api.github.com/repos/actions/setup-java/contents/README.md?ref=03ad4de0992f5dab5e18fcb136590ce7c4a0ac95",
+      "status": 200,
+      "path": "actions-setup-java/README.md.response.json",
+      "sha256": "55021ad19aa374bce3cd6d90d67eef5f96dd5423b693572b817e423cea65b426",
+      "bytes": 32115
+    },
+    {
+      "path": "actions-setup-java/README.md",
+      "sha256": "51ff55baf909691a15752558a8c0ace901a7cdcadfeb0adca7dc5f198461edc9",
+      "bytes": 22618,
+      "source": "exact base64-decoded GitHub Contents response at pinned commit; not reformatted"
+    },
+    {
+      "url": "https://api.github.com/repos/actions/setup-java/contents/action.yml?ref=03ad4de0992f5dab5e18fcb136590ce7c4a0ac95",
+      "status": 200,
+      "path": "actions-setup-java/action.yml.response.json",
+      "sha256": "55631d61e800b2a6bbbb3e1117b59889e43f26fbb7d6dfff46f2d868a299eddb",
+      "bytes": 9425
+    },
+    {
+      "path": "actions-setup-java/action.yml",
+      "sha256": "0cb7ac2ee9a789775502f63c258ba28936f9dee1135ca7d815644558603c688d",
+      "bytes": 6147,
+      "source": "exact base64-decoded GitHub Contents response at pinned commit; not reformatted"
+    },
+    {
+      "url": "https://api.github.com/repos/astral-sh/setup-uv/commits/v7.6.0",
+      "status": 200,
+      "path": "astral-sh-setup-uv/tag-commit.response.json",
+      "sha256": "cc32973a137ec103e6f7226648722a6a749ce8f20b7b4105596bd47fb110a866",
+      "bytes": 17982
+    },
+    {
+      "url": "https://api.github.com/repos/astral-sh/setup-uv/releases/tags/v7.6.0",
+      "status": 200,
+      "path": "astral-sh-setup-uv/release.response.json",
+      "sha256": "b35639fa5ef2a960de6ee859d524f54de7a0bc700c6d86eeb4aac4f65fe78db1",
+      "bytes": 2888
+    },
+    {
+      "url": "https://api.github.com/repos/astral-sh/setup-uv/contents/README.md?ref=37802adc94f370d6bfd71619e3f0bf239e1f3b78",
+      "status": 200,
+      "path": "astral-sh-setup-uv/README.md.response.json",
+      "sha256": "6196ac7d5f2b75f8b2f484a58c094d32ffb55599a93e435d25732840fdd15783",
+      "bytes": 17777
+    },
+    {
+      "path": "astral-sh-setup-uv/README.md",
+      "sha256": "7beb855c0f0a28fa44225cb3f8df3fd475307b61b7248eed2a8c2feb8a187441",
+      "bytes": 12212,
+      "source": "exact base64-decoded GitHub Contents response at pinned commit; not reformatted"
+    },
+    {
+      "url": "https://api.github.com/repos/astral-sh/setup-uv/contents/action.yml?ref=37802adc94f370d6bfd71619e3f0bf239e1f3b78",
+      "status": 200,
+      "path": "astral-sh-setup-uv/action.yml.response.json",
+      "sha256": "872e25d8daee5a015343f7de5302f9254de747a2b472bfbe387f6e7d74780f68",
+      "bytes": 6325
+    },
+    {
+      "path": "astral-sh-setup-uv/action.yml",
+      "sha256": "fb1672973d8ed83aa98a26f908b2946aafa01d415299913d55bb135ab0864752",
+      "bytes": 3897,
+      "source": "exact base64-decoded GitHub Contents response at pinned commit; not reformatted"
+    }
+  ],
+  "network_limitations": "web search returned HTTP404 invalid /v1/alpha/search; direct raw.githubusercontent reads reset; official api.github.com responses above were actually200. No claim of warning-free runtime before new CI."
+}

@@ -1,0 +1,8 @@
+{
+  "head": "ab87d70ebccece5ceb7987931d244bab7ac069fb",
+  "path": ".github/workflows/rust-ci.yml",
+  "beforeSha256": "c42a5197da5bb7b46c9af98fa57b78dc612e4e717a23f781bf9a273a6cdce78c",
+  "afterSha256": "b37d59b4349e956c8c6eee19f41e8d4dfa1c48a2ca4396b321f6350388b12021",
+  "bytes": 6827,
+  "scope": "only three reviewed action uses and version comments; no new CI result"
+}

@@ -1,0 +1,20 @@
+{
+  "source": "same-session actual collaboration report from /root/current_tool_boundary_review; no fabricated stdout",
+  "result": "PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "reviewed_manifest_sha256": "44f2d1bdcbe07c8e783201b4aee3fbae4f3b33b48b534800f6a28612780983b6",
+  "reviewed_scope": [
+    "official three exact tag/commit/releases entities",
+    "six decoded README/action.yml entities byte equality",
+    "three Node24 runtimes and current input compatibility",
+    "observed runner2.337 versus Node/Java minimum2.327.1",
+    "only3uses/fullSHA/versioncomment AST delta",
+    "cache/mirror migration tradeoffs and actionlint absent"
+  ],
+  "limits": [
+    "candidate review precedes installation",
+    "no runtime/remote CI warning resolution claim"
+  ]
+}
