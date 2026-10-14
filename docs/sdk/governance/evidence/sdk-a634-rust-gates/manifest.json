@@ -1,0 +1,57 @@
+{
+  "scope": "SDK Rust gates only; dirty candidate, not full accepted-contract/language/main acceptance",
+  "archived_at_utc": "2026-10-14T06:14:20.446847+00:00",
+  "sdk_git_head": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "sdk_source_identity": "61 runtime input content hashes; working-tree changes are not claimed to be in SDK HEAD",
+  "framework_published_revision": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "lock_sha256": "a7a331cf94a24842e0b892d44f842e5663434009c9187b4306af7df524344bb3",
+  "original_receipt_sha256": "a7d0f47f9283c885d116fb44b4cc46a59eb8eb68fdfcf78648197c3b86a9d3a4",
+  "runtime_inputs_count": 61,
+  "runtime_inputs_current_comparison": {
+    "observed_at_utc": "2026-10-14T06:14:20.447383+00:00",
+    "matched": 61,
+    "changed": [],
+    "claim": "post-run current content equals original before-start map; no invented unavailable after-run snapshot"
+  },
+  "commands": 14,
+  "all_exit_zero": true,
+  "workspace_test_counts": {
+    "passed": 461,
+    "failed": 0,
+    "ignored": 0
+  },
+  "compiler_diagnostic_warning_count": 0,
+  "compiler_diagnostic_error_count": 0,
+  "runtime_negative_rpc_warning_counts": {
+    "05-workspace-tests.log": 10
+  },
+  "flags": {
+    "steps_11_12": "explicit RUSTFLAGS=-A linker_messages -D warnings recorded in original command arrays",
+    "other_steps": "no explicit RUSTFLAGS override in receipt; original repository .cargo/config.toml macOS linker_messages flag applies"
+  },
+  "raw_files": {
+    "receipt.json": "a7d0f47f9283c885d116fb44b4cc46a59eb8eb68fdfcf78648197c3b86a9d3a4",
+    "runtime-inputs-start.json": "24dc4508509e1f36c9e12a926061927538a763f541655e60cb58f384c399a2fb",
+    "01-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "02-fmt-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "03-workspace-clippy.log": "58242508751d76cbf1cd92e6fe96fe08deadfb43ead2c6a48bf2b677440b51c5",
+    "04-production-clippy.log": "96e4e8fef63f85f1b8422f695750aa560586d105ce02d14a1135ace7aec3c053",
+    "05-workspace-tests.log": "a203145052e2db2c389afaaf8c02ce3eb8041b9239f42f0388a37d89d36042cc",
+    "06-featureless-check.log": "8d6427ad53e2e301b95fd92300ec7d41b819472a06ec138c546ce461935cce6a",
+    "07-workspace-doctests.log": "554131b2c411e47d70aeb23b843bac1da9ea42781109f85568d537d98301eb44",
+    "08-ci-default-protocol.log": "a4dd85510f91b68432a2c8f49f21dfb87d51a077c029a6a08a30fec3c9769b2f",
+    "09-ci-default-host.log": "4204fb4bc8bea28abb32a2c79f21342bff7e4048408365383f18d6d1f03c6631",
+    "10-ci-core-profile.log": "7b8bb77da405dd0af92cdcf7e9fc897907988910a960ec0f70cbe227a2a997e0",
+    "11-ci-bridge-no-run.log": "65a4cbb3ab1aa2365de62d9d664ff8e403ab084c387a0fdd8e2a344d11064db8",
+    "12-ci-bridge-e2e.log": "b00448f43b7be76735dd762f96cc98c84dd7c0561919c828a753f96bcff571df",
+    "13-ci-facade-e2e.log": "46e7dfa95fc2e337f4b830393fcfcba370aa995ec17a6a3538b5da69bf652798",
+    "14-ci-no-bridge-source-admission.log": "9d938a81f5b859080dfa67bfce4b16cbcdf7709360aa7412744f67ba7f01897a"
+  },
+  "not_claimed": [
+    "full accepted-source continuity",
+    "all-language gate",
+    "SDK main acceptance",
+    "all Rust public identity accepted",
+    "all Findings closed"
+  ]
+}

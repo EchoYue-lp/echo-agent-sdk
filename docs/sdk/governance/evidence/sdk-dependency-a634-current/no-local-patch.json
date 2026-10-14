@@ -1,0 +1,9 @@
+{
+  "rootManifestPatchOrReplace": false,
+  "hostManifestPatchOrReplace": false,
+  "configPatchReplacePaths": false,
+  "originalConfigSHA256": "493c87fc3ef8111f097808dd20ba21984d574e90758c49f0134d55580fdc3c20",
+  "frameworkDependencyGit": "https://github.com/EchoYue-lp/echo-agent.git",
+  "frameworkDependencyRev": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "frameworkDependencyHasLocalPath": false
+}

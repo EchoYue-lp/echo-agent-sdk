@@ -1,0 +1,6 @@
+{
+  "production_import_compatibility_source": "sdks/python/src/echo_agent_sdk/execution_usage_values.py",
+  "sha256": "cd07640f08786d148112d99b239b284b3781e35fa538f08785c3b1dca92f4398",
+  "rules_test_sha256": "528cce245a4d6ededfe264a92dfadc81ac04c221cc9c81bdc52595390e13bb07",
+  "reason_for_final_native_rerun": "True production source changed from NotRequired-only fallback to final TypedDict+NotRequired imports after previous18pass; repeat7files binds actual finalcut"
+}

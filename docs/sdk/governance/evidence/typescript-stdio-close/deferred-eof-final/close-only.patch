@@ -1,0 +1,105 @@
+--- docs/sdk/governance/evidence/typescript-stdio-close/client.before.ts	2026-10-14 12:07:02
++++ docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/client.after.ts	2026-10-14 12:16:06
+@@ -246,6 +246,7 @@
+   private readonly updates: Map<string, AsyncQueue<unknown>>;
+   private readonly queueCapacity: number;
+   private closed = false;
++  private closeOperation?: Promise<void>;
+   private invocationControllers = new Map<string, AbortController>();
+   private extensionStreamRoutes = new Map<string, ExtensionStreamRoute>();
+ 
+@@ -1005,25 +1006,82 @@
+   }
+ 
+   async close(): Promise<void> {
+-    if (this.closed) return;
++    if (this.closeOperation) return this.closeOperation;
+     this.closed = true;
++    // Every caller observes settlement of this same original process owner.
++    let resolveClose!: () => void;
++    let rejectClose!: (error: unknown) => void;
++    const operation = new Promise<void>((resolve, reject) => { resolveClose = resolve; rejectClose = reject; });
++    this.closeOperation = operation;
++    void this.closeOwned().then(resolveClose, rejectClose);
++    try {
++      await operation;
++    } catch (error) {
++      if (this.closeOperation === operation) this.closeOperation = undefined;
++      throw error;
++    }
++  }
++
++  private async closeOwned(): Promise<void> {
++    const child = this.process;
++    const hasExited = () => child.exitCode !== null || child.signalCode !== null;
++    let onExit: () => void = () => {};
++    const exited = new Promise<void>((resolve) => {
++      onExit = resolve;
++      if (hasExited()) resolve();
++      else child.once("exit", onExit);
++    });
+     for (const controller of this.invocationControllers.values()) controller.abort();
+     this.invocationControllers.clear(); this.extensionStreamRoutes.clear();
+     this.extensionHandlers.clear();
+     for (const feed of this.events.values()) feed.queue.end();
+     for (const queue of this.updates.values()) queue.end();
+-    this.connection.close();
+-    const exited = new Promise<void>((resolve) => {
+-      if (this.process.exitCode !== null) resolve();
+-      else this.process.once("exit", () => resolve());
+-    });
+-    const settled = await Promise.race([
+-      exited.then(() => true),
+-      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), DEFAULT_CLOSE_WAIT_MS)),
+-    ]);
+-    if (!settled && !this.process.killed) {
+-      this.process.kill();
++    let timer: ReturnType<typeof setTimeout> | undefined;
++    let inputSettled = false;
++    let inputError: unknown;
++    let onInputError: (error: Error & { code?: string }) => void = () => {};
++    let onInputFinish: () => void = () => {};
++    try {
++      this.connection.close();
++      const inputComplete = new Promise<void>((resolve) => {
++        onInputError = (error) => {
++          if (error.code !== "EPIPE" && error.code !== "ERR_STREAM_DESTROYED") inputError = error;
++        };
++        const settle = (error?: Error | null) => {
++          if (error) onInputError(error);
++          if (inputSettled) return;
++          inputSettled = true;
++          resolve();
++        };
++        onInputFinish = () => settle();
++        child.stdin.on("error", onInputError);
++        if (child.stdin.destroyed || child.stdin.writableFinished) {
++          settle();
++        } else if (child.stdin.writableEnded) {
++          child.stdin.once("finish", onInputFinish);
++          child.stdin.once("close", onInputFinish);
++        } else {
++          try { child.stdin.end(settle); } catch (error) { settle(error as Error); }
++        }
++      });
++      const settled = await Promise.race([
++        Promise.all([exited, inputComplete]).then(() => true),
++        new Promise<boolean>((resolve) => { timer = setTimeout(() => resolve(false), DEFAULT_CLOSE_WAIT_MS); }),
++      ]);
++      if (!settled && !hasExited() && !child.killed && !child.kill()) {
++        throw new EchoAgentError("transport_error", "Host process termination did not start", "after_delay");
++      }
+       await exited;
++      if (!inputSettled) {
++        throw new EchoAgentError("transport_error", "Host stdin completion is still pending", "after_delay");
++      }
++      if (inputError) throw EchoAgentError.fromUnknown(inputError);
++    } finally {
++      if (timer) clearTimeout(timer);
++      child.off("exit", onExit);
++      child.stdin.off("error", onInputError);
++      child.stdin.off("finish", onInputFinish);
++      child.stdin.off("close", onInputFinish);
+     }
+   }
+ 

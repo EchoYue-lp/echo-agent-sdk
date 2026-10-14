@@ -1,0 +1,19 @@
+{
+  "label": "sdk-a634-audit",
+  "command": [
+    "cargo",
+    "audit",
+    "--deny",
+    "warnings"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-dependency-a634-current/audit.log",
+  "exitCode": 1,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 346,
+  "bytesWritten": 346,
+  "startedAt": "2026-10-14T05:16:17.289Z",
+  "finishedAt": "2026-10-14T05:16:37.375Z"
+}

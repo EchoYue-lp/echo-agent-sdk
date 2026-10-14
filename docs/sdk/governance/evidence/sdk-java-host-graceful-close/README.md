@@ -1,0 +1,21 @@
+# Java owned-child graceful close evidence
+
+This slice drains accepted frames through the official ACP 0.17 writer before closing the original Process stdin and awaiting its actual exit. Existing factory/callback cleanup remains first. The native five-second deadline forces the same child and returns failure; a timeout, kill request, or wrapper exit does not prove remote cleanup or telemetry flush.
+
+The approved design is [design.md](design.md). Implementation claims bind to their actual source epoch:
+
+| Epoch | Actual result | Raw entry |
+|---|---|---|
+| Original production | Genuine-child EOF case failed: public close sent TERM before EOF | before-original-child-eof-run.json, .log, .xml; source-before.json; before/ |
+| Initial b89 | 13 lifecycle cases passed; the original real telemetry slow-flush case separately passed | after-early-exit-and-close-run.json; first13-xml/; ../telemetry-host/java-publicclose-after-initial/receipt.json |
+| Writer iteration | 15/16 passed; post-exit queued write receipt remained pending | writer-drain-and-deadline-run.json; writer-drain-first-HostEarlyExitTest.xml |
+| Exit receipt iteration | 16/17 passed; initialize race exposed an unprojected original exit cause | writer-drain-deadline-and-exit-run.json; exit-receipt-first-HostEarlyExitTest.xml |
+| Prior 3aa22bf | HostEarlyExitTest 14 and JavaClientCloseLifecycleTest 3 passed, zero skipped | final-owned-stdio-lifecycle-run.json; final-lifecycle-xml/; final-lifecycle-source.json |
+
+The prior 17 cases retain the original nine early-exit/late-consumer/close-admission regressions and three close-owner tests. Five additional cases prove EOF before TERM, a complete Unicode frame before EOF despite cancellation of a dependent close waiter, an independent five-second fallback under blocked output, preservation of an accepted I/O failure, and explicit rejection of writes after original-child exit. These finite real-child tests use existing private test entry points; production has no reflection, second process, or public testing getter. They are not real Host E2E.
+
+The 3aa epoch source/design hashes remain in final-lifecycle-source.json; its original delta remains owned-stdio-candidate.patch. Final cleanup-source hashes are in final-cleanup-source.json, with final-cleanup-candidate.patch against the same preserved before bytes. Both successful and failed intermediate receipts remain unchanged. The existing dependency still owns codec, JSON-RPC session, and writer; no dependency or wire is added.
+
+The same original telemetry public-close case passed on 3aa (real ACK held, original Host alive, then release and actual exit); its separate final receipt is maintained by the telemetry owner. A subsequent review found that local I/O close errors were swallowed and the stderr drainer was not joined. Final 86efd395 preserves per-resource close failures/retry and joins the started stderr drainer. Final-cleanup-and-start-run.json and final-cleanup-xml/ record 19/19 passing cases (16 early-exit/native tests plus 3 close-owner tests), adding genuine missing-command startup failure and large-stderr drain with repeated connect retaining one original child. Related ACK, cancellation-route, factory-ownership, publisher-lifecycle, and real Protocol Host regressions passed 72/72, zero skipped, as archived in related-regression-xml/ and related-regression-source.json. The latter required immutable Host 4967dd43; this is adapter regression proof, not final published-pin proof. Final-source independent review passed Critical 0 / Important 0 / Minor 0; the cleanup Minor is resolved (independent-review.json). b89/3aa telemetry receipts remain bound to their historical source epochs; the later cleanup delta must be exercised in the final whole-language run. Whole Java/three-language, final framework pin, SDK main, and CI gates are coordinated separately by Root. Stdout EOF while the child remains alive is outside actual process-exit proof.
+
+Documentation/example impact: this repairs the existing close contract without changing API calls or examples. The website has no Java transport lifecycle-specific guide. ADR 0034/0036 and this approved design remain the behavior references; the overall SDK documentation owner coordinates long-term public wording.

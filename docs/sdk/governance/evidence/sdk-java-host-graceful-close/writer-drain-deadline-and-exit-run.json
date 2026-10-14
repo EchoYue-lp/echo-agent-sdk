@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+  "steps": [
+    {
+      "label": "native-writer-drain-deadline-exit",
+      "command": [
+        "mvn",
+        "-q",
+        "-Dtest=HostEarlyExitTest,JavaClientCloseLifecycleTest",
+        "-Dmaven.compiler.showWarnings=true",
+        "-Dmaven.compiler.failOnWarning=true",
+        "test"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-java-host-graceful-close/writer-drain-deadline-and-exit.log",
+      "exitCode": 1,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 6131,
+      "bytesWritten": 6131,
+      "startedAt": "2026-10-14T04:55:47.786Z",
+      "finishedAt": "2026-10-14T04:56:04.051Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T04:56:04.051Z"
+}

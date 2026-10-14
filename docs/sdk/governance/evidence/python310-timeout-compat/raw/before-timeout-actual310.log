@@ -1,0 +1,9 @@
+3.10.19 (main, Dec  9 2025, 19:17:38) [Clang 21.1.4 ] /Users/ls/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/bin/python3.10
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+  File "/Users/ls/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/Users/ls/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "original_test_barrier.py", line 21, in barrier
+AttributeError: module 'asyncio' has no attribute 'timeout'

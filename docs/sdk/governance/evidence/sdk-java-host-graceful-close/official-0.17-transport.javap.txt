@@ -1,0 +1,1556 @@
+Compiled from "StdioAcpAgentTransport.java"
+public class com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport implements com.agentclientprotocol.sdk.spec.AcpAgentTransport {
+  private static final org.slf4j.Logger logger;
+
+  private final com.agentclientprotocol.sdk.json.AcpJsonMapper jsonMapper;
+
+  private final java.io.InputStream inputStream;
+
+  private final java.io.OutputStream outputStream;
+
+  private final reactor.core.publisher.Sinks$Many<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage> inboundSink;
+
+  private final reactor.core.publisher.Sinks$Many<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage> outboundSink;
+
+  private final reactor.core.publisher.Sinks$One<java.lang.Void> inboundReady;
+
+  private final reactor.core.publisher.Sinks$One<java.lang.Void> outboundReady;
+
+  private final reactor.core.publisher.Sinks$One<java.lang.Void> terminationSink;
+
+  private reactor.core.scheduler.Scheduler inboundScheduler;
+
+  private reactor.core.scheduler.Scheduler outboundScheduler;
+
+  private final java.util.concurrent.atomic.AtomicBoolean isClosing;
+
+  private final java.util.concurrent.atomic.AtomicBoolean isStarted;
+
+  private java.util.function.Consumer<java.lang.Throwable> exceptionHandler;
+
+  public com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport();
+    Code:
+       0: aload_0
+       1: invokestatic  #1                  // InterfaceMethod com/agentclientprotocol/sdk/json/AcpJsonMapper.createDefault:()Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+       4: invokespecial #7                  // Method "<init>":(Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;)V
+       7: return
+
+  public com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport(com.agentclientprotocol.sdk.json.AcpJsonMapper);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: getstatic     #13                 // Field java/lang/System.in:Ljava/io/InputStream;
+       5: getstatic     #19                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       8: invokespecial #23                 // Method "<init>":(Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;Ljava/io/InputStream;Ljava/io/OutputStream;)V
+      11: return
+
+  public com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport(com.agentclientprotocol.sdk.json.AcpJsonMapper, java.io.InputStream, java.io.OutputStream);
+    Code:
+       0: aload_0
+       1: invokespecial #26                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: invokestatic  #31                 // Method reactor/core/publisher/Sinks.one:()Lreactor/core/publisher/Sinks$One;
+       8: putfield      #37                 // Field inboundReady:Lreactor/core/publisher/Sinks$One;
+      11: aload_0
+      12: invokestatic  #31                 // Method reactor/core/publisher/Sinks.one:()Lreactor/core/publisher/Sinks$One;
+      15: putfield      #41                 // Field outboundReady:Lreactor/core/publisher/Sinks$One;
+      18: aload_0
+      19: invokestatic  #31                 // Method reactor/core/publisher/Sinks.one:()Lreactor/core/publisher/Sinks$One;
+      22: putfield      #44                 // Field terminationSink:Lreactor/core/publisher/Sinks$One;
+      25: aload_0
+      26: new           #47                 // class java/util/concurrent/atomic/AtomicBoolean
+      29: dup
+      30: iconst_0
+      31: invokespecial #49                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      34: putfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+      37: aload_0
+      38: new           #47                 // class java/util/concurrent/atomic/AtomicBoolean
+      41: dup
+      42: iconst_0
+      43: invokespecial #49                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      46: putfield      #56                 // Field isStarted:Ljava/util/concurrent/atomic/AtomicBoolean;
+      49: aload_0
+      50: invokedynamic #59,  0             // InvokeDynamic #0:accept:()Ljava/util/function/Consumer;
+      55: putfield      #63                 // Field exceptionHandler:Ljava/util/function/Consumer;
+      58: aload_1
+      59: ldc           #67                 // String The JsonMapper can not be null
+      61: invokestatic  #69                 // Method com/agentclientprotocol/sdk/util/Assert.notNull:(Ljava/lang/Object;Ljava/lang/String;)V
+      64: aload_2
+      65: ldc           #75                 // String The InputStream can not be null
+      67: invokestatic  #69                 // Method com/agentclientprotocol/sdk/util/Assert.notNull:(Ljava/lang/Object;Ljava/lang/String;)V
+      70: aload_3
+      71: ldc           #77                 // String The OutputStream can not be null
+      73: invokestatic  #69                 // Method com/agentclientprotocol/sdk/util/Assert.notNull:(Ljava/lang/Object;Ljava/lang/String;)V
+      76: aload_0
+      77: aload_1
+      78: putfield      #79                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+      81: aload_0
+      82: aload_2
+      83: putfield      #83                 // Field inputStream:Ljava/io/InputStream;
+      86: aload_0
+      87: aload_3
+      88: putfield      #86                 // Field outputStream:Ljava/io/OutputStream;
+      91: aload_0
+      92: invokestatic  #90                 // Method reactor/core/publisher/Sinks.many:()Lreactor/core/publisher/Sinks$ManySpec;
+      95: invokeinterface #94,  1           // InterfaceMethod reactor/core/publisher/Sinks$ManySpec.unicast:()Lreactor/core/publisher/Sinks$UnicastSpec;
+     100: invokeinterface #100,  1          // InterfaceMethod reactor/core/publisher/Sinks$UnicastSpec.onBackpressureBuffer:()Lreactor/core/publisher/Sinks$Many;
+     105: putfield      #106                // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+     108: aload_0
+     109: invokestatic  #90                 // Method reactor/core/publisher/Sinks.many:()Lreactor/core/publisher/Sinks$ManySpec;
+     112: invokeinterface #94,  1           // InterfaceMethod reactor/core/publisher/Sinks$ManySpec.unicast:()Lreactor/core/publisher/Sinks$UnicastSpec;
+     117: invokeinterface #100,  1          // InterfaceMethod reactor/core/publisher/Sinks$UnicastSpec.onBackpressureBuffer:()Lreactor/core/publisher/Sinks$Many;
+     122: putfield      #110                // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+     125: aload_0
+     126: invokedynamic #113,  0            // InvokeDynamic #1:newThread:()Ljava/util/concurrent/ThreadFactory;
+     131: invokestatic  #117                // Method java/util/concurrent/Executors.newSingleThreadExecutor:(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
+     134: ldc           #123                // String agent-inbound
+     136: invokestatic  #125                // Method reactor/core/scheduler/Schedulers.fromExecutorService:(Ljava/util/concurrent/ExecutorService;Ljava/lang/String;)Lreactor/core/scheduler/Scheduler;
+     139: putfield      #131                // Field inboundScheduler:Lreactor/core/scheduler/Scheduler;
+     142: aload_0
+     143: invokedynamic #135,  0            // InvokeDynamic #2:newThread:()Ljava/util/concurrent/ThreadFactory;
+     148: invokestatic  #117                // Method java/util/concurrent/Executors.newSingleThreadExecutor:(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
+     151: ldc           #136                // String agent-outbound
+     153: invokestatic  #125                // Method reactor/core/scheduler/Schedulers.fromExecutorService:(Ljava/util/concurrent/ExecutorService;Ljava/lang/String;)Lreactor/core/scheduler/Scheduler;
+     156: putfield      #138                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+     159: return
+
+  public java.util.List<java.lang.Integer> protocolVersions();
+    Code:
+       0: iconst_1
+       1: invokestatic  #143                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+       4: invokestatic  #149                // InterfaceMethod java/util/List.of:(Ljava/lang/Object;)Ljava/util/List;
+       7: areturn
+
+  public reactor.core.publisher.Mono<java.lang.Void> start(java.util.function.Function<reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>, reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>>);
+    Code:
+       0: aload_0
+       1: getfield      #56                 // Field isStarted:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: iconst_0
+       5: iconst_1
+       6: invokevirtual #155                // Method java/util/concurrent/atomic/AtomicBoolean.compareAndSet:(ZZ)Z
+       9: ifne          25
+      12: new           #159                // class java/lang/IllegalStateException
+      15: dup
+      16: ldc           #161                // String Already started
+      18: invokespecial #163                // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      21: invokestatic  #166                // Method reactor/core/publisher/Mono.error:(Ljava/lang/Throwable;)Lreactor/core/publisher/Mono;
+      24: areturn
+      25: aload_0
+      26: aload_1
+      27: invokedynamic #172,  0            // InvokeDynamic #3:run:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;Ljava/util/function/Function;)Ljava/lang/Runnable;
+      32: invokestatic  #176                // Method reactor/core/publisher/Mono.fromRunnable:(Ljava/lang/Runnable;)Lreactor/core/publisher/Mono;
+      35: aload_0
+      36: getfield      #37                 // Field inboundReady:Lreactor/core/publisher/Sinks$One;
+      39: invokeinterface #180,  1          // InterfaceMethod reactor/core/publisher/Sinks$One.asMono:()Lreactor/core/publisher/Mono;
+      44: aload_0
+      45: getfield      #41                 // Field outboundReady:Lreactor/core/publisher/Sinks$One;
+      48: invokeinterface #180,  1          // InterfaceMethod reactor/core/publisher/Sinks$One.asMono:()Lreactor/core/publisher/Mono;
+      53: invokestatic  #186                // Method reactor/core/publisher/Mono.zip:(Lreactor/core/publisher/Mono;Lreactor/core/publisher/Mono;)Lreactor/core/publisher/Mono;
+      56: invokevirtual #190                // Method reactor/core/publisher/Mono.then:()Lreactor/core/publisher/Mono;
+      59: invokevirtual #193                // Method reactor/core/publisher/Mono.then:(Lreactor/core/publisher/Mono;)Lreactor/core/publisher/Mono;
+      62: areturn
+
+  private void handleIncomingMessages(java.util.function.Function<reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>, reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>>);
+    Code:
+       0: aload_0
+       1: getfield      #106                // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+       4: invokeinterface #196,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.asFlux:()Lreactor/core/publisher/Flux;
+       9: aload_1
+      10: invokedynamic #202,  0            // InvokeDynamic #4:apply:(Ljava/util/function/Function;)Ljava/util/function/Function;
+      15: invokevirtual #206                // Method reactor/core/publisher/Flux.flatMap:(Ljava/util/function/Function;)Lreactor/core/publisher/Flux;
+      18: aload_0
+      19: invokedynamic #212,  0            // InvokeDynamic #5:accept:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/util/function/Consumer;
+      24: invokevirtual #215                // Method reactor/core/publisher/Flux.doOnNext:(Ljava/util/function/Consumer;)Lreactor/core/publisher/Flux;
+      27: aload_0
+      28: invokedynamic #219,  0            // InvokeDynamic #6:run:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/lang/Runnable;
+      33: invokevirtual #222                // Method reactor/core/publisher/Flux.doOnTerminate:(Ljava/lang/Runnable;)Lreactor/core/publisher/Flux;
+      36: invokevirtual #226                // Method reactor/core/publisher/Flux.subscribe:()Lreactor/core/Disposable;
+      39: pop
+      40: return
+
+  private void startInboundProcessing();
+    Code:
+       0: aload_0
+       1: getfield      #131                // Field inboundScheduler:Lreactor/core/scheduler/Scheduler;
+       4: aload_0
+       5: invokedynamic #230,  0            // InvokeDynamic #7:run:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/lang/Runnable;
+      10: invokeinterface #231,  2          // InterfaceMethod reactor/core/scheduler/Scheduler.schedule:(Ljava/lang/Runnable;)Lreactor/core/Disposable;
+      15: pop
+      16: return
+
+  private void startOutboundProcessing();
+    Code:
+       0: aload_0
+       1: invokedynamic #237,  0            // InvokeDynamic #8:apply:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/util/function/Function;
+       6: astore_1
+       7: aload_1
+       8: aload_0
+       9: getfield      #110                // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+      12: invokeinterface #196,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.asFlux:()Lreactor/core/publisher/Flux;
+      17: invokeinterface #240,  2          // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+      22: checkcast     #207                // class reactor/core/publisher/Flux
+      25: invokevirtual #226                // Method reactor/core/publisher/Flux.subscribe:()Lreactor/core/Disposable;
+      28: pop
+      29: return
+
+  public reactor.core.publisher.Mono<java.lang.Void> sendMessage(com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage);
+    Code:
+       0: aload_0
+       1: getfield      #37                 // Field inboundReady:Lreactor/core/publisher/Sinks$One;
+       4: invokeinterface #180,  1          // InterfaceMethod reactor/core/publisher/Sinks$One.asMono:()Lreactor/core/publisher/Mono;
+       9: aload_0
+      10: getfield      #41                 // Field outboundReady:Lreactor/core/publisher/Sinks$One;
+      13: invokeinterface #180,  1          // InterfaceMethod reactor/core/publisher/Sinks$One.asMono:()Lreactor/core/publisher/Mono;
+      18: invokestatic  #186                // Method reactor/core/publisher/Mono.zip:(Lreactor/core/publisher/Mono;Lreactor/core/publisher/Mono;)Lreactor/core/publisher/Mono;
+      21: aload_0
+      22: aload_1
+      23: invokedynamic #245,  0            // InvokeDynamic #9:get:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;Lcom/agentclientprotocol/sdk/spec/AcpSchema$JSONRPCMessage;)Ljava/util/function/Supplier;
+      28: invokestatic  #249                // Method reactor/core/publisher/Mono.defer:(Ljava/util/function/Supplier;)Lreactor/core/publisher/Mono;
+      31: invokevirtual #193                // Method reactor/core/publisher/Mono.then:(Lreactor/core/publisher/Mono;)Lreactor/core/publisher/Mono;
+      34: areturn
+
+  public reactor.core.publisher.Mono<java.lang.Void> closeGracefully();
+    Code:
+       0: aload_0
+       1: invokedynamic #253,  0            // InvokeDynamic #10:run:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/lang/Runnable;
+       6: invokestatic  #176                // Method reactor/core/publisher/Mono.fromRunnable:(Ljava/lang/Runnable;)Lreactor/core/publisher/Mono;
+       9: aload_0
+      10: invokedynamic #254,  0            // InvokeDynamic #11:run:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/lang/Runnable;
+      15: invokestatic  #176                // Method reactor/core/publisher/Mono.fromRunnable:(Ljava/lang/Runnable;)Lreactor/core/publisher/Mono;
+      18: invokevirtual #193                // Method reactor/core/publisher/Mono.then:(Lreactor/core/publisher/Mono;)Lreactor/core/publisher/Mono;
+      21: areturn
+
+  public void setExceptionHandler(java.util.function.Consumer<java.lang.Throwable>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #63                 // Field exceptionHandler:Ljava/util/function/Consumer;
+       5: return
+
+  public reactor.core.publisher.Mono<java.lang.Void> awaitTermination();
+    Code:
+       0: aload_0
+       1: getfield      #44                 // Field terminationSink:Lreactor/core/publisher/Sinks$One;
+       4: invokeinterface #180,  1          // InterfaceMethod reactor/core/publisher/Sinks$One.asMono:()Lreactor/core/publisher/Mono;
+       9: areturn
+
+  public <T> T unmarshalFrom(java.lang.Object, com.agentclientprotocol.sdk.json.TypeRef<T>);
+    Code:
+       0: aload_0
+       1: getfield      #79                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+       4: aload_1
+       5: aload_2
+       6: invokeinterface #255,  3          // InterfaceMethod com/agentclientprotocol/sdk/json/AcpJsonMapper.convertValue:(Ljava/lang/Object;Lcom/agentclientprotocol/sdk/json/TypeRef;)Ljava/lang/Object;
+      11: areturn
+
+  private void logIfNotClosing(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+       7: ifne          19
+      10: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+      13: aload_1
+      14: invokeinterface #266,  2          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+      19: return
+
+  private void logIfNotClosing(java.lang.String, java.lang.Exception);
+    Code:
+       0: aload_0
+       1: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+       7: ifne          20
+      10: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+      13: aload_1
+      14: aload_2
+      15: invokeinterface #270,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      20: return
+
+  private void lambda$closeGracefully$16();
+    Code:
+       0: aload_0
+       1: getfield      #131                // Field inboundScheduler:Lreactor/core/scheduler/Scheduler;
+       4: invokeinterface #273,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+       9: aload_0
+      10: getfield      #138                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+      13: invokeinterface #273,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+      18: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+      21: ldc_w         #276                // String Agent transport closed
+      24: invokeinterface #278,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      29: goto          45
+      32: astore_1
+      33: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+      36: ldc_w         #283                // String Error during graceful shutdown
+      39: aload_1
+      40: invokeinterface #270,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      45: return
+    Exception table:
+       from    to  target type
+           0    29    32   Class java/lang/Exception
+
+  private void lambda$closeGracefully$15();
+    Code:
+       0: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+       3: ldc_w         #285                // String Agent transport closing gracefully
+       6: invokeinterface #278,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      11: aload_0
+      12: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+      15: iconst_1
+      16: invokevirtual #287                // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+      19: aload_0
+      20: getfield      #106                // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+      23: invokeinterface #290,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+      28: pop
+      29: aload_0
+      30: getfield      #110                // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+      33: invokeinterface #290,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+      38: pop
+      39: return
+
+  private reactor.core.publisher.Mono lambda$sendMessage$14(com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage);
+    Code:
+       0: aload_0
+       1: getfield      #110                // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+       4: aload_1
+       5: ldc2_w        #294                // long 100l
+       8: invokestatic  #296                // Method java/time/Duration.ofMillis:(J)Ljava/time/Duration;
+      11: invokestatic  #302                // InterfaceMethod reactor/core/publisher/Sinks$EmitFailureHandler.busyLooping:(Ljava/time/Duration;)Lreactor/core/publisher/Sinks$EmitFailureHandler;
+      14: invokeinterface #308,  3          // InterfaceMethod reactor/core/publisher/Sinks$Many.emitNext:(Ljava/lang/Object;Lreactor/core/publisher/Sinks$EmitFailureHandler;)V
+      19: invokestatic  #312                // Method reactor/core/publisher/Mono.empty:()Lreactor/core/publisher/Mono;
+      22: areturn
+
+  private reactor.core.publisher.Flux lambda$startOutboundProcessing$13(reactor.core.publisher.Flux);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: invokedynamic #315,  0            // InvokeDynamic #12:accept:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/util/function/Consumer;
+       7: invokevirtual #316                // Method reactor/core/publisher/Flux.doOnSubscribe:(Ljava/util/function/Consumer;)Lreactor/core/publisher/Flux;
+      10: aload_0
+      11: getfield      #138                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+      14: invokevirtual #319                // Method reactor/core/publisher/Flux.publishOn:(Lreactor/core/scheduler/Scheduler;)Lreactor/core/publisher/Flux;
+      17: aload_0
+      18: invokedynamic #323,  0            // InvokeDynamic #13:accept:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/util/function/BiConsumer;
+      23: invokevirtual #326                // Method reactor/core/publisher/Flux.handle:(Ljava/util/function/BiConsumer;)Lreactor/core/publisher/Flux;
+      26: aload_0
+      27: invokedynamic #330,  0            // InvokeDynamic #14:run:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/lang/Runnable;
+      32: invokevirtual #331                // Method reactor/core/publisher/Flux.doOnComplete:(Ljava/lang/Runnable;)Lreactor/core/publisher/Flux;
+      35: aload_0
+      36: invokedynamic #334,  0            // InvokeDynamic #15:accept:(Lcom/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport;)Ljava/util/function/Consumer;
+      41: invokevirtual #335                // Method reactor/core/publisher/Flux.doOnError:(Ljava/util/function/Consumer;)Lreactor/core/publisher/Flux;
+      44: invokedynamic #338,  0            // InvokeDynamic #16:apply:()Ljava/util/function/Function;
+      49: invokevirtual #341                // Method reactor/core/publisher/Flux.map:(Ljava/util/function/Function;)Lreactor/core/publisher/Flux;
+      52: areturn
+
+  private static com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage lambda$startOutboundProcessing$12(java.lang.Object);
+    Code:
+       0: aload_0
+       1: checkcast     #344                // class com/agentclientprotocol/sdk/spec/AcpSchema$JSONRPCMessage
+       4: areturn
+
+  private void lambda$startOutboundProcessing$11(java.lang.Throwable);
+    Code:
+       0: aload_0
+       1: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+       7: ifne          39
+      10: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+      13: ldc_w         #346                // String Error in outbound processing
+      16: aload_1
+      17: invokeinterface #270,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      22: aload_0
+      23: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+      26: iconst_1
+      27: invokevirtual #287                // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+      30: aload_0
+      31: getfield      #138                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+      34: invokeinterface #273,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+      39: return
+
+  private void lambda$startOutboundProcessing$10();
+    Code:
+       0: aload_0
+       1: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: iconst_1
+       5: invokevirtual #287                // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+       8: aload_0
+       9: getfield      #138                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+      12: invokeinterface #273,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+      17: return
+
+  private void lambda$startOutboundProcessing$9(com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage, reactor.core.publisher.SynchronousSink);
+    Code:
+       0: aload_1
+       1: ifnull        206
+       4: aload_0
+       5: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+       8: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+      11: ifne          206
+      14: aload_0
+      15: getfield      #79                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+      18: aload_1
+      19: invokeinterface #348,  2          // InterfaceMethod com/agentclientprotocol/sdk/json/AcpJsonMapper.writeValueAsString:(Ljava/lang/Object;)Ljava/lang/String;
+      24: astore_3
+      25: aload_3
+      26: ldc_w         #352                // String \r\n
+      29: ldc_w         #354                // String \\n
+      32: invokevirtual #356                // Method java/lang/String.replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+      35: ldc_w         #362                // String \n
+      38: ldc_w         #354                // String \\n
+      41: invokevirtual #356                // Method java/lang/String.replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+      44: ldc_w         #364                // String \r
+      47: ldc_w         #354                // String \\n
+      50: invokevirtual #356                // Method java/lang/String.replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+      53: astore_3
+      54: aload_0
+      55: getfield      #86                 // Field outputStream:Ljava/io/OutputStream;
+      58: dup
+      59: astore        4
+      61: monitorenter
+      62: aload_0
+      63: getfield      #86                 // Field outputStream:Ljava/io/OutputStream;
+      66: aload_3
+      67: getstatic     #366                // Field java/nio/charset/StandardCharsets.UTF_8:Ljava/nio/charset/Charset;
+      70: invokevirtual #372                // Method java/lang/String.getBytes:(Ljava/nio/charset/Charset;)[B
+      73: invokevirtual #376                // Method java/io/OutputStream.write:([B)V
+      76: aload_0
+      77: getfield      #86                 // Field outputStream:Ljava/io/OutputStream;
+      80: ldc_w         #362                // String \n
+      83: getstatic     #366                // Field java/nio/charset/StandardCharsets.UTF_8:Ljava/nio/charset/Charset;
+      86: invokevirtual #372                // Method java/lang/String.getBytes:(Ljava/nio/charset/Charset;)[B
+      89: invokevirtual #376                // Method java/io/OutputStream.write:([B)V
+      92: aload_0
+      93: getfield      #86                 // Field outputStream:Ljava/io/OutputStream;
+      96: invokevirtual #382                // Method java/io/OutputStream.flush:()V
+      99: aload         4
+     101: monitorexit
+     102: goto          113
+     105: astore        5
+     107: aload         4
+     109: monitorexit
+     110: aload         5
+     112: athrow
+     113: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+     116: ldc_w         #385                // String Sent JSON message ({} characters)
+     119: aload_3
+     120: invokevirtual #387                // Method java/lang/String.length:()I
+     123: invokestatic  #143                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     126: invokeinterface #391,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     131: aload_2
+     132: aload_1
+     133: invokeinterface #394,  2          // InterfaceMethod reactor/core/publisher/SynchronousSink.next:(Ljava/lang/Object;)V
+     138: goto          222
+     141: astore_3
+     142: aload_0
+     143: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+     146: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+     149: ifne          191
+     152: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+     155: ldc_w         #402                // String Error writing message
+     158: aload_3
+     159: invokeinterface #270,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     164: aload_0
+     165: getfield      #63                 // Field exceptionHandler:Ljava/util/function/Consumer;
+     168: aload_3
+     169: invokeinterface #404,  2          // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+     174: aload_2
+     175: new           #408                // class java/lang/RuntimeException
+     178: dup
+     179: aload_3
+     180: invokespecial #410                // Method java/lang/RuntimeException."<init>":(Ljava/lang/Throwable;)V
+     183: invokeinterface #413,  2          // InterfaceMethod reactor/core/publisher/SynchronousSink.error:(Ljava/lang/Throwable;)V
+     188: goto          203
+     191: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+     194: ldc_w         #415                // String Stream closed during shutdown
+     197: aload_3
+     198: invokeinterface #417,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     203: goto          222
+     206: aload_0
+     207: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+     210: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+     213: ifeq          222
+     216: aload_2
+     217: invokeinterface #419,  1          // InterfaceMethod reactor/core/publisher/SynchronousSink.complete:()V
+     222: return
+    Exception table:
+       from    to  target type
+          62   102   105   any
+         105   110   105   any
+          14   138   141   Class java/io/IOException
+
+  private void lambda$startOutboundProcessing$8(org.reactivestreams.Subscription);
+    Code:
+       0: aload_0
+       1: getfield      #41                 // Field outboundReady:Lreactor/core/publisher/Sinks$One;
+       4: aconst_null
+       5: invokeinterface #422,  2          // InterfaceMethod reactor/core/publisher/Sinks$One.tryEmitValue:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+      10: pop
+      11: return
+
+  private void lambda$startInboundProcessing$7();
+    Code:
+       0: aload_0
+       1: getfield      #37                 // Field inboundReady:Lreactor/core/publisher/Sinks$One;
+       4: aconst_null
+       5: invokeinterface #422,  2          // InterfaceMethod reactor/core/publisher/Sinks$One.tryEmitValue:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+      10: pop
+      11: aconst_null
+      12: astore_1
+      13: new           #426                // class java/io/BufferedReader
+      16: dup
+      17: new           #428                // class java/io/InputStreamReader
+      20: dup
+      21: aload_0
+      22: getfield      #83                 // Field inputStream:Ljava/io/InputStream;
+      25: getstatic     #366                // Field java/nio/charset/StandardCharsets.UTF_8:Ljava/nio/charset/Charset;
+      28: invokespecial #430                // Method java/io/InputStreamReader."<init>":(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V
+      31: invokespecial #433                // Method java/io/BufferedReader."<init>":(Ljava/io/Reader;)V
+      34: astore_1
+      35: aload_0
+      36: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+      39: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+      42: ifne          170
+      45: aload_1
+      46: invokevirtual #436                // Method java/io/BufferedReader.readLine:()Ljava/lang/String;
+      49: astore_2
+      50: aload_2
+      51: ifnull        64
+      54: aload_0
+      55: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+      58: invokevirtual #259                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+      61: ifeq          67
+      64: goto          170
+      67: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+      70: ldc_w         #440                // String Received JSON message ({} characters)
+      73: aload_2
+      74: invokevirtual #387                // Method java/lang/String.length:()I
+      77: invokestatic  #143                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      80: invokeinterface #391,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+      85: aload_0
+      86: getfield      #79                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+      89: aload_2
+      90: invokestatic  #442                // Method com/agentclientprotocol/sdk/spec/AcpSchema.deserializeJsonRpcMessage:(Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;Ljava/lang/String;)Lcom/agentclientprotocol/sdk/spec/AcpSchema$JSONRPCMessage;
+      93: astore_3
+      94: aload_0
+      95: getfield      #106                // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+      98: aload_3
+      99: invokeinterface #446,  2          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitNext:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+     104: invokevirtual #449                // Method reactor/core/publisher/Sinks$EmitResult.isSuccess:()Z
+     107: ifne          120
+     110: aload_0
+     111: ldc_w         #454                // String Failed to enqueue inbound message
+     114: invokevirtual #456                // Method logIfNotClosing:(Ljava/lang/String;)V
+     117: goto          170
+     120: goto          145
+     123: astore_3
+     124: aload_0
+     125: ldc_w         #459                // String Error processing inbound message
+     128: aload_3
+     129: invokevirtual #461                // Method logIfNotClosing:(Ljava/lang/String;Ljava/lang/Exception;)V
+     132: aload_0
+     133: getfield      #63                 // Field exceptionHandler:Ljava/util/function/Consumer;
+     136: aload_3
+     137: invokeinterface #404,  2          // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+     142: goto          170
+     145: goto          35
+     148: astore_2
+     149: aload_0
+     150: ldc_w         #464                // String Error reading from stdin
+     153: aload_2
+     154: invokevirtual #461                // Method logIfNotClosing:(Ljava/lang/String;Ljava/lang/Exception;)V
+     157: aload_0
+     158: getfield      #63                 // Field exceptionHandler:Ljava/util/function/Consumer;
+     161: aload_2
+     162: invokeinterface #404,  2          // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+     167: goto          170
+     170: aload_0
+     171: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+     174: iconst_1
+     175: invokevirtual #287                // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     178: aload_0
+     179: getfield      #106                // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+     182: invokeinterface #290,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     187: pop
+     188: aload_0
+     189: getfield      #44                 // Field terminationSink:Lreactor/core/publisher/Sinks$One;
+     192: aconst_null
+     193: invokeinterface #422,  2          // InterfaceMethod reactor/core/publisher/Sinks$One.tryEmitValue:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+     198: pop
+     199: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+     202: ldc_w         #466                // String Agent transport terminated
+     205: invokeinterface #278,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     210: goto          320
+     213: astore_2
+     214: aload_0
+     215: ldc_w         #468                // String Error in inbound processing
+     218: aload_2
+     219: invokevirtual #461                // Method logIfNotClosing:(Ljava/lang/String;Ljava/lang/Exception;)V
+     222: aload_0
+     223: getfield      #63                 // Field exceptionHandler:Ljava/util/function/Consumer;
+     226: aload_2
+     227: invokeinterface #404,  2          // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+     232: aload_0
+     233: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+     236: iconst_1
+     237: invokevirtual #287                // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     240: aload_0
+     241: getfield      #106                // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+     244: invokeinterface #290,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     249: pop
+     250: aload_0
+     251: getfield      #44                 // Field terminationSink:Lreactor/core/publisher/Sinks$One;
+     254: aconst_null
+     255: invokeinterface #422,  2          // InterfaceMethod reactor/core/publisher/Sinks$One.tryEmitValue:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+     260: pop
+     261: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+     264: ldc_w         #466                // String Agent transport terminated
+     267: invokeinterface #278,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     272: goto          320
+     275: astore        4
+     277: aload_0
+     278: getfield      #52                 // Field isClosing:Ljava/util/concurrent/atomic/AtomicBoolean;
+     281: iconst_1
+     282: invokevirtual #287                // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     285: aload_0
+     286: getfield      #106                // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+     289: invokeinterface #290,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     294: pop
+     295: aload_0
+     296: getfield      #44                 // Field terminationSink:Lreactor/core/publisher/Sinks$One;
+     299: aconst_null
+     300: invokeinterface #422,  2          // InterfaceMethod reactor/core/publisher/Sinks$One.tryEmitValue:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+     305: pop
+     306: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+     309: ldc_w         #466                // String Agent transport terminated
+     312: invokeinterface #278,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     317: aload         4
+     319: athrow
+     320: return
+    Exception table:
+       from    to  target type
+          85   117   123   Class java/lang/Exception
+          45    64   148   Class java/io/IOException
+          67   117   148   Class java/io/IOException
+         120   142   148   Class java/io/IOException
+          13   170   213   Class java/lang/Exception
+          13   170   275   any
+         213   232   275   any
+         275   277   275   any
+
+  private void lambda$handleIncomingMessages$6();
+    Code:
+       0: aload_0
+       1: getfield      #110                // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+       4: invokeinterface #290,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+       9: pop
+      10: aload_0
+      11: getfield      #131                // Field inboundScheduler:Lreactor/core/scheduler/Scheduler;
+      14: invokeinterface #273,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+      19: return
+
+  private void lambda$handleIncomingMessages$5(com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage);
+    Code:
+       0: aload_1
+       1: ifnull        15
+       4: aload_0
+       5: getfield      #110                // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+       8: aload_1
+       9: invokeinterface #446,  2          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitNext:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+      14: pop
+      15: return
+
+  private static org.reactivestreams.Publisher lambda$handleIncomingMessages$4(java.util.function.Function, com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage);
+    Code:
+       0: aload_1
+       1: invokestatic  #470                // Method reactor/core/publisher/Mono.just:(Ljava/lang/Object;)Lreactor/core/publisher/Mono;
+       4: aload_0
+       5: invokevirtual #474                // Method reactor/core/publisher/Mono.transform:(Ljava/util/function/Function;)Lreactor/core/publisher/Mono;
+       8: areturn
+
+  private void lambda$start$3(java.util.function.Function);
+    Code:
+       0: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+       3: ldc_w         #478                // String ACP agent transport starting
+       6: invokeinterface #480,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      11: aload_0
+      12: aload_1
+      13: invokevirtual #483                // Method handleIncomingMessages:(Ljava/util/function/Function;)V
+      16: aload_0
+      17: invokevirtual #487                // Method startInboundProcessing:()V
+      20: aload_0
+      21: invokevirtual #490                // Method startOutboundProcessing:()V
+      24: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+      27: ldc_w         #493                // String ACP agent transport started
+      30: invokeinterface #480,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      35: return
+
+  private static java.lang.Thread lambda$new$2(java.lang.Runnable);
+    Code:
+       0: new           #495                // class java/lang/Thread
+       3: dup
+       4: aload_0
+       5: ldc_w         #497                // String acp-agent-outbound
+       8: invokespecial #499                // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;Ljava/lang/String;)V
+      11: astore_1
+      12: aload_1
+      13: iconst_1
+      14: invokevirtual #502                // Method java/lang/Thread.setDaemon:(Z)V
+      17: aload_1
+      18: areturn
+
+  private static java.lang.Thread lambda$new$1(java.lang.Runnable);
+    Code:
+       0: new           #495                // class java/lang/Thread
+       3: dup
+       4: aload_0
+       5: ldc_w         #505                // String acp-agent-inbound
+       8: invokespecial #499                // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;Ljava/lang/String;)V
+      11: astore_1
+      12: aload_1
+      13: iconst_1
+      14: invokevirtual #502                // Method java/lang/Thread.setDaemon:(Z)V
+      17: aload_1
+      18: areturn
+
+  private static void lambda$new$0(java.lang.Throwable);
+    Code:
+       0: getstatic     #262                // Field logger:Lorg/slf4j/Logger;
+       3: ldc_w         #507                // String Transport error
+       6: aload_0
+       7: invokeinterface #270,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      12: return
+
+  static {};
+    Code:
+       0: ldc           #8                  // class com/agentclientprotocol/sdk/agent/transport/StdioAcpAgentTransport
+       2: invokestatic  #509                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #262                // Field logger:Lorg/slf4j/Logger;
+       8: return
+}
+Compiled from "StdioAcpClientTransport.java"
+public class com.agentclientprotocol.sdk.client.transport.StdioAcpClientTransport implements com.agentclientprotocol.sdk.spec.AcpClientTransport {
+  private static final org.slf4j.Logger logger;
+
+  private final reactor.core.publisher.Sinks$Many<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage> inboundSink;
+
+  private final reactor.core.publisher.Sinks$Many<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage> outboundSink;
+
+  private java.lang.Process process;
+
+  private com.agentclientprotocol.sdk.json.AcpJsonMapper jsonMapper;
+
+  private reactor.core.scheduler.Scheduler inboundScheduler;
+
+  private reactor.core.scheduler.Scheduler outboundScheduler;
+
+  private reactor.core.scheduler.Scheduler errorScheduler;
+
+  private final com.agentclientprotocol.sdk.client.transport.AgentParameters params;
+
+  private final reactor.core.publisher.Sinks$Many<java.lang.String> errorSink;
+
+  private volatile boolean isClosing;
+
+  private java.util.function.Consumer<java.lang.String> stdErrorHandler;
+
+  public com.agentclientprotocol.sdk.client.transport.StdioAcpClientTransport(com.agentclientprotocol.sdk.client.transport.AgentParameters);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #1                  // InterfaceMethod com/agentclientprotocol/sdk/json/AcpJsonMapper.createDefault:()Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+       5: invokespecial #7                  // Method "<init>":(Lcom/agentclientprotocol/sdk/client/transport/AgentParameters;Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;)V
+       8: return
+
+  public com.agentclientprotocol.sdk.client.transport.StdioAcpClientTransport(com.agentclientprotocol.sdk.client.transport.AgentParameters, com.agentclientprotocol.sdk.json.AcpJsonMapper);
+    Code:
+       0: aload_0
+       1: invokespecial #13                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #18                 // Field isClosing:Z
+       9: aload_0
+      10: invokedynamic #22,  0             // InvokeDynamic #0:accept:()Ljava/util/function/Consumer;
+      15: putfield      #26                 // Field stdErrorHandler:Ljava/util/function/Consumer;
+      18: aload_1
+      19: ldc           #30                 // String The params can not be null
+      21: invokestatic  #32                 // Method com/agentclientprotocol/sdk/util/Assert.notNull:(Ljava/lang/Object;Ljava/lang/String;)V
+      24: aload_2
+      25: ldc           #38                 // String The JsonMapper can not be null
+      27: invokestatic  #32                 // Method com/agentclientprotocol/sdk/util/Assert.notNull:(Ljava/lang/Object;Ljava/lang/String;)V
+      30: aload_0
+      31: invokestatic  #40                 // Method reactor/core/publisher/Sinks.many:()Lreactor/core/publisher/Sinks$ManySpec;
+      34: invokeinterface #46,  1           // InterfaceMethod reactor/core/publisher/Sinks$ManySpec.unicast:()Lreactor/core/publisher/Sinks$UnicastSpec;
+      39: invokeinterface #52,  1           // InterfaceMethod reactor/core/publisher/Sinks$UnicastSpec.onBackpressureBuffer:()Lreactor/core/publisher/Sinks$Many;
+      44: putfield      #58                 // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+      47: aload_0
+      48: invokestatic  #40                 // Method reactor/core/publisher/Sinks.many:()Lreactor/core/publisher/Sinks$ManySpec;
+      51: invokeinterface #46,  1           // InterfaceMethod reactor/core/publisher/Sinks$ManySpec.unicast:()Lreactor/core/publisher/Sinks$UnicastSpec;
+      56: invokeinterface #52,  1           // InterfaceMethod reactor/core/publisher/Sinks$UnicastSpec.onBackpressureBuffer:()Lreactor/core/publisher/Sinks$Many;
+      61: putfield      #62                 // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+      64: aload_0
+      65: aload_1
+      66: putfield      #65                 // Field params:Lcom/agentclientprotocol/sdk/client/transport/AgentParameters;
+      69: aload_0
+      70: aload_2
+      71: putfield      #69                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+      74: aload_0
+      75: invokestatic  #40                 // Method reactor/core/publisher/Sinks.many:()Lreactor/core/publisher/Sinks$ManySpec;
+      78: invokeinterface #46,  1           // InterfaceMethod reactor/core/publisher/Sinks$ManySpec.unicast:()Lreactor/core/publisher/Sinks$UnicastSpec;
+      83: invokeinterface #52,  1           // InterfaceMethod reactor/core/publisher/Sinks$UnicastSpec.onBackpressureBuffer:()Lreactor/core/publisher/Sinks$Many;
+      88: putfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+      91: aload_0
+      92: invokedynamic #76,  0             // InvokeDynamic #1:newThread:()Ljava/util/concurrent/ThreadFactory;
+      97: invokestatic  #80                 // Method java/util/concurrent/Executors.newSingleThreadExecutor:(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
+     100: ldc           #86                 // String inbound
+     102: invokestatic  #88                 // Method reactor/core/scheduler/Schedulers.fromExecutorService:(Ljava/util/concurrent/ExecutorService;Ljava/lang/String;)Lreactor/core/scheduler/Scheduler;
+     105: putfield      #94                 // Field inboundScheduler:Lreactor/core/scheduler/Scheduler;
+     108: aload_0
+     109: invokedynamic #98,  0             // InvokeDynamic #2:newThread:()Ljava/util/concurrent/ThreadFactory;
+     114: invokestatic  #80                 // Method java/util/concurrent/Executors.newSingleThreadExecutor:(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
+     117: ldc           #99                 // String outbound
+     119: invokestatic  #88                 // Method reactor/core/scheduler/Schedulers.fromExecutorService:(Ljava/util/concurrent/ExecutorService;Ljava/lang/String;)Lreactor/core/scheduler/Scheduler;
+     122: putfield      #101                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+     125: aload_0
+     126: invokedynamic #104,  0            // InvokeDynamic #3:newThread:()Ljava/util/concurrent/ThreadFactory;
+     131: invokestatic  #80                 // Method java/util/concurrent/Executors.newSingleThreadExecutor:(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;
+     134: ldc           #105                // String error
+     136: invokestatic  #88                 // Method reactor/core/scheduler/Schedulers.fromExecutorService:(Ljava/util/concurrent/ExecutorService;Ljava/lang/String;)Lreactor/core/scheduler/Scheduler;
+     139: putfield      #107                // Field errorScheduler:Lreactor/core/scheduler/Scheduler;
+     142: return
+
+  public reactor.core.publisher.Mono<java.lang.Void> connect(java.util.function.Function<reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>, reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokedynamic #110,  0            // InvokeDynamic #4:run:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;Ljava/util/function/Function;)Ljava/lang/Runnable;
+       7: invokestatic  #114                // Method reactor/core/publisher/Mono.fromRunnable:(Ljava/lang/Runnable;)Lreactor/core/publisher/Mono;
+      10: areturn
+
+  protected java.lang.ProcessBuilder getProcessBuilder();
+    Code:
+       0: new           #120                // class java/lang/ProcessBuilder
+       3: dup
+       4: iconst_0
+       5: anewarray     #122                // class java/lang/String
+       8: invokespecial #124                // Method java/lang/ProcessBuilder."<init>":([Ljava/lang/String;)V
+      11: areturn
+
+  public void setStdErrorHandler(java.util.function.Consumer<java.lang.String>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #26                 // Field stdErrorHandler:Ljava/util/function/Consumer;
+       5: return
+
+  public void awaitForExit();
+    Code:
+       0: aload_0
+       1: getfield      #127                // Field process:Ljava/lang/Process;
+       4: invokevirtual #131                // Method java/lang/Process.waitFor:()I
+       7: pop
+       8: goto          23
+      11: astore_1
+      12: new           #139                // class java/lang/RuntimeException
+      15: dup
+      16: ldc           #141                // String Process interrupted
+      18: aload_1
+      19: invokespecial #143                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      22: athrow
+      23: return
+    Exception table:
+       from    to  target type
+           0     8    11   Class java/lang/InterruptedException
+
+  private void startErrorProcessing();
+    Code:
+       0: aload_0
+       1: getfield      #107                // Field errorScheduler:Lreactor/core/scheduler/Scheduler;
+       4: aload_0
+       5: invokedynamic #146,  0            // InvokeDynamic #5:run:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/lang/Runnable;
+      10: invokeinterface #149,  2          // InterfaceMethod reactor/core/scheduler/Scheduler.schedule:(Ljava/lang/Runnable;)Lreactor/core/Disposable;
+      15: pop
+      16: return
+
+  private void handleIncomingMessages(java.util.function.Function<reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>, reactor.core.publisher.Mono<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>>);
+    Code:
+       0: aload_0
+       1: getfield      #58                 // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+       4: invokeinterface #155,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.asFlux:()Lreactor/core/publisher/Flux;
+       9: aload_1
+      10: invokedynamic #161,  0            // InvokeDynamic #6:apply:(Ljava/util/function/Function;)Ljava/util/function/Function;
+      15: invokevirtual #165                // Method reactor/core/publisher/Flux.flatMap:(Ljava/util/function/Function;)Lreactor/core/publisher/Flux;
+      18: invokevirtual #171                // Method reactor/core/publisher/Flux.subscribe:()Lreactor/core/Disposable;
+      21: pop
+      22: return
+
+  private void handleIncomingErrors();
+    Code:
+       0: aload_0
+       1: getfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+       4: invokeinterface #155,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.asFlux:()Lreactor/core/publisher/Flux;
+       9: aload_0
+      10: invokedynamic #175,  0            // InvokeDynamic #7:accept:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/util/function/Consumer;
+      15: invokevirtual #178                // Method reactor/core/publisher/Flux.subscribe:(Ljava/util/function/Consumer;)Lreactor/core/Disposable;
+      18: pop
+      19: return
+
+  public reactor.core.publisher.Mono<java.lang.Void> sendMessage(com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage);
+    Code:
+       0: aload_0
+       1: getfield      #62                 // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+       4: aload_1
+       5: ldc2_w        #181                // long 100l
+       8: invokestatic  #183                // Method java/time/Duration.ofMillis:(J)Ljava/time/Duration;
+      11: invokestatic  #189                // InterfaceMethod reactor/core/publisher/Sinks$EmitFailureHandler.busyLooping:(Ljava/time/Duration;)Lreactor/core/publisher/Sinks$EmitFailureHandler;
+      14: invokeinterface #195,  3          // InterfaceMethod reactor/core/publisher/Sinks$Many.emitNext:(Ljava/lang/Object;Lreactor/core/publisher/Sinks$EmitFailureHandler;)V
+      19: invokestatic  #199                // Method reactor/core/publisher/Mono.empty:()Lreactor/core/publisher/Mono;
+      22: areturn
+
+  private void startInboundProcessing();
+    Code:
+       0: aload_0
+       1: getfield      #94                 // Field inboundScheduler:Lreactor/core/scheduler/Scheduler;
+       4: aload_0
+       5: invokedynamic #203,  0            // InvokeDynamic #8:run:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/lang/Runnable;
+      10: invokeinterface #149,  2          // InterfaceMethod reactor/core/scheduler/Scheduler.schedule:(Ljava/lang/Runnable;)Lreactor/core/Disposable;
+      15: pop
+      16: return
+
+  private void startOutboundProcessing();
+    Code:
+       0: aload_0
+       1: aload_0
+       2: invokedynamic #204,  0            // InvokeDynamic #9:apply:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/util/function/Function;
+       7: invokevirtual #207                // Method handleOutbound:(Ljava/util/function/Function;)V
+      10: return
+
+  protected void handleOutbound(java.util.function.Function<reactor.core.publisher.Flux<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>, reactor.core.publisher.Flux<com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage>>);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #62                 // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+       5: invokeinterface #155,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.asFlux:()Lreactor/core/publisher/Flux;
+      10: invokeinterface #211,  2          // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+      15: checkcast     #166                // class reactor/core/publisher/Flux
+      18: aload_0
+      19: invokedynamic #216,  0            // InvokeDynamic #10:run:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/lang/Runnable;
+      24: invokevirtual #217                // Method reactor/core/publisher/Flux.doOnComplete:(Ljava/lang/Runnable;)Lreactor/core/publisher/Flux;
+      27: aload_0
+      28: invokedynamic #221,  0            // InvokeDynamic #11:accept:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/util/function/Consumer;
+      33: invokevirtual #222                // Method reactor/core/publisher/Flux.doOnError:(Ljava/util/function/Consumer;)Lreactor/core/publisher/Flux;
+      36: invokevirtual #171                // Method reactor/core/publisher/Flux.subscribe:()Lreactor/core/Disposable;
+      39: pop
+      40: return
+
+  public reactor.core.publisher.Mono<java.lang.Void> closeGracefully();
+    Code:
+       0: aload_0
+       1: invokedynamic #226,  0            // InvokeDynamic #12:run:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/lang/Runnable;
+       6: invokestatic  #114                // Method reactor/core/publisher/Mono.fromRunnable:(Ljava/lang/Runnable;)Lreactor/core/publisher/Mono;
+       9: areturn
+
+  public reactor.core.publisher.Sinks$Many<java.lang.String> getErrorSink();
+    Code:
+       0: aload_0
+       1: getfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+       4: areturn
+
+  public <T> T unmarshalFrom(java.lang.Object, com.agentclientprotocol.sdk.json.TypeRef<T>);
+    Code:
+       0: aload_0
+       1: getfield      #69                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+       4: aload_1
+       5: aload_2
+       6: invokeinterface #227,  3          // InterfaceMethod com/agentclientprotocol/sdk/json/AcpJsonMapper.convertValue:(Ljava/lang/Object;Lcom/agentclientprotocol/sdk/json/TypeRef;)Ljava/lang/Object;
+      11: areturn
+
+  private void lambda$closeGracefully$14();
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #18                 // Field isClosing:Z
+       5: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+       8: ldc           #235                // String Initiating graceful shutdown
+      10: invokeinterface #237,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      15: aload_0
+      16: getfield      #58                 // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+      19: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+      24: pop
+      25: aload_0
+      26: getfield      #62                 // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+      29: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+      34: pop
+      35: aload_0
+      36: getfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+      39: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+      44: pop
+      45: aload_0
+      46: getfield      #127                // Field process:Ljava/lang/Process;
+      49: ifnull        189
+      52: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+      55: ldc           #247                // String Sending TERM to process
+      57: invokeinterface #237,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      62: aload_0
+      63: getfield      #127                // Field process:Ljava/lang/Process;
+      66: invokevirtual #249                // Method java/lang/Process.destroy:()V
+      69: aload_0
+      70: getfield      #127                // Field process:Ljava/lang/Process;
+      73: ldc2_w        #252                // long 5l
+      76: getstatic     #254                // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      79: invokevirtual #260                // Method java/lang/Process.waitFor:(JLjava/util/concurrent/TimeUnit;)Z
+      82: istore_1
+      83: iload_1
+      84: ifeq          149
+      87: aload_0
+      88: getfield      #127                // Field process:Ljava/lang/Process;
+      91: invokevirtual #263                // Method java/lang/Process.exitValue:()I
+      94: istore_2
+      95: iload_2
+      96: ifeq          113
+      99: iload_2
+     100: sipush        143
+     103: if_icmpeq     113
+     106: iload_2
+     107: sipush        137
+     110: if_icmpne     131
+     113: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     116: ldc_w         #266                // String ACP agent process stopped (exit code {})
+     119: iload_2
+     120: invokestatic  #268                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     123: invokeinterface #274,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+     128: goto          146
+     131: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     134: ldc_w         #278                // String Process terminated unexpectedly with code {}
+     137: iload_2
+     138: invokestatic  #268                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     141: invokeinterface #280,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+     146: goto          168
+     149: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     152: ldc_w         #283                // String Process did not exit within timeout, forcing kill
+     155: invokeinterface #285,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     160: aload_0
+     161: getfield      #127                // Field process:Ljava/lang/Process;
+     164: invokevirtual #287                // Method java/lang/Process.destroyForcibly:()Ljava/lang/Process;
+     167: pop
+     168: goto          189
+     171: astore_1
+     172: invokestatic  #291                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     175: invokevirtual #297                // Method java/lang/Thread.interrupt:()V
+     178: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     181: ldc_w         #300                // String Interrupted while waiting for process exit
+     184: invokeinterface #237,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     189: aload_0
+     190: getfield      #94                 // Field inboundScheduler:Lreactor/core/scheduler/Scheduler;
+     193: invokeinterface #302,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+     198: aload_0
+     199: getfield      #107                // Field errorScheduler:Lreactor/core/scheduler/Scheduler;
+     202: invokeinterface #302,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+     207: aload_0
+     208: getfield      #101                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+     211: invokeinterface #302,  1          // InterfaceMethod reactor/core/scheduler/Scheduler.dispose:()V
+     216: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     219: ldc_w         #305                // String Graceful shutdown completed
+     222: invokeinterface #237,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     227: goto          243
+     230: astore_1
+     231: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     234: ldc_w         #309                // String Error during graceful shutdown
+     237: aload_1
+     238: invokeinterface #311,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     243: return
+    Exception table:
+       from    to  target type
+          69   168   171   Class java/lang/InterruptedException
+         189   227   230   Class java/lang/Exception
+
+  private void lambda$handleOutbound$13(java.lang.Throwable);
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field isClosing:Z
+       4: ifne          34
+       7: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+      10: ldc_w         #313                // String Error in outbound processing
+      13: aload_1
+      14: invokeinterface #311,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      19: aload_0
+      20: iconst_1
+      21: putfield      #18                 // Field isClosing:Z
+      24: aload_0
+      25: getfield      #62                 // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+      28: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+      33: pop
+      34: return
+
+  private void lambda$handleOutbound$12();
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #18                 // Field isClosing:Z
+       5: aload_0
+       6: getfield      #62                 // Field outboundSink:Lreactor/core/publisher/Sinks$Many;
+       9: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+      14: pop
+      15: return
+
+  private reactor.core.publisher.Flux lambda$startOutboundProcessing$11(reactor.core.publisher.Flux);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #101                // Field outboundScheduler:Lreactor/core/scheduler/Scheduler;
+       5: invokevirtual #315                // Method reactor/core/publisher/Flux.publishOn:(Lreactor/core/scheduler/Scheduler;)Lreactor/core/publisher/Flux;
+       8: aload_0
+       9: invokedynamic #319,  0            // InvokeDynamic #13:accept:(Lcom/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport;)Ljava/util/function/BiConsumer;
+      14: invokevirtual #322                // Method reactor/core/publisher/Flux.handle:(Ljava/util/function/BiConsumer;)Lreactor/core/publisher/Flux;
+      17: areturn
+
+  private void lambda$startOutboundProcessing$10(com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage, reactor.core.publisher.SynchronousSink);
+    Code:
+       0: aload_1
+       1: ifnull        148
+       4: aload_0
+       5: getfield      #18                 // Field isClosing:Z
+       8: ifne          148
+      11: aload_0
+      12: getfield      #69                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+      15: aload_1
+      16: invokeinterface #326,  2          // InterfaceMethod com/agentclientprotocol/sdk/json/AcpJsonMapper.writeValueAsString:(Ljava/lang/Object;)Ljava/lang/String;
+      21: astore_3
+      22: aload_3
+      23: ldc_w         #330                // String \r\n
+      26: ldc_w         #332                // String \\n
+      29: invokevirtual #334                // Method java/lang/String.replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+      32: ldc_w         #338                // String \n
+      35: ldc_w         #332                // String \\n
+      38: invokevirtual #334                // Method java/lang/String.replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+      41: ldc_w         #340                // String \r
+      44: ldc_w         #332                // String \\n
+      47: invokevirtual #334                // Method java/lang/String.replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+      50: astore_3
+      51: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+      54: ldc_w         #342                // String SEND: {}
+      57: aload_3
+      58: invokeinterface #344,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      63: aload_0
+      64: getfield      #127                // Field process:Ljava/lang/Process;
+      67: invokevirtual #347                // Method java/lang/Process.getOutputStream:()Ljava/io/OutputStream;
+      70: astore        4
+      72: aload         4
+      74: dup
+      75: astore        5
+      77: monitorenter
+      78: aload         4
+      80: aload_3
+      81: getstatic     #351                // Field java/nio/charset/StandardCharsets.UTF_8:Ljava/nio/charset/Charset;
+      84: invokevirtual #357                // Method java/lang/String.getBytes:(Ljava/nio/charset/Charset;)[B
+      87: invokevirtual #361                // Method java/io/OutputStream.write:([B)V
+      90: aload         4
+      92: ldc_w         #338                // String \n
+      95: getstatic     #351                // Field java/nio/charset/StandardCharsets.UTF_8:Ljava/nio/charset/Charset;
+      98: invokevirtual #357                // Method java/lang/String.getBytes:(Ljava/nio/charset/Charset;)[B
+     101: invokevirtual #361                // Method java/io/OutputStream.write:([B)V
+     104: aload         4
+     106: invokevirtual #367                // Method java/io/OutputStream.flush:()V
+     109: aload         5
+     111: monitorexit
+     112: goto          123
+     115: astore        6
+     117: aload         5
+     119: monitorexit
+     120: aload         6
+     122: athrow
+     123: aload_2
+     124: aload_1
+     125: invokeinterface #370,  2          // InterfaceMethod reactor/core/publisher/SynchronousSink.next:(Ljava/lang/Object;)V
+     130: goto          148
+     133: astore_3
+     134: aload_2
+     135: new           #139                // class java/lang/RuntimeException
+     138: dup
+     139: aload_3
+     140: invokespecial #378                // Method java/lang/RuntimeException."<init>":(Ljava/lang/Throwable;)V
+     143: invokeinterface #381,  2          // InterfaceMethod reactor/core/publisher/SynchronousSink.error:(Ljava/lang/Throwable;)V
+     148: return
+    Exception table:
+       from    to  target type
+          78   112   115   any
+         115   120   115   any
+          11   130   133   Class java/io/IOException
+
+  private void lambda$startInboundProcessing$9();
+    Code:
+       0: new           #383                // class java/io/BufferedReader
+       3: dup
+       4: new           #385                // class java/io/InputStreamReader
+       7: dup
+       8: aload_0
+       9: getfield      #127                // Field process:Ljava/lang/Process;
+      12: invokevirtual #387                // Method java/lang/Process.getInputStream:()Ljava/io/InputStream;
+      15: invokespecial #391                // Method java/io/InputStreamReader."<init>":(Ljava/io/InputStream;)V
+      18: invokespecial #394                // Method java/io/BufferedReader."<init>":(Ljava/io/Reader;)V
+      21: astore_1
+      22: aload_0
+      23: getfield      #18                 // Field isClosing:Z
+      26: ifne          124
+      29: aload_1
+      30: invokevirtual #397                // Method java/io/BufferedReader.readLine:()Ljava/lang/String;
+      33: dup
+      34: astore_2
+      35: ifnull        124
+      38: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+      41: ldc_w         #401                // String RECV: {}
+      44: aload_2
+      45: invokeinterface #344,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      50: aload_0
+      51: getfield      #69                 // Field jsonMapper:Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;
+      54: aload_2
+      55: invokestatic  #403                // Method com/agentclientprotocol/sdk/spec/AcpSchema.deserializeJsonRpcMessage:(Lcom/agentclientprotocol/sdk/json/AcpJsonMapper;Ljava/lang/String;)Lcom/agentclientprotocol/sdk/spec/AcpSchema$JSONRPCMessage;
+      58: astore_3
+      59: aload_0
+      60: getfield      #58                 // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+      63: aload_3
+      64: invokeinterface #409,  2          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitNext:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+      69: invokevirtual #413                // Method reactor/core/publisher/Sinks$EmitResult.isSuccess:()Z
+      72: ifne          97
+      75: aload_0
+      76: getfield      #18                 // Field isClosing:Z
+      79: ifne          94
+      82: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+      85: ldc_w         #419                // String Failed to enqueue inbound message: {}
+      88: aload_3
+      89: invokeinterface #421,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;)V
+      94: goto          124
+      97: goto          22
+     100: astore_3
+     101: aload_0
+     102: getfield      #18                 // Field isClosing:Z
+     105: ifne          121
+     108: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     111: ldc_w         #423                // String Error processing inbound message for line: {}
+     114: aload_2
+     115: aload_3
+     116: invokeinterface #425,  4          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     121: goto          124
+     124: aload_1
+     125: invokevirtual #428                // Method java/io/BufferedReader.close:()V
+     128: goto          147
+     131: astore_2
+     132: aload_1
+     133: invokevirtual #428                // Method java/io/BufferedReader.close:()V
+     136: goto          145
+     139: astore_3
+     140: aload_2
+     141: aload_3
+     142: invokevirtual #433                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     145: aload_2
+     146: athrow
+     147: aload_0
+     148: iconst_1
+     149: putfield      #18                 // Field isClosing:Z
+     152: aload_0
+     153: getfield      #58                 // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+     156: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     161: pop
+     162: goto          223
+     165: astore_1
+     166: aload_0
+     167: getfield      #18                 // Field isClosing:Z
+     170: ifne          185
+     173: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     176: ldc_w         #436                // String Error reading from input stream
+     179: aload_1
+     180: invokeinterface #311,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     185: aload_0
+     186: iconst_1
+     187: putfield      #18                 // Field isClosing:Z
+     190: aload_0
+     191: getfield      #58                 // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+     194: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     199: pop
+     200: goto          223
+     203: astore        4
+     205: aload_0
+     206: iconst_1
+     207: putfield      #18                 // Field isClosing:Z
+     210: aload_0
+     211: getfield      #58                 // Field inboundSink:Lreactor/core/publisher/Sinks$Many;
+     214: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     219: pop
+     220: aload         4
+     222: athrow
+     223: return
+    Exception table:
+       from    to  target type
+          38    94   100   Class java/lang/Exception
+          22   124   131   Class java/lang/Throwable
+         132   136   139   Class java/lang/Throwable
+           0   147   165   Class java/io/IOException
+           0   147   203   any
+         165   185   203   any
+         203   205   203   any
+
+  private void lambda$handleIncomingErrors$8(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #26                 // Field stdErrorHandler:Ljava/util/function/Consumer;
+       4: aload_1
+       5: invokeinterface #438,  2          // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+      10: return
+
+  private static org.reactivestreams.Publisher lambda$handleIncomingMessages$7(java.util.function.Function, com.agentclientprotocol.sdk.spec.AcpSchema$JSONRPCMessage);
+    Code:
+       0: aload_1
+       1: invokestatic  #442                // Method reactor/core/publisher/Mono.just:(Ljava/lang/Object;)Lreactor/core/publisher/Mono;
+       4: aload_0
+       5: invokevirtual #446                // Method reactor/core/publisher/Mono.transform:(Ljava/util/function/Function;)Lreactor/core/publisher/Mono;
+       8: invokedynamic #450,  0            // InvokeDynamic #14:apply:()Ljava/util/function/Function;
+      13: invokevirtual #453                // Method reactor/core/publisher/Mono.contextWrite:(Ljava/util/function/Function;)Lreactor/core/publisher/Mono;
+      16: areturn
+
+  private static reactor.util.context.Context lambda$handleIncomingMessages$6(reactor.util.context.Context);
+    Code:
+       0: aload_0
+       1: ldc_w         #456                // String observation
+       4: ldc_w         #458                // String myObservation
+       7: invokeinterface #460,  3          // InterfaceMethod reactor/util/context/Context.put:(Ljava/lang/Object;Ljava/lang/Object;)Lreactor/util/context/Context;
+      12: areturn
+
+  private void lambda$startErrorProcessing$5();
+    Code:
+       0: new           #383                // class java/io/BufferedReader
+       3: dup
+       4: new           #385                // class java/io/InputStreamReader
+       7: dup
+       8: aload_0
+       9: getfield      #127                // Field process:Ljava/lang/Process;
+      12: invokevirtual #466                // Method java/lang/Process.getErrorStream:()Ljava/io/InputStream;
+      15: invokespecial #391                // Method java/io/InputStreamReader."<init>":(Ljava/io/InputStream;)V
+      18: invokespecial #394                // Method java/io/BufferedReader."<init>":(Ljava/io/Reader;)V
+      21: astore_1
+      22: aload_0
+      23: getfield      #18                 // Field isClosing:Z
+      26: ifne          101
+      29: aload_1
+      30: invokevirtual #397                // Method java/io/BufferedReader.readLine:()Ljava/lang/String;
+      33: dup
+      34: astore_2
+      35: ifnull        101
+      38: aload_0
+      39: getfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+      42: aload_2
+      43: invokeinterface #409,  2          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitNext:(Ljava/lang/Object;)Lreactor/core/publisher/Sinks$EmitResult;
+      48: invokevirtual #413                // Method reactor/core/publisher/Sinks$EmitResult.isSuccess:()Z
+      51: ifne          75
+      54: aload_0
+      55: getfield      #18                 // Field isClosing:Z
+      58: ifne          72
+      61: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+      64: ldc_w         #469                // String Failed to emit error message
+      67: invokeinterface #471,  2          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+      72: goto          101
+      75: goto          22
+      78: astore_3
+      79: aload_0
+      80: getfield      #18                 // Field isClosing:Z
+      83: ifne          98
+      86: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+      89: ldc_w         #473                // String Error processing error message
+      92: aload_3
+      93: invokeinterface #311,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      98: goto          101
+     101: aload_1
+     102: invokevirtual #428                // Method java/io/BufferedReader.close:()V
+     105: goto          124
+     108: astore_2
+     109: aload_1
+     110: invokevirtual #428                // Method java/io/BufferedReader.close:()V
+     113: goto          122
+     116: astore_3
+     117: aload_2
+     118: aload_3
+     119: invokevirtual #433                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     122: aload_2
+     123: athrow
+     124: aload_0
+     125: iconst_1
+     126: putfield      #18                 // Field isClosing:Z
+     129: aload_0
+     130: getfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+     133: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     138: pop
+     139: goto          200
+     142: astore_1
+     143: aload_0
+     144: getfield      #18                 // Field isClosing:Z
+     147: ifne          162
+     150: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     153: ldc_w         #475                // String Error reading from error stream
+     156: aload_1
+     157: invokeinterface #311,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     162: aload_0
+     163: iconst_1
+     164: putfield      #18                 // Field isClosing:Z
+     167: aload_0
+     168: getfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+     171: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     176: pop
+     177: goto          200
+     180: astore        4
+     182: aload_0
+     183: iconst_1
+     184: putfield      #18                 // Field isClosing:Z
+     187: aload_0
+     188: getfield      #73                 // Field errorSink:Lreactor/core/publisher/Sinks$Many;
+     191: invokeinterface #243,  1          // InterfaceMethod reactor/core/publisher/Sinks$Many.tryEmitComplete:()Lreactor/core/publisher/Sinks$EmitResult;
+     196: pop
+     197: aload         4
+     199: athrow
+     200: return
+    Exception table:
+       from    to  target type
+          38    72    78   Class java/lang/Exception
+          22   101   108   Class java/lang/Throwable
+         109   113   116   Class java/lang/Throwable
+           0   124   142   Class java/io/IOException
+           0   124   180   any
+         142   162   180   any
+         180   182   180   any
+
+  private void lambda$connect$4(java.util.function.Function);
+    Code:
+       0: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+       3: ldc_w         #477                // String ACP agent starting.
+       6: invokeinterface #479,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      11: aload_0
+      12: aload_1
+      13: invokevirtual #481                // Method handleIncomingMessages:(Ljava/util/function/Function;)V
+      16: aload_0
+      17: invokevirtual #484                // Method handleIncomingErrors:()V
+      20: new           #487                // class java/util/ArrayList
+      23: dup
+      24: invokespecial #489                // Method java/util/ArrayList."<init>":()V
+      27: astore_2
+      28: aload_2
+      29: aload_0
+      30: getfield      #65                 // Field params:Lcom/agentclientprotocol/sdk/client/transport/AgentParameters;
+      33: invokevirtual #490                // Method com/agentclientprotocol/sdk/client/transport/AgentParameters.getCommand:()Ljava/lang/String;
+      36: invokeinterface #495,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      41: pop
+      42: aload_2
+      43: aload_0
+      44: getfield      #65                 // Field params:Lcom/agentclientprotocol/sdk/client/transport/AgentParameters;
+      47: invokevirtual #501                // Method com/agentclientprotocol/sdk/client/transport/AgentParameters.getArgs:()Ljava/util/List;
+      50: invokeinterface #505,  2          // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+      55: pop
+      56: aload_0
+      57: invokevirtual #509                // Method getProcessBuilder:()Ljava/lang/ProcessBuilder;
+      60: astore_3
+      61: aload_3
+      62: aload_2
+      63: invokevirtual #513                // Method java/lang/ProcessBuilder.command:(Ljava/util/List;)Ljava/lang/ProcessBuilder;
+      66: pop
+      67: aload_3
+      68: invokevirtual #517                // Method java/lang/ProcessBuilder.environment:()Ljava/util/Map;
+      71: aload_0
+      72: getfield      #65                 // Field params:Lcom/agentclientprotocol/sdk/client/transport/AgentParameters;
+      75: invokevirtual #521                // Method com/agentclientprotocol/sdk/client/transport/AgentParameters.getEnv:()Ljava/util/Map;
+      78: invokeinterface #524,  2          // InterfaceMethod java/util/Map.putAll:(Ljava/util/Map;)V
+      83: aload_0
+      84: aload_3
+      85: invokevirtual #530                // Method java/lang/ProcessBuilder.start:()Ljava/lang/Process;
+      88: putfield      #127                // Field process:Ljava/lang/Process;
+      91: goto          115
+      94: astore        4
+      96: new           #139                // class java/lang/RuntimeException
+      99: dup
+     100: aload_2
+     101: invokestatic  #533                // Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;
+     104: invokedynamic #535,  0            // InvokeDynamic #15:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+     109: aload         4
+     111: invokespecial #143                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     114: athrow
+     115: aload_0
+     116: getfield      #127                // Field process:Ljava/lang/Process;
+     119: invokevirtual #387                // Method java/lang/Process.getInputStream:()Ljava/io/InputStream;
+     122: ifnull        135
+     125: aload_0
+     126: getfield      #127                // Field process:Ljava/lang/Process;
+     129: invokevirtual #347                // Method java/lang/Process.getOutputStream:()Ljava/io/OutputStream;
+     132: ifnonnull     153
+     135: aload_0
+     136: getfield      #127                // Field process:Ljava/lang/Process;
+     139: invokevirtual #249                // Method java/lang/Process.destroy:()V
+     142: new           #139                // class java/lang/RuntimeException
+     145: dup
+     146: ldc_w         #539                // String Process input or output stream is null
+     149: invokespecial #541                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     152: athrow
+     153: aload_0
+     154: invokevirtual #543                // Method startInboundProcessing:()V
+     157: aload_0
+     158: invokevirtual #546                // Method startOutboundProcessing:()V
+     161: aload_0
+     162: invokevirtual #549                // Method startErrorProcessing:()V
+     165: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+     168: ldc_w         #552                // String ACP agent started
+     171: invokeinterface #479,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     176: return
+    Exception table:
+       from    to  target type
+          83    91    94   Class java/io/IOException
+
+  private static java.lang.Thread lambda$new$3(java.lang.Runnable);
+    Code:
+       0: new           #292                // class java/lang/Thread
+       3: dup
+       4: aload_0
+       5: ldc_w         #554                // String acp-client-error
+       8: invokespecial #556                // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;Ljava/lang/String;)V
+      11: astore_1
+      12: aload_1
+      13: iconst_1
+      14: invokevirtual #559                // Method java/lang/Thread.setDaemon:(Z)V
+      17: aload_1
+      18: areturn
+
+  private static java.lang.Thread lambda$new$2(java.lang.Runnable);
+    Code:
+       0: new           #292                // class java/lang/Thread
+       3: dup
+       4: aload_0
+       5: ldc_w         #563                // String acp-client-outbound
+       8: invokespecial #556                // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;Ljava/lang/String;)V
+      11: astore_1
+      12: aload_1
+      13: iconst_1
+      14: invokevirtual #559                // Method java/lang/Thread.setDaemon:(Z)V
+      17: aload_1
+      18: areturn
+
+  private static java.lang.Thread lambda$new$1(java.lang.Runnable);
+    Code:
+       0: new           #292                // class java/lang/Thread
+       3: dup
+       4: aload_0
+       5: ldc_w         #565                // String acp-client-inbound
+       8: invokespecial #556                // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;Ljava/lang/String;)V
+      11: astore_1
+      12: aload_1
+      13: iconst_1
+      14: invokevirtual #559                // Method java/lang/Thread.setDaemon:(Z)V
+      17: aload_1
+      18: areturn
+
+  private static void lambda$new$0(java.lang.String);
+    Code:
+       0: getstatic     #231                // Field logger:Lorg/slf4j/Logger;
+       3: ldc_w         #567                // String STDERR Message received: {}
+       6: aload_0
+       7: invokeinterface #274,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+      12: return
+
+  static {};
+    Code:
+       0: ldc           #8                  // class com/agentclientprotocol/sdk/client/transport/StdioAcpClientTransport
+       2: invokestatic  #569                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #231                // Field logger:Lorg/slf4j/Logger;
+       8: return
+}

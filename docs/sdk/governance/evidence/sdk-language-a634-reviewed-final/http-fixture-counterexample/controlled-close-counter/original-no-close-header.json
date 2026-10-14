@@ -1,0 +1,33 @@
+{
+  "exit_code": 1,
+  "events": [
+    {
+      "kind": "request",
+      "peer": [
+        "127.0.0.1",
+        61045
+      ],
+      "path": "/store",
+      "body": "{\"operation\":\"load\"}"
+    },
+    {
+      "kind": "response_flushed",
+      "peer": [
+        "127.0.0.1",
+        61045
+      ],
+      "protocol": "HTTP/1.0",
+      "explicit_close": false
+    },
+    {
+      "kind": "before_nonpersistent_close",
+      "peer": [
+        "127.0.0.1",
+        61045
+      ],
+      "peek": "POST /store HTTP/1.1\r\nConnection: Upgrade, HTTP2-Settings\r\nContent-Length: 20\r\nHost: 127.0.0.1:61044\r\nHTTP2-Settings: AAEAAEAAAAIAAAAAAAMAAAAAAAQBAAAAAAUAAEAAAAYABgAA\r\nUpgrade: h2c\r\nUser-Agent: Java-http-client/21.0.5\r\n\r\n",
+      "same_connection_second_post": true
+    }
+  ],
+  "stdout": "SEND 1\nRESULT 1 200 {\"result\":null}\nSEND 2\nERROR 2 java.io.IOException: HTTP/1.1 header parser received no bytes\njava.io.IOException: HTTP/1.1 header parser received no bytes\n\tat java.net.http/jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:966)\n\tat java.net.http/jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133)\n\tat Counter.main(Counter.java:9)\nCaused by: java.io.IOException: HTTP/1.1 header parser received no bytes\n\tat java.net.http/jdk.internal.net.http.common.Utils.wrapWithExtraDetail(Utils.java:388)\n\tat java.net.http/jdk.internal.net.http.Http1Response$HeadersReader.onReadError(Http1Response.java:590)\n\tat java.net.http/jdk.internal.net.http.Http1AsyncReceiver.checkForErrors(Http1AsyncReceiver.java:302)\n\tat java.net.http/jdk.internal.net.http.Http1AsyncReceiver.flush(Http1AsyncReceiver.java:268)\n\tat java.net.http/jdk.internal.net.http.common.SequentialScheduler$LockingRestartableTask.run(SequentialScheduler.java:182)\n\tat java.net.http/jdk.internal.net.http.common.SequentialScheduler$CompleteRestartableTask.run(SequentialScheduler.java:149)\n\tat java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:207)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)\n\tat java.base/java.lang.Thread.run(Thread.java:1583)\nCaused by: java.net.SocketException: Connection reset\n\tat java.base/sun.nio.ch.SocketChannelImpl.throwConnectionReset(SocketChannelImpl.java:401)\n\tat java.base/sun.nio.ch.SocketChannelImpl.read(SocketChannelImpl.java:434)\n\tat java.net.http/jdk.internal.net.http.SocketTube.readAvailable(SocketTube.java:1178)\n\tat java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read(SocketTube.java:841)\n\tat java.net.http/jdk.internal.net.http.SocketTube$SocketFlowTask.run(SocketTube.java:181)\n\tat java.net.http/jdk.internal.net.http.common.SequentialScheduler$SchedulableTask.run(SequentialScheduler.java:207)\n\tat java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:280)\n\tat java.net.http/jdk.internal.net.http.common.SequentialScheduler.runOrSchedule(SequentialScheduler.java:233)\n\tat java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.signalReadable(SocketTube.java:782)\n\tat java.net.http/jdk.internal.net.http.SocketTube$InternalReadPublisher$ReadEvent.signalEvent(SocketTube.java:965)\n\tat java.net.http/jdk.internal.net.http.SocketTube$SocketFlowEvent.handle(SocketTube.java:253)\n\tat java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:1469)\n\tat java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:1414)\n\tat java.base/java.util.ArrayList.forEach(ArrayList.java:1596)\n\tat java.net.http/jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:1414)\n"
+}

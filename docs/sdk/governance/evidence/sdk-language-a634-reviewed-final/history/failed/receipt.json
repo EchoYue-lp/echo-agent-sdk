@@ -1,0 +1,21 @@
+{
+  "label": "sdk-language-a634-complete",
+  "command": [
+    "bash",
+    "scripts/check-language-sdks.sh"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-a634-current-final/language-all.log",
+  "exitCode": 1,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 106585,
+  "bytesWritten": 106585,
+  "startedAt": "2026-10-14T06:11:57.059Z",
+  "finishedAt": "2026-10-14T06:16:43.200Z",
+  "framework": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "sourceInputs": 790,
+  "inputsChanged": [],
+  "sha256": "98d7141789c4816b25a145e0ffc73b424a2f0d1250e466f99f629081be21399e"
+}

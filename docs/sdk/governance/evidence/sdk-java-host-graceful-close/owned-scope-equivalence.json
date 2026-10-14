@@ -1,0 +1,8 @@
+{
+  "method": "replace nested transport with marker; remove obsolete official-client import and early expected-close call only",
+  "outsideOwnedBeforeSHA256": "727fb9a6a470cd8e55e7d877247bbd726eb945f8cf6983064a597f7e7bfa01c2",
+  "outsideOwnedAfterSHA256": "727fb9a6a470cd8e55e7d877247bbd726eb945f8cf6983064a597f7e7bfa01c2",
+  "equal": true,
+  "closeOwnerStateFieldsAndFactoryCallbacks": "byte-identical outside the bounded native transport and removed early marker call",
+  "unmodifiedCloseLifecycleTestSHA256": "67987e30aa81a90a4e1294925aaab582ee28668ae3cf509f343d47295cadd2dd"
+}

@@ -1,0 +1,16 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/before/sdks/python/tests/test_factory_host.py	2026-10-12 13:04:52
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/after/sdks/python/tests/test_factory_host.py	2026-10-14 11:09:43
+@@ -214,10 +214,12 @@
+         identity = []
+ 
+         async def until(predicate):
+-            async with asyncio.timeout(15):
++            async def wait_for_condition_1():
+                 while not predicate():
+                     await asyncio.sleep(0.01)
+ 
++            await asyncio.wait_for(wait_for_condition_1(), 15)
++
+         async with sdk:
+ 
+             async def handler(call, cancel):

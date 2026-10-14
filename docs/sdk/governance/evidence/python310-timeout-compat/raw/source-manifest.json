@@ -1,0 +1,38 @@
+{
+  "sdks/python/tests/test_client_close_callbacks.py": {
+    "before_sha256": "533da5a10bb886915584b654a3175276443b1c162606a0e6866f4abca8ddfb8d",
+    "after_sha256": "f7606fa19dec4486f5c2aaeee77e479355b5362569dde3419b3343d514158f39",
+    "all_assert_syntax_preserved": true,
+    "scope": "Only original polling body extracted into awaited wait_for coroutine; SDK owners and deadlines unchanged"
+  },
+  "sdks/python/tests/test_tool_value_effect_host.py": {
+    "before_sha256": "f0602ba8964839d2bb5171c9d619a5894ea939dd6cfd78f38c28d6f33b325c25",
+    "after_sha256": "16a121ddb2c661b7436bd36e18d0f483a17c1e6586e3edd4bbf4f627477fc33e",
+    "all_assert_syntax_preserved": true,
+    "scope": "Only original polling body extracted into awaited wait_for coroutine; SDK owners and deadlines unchanged"
+  },
+  "sdks/python/tests/test_factory_host.py": {
+    "before_sha256": "e7ffc2ccc9ffcf98930d24fb0bb781090f6533873639a0d2301411c343f9c96b",
+    "after_sha256": "5ffb738fe06ad2239089dad5c7f87ef441822d638a839ac9b0fdfae2c2272018",
+    "all_assert_syntax_preserved": true,
+    "scope": "Only original polling body extracted into awaited wait_for coroutine; SDK owners and deadlines unchanged"
+  },
+  "sdks/python/tests/test_managed_host.py": {
+    "before_sha256": "75a76fb7a6516a3c86e13369dbd07ffc79e3be5aea728aa5598a80080fdfae08",
+    "after_sha256": "d34d56237f86358ab7694d4eaeb3015c2c94ced03865fa2b0a67aeff05e3dea6",
+    "all_assert_syntax_preserved": true,
+    "scope": "Only original polling body extracted into awaited wait_for coroutine; SDK owners and deadlines unchanged"
+  },
+  "sdks/python/tests/test_memory_permission_host.py": {
+    "before_sha256": "9f9d97f4c3604d81cd4261a8ad5191508cacf27c81615dfdee3a919409d069d1",
+    "after_sha256": "f1513c65c7d968bcf98389fe58c768bc52c275fa770b9ce5e37727a36c77efc1",
+    "all_assert_syntax_preserved": true,
+    "scope": "Only original polling body extracted into awaited wait_for coroutine; SDK owners and deadlines unchanged"
+  },
+  "sdks/python/tests/test_parallel_sessions_host.py": {
+    "before_sha256": "a08943c14a03e38230eae302dcb491a4bf8277382c131ac17e3df18ae712eda3",
+    "after_sha256": "8c83e564ccb94d44b227b48562fc9a503bfaa59943d4dfcbf43ae4b17be9f4fb",
+    "all_assert_syntax_preserved": true,
+    "scope": "Only original polling body extracted into awaited wait_for coroutine; SDK owners and deadlines unchanged"
+  }
+}

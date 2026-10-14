@@ -1,0 +1,54 @@
+TAP version 13
+# Subtest: synchronous cancellation callback reentry shares the already published close owner
+not ok 1 - synchronous cancellation callback reentry shares the already published close owner
+  ---
+  duration_ms: 89.440291
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ts-close-old-review-candidate/sdks/typescript/test/client-stdio-close.test.js:45:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    reentry must not start a second transport close
+    
+    2 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 2
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ts-close-old-review-candidate/sdks/typescript/test/client-stdio-close.test.js:46:547)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: unexpected stdin end callback error after actual child exit rejects the shared close owner
+not ok 2 - unexpected stdin end callback error after actual child exit rejects the shared close owner
+  ---
+  duration_ms: 71.701292
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ts-close-old-review-candidate/sdks/typescript/test/client-stdio-close.test.js:54:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    child exit must not discard the original EOF completion
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/ts-close-old-review-candidate/sdks/typescript/test/client-stdio-close.test.js:55:448)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 322.824292

@@ -1,0 +1,5 @@
+{
+  "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "b65dea36e455ea74a9c3926b64e456dea037771c9d1125ad158e34cbf73db14e",
+  "sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java": "25fcba5992f16a5830cec855656800e453e4b7505520bc6313748a85231cff5a",
+  "sdks/java/src/test/java/com/echoagent/sdk/JavaClientCloseLifecycleTest.java": "67987e30aa81a90a4e1294925aaab582ee28668ae3cf509f343d47295cadd2dd"
+}

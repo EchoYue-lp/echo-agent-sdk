@@ -1,0 +1,907 @@
+{
+  "scope": "one complete official language SDK script execution against a634 working-tree candidate; not full generated continuity or main acceptance",
+  "framework_git_revision": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "host_immutable_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-composed-host",
+  "host_sha256": "193e49b8557db9b746a1cc8c6f5cf30bb6d3154a630562f7ef8551b949e878d1",
+  "receipt_sha256": "b1c6ed389e99b2ad3d37c87e303e6580c5a38a72d3cb5a98943352cc0188d77c",
+  "whole_log_sha256": "af652b11a1774e77cb1f9486755e2598c2ab3bb6652a9096d6a85d4c326fa89b",
+  "whole_exit_code": 0,
+  "whole_log_bytes": 100567,
+  "whole_log_truncated": false,
+  "runtime_input_count": 790,
+  "before_after_equal": true,
+  "archival_current_790_inputs_equal": true,
+  "archival_observed_sdk_git_head": "1ca513a1d5c672d70970f97a4a349fe9fb93f5b0",
+  "sdk_git_head_scope": "post-run milestone HEAD observed only; execution source identity is exact 790 hashes, not an assertion that all candidate inputs were committed at that HEAD",
+  "typescript": {
+    "tests": 308,
+    "pass": 308,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "python": {
+    "passed": 375,
+    "subtests_passed": 18,
+    "summary": "375 passed, 18 subtests passed in 131.63s (0:02:11)"
+  },
+  "java": {
+    "suites": 71,
+    "tests": 332,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "xml_current_run_proof": "all original XML mtimes fall within actual whole-script start/end; hashes and original mtimes recorded per suite"
+  },
+  "java_xml": {
+    "TEST-com.echoagent.sdk.A2ATaskStateTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:21.816077+00:00",
+      "sha256": "c057c56f90cac759c02a92f21529a1cc4de2c46c7157f36f124614b9bf71de9e"
+    },
+    "TEST-com.echoagent.sdk.A2AValueTest.xml": {
+      "counts": {
+        "tests": 78,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:04.211704+00:00",
+      "sha256": "a35ea0f7682a6fac918652cbadab52e1d965aadc6a38c11700e4066bb6e8134f"
+    },
+    "TEST-com.echoagent.sdk.AckSubmissionTest.xml": {
+      "counts": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:11.394559+00:00",
+      "sha256": "9366b307c8961459768da7571d575ce9fd6af8be250eba5a256400886efd0064"
+    },
+    "TEST-com.echoagent.sdk.CallbackAndEffectsTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:50.612395+00:00",
+      "sha256": "540a01658aa37c31fea9ea245bba4eef12443f42dd827b57d01cdc6ce6da3c59"
+    },
+    "TEST-com.echoagent.sdk.CallbackHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:48.385710+00:00",
+      "sha256": "5eb62d5e0aa935e1e7d1f26ecc2341d9022803babf3f3f3085781dbba8482ae7"
+    },
+    "TEST-com.echoagent.sdk.ChannelHandlerForwardHostTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:11.772828+00:00",
+      "sha256": "792b80b10c0fd4568ddb1590b1c29896ac58e078bc95e5e86b8e41eee458432a"
+    },
+    "TEST-com.echoagent.sdk.ComputationHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:23.688088+00:00",
+      "sha256": "61308d003ece359d59a733c34c8c82c5c8862dcf5044627a936824320451b921"
+    },
+    "TEST-com.echoagent.sdk.DelayedSubscriberHostTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:57.450043+00:00",
+      "sha256": "662ad6afd35f1a6f102616d5dad1a7e17caf4e5244155aebda873d2c989a5e69"
+    },
+    "TEST-com.echoagent.sdk.EvalImproveTopologyHostTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:27.770622+00:00",
+      "sha256": "515472bb89dc5981f7ab9b08ea551f89a3321e9e5522e03dc4dcde2f23a43854"
+    },
+    "TEST-com.echoagent.sdk.EventIdentityTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:38.930626+00:00",
+      "sha256": "209d035a99fe3472c0165e24b26fd95404943578e6d0cf0014ad3ff2e9bf5826"
+    },
+    "TEST-com.echoagent.sdk.ExecutionUsageTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:17.529359+00:00",
+      "sha256": "fae68303416ff4cc8c982d49169be620fcbb45058897719869079eedabbf0da9"
+    },
+    "TEST-com.echoagent.sdk.ExternalAckHostTest.xml": {
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:47.643537+00:00",
+      "sha256": "26ae1e9d32236594e98dfca68208df26271aa9e4ae1340578eb8b185dbf03368"
+    },
+    "TEST-com.echoagent.sdk.FacadeParityTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:50.656957+00:00",
+      "sha256": "7e1f8365b71b2ccf49bc8910a18034c664536616ee383f47cff5d4fd22965ac2"
+    },
+    "TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml": {
+      "counts": {
+        "tests": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:21.671514+00:00",
+      "sha256": "1b16931c04188a2f9e152e0f386f0628cf2fcad82b01fdf6a2ec420340908c31"
+    },
+    "TEST-com.echoagent.sdk.FactoryHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:03.681326+00:00",
+      "sha256": "bca8e3c5d596c557a40e0398fc22b9b153d5068220fbca53cfa95d90d12fdfb4"
+    },
+    "TEST-com.echoagent.sdk.FamilyRouteHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:06.424762+00:00",
+      "sha256": "310bdca03c1655e0de7b476f591474a559ad0d96620847fc76dde12ad85e71b6"
+    },
+    "TEST-com.echoagent.sdk.FileAuthorityIdentityHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:06.143113+00:00",
+      "sha256": "dde53645802f3bd7e9a1a9f96ce7cb20aa3175387778948b27eeda50e7d5f92a"
+    },
+    "TEST-com.echoagent.sdk.GapAckHostTest.xml": {
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:08.365340+00:00",
+      "sha256": "d17864c02e4a95b3f45b9ee6e9e492fc9bbf9cd86288bf814792341fe3658a87"
+    },
+    "TEST-com.echoagent.sdk.HookEventTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:23.723964+00:00",
+      "sha256": "160763617b2145fc34498ce3a061cd24080763bb9c5268bf6be6dedce57306c4"
+    },
+    "TEST-com.echoagent.sdk.HostEarlyExitTest.xml": {
+      "counts": {
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:01.960995+00:00",
+      "sha256": "96a2c52a037e8541b6b79d2b97164ce804d911d2b5cb87e778d6c03999edef85"
+    },
+    "TEST-com.echoagent.sdk.InterventionResultTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:23.542025+00:00",
+      "sha256": "5d000fc19673ff86c35446abbc28f9feb6ce9110634647dc48d3031a3f089d6d"
+    },
+    "TEST-com.echoagent.sdk.IntrinsicToolValueTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:34.646304+00:00",
+      "sha256": "8c30db10d7018eb420d756b4556f4bdfbbc2c531fc489336ea296a777c9b14ed"
+    },
+    "TEST-com.echoagent.sdk.JavaClientCloseLifecycleTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:21.826640+00:00",
+      "sha256": "533d1caf4d18ef81997a75e11d10d64e1fa4eb1833b6ee20592df4c922ac5540"
+    },
+    "TEST-com.echoagent.sdk.JsonSupportTest.xml": {
+      "counts": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:50.622974+00:00",
+      "sha256": "359cca01ee1640cd13d3fc6537924145e2fca61ef54eb1e9df55cdc8952eb31d"
+    },
+    "TEST-com.echoagent.sdk.LateFactoryHostTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:19.127726+00:00",
+      "sha256": "d340411dd981de6ab1c046bab410fab097af8d79dbeb2fd9b32ad7401dfe3836"
+    },
+    "TEST-com.echoagent.sdk.LifecycleTest.xml": {
+      "counts": {
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:23.351255+00:00",
+      "sha256": "86ae8c401f00ba1b4b39402b019fb7b728f707d9754dbfb2fbe1f12f5db8d1ef"
+    },
+    "TEST-com.echoagent.sdk.LlmApiProtocolTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:03.788610+00:00",
+      "sha256": "d810c34149ec7554863b3acffce584cb7da370598e452bd06c97c4f643eda4b7"
+    },
+    "TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:50.602613+00:00",
+      "sha256": "740ca2f0b24d1b8261becacb4152e3975ae955c886b2c072a24119b64c406944"
+    },
+    "TEST-com.echoagent.sdk.LspDiagnosticsHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:37.149589+00:00",
+      "sha256": "b719d8d0688ef895fd76f99c5eb572d55cb772e71fbbdf0601a8846d70494f92"
+    },
+    "TEST-com.echoagent.sdk.LspHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:08.679410+00:00",
+      "sha256": "3fcd4ab05d1084a0beee3f7bacec99e5058dd67d9ba4bcfa9af3ffd9be4f79e7"
+    },
+    "TEST-com.echoagent.sdk.ManagedComponentOperationsTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:19.183719+00:00",
+      "sha256": "b0dd802f039cf63d76f432d452906e67c1f8605819f55e61cda19aee0c8ecd0c"
+    },
+    "TEST-com.echoagent.sdk.ManagedPersistenceTest.xml": {
+      "counts": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:06.197611+00:00",
+      "sha256": "8fb718a68814109a5da1af05a5cf9cc86ed9250f78db27dfa18c1ebe5d0d965f"
+    },
+    "TEST-com.echoagent.sdk.ManagedRetirementHostTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:36.547886+00:00",
+      "sha256": "c9dac346d77289b1950dc50e23be370ed9944b04a3d9b4ebcadfba57d69da1dd"
+    },
+    "TEST-com.echoagent.sdk.ManagedStoreHostTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:56.315767+00:00",
+      "sha256": "199c044e7b2732a20f28902bd62e54c13acc0bf9008793a9f6d5df68da08b494"
+    },
+    "TEST-com.echoagent.sdk.McpChannelHostTest.xml": {
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:03.395582+00:00",
+      "sha256": "1b7d6993d61bd8f39b8d868b6e919a18cccedefdf95fab795b502d3b3408a599"
+    },
+    "TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:10.162975+00:00",
+      "sha256": "92d04f11a95f5784971d384976963559d0043dca035959879f3035257b4c9f5a"
+    },
+    "TEST-com.echoagent.sdk.MemoryPolicyValuesTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:48.566556+00:00",
+      "sha256": "04e75edab3b3963c7e0bd394ecd5f0bea56be0c24e3bae963f00a7bdaedd46a4"
+    },
+    "TEST-com.echoagent.sdk.MemoryScopeTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:48.424687+00:00",
+      "sha256": "bc3021792159f309e7ad552d0413f161c227cf7deffa6ebb77e31e3715e06948"
+    },
+    "TEST-com.echoagent.sdk.ModelInputModalityTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:22.272595+00:00",
+      "sha256": "462e5697dd04d035bd77c6306c6dbc46ec989dc9284e64203914f18377961502"
+    },
+    "TEST-com.echoagent.sdk.ModelProfileTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:46.295609+00:00",
+      "sha256": "85362968ffcafc9360944e33f834c8dce0b1dd9ae1728fb60c6f5f9946cd3824"
+    },
+    "TEST-com.echoagent.sdk.ParallelSessionHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:44.120055+00:00",
+      "sha256": "24045e78141fe941f9148ffa37189f04ceeba15916298740694d97bfc291df3d"
+    },
+    "TEST-com.echoagent.sdk.PromptCacheLayoutTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:48.568476+00:00",
+      "sha256": "d4839d01360d22ee4eacf3077317f75c933289bc15dbe1861aa72e0cb52c4eb9"
+    },
+    "TEST-com.echoagent.sdk.ProtocolHostTest.xml": {
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:22.084753+00:00",
+      "sha256": "94939365f49db602abaea27dff1bd5249080dc1abfe76ddec307b1d72c127088"
+    },
+    "TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml": {
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:06.161757+00:00",
+      "sha256": "7fd1773ff07d35ac3eb664f44ec35cd228c88b3fc22d1b23ff5dd3a46906550c"
+    },
+    "TEST-com.echoagent.sdk.ProviderCapabilitiesTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:58.524668+00:00",
+      "sha256": "f7cfabc54691e4826ccee2f0b5cd9ffc82122be9e98f0288aec65a4f0a37eaed"
+    },
+    "TEST-com.echoagent.sdk.RagProjectRulesHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:11.308125+00:00",
+      "sha256": "2fb38d2a88a44d1d9bc4a961698d3dd2813e31c75366613d0eca7dcb3b67e3a6"
+    },
+    "TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:09.305182+00:00",
+      "sha256": "874f4d9b104c28558cc5429918276e93729c0555007686fd799410cca10dc47d"
+    },
+    "TEST-com.echoagent.sdk.ResourceLimitsTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:21.966906+00:00",
+      "sha256": "fd2f4f978b601be0c352493ff9bf7d8323a79cbf5a77ca5078f3d3fd437dd9d0"
+    },
+    "TEST-com.echoagent.sdk.ResponseFormatTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:23.231868+00:00",
+      "sha256": "f93d658293887b79c6005fc25b83580d06467d9a2db1d0c8d544115216180767"
+    },
+    "TEST-com.echoagent.sdk.RetryPolicyTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:46.177291+00:00",
+      "sha256": "a8ed6fb3e15fca5b23fd9d2fad621dd1c4801f748c56874336f6c413f67a74ed"
+    },
+    "TEST-com.echoagent.sdk.RunReceiptApiTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:38.937984+00:00",
+      "sha256": "606195991c9a2d5d6212e46d1a083d9f50edc89e2ea159b16de13e78d41ace33"
+    },
+    "TEST-com.echoagent.sdk.RunSteerHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:51.169600+00:00",
+      "sha256": "839a61d1d76433d9aa99cb7d784b0938fb05960ca642e6bb34a51df28c05964d"
+    },
+    "TEST-com.echoagent.sdk.SessionRulesPromptHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:34.322436+00:00",
+      "sha256": "30de3d720b610579523b4ac0a2b94ceca5c8c3649a01927382ae7c5f904257c9"
+    },
+    "TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:38.722383+00:00",
+      "sha256": "9f91f41e77240f94c6995422d2ad64ea4e6f1e96c2acf292cb01d16f89cf9f6e"
+    },
+    "TEST-com.echoagent.sdk.StreamCancellationRouteHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:46.545538+00:00",
+      "sha256": "93f77326f6430f6356abe98c3115bdfffa985f75cbde3285365a84ff73c8d083"
+    },
+    "TEST-com.echoagent.sdk.StreamCancellationRoutesTest.xml": {
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:17.622043+00:00",
+      "sha256": "afddce9922a4ab6d28990c525703e4c7cad83edfbd972decacc91c1345ab93f2"
+    },
+    "TEST-com.echoagent.sdk.TaskStoreTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:48.422393+00:00",
+      "sha256": "e4a7bd8c45fa7a1ec693bba6a2402f6ace144d67068cd5ea231df66a9d6ed397"
+    },
+    "TEST-com.echoagent.sdk.TaskSubagentHostTest.xml": {
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:25.581295+00:00",
+      "sha256": "e2f0f758a330e6733f46f2faa61a51ea2fca4e5ab38e6a3eef465486fbdcadfb"
+    },
+    "TEST-com.echoagent.sdk.TelemetryHostTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:17.304348+00:00",
+      "sha256": "d9cee6cb3e27dbf9ebb868320ffd7bf2bdab4cfda83e2b556ddea9349dfa7bbf"
+    },
+    "TEST-com.echoagent.sdk.TestingContractTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:22.285625+00:00",
+      "sha256": "d675c3ff9be72680f8726d1f965ce57a6927f88333d73ad9832845db10fb4a5b"
+    },
+    "TEST-com.echoagent.sdk.ThinkingConfigTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:39.128851+00:00",
+      "sha256": "86d5dc1a49a961d3fffc432f9d48c040f4d2f674c4b70a1b92144f59acca30d4"
+    },
+    "TEST-com.echoagent.sdk.ThinkingProfileTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:23.340479+00:00",
+      "sha256": "0531411dc240b0611d50080d84a463ce7893c0ac85a612818ac054a85901b112"
+    },
+    "TEST-com.echoagent.sdk.ThinkingProtocolTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:06.710128+00:00",
+      "sha256": "0ab3d4aeead2c4ed45acb2c2494f1408166e8e582532bb69073dba4f47df3a53"
+    },
+    "TEST-com.echoagent.sdk.TimeValuesTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:48.563766+00:00",
+      "sha256": "07badc28369a12c9da40a2417947aec5fb85255779a318880db4a3c50dc2dc85"
+    },
+    "TEST-com.echoagent.sdk.TokenBudgetTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:11.505751+00:00",
+      "sha256": "b6ac1168c376eada2a69f4caed20d2bf21ee8bca2f237f2268c19072e18fdb03"
+    },
+    "TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:23.070668+00:00",
+      "sha256": "e44c7ad9d4c7ceed47d7f15b8707503aa33dbbbf04a1ecdc5186f749ddf8e6b0"
+    },
+    "TEST-com.echoagent.sdk.ToolValueEffectHostTest.xml": {
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:46.066874+00:00",
+      "sha256": "811d4ea34602561b93a732c35fd6a26f7e910e159cdda49d404d31f350b59d95"
+    },
+    "TEST-com.echoagent.sdk.TurnModeTest.xml": {
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:34:48.695531+00:00",
+      "sha256": "c7f583c7f01e046bef0e117f38565b2bfdce05882ed19ed1f2b7397cf97aa73c"
+    },
+    "TEST-com.echoagent.sdk.TypedExtensionTest.xml": {
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:57.472339+00:00",
+      "sha256": "f7ad10cdd0844d3181192257617190a05cd94ea30ddcc19bcbdc458f2b0d531c"
+    },
+    "TEST-com.echoagent.sdk.Utf8SupportTest.xml": {
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:35:01.963392+00:00",
+      "sha256": "2d3e4f082b0d01ee8610242c17497321c50e104c935018a123782036e9b58787"
+    },
+    "TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "mtime_utc": "2026-10-14T06:33:42.712812+00:00",
+      "sha256": "b3ef4d04ba8326acb5b63ac9aea35a1922db5fecd1c53ae3cc0c27eb23a059d8"
+    }
+  },
+  "quickstarts": {
+    "typescript": "echo-agent after final Node TAP summary",
+    "python": "echo-agent after complete pytest summary",
+    "java": "echo-agent Java SDK connected: agent-2 before final script success"
+  },
+  "ruff": {
+    "check": "All checks passed!",
+    "format": "184 files already formatted"
+  },
+  "compiler_warning_count": 0,
+  "slf4j_provider_warning_count": 0,
+  "negative_rpc_runtime_warn_count": 22,
+  "source_copy_paths": {
+    "scripts/check-language-sdks.sh": "c92568fe6a55668abe62208c6935cfe5ad923b1b8ba1e40f6e5b8047f40d47b7",
+    "sdks/typescript/src/client.ts": "dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f",
+    "sdks/python/src/echo_agent_sdk/client.py": "30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "86efd3959d478723949910ff97058f26a6fd32b3e050b54713f83288a2ca6131",
+    "sdks/shared/testing/task_subagent_fixture.py": "84cc5769cfced7c8b9f58a1365cdec6aa35d968bb3a35ab274c8f86916e4d19e",
+    "echo-sdk-host/Cargo.toml": "4245fe4e2c249470a99878ef2dc4c4f80a60777b2e9b17ae697f594c9b9078f7",
+    ".cargo/config.toml": "493c87fc3ef8111f097808dd20ba21984d574e90758c49f0134d55580fdc3c20"
+  },
+  "prior_failure_retained": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-a634-current-final/receipt.json",
+  "not_claimed": [
+    "full accepted-source generation/12 identity decisions",
+    "remote SDK main acceptance",
+    "registry publication",
+    "all Rust public inventory accepted"
+  ],
+  "failure_history": {
+    "original_receipt_sha256": "ba9ee46f610d5eb75cced1fd8a9178c438246310048d76e3f4495ffcef40430f",
+    "original_log_sha256": "98d7141789c4816b25a145e0ffc73b424a2f0d1250e466f99f629081be21399e",
+    "original_exit_code": 1,
+    "xml_suites": 71,
+    "java_counts": {
+      "tests": 332,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    "copied_original_paths": {
+      "history/failed/receipt.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-a634-current-final/receipt.json",
+      "history/failed/language-all.log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-a634-current-final/language-all.log",
+      "history/failed/inputs-before.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-a634-current-final/inputs-before.json",
+      "history/failed/inputs-after.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-a634-current-final/inputs-after.json",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.AckSubmissionTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.AckSubmissionTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.LifecycleTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.LifecycleTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.MemoryScopeTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.MemoryScopeTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.StreamCancellationRouteHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.StreamCancellationRouteHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.HookEventTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.HookEventTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.JavaClientCloseLifecycleTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.JavaClientCloseLifecycleTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ParallelSessionHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ParallelSessionHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TestingContractTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TestingContractTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.FactoryHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.FactoryHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.RetryPolicyTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.RetryPolicyTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.DelayedSubscriberHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.DelayedSubscriberHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TurnModeTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TurnModeTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.CallbackAndEffectsTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.CallbackAndEffectsTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.InterventionResultTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.InterventionResultTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.HostEarlyExitTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.HostEarlyExitTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ComputationHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ComputationHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ChannelHandlerForwardHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ChannelHandlerForwardHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.SessionRulesPromptHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.SessionRulesPromptHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ResourceLimitsTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ResourceLimitsTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ExternalAckHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ExternalAckHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.FacadeParityTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.FacadeParityTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TaskStoreTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TaskStoreTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ModelInputModalityTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ModelInputModalityTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ResponseFormatTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ResponseFormatTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ThinkingConfigTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ThinkingConfigTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ManagedRetirementHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ManagedRetirementHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TokenBudgetTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TokenBudgetTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.LspDiagnosticsHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.LspDiagnosticsHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.McpChannelHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.McpChannelHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.RagProjectRulesHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.RagProjectRulesHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.FamilyRouteHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.FamilyRouteHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.LspHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.LspHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ToolValueEffectHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ToolValueEffectHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.JsonSupportTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.JsonSupportTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.LlmApiProtocolTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.LlmApiProtocolTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.RunSteerHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.RunSteerHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ProtocolHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ProtocolHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.Utf8SupportTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.Utf8SupportTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ManagedPersistenceTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ManagedPersistenceTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.RunReceiptApiTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.RunReceiptApiTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.StreamCancellationRoutesTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.StreamCancellationRoutesTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TypedExtensionTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TypedExtensionTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ThinkingProtocolTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ThinkingProtocolTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.A2AValueTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.A2AValueTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ManagedComponentOperationsTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ManagedComponentOperationsTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ProviderCapabilitiesTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ProviderCapabilitiesTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.FileAuthorityIdentityHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.FileAuthorityIdentityHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.PromptCacheLayoutTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.PromptCacheLayoutTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.MemoryPolicyValuesTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.MemoryPolicyValuesTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.GapAckHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.GapAckHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ModelProfileTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ModelProfileTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.TimeValuesTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.TimeValuesTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.LateFactoryHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.LateFactoryHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ThinkingProfileTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ThinkingProfileTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ExecutionUsageTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ExecutionUsageTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.A2ATaskStateTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.A2ATaskStateTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.EventIdentityTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.EventIdentityTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.EvalImproveTopologyHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.EvalImproveTopologyHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.CallbackHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.CallbackHostTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.IntrinsicToolValueTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.IntrinsicToolValueTest.xml",
+      "history/failed/java-surefire/TEST-com.echoagent.sdk.ManagedStoreHostTest.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-surefire/TEST-com.echoagent.sdk.ManagedStoreHostTest.xml",
+      "http-fixture-counterexample/fixture-explicit-close.patch": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/fixture-explicit-close.patch",
+      "http-fixture-counterexample/diagnosis-readonly.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/diagnosis-readonly.json",
+      "http-fixture-counterexample/after-explicit-close-original-class.xml": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/after-explicit-close-original-class.xml",
+      "http-fixture-counterexample/after-explicit-close-original-class.log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/after-explicit-close-original-class.log",
+      "http-fixture-counterexample/after-explicit-close-original-class-receipt.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/after-explicit-close-original-class-receipt.json",
+      "http-fixture-counterexample/jdk21-source-MultiExchange.java.txt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/jdk21-source-MultiExchange.java.txt",
+      "http-fixture-counterexample/jdk21-source-HttpConnection.java.txt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/jdk21-source-HttpConnection.java.txt",
+      "http-fixture-counterexample/jdk21-source-Http1Exchange.java.txt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/jdk21-source-Http1Exchange.java.txt",
+      "http-fixture-counterexample/jdk21-source-Http1Response.java.txt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/jdk21-source-Http1Response.java.txt",
+      "http-fixture-counterexample/controlled-close-counter/original-no-close-header.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/controlled-close-counter/original-no-close-header.json",
+      "http-fixture-counterexample/controlled-close-counter/explicit-close.log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/controlled-close-counter/explicit-close.log",
+      "http-fixture-counterexample/controlled-close-counter/Counter.java": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/controlled-close-counter/Counter.java",
+      "http-fixture-counterexample/controlled-close-counter/explicit-close.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/controlled-close-counter/explicit-close.json",
+      "http-fixture-counterexample/controlled-close-counter/Counter.class": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/controlled-close-counter/Counter.class",
+      "http-fixture-counterexample/controlled-close-counter/original-no-close-header.log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/controlled-close-counter/original-no-close-header.log",
+      "http-fixture-counterexample/controlled-close-counter/run_counter.py": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/controlled-close-counter/run_counter.py",
+      "http-fixture-counterexample/original-source/sdks/java/target/test-classes/com/echoagent/sdk/TaskSubagentHostTest.class": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-source/sdks/java/target/test-classes/com/echoagent/sdk/TaskSubagentHostTest.class",
+      "http-fixture-counterexample/original-source/sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-source/sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java",
+      "http-fixture-counterexample/original-source/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-source/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "http-fixture-counterexample/original-source/sdks/shared/testing/task_subagent_fixture.py": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-source/sdks/shared/testing/task_subagent_fixture.py",
+      "http-fixture-counterexample/original-failed-work/fixture.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-failed-work/fixture.json",
+      "http-fixture-counterexample/original-failed-work/ready": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-failed-work/ready",
+      "http-fixture-counterexample/original-failed-work/host.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-failed-work/host.json",
+      "http-fixture-counterexample/original-failed-work/task-store.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-failed-work/task-store.json",
+      "http-fixture-counterexample/original-failed-work/state/.runtime_state.lease": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-failed-work/state/.runtime_state.lease",
+      "http-fixture-counterexample/original-failed-work/state/host/session-index.json": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-failed-work/state/host/session-index.json",
+      "http-fixture-counterexample/original-failed-work/state/host/generation": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/task-pause-http-counterexample/original-failed-work/state/host/generation"
+    },
+    "controlled_counterexample": {
+      "without_header_exit": 1,
+      "same_socket_second_post_observed": true,
+      "with_header_exit": 0,
+      "second_request_new_socket": true,
+      "production_JDK_HTTP_policy_changed": false,
+      "fixture_only_diff": "one Connection: close response header"
+    },
+    "native_original_Task_class_after": {
+      "tests": 4,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "limitation": "Original failed request/socket/port correlation unavailable. Controlled counterexample proves the mechanism; it does not reconstruct original socket identity. Original diagnostic repeated runs remain Admin-only and are not claimed to be fully archived here."
+  }
+}

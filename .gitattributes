@@ -1,3 +1,40 @@
 # Preserve archived diagnostic bytes; source and prose retain normal diff checks.
 docs/sdk/governance/evidence/task-fixture-explicit-close/**/*.log -diff
 docs/sdk/governance/evidence/task-fixture-explicit-close/fixture-explicit-close.patch -diff
+
+# Exact reviewed execution artifacts with intentionally preserved whitespace.
+docs/sdk/governance/evidence/python310-import-compat/after-tests310.log -diff
+docs/sdk/governance/evidence/python310-import-compat/final-tests310.log -diff
+docs/sdk/governance/evidence/python310-timeout-compat/raw/test_client_close_callbacks.py.patch -diff
+docs/sdk/governance/evidence/python310-timeout-compat/raw/test_factory_host.py.patch -diff
+docs/sdk/governance/evidence/python310-timeout-compat/raw/test_managed_host.py.patch -diff
+docs/sdk/governance/evidence/python310-timeout-compat/raw/test_parallel_sessions_host.py.patch -diff
+docs/sdk/governance/evidence/python310-timeout-compat/raw/test_tool_value_effect_host.py.patch -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/05-workspace-tests.log -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/07-workspace-doctests.log -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/08-ci-default-protocol.log -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/09-ci-default-host.log -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/10-ci-core-profile.log -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/12-ci-bridge-e2e.log -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/13-ci-facade-e2e.log -diff
+docs/sdk/governance/evidence/sdk-a634-rust-gates/14-ci-no-bridge-source-admission.log -diff
+docs/sdk/governance/evidence/sdk-dependency-a634-current/deny.log -diff
+docs/sdk/governance/evidence/sdk-java-host-graceful-close/before-original-child-eof.log -diff
+docs/sdk/governance/evidence/sdk-java-host-graceful-close/final-cleanup-candidate.patch -diff
+docs/sdk/governance/evidence/sdk-java-host-graceful-close/final-cleanup-tests.patch -diff
+docs/sdk/governance/evidence/sdk-java-host-graceful-close/owned-stdio-candidate.patch -diff
+docs/sdk/governance/evidence/sdk-java-host-graceful-close/writer-drain-and-deadline.log -diff
+docs/sdk/governance/evidence/sdk-java-host-graceful-close/writer-drain-deadline-and-exit.log -diff
+docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/history/failed/language-all.log -diff
+docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/controlled-close-counter/original-no-close-header.log -diff
+docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/fixture-explicit-close.patch -diff
+docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-Http1Exchange.java.txt -diff
+docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-Http1Response.java.txt -diff
+docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-HttpConnection.java.txt -diff
+docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-MultiExchange.java.txt -diff
+docs/sdk/governance/evidence/telemetry-host/publicclose-current-source/collector.stdout -diff
+docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/build.log -diff
+docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/close-only.patch -diff
+docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/important-counterexamples-old61f.log -diff
+docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/review-counterexamples-before.log -diff
+docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/tests.log -diff

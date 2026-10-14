@@ -1,0 +1,5 @@
+3.10.19 (main, Dec  9 2025, 19:17:38) [Clang 21.1.4 ]
+4.16.0
+{'duration_ms': typing_extensions.NotRequired[int | None], 'tokens_used': typing_extensions.NotRequired[int | None], 'iterations': typing_extensions.NotRequired[int | None]}
+postponed-runtime-key-cache frozenset({'tokens_used', 'iterations', 'duration_ms'}) frozenset()
+{"duration_ms": 9007199254740993, "tokens_used": null}

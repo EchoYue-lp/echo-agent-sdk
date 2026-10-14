@@ -1,0 +1,20 @@
+{
+  "01-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "02-fmt-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "03-workspace-clippy.log": "58242508751d76cbf1cd92e6fe96fe08deadfb43ead2c6a48bf2b677440b51c5",
+  "04-production-clippy.log": "96e4e8fef63f85f1b8422f695750aa560586d105ce02d14a1135ace7aec3c053",
+  "05-workspace-tests.log": "a203145052e2db2c389afaaf8c02ce3eb8041b9239f42f0388a37d89d36042cc",
+  "06-featureless-check.log": "8d6427ad53e2e301b95fd92300ec7d41b819472a06ec138c546ce461935cce6a",
+  "07-workspace-doctests.log": "554131b2c411e47d70aeb23b843bac1da9ea42781109f85568d537d98301eb44",
+  "08-ci-default-protocol.log": "a4dd85510f91b68432a2c8f49f21dfb87d51a077c029a6a08a30fec3c9769b2f",
+  "09-ci-default-host.log": "4204fb4bc8bea28abb32a2c79f21342bff7e4048408365383f18d6d1f03c6631",
+  "10-ci-core-profile.log": "7b8bb77da405dd0af92cdcf7e9fc897907988910a960ec0f70cbe227a2a997e0",
+  "11-ci-bridge-no-run.log": "65a4cbb3ab1aa2365de62d9d664ff8e403ab084c387a0fdd8e2a344d11064db8",
+  "12-ci-bridge-e2e.log": "b00448f43b7be76735dd762f96cc98c84dd7c0561919c828a753f96bcff571df",
+  "13-ci-facade-e2e.log": "46e7dfa95fc2e337f4b830393fcfcba370aa995ec17a6a3538b5da69bf652798",
+  "14-ci-no-bridge-source-admission.log": "9d938a81f5b859080dfa67bfce4b16cbcdf7709360aa7412744f67ba7f01897a",
+  "README.md": "9c7b9ecb26ed7d02a7c5dd51d233476d608d6afd35b17b3dc3fe5a7ce664d47e",
+  "manifest.json": "462f8c26fcfffb00bed039e1eefeda68ce7e5b28778d6dc7e17ce9e025873d58",
+  "receipt.json": "a7d0f47f9283c885d116fb44b4cc46a59eb8eb68fdfcf78648197c3b86a9d3a4",
+  "runtime-inputs-start.json": "24dc4508509e1f36c9e12a926061927538a763f541655e60cb58f384c399a2fb"
+}

@@ -1,0 +1,21 @@
+{
+  "label": "sdk-a634-deny",
+  "command": [
+    "cargo",
+    "deny",
+    "--workspace",
+    "--all-features",
+    "--locked",
+    "check"
+  ],
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/sdk-dependency-a634-current/deny.log",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "truncated": false,
+  "bytesSeen": 702116,
+  "bytesWritten": 702116,
+  "startedAt": "2026-10-14T05:16:53.892Z",
+  "finishedAt": "2026-10-14T05:17:15.316Z"
+}

@@ -1,0 +1,12 @@
+438:                 debug.log(acknowledged ? ("completed response with " + cause)
+439:                           : ("response already completed, ignoring " + cause));
+440:         }
+441:         return Utils.wrapForDebug(debug, "getResponseAsync", cf);
+442:     }
+443: 
+444:     @Override
+445:     CompletableFuture<T> readBodyAsync(BodyHandler<T> handler,
+446:                                        boolean returnConnectionToPool,
+447:                                        Executor executor)
+448:     {
+449:         var responseInfo = new ResponseInfoImpl(response.responseCode(),

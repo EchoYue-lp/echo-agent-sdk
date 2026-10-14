@@ -1,0 +1,228 @@
+--- before/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
++++ candidate/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+@@ -1,7 +1,6 @@
+ package com.echoagent.sdk;
+ 
+ import com.agentclientprotocol.sdk.client.transport.AgentParameters;
+-import com.agentclientprotocol.sdk.client.transport.StdioAcpClientTransport;
+ import com.agentclientprotocol.sdk.json.AcpJsonMapper;
+ import com.agentclientprotocol.sdk.json.TypeRef;
+ import com.agentclientprotocol.sdk.spec.AcpClientSession;
+@@ -29,46 +28,175 @@
+ public final class EchoAgentClient implements AutoCloseable {
+     private static final TypeRef<JsonNode> JSON_NODE = new TypeRef<>() {};
+ 
+-    /** Observe the official transport's original Process without changing its I/O ownership. */
+-    private static final class OwnedStdioTransport extends StdioAcpClientTransport {
++    /** Own one Process; the official stream transport remains the sole ACP codec/writer. */
++    private static final class OwnedStdioTransport implements AcpClientTransport {
++        private final AgentParameters parameters;
++        private final AcpJsonMapper mapper;
++        private final Object admission = new Object();
++        private final CompletableFuture<Void> ready = new CompletableFuture<>();
++        private final CompletableFuture<Integer> exited = new CompletableFuture<>();
++        private final CompletableFuture<Void> stderrDrained = new CompletableFuture<>();
+         private final CompletableFuture<Throwable> failure = new CompletableFuture<>();
+-        private final java.util.concurrent.atomic.AtomicBoolean watching = new java.util.concurrent.atomic.AtomicBoolean();
+         private final java.util.concurrent.atomic.AtomicBoolean expectedClose = new java.util.concurrent.atomic.AtomicBoolean();
+         private final java.util.concurrent.atomic.AtomicReference<Throwable> observedExit = new java.util.concurrent.atomic.AtomicReference<>();
+-
+-        OwnedStdioTransport(AgentParameters parameters, AcpJsonMapper mapper) { super(parameters, mapper); }
+-
+-        @Override public Mono<Void> connect(Function<Mono<AcpSchema.JSONRPCMessage>,Mono<AcpSchema.JSONRPCMessage>> handler) {
+-            return super.connect(handler)
+-                    .doOnError(this::failed)
+-                    .doOnSuccess(ignored -> {
+-                        if(watching.compareAndSet(false,true)) {
+-                            // One wait for this actual child runs off the caller/UI thread.
+-                            // The official transport owns the Process and all stdio cleanup.
+-                            Mono.fromRunnable(this::awaitForExit)
+-                                    .subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic())
+-                                    .subscribe(unused -> {}, this::failed, () -> failed(new IllegalStateException("Host process exited before the ACP connection closed")));
+-                        }
+-                    });
+-        }
+-
++        private final java.util.concurrent.atomic.AtomicReference<Throwable> nativeFailure = new java.util.concurrent.atomic.AtomicReference<>();
++        private final java.util.concurrent.atomic.AtomicReference<CompletableFuture<Void>> writing = new java.util.concurrent.atomic.AtomicReference<>();
++        private CompletableFuture<Void> writeTail = ready;
++        private Mono<Void> connection;
++        private CompletableFuture<Void> closeStage;
++        private volatile Process process;
++        private volatile com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport delegate;
++        private volatile java.io.OutputStream output;
++        private boolean accepting = true;
++        private volatile boolean cleaned;
++        private volatile boolean stderrStarted;
++        private boolean delegateClosed;
++        private boolean stdoutClosed;
++        private boolean stderrClosed;
++
++        OwnedStdioTransport(AgentParameters parameters, AcpJsonMapper mapper) { this.parameters=parameters;this.mapper=mapper; }
++        private static void offThread(Runnable action) { reactor.core.scheduler.Schedulers.boundedElastic().schedule(action); }
+         private void failed(Throwable error) {
+             observedExit.compareAndSet(null,error);
+-            if(!expectedClose.get())failure.complete(observedExit.get()); // Keep the first observed cause.
+-        }
+-
+-        void expectClose() { expectedClose.set(true); }
++            if(!expectedClose.get())failure.complete(observedExit.get());
++        }
++        private void writeFailed(Throwable error) {
++            nativeFailure.compareAndSet(null,error);
++            var current=writing.getAndSet(null);
++            if(current!=null)offThread(()->current.completeExceptionally(error));
++            failed(error);
++        }
++        @Override public synchronized Mono<Void> connect(Function<Mono<AcpSchema.JSONRPCMessage>,Mono<AcpSchema.JSONRPCMessage>> handler) {
++            if(connection!=null)return connection;
++            connection=Mono.defer(()->{
++                try {
++                    var command=new ArrayList<String>();command.add(parameters.getCommand());command.addAll(parameters.getArgs());
++                    var builder=new ProcessBuilder(command);builder.environment().putAll(parameters.getEnv());
++                    Process original=builder.start();process=original;
++                    output=new java.io.OutputStream() {
++                        private final java.io.OutputStream originalInput=original.getOutputStream();
++                        @Override public void write(int value)throws IOException{originalInput.write(value);}
++                        @Override public void write(byte[] bytes,int offset,int length)throws IOException{originalInput.write(bytes,offset,length);}
++                        @Override public void flush()throws IOException{
++                            originalInput.flush();
++                            var current=writing.getAndSet(null);
++                            // Never execute dependent user code or advance the tail under the writer monitor.
++                            if(current!=null)offThread(()->current.complete(null));
++                        }
++                        @Override public void close()throws IOException{originalInput.close();}
++                    };
++                    delegate=new com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport(mapper,original.getInputStream(),output);
++                    delegate.setExceptionHandler(this::writeFailed);
++                    Mono.fromCallable(original::waitFor).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()).subscribe(code->{
++                        var cause=nativeFailure.get();
++                        if(cause==null)cause=new IllegalStateException("Host process exited before the ACP connection closed (exit "+code+")");
++                        ready.completeExceptionally(cause);
++                        var pendingWrite=writing.getAndSet(null);
++                        if(pendingWrite!=null){var originalCause=cause;nativeFailure.compareAndSet(null,cause);offThread(()->pendingWrite.completeExceptionally(originalCause));}
++                        exited.complete(code);
++                        observedExit.compareAndSet(null,cause);
++                        if(!expectedClose.get()||nativeFailure.get()!=null)failure.complete(observedExit.get());
++                    },error->{exited.completeExceptionally(error);failed(error);});
++                    stderrStarted=true;
++                    Mono.fromRunnable(()->{
++                        try(var reader=new java.io.BufferedReader(new java.io.InputStreamReader(original.getErrorStream(),java.nio.charset.StandardCharsets.UTF_8))){
++                            String line;while((line=reader.readLine())!=null)org.slf4j.LoggerFactory.getLogger(OwnedStdioTransport.class).info("STDERR Message received: {}",line);
++                        }catch(IOException error){if(!expectedClose.get())failed(error);}
++                    }).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()).doFinally(ignored->stderrDrained.complete(null)).subscribe(ignored->{},this::failed);
++                    return delegate.start(handler).doOnSuccess(ignored->ready.complete(null));
++                }catch(IOException|RuntimeException error){return Mono.error(error);}
++            }).doOnError(error->{ready.completeExceptionally(error);failed(error);closeGracefully().subscribe(ignored->{},ignored->{});}).cache();
++            return connection;
++        }
++        private static Throwable frameFailure(Throwable error) {
++            var cause=error;
++            while(cause instanceof java.util.concurrent.CompletionException && cause.getCause()!=null)cause=cause.getCause();
++            if(cause instanceof EchoAgentException)return cause;
++            var typed=new EchoAgentException("transport_error","Native frame was not written: "+(cause.getMessage()==null?cause.getClass().getSimpleName():cause.getMessage()),"never",null,null);
++            typed.initCause(cause);return typed;
++        }
++        @Override public Mono<Void> sendMessage(AcpSchema.JSONRPCMessage message) {
++            // One retained receipt per accepted native frame; repeated subscribers only join it.
++            return Mono.defer(()->{
++                var written=new CompletableFuture<Void>();final CompletableFuture<Void> previous;
++                synchronized(admission){
++                    if(!accepting||exited.isDone()||(process!=null&&!process.isAlive()))return Mono.error(new EchoAgentException("transport_error","Host transport is closing or has exited","never",null,null));
++                    previous=writeTail;writeTail=written;
++                }
++                previous.whenComplete((ignored,error)->offThread(()->{
++                    if(error!=null){written.completeExceptionally(error);return;}
++                    writing.set(written);
++                    if(exited.isDone()){writeFailed(new IllegalStateException("original Host exited before this accepted frame was written"));return;}
++                    try{delegate.sendMessage(message).subscribe(unused->{},this::writeFailed);}
++                    catch(RuntimeException sendFailure){writeFailed(sendFailure);}
++                }));
++                return Mono.fromFuture(written,true);
++            }).onErrorMap(OwnedStdioTransport::frameFailure).cache();
++        }
++        @Override public <T>T unmarshalFrom(Object value,TypeRef<T> type){return mapper.convertValue(value,type);}
++        private synchronized void disposeAfterExit() {
++            // Keep successful releases on retry, and never turn a failed I/O close into clean EOF.
++            if(!delegateClosed){if(delegate!=null)delegate.closeGracefully().block();delegateClosed=true;}
++            if(process!=null){
++                try {
++                    if(!stdoutClosed){process.getInputStream().close();stdoutClosed=true;}
++                    if(!stderrClosed){process.getErrorStream().close();stderrClosed=true;}
++                } catch(IOException error){throw new java.util.concurrent.CompletionException(error);}
++            }
++            if(stderrStarted)stderrDrained.join();
++            cleaned=true;
++        }
++        @Override public synchronized Mono<Void> closeGracefully() {
++            if(cleaned)return Mono.empty();
++            if(closeStage!=null){
++                if(closeStage.isCompletedExceptionally()&&process!=null&&!process.isAlive()){
++                    // A retry releases the same exited child's remaining local I/O.
++                    var retry=new CompletableFuture<Void>();closeStage=retry;
++                    offThread(()->{try{disposeAfterExit();retry.complete(null);}catch(RuntimeException error){retry.completeExceptionally(error);}});
++                }
++                return Mono.fromFuture(closeStage,true);
++            }
++            final CompletableFuture<Void> tail;
++            synchronized(admission){accepting=false;tail=writeTail;}
++            var result=new CompletableFuture<Void>();closeStage=result;
++            if(process==null){cleaned=true;result.complete(null);return Mono.fromFuture(result,true);}
++            var timeout=new EchoAgentException("timeout","Host transport did not exit within the five-second close deadline","after_delay","client/close",null);
++            // Independent of the output monitor: a blocked write must not block the deadline/kill.
++            var watchdog=Mono.delay(Duration.ofSeconds(5)).subscribe(ignored->{
++                if(!cleaned){
++                    nativeFailure.compareAndSet(null,timeout);expectedClose.set(true);
++                    process.destroyForcibly();
++                    var current=writing.getAndSet(null);if(current!=null)current.completeExceptionally(nativeFailure.get());
++                    result.completeExceptionally(nativeFailure.get());
++                }
++            });
++            Mono.fromFuture(tail,true)
++                    .then(Mono.fromRunnable(()->{
++                        synchronized(output){
++                            expectedClose.set(true);
++                            try{output.close();}catch(IOException error){throw new java.util.concurrent.CompletionException(error);}
++                        }
++                    }).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
++                    .then(Mono.fromFuture(exited,true))
++                    .then(Mono.fromRunnable(this::disposeAfterExit).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
++                    .doOnError(error->nativeFailure.compareAndSet(null,error))
++                    .onErrorResume(error->Mono.fromFuture(exited,true)
++                            .then(Mono.fromRunnable(this::disposeAfterExit).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
++                            .then(Mono.error(error)))
++                    .subscribe(ignored->{},error->{watchdog.dispose();result.completeExceptionally(nativeFailure.get()==null?error:nativeFailure.get());},()->{watchdog.dispose();result.complete(null);});
++            return Mono.fromFuture(result,true);
++        }
+         void closeFailed() {
+-            expectedClose.set(false);
+-            var cause=observedExit.get();
+-            if(cause!=null)failure.complete(cause);
+-        }
+-
+-        <T> Mono<T> untilExit(Mono<T> response, String operation) {
+-            Mono<T> exited = Mono.fromFuture(failure,true).flatMap(error -> Mono.error(new EchoAgentException(
+-                    "transport_error", "Host transport ended: " + (error.getMessage()==null?error.getClass().getSimpleName():error.getMessage()),
+-                    "never", operation, null)));
+-            return Mono.firstWithSignal(response,exited);
++            if(!expectedClose.get()){var cause=observedExit.get();if(cause!=null)failure.complete(cause);}
++        }
++        <T> Mono<T> untilExit(Mono<T> response,String operation) {
++            Mono<T> end=Mono.fromFuture(failure,true).flatMap(error->Mono.error(new EchoAgentException("transport_error","Host transport ended: "+(error.getMessage()==null?error.getClass().getSimpleName():error.getMessage()),"never",operation,null)));
++            return Mono.firstWithSignal(response,end).onErrorMap(error->{
++                if(error instanceof EchoAgentException typed && "transport_error".equals(typed.code()) && typed.operation()==null){
++                    var projected=new EchoAgentException("transport_error",typed.getMessage(),typed.retryable(),operation,null);projected.initCause(typed);return projected;
++                }
++                return error;
++            });
+         }
+     }
+ 
+@@ -1252,7 +1380,6 @@
+                     factoryChildren.clear();closedFactoryChildren.clear();
+                     // Expected exit begins only when original transport close
+                     // starts, after all cleanup prerequisites actually succeed.
+-                    if(transport instanceof OwnedStdioTransport owned)owned.expectClose();
+                     // Session owns ACP draining; the official transport owns
+                     // its native process. Neither decides factory cleanup facts.
+                     return session.closeGracefully().timeout(Duration.ofSeconds(5))

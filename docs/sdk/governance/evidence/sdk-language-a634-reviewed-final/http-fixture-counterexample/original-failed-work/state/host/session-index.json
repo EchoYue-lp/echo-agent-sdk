@@ -1,0 +1,11 @@
+[
+  {
+    "session_id": "sess_3a66ad45-ee07-4050-b6ba-1c5a108ddd27",
+    "agent_handle_id": "agent-2",
+    "agent_config_fingerprint": "{\"variant\":\"host_default\"}",
+    "cwd": {
+      "encoding": "utf8",
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java"
+    }
+  }
+]

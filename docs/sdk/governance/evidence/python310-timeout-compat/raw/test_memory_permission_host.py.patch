@@ -1,0 +1,16 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/before/sdks/python/tests/test_memory_permission_host.py	2026-10-13 14:09:33
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/after/sdks/python/tests/test_memory_permission_host.py	2026-10-14 11:09:43
+@@ -81,9 +81,12 @@
+     )
+     results = []
+     try:
+-        async with asyncio.timeout(5):
++
++        async def wait_for_condition_1():
+             while not (work / "ready").exists():
+                 await asyncio.sleep(0.01)
++
++        await asyncio.wait_for(wait_for_condition_1(), 5)
+         url = json.loads((work / "backend.json").read_text())["url"]
+         async with await EchoAgentClient.spawn(
+             HOST, "--config", str(work / "host.json")

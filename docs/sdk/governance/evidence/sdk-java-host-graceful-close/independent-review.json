@@ -1,0 +1,18 @@
+{
+  "reviewer": "/root/sdk_capability_acceptance_audit",
+  "decision": "PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "productionSHA256": "86efd3959d478723949910ff97058f26a6fd32b3e050b54713f83288a2ca6131",
+  "priorMinor": "I/O close exceptions could be swallowed and stderr drain was not joined",
+  "resolution": "per-resource successful-release flags preserve failures/retry; started stderr drainer joins before cleaned; unstarted failure does not await absent drainer",
+  "verifiedCases": {
+    "lifecycle": 19,
+    "related": 72,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "limitation": "3aa telemetry proof is historical; final combined whole-language run must exercise current source with the same public-close case"
+}

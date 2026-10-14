@@ -1,0 +1,18 @@
+{
+  "sdks/shared/testing/telemetry_host_fixture.py": {
+    "sha256": "d4516646cb4ad760f99632ceb769f9182eb374a40f14267316f763fa95bf8bb9",
+    "archive": "executed-source/sdks/shared/testing/telemetry_host_fixture.py.txt"
+  },
+  "sdks/typescript/test/telemetry-host.test.js": {
+    "sha256": "e152c4b1950db19319977ba02bb58e0c7ecbff2f32a3b98517cc28b14a0f62c8",
+    "archive": "executed-source/sdks/typescript/test/telemetry-host.test.js.txt"
+  },
+  "sdks/typescript/src/client.ts": {
+    "sha256": "dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f",
+    "archive": "executed-source/sdks/typescript/src/client.ts.txt"
+  },
+  "sdks/typescript/dist/client.js": {
+    "sha256": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+    "archive": "executed-source/sdks/typescript/dist/client.js.txt"
+  }
+}

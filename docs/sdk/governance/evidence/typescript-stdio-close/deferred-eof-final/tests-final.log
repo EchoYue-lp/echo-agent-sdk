@@ -1,0 +1,75 @@
+TAP version 13
+# stdio EOF evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/exit-N424Xo
+# Subtest: public close sends native stdin EOF and awaits normal original child exit
+ok 1 - public close sends native stdin EOF and awaits normal original child exit
+  ---
+  duration_ms: 77.901792
+  type: 'test'
+  ...
+# stdio coalesced close evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-CiT1ry
+# Subtest: concurrent and repeated close wait for the same child held after EOF
+ok 2 - concurrent and repeated close wait for the same child held after EOF
+  ---
+  duration_ms: 85.999167
+  type: 'test'
+  ...
+# Subtest: closing an already signalled child observes existing exit without a new waiter
+ok 3 - closing an already signalled child observes existing exit without a new waiter
+  ---
+  duration_ms: 60.513375
+  type: 'test'
+  ...
+# stdio fallback evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-rjZ0k0
+# Subtest: five second fallback terminates a child that observes EOF but never exits
+ok 4 - five second fallback terminates a child that observes EOF but never exits
+  ---
+  duration_ms: 5070.30725
+  type: 'test'
+  ...
+# stdio same-owner retry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/exit-4JHoCY
+# Subtest: a failed connection close remains observable and retries the same original child
+ok 5 - a failed connection close remains observable and retries the same original child
+  ---
+  duration_ms: 81.355334
+  type: 'test'
+  ...
+# stdio synchronous reentry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/target/typescript-stdio-close/held-ySl3ym
+# Subtest: synchronous cancellation callback reentry shares the already published close owner
+ok 6 - synchronous cancellation callback reentry shares the already published close owner
+  ---
+  duration_ms: 73.29675
+  type: 'test'
+  ...
+# Subtest: close synchronously rejects same-tick public request admission
+ok 7 - close synchronously rejects same-tick public request admission
+  ---
+  duration_ms: 83.917333
+  type: 'test'
+  ...
+# Subtest: unexpected stdin end callback error after actual child exit rejects the shared close owner
+ok 8 - unexpected stdin end callback error after actual child exit rejects the shared close owner
+  ---
+  duration_ms: 73.609792
+  type: 'test'
+  ...
+# Subtest: expected EPIPE completion is harmless but still waits for native exit
+ok 9 - expected EPIPE completion is harmless but still waits for native exit
+  ---
+  duration_ms: 74.134584
+  type: 'test'
+  ...
+# Subtest: a signal-sent flag is not an exit receipt for an original child still alive
+ok 10 - a signal-sent flag is not an exit receipt for an original child still alive
+  ---
+  duration_ms: 73.402875
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5944.6505

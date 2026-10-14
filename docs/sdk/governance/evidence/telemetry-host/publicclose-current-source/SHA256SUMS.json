@@ -1,0 +1,20 @@
+{
+  "collector.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "collector.stdout": "1040f50e65dcd97f075494578ce48bc2cfa5af8631546dbc0ec02dd1bbc01d28",
+  "executed-source/sdks/shared/testing/telemetry_host_fixture.py.txt": "d4516646cb4ad760f99632ceb769f9182eb374a40f14267316f763fa95bf8bb9",
+  "executed-source/sdks/typescript/dist/client.js.txt": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+  "executed-source/sdks/typescript/src/client.ts.txt": "dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f",
+  "executed-source/sdks/typescript/test/telemetry-host.test.js.txt": "e152c4b1950db19319977ba02bb58e0c7ecbff2f32a3b98517cc28b14a0f62c8",
+  "export-held": "c689dfbfc4c2166f6f9982ea8c08bfddab1e39ee6a1cef1017d8e3b596513394",
+  "host-exit.json": "235582fe44260155375a03592bae46a73244bd33eea73a5326202b18aefa9159",
+  "host-process.json": "121a5ceba9a412bf911b613c77f181501db26be9771797b1371545d20ca38f5b",
+  "host.stderr": "66ee517810e9aedff293886da808688dedf47a4cd45a63d320378853776594bc",
+  "otlp.jsonl": "14e747d8c2a1ad926c908f9d4c66f6644e7e6e60f0f0e28499d4592383ca1a57",
+  "receipt.json": "f5220ea6af0d61db753a7636ad688c2cd3b15f1b39bf1397b1b6599d3ef37046",
+  "release-export": "2f2d04ff3aada1c980abaff2081af8be966529bece08ba5920aab22d9f3a64c9",
+  "shutdown-request.json": "be3b9d5c30d38127c300bcff17373b85377e8ff767bfbe0fc0b5912b5aafcf1d",
+  "source-after.json": "c0128ca9bd4cc5dc3559c579b94c2698cb9bb9aa8627208ed54c4ea0d97999ee",
+  "source-before.json": "c0128ca9bd4cc5dc3559c579b94c2698cb9bb9aa8627208ed54c4ea0d97999ee",
+  "typescript-source-exact-publicclose.log": "4c8bc176a0732ab0a1d1737ca4d32760f73dfb941446a4521cf9bc4c2155739d",
+  "wire-observed.json": "d66cbbee24a71f94aae3cc2c12331138b03cca11593c3f7b19e24373afd81087"
+}

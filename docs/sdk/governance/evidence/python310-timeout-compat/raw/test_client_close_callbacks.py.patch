@@ -1,0 +1,16 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/before/sdks/python/tests/test_client_close_callbacks.py	2026-10-13 10:48:21
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/after/sdks/python/tests/test_client_close_callbacks.py	2026-10-14 11:09:43
+@@ -378,9 +378,12 @@
+ 
+     process.terminate, process.kill = initial_termination_fault, first_kill_fault
+     try:
+-        async with asyncio.timeout(2):
++
++        async def wait_for_condition_1():
+             while not ready.exists():
+                 await asyncio.sleep(0.01)
++
++        await asyncio.wait_for(wait_for_condition_1(), 2)
+         with pytest.raises(OSError, match="initial termination failure"):
+             await client.close()
+         with pytest.raises(OSError, match="kill failure"):

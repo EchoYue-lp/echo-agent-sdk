@@ -1,0 +1,47 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/before/sdks/python/tests/test_tool_value_effect_host.py	2026-10-14 04:24:53
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/after/sdks/python/tests/test_tool_value_effect_host.py	2026-10-14 11:09:43
+@@ -63,10 +63,13 @@
+     rows = []
+     byid = {}
+     try:
+-        async with asyncio.timeout(10):
++
++        async def wait_for_condition_1():
+             while not (work / "ready").exists():
+                 assert proc.returncode is None, "fixture exited before ready"
+                 await asyncio.sleep(0.01)
++
++        await asyncio.wait_for(wait_for_condition_1(), 10)
+         sdk = await EchoAgentClient.spawn(
+             HOST,
+             "--config",
+@@ -177,10 +180,13 @@
+     sdk = None
+     rows = []
+     try:
+-        async with asyncio.timeout(10):
++
++        async def wait_for_condition_2():
+             while not (work / "ready").exists():
+                 assert proc.returncode is None
+                 await asyncio.sleep(0.01)
++
++        await asyncio.wait_for(wait_for_condition_2(), 10)
+         sdk = await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json"))
+         calls = []
+ 
+@@ -308,10 +314,13 @@
+     facts = []
+     tasks = []
+     try:
+-        async with asyncio.timeout(10):
++
++        async def wait_for_condition_3():
+             while not (work / "ready").exists():
+                 assert fixture_process.returncode is None
+                 await asyncio.sleep(0.01)
++
++        await asyncio.wait_for(wait_for_condition_3(), 10)
+         sdk = await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json"))
+         for mode in ["success", "cancel", "close"]:
+             fact = {

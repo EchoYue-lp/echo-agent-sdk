@@ -1,0 +1,26 @@
+390:     void closeOrReturnToCache(HttpHeaders hdrs) {
+391:         if (hdrs == null) {
+392:             // the connection was closed by server, eof
+393:             Log.logTrace("Cannot return connection to pool: closing {0}", this);
+394:             close();
+395:             return;
+396:         }
+397:         HttpClientImpl client = client();
+398:         if (client == null) {
+399:             Log.logTrace("Client released: closing {0}", this);
+400:             close();
+401:             return;
+402:         }
+403:         ConnectionPool pool = client.connectionPool();
+404:         boolean keepAlive = hdrs.firstValue("Connection")
+405:                 .map((s) -> !s.equalsIgnoreCase("close"))
+406:                 .orElse(true);
+407: 
+408:         if (keepAlive && checkOpen()) {
+409:             Log.logTrace("Returning connection to the pool: {0}", this);
+410:             pool.returnToPool(this);
+411:         } else {
+412:             Log.logTrace("Closing connection (keepAlive={0}, isOpen={1}): {2}",
+413:                     keepAlive, isOpen(), this);
+414:             close();
+415:         }

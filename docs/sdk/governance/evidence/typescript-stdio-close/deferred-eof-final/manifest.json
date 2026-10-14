@@ -1,0 +1,25 @@
+{
+  "source_before_sha256": "c6d9fb25e407c54ce9f8a38ec24cfd199d902d17d8436b841b15c87945f8b2dc",
+  "source_after_sha256": "dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f",
+  "dist_after_sha256": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+  "test_after_sha256": "9b942187659daec624d7e714037c46af8553d881684aac5502a5f5d1b3a1a8e3",
+  "build_exit_code": 0,
+  "final_all_tests": {
+    "pass": 10,
+    "fail": 0,
+    "skip": 0
+  },
+  "old_actual61f_two_important_cases": {
+    "pass": 0,
+    "fail": 2
+  },
+  "same_two_cases_after": {
+    "pass": 2,
+    "fail": 0
+  },
+  "source_outside_close_field_and_methods_identical": true,
+  "timeout_ms": 5000,
+  "admission": "DeferredPromise published first; closeOwned then runs synchronously through originalConnection.close before returning to caller; request/notify not changed",
+  "EOF_receipt": "Original stdin endcallback or alreadyclosed/ended-finish facts AND actualchildexit awaited; unexpected asyncEIO lateafterchildexit retained, expectedEPIPE/DESTROYED only exemption fromerror not exit",
+  "scope": "Native stdio/process cleanup only, original samechild retry. FrameworkTelemetrypublicclose verified separately."
+}

@@ -1,0 +1,15 @@
+Downloading pydantic-core (2.0MiB)
+ Downloaded pydantic-core
+Installed 15 packages in 43ms
+3.10.19 (main, Dec  9 2025, 19:17:38) [Clang 21.1.4 ] /Users/ls/.cache/uv/builds-v0/.tmpXRUT5H/bin/python
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_parallel_sessions_host.py", line 8, in <module>
+    from echo_agent_sdk import EchoAgentClient
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/__init__.py", line 145, in <module>
+    from .execution_usage_values import ExecutionUsageValue, execution_usage_duration_millis
+  File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/src/echo_agent_sdk/execution_usage_values.py", line 4, in <module>
+    from typing import NotRequired, TypedDict
+ImportError: cannot import name 'NotRequired' from 'typing' (/Users/ls/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/lib/python3.10/typing.py)

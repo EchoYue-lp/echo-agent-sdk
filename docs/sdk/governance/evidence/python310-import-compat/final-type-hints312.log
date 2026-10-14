@@ -1,0 +1,3 @@
+3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 10:07:17) [Clang 14.0.6 ]
+{'duration_ms': typing.NotRequired[int | None], 'tokens_used': typing.NotRequired[int | None], 'iterations': typing.NotRequired[int | None]}
+postponed-runtime-key-cache frozenset({'tokens_used', 'iterations', 'duration_ms'}) frozenset()

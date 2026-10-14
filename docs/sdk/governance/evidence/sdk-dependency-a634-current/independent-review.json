@@ -1,0 +1,22 @@
+{
+  "reviewer": "/root/current_tool_boundary_review",
+  "mode": "read-only bounded dependency review; no Cargo, network or source writes",
+  "result": "PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "reviewedOriginalManifestSha256": "e30f8af4deb179fcde81d957a049c8825e97a5b65b1bfd7286c77e4189df4cc8",
+  "reviewedOriginalItems": 27,
+  "reviewedReceiptSha256": "6a3aab26847f95fe5d78ec50b395150be02c15a7abe700cca3ebd0684af6a425",
+  "checked": [
+    "All 27 file SHA256 values match; 7 inputs archive=before=after=current",
+    "Whole lock change only replaces exact source identities for 8 framework Git packages; 648 registry package complete objects unchanged",
+    "Root and Host manifests and Cargo config have no patch/replace/path override",
+    "Reviewer independently extracts each group/version array from complete 702116-byte deny output; all 50 equal accepted policy table, original baseline and comparison",
+    "Deny four categories ok, only accepted 50 duplicate hints, other warnings zero",
+    "First audit network failure retained; original command retry passes with fresh fetch, 1310 loaded advisories and 658 dependencies",
+    "Two actual RustSec caches clean, HEAD matches recorded independent official ls-remote stdout, official origin consistent",
+    "All 1317 Markdown hashes in both caches match; crate Markdown count and loaded-advisory count are explicitly distinguished"
+  ],
+  "scopeLimit": "No complete SDK, CI, Rust compilation, delivery or main acceptance conclusion. Original snapshot receipts and README pending-review wording are historical capture preserved unchanged; this separate receipt records the completed review."
+}

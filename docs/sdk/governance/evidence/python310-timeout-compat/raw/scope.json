@@ -1,0 +1,13 @@
+{
+  "source_files": [
+    "sdks/python/tests/test_client_close_callbacks.py",
+    "sdks/python/tests/test_tool_value_effect_host.py",
+    "sdks/python/tests/test_factory_host.py",
+    "sdks/python/tests/test_managed_host.py",
+    "sdks/python/tests/test_memory_permission_host.py",
+    "sdks/python/tests/test_parallel_sessions_host.py"
+  ],
+  "original_asyncio_timeout_count": 9,
+  "excluded_owner": "test_session_rules_prompt_host.py separate owner",
+  "production_source_changed": false
+}

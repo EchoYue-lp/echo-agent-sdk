@@ -1,0 +1,17 @@
+--- /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/before/sdks/python/tests/test_parallel_sessions_host.py	2026-10-12 15:46:16
++++ /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-python310-timeout-compat/after/sdks/python/tests/test_parallel_sessions_host.py	2026-10-14 11:09:43
+@@ -18,11 +18,13 @@
+ 
+ 
+ async def barrier(predicate):
+-    async with asyncio.timeout(10):
++    async def wait_for_condition_1():
+         while not predicate():
+             await asyncio.sleep(0.01)
+ 
++    await asyncio.wait_for(wait_for_condition_1(), 10)
+ 
++
+ @asynccontextmanager
+ async def fixture(tmp_path):
+     model = await asyncio.create_subprocess_exec(

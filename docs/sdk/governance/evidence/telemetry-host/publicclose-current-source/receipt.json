@@ -1,0 +1,56 @@
+{
+  "scope": "current exact fixture entity, final approved TypeScript public close; no fixture EOF, signal substitution or fabricated reply",
+  "supersedes": "../publicclose-approved/receipt.json (old fixture entity missing; historical pass retained but not source-exact package approval)",
+  "source": {
+    "sdks/shared/testing/telemetry_host_fixture.py": {
+      "sha256": "d4516646cb4ad760f99632ceb769f9182eb374a40f14267316f763fa95bf8bb9",
+      "archive": "executed-source/sdks/shared/testing/telemetry_host_fixture.py.txt"
+    },
+    "sdks/typescript/test/telemetry-host.test.js": {
+      "sha256": "e152c4b1950db19319977ba02bb58e0c7ecbff2f32a3b98517cc28b14a0f62c8",
+      "archive": "executed-source/sdks/typescript/test/telemetry-host.test.js.txt"
+    },
+    "sdks/typescript/src/client.ts": {
+      "sha256": "dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f",
+      "archive": "executed-source/sdks/typescript/src/client.ts.txt"
+    },
+    "sdks/typescript/dist/client.js": {
+      "sha256": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+      "archive": "executed-source/sdks/typescript/dist/client.js.txt"
+    }
+  },
+  "producerSession": 42659,
+  "exitCode": 0,
+  "tests": 1,
+  "failures": 0,
+  "skips": 0,
+  "startedAt": "2026-10-14T04:37:49.349Z",
+  "finishedAt": "2026-10-14T04:37:51.625Z",
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-source-exact-publicclose/typescript-wire-public_close-MlU95W",
+  "hostSHA256": "4967dd4352d49b79fdc46bee8e3fa7f1c3e3e35660abb272bb348ee5adbbad6a",
+  "collectorSHA256": "3a5d94fd10efdfa387f17846ac5eed5150bdc3afe7173c7d34b8bfcafa717d08",
+  "beforeRelease": {
+    "shutdown_settled": true,
+    "close_settled": false,
+    "real_host_exited": false
+  },
+  "afterRelease": {
+    "pid": 36914,
+    "returncode": 0,
+    "observed_by_original_parent": true
+  },
+  "statusWhileHeld": {
+    "initialized": true
+  },
+  "collectorKinds": [
+    "metrics",
+    "traces"
+  ],
+  "argv": [
+    "node",
+    "--test",
+    "--test-name-pattern=public_close",
+    "test/telemetry-host.test.js"
+  ],
+  "remaining": "final combined framework/published exact pin/whole SDK/main acceptance"
+}
