@@ -8,6 +8,7 @@ freshness: examined
 revision: 622d7931e01556161441d22de0697f6f35f24f17
 finding_refs:
 - finding.sdk-negotiation-response-validation
+- finding.sdk-inventory-acceptance-authority
 challenges:
   accepted-protocol-and-advertisement-shape:
     revision: 622d7931e01556161441d22de0697f6f35f24f17
@@ -44,6 +45,21 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml
     evidence_refs:
     - evidence.sdk-protocol-finite-observation
+  specific-accepted-source-authority:
+    revision: 622d7931e01556161441d22de0697f6f35f24f17
+    source_refs:
+    - echo-sdk-protocol/src/inventory.rs
+    - echo-sdk-protocol/src/bin/export_schema.rs
+    - echo-sdk-protocol/tests/facade_inventory.rs
+    - echo-sdk-protocol/src/inventory.rs#new_public_invoke_is_inventory_not_an_accepted_language_promise
+    - echo-sdk-protocol/src/bin/export_schema.rs#new_source_inventory_route_does_not_change_accepted_catalog_or_digest
+    - echo-sdk-protocol/src/bin/export_schema.rs#acceptance_dispositions_reject_draft_wrong_action_and_identity_substrings
+    - echo-sdk-protocol/src/bin/export_schema.rs#accepted_catalog_ignores_reexport_alias_inventory_growth
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/08-ci-default-protocol.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
 ---
 
 # Protocol contract_evidence 有限审查
@@ -75,3 +91,12 @@ Windowsnative路径、fullacceptedgenerator12source、5sphysicalB/platform/main�
 ## 原具名协议入口/消费断言直接定位
 
 core_rpc_contract与stdio4、plain/mismatchedhello实测试、negotiate_hello/require_extended生产入口，以及原JavaProtocolIntegrityXML9均追加真实622d直接refs。原oldRust/三native命令时间为历史，622d源/receipt观察不把后继A新增coretests当原命令已运行；这只是该Protocol故障义务的可复核来源补齐，不要求新工程门禁或全fields矩阵。
+
+## 自动接受库存身份原缺陷的真实源码复审
+
+本次 sdk_capability_acceptance_audit 确实读取 inventory、export_schema、facade_inventory 的原接受权威故障与修复路径，有限源码复审 C0/I0/M0。三个修复源在真实85400与622d及本次当前逐字节相同。manifest_entries 的新 routable 身份默认 Deferred / sdk_scope=false；apply_accepted_source_scope 以既有 seed 的 defining source + ItemKind 精确匹配，不由 signature、alias、路由或数量推接受。非canonical/duplicate seed、missing/wrongkind、unknown add/invalid retire 都在 mutation 前明确拒绝。producer 在文件写入前 apply，catalog_documents 仅 canonical accepted，acceptance delta 要已批准的精确 ADR 与 full-update。
+
+facade_inventory 八个具名真实 fixture 覆盖新可路由项不接受、alias/signature 漂移不改变既有 source/kind、missing atomic/精确退役、新 Task result 不接受兄弟字段、RustHost recovery authority 不暗升语言 API、seed 精确重现、invalid delta 原子拒绝、收集全部 missing 且 partial retire 不掩余项；inventory/new public invoke 与 export 三个反例断言也实际在正式05/08通过。没有原旧产品执行红日志就不写 executed RED；meaningful postfix 场景与本次真实源码独审支持原自动扩大身份的具体逻辑缺陷本地 resolved。
+
+seed 未在此改动，完整28 profiles 的12 missing source 按原明确合同正确阻写，旧身份是否迁移/退役仍待用户。该正确阻断不是旧自动接受 bug 仍未修，也不是 full generator 已通过。库存量不成为能力完成分母，不自动接受 API、关闭全部模型或宣称 SDK main 完成。
+本 challenge 是 SDKcap 本次新增实际 source review；不是从协商 PASS 或 generic catalog 完成标志借来的通过。原其它 Protocol challenge 保持。

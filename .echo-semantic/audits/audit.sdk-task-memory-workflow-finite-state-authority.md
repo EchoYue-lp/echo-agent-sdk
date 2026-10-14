@@ -10,6 +10,7 @@ finding_refs:
 - finding.sdk-task-resume-extension-invocation-conflict
 - finding.sdk-task-control-locality
 - finding.sdk-task-runtime-store-authority
+- finding.sdk-live-agent-service-view
 challenges:
   task-memory-workflow-accepted-obligation:
     revision: 02059dd3014633a23c188e30e73b0634a8c5621d
@@ -62,6 +63,22 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml
     evidence_refs:
     - evidence.sdk-task-memory-workflow-finite-observation
+  specific-live-agent-service-replacement:
+    revision: b7e6c68fbaa91cc97ad5fef4ff3d5a61b187345a
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/memory.rs#malformed_namespace_never_writes_and_replacement_store_is_live_authority
+    - echo-sdk-host/src/core_profile/facade/workflow.rs#agent_node_uses_replaced_live_llm_after_session_services_capture
+    - echo-sdk-host/src/factory.rs
+    - docs/sdk/governance/evidence/live-service-llm-proof/receipt.json
+    - docs/sdk/governance/evidence/live-service-llm-proof/independent-review.json
+    - docs/sdk/governance/evidence/live-service-llm-proof/manifest.json
+    - docs/sdk/governance/evidence/live-service-llm-proof/focused.log
+    - docs/sdk/governance/evidence/live-service-llm-proof/host-lib.log
+    - docs/sdk/governance/evidence/live-service-llm-proof/historical-30d/echo-sdk-host/src/core_profile/facade/workflow.rs
+    - docs/sdk/governance/evidence/live-service-llm-proof/historical-30d/echo-sdk-host/src/factory.rs
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
 ---
 
 # Task/Memory/Workflow state_authority 有限审查
@@ -97,3 +114,12 @@ ContextInheritance纯值不证明实际history/memory继承E2E，compressor消�
 ## task-runtime-store-authority原局部缺陷准确复核
 
 SessionServices取liveAgenttaskrevisionservice同Arc，CRUD/runtime同framework service/store无fallback双图；nativeCRUD-onlyexecute featureUnavailable agentcalls0拒前effect/canonicalCAS4scene真实。原真实来源修复/强断言/本session实际有限scope独ref复核支持，仅此root不物理B。newchallenge真实622d，原主02059audit/time/limits不改，knownliveLLM缺口不借Task场景解决。
+
+## Live Agent replacement 的实际独立复审
+
+本次补齐原 Finding 的两个具体 live authority 义务。Memory 原具名测试在同 Agent 的 Store A→B 后实际读写 B，错误 namespace 零写，旧值与计数强断言已执行。Workflow 新具名测试先由原 SessionAuthorityServices 捕获同一个 AgentHandle，再通过既有公开 set_llm_client 将 A 替换成 B，随后经真实 Host graph.build 与框架 AgentNode 执行。A 的真实 stream 请求数为 0，B 为 1；完整 ChatRequest 保留原 task 与 Unicode system/user，completed graph state 输出 B 的 Unicode 回答与原任务、唯一路径。该证据不是 pure router 的 callback0，也不是 getter 观察。
+
+修复生产路径是原 live Agent 服务读取；workflow 新 d516 文件只增加 cfg(test)，生产 prefix 9ae6 与原修复源一致。b7e6 是该代码与正式包的真实可恢复 Git 观察，不表示早期 Memory 命令重新执行。原 30d captured client/config 源已冻结，作为旧缺陷源码证据，未造旧产品执行红。两次新 fixture 错误（缺合法 owner、读错 state JSON 路径）明确保留。focused 1、Host lib 187/0 ignored、严格 Clippy 和 fmt/check 实际通过；sdk_capability_acceptance_audit 已独立读源码、真实断言和正式包，PASS C0/I0/M0。
+
+此处仅证明替换后新建 graph 使用当前 provider，不承诺已建 graph 中途热换，不新增 SDK setter、RPC 或跨进程持久化。Memory 与 Workflow 原具体 captured authority 缺陷三链足够本地 resolved；B 物理结算、12 身份处置、平台与 SDK main 均独立。
+主 02059 审查与原 challenge 保持；本 challenge 使用后继实际 source review 和具名消费断言，不借整个 group 审查代替新 LLM 证明。
