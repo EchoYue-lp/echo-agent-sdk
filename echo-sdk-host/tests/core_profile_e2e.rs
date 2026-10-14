@@ -36,8 +36,8 @@ use echo_sdk_protocol::methods::{
     RunCancelRequest, TaskCreateRequest, TaskListRequest, TaskUpdateRequest,
 };
 #[cfg(feature = "sdk-facade-adapters")]
-use echo_sdk_protocol::scalar::{WireBytes, WireDuration, WireField, WireMapEntry, WireValue};
-use echo_sdk_protocol::scalar::{WireNonZeroU64, WirePath, WireU64};
+use echo_sdk_protocol::scalar::{WireBytes, WireField, WireMapEntry, WireValue};
+use echo_sdk_protocol::scalar::{WireDuration, WireNonZeroU64, WirePath, WireU64};
 use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
