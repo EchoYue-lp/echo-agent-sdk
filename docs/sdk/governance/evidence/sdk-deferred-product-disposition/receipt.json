@@ -1,0 +1,32 @@
+{
+  "classification": "product grouping of existing generated deferred canonical epoch; no scope or production mutation",
+  "source_epoch": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=27c7701e1eb116db1076da7f84bb68898544a44c#27c7701e1eb116db1076da7f84bb68898544a44c",
+  "input_sha256": {
+    "contracts/sdk/parity-manifest.json": "73cc165e1e2b7d428dcf6d0906d80a55ce62216bf44f6716907da849aa206ab0",
+    "contracts/sdk/accepted-external-contract.json": "901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45",
+    "contracts/sdk/inventory-telemetry.json": "6e6f3695a20f56a89d0c033fe0794e17da4d574c90fcdf65136937bf28067356"
+  },
+  "counts": {
+    "D01": 291,
+    "D02": 126,
+    "D03": 89,
+    "D04": 79,
+    "D05": 115,
+    "D06": 90,
+    "D07": 131,
+    "D08": 84,
+    "D09": 57,
+    "D10": 58,
+    "D11": 132,
+    "D12": 117,
+    "D13": 48,
+    "D14": 31
+  },
+  "group_count": 14,
+  "identity_count": 1448,
+  "unclassified": [],
+  "overlaps": [],
+  "accepted_overlap": [],
+  "all_defining_source_paths_present": true,
+  "boundaries": "Full inventory telemetry not acceptance authority; new source cut must rerun uniquegenerator then same grouping. Supporting accepted value fields do not grant deferred helper calls."
+}

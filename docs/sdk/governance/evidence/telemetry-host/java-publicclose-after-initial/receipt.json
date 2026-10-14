@@ -1,0 +1,40 @@
+{
+  "scope": "initial approved Java close implementation b89; actual unchanged telemetry public close counterexample now passes; not final Java writer/deadline/review proof",
+  "source": {
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "b89f4edb54e59db35d64e7101733d837038602652b4672e45922cdf6917c5ca9",
+    "sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java": "f215e02cb651a16f0199e6a074e3d1485424591971822e62c99b303189c8254e",
+    "sdks/shared/testing/telemetry_host_fixture.py": "d4516646cb4ad760f99632ceb769f9182eb374a40f14267316f763fa95bf8bb9"
+  },
+  "producerSession": 52395,
+  "exitCode": 0,
+  "tests": 1,
+  "failures": 0,
+  "skipped": 0,
+  "hostSHA256": "4967dd4352d49b79fdc46bee8e3fa7f1c3e3e35660abb272bb348ee5adbbad6a",
+  "collectorSHA256": "3a5d94fd10efdfa387f17846ac5eed5150bdc3afe7173c7d34b8bfcafa717d08",
+  "beforeRelease": {
+    "public_close_done": false,
+    "real_host_exited": false
+  },
+  "afterRelease": {
+    "pid": 60113,
+    "returncode": 0,
+    "observed_by_original_parent": true
+  },
+  "originalProcess": {
+    "pid": 60113,
+    "parent_pid": 60111,
+    "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-telemetry-no-endpoint-log-host"
+  },
+  "statusWhileHeld": {
+    "initialized": true
+  },
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-java-close-after/java-public-close-4821045378458008578",
+  "noFixtureEofControl": true,
+  "collectorKinds": [
+    "metrics",
+    "traces"
+  ],
+  "previousCounterexample": "../java-publicclose-counterexample/receipt.json",
+  "remaining": "assigned owner final writer/drain/deadline regression and independent review; final combined/published pin/whole SDK/main gates"
+}

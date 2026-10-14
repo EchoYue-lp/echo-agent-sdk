@@ -1,0 +1,16 @@
+{
+  "scope": "actual public SDK close only, no fixture EOF/signal substitute",
+  "passed": false,
+  "tests": 1,
+  "failures": 1,
+  "skipped": 0,
+  "hostSHA256": "4967dd4352d49b79fdc46bee8e3fa7f1c3e3e35660abb272bb348ee5adbbad6a",
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-java-close/java-public-close-8754400370932725132",
+  "beforeRelease": {
+    "public_close_done": true,
+    "real_host_exited": false
+  },
+  "afterRelease": null,
+  "failureCleanupIsNotSettlement": true,
+  "remaining": "Java premature transport termination fix and original same-case revalidation by assigned owner"
+}

@@ -1,0 +1,95 @@
+Telemetry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/runtime/python-eju7ty8n
+F
+=================================== FAILURES ===================================
+____________ test_accepted_telemetry_initializes_through_real_host _____________
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x105ce3a10>
+method = '_echo_agent/telemetry/op'
+params = {'operation': 'telemetry.status', 'signature_digest': 'sha256:562ff3a4245fd0c9cc69f304b7d3e91ece437fe4c69ceb06a3a5bdef...handle': {'id': 'session-ac061df0-7c9e-4bd9-9d94-71402ec3c71a', 'generation': '1', 'kind': 'session'}, 'arguments': []}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+>           return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+
+src/echo_agent_sdk/client.py:3445: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/acp/client/connection.py:340: in ext_method
+    return await self._conn.send_request(f"_{method}", params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/acp/connection.py:112: in send_request
+    self._raise_if_unavailable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <acp.connection.Connection object at 0x105ce37d0>
+
+    def _raise_if_unavailable(self) -> None:
+        if self._disconnected or self._closed:
+>           raise ConnectionError("Connection closed")
+E           ConnectionError: Connection closed
+
+.venv/lib/python3.12/site-packages/acp/connection.py:276: ConnectionError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(not HOST, reason="real Host required")
+    async def test_accepted_telemetry_initializes_through_real_host():
+        ROOT.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT))
+        process = await asyncio.create_subprocess_exec(sys.executable, str(FIXTURE), "--work", str(work))
+        assert await process.wait() == 0
+        scenario = json.loads((work / "scenario.json").read_text())
+        facts = {"work": str(work), "host": HOST, "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(), "scenario": scenario}
+        try:
+            async with await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json")) as sdk:
+                agent = await sdk.create_agent()
+                session = await agent.create_session()
+                facts["before"] = await session.invoke("telemetry.status", [])
+                try:
+                    facts["init"] = await session.invoke("telemetry.init", [scenario["endpoint"], scenario["service_name"], scenario["enable_console"]])
+                except EchoAgentError as error:
+                    facts["error"] = {"code": error.code, "message": error.message, "operation": error.operation, "retryable": error.retryable, "details": error.details, "handle": error.handle.to_dict() if error.handle else None}
+>               facts["after"] = await session.invoke("telemetry.status", [])
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_telemetry_host.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/echo_agent_sdk/client.py:4390: in invoke
+    return await self.client.call(operation, self.wire, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/echo_agent_sdk/client.py:3642: in call
+    return await self.family(resolved.family, operation, handle, arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/echo_agent_sdk/client.py:3660: in family
+    response = await self.request(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <echo_agent_sdk.client.EchoAgentClient object at 0x105ce3a10>
+method = '_echo_agent/telemetry/op'
+params = {'operation': 'telemetry.status', 'signature_digest': 'sha256:562ff3a4245fd0c9cc69f304b7d3e91ece437fe4c69ceb06a3a5bdef...handle': {'id': 'session-ac061df0-7c9e-4bd9-9d94-71402ec3c71a', 'generation': '1', 'kind': 'session'}, 'arguments': []}
+
+    async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
+        try:
+            return await self.connection.ext_method(
+                method.removeprefix("_"), params or {}
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+>           raise EchoAgentError.from_exception(error, method) from error
+E           echo_agent_sdk.errors.EchoAgentError: Connection closed
+
+src/echo_agent_sdk/client.py:3451: EchoAgentError
+=========================== short test summary info ============================
+FAILED tests/test_telemetry_host.py::test_accepted_telemetry_initializes_through_real_host
+1 failed in 85.39s (0:01:25)

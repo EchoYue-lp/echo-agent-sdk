@@ -1,0 +1,43 @@
+{
+  "scope": "final independently reviewed TypeScript public close only; no fixture EOF/signal substitute",
+  "exitCode": 0,
+  "tests": 1,
+  "failures": 0,
+  "skips": 0,
+  "producerSession": 95941,
+  "startedAt": "2026-10-14T04:25:47.431Z",
+  "finishedAt": "2026-10-14T04:25:49.818Z",
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-approved-publicclose/typescript-wire-public_close-qla7Vh",
+  "hostSHA256": "4967dd4352d49b79fdc46bee8e3fa7f1c3e3e35660abb272bb348ee5adbbad6a",
+  "collectorSHA256": "3a5d94fd10efdfa387f17846ac5eed5150bdc3afe7173c7d34b8bfcafa717d08",
+  "source": {
+    "sdks/typescript/src/client.ts": "dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f",
+    "sdks/typescript/dist/client.js": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+    "sdks/typescript/test/telemetry-host.test.js": "e152c4b1950db19319977ba02bb58e0c7ecbff2f32a3b98517cc28b14a0f62c8",
+    "sdks/shared/testing/telemetry_host_fixture.py": "6e1182491936d4df7a9d94873cbf109784f7fdda3fdb1d2f0badd34ebfe64ac2"
+  },
+  "observed": {
+    "real_export_received_not_acked": true,
+    "status_during_hold": {
+      "initialized": true
+    },
+    "public_close_pending_before_release": true,
+    "same_real_host_alive_before_release": true,
+    "real_child_exit_after_release": {
+      "pid": 26788,
+      "returncode": 0,
+      "observed_by_original_parent": true
+    },
+    "collector_request_kinds": [
+      "metrics",
+      "traces"
+    ]
+  },
+  "argv": [
+    "node",
+    "--test",
+    "--test-name-pattern=public_close",
+    "test/telemetry-host.test.js"
+  ],
+  "remaining": "combined framework/published exact pin/whole language gate/main remain separate"
+}

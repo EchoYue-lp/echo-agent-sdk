@@ -1,0 +1,1 @@
+{"jsonrpc": "2.0", "id": "9ec5053a-6", "method": "_echo_agent/telemetry/op", "params": {"operation": "telemetry.shutdown", "signature_digest": "sha256:2651a628a940ede1126bf367c2a7035d449f3a66502d7e5e72e1b06c12385953", "handle": {"id": "session-bb93dc66-fe68-44bc-8961-f9450421808e", "generation": "1", "kind": "session"}, "arguments": []}}

@@ -1,0 +1,151 @@
+pub async fn delete_persisted_conversation_managed(
+    conversation_store: &dyn crate::memory::ConversationStore,
+    runtime_state_store: &dyn RuntimeStateStore,
+    delete: crate::memory::ManagedConversationDelete,
+) -> crate::error::Result<PersistedConversationDeleteReceipt> {
+    delete_persisted_conversation_managed_with_context(
+        conversation_store,
+        runtime_state_store,
+        delete,
+        crate::memory::PersistenceCallContext::with_timeout(PERSISTED_STATE_OPERATION_TIMEOUT)?,
+    )
+    .await
+}
+
+/// Context-aware managed delete. A retry supplies the same durable request
+/// while refreshing only the non-authoritative absolute call deadline.
+pub async fn delete_persisted_conversation_managed_with_context(
+    conversation_store: &dyn crate::memory::ConversationStore,
+    runtime_state_store: &dyn RuntimeStateStore,
+    delete: crate::memory::ManagedConversationDelete,
+    context: crate::memory::PersistenceCallContext,
+) -> crate::error::Result<PersistedConversationDeleteReceipt> {
+    let budget = PersistenceOperationDeadline::from_context(context)?;
+    delete.validate()?;
+    if !managed_persistence_pair(conversation_store, runtime_state_store)? {
+        return Err(echo_core::error::RuntimeStateError::Unsupported(
+            "managed conversation deletion requires atomic conversation and revisioned runtime stores"
+                .to_string(),
+        )
+        .into());
+    }
+    await_persistence(
+        budget,
+        "managed persisted conversation delete",
+        delete_managed_persisted_conversation(
+            conversation_store,
+            runtime_state_store,
+            delete,
+            budget,
+        ),
+    )
+    .await
+}
+
+async fn delete_managed_persisted_conversation(
+    conversation_store: &dyn crate::memory::ConversationStore,
+    runtime_state_store: &dyn RuntimeStateStore,
+    delete: crate::memory::ManagedConversationDelete,
+    budget: PersistenceOperationDeadline,
+) -> crate::error::Result<PersistedConversationDeleteReceipt> {
+    let conversation_id = delete.conversation_id.clone();
+    let scope_revision = await_persistence(
+        budget,
+        "runtime scope load before managed delete",
+        runtime_state_store.load_scope_authority_with_context(budget.context, &conversation_id),
+    )
+    .await?
+    .map(|scope| scope.revision)
+    .unwrap_or(0);
+    let request = ScopeRetirementRequest::prepare(&conversation_id, scope_revision, &delete)?;
+    let mut retirement = await_persistence(
+        budget,
+        "runtime scope retirement begin",
+        runtime_state_store.begin_scope_retirement_with_context(budget.context, request),
+    )
+    .await?;
+    retirement.validate()?;
+    if matches!(
+        retirement.status,
+        ScopeRetirementStatus::Completed | ScopeRetirementStatus::AlreadyCompleted
+    ) || !scope_retirement_can_advance(retirement.status)
+    {
+        return Ok(persisted_delete_receipt(conversation_id, retirement));
+    }
+
+    if retirement.manifest.conversation_delete_receipt.is_none() {
+        let conversation_receipt = await_persistence(
+            budget,
+            "managed conversation transcript delete",
+            conversation_store
+                .delete_managed_conversation_with_context(budget.context, delete.clone()),
+        )
+        .await?;
+        retirement = await_persistence(
+            budget,
+            "managed conversation delete receipt persistence",
+            runtime_state_store.continue_scope_retirement_with_context(
+                budget.context,
+                &conversation_id,
+                &delete.operation_id,
+                retirement.scope.revision,
+                ScopeRetirementAdvance::ConversationDeleted {
+                    receipt: conversation_receipt,
+                },
+            ),
+        )
+        .await?;
+        retirement.validate()?;
+        if !scope_retirement_can_advance(retirement.status) {
+            return Ok(persisted_delete_receipt(conversation_id, retirement));
+        }
+    }
+
+    let pending_items = retirement
+        .manifest
+        .items
+        .iter()
+        .filter(|item| item.status == ScopeRetirementItemStatus::Pending)
+        .map(|item| {
+            (
+                item.runtime_state_id.clone(),
+                item.pending_operation_id.clone(),
+            )
+        })
+        .collect::<Vec<_>>();
+    for (runtime_state_id, pending_operation_id) in pending_items {
+        retirement = await_persistence(
+            budget,
+            "managed runtime generation drop",
+            runtime_state_store.continue_scope_retirement_with_context(
+                budget.context,
+                &conversation_id,
+                &delete.operation_id,
+                retirement.scope.revision,
+                ScopeRetirementAdvance::GenerationDropped {
+                    runtime_state_id,
+                    pending_operation_id,
+                },
+            ),
+        )
+        .await?;
+        retirement.validate()?;
+        if !scope_retirement_can_advance(retirement.status) {
+            return Ok(persisted_delete_receipt(conversation_id, retirement));
+        }
+    }
+    retirement = await_persistence(
+        budget,
+        "managed runtime scope retirement completion",
+        runtime_state_store.continue_scope_retirement_with_context(
+            budget.context,
+            &conversation_id,
+            &delete.operation_id,
+            retirement.scope.revision,
+            ScopeRetirementAdvance::Complete,
+        ),
+    )
+    .await?;
+    retirement.validate()?;
+    Ok(persisted_delete_receipt(conversation_id, retirement))
+}

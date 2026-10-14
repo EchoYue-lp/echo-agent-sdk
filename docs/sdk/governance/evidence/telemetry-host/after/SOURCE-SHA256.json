@@ -1,0 +1,102 @@
+{
+  "framework/src/telemetry.rs": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/telemetry.rs",
+    "sha256": "7b35416fc7f1eacaa6e5373bc8babd9e35552a74a71c4409ca3b35be17210ed9",
+    "archive": "source/framework/src/telemetry.rs.txt"
+  },
+  "framework/tests/telemetry_composition.rs": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/tests/telemetry_composition.rs",
+    "sha256": "d9d8b70c7c4ecb6b183f1e7306b2c5749638df7a6a76a5682a13ad8232ee2033",
+    "archive": "source/framework/tests/telemetry_composition.rs.txt"
+  },
+  "framework/Cargo.toml": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/Cargo.toml",
+    "sha256": "18029a0e60bf4c9680c85eec13eae0873b5c4deb2b3abef3ca4e04692214c2e9",
+    "archive": "source/framework/Cargo.toml.txt"
+  },
+  "framework/Cargo.lock": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/Cargo.lock",
+    "sha256": "49f8e5605e329f7a05b617a7ec0ecb3b216a4f88665fd3e67a9e0c5de02cf6f1",
+    "archive": "source/framework/Cargo.lock.txt"
+  },
+  "framework/README.md": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/README.md",
+    "sha256": "931f1f0756bc075c0ffa12c0e2a16f5d6201dc0374ff77ab23f209c78d4d7236",
+    "archive": "source/framework/README.md.txt"
+  },
+  "framework/README.zh.md": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/README.zh.md",
+    "sha256": "5b53c6a596b7101ce8da7835d36cc45f208b2c46eb0a15b831928ccfe094d5d9",
+    "archive": "source/framework/README.zh.md.txt"
+  },
+  "framework/docs/en/27-tracing.md": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/docs/en/27-tracing.md",
+    "sha256": "197e191b6bc2e5275919bf22e0fa023055bd26ad7a6e2a0a08b58779801b009b",
+    "archive": "source/framework/docs/en/27-tracing.md.txt"
+  },
+  "framework/docs/adr/0087-telemetry-subscriber-composition.md": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/docs/adr/0087-telemetry-subscriber-composition.md",
+    "sha256": "15145e3bf489bebb4e142bb3e17c99390b24137b7d863638396a51158d785597",
+    "archive": "source/framework/docs/adr/0087-telemetry-subscriber-composition.md.txt"
+  },
+  "framework/docs/telemetry-composition-design.md": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/docs/telemetry-composition-design.md",
+    "sha256": "44d867ccc4d65ae97c7ffbde89aa90d85ee817f861e4db9be833dbfd68ff970d",
+    "archive": "source/framework/docs/telemetry-composition-design.md.txt"
+  },
+  "sdk/echo-sdk-host/src/main.rs": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/main.rs",
+    "sha256": "d6608d38747669fabf6e661a2f3170c173e7bfe3377668369d0c9de8285cd22c",
+    "archive": "source/sdk/echo-sdk-host/src/main.rs.txt"
+  },
+  "sdk/echo-sdk-host/src/core_profile/facade/telemetry.rs": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/telemetry.rs",
+    "sha256": "48363a3704cd4150bbb9e5cfae0fd0e43237d25dcc729f25951b0cc02c9e072a",
+    "archive": "source/sdk/echo-sdk-host/src/core_profile/facade/telemetry.rs.txt"
+  },
+  "sdk/echo-sdk-host/src/core_profile/facade/mod.rs": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/facade/mod.rs",
+    "sha256": "95c3b306c857efd65bd315029dab7a5f346f0c7926201778ed70043042d26628",
+    "archive": "source/sdk/echo-sdk-host/src/core_profile/facade/mod.rs.txt"
+  },
+  "sdk/echo-sdk-host/src/core_profile/state.rs": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host/src/core_profile/state.rs",
+    "sha256": "beaacc87a18188d89681b6ff2712dcb890f2eed93273071eb244fd0d6f178bbf",
+    "archive": "source/sdk/echo-sdk-host/src/core_profile/state.rs.txt"
+  },
+  "sdk/sdks/shared/testing/telemetry_host_fixture.py": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/telemetry_host_fixture.py",
+    "sha256": "f8cf6b6fe2e56dc6284d79c2d9d472d59c9469b7caf305d9612b76e5cea9e0e4",
+    "archive": "source/sdk/sdks/shared/testing/telemetry_host_fixture.py.txt"
+  },
+  "sdk/sdks/typescript/test/telemetry-host.test.js": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/telemetry-host.test.js",
+    "sha256": "e152c4b1950db19319977ba02bb58e0c7ecbff2f32a3b98517cc28b14a0f62c8",
+    "archive": "source/sdk/sdks/typescript/test/telemetry-host.test.js.txt"
+  },
+  "sdk/sdks/python/tests/test_telemetry_host.py": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_telemetry_host.py",
+    "sha256": "771fdc4b7e1973aa591baf0a4075c8038a948274d8041f78cf3d913281247bef",
+    "archive": "source/sdk/sdks/python/tests/test_telemetry_host.py.txt"
+  },
+  "sdk/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java",
+    "sha256": "85371f5b347290b7908c6137856a570572fa6e1f3157ff34133ebc94d1ad478a",
+    "archive": "source/sdk/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java.txt"
+  },
+  "sdk/scripts/build-telemetry-test-collector.sh": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/scripts/build-telemetry-test-collector.sh",
+    "sha256": "bfed6da128af78a889e296aba80fbf6d7ff672c0f7db96f70dc2fc48602d6f94",
+    "archive": "source/sdk/scripts/build-telemetry-test-collector.sh.txt"
+  },
+  "sdk/scripts/check-language-sdks.sh": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/scripts/check-language-sdks.sh",
+    "sha256": "c92568fe6a55668abe62208c6935cfe5ad923b1b8ba1e40f6e5b8047f40d47b7",
+    "archive": "source/sdk/scripts/check-language-sdks.sh.txt"
+  },
+  "sdk/docs/adr/0036-telemetry-host-composition.md": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/adr/0036-telemetry-host-composition.md",
+    "sha256": "6a963ad78968f6b31ea14d067cfe3df422e051c0f44b76e3190a2ef5966d8f74",
+    "archive": "source/sdk/docs/adr/0036-telemetry-host-composition.md.txt"
+  }
+}

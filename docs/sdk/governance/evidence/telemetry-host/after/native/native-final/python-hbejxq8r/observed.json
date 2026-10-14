@@ -1,0 +1,714 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-final/python-hbejxq8r",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-telemetry-filtered-diagnostic-host",
+  "host_sha256": "0bacb1eaea49d9f640acfbb5e892753b0a3d4e5936386fdbd94b3b0ab657463c",
+  "errors": {
+    "shutdown_before": "framework_error",
+    "invalid_console": "invalid_value",
+    "invalid_endpoint": "invalid_value",
+    "invalid_service": "invalid_value",
+    "repeat_init": "framework_error",
+    "repeat_shutdown": "framework_error"
+  },
+  "scenario": {
+    "service_name": "sdk-telemetry-中文🙂",
+    "enable_console": true,
+    "endpoint": "http://127.0.0.1:61342",
+    "pid": 17893,
+    "collector_started": true,
+    "fixture_pid": 17892
+  },
+  "before": {
+    "initialized": false
+  },
+  "init": {
+    "initialized": true
+  },
+  "after": {
+    "initialized": true
+  },
+  "run_outcome": "completed",
+  "replay": {
+    "requested_after_sequence": "0",
+    "events": [
+      {
+        "schema_version": 5,
+        "event_id": "evt_b2739cb51e2b2afb97225f5dbea5d38570b17d0b1957e629c000de651526a2de",
+        "content_hash": "sha256:dc115425f6decfe64ee47d40998d070f56101024e3488aa4cf1b5f0f4a944f91",
+        "sequence": "1",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 713459000,
+          "rfc3339": "2026-10-14T04:10:56.713459+00:00"
+        },
+        "payload": {
+          "event_type": "llm_usage",
+          "data": {
+            "kind": "map",
+            "value": [
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "model"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "telemetry-model"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "prompt_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "17"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "completion_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "5"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "total_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "22"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "cached_prompt_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "0"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "cache_creation_prompt_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "0"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "usage_reported"
+                },
+                "value": {
+                  "kind": "bool",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "schema_version": 5,
+        "event_id": "evt_e08706f7a0e7adc7754e9a9f8b6673601758df3c0d4ce7db7f61a40dcf56409f",
+        "content_hash": "sha256:760577a9fba3699fdecf78d2b8db5066da5614d0623a8553c35b832600f8ca4e",
+        "sequence": "2",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 714453000,
+          "rfc3339": "2026-10-14T04:10:56.714453+00:00"
+        },
+        "payload": {
+          "event_type": "tool_batch_start",
+          "data": {
+            "kind": "map",
+            "value": [
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "tool_count"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "schema_version": 5,
+        "event_id": "evt_c41c8d25a8e50073780169cc02b4e54bcddcaa7956acdcb58adae9f2ebb1f643",
+        "content_hash": "sha256:1974deb43042638422d31d66e22db09d6b39395b0807754e37dbc67d6cbd2d58",
+        "sequence": "3",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 715054000,
+          "rfc3339": "2026-10-14T04:10:56.715054+00:00"
+        },
+        "payload": {
+          "event_type": "tool_call",
+          "data": {
+            "kind": "map",
+            "value": [
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "call_id"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "telemetry-read"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "invocation"
+                },
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "requested_name"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "read_file"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "requested_args"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "path"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-final/python-hbejxq8r/probe.txt"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "name"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "read_file"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "args"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "path"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-final/python-hbejxq8r/probe.txt"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "schema_version": 5,
+        "event_id": "evt_573ffb2f94c9bff33f6885787e4679479b93c479c0671160f6317eeae7ebb182",
+        "content_hash": "sha256:f389365ed9047ab0746721a3b7aaf44c5e8c891712a742fc3b8ba9cd710a94a1",
+        "sequence": "4",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "parent_event_id": "evt_c41c8d25a8e50073780169cc02b4e54bcddcaa7956acdcb58adae9f2ebb1f643",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 716267000,
+          "rfc3339": "2026-10-14T04:10:56.716267+00:00"
+        },
+        "payload": {
+          "event_type": "tool_result",
+          "data": {
+            "kind": "map",
+            "value": [
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "call_id"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "telemetry-read"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "name"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "read_file"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "result"
+                },
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "kind"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "kind_type"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "text"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "success"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": true
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "output"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "1|真实文件内容 telemetry read 中文🙂\n"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "error"
+                      },
+                      "value": {
+                        "kind": "null"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "metadata"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "encoding"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "utf-8"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "total_lines"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "1"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "content_hash"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "50b481f7f6b0018311a494db8004084d0e25e2bba6128c8bc411300358effbb7"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "original_bytes"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "47"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "end_line"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "1"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "returned_bytes"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "47"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "output_handling"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "inline"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "remaining_lines"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "0"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "estimated_tokens"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "9"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "path"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-final/python-hbejxq8r/probe.txt"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "start_line"
+                            },
+                            "value": {
+                              "kind": "string",
+                              "value": "1"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "effects"
+                      },
+                      "value": {
+                        "kind": "list",
+                        "value": [
+                          {
+                            "kind": "map",
+                            "value": [
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "effect"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "file_read"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "kind": "string",
+                                  "value": "path"
+                                },
+                                "value": {
+                                  "kind": "string",
+                                  "value": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-final/python-hbejxq8r/probe.txt"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "schema_version": 5,
+        "event_id": "evt_9ae877ae26222962672b959df517f9fd228e3a5f5f535939160de885983cf191",
+        "content_hash": "sha256:e9f11920fdcdac14e3989f494ede9500cce8acba522bf94a11977143143d2b05",
+        "sequence": "5",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 756111000,
+          "rfc3339": "2026-10-14T04:10:56.756111+00:00"
+        },
+        "payload": {
+          "event_type": "tool_batch_end"
+        }
+      },
+      {
+        "schema_version": 5,
+        "event_id": "evt_84f86b872470ead0a0f3d3b16b79542d43538c467767a6be2835875c080070a3",
+        "content_hash": "sha256:dc115425f6decfe64ee47d40998d070f56101024e3488aa4cf1b5f0f4a944f91",
+        "sequence": "6",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 821696000,
+          "rfc3339": "2026-10-14T04:10:56.821696+00:00"
+        },
+        "payload": {
+          "event_type": "llm_usage",
+          "data": {
+            "kind": "map",
+            "value": [
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "model"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "telemetry-model"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "prompt_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "17"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "completion_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "5"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "total_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "22"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "cached_prompt_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "0"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "cache_creation_prompt_tokens"
+                },
+                "value": {
+                  "kind": "u64",
+                  "value": "0"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "usage_reported"
+                },
+                "value": {
+                  "kind": "bool",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "schema_version": 5,
+        "event_id": "evt_0551448af5e59eb652b6f6c4633d236ecd937310f13dad22563ae2f817caf7bf",
+        "content_hash": "sha256:284d746349de26f0b04e84f7d880d929748aa6b68244f061a91b630e2e6449b6",
+        "sequence": "7",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 856131000,
+          "rfc3339": "2026-10-14T04:10:56.856131+00:00"
+        },
+        "payload": {
+          "event_type": "token",
+          "data": {
+            "kind": "string",
+            "value": "TELEMETRY_BUSINESS_COMPLETE 中文🙂"
+          }
+        }
+      },
+      {
+        "schema_version": 5,
+        "event_id": "evt_0fa2543c25bb0be5f04eafee169fa160fd8ad25e84acffa16aa4a1d61dbab65c",
+        "content_hash": "sha256:d4383dd3c871025f795875afbcda659de2a715523eb2b53dfb94ca8f01625801",
+        "sequence": "8",
+        "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+        "conversation_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32",
+        "run_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "turn_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1",
+        "message_id": "sess_ed2a0dab-fbc8-4372-9623-f4d633a5fb32:turn:1:message",
+        "timestamp": {
+          "unix_seconds": "1791951056",
+          "nanos": 857015000,
+          "rfc3339": "2026-10-14T04:10:56.857015+00:00"
+        },
+        "payload": {
+          "event_type": "final_answer",
+          "data": {
+            "kind": "string",
+            "value": "TELEMETRY_BUSINESS_COMPLETE 中文🙂"
+          }
+        }
+      }
+    ],
+    "next_cursor": {
+      "stream_id": "995a75ec-fa92-4471-a25a-7c0f3f6db1f4",
+      "last_processed_sequence": "8"
+    }
+  },
+  "shutdown": {
+    "shutdown": true
+  },
+  "collector_at_shutdown": "{\"kind\":\"metrics\",\"request\":{\"resourceMetrics\":[{\"resource\":{\"attributes\":[{\"key\":\"service.name\",\"value\":{\"stringValue\":\"sdk-telemetry-中文🙂\"}}],\"droppedAttributesCount\":0},\"schemaUrl\":\"\",\"scopeMetrics\":[{\"metrics\":[{\"description\":\"Number of LLM API calls\",\"metadata\":[],\"name\":\"llm.calls\",\"sum\":{\"aggregationTemporality\":2,\"dataPoints\":[{\"asInt\":2,\"attributes\":[{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"provider\",\"value\":{\"stringValue\":\"fixture\"}},{\"key\":\"status\",\"value\":{\"stringValue\":\"success\"}}],\"exemplars\":[],\"flags\":0,\"startTimeUnixNano\":\"1791951056590383000\",\"timeUnixNano\":\"1791951056870010000\"}],\"isMonotonic\":true},\"unit\":\"\"},{\"description\":\"Number of tokens consumed\",\"metadata\":[],\"name\":\"llm.tokens\",\"sum\":{\"aggregationTemporality\":2,\"dataPoints\":[{\"asInt\":34,\"attributes\":[{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"provider\",\"value\":{\"stringValue\":\"fixture\"}},{\"key\":\"type\",\"value\":{\"stringValue\":\"input\"}}],\"exemplars\":[],\"flags\":0,\"startTimeUnixNano\":\"1791951056590395000\",\"timeUnixNano\":\"1791951056870030000\"},{\"asInt\":10,\"attributes\":[{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"provider\",\"value\":{\"stringValue\":\"fixture\"}},{\"key\":\"type\",\"value\":{\"stringValue\":\"output\"}}],\"exemplars\":[],\"flags\":0,\"startTimeUnixNano\":\"1791951056590395000\",\"timeUnixNano\":\"1791951056870030000\"}],\"isMonotonic\":true},\"unit\":\"tokens\"},{\"description\":\"LLM API call latency in milliseconds\",\"histogram\":{\"aggregationTemporality\":2,\"dataPoints\":[{\"attributes\":[{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"provider\",\"value\":{\"stringValue\":\"fixture\"}}],\"bucketCounts\":[0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0],\"count\":2,\"exemplars\":[],\"explicitBounds\":[0.0,5.0,10.0,25.0,50.0,75.0,100.0,250.0,500.0,750.0,1000.0,2500.0,5000.0,7500.0,10000.0],\"flags\":0,\"max\":17.5365,\"min\":16.8575,\"startTimeUnixNano\":\"1791951056590408000\",\"sum\":34.394000000000005,\"timeUnixNano\":\"1791951056870037000\"}]},\"metadata\":[],\"name\":\"llm.latency\",\"unit\":\"ms\"},{\"description\":\"Number of tool executions\",\"metadata\":[],\"name\":\"tool.executions\",\"sum\":{\"aggregationTemporality\":2,\"dataPoints\":[{\"asInt\":1,\"attributes\":[{\"key\":\"status\",\"value\":{\"stringValue\":\"success\"}},{\"key\":\"tool\",\"value\":{\"stringValue\":\"read_file\"}}],\"exemplars\":[],\"flags\":0,\"startTimeUnixNano\":\"1791951056590414000\",\"timeUnixNano\":\"1791951056870049000\"}],\"isMonotonic\":true},\"unit\":\"\"},{\"description\":\"Tool execution latency in milliseconds\",\"histogram\":{\"aggregationTemporality\":2,\"dataPoints\":[{\"attributes\":[{\"key\":\"tool\",\"value\":{\"stringValue\":\"read_file\"}}],\"bucketCounts\":[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"count\":1,\"exemplars\":[],\"explicitBounds\":[0.0,5.0,10.0,25.0,50.0,75.0,100.0,250.0,500.0,750.0,1000.0,2500.0,5000.0,7500.0,10000.0],\"flags\":0,\"max\":0.865375,\"min\":0.865375,\"startTimeUnixNano\":\"1791951056590420000\",\"sum\":0.865375,\"timeUnixNano\":\"1791951056870054000\"}]},\"metadata\":[],\"name\":\"tool.latency\",\"unit\":\"ms\"}],\"schemaUrl\":\"\",\"scope\":{\"attributes\":[],\"droppedAttributesCount\":0,\"name\":\"echo-agent\",\"version\":\"\"}}]}]}}\n{\"kind\":\"traces\",\"request\":{\"resourceSpans\":[{\"resource\":{\"attributes\":[{\"key\":\"service.name\",\"value\":{\"stringValue\":\"sdk-telemetry-中文🙂\"}}],\"droppedAttributesCount\":0},\"schemaUrl\":\"\",\"scopeSpans\":[{\"schemaUrl\":\"\",\"scope\":{\"attributes\":[],\"droppedAttributesCount\":0,\"name\":\"echo-agent\",\"version\":\"\"},\"spans\":[{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/agent/react/mod.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_agent::agent::react\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"3478\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"4\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"agent.name\",\"value\":{\"stringValue\":\"telemetry-proof\"}},{\"key\":\"agent.model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"1670708\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"372250\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056616007000\",\"events\":[],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"agent_chat_stream_with_cancel\",\"parentSpanId\":\"\",\"spanId\":\"a48d62cebbb26909\",\"startTimeUnixNano\":\"1791951056613979000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"e6792451d3048aafc9c194818d8ce122\",\"traceState\":\"\"},{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-integration/src/providers/client.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_integration::providers::client\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"381\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"2\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"timeouts\",\"value\":{\"stringValue\":\"LlmTimeouts { request: Some(120s), first_chunk: Some(30s), idle: Some(60s), overall: None }\"}},{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"3903001\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"2319499\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056692640000\",\"events\":[{\"attributes\":[{\"key\":\"level\",\"value\":{\"stringValue\":\"INFO\"}},{\"key\":\"target\",\"value\":{\"stringValue\":\"echo_integration::providers::client\"}},{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-integration/src/providers/client.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_integration::providers::client\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"471\"}}],\"droppedAttributesCount\":0,\"name\":\"Stream completion: model=telemetry-model, first_chunk_timeout_ms=Some(30000), idle_timeout_ms=Some(60000), overall_timeout_ms=None\",\"timeUnixNano\":\"1791951056689730000\"}],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"stream_post\",\"parentSpanId\":\"bece636ed3a8f11a\",\"spanId\":\"b3cdd76859afa0f0\",\"startTimeUnixNano\":\"1791951056686422000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"8d870d3866cc788f98e1c2940fa4ba30\",\"traceState\":\"\"},{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-integration/src/providers/openai.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_integration::providers::openai\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"325\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"2\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"4128583\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"2293834\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056692689000\",\"events\":[],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"openai_chat_stream\",\"parentSpanId\":\"fe5a1ae3442dbca2\",\"spanId\":\"bece636ed3a8f11a\",\"startTimeUnixNano\":\"1791951056686271000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"8d870d3866cc788f98e1c2940fa4ba30\",\"traceState\":\"\"},{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/agent/react/run/retry.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_agent::agent::react::run::retry\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"13\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"2\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"agent\",\"value\":{\"stringValue\":\"telemetry-proof\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"4545710\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"2330540\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056692702000\",\"events\":[],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"retry_llm_call\",\"parentSpanId\":\"\",\"spanId\":\"fe5a1ae3442dbca2\",\"startTimeUnixNano\":\"1791951056685838000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"8d870d3866cc788f98e1c2940fa4ba30\",\"traceState\":\"\"},{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/agent/react/run/phases/tools.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_agent::agent::react::run::phases::tools\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"474\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"3\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"21340583\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"127750\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056714620000\",\"events\":[{\"attributes\":[{\"key\":\"level\",\"value\":{\"stringValue\":\"INFO\"}},{\"key\":\"target\",\"value\":{\"stringValue\":\"echo_agent::tool_budget\"}},{\"key\":\"tool\",\"value\":{\"stringValue\":\"read_file\"}},{\"key\":\"success\",\"value\":{\"boolValue\":true}},{\"key\":\"visible_bytes\",\"value\":{\"stringValue\":\"47\"}},{\"key\":\"spilled_payload_bytes\",\"value\":{\"stringValue\":\"0\"}},{\"key\":\"duration_ms\",\"value\":{\"stringValue\":\"0\"}},{\"key\":\"paginated\",\"value\":{\"boolValue\":false}},{\"key\":\"artifact_sha256\",\"value\":{\"stringValue\":\"\"}},{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-execution/src/tools.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_execution::tools\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"613\"}}],\"droppedAttributesCount\":0,\"name\":\"tool result budget\",\"timeUnixNano\":\"1791951056714467000\"}],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"tool\",\"parentSpanId\":\"\",\"spanId\":\"16436628810e37af\",\"startTimeUnixNano\":\"1791951056693155000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"b30a27bb7fce19845f292955938c32fc\",\"traceState\":\"\"},{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-integration/src/providers/client.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_integration::providers::client\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"381\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"3\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"timeouts\",\"value\":{\"stringValue\":\"LlmTimeouts { request: Some(120s), first_chunk: Some(30s), idle: Some(60s), overall: None }\"}},{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"3730457\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"2225585\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056819960000\",\"events\":[{\"attributes\":[{\"key\":\"level\",\"value\":{\"stringValue\":\"INFO\"}},{\"key\":\"target\",\"value\":{\"stringValue\":\"echo_integration::providers::client\"}},{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-integration/src/providers/client.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_integration::providers::client\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"471\"}}],\"droppedAttributesCount\":0,\"name\":\"Stream completion: model=telemetry-model, first_chunk_timeout_ms=Some(30000), idle_timeout_ms=Some(60000), overall_timeout_ms=None\",\"timeUnixNano\":\"1791951056817199000\"}],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"stream_post\",\"parentSpanId\":\"3c3058466cbea7e2\",\"spanId\":\"debc5c1e309ed47e\",\"startTimeUnixNano\":\"1791951056814006000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"f4489ce43484274555cab82172806388\",\"traceState\":\"\"},{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-integration/src/providers/openai.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_integration::providers::openai\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"325\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"3\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"model\",\"value\":{\"stringValue\":\"telemetry-model\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"3854875\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"2203583\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056820001000\",\"events\":[],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"openai_chat_stream\",\"parentSpanId\":\"3f5aad8a0c8121ac\",\"spanId\":\"3c3058466cbea7e2\",\"startTimeUnixNano\":\"1791951056813947000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"f4489ce43484274555cab82172806388\",\"traceState\":\"\"},{\"attributes\":[{\"key\":\"code.filepath\",\"value\":{\"stringValue\":\"/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/src/agent/react/run/retry.rs\"}},{\"key\":\"code.namespace\",\"value\":{\"stringValue\":\"echo_agent::agent::react::run::retry\"}},{\"key\":\"code.lineno\",\"value\":{\"intValue\":\"13\"}},{\"key\":\"thread.id\",\"value\":{\"intValue\":\"3\"}},{\"key\":\"thread.name\",\"value\":{\"stringValue\":\"tokio-rt-worker\"}},{\"key\":\"agent\",\"value\":{\"stringValue\":\"telemetry-proof\"}},{\"key\":\"busy_ns\",\"value\":{\"intValue\":\"4227916\"}},{\"key\":\"idle_ns\",\"value\":{\"intValue\":\"2221501\"}}],\"droppedAttributesCount\":0,\"droppedEventsCount\":0,\"droppedLinksCount\":0,\"endTimeUnixNano\":\"1791951056820012000\",\"events\":[],\"flags\":1,\"kind\":1,\"links\":[],\"name\":\"retry_llm_call\",\"parentSpanId\":\"\",\"spanId\":\"3f5aad8a0c8121ac\",\"startTimeUnixNano\":\"1791951056813572000\",\"status\":{\"code\":0,\"message\":\"\"},\"traceId\":\"f4489ce43484274555cab82172806388\",\"traceState\":\"\"}]}]}]}}\n",
+  "after_shutdown": {
+    "initialized": true
+  }
+}

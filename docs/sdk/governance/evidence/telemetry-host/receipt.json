@@ -1,0 +1,53 @@
+{
+  "scope": "real native telemetry.init admission counterexamples and candidate repair design only",
+  "hostSha256": "bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345",
+  "frameworkRevision": "be5f0a8405b593c4ef964cd6fd2df4beabf4956c",
+  "nativeBefore": {
+    "typescript": {
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "exitCode": 1,
+      "log": "typescript-before-bounded.log"
+    },
+    "python": {
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "exitCode": 1,
+      "log": "python-before-bounded.log"
+    },
+    "java": {
+      "passed": 0,
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0,
+      "exitCode": 1,
+      "log": "java-before-bounded.log"
+    }
+  },
+  "observed": "All three normal real Hosts first return status.initialized=false. Public Session.invoke(telemetry.init) does not complete in a 2-second observation window. The positive success assertion fails. No FrameworkError response or after-status response is claimed.",
+  "sample": {
+    "hostPid": 58879,
+    "parentPid": 58812,
+    "probeProducerPid": 58808,
+    "durationSeconds": 1,
+    "exitCode": 0,
+    "observedStack": "facade.telemetry.dispatch -> framework.init_telemetry -> drop SdkMeterProvider -> MeterProviderInner.shutdown -> Pipeline.shutdown -> PeriodicReader.shutdown -> futures_executor.block_on(oneshot receiver)",
+    "meaning": "Initialization has reached meter-provider drop/shutdown during failure rollback; sample does not itself report the original try_init error payload."
+  },
+  "staticCause": "Host Run path already installs a global stderr subscriber. Framework init builds exporters and providers then attempts to install another global subscriber, which cannot succeed; its local meter-provider drop synchronously waits before a typed failure can be returned.",
+  "attempts": {
+    "typescript-before.log": "fixture_error enable_tools=false prevented ACP Host admission, not a telemetry behavior conclusion",
+    "python-before.log": "same invalid fixture config",
+    "typescript-before-corrected.log": "real pending initialization reached 30-second outer test timeout; own Host explicitly terminated after longer observation",
+    "python-before-corrected.log": "real initialization pending; own Host explicitly terminated, eventual transport_error is induced cleanup rather than a returned framework_error"
+  },
+  "limits": [
+    "No production source changes",
+    "No collector has run; no OTLP export, flush, retry or shutdown behavior proof yet",
+    "No after-repair success",
+    "Candidate design is not an approved ADR/public architecture",
+    "Java Maven producer is terminal and released; Cargo was never used"
+  ]
+}

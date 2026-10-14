@@ -1,0 +1,18 @@
+2026-10-14T04:10:59.130837Z  INFO opentelemetry_sdk:  name="MeterProvider.Built"
+2026-10-14T04:10:59.130948Z  INFO echo_agent::telemetry: Metrics initialized endpoint=http://127.0.0.1:61365
+2026-10-14T04:10:59.154633Z  INFO echo_agent::agent::react::run::phases::prepare: Agent streaming conversation agent=telemetry-proof
+2026-10-14T04:10:59.158579Z  INFO echo_agent::tool_budget: model tool schema budget tool_count=74 schema_bytes=53888 schema_estimated_tokens=13471
+2026-10-14T04:10:59.193983Z  INFO echo_agent::tool_budget: model tool schema budget tool_count=74 schema_bytes=53888 schema_estimated_tokens=13471
+2026-10-14T04:10:59.227091Z  INFO retry_llm_call{agent=telemetry-proof}:openai_chat_stream{model=telemetry-model}:stream_post{timeouts=LlmTimeouts { request: Some(120s), first_chunk: Some(30s), idle: Some(60s), overall: None } model=telemetry-model}: echo_integration::providers::client: Stream completion: model=telemetry-model, first_chunk_timeout_ms=Some(30000), idle_timeout_ms=Some(60000), overall_timeout_ms=None
+2026-10-14T04:10:59.252475Z  INFO tool: echo_agent::tool_budget: tool result budget tool="read_file" success=true visible_bytes=47 spilled_payload_bytes=0 duration_ms=0 paginated=false artifact_sha256=""
+2026-10-14T04:10:59.286778Z  INFO echo_agent::tool_budget: model tool schema budget tool_count=74 schema_bytes=53888 schema_estimated_tokens=13471
+2026-10-14T04:10:59.328380Z  INFO echo_agent::tool_budget: model tool schema budget tool_count=74 schema_bytes=53888 schema_estimated_tokens=13471
+2026-10-14T04:10:59.361982Z  INFO retry_llm_call{agent=telemetry-proof}:openai_chat_stream{model=telemetry-model}:stream_post{timeouts=LlmTimeouts { request: Some(120s), first_chunk: Some(30s), idle: Some(60s), overall: None } model=telemetry-model}: echo_integration::providers::client: Stream completion: model=telemetry-model, first_chunk_timeout_ms=Some(30000), idle_timeout_ms=Some(60000), overall_timeout_ms=None
+2026-10-14T04:10:59.417146Z  INFO opentelemetry_sdk:  name="MeterProvider.Shutdown" User initiated shutdown of MeterProvider.
+2026-10-14T04:10:59.430859Z  WARN connection{name="echo-agent"}: agent_client_protocol::jsonrpc::outgoing_actor: Sending error response id=Number(7) method=_echo_agent/telemetry/op error=Error { code: -32050: Unknown error, message: "Session closed during operation", data: Some(Object {"code": String("closed_handle"), "message": String("Session closed during operation"), "retryable": String("never"), "operation": String("_echo_agent/telemetry/op")}) }
+2026-10-14T04:10:59.540198Z  INFO echo_agent::agent::react: Agent shut down complete agent=telemetry-proof
+Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedReader name='<stdin>'> at interpreter shutdown, possibly due to daemon threads
+Python runtime state: finalizing (tstate=0x1037a3b80)
+
+Current thread 0x00000001f009a180 (most recent call first):
+<no Python frame>

@@ -1,0 +1,20 @@
+{
+  "TEST-com.echoagent.sdk.TelemetryHostTest.xml": "8ac43c02f241320f1aa58938aeb46e6a5b78902a9adff8be4b7d6179f9100cb3",
+  "collector.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "collector.stdout": "5616db1d614fea0722629996207522a270ef7008dce8e5feb4eef3a401688ed5",
+  "com.echoagent.sdk.TelemetryHostTest.txt": "218ac5a4dc00bf8005232cfa15a2559dd545da51f0ccccc0365d2399778dde05",
+  "executed-source/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java.txt": "b89f4edb54e59db35d64e7101733d837038602652b4672e45922cdf6917c5ca9",
+  "executed-source/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java.txt": "f215e02cb651a16f0199e6a074e3d1485424591971822e62c99b303189c8254e",
+  "executed-source/sdks/shared/testing/telemetry_host_fixture.py.txt": "d4516646cb4ad760f99632ceb769f9182eb374a40f14267316f763fa95bf8bb9",
+  "export-held": "c689dfbfc4c2166f6f9982ea8c08bfddab1e39ee6a1cef1017d8e3b596513394",
+  "host-exit.json": "081a87018080688fb4381893391bfcd4206149ab816262da28cb766db8ca6aad",
+  "host-process.json": "03b1b8555329dd1446576b277017c5c8f1768ad5ef18af29bedcb129f59f582a",
+  "java-publicclose-after.log": "40b7e5697481769d85dbef8369ff1f73763324391c11fcf032c8a129482faab5",
+  "model.jsonl": "5143aff458c0d36da43bf415a115c25df6f120d4c610c5db6175e599d88b107d",
+  "otlp.jsonl": "f96d7a4d6be00ae9a3d78c66a1b517f1eca9088e1daccbb1f9185fd72ade887d",
+  "receipt.json": "6a5674cbcf1233d9c515737d4d49793c6eb481b072cf222a3c9418f69f9df54e",
+  "release-export": "737d91c057a1a4e0b0b15030fc4c2038a3b74da9db44b22ff6457e46822c6936",
+  "service.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "shutdown-request.json": "e92a9d478890f495acd2a25280e62166b69cf3401439b72cfcd824fdf20eaca6",
+  "wire-observed.json": "431dcdf1e7a692dc6edd3cc3eaf3e4bf61db0099459f1bb044a25cb557532e27"
+}

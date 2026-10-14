@@ -1,0 +1,20 @@
+{
+  "stderr": [],
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/runtime/typescript-lPSk8V",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-be5-chart-dimension-host",
+  "host_sha256": "bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345",
+  "scenario": {
+    "endpoint": "http://127.0.0.1:49847",
+    "service_name": "sdk-telemetry-中文🙂",
+    "enable_console": false,
+    "collector_started": false
+  },
+  "before": {
+    "initialized": false
+  },
+  "error": {
+    "code": "observation_timeout",
+    "message": "accepted telemetry.init did not finish within observation window"
+  },
+  "after_unavailable": "initialization request still pending; status was not queried through the blocked dispatcher"
+}

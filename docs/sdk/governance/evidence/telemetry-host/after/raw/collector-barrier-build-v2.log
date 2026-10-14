@@ -1,0 +1,3 @@
+   Compiling echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control)
+    Finished `test` profile [unoptimized] target(s) in 3.56s
+  Executable tests/telemetry_composition.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/telemetry_composition-cbc07894d36a66c0)

@@ -1,0 +1,12 @@
+{
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$FactoryConstructionExecution.class": "2634e66a6677eee40c0652242498de8c2867ad8d2db049b93f195ef718baae30",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$ExtensionRegistrationMetadata.class": "079df35a6be75bbf541d365fe2f603a51021eca8015bf8066769f2a762d9e6b7",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$OwnedStdioTransport.class": "3361957a38ea589e7e71b0c066dce92f81cca42de8ee2b95930cf53fb2db94b3",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient.class": "f03c984a9c8f165e89675fa037293c68d472bbb29d69543e6d9c9d67692c7786",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$FactoryCleanupExecution.class": "2b0932c13782d4ac00f345743590bb85a83447b1eca70d88b1ff9a31747982a1",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$ReplayRange.class": "290a2fc1b9fbc25646ac83d00463b9757553ebe752ceb59ff81ff03fcaed969e",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$OwnedStdioTransport$1.class": "0d96db631be0c276d9e85737e2cba9398c0cbfc70b3d33e6018976c826c6d517",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$ExtensionStreamRoute.class": "4fbc9d253edb8736b0c2b33784444ea146d36f389b9880b33c9de04307f9159c",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$1.class": "02bfbaa90609acd189a1bb2cebc970a319f908ff973d46c837d0280c8e243c2a",
+  "sdks/java/target/classes/com/echoagent/sdk/EchoAgentClient$FactoryCleanupRetry.class": "f66947277b2ce807e75a6992e7b4159837be344cd57a5a40d693b40892db257b"
+}

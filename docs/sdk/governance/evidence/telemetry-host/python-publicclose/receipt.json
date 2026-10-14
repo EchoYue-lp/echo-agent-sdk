@@ -1,0 +1,20 @@
+{
+  "scope": "actual public SDK close only, no fixture EOF/signal substitute",
+  "passed": true,
+  "tests": 1,
+  "failures": 0,
+  "skipped": 0,
+  "hostSHA256": "0bacb1eaea49d9f640acfbb5e892753b0a3d4e5936386fdbd94b3b0ab657463c",
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-python-close/python-public-close-a9ucnfex",
+  "beforeRelease": {
+    "public_close_done": false,
+    "real_host_exited": false
+  },
+  "afterRelease": {
+    "pid": 23271,
+    "returncode": 0,
+    "observed_by_original_parent": true
+  },
+  "failureCleanupIsNotSettlement": false,
+  "remaining": "final combined/published-pin gate separate"
+}

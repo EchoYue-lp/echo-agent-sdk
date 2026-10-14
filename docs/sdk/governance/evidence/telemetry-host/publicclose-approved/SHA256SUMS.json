@@ -1,0 +1,14 @@
+{
+  "collector.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "collector.stdout": "9e8b3091938f65967227e60ce1154e24ef44b41b897c59c4103cc051d020d0f8",
+  "export-held": "c689dfbfc4c2166f6f9982ea8c08bfddab1e39ee6a1cef1017d8e3b596513394",
+  "host-exit.json": "38fc91fb6685b08e389c1422054ff6846402b95ce94eea7006ed7cab5a8456aa",
+  "host-process.json": "497424063ab686126677589dc454e0bf97c09b0ad6541b5fdeb4923b55060847",
+  "host.stderr": "7992fcfc76efe99f4c4abd2344a911eef734a6f07c37e14cacc31e9aa3ca0868",
+  "otlp.jsonl": "173815f51061734a6158ac2a4da6448d0145c8adf064da5e156d82232c1f3876",
+  "receipt.json": "da2b58a90eb70085c05e81ceccc0fd48a0a6555bb1d33674bcfdb34da9bdae28",
+  "release-export": "2f2d04ff3aada1c980abaff2081af8be966529bece08ba5920aab22d9f3a64c9",
+  "shutdown-request.json": "6a4ef75a5b46c4cbbdb8fe944115d7b1da435ceaee0d678d5105ce7c3608a3d6",
+  "typescript-approved-publicclose.log": "ca13c7b4a85f3d4f5d0c32b33c00ef7d72ebd5fdef471259cc31175d6aabbd4a",
+  "wire-observed.json": "4b11125b0f25431a3a46b05b1be9351e3f15f1422d455d1aed8ec66c05021a98"
+}

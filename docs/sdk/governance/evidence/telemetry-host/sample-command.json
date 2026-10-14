@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": "Sampling process 58879 for 1 second with 1 millisecond of run time between samples\nSampling completed, processing symbols...\nSample analysis of process 58879 written to file /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/host-init.sample.txt\n"
+}

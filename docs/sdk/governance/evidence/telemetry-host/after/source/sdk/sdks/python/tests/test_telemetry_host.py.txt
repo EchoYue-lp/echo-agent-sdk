@@ -1,0 +1,130 @@
+"""Accepted telemetry: real Agent records, local OTLP receipt and lifecycle."""
+
+import asyncio
+import hashlib
+import json
+import os
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
+
+from echo_agent_sdk import EchoAgentClient, EchoAgentError
+
+HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
+if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
+    raise RuntimeError("required telemetry Host missing")
+ROOT = Path(
+    os.environ.get(
+        "ECHO_AGENT_SDK_TELEMETRY_ROOT",
+        str(Path(__file__).resolve().parents[3] / "target/telemetry-host"),
+    )
+)
+FIXTURE = (
+    Path(__file__).resolve().parents[2] / "shared/testing/telemetry_host_fixture.py"
+)
+
+
+async def helper(work, *args):
+    process = await asyncio.create_subprocess_exec(
+        sys.executable,
+        str(FIXTURE),
+        "--work",
+        str(work),
+        *args,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
+    )
+    output, _ = await process.communicate()
+    assert process.returncode == 0, output.decode()
+    return output.decode()
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(not HOST, reason="real Host required")
+@pytest.mark.parametrize("console_enabled", [False, True])
+async def test_accepted_telemetry_exports_and_flushes(console_enabled):
+    ROOT.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT)).resolve()
+    await helper(work, *(["--console"] if console_enabled else []))
+    service = await asyncio.create_subprocess_exec(
+        sys.executable, str(FIXTURE), "--work", str(work), "--serve"
+    )
+    facts = {
+        "work": str(work),
+        "host": HOST,
+        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+        "errors": {},
+    }
+    try:
+
+        async def ready():
+            while not (work / "ready").exists():
+                assert service.returncode is None
+                await asyncio.sleep(0.01)
+
+        await asyncio.wait_for(ready(), 10)
+        facts["scenario"] = json.loads((work / "scenario.json").read_text())
+        async with await EchoAgentClient.spawn(
+            HOST,
+            "--config",
+            str(work / "host.json"),
+            env={
+                "RUST_LOG": "info",
+                "OTEL_METRIC_EXPORT_INTERVAL": "60000",
+                "OTEL_BSP_SCHEDULE_DELAY": "60000",
+            },
+        ) as sdk:
+            agent = await sdk.create_agent()
+            session = await agent.create_session(str(work))
+
+            async def failure(name, op, args):
+                with pytest.raises(EchoAgentError) as caught:
+                    await session.invoke(op, args)
+                facts["errors"][name] = caught.value.code
+
+            facts["before"] = await session.invoke("telemetry.status", [])
+            await failure("shutdown_before", "telemetry.shutdown", [])
+            scenario = facts["scenario"]
+            args = [scenario["endpoint"], scenario["service_name"], console_enabled]
+            await failure("invalid_console", "telemetry.init", [*args[:2], "false"])
+            await failure(
+                "invalid_endpoint",
+                "telemetry.init",
+                ["", scenario["service_name"], False],
+            )
+            await failure(
+                "invalid_service", "telemetry.init", [scenario["endpoint"], " ", False]
+            )
+            facts["init"] = await session.invoke("telemetry.init", args)
+            facts["after"] = await session.invoke("telemetry.status", [])
+            await failure("repeat_init", "telemetry.init", args)
+            run = await session.start_run(
+                "Read probe.txt using read_file and consume its full content."
+            )
+            assert (await run.wait(timeout=15))["settled"]
+            facts["run_outcome"] = await run.outcome_status()
+            facts["replay"] = await run.replay()
+            facts["shutdown"] = await session.invoke("telemetry.shutdown", [])
+            facts["collector_at_shutdown"] = (work / "otlp.jsonl").read_text()
+            facts["after_shutdown"] = await session.invoke("telemetry.status", [])
+            await failure("repeat_shutdown", "telemetry.shutdown", [])
+            await session.close()
+            await agent.close()
+        (work / "observed.json").write_text(
+            json.dumps(facts, ensure_ascii=False, indent=2)
+        )
+        proof = json.loads(await helper(work, "--verify"))
+        assert proof["shutdown_flush"] and proof["business_file_content_consumed"]
+    finally:
+        (work / "observed.json").write_text(
+            json.dumps(facts, ensure_ascii=False, indent=2)
+        )
+        (work / "stop").write_text("stop")
+        try:
+            await asyncio.wait_for(service.wait(), 5)
+        except TimeoutError:
+            service.terminate()
+            await asyncio.wait_for(service.wait(), 5)
+        print(f"Telemetry evidence: {work}")

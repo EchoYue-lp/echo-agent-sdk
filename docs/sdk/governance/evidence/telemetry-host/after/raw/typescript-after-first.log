@@ -1,0 +1,31 @@
+TAP version 13
+# Subtest: accepted telemetry exports real business records and flushes (console=false)
+not ok 1 - accepted telemetry exports real business records and flushes (console=false)
+  ---
+  duration_ms: 30003.9025
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/telemetry-host.test.js:14:45'
+  failureType: 'testTimeoutFailure'
+  error: 'test timed out after 30000ms'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: accepted telemetry exports real business records and flushes (console=true)
+not ok 2 - accepted telemetry exports real business records and flushes (console=true)
+  ---
+  duration_ms: 30003.759709
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/telemetry-host.test.js:14:45'
+  failureType: 'testTimeoutFailure'
+  error: 'test timed out after 30000ms'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Telemetry evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/native-after/typescript-Bai61k
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 0
+# cancelled 2
+# skipped 0
+# todo 0
+# duration_ms 377447.211917

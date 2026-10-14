@@ -1,0 +1,344 @@
+{
+  "finally_count" : 6,
+  "calls" : [ {
+    "operation" : "channel_handle",
+    "message" : {
+      "channel_id" : "forward-中文",
+      "sender_id" : "sender-中文",
+      "chat_id" : "chat-\uD83C\uDF0A",
+      "chat_type" : "direct",
+      "text" : "入站 中文\uD83C\uDF0A",
+      "message_id" : "second-owner-message",
+      "timestamp" : "18446744073709551615",
+      "attachments" : [ {
+        "kind" : "image",
+        "data_base64" : "AP8AgA==",
+        "filename" : ""
+      }, {
+        "kind" : "file",
+        "data_base64" : "AP8BgA==",
+        "filename" : "附件-file-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "audio",
+        "data_base64" : "AP8CgA==",
+        "filename" : "附件-audio-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "video",
+        "data_base64" : "AP8DgA==",
+        "filename" : "附件-video-\uD83C\uDF0A.bin"
+      } ]
+    },
+    "extension" : {
+      "id" : "extension-5652c6fe-6295-4575-adc0-f54530e9a657",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-101a2729e3294087829850bacffb1da8-4",
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "operation" : "channel_handle_stream",
+    "message" : {
+      "channel_id" : "forward-中文",
+      "sender_id" : "sender-中文",
+      "chat_id" : "chat-\uD83C\uDF0A",
+      "chat_type" : "direct",
+      "text" : "入站 中文\uD83C\uDF0A",
+      "message_id" : "message-1",
+      "timestamp" : "18446744073709551615",
+      "attachments" : [ {
+        "kind" : "image",
+        "data_base64" : "AP8AgA==",
+        "filename" : ""
+      }, {
+        "kind" : "file",
+        "data_base64" : "AP8BgA==",
+        "filename" : "附件-file-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "audio",
+        "data_base64" : "AP8CgA==",
+        "filename" : "附件-audio-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "video",
+        "data_base64" : "AP8DgA==",
+        "filename" : "附件-video-\uD83C\uDF0A.bin"
+      } ]
+    },
+    "extension" : {
+      "id" : "extension-5652c6fe-6295-4575-adc0-f54530e9a657",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-101a2729e3294087829850bacffb1da8-5",
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "operation" : "channel_handle",
+    "message" : {
+      "channel_id" : "forward-中文",
+      "sender_id" : "sender-中文",
+      "chat_id" : "chat-\uD83C\uDF0A",
+      "chat_type" : "direct",
+      "text" : "入站 中文\uD83C\uDF0A",
+      "message_id" : "message-1",
+      "timestamp" : "18446744073709551615",
+      "attachments" : [ {
+        "kind" : "image",
+        "data_base64" : "AP8AgA==",
+        "filename" : ""
+      }, {
+        "kind" : "file",
+        "data_base64" : "AP8BgA==",
+        "filename" : "附件-file-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "audio",
+        "data_base64" : "AP8CgA==",
+        "filename" : "附件-audio-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "video",
+        "data_base64" : "AP8DgA==",
+        "filename" : "附件-video-\uD83C\uDF0A.bin"
+      } ]
+    },
+    "extension" : {
+      "id" : "extension-5652c6fe-6295-4575-adc0-f54530e9a657",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-101a2729e3294087829850bacffb1da8-6",
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "operation" : "channel_handle",
+    "message" : {
+      "channel_id" : "forward-中文",
+      "sender_id" : "sender-中文",
+      "chat_id" : "chat-\uD83C\uDF0A",
+      "chat_type" : "direct",
+      "text" : "入站 中文\uD83C\uDF0A",
+      "message_id" : "message-1",
+      "timestamp" : "18446744073709551615",
+      "attachments" : [ {
+        "kind" : "image",
+        "data_base64" : "AP8AgA==",
+        "filename" : ""
+      }, {
+        "kind" : "file",
+        "data_base64" : "AP8BgA==",
+        "filename" : "附件-file-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "audio",
+        "data_base64" : "AP8CgA==",
+        "filename" : "附件-audio-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "video",
+        "data_base64" : "AP8DgA==",
+        "filename" : "附件-video-\uD83C\uDF0A.bin"
+      } ]
+    },
+    "extension" : {
+      "id" : "extension-5652c6fe-6295-4575-adc0-f54530e9a657",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-101a2729e3294087829850bacffb1da8-8",
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "operation" : "channel_handle",
+    "message" : {
+      "channel_id" : "forward-中文",
+      "sender_id" : "sender-中文",
+      "chat_id" : "chat-\uD83C\uDF0A",
+      "chat_type" : "direct",
+      "text" : "入站 中文\uD83C\uDF0A",
+      "message_id" : "message-1",
+      "timestamp" : "18446744073709551615",
+      "attachments" : [ {
+        "kind" : "image",
+        "data_base64" : "AP8AgA==",
+        "filename" : ""
+      }, {
+        "kind" : "file",
+        "data_base64" : "AP8BgA==",
+        "filename" : "附件-file-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "audio",
+        "data_base64" : "AP8CgA==",
+        "filename" : "附件-audio-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "video",
+        "data_base64" : "AP8DgA==",
+        "filename" : "附件-video-\uD83C\uDF0A.bin"
+      } ]
+    },
+    "extension" : {
+      "id" : "extension-5652c6fe-6295-4575-adc0-f54530e9a657",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-101a2729e3294087829850bacffb1da8-10",
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  }, {
+    "operation" : "channel_handle",
+    "message" : {
+      "channel_id" : "forward-中文",
+      "sender_id" : "sender-中文",
+      "chat_id" : "chat-\uD83C\uDF0A",
+      "chat_type" : "direct",
+      "text" : "入站 中文\uD83C\uDF0A",
+      "message_id" : "handle-error",
+      "timestamp" : "18446744073709551615",
+      "attachments" : [ {
+        "kind" : "image",
+        "data_base64" : "AP8AgA==",
+        "filename" : ""
+      }, {
+        "kind" : "file",
+        "data_base64" : "AP8BgA==",
+        "filename" : "附件-file-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "audio",
+        "data_base64" : "AP8CgA==",
+        "filename" : "附件-audio-\uD83C\uDF0A.bin"
+      }, {
+        "kind" : "video",
+        "data_base64" : "AP8DgA==",
+        "filename" : "附件-video-\uD83C\uDF0A.bin"
+      } ]
+    },
+    "extension" : {
+      "id" : "extension-5652c6fe-6295-4575-adc0-f54530e9a657",
+      "generation" : "1",
+      "kind" : "extension"
+    },
+    "invocation_id" : "invocation-101a2729e3294087829850bacffb1da8-11",
+    "deadline" : {
+      "seconds" : "30",
+      "nanos" : 0
+    }
+  } ],
+  "plugin_calls" : [ {
+    "operation" : "channel_start",
+    "channel" : "forward-中文",
+    "input" : {
+      "handler_id" : "forward-handler"
+    }
+  }, {
+    "operation" : "channel_stop",
+    "channel" : "forward-中文",
+    "input" : null
+  }, {
+    "operation" : "channel_start",
+    "channel" : "forward-中文",
+    "input" : {
+      "handler_id" : "forward-handler"
+    }
+  }, {
+    "operation" : "channel_start",
+    "channel" : "forward-中文",
+    "input" : {
+      "handler_id" : "forward-handler"
+    }
+  }, {
+    "operation" : "channel_stop",
+    "channel" : "forward-中文",
+    "input" : null
+  }, {
+    "operation" : "channel_start",
+    "channel" : "forward-中文",
+    "input" : {
+      "handler_id" : "forward-handler"
+    }
+  }, {
+    "operation" : "channel_stop",
+    "channel" : "forward-中文",
+    "input" : null
+  } ],
+  "metadata" : [ {
+    "ids" : [ "forward-中文" ],
+    "list" : {
+      "channels" : [ "forward-中文" ]
+    }
+  }, {
+    "ids" : [ "forward-中文" ],
+    "list" : {
+      "channels" : [ "forward-中文" ]
+    }
+  }, {
+    "ids" : [ "forward-中文" ],
+    "list" : {
+      "channels" : [ "forward-中文" ]
+    }
+  }, {
+    "ids" : [ "forward-中文" ],
+    "list" : {
+      "channels" : [ "forward-中文" ]
+    }
+  }, {
+    "ids" : [ "forward-中文" ],
+    "list" : {
+      "channels" : [ "forward-中文" ]
+    }
+  }, {
+    "ids" : [ "forward-中文" ],
+    "list" : {
+      "channels" : [ "forward-中文" ]
+    }
+  } ],
+  "rows" : [ {
+    "scenario" : "unstarted",
+    "callback_delta_expected" : 0,
+    "callback_delta" : 0,
+    "error" : {
+      "code" : "invalid_value",
+      "message" : "Channel Error: Invalid config: channel handler has not started",
+      "operation" : "_echo_agent/integration/op",
+      "details" : null
+    }
+  }, {
+    "scenario" : "batch-original-binding-before-all-effects",
+    "plugin_start_effects" : 0
+  }, {
+    "scenario" : "owner-generation-binding-start-digest",
+    "original_entry_survived" : true,
+    "stale" : {
+      "code" : "stale_handle",
+      "message" : "handle generation 0 predates Host generation 1",
+      "operation" : "_echo_agent/integration/op",
+      "details" : null
+    },
+    "digest" : {
+      "code" : "invalid_value",
+      "message" : "signature digest for channels.handler.handle is not canonical",
+      "operation" : "_echo_agent/channels/op",
+      "details" : {
+        "facade" : {
+          "operation" : "channels.handler.handle",
+          "signature_digest" : "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      }
+    }
+  }, {
+    "scenario" : "fail-handle",
+    "error_code" : "framework_error",
+    "callback_delta" : 1,
+    "error" : {
+      "code" : "framework_error",
+      "message" : "extension bridge failure extension_conflict: controlled channel handle failure",
+      "operation" : "_echo_agent/integration/op",
+      "details" : null
+    }
+  } ]
+}

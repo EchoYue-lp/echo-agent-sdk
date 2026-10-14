@@ -1,0 +1,11 @@
+{
+  "command": [
+    "cargo",
+    "metadata",
+    "--format-version",
+    "1",
+    "--all-features",
+    "--locked"
+  ],
+  "exitCode": 0
+}

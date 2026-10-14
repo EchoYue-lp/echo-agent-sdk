@@ -1,0 +1,66 @@
+   Compiling serde_json v1.0.151
+   Compiling h2 v0.4.16
+   Compiling httpdate v1.0.3
+   Compiling futures-executor v0.3.34
+   Compiling getrandom v0.2.17
+   Compiling rand_core v0.6.4
+   Compiling tower-http v0.6.11
+   Compiling hyper v1.11.0
+   Compiling rand_chacha v0.3.1
+   Compiling schemars v0.8.22
+   Compiling hyper-util v0.1.20
+   Compiling rand v0.8.7
+   Compiling futures v0.3.34
+   Compiling hyper-tls v0.6.0
+   Compiling reqwest v0.12.28
+   Compiling thiserror v1.0.69
+   Compiling tokio-stream v0.1.19
+   Compiling hashbrown v0.12.3
+   Compiling indexmap v1.9.3
+   Compiling echo_core v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-core)
+   Compiling axum-core v0.4.5
+   Compiling opentelemetry v0.27.1
+   Compiling matchit v0.7.3
+   Compiling axum v0.7.9
+   Compiling opentelemetry_sdk v0.27.1
+   Compiling tower v0.4.13
+   Compiling hyper-timeout v0.5.2
+   Compiling referencing v0.49.9
+   Compiling jsonschema-value v0.49.9
+   Compiling tonic v0.12.3
+   Compiling hex v0.4.3
+   Compiling jsonschema v0.49.9
+   Compiling opentelemetry-proto v0.27.0
+   Compiling echo_state v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-state)
+   Compiling echo_tools v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-tools)
+   Compiling echo_integration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-integration)
+   Compiling echo_orchestration v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-orchestration)
+   Compiling rusty-fork v0.3.1
+   Compiling echo_execution v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/echo-execution)
+   Compiling tracing-opentelemetry v0.28.0
+   Compiling opentelemetry-otlp v0.27.0
+   Compiling tinytemplate v1.2.1
+   Compiling proptest v1.11.0
+   Compiling criterion v0.5.1
+   Compiling echo_agent v0.2.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control)
+    Finished `test` profile [unoptimized] target(s) in 40.08s
+     Running tests/telemetry_composition.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/telemetry_composition-cbc07894d36a66c0)
+
+running 5 tests
+test native_sdk_collector_fixture ... ok
+test incompatible_subscriber_rejection_leaves_metrics_unpublished ... ok
+test failed_exporter_build_does_not_install_standalone_subscriber ... ok
+Error: Custom { kind: Other, error: "isolated telemetry case failed: \nrunning 1 test\ntest standalone_initialization_keeps_original_lifecycle ... FAILED\n\nfailures:\n\nfailures:\n    standalone_initialization_keeps_original_lifecycle\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.01s\n\n\n\nthread 'standalone_initialization_keeps_original_lifecycle' (132004588) panicked at tests/telemetry_composition.rs:205:9:\nassertion failed: context.span().span_context().is_valid()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n" }
+test standalone_initialization_keeps_original_lifecycle ... FAILED
+Error: Custom { kind: Other, error: "isolated telemetry case failed: \nrunning 1 test\ntest composed_layer_preserves_context_and_shutdown_flush ... FAILED\n\nfailures:\n\nfailures:\n    composed_layer_preserves_context_and_shutdown_flush\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.01s\n\n\n\nthread 'composed_layer_preserves_context_and_shutdown_flush' (132004593) panicked at tests/telemetry_composition.rs:205:9:\nassertion failed: context.span().span_context().is_valid()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n" }
+test composed_layer_preserves_context_and_shutdown_flush ... FAILED
+
+failures:
+
+failures:
+    composed_layer_preserves_context_and_shutdown_flush
+    standalone_initialization_keeps_original_lifecycle
+
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p echo_agent --test telemetry_composition`

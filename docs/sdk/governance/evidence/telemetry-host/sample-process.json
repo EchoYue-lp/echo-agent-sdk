@@ -1,0 +1,5 @@
+{
+  "hostProcess": "58879 58812 /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-be5-chart-dimension-host --config /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/telemetry-host/stack-runtime/typescript-9kyCOj/host.json",
+  "parentProducerPid": 58808,
+  "capture": "sample 1 second 1ms interval after own public telemetry.init request"
+}
