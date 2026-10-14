@@ -246,3 +246,10 @@ docs/sdk/governance/evidence/sdk-stream-cancellation-routing/java-native-before.
 docs/sdk/governance/evidence/sdk-stream-cancellation-routing/python-native-before.log -diff
 docs/sdk/governance/evidence/session-rules-prompt/fixture-failure-history/python-green.log -diff
 docs/sdk/governance/evidence/session-rules-prompt/fixture-failure-history/typescript-config-corrected.log -diff
+
+# Exact original SDK CI and focused-test witnesses; preserve emitted bytes.
+docs/sdk/governance/evidence/ci-action-node24/actions-setup-java/README.md -diff
+docs/sdk/governance/evidence/host-binary-streaming-sha/existing-callers.patch -diff
+docs/sdk/governance/evidence/host-binary-streaming-sha/history/language-cancelled.log -diff
+docs/sdk/governance/evidence/state-trace-timezone-oracle/before-ci/language-cancelled.log -diff
+docs/sdk/governance/evidence/state-trace-timezone-oracle/native/typescript-build.log -diff
