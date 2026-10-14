@@ -1,0 +1,147 @@
+{
+  "baseGit": "9a59943e70da06b1af231b1fb22bddc879885f28",
+  "sourceFrozen": true,
+  "JavaSourceCompleteNotCompiled": true,
+  "paths": [
+    {
+      "path": "sdks/typescript/test/channel-handler-forward-host.test.js",
+      "sha256": "3a575c70403bebb3a2bc68ab22402c4212a84790aee198b092ff44b7560a5f49",
+      "bytes": 24812
+    },
+    {
+      "path": "sdks/typescript/test/computation-host.test.js",
+      "sha256": "71469f22559a3d295a12e80fd793bea5848670cdf5dfa00edcb4160bf217a10f",
+      "bytes": 3834
+    },
+    {
+      "path": "sdks/typescript/test/file-authority-identity-host.test.js",
+      "sha256": "b7a58ad3d5d27090e3ecd6f71507babdc3ef962949b7c4beddb5980b36219feb",
+      "bytes": 4078
+    },
+    {
+      "path": "sdks/typescript/test/git-tool-host.test.js",
+      "sha256": "7ef484216ca29a563c8992aaf7ae34d09c670f886f615cb81b04eb5fe1d12755",
+      "bytes": 2830
+    },
+    {
+      "path": "sdks/typescript/test/memory-permission-host.test.js",
+      "sha256": "e927d6b606020f943e03c34f28714302e5b4260ea861b50871fe1d8a24f76292",
+      "bytes": 14215
+    },
+    {
+      "path": "sdks/typescript/test/rag-project-rules-host.test.js",
+      "sha256": "4b1315b2adaa1ddde99b678e062d76946e50455c9106e885c96f99b7f298691c",
+      "bytes": 6058
+    },
+    {
+      "path": "sdks/typescript/test/tool-value-effect-host.test.js",
+      "sha256": "7b65a8026d1bad2e9678764a31137befcd20d1d99607c5891c0acb4beef7b6f3",
+      "bytes": 14008
+    },
+    {
+      "path": "sdks/python/tests/test_channel_handler_forward_host.py",
+      "sha256": "a9889512d770c264e2f3ddf0410dbf62be3c7aad96323c21dca7b25077c8104d",
+      "bytes": 29532
+    },
+    {
+      "path": "sdks/python/tests/test_computation_host.py",
+      "sha256": "6c25e3ff2bbb2c5545abf365df02c435c057a0fbfb78575591b7358e24a656a7",
+      "bytes": 3794
+    },
+    {
+      "path": "sdks/python/tests/test_file_authority_identity_host.py",
+      "sha256": "a594010d5f3eba777193714b3e4f97a45281395c8d68a89612da44d6295ae40e",
+      "bytes": 4512
+    },
+    {
+      "path": "sdks/python/tests/test_git_tool_host.py",
+      "sha256": "2d587912fda39edd8fb1bc557f4c2971c8ebd73db5f0a58858f1eca6b919a659",
+      "bytes": 3845
+    },
+    {
+      "path": "sdks/python/tests/test_memory_permission_host.py",
+      "sha256": "9bf043fdcc925b6d471ce976c4ee437e885ee3875ae9da8b6fa57accfb6c771f",
+      "bytes": 25023
+    },
+    {
+      "path": "sdks/python/tests/test_rag_project_rules_host.py",
+      "sha256": "58c6c810433a33e4436fdc1e66410711a7af7353c5995b5d6334feb7f45c7cf4",
+      "bytes": 7622
+    },
+    {
+      "path": "sdks/python/tests/test_tool_value_effect_host.py",
+      "sha256": "b7b59e497d324a2b914e8ab641cfb0b70f9e16523c3d04c7acca7ae211e942a7",
+      "bytes": 21561
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/ChannelHandlerForwardHostTest.java",
+      "sha256": "468f369c7a635ff3d2178794f6fe791bf7eea41bd9eca110f6ba394bfe9f533c",
+      "bytes": 28951
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/ComputationHostTest.java",
+      "sha256": "5d4b77b887a3a30a7a757783b48d6a7a8a748ea44638dd3bcb9bf7d8a77d80ba",
+      "bytes": 6502
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/FileAuthorityIdentityHostTest.java",
+      "sha256": "dd93054ab3ffa45c98dfb03f3da1e914f31b6aae60eaaf46c5901612e12e7652",
+      "bytes": 5964
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/GitToolHostTest.java",
+      "sha256": "6935401b0b98089c26912799e9e1b419722984a52a6ba9896610972f5911ebbe",
+      "bytes": 6293
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/MemoryPermissionHostTest.java",
+      "sha256": "b93576185fc4b94013ce8b60147f3beb6929dd80930b42877af57a7d9cdf4366",
+      "bytes": 21626
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/RagProjectRulesHostTest.java",
+      "sha256": "fb9e1525bc9531794ab701714d9c3d842173d9c83e3dda80b7fe99c1fb7e472e",
+      "bytes": 9952
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/ToolValueEffectHostTest.java",
+      "sha256": "5ea14c6727793b1ddeb100b3c479ac7d732dbc6285012f9d87261100c0f96a6c",
+      "bytes": 20351
+    },
+    {
+      "path": "sdks/shared/testing/computation_fixture.py",
+      "sha256": "7ce79b1de40cf94aaae1f3794f336be3526d521809384395b9b71b367141b03d",
+      "bytes": 38407
+    },
+    {
+      "path": "sdks/shared/testing/file-sha256.mjs",
+      "sha256": "382961de7e3b0ba05c90da942f6c5a9ea9d498d145719b829ef2594a5db9c8f1",
+      "bytes": 585
+    },
+    {
+      "path": "sdks/shared/testing/file_sha256.py",
+      "sha256": "e0902802828617dbaa98a93f16e8dceb538a989adcd813a6a4612a5b926c7ba8",
+      "bytes": 363
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/FileSha256.java",
+      "sha256": "38718b6a03e577ebabb015f8cf74b57e728c88cc1b2be10e52ece66d2d17afb7",
+      "bytes": 803
+    },
+    {
+      "path": "sdks/typescript/test/file-sha256.test.js",
+      "sha256": "08d85b4920e44861762d932a03a85763a62be5b1c523415760b7744e82c74654",
+      "bytes": 1723
+    },
+    {
+      "path": "sdks/shared/testing/test_file_sha256.py",
+      "sha256": "858d5082df3119d756c78d62789cf93683e442d7490986a771aee91d6e186705",
+      "bytes": 1156
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/FileSha256Test.java",
+      "sha256": "64a7ef5d5863e3bda83688c23374a92208a05c147123f15b10e9cd0b3269c1a1",
+      "bytes": 1984
+    }
+  ]
+}

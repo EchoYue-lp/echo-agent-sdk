@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
@@ -59,7 +57,7 @@ class GitToolHostTest {
         oracle(work, "--prepare"); var scenario = JsonSupport.MAPPER.readTree(Files.readString(work.resolve("scenario.json")));
         var rows = JsonSupport.MAPPER.createArrayNode(); var results = new HashMap<String, JsonNode>();
         var env = new HashMap<String, String>(); scenario.path("host_env").fields().forEachRemaining(field -> env.put(field.getKey(), field.getValue().asText()));
-        String hostHash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of(HOST))));
+        String hostHash = FileSha256.sha256(Path.of(HOST));
         try (var sdk = await(EchoAgentClient.spawn(HOST, List.of("--config", work.resolve("host.json").toString()), Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"), env))) {
             var agent = await(sdk.createAgent()); var session = await(agent.createSession(scenario.path("repo").asText()));
             for (var step : scenario.path("rows")) {

@@ -10,7 +10,6 @@ import java.nio.file.*;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
-import java.security.MessageDigest;
 
 /** Native Host consumer through public SDK methods; framework owns memory, permissions and Run state. */
 class MemoryPermissionHostTest {
@@ -102,7 +101,7 @@ class MemoryPermissionHostTest {
                 var denied=await(agent.createSession(work.toString()));var allowed=await(agent.createSession(work.toString()));var denial=await(denied.startChat("permission-effect-deny"));var deniedSettlement=await(denial.waitForSettlement(Duration.ofSeconds(10)));require(deniedSettlement.path("settled").asBoolean()&&!Files.exists(work.resolve("effect-deny.txt"))&&toolCalls.isEmpty(),"denied actual execution has no side effect");var approval=await(allowed.startChat("permission-effect-allow"));var approvedSettlement=await(approval.waitForSettlement(Duration.ofSeconds(10)));require(approvedSettlement.path("settled").asBoolean(),"allowed Run settled");require(Files.readString(work.resolve("effect-allow.txt")).equals("accepted permission effect 中文🌊"),"actual approved file content");require(toolCalls.size()==1&&toolCalls.get(0).path("phase").textValue().equals("allow"),"only one actual tool execution");var effect=ROWS.addObject().putObject("actual_permission_effect").put("denied_file_exists",false).put("denied_tool_calls",0);effect.set("approved_tool_calls",JSON.valueToTree(toolCalls));effect.set("denial_settlement",deniedSettlement);effect.set("approval_settlement",approvedSettlement);ROWS.addObject().set("backend_inspection",http(url,"/inspect",null));denied.close();allowed.close();tool.close();
                 b.close();c.close();agent.close();human.close();
             }
-            var evidence=JSON.createObjectNode().put("host",HOST).put("host_sha256",HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of(HOST))))).put("work",work.toString());evidence.set("results",ROWS);evidence.putArray("limitations").add("TTL expiration not observed").add("approval receipt omitted by adapter");JSON.writerWithDefaultPrettyPrinter().writeValue(work.resolve("java-real-evidence.json").toFile(),evidence);System.out.println("Java actual memory/permission evidence rows "+ROWS.size()+" work "+work);
+            var evidence=JSON.createObjectNode().put("host",HOST).put("host_sha256",FileSha256.sha256(Path.of(HOST))).put("work",work.toString());evidence.set("results",ROWS);evidence.putArray("limitations").add("TTL expiration not observed").add("approval receipt omitted by adapter");JSON.writerWithDefaultPrettyPrinter().writeValue(work.resolve("java-real-evidence.json").toFile(),evidence);System.out.println("Java actual memory/permission evidence rows "+ROWS.size()+" work "+work);
         }finally{model.destroy();if(!model.waitFor(3,TimeUnit.SECONDS))model.destroyForcibly();}
     }
 }

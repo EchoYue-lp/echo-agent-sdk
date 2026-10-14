@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
@@ -125,7 +123,7 @@ class RagProjectRulesHostTest {
                 rows.add(JsonSupport.MAPPER.createObjectNode().put("id", "invalid-config").put("operation", "rag_search").set("error", error(typed)));
                 await(session.closeAsync()); await(badAgent.closeAsync());
             }
-            var evidence = JsonSupport.MAPPER.createObjectNode().put("language", "java").put("host", host).put("host_sha256", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of(host))))).put("work", work.toString()).put("server_pid", server.pid());
+            var evidence = JsonSupport.MAPPER.createObjectNode().put("language", "java").put("host", host).put("host_sha256", FileSha256.sha256(Path.of(host))).put("work", work.toString()).put("server_pid", server.pid());
             evidence.set("rows", rows);
             Files.writeString(work.resolve("results.json"), evidence.toPrettyString());
             System.out.println("RAG/project-rules verified: " + helper(work, "--verify", work.resolve("results.json").toString()) + " evidence: " + work);

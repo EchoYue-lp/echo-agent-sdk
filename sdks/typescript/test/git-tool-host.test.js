@@ -1,10 +1,10 @@
+import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {mkdirSync,mkdtempSync,readFileSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {createHash} from 'node:crypto';
 import {EchoAgentClient,EchoAgentError} from '../dist/index.js';
 const host=process.env.ECHO_AGENT_SDK_HOST;
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==='1'&&!host)throw Error('required Git Host missing');
@@ -20,7 +20,7 @@ test('accepted Git tools and worktree source operations preserve exact local eff
    if(step.checkpoint)oracle('--checkpoint',step.checkpoint);
    const row={id:step.id,operation:step.operation,arguments:resolved(step.arguments,results),before:JSON.parse(oracle('--snapshot'))};
    try{row.result=await session.invoke(step.operation,row.arguments);results[step.id]=row.result;}catch(error){assert.ok(error instanceof EchoAgentError,String(error));row.error={code:error.code,message:error.message,operation:error.operation,retryable:error.retryable,handle:error.handle??null,details:error.details??null};}
-   row.after=JSON.parse(oracle('--snapshot'));rows.push(row);writeFileSync(join(work,'results.json'),JSON.stringify({work,host,host_sha256:createHash('sha256').update(readFileSync(host)).digest('hex'),rows},(_,v)=>typeof v==='bigint'?v.toString():v,2));
+   row.after=JSON.parse(oracle('--snapshot'));rows.push(row);writeFileSync(join(work,'results.json'),JSON.stringify({work,host,host_sha256:fileSha256(host),rows},(_,v)=>typeof v==='bigint'?v.toString():v,2));
   }
   await session.close();await agent.close();const proof=JSON.parse(oracle('--verify'));assert.equal(proof.tool_operations.length,9);assert.equal(proof.source_operations.length,4);assert.equal(proof.groups.length,3);console.log('Git evidence',work);
  }finally{await sdk?.close();console.log('Git evidence retained',work);}

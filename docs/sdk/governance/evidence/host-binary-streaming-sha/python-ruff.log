@@ -1,0 +1,77 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_computation_host.py:14:1
+   |
+13 |   sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+14 | / from file_sha256 import file_sha256
+15 | | import computation_fixture as fixture
+   | |_____________________________________^
+16 |
+17 |   HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip() or None
+   |
+help: Organize imports
+   |
+13 | sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+14 + import computation_fixture as fixture
+15 | from file_sha256 import file_sha256
+   - import computation_fixture as fixture
+16 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_file_authority_identity_host.py:15:1
+   |
+14 |   sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+15 | / from file_sha256 import file_sha256
+16 | | import file_authority_identity_fixture as fixture
+   | |_________________________________________________^
+17 |
+18 |   HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip()
+   |
+help: Organize imports
+   |
+14 | sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+15 + import file_authority_identity_fixture as fixture
+16 | from file_sha256 import file_sha256
+   - import file_authority_identity_fixture as fixture
+17 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_tool_value_effect_host.py:17:1
+   |
+16 |   sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+17 | / from file_sha256 import file_sha256
+18 | | import tool_value_effect_fixture as fixture
+   | |___________________________________________^
+19 |
+20 |   HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip()
+   |
+help: Organize imports
+   |
+16 | sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+17 + import tool_value_effect_fixture as fixture
+18 | from file_sha256 import file_sha256
+   - import tool_value_effect_fixture as fixture
+19 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/test_file_sha256.py:3:1
+  |
+1 |   """摘要 helper 的真实文件、跨分块、超大稀疏输入及 IO 错误反例。"""
+2 |
+3 | / import hashlib
+4 | |
+5 | | import pytest
+6 | |
+7 | | from file_sha256 import file_sha256
+  | |___________________________________^
+help: Organize imports
+  |
+5 | import pytest
+  -
+6 | from file_sha256 import file_sha256
+  |
+
+Found 4 errors.
+[*] 4 fixable with the `--fix` option.

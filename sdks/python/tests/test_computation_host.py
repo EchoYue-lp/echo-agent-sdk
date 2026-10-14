@@ -12,6 +12,7 @@ from echo_agent_sdk import EchoAgentClient, EchoAgentError, from_wire, to_wire
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
 import computation_fixture as fixture
+from file_sha256 import file_sha256
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip() or None
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
@@ -73,7 +74,7 @@ async def test_computation_host_exact_values_errors_and_effects(tmp_path):
         await agent.close()
     data = {
         "host": HOST,
-        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+        "host_sha256": file_sha256(HOST),
         "work": str(work),
         "rows": rows,
         "raw_identity": identity,

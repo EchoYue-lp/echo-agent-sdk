@@ -1,7 +1,6 @@
 """Native Python calls accepted RAG/InstructionResolver operations on real Host."""
 
 import asyncio
-import hashlib
 import json
 import os
 import sys
@@ -21,6 +20,9 @@ ROOT = Path(
         str(Path(__file__).resolve().parents[3] / "target/rag-project-rules"),
     )
 )
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+from file_sha256 import file_sha256
+
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip()
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
     raise RuntimeError("required RAG/project-rules Host missing")
@@ -186,7 +188,7 @@ async def test_rag_project_rules_shared_authority_errors_and_scope():
         evidence = {
             "language": "python",
             "host": HOST,
-            "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+            "host_sha256": file_sha256(HOST),
             "work": str(work),
             "rows": rows,
             "server_pid": server.pid,

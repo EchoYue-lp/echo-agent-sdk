@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.*;
 import java.nio.file.*;
-import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -26,7 +25,7 @@ class ChannelHandlerForwardHostTest {
         Path root = (configured == null ? Path.of("../../target/channel-forward") : Path.of(configured)).toAbsolutePath().normalize();
         Files.createDirectories(root); evidenceRoot = Files.createTempDirectory(root, "java-channel-forward-");
     }
-    static String sha(Path path) throws Exception { var digest = MessageDigest.getInstance("SHA-256"); try (var stream = Files.newInputStream(path)) { byte[] buffer = new byte[1024 * 1024]; int count; while ((count = stream.read(buffer)) != -1) digest.update(buffer, 0, count); } return HexFormat.of().formatHex(digest.digest()); }
+    static String sha(Path path) throws Exception { return FileSha256.sha256(path); }
     @AfterAll static void receipt() throws Exception {
         if (evidenceRoot == null) return;
         var result = obj().put("language", "java").put("host_sha256", sha(Path.of(System.getenv("ECHO_AGENT_SDK_HOST"))));

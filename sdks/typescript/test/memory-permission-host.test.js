@@ -1,10 +1,10 @@
+import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { mkdtemp,readFile,writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
-import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 import { EchoAgentClient } from '../dist/client.js';
 import { fromWireValue,toWireValue } from '../dist/wire.js';
@@ -59,7 +59,7 @@ try{
  const deniedRun=await denied.startRun({text:'permission-effect-deny'});const deniedSettlement=await deniedRun.wait({seconds:'10',nanos:0});assert.equal(deniedSettlement.settled,true);await assert.rejects(readFile(join(work,'effect-deny.txt')),error=>error.code==='ENOENT');assert.equal(toolCalls.length,0);
  const approvedRun=await allowed.startRun({text:'permission-effect-allow'});const approvedSettlement=await approvedRun.wait({seconds:'10',nanos:0});assert.equal(approvedSettlement.settled,true);assert.equal(await readFile(join(work,'effect-allow.txt'),'utf8'),'accepted permission effect 中文🌊');assert.equal(toolCalls.length,1);assert.equal(toolCalls[0].phase,'allow');rows.push({actual_permission_effect:{denied_file_exists:false,denied_tool_calls:0,approved_tool_calls:toolCalls,denial_settlement:deniedSettlement,approval_settlement:approvedSettlement},human_requests:humanCalls.slice(-2)});rows.push({backend_inspection:await http(url,'/inspect')});await denied.close();await allowed.close();await tool.close();
  await b.close();await c.close();await agent.close();await rb.close();await human.close();
- await writeFile(join(work,'typescript-real-evidence.json'),JSON.stringify({host,host_sha256:createHash('sha256').update(await readFile(host)).digest('hex'),work,results:rows,limitations:['TTL expiration not observed','approval receipt omitted by existing adapter']},null,2));console.log('TS actual memory/permission evidence rows',rows.length,'work',work);
+ await writeFile(join(work,'typescript-real-evidence.json'),JSON.stringify({host,host_sha256:fileSha256(host),work,results:rows,limitations:['TTL expiration not observed','approval receipt omitted by existing adapter']},null,2));console.log('TS actual memory/permission evidence rows',rows.length,'work',work);
 }finally{if(sdk)await sdk.close();fixture.kill();await new Promise(resolve=>fixture.once('exit',resolve));}
 
 });

@@ -2,7 +2,6 @@
 
 import asyncio
 import copy
-import hashlib
 import json
 import os
 import sys
@@ -15,6 +14,9 @@ from echo_agent_sdk import EchoAgentClient, EchoAgentError, from_wire, to_wire
 from echo_agent_sdk.client import StoreCall
 
 TESTING = Path(__file__).resolve().parents[2] / "shared" / "testing"
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+from file_sha256 import file_sha256
+
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip() or None
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
     raise RuntimeError("required memory/permission Host binary is missing")
@@ -599,7 +601,7 @@ async def test_memory_permission_live_authorities_and_effects(tmp_path):
             json.dumps(
                 {
                     "host": HOST,
-                    "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+                    "host_sha256": file_sha256(HOST),
                     "work": str(work),
                     "results": results,
                     "limitations": [

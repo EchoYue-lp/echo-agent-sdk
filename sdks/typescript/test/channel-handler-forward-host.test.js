@@ -1,3 +1,4 @@
+import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -14,7 +15,7 @@ const shared = dirname(fileURLToPath(new URL("../../shared/testing/channel_forwa
 const scenario = JSON.parse(readFileSync(join(shared, "channel_forward_scenarios.json"), "utf8"));
 const evidence = process.env.ECHO_AGENT_SDK_CHANNEL_FORWARD_EVIDENCE;
 const sha = path => createHash("sha256").update(readFileSync(path)).digest("hex");
-const receipt = { language: "typescript", host_sha256: host ? sha(host) : null, source_hashes: {
+const receipt = { language: "typescript", host_sha256: host ? fileSha256(host) : null, source_hashes: {
   "channel-handler-forward-host.test.js": sha(fileURLToPath(import.meta.url)),
   "client.ts": sha(fileURLToPath(new URL("../src/client.ts", import.meta.url))),
   "channel_forward_scenarios.json": sha(join(shared, "channel_forward_scenarios.json")),

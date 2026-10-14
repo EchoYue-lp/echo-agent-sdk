@@ -1,0 +1,37 @@
+{
+  "scope": "Imports and test-only sys.path setup removed for comparison; only old Host SHA expression normalized. All remaining statements/assertions/fields/loops/try/finally AST match. Not a substitute for native behavior proof.",
+  "results": [
+    {
+      "path": "sdks/python/tests/test_channel_handler_forward_host.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    },
+    {
+      "path": "sdks/python/tests/test_computation_host.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    },
+    {
+      "path": "sdks/python/tests/test_file_authority_identity_host.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    },
+    {
+      "path": "sdks/python/tests/test_git_tool_host.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    },
+    {
+      "path": "sdks/python/tests/test_memory_permission_host.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    },
+    {
+      "path": "sdks/python/tests/test_rag_project_rules_host.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    },
+    {
+      "path": "sdks/python/tests/test_tool_value_effect_host.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    },
+    {
+      "path": "sdks/shared/testing/computation_fixture.py",
+      "businessASTAfterOnlyHostHashNormalizationAndImportPathSetupEqual": true
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn,execFileSync} from 'node:child_process';
@@ -31,7 +32,7 @@ test('accepted tool exact values, errors and actual effects', {skip:!host,timeou
    }catch(error){assert.ok(error instanceof EchoAgentError,String(error));row.error={code:error.code,message:error.message,operation:error.operation,retryable:error.retryable,handle:error.handle??null,details:error.details??null};}}
    row.protected_after=snapshot(work);row.files_after=files(work);rows.push(row);results[row.id]=row;
   }
-  await session.close();await agent.close();const data={work,host,host_sha256:sha(host),raw_identity:identity,rows};writeFileSync(join(work,'results.json'),JSON.stringify(data,(_,v)=>typeof v==='bigint'?v.toString():v,2));
+  await session.close();await agent.close();const data={work,host,host_sha256:fileSha256(host),raw_identity:identity,rows};writeFileSync(join(work,'results.json'),JSON.stringify(data,(_,v)=>typeof v==='bigint'?v.toString():v,2));
   const summary=execFileSync('python3',[fixture,'--work',work,'--verify',join(work,'results.json')],{encoding:'utf8'});process.stdout.write('Tool value/effects: '+summary.trim()+' evidence: '+work+'\n');
  }finally{if(rows.length&&!existsSync(join(work,'results.json')))writeFileSync(join(work,'partial-results.json'),JSON.stringify(rows,(_,v)=>typeof v==='bigint'?v.toString():v,2));await sdk?.close();fixtureProcess.kill();await new Promise(r=>fixtureProcess.exitCode!==null||fixtureProcess.signalCode!==null?r():fixtureProcess.once('exit',r));}
 });
@@ -47,7 +48,7 @@ test('SearchProvider exact title/url/snippet and real Agent tool failure',{skip:
  });
  const agent=await sdk.createAgent(),session=await agent.createSession(work);await session.invoke('echo_agent::agent::react::ReactAgent::set_permission_mode',['full-auto']);
  for(const prompt of ['search-success','search-error']){const before=snapshot(work),run=await session.startRun({text:prompt});const settled=await run.wait({timeoutMs:15000}),replay=await run.replay('0',512);rows.push({prompt,settled,replay,protected_before:before,protected_after:snapshot(work)});await run.close();}
- await session.close();await agent.close();await registration.close();writeFileSync(join(work,'search-results.json'),JSON.stringify({work,host,host_sha256:sha(host),calls,rows},(_,v)=>typeof v==='bigint'?v.toString():v,2));
+ await session.close();await agent.close();await registration.close();writeFileSync(join(work,'search-results.json'),JSON.stringify({work,host,host_sha256:fileSha256(host),calls,rows},(_,v)=>typeof v==='bigint'?v.toString():v,2));
  const summary=execFileSync('python3',[fixture,'--work',work,'--kind','search','--verify',join(work,'search-results.json')],{encoding:'utf8'});console.log('SearchProvider verified:',summary.trim(),'evidence:',work);
  }finally{if(sdk)await sdk.close();fixtureProcess.kill();await new Promise(r=>fixtureProcess.exitCode!==null||fixtureProcess.signalCode!==null?r():fixtureProcess.once('exit',r));}
 });
@@ -68,6 +69,6 @@ test('Sandbox stream real process completion, pending cancel and repeated close'
  if(mode==='success'){fact.events=[];for(let n=0;n<5;n++){const event=await session.invoke('sandbox.stream.next',[stream]);fact.events.push(event);assert.notEqual(event.value.variant,'failed',JSON.stringify(event));if(event.value.variant==='complete'){fact.terminal_returned_after_cleanup=fact.finally===1;break;}}}
  else {const before=performance.now();fact.close_result=await session.invoke(mode==='cancel'?'sandbox.stream.cancel':'sandbox.stream.close',[stream]);fact.control_elapsed_ms=performance.now()-before;fact.control_returned_after_cleanup=fact.finally===1;}await settled;try{process.kill(fact.pid,0);fact.pid_alive=true;}catch(error){if(error.code!=='ESRCH')throw error;fact.pid_alive=false;}fact.repeated_close=await session.invoke('sandbox.stream.close',[stream]);fact.protected=snapshot(work);await session.close();await agent.close();await registration.close();
  }
- writeFileSync(join(work,'sandbox-results.json'),JSON.stringify({work,host,host_sha256:sha(host),facts},(_,v)=>typeof v==='bigint'?v.toString():v,2));const summary=execFileSync('python3',[fixture,'--work',work,'--kind','sandbox','--verify',join(work,'sandbox-results.json')],{encoding:'utf8'});console.log('Sandbox verified:',summary.trim(),'evidence:',work);
+ writeFileSync(join(work,'sandbox-results.json'),JSON.stringify({work,host,host_sha256:fileSha256(host),facts},(_,v)=>typeof v==='bigint'?v.toString():v,2));const summary=execFileSync('python3',[fixture,'--work',work,'--kind','sandbox','--verify',join(work,'sandbox-results.json')],{encoding:'utf8'});console.log('Sandbox verified:',summary.trim(),'evidence:',work);
  }finally{writeFileSync(join(work,'sandbox-partial.json'),JSON.stringify(facts,(_,v)=>typeof v==='bigint'?v.toString():v,2));if(sdk)await sdk.close();fixtureProcess.kill();await new Promise(r=>fixtureProcess.exitCode!==null||fixtureProcess.signalCode!==null?r():fixtureProcess.once('exit',r));}
 });

@@ -20,6 +20,9 @@ from echo_agent_sdk import (
     to_wire,
 )
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+from file_sha256 import file_sha256
+
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
     raise RuntimeError("required Channel forward Host missing")
@@ -81,9 +84,7 @@ def evidence():
     work = Path(tempfile.mkdtemp(prefix="python-channel-forward-", dir=root))
     receipt = {
         "language": "python",
-        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest()
-        if HOST
-        else None,
+        "host_sha256": file_sha256(HOST) if HOST else None,
         "source_hashes": {
             str(path): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in [Path(__file__), SHARED / "channel_forward_scenarios.json"]

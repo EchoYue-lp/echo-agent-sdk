@@ -1,0 +1,47 @@
+[
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/channel-handler-forward-host.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/computation-host.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/file-authority-identity-host.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/git-tool-host.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/memory-permission-host.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/rag-project-rules-host.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/tool-value-effect-host.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/file-sha256.mjs",
+    "exitCode": 0,
+    "stderr": ""
+  },
+  {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/file-sha256.test.js",
+    "exitCode": 0,
+    "stderr": ""
+  }
+]

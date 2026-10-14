@@ -1,3 +1,4 @@
+import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import { mkdtemp,readFile,writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -26,7 +27,7 @@ try{
  }
  await session.close();await agent.close();
 }finally{if(sdk)await sdk.close();}
-await writeFile(join(work,'results.json'),JSON.stringify({host,host_sha256:createHash('sha256').update(await readFile(host)).digest('hex'),work,rows,raw_identity:identity,actual_exports:{output_text:await readFile(join(work,'output.txt'),'utf8'),output_json:JSON.parse(await readFile(join(work,'output.json'),'utf8'))},actual_side_effects:{sentinel_contents:await readFile(join(work,'sentinel.txt'),'utf8'),sentinel_sha256:createHash('sha256').update(await readFile(join(work,'sentinel.txt'))).digest('hex')}},(_,value)=>typeof value==='bigint'?value.toString():value,2));
+await writeFile(join(work,'results.json'),JSON.stringify({host,host_sha256:fileSha256(host),work,rows,raw_identity:identity,actual_exports:{output_text:await readFile(join(work,'output.txt'),'utf8'),output_json:JSON.parse(await readFile(join(work,'output.json'),'utf8'))},actual_side_effects:{sentinel_contents:await readFile(join(work,'sentinel.txt'),'utf8'),sentinel_sha256:createHash('sha256').update(await readFile(join(work,'sentinel.txt'))).digest('hex')}},(_,value)=>typeof value==='bigint'?value.toString():value,2));
 console.log('TS native public corpus',rows.length,'work',work);
 
 const summary=execFileSync('python3',[fixture,'--work',work,'--verify',join(work,'results.json')],{encoding:'utf8'});console.log('Computation verified:',summary.trim(),'evidence:',work);

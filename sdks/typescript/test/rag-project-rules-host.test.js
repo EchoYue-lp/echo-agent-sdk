@@ -1,9 +1,9 @@
+import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, createWriteStream } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { createHash } from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EchoAgentClient } from '../dist/client.js';
@@ -70,7 +70,7 @@ test('RAG and project rules retain original Session authority, failures and file
       await assert.rejects(bad.call('rag_search', session.wire, ['query', 1]), error => { rows.push({ id: 'invalid-config', operation: 'rag_search', error: { code: error.code, message: error.message, operation: error.operation, retryable: error.retryable, details: error.details ?? null, handle: portable(error.handle ?? null) } }); return true; });
       await session.close(); await badAgent.close();
     } finally { await bad.close(); }
-    writeFileSync(join(work, 'results.json'), encode({ language: 'typescript', host, host_sha256: createHash('sha256').update(readFileSync(host)).digest('hex'), work, rows, server_pid: server.pid }));
+    writeFileSync(join(work, 'results.json'), encode({ language: 'typescript', host, host_sha256: fileSha256(host), work, rows, server_pid: server.pid }));
     console.log('RAG/project-rules verified:', helper(work, '--verify', join(work, 'results.json')).trim(), 'evidence:', work);
   } finally {
     if (sdk) await sdk.close();

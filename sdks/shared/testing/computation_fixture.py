@@ -14,6 +14,8 @@ import math
 import unittest
 from pathlib import Path
 
+from file_sha256 import file_sha256
+
 SDK = Path(__file__).resolve().parents[3]
 ROWS_TEMPLATE = [
     {
@@ -944,10 +946,7 @@ def verify(work, evidence):
     EVIDENCE = evidence
     ROWS = {row["id"]: row for row in evidence["rows"]}
     assert len(ROWS) == len(ROWS_TEMPLATE) == len(evidence["rows"])
-    assert (
-        evidence["host_sha256"]
-        == hashlib.sha256(Path(evidence["host"]).read_bytes()).hexdigest()
-    )
+    assert evidence["host_sha256"] == file_sha256(evidence["host"])
     suite = unittest.TestSuite(
         [
             unittest.defaultTestLoader.loadTestsFromTestCase(ExactGreenObservations),

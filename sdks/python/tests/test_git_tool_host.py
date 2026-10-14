@@ -1,6 +1,5 @@
 """Real Host Git calls; shared oracle observes owned files, refs and index entries."""
 
-import hashlib
 import json
 import os
 import subprocess
@@ -11,6 +10,9 @@ from pathlib import Path
 import pytest
 
 from echo_agent_sdk import EchoAgentClient, EchoAgentError
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
+from file_sha256 import file_sha256
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
@@ -83,9 +85,7 @@ async def test_git_tools_and_worktree_source_exact_local_effects():
                         {
                             "work": str(work),
                             "host": HOST,
-                            "host_sha256": hashlib.sha256(
-                                Path(HOST).read_bytes()
-                            ).hexdigest(),
+                            "host_sha256": file_sha256(HOST),
                             "rows": rows,
                         },
                         ensure_ascii=False,

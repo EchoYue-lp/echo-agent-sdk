@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "steps": [
+    {
+      "label": "python310-actual-shared-streaming-hash-regression",
+      "command": [
+        "uv",
+        "run",
+        "--no-project",
+        "--python",
+        "3.10",
+        "--with",
+        "pytest",
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "../shared/testing/test_file_sha256.py"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-hash-streaming/python310-tests.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 127,
+      "bytesWritten": 127,
+      "startedAt": "2026-10-14T22:34:18.231Z",
+      "finishedAt": "2026-10-14T22:34:20.822Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T22:34:20.822Z"
+}

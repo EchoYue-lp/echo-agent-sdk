@@ -1,7 +1,6 @@
 """Native public SDK consumes the original retained FileAuthority identity."""
 
 import base64
-import hashlib
 import json
 import os
 import sys
@@ -14,6 +13,7 @@ from echo_agent_sdk import EchoAgentClient, EchoAgentError, wire_utf8_path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
 import file_authority_identity_fixture as fixture
+from file_sha256 import file_sha256
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip()
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
@@ -105,7 +105,7 @@ async def test_same_length_replacement_rejects_stale_guard_without_writing():
         await agent.close()
     data = {
         "host": HOST,
-        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+        "host_sha256": file_sha256(HOST),
         "work": str(work),
         "rows": rows,
         "closed": True,

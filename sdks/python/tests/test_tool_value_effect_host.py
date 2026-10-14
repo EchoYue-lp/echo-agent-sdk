@@ -2,7 +2,6 @@
 
 import asyncio
 import copy
-import hashlib
 import json
 import os
 import subprocess
@@ -16,6 +15,7 @@ from echo_agent_sdk import EchoAgentClient, EchoAgentError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))
 import tool_value_effect_fixture as fixture
+from file_sha256 import file_sha256
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip()
 ROOT = Path(
@@ -139,7 +139,7 @@ async def test_tool_value_effect_native_host():
         data = {
             "work": str(work),
             "host": HOST,
-            "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+            "host_sha256": file_sha256(HOST),
             "raw_identity": identity,
             "rows": rows,
         }
@@ -255,7 +255,7 @@ async def test_search_provider_real_agent_result_and_failure():
             "calls": calls,
             "rows": rows,
             "host": HOST,
-            "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+            "host_sha256": file_sha256(HOST),
         }
         (work / "search-results.json").write_text(
             json.dumps(data, ensure_ascii=False, indent=2)
@@ -520,7 +520,7 @@ async def test_sandbox_stream_real_process_completion_cancel_and_close():
         data = {
             "work": str(work),
             "host": HOST,
-            "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+            "host_sha256": file_sha256(HOST),
             "facts": facts,
         }
         (work / "sandbox-results.json").write_text(
