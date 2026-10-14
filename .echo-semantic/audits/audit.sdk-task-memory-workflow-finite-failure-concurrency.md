@@ -8,6 +8,8 @@ freshness: examined
 revision: 02059dd3014633a23c188e30e73b0634a8c5621d
 finding_refs:
 - finding.sdk-task-resume-extension-invocation-conflict
+- finding.sdk-subagent-await-result
+- finding.sdk-task-control-locality
 challenges:
   task-memory-workflow-accepted-obligation:
     revision: 02059dd3014633a23c188e30e73b0634a8c5621d
@@ -28,6 +30,33 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+  specific-subagent-await-result:
+    revision: 622d7931e01556161441d22de0697f6f35f24f17
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/subagent.rs#collect_result
+    - echo-sdk-host/tests/core_profile_e2e.rs#subagent_short_await_preserves_result_and_dispatch_receipt
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+  specific-task-control-locality:
+    revision: 622d7931e01556161441d22de0697f6f35f24f17
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs#request_live_interrupt
+    - echo-sdk-host/tests/core_profile_e2e.rs#task_pause_is_exact_and_resume_reuses_canonical_dependency_result
+    - echo-sdk-host/tests/core_profile_e2e.rs#task_cancel_is_exact_and_pending_sibling_continues
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml
     evidence_refs:
     - evidence.sdk-task-memory-workflow-finite-observation
 ---
@@ -57,3 +86,11 @@ ContextInheritance纯值不证明实际history/memory继承E2E，compressor消�
 ## 未检查项
 
 最新approved意图Acaller幂等、任意未接受sourceoperation或所有Subagent强停物理工作；不以未定义穷尽组合拉大本slice。
+
+## subagent-await-result原局部缺陷准确复核
+
+单Joincollector memo原resultreceipt，短timeout→重复fullawait同claim/attempt1/result/constraints不耗结果；非restart与全physical保证。原真实来源修复/强断言/本session实际有限scope独ref复核支持，仅此root不物理B。newchallenge真实622d，原主02059audit/time/limits不改，knownliveLLM缺口不借Task场景解决。
+
+## task-control-locality原局部缺陷准确复核
+
+原rootcancel全图误推改为exactattempt/controlclaim；pauseA/BRunning/Cpending→B/C完成canonicalB后resumeA2/D1，cancelA兄弟继续，3native4完整输出/次数；Bphysical独立。原真实来源修复/强断言/本session实际有限scope独ref复核支持，仅此root不物理B。newchallenge真实622d，原主02059audit/time/limits不改，knownliveLLM缺口不借Task场景解决。

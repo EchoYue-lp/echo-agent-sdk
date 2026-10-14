@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-task-memory-workflow-finite-observation
 kind: evidence
-observed_at: 02059dd3014633a23c188e30e73b0634a8c5621d
+observed_at: 622d7931e01556161441d22de0697f6f35f24f17
 source_refs:
 - echo-sdk-host/src/core_profile/facade/task.rs
 - echo-sdk-host/src/core_profile/facade/task_runtime.rs
@@ -20,6 +20,19 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml
 - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml
+- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log
+- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+- echo-sdk-host/src/core_profile/facade/workflow.rs#optional_workflow_fields_reject_malformed_values
+- echo-sdk-host/src/core_profile/facade/memory.rs#malformed_namespace_never_writes_and_replacement_store_is_live_authority
+- echo-sdk-host/src/core_profile/facade/memory.rs#explicit_invalid_limits_are_not_defaulted
+- echo-sdk-host/src/core_profile/facade/subagent.rs#collect_result
+- echo-sdk-host/tests/core_profile_e2e.rs#subagent_short_await_preserves_result_and_dispatch_receipt
+- echo-sdk-host/src/core_profile/facade/task_runtime.rs#request_live_interrupt
+- echo-sdk-host/tests/core_profile_e2e.rs#task_pause_is_exact_and_resume_reuses_canonical_dependency_result
+- echo-sdk-host/tests/core_profile_e2e.rs#task_cancel_is_exact_and_pending_sibling_continues
+- echo-sdk-host/tests/core_profile_e2e.rs#task_rpc_shares_the_session_task_authority
+- echo-sdk-host/tests/core_profile_e2e.rs#task_execute_and_control_settle_through_the_runtime
 supports:
 - behavior.sdk-task-subagent
 - behavior.sdk-family-task
@@ -27,11 +40,16 @@ supports:
 - behavior.sdk-family-memory
 - behavior.sdk-family-workflow
 limitations:
-- Original CLI author sourceaudit is distinguished from actual independent material/source slices; not renamed an independent new execution.
-- Source restored in02059 is byte-identical to reviewed69b for these paths; current mutable factory/core tests or intentA implementation are excluded.
-- ContextInheritance value tests do not prove three-language livehistory/memory inheritance E2E; no new context family/API is required.
-- TaskContext getter consumption supports four exact Host cases and native runid only, not complete threefield reverseDTO.
-- Memory/checkpoint backends are volatile in this accepted path, not crossprocessdurable;5second physicalB/12sourcekind and SDK main remain separate.
+- Original CLI author sourceaudit is distinguished from actual independent material/source
+  slices; not renamed an independent new execution.
+- Source restored in02059 is byte-identical to reviewed69b for these paths; current
+  mutable factory/core tests or intentA implementation are excluded.
+- ContextInheritance value tests do not prove three-language livehistory/memory inheritance
+  E2E; no new context family/API is required.
+- TaskContext getter consumption supports four exact Host cases and native runid only,
+  not complete threefield reverseDTO.
+- Memory/checkpoint backends are volatile in this accepted path, not crossprocessdurable;5second
+  physicalB/12sourcekind and SDK main remain separate.
 ---
 
 # Task/Subagent、Memory与Workflow有界观察
@@ -49,3 +67,26 @@ limitations:
 ## 已知缺口
 
 ContextInheritance纯值support不替livehistory/memory继承三语E2E（现accepted路径源码/角色明确，补证不得造新API）；Hostcompressor注册消费不推每个hook reentry/cancel已经三native执行。内存Store/checkpoint无额外跨processdurability保证。5秒physicalB/旧12field source身份处置继续原Finding/待人，不由绿色Task场景riskaccept；新意图A幂等caller合同已人批准，其最新实现/原生gate与本原source审切片独立。scope外未接受构造器或全部unlistedsourceoperation不自动纳新完成分母。
+
+## 四个原Task/字段逻辑缺陷的准确三链闭合
+
+原CLI实际source作者事实与SDKcap有限逐defect独ref审必须分明，不凭全4counts推缺陷闭。对应原contextA/B/resume物理B的宽Finding不动，LiveStore半闭/WorkflowLLM替换未证不能借此closed。
+
+### adapter-invalid-input
+
+原namespace/tags/optional/limit malformed明确typed拒且mixedns零write；不将boundedpageclamp升级所有u32宽度无损承诺。准确postfixstrongcase echo-sdk-host/src/core_profile/facade/workflow.rs#optional_workflow_fields_reject_malformed_values, echo-sdk-host/src/core_profile/facade/memory.rs#malformed_namespace_never_writes_and_replacement_store_is_live_authority, echo-sdk-host/src/core_profile/facade/memory.rs#explicit_invalid_limits_are_not_defaulted，finalRust原05/10及native4的原source同cut已实际通过；原8lens业务与本closurefactreview分别记，observe622d为这些具名源码/已保存收据定位，不称旧命令重新运行。
+
+### subagent-await-result
+
+单Joincollector memo原resultreceipt，短timeout→重复fullawait同claim/attempt1/result/constraints不耗结果；非restart与全physical保证。准确postfixstrongcase echo-sdk-host/src/core_profile/facade/subagent.rs#collect_result, echo-sdk-host/tests/core_profile_e2e.rs#subagent_short_await_preserves_result_and_dispatch_receipt，finalRust原05/10及native4的原source同cut已实际通过；原8lens业务与本closurefactreview分别记，observe622d为这些具名源码/已保存收据定位，不称旧命令重新运行。
+
+### task-control-locality
+
+原rootcancel全图误推改为exactattempt/controlclaim；pauseA/BRunning/Cpending→B/C完成canonicalB后resumeA2/D1，cancelA兄弟继续，3native4完整输出/次数；Bphysical独立。准确postfixstrongcase echo-sdk-host/src/core_profile/facade/task_runtime.rs#request_live_interrupt, echo-sdk-host/tests/core_profile_e2e.rs#task_pause_is_exact_and_resume_reuses_canonical_dependency_result, echo-sdk-host/tests/core_profile_e2e.rs#task_cancel_is_exact_and_pending_sibling_continues，finalRust原05/10及native4的原source同cut已实际通过；原8lens业务与本closurefactreview分别记，observe622d为这些具名源码/已保存收据定位，不称旧命令重新运行。
+
+### task-runtime-store-authority
+
+SessionServices取liveAgenttaskrevisionservice同Arc，CRUD/runtime同framework service/store无fallback双图；nativeCRUD-onlyexecute featureUnavailable agentcalls0拒前effect/canonicalCAS4scene真实。准确postfixstrongcase echo-sdk-host/src/factory.rs, echo-sdk-host/src/core_profile/facade/task.rs, echo-sdk-host/src/core_profile/facade/task_runtime.rs, echo-sdk-host/tests/core_profile_e2e.rs#task_rpc_shares_the_session_task_authority, echo-sdk-host/tests/core_profile_e2e.rs#task_execute_and_control_settle_through_the_runtime，finalRust原05/10及native4的原source同cut已实际通过；原8lens业务与本closurefactreview分别记，observe622d为这些具名源码/已保存收据定位，不称旧命令重新运行。
+
+
+这四原逻辑root可局部resolved，不等SDKmain；Taskresume早ACK子cause已闭但同一个knownBphysical残余仍保wideTaskFinding；cleanup/Sandbox各关联这个未决，不新三个重复policyauthority。原内存不crossprocess、12迁移/Afinal/newclientneg/sourcecuts/平台全gate独立。

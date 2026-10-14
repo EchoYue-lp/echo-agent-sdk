@@ -8,6 +8,7 @@ freshness: examined
 revision: 02059dd3014633a23c188e30e73b0634a8c5621d
 finding_refs:
 - finding.sdk-task-resume-extension-invocation-conflict
+- finding.sdk-task-runtime-store-authority
 challenges:
   task-memory-workflow-accepted-obligation:
     revision: 02059dd3014633a23c188e30e73b0634a8c5621d
@@ -28,6 +29,22 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+  specific-task-runtime-store-authority:
+    revision: 622d7931e01556161441d22de0697f6f35f24f17
+    source_refs:
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs#task_rpc_shares_the_session_task_authority
+    - echo-sdk-host/tests/core_profile_e2e.rs#task_execute_and_control_settle_through_the_runtime
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
+    - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml
     evidence_refs:
     - evidence.sdk-task-memory-workflow-finite-observation
 ---
@@ -57,3 +74,7 @@ ContextInheritance纯值不证明实际history/memory继承E2E，compressor消�
 ## 未检查项
 
 最新approved意图Acaller幂等、任意未接受sourceoperation或所有Subagent强停物理工作；不以未定义穷尽组合拉大本slice。
+
+## task-runtime-store-authority原局部缺陷准确复核
+
+SessionServices取liveAgenttaskrevisionservice同Arc，CRUD/runtime同framework service/store无fallback双图；nativeCRUD-onlyexecute featureUnavailable agentcalls0拒前effect/canonicalCAS4scene真实。原真实来源修复/强断言/本session实际有限scope独ref复核支持，仅此root不物理B。newchallenge真实622d，原主02059audit/time/limits不改，knownliveLLM缺口不借Task场景解决。
