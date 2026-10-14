@@ -66,3 +66,5 @@ export {
 } from "./helpers.js";
 export * from "./types.js";
 export * from "./wire.js";
+
+export * from "./managed.js";

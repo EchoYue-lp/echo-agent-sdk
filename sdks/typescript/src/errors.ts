@@ -1,8 +1,11 @@
+import type { WireHandle } from "./types.js";
+
 export class EchoAgentError extends Error {
   readonly code: string;
   readonly retryable: string;
   readonly operation?: string;
   readonly details?: unknown;
+  readonly handle?: WireHandle;
 
   constructor(
     code: string,
@@ -10,6 +13,7 @@ export class EchoAgentError extends Error {
     retryable = "never",
     operation?: string,
     details?: unknown,
+    handle?: WireHandle,
   ) {
     super(message);
     this.name = "EchoAgentError";
@@ -17,6 +21,7 @@ export class EchoAgentError extends Error {
     this.retryable = retryable;
     this.operation = operation;
     this.details = details;
+    this.handle = handle;
   }
 
   static fromUnknown(error: unknown, operation?: string): EchoAgentError {
@@ -31,6 +36,6 @@ export class EchoAgentError extends Error {
       : typeof candidate?.message === "string" ? candidate.message : String(error);
     const retryable = typeof data?.retryable === "string" ? data.retryable : "never";
     const resolvedOperation = typeof data?.operation === "string" ? data.operation : operation;
-    return new EchoAgentError(code, message, retryable, resolvedOperation, data?.details);
+    return new EchoAgentError(code, message, retryable, resolvedOperation, data?.details, data?.handle as WireHandle | undefined);
   }
 }
