@@ -131,3 +131,13 @@ docs/sdk/governance/evidence/telemetry-host/python-before.log -diff
 docs/sdk/governance/evidence/telemetry-host/python-publicclose/collector.stdout -diff
 docs/sdk/governance/evidence/telemetry-host/stack-probe-sampled.log -diff
 docs/sdk/governance/evidence/telemetry-host/typescript-before-bounded.log -diff
+
+# Exact raw Rust gate captures retain their original trailing blank lines.
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/12-ci-bridge-e2e.log -diff
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log -diff
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/14-ci-no-bridge-source-admission.log -diff
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log -diff
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/07-workspace-doctests.log -diff
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/08-ci-default-protocol.log -diff
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/09-ci-default-host.log -diff
+docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log -diff
