@@ -1,0 +1,11 @@
+# 幂等修复后完整语言门禁：后续 negotiation 修复前切点
+
+这是一次完整官方 `bash scripts/check-language-sdks.sh` 执行的原字节归档，源码 Git `3ad401e222652775e959587e3b9923dbaf426841`，framework 精确 a634。2026-10-14 09:26:16 至 09:31:38 UTC 真实退出0：TypeScript 311 tests全通过，Python 378 passed加18 subtests，Java 73份XML合计335 tests、0failures/errors/skipped。三quickstart实际执行；Ruff check通过、188 files already formatted。不是分段结果拼接。
+
+782项输入before/after完全相同，并逐项核对原Git3ad的文件blob摘要全部匹配。旧790集合不用于这次总数：Root已核旧集合多15个pycache输出和未执行比较CLI，新集合增加8个A2A/幂等fixture/test。全套运行之后其它lane修改了4个protocol负例test/proxy并准备Java negotiation修复，这些更晚变化不属于本运行；不得把本335全绿说成新negotiation反例已修或当前全量验收。后续修复必须另绑源码/实际门禁。
+
+原日志102529字节，SHA256 f20f4464b9a0901a7cf9cc6ff407e0b17df59ea8c1e8127155219d66d7de1360；receipt文件本身SHA256 7ddaaf3fab293778e35c4da3a9eda6217306cafdac11e594692a6d784fab6ce8。原五文件为log、receipt、before/after输入map和java-summary；另73XML均匹配java-summary中逐文件SHA与计数。原props/路径全部保真，没有复制782源码或另186旧包。
+
+Root原09:36工具先对实际target全部73报告assert原mtime不晚于wholefinish，再以shutil.copyfile安全拷贝，随后才启动新Maven反例。目标XMLmtime为09:36拷贝时间，不是执行时间；没有持久精确originalmtimeJSON，本包不伪补。此原mtime观察明确来自该工具终态和主线程确认；独立本归档只以原java-summary SHA核对73原字节，并保留其时间事实边界。
+
+编译warning/SLF4J provider warning为0；22条ACP发送负例错误响应的运行时WARN原样保留，不能声称所有日志WARN均0。原执行入口真实末句language SDK source checks passed与三quickstart输出都在完整日志。本次只是历史切点归档，未运行编译/测试，未修改运行源、模型或合同。完整accepted-source生成、最新修复后全量门禁、适用CI及SDKmain交付独立结算。

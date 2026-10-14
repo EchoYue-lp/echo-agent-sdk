@@ -1,0 +1,595 @@
+{
+  "summary": {
+    "tests": 335,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "xmlFiles": 73
+  },
+  "rows": [
+    {
+      "file": "TEST-com.echoagent.sdk.A2AHostTest.xml",
+      "sha256": "14cff99075b568d0fac8692985d89bc29777a6698b0406e875124042c4412b4b",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.A2ATaskStateTest.xml",
+      "sha256": "abf5a0caf4f72bfa390262fe9b32e01bf4efc5868ecd1ae9093b0fc9feb6f025",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.A2AValueTest.xml",
+      "sha256": "c9dbc05baa4c3f101dcb1dd4aa6dd15077ff686e34ef697010c86f0108d92c58",
+      "tests": 78,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.AckSubmissionTest.xml",
+      "sha256": "6965fb76ef29943254a0c9dadf05ab71060832e1933556794d8e4be662516296",
+      "tests": 18,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.CallbackAndEffectsTest.xml",
+      "sha256": "6046c9d43c9d1237afaadc0e9a8cac4bea2309fe96bd4551b46d49c1cccef2ac",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.CallbackHostTest.xml",
+      "sha256": "170c972117750d07d36214a879cfa69f33994dfc80e9d93531ea9f180e96448f",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ChannelHandlerForwardHostTest.xml",
+      "sha256": "6cd1a95ade8f86e2a87c2dd0ea09374707007ea1319c969b0f0eb79725cd6c67",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ComputationHostTest.xml",
+      "sha256": "a7a8b2335450e285f6f6ef98ab7f445edb992209f7443360b3b920b8de4e21cb",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.DelayedSubscriberHostTest.xml",
+      "sha256": "d996dea5ac763e030afa85aa57b4b151b377570d887239a47f2ca5d3b19273c2",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.EvalImproveTopologyHostTest.xml",
+      "sha256": "2bbbf9e5a8559e1df2d027433f4a0503b07ddb23600d9e4af8c64bf820a9154f",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.EventIdentityTest.xml",
+      "sha256": "b1a03496801a2e68c1e2b788432cfae432afa60ecb4bf37a3d304b716119932b",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ExecutionUsageTest.xml",
+      "sha256": "f86c2951bb4d19ee80f410af40e58277ac856585f3ee5ce314c51bf2a519207e",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ExternalAckHostTest.xml",
+      "sha256": "f70e473840f33f3f0883af3caec0bbed979960595d0101dbdb0936c1e3541111",
+      "tests": 4,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.FacadeParityTest.xml",
+      "sha256": "0fa72d35a9f017bec338a2f4c62df5a92af7005fa79466a23d53501aea22608a",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml",
+      "sha256": "dfeb9f2bdc52cd8269fb37d3197c4ef19d73216874fa6ef8dda7432e3cbb6c9e",
+      "tests": 25,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.FactoryHostTest.xml",
+      "sha256": "7db04b18fb63aceaf1d618c43b94192403bae8ac9da6a0adaac3eb644e325444",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.FamilyRouteHostTest.xml",
+      "sha256": "71c5f6fbe18e1bfa4d5eb30fd7e817fa0d4ede98347223117bd1dfbd5e456201",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.FileAuthorityIdentityHostTest.xml",
+      "sha256": "8f3a25bca3e311acaeb385050b2db73dd6e786bd749e7bc42525657079e11da7",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.GapAckHostTest.xml",
+      "sha256": "782731d9ea9c577c2a550e9cd7169eacf047a7a20a4767d108d8e319723d8af3",
+      "tests": 9,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.HookEventTest.xml",
+      "sha256": "c127613eac6d6455bfa47a79b82864f47a70889816834c17dbf38b86b585aeb0",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.HostEarlyExitTest.xml",
+      "sha256": "b7cb4a15790a5f748f91bd219d0885f1614dd7b7f75db17b540db56d16b75c57",
+      "tests": 16,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.InterventionResultTest.xml",
+      "sha256": "22739b37d6ab95c2de0a8ba54f498e8e772ae21e05a1a91253f8f7005ac7eb4d",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.IntrinsicToolValueTest.xml",
+      "sha256": "533fdecf79db545289dde16f42898dabb689dd87c710923aac0f328f28404aad",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.JavaClientCloseLifecycleTest.xml",
+      "sha256": "73a8a8177ac774e8b283c0de0ebda3910e7caf3bdb6805c130d05130fdd830bb",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.JsonSupportTest.xml",
+      "sha256": "d8392d31d7a656fddabb6ddabc24ec555c499cebfc3e3e8ff0dd676edea56337",
+      "tests": 10,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.LateFactoryHostTest.xml",
+      "sha256": "57286640590d6ceeef97213a9d13064aa31146646aa22e8d000a9fb78500b027",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.LifecycleTest.xml",
+      "sha256": "0ed7dccac3c51261ae1f9c78009a4a14a57a3c85630835acf4e089270c76ec20",
+      "tests": 17,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.LlmApiProtocolTest.xml",
+      "sha256": "28682f425e7c38894c152eb9cc3d343b3a18c92788ec4942fe62c05d81adf506",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml",
+      "sha256": "c288ce310c00eb56e5146d9fa30f1ec48de7e7d1303e49b6724f2bcf78db3b84",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.LspDiagnosticsHostTest.xml",
+      "sha256": "3d8da4bcbc6b9bf8330c40d53735fcdccc2fcca136becb160a252df9b79baa0b",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.LspHostTest.xml",
+      "sha256": "8a422fe3d32a87350740639683059b9d8405198025cab581f7195830077f3ae8",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ManagedComponentOperationsTest.xml",
+      "sha256": "3587a13003e0fd7a05258bd37c35e574b9c9027b872d77f276f701c7fa7efa0a",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ManagedPersistenceTest.xml",
+      "sha256": "3699c52db153ae5540b0d937d72e0c1c9117da942f306f4061d8c76639c3a5f1",
+      "tests": 10,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ManagedRetirementHostTest.xml",
+      "sha256": "09dfbcbdeae16e82150f294425a80486075efe8a6fbd80520beb098fe98e0174",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ManagedStoreHostTest.xml",
+      "sha256": "d1d8ab787ba2334c355235847fbeceb275cd97893c2b108d6c5a688e31bc5c60",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.McpChannelHostTest.xml",
+      "sha256": "c4299e22d904fda6caaa902b0f9d031eb2ef78fe4356bd86a06f56442dd5086c",
+      "tests": 5,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml",
+      "sha256": "124f56b98304a945f137f7520450d5d9e578d8b6cbf9193e02521fde0012a890",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.MemoryPolicyValuesTest.xml",
+      "sha256": "1de3988e6aea4da375f9ad4f5ead4078f00d78ce3a3134efabd25ae04ee68e65",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.MemoryScopeTest.xml",
+      "sha256": "38a964d4c6ed2d62d8b314fc2f04361b8314df2d3eabe163575984866f2c5c47",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ModelInputModalityTest.xml",
+      "sha256": "e5b83c0c4f85aa1fae01a16e75bc1d0a299eb675facf961f397cdbbc993ee1a7",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ModelProfileTest.xml",
+      "sha256": "f4b6a523959151e67500ca12c5ca12edf7cc88184602840c3ba722a390059806",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ParallelSessionHostTest.xml",
+      "sha256": "52c88dcacbbcd2e984e3d59a4e658dfd38e1e9ea943e799e66442a8a0f9a1959",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.PromptCacheLayoutTest.xml",
+      "sha256": "51282ba5ead4a6920e019144f9bd4b02556ee63785f0537d2d9cd6cd93019de1",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ProtocolHostTest.xml",
+      "sha256": "07c47d241353c40a40f85b99bf00ddf90d34e016f54ed104067faa132806f19e",
+      "tests": 7,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml",
+      "sha256": "4155080c4baa3f33d361a61f64b1e3607076d7e4d965dcdbff9aea6393d7ebc8",
+      "tests": 9,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ProviderCapabilitiesTest.xml",
+      "sha256": "436a8cac28a2c2b9aa0dea137bd6f762446dbf93506228be3f7d9d7c9613a421",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.RagProjectRulesHostTest.xml",
+      "sha256": "ea816b5fcdb298ac5f5129acc945fd96e5941067254f7c06683a4f36de5e6b9d",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml",
+      "sha256": "61457693884f6e3b53c6a476efb24547d91aa0fec798b88b5c5583074f3a3fb1",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ResourceLimitsTest.xml",
+      "sha256": "e04e7e751e891e02a352ffd75e62499d733a4024161c3ca01b982ec677f647a1",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ResponseFormatTest.xml",
+      "sha256": "f9e61c6121ffbba9fd0a3d90d21473b5e53a8f8b43c58efc978e7c8a06101d16",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.RetryPolicyTest.xml",
+      "sha256": "358d129eb063c806f23ae20a1ee4964b96e52b367a7f160c8028bc97c00a16d7",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.RunReceiptApiTest.xml",
+      "sha256": "5a36ed30987914bccb21ba1d56d069b5081f6933f88683c8679dd2340f24011d",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.RunSteerHostTest.xml",
+      "sha256": "c5115966a8320a457104a9a2b13fe87fbda03a44775466c170f757d6e891237f",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.SessionRulesPromptHostTest.xml",
+      "sha256": "5221cf8dd32d8a40020c5342fa3ac200b15a9cd2319b857aaaa2fec6036e0b57",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.SessionRunIdempotencyHostTest.xml",
+      "sha256": "cba2cb93a2422888d90be8bbae61012963db1413955255758d70e5664399deab",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml",
+      "sha256": "6bdd0783143f2a600310a24f9c625ae4ac600f9da26eb49f66a51829f5944d25",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.StreamCancellationRouteHostTest.xml",
+      "sha256": "6cfb5d645ba39208652eec47d3eb25180e1b4bb9ac227cc0b27107257c5913aa",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.StreamCancellationRoutesTest.xml",
+      "sha256": "1cd97dd76e085d8fa4a423f6146873f3a82fb8767269ff163afc32e5be8c8fa8",
+      "tests": 4,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TaskStoreTest.xml",
+      "sha256": "b24ab5731485c03b392b7922ec318cabd963419e08cf15cab8865487d72cefa2",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TaskSubagentHostTest.xml",
+      "sha256": "525c890d0f984c806fedf848ed05b1529dd81244078de34fb21ecfda082b6d89",
+      "tests": 4,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TelemetryHostTest.xml",
+      "sha256": "436cfd1110819e125eec6ae1f77d07865dfa0c9aa95618a7900e7eeb042382b1",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TestingContractTest.xml",
+      "sha256": "116aa15a70faf055f0603df3f09f6f0b52a4a676fdf4cd74f89e286ed42bf309",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ThinkingConfigTest.xml",
+      "sha256": "ca2e071d607f3c72fee2c00787408a00e5c9f5fdbe23c878294c524a794e9813",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ThinkingProfileTest.xml",
+      "sha256": "4f869ce90b9d12e1efaf60d9476dcfc880d29f76127033f8319a9b912573c84e",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ThinkingProtocolTest.xml",
+      "sha256": "a096b09f24188bb6b553d2b39c10e08c8b6bebe0a3de035313ae987eb6165d39",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TimeValuesTest.xml",
+      "sha256": "416fa1ff4ebd2301950b3f6af1c95d25de05050c3476c45be7739f2ce9677c48",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TokenBudgetTest.xml",
+      "sha256": "35ba4843048703eea3e4f54f12e0834ba16764c5a63ed1f3dc08fbc2c5d9e82e",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml",
+      "sha256": "0d6e4af8939e740d516fc008930a78cabb9b642f72a97c7d948290ae471b3513",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.ToolValueEffectHostTest.xml",
+      "sha256": "c0a3becbea31d56c7c9f683eae96dbfea813bef7803e74da0a5aadb2231b9be9",
+      "tests": 3,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TurnModeTest.xml",
+      "sha256": "cf075dcf051ffc7b00064944aeeaca82f873a4917a1843b6824c92b2b83f8098",
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.TypedExtensionTest.xml",
+      "sha256": "7b36296603ac2207d0e9da07775e4210c2acac28d38802c60cd2abf5dde28617",
+      "tests": 5,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.Utf8SupportTest.xml",
+      "sha256": "4ee383088c4eae3b15777b5e368198d2bd4ac63df491ca24f8bd118a404f21ff",
+      "tests": 5,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "file": "TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml",
+      "sha256": "436ac24d4a90043fb2b69d2eb82fbdec57e3e16a35b58a8575726bec2d78be9f",
+      "tests": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    }
+  ]
+}
