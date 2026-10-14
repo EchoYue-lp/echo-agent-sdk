@@ -1,0 +1,50 @@
+{
+  "main": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "candidate": "ca702925b5c22cf0798836584926dca041ffcee9",
+  "mainTree": "b77ee48e14daf7ffa9437a900efc48f162d807ed",
+  "candidateTree": "b77ee48e14daf7ffa9437a900efc48f162d807ed",
+  "exactTreeEqual": true,
+  "localHead": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "remoteMain": "00782b8aeddefe2ea8c566922cbdee6aedc80d70\trefs/heads/main",
+  "clean": true,
+  "matchingBuildInputs": 570,
+  "buildInputChanges": [],
+  "buildInputMap": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control/docs/evidence/rustls-security-patch-20261015/final-six/inputs-after.json",
+    "sha256": "ba25c1c69839b404bb42acc1c7b90c5e1a0fbae517166feefd024fb7d682f267",
+    "bytes": 62270
+  },
+  "sourceSHA256": "cfd9565be083ea846651c476bc37e37788fd94a5589939b7b960b8203c7e00b5",
+  "lockSHA256": "4d036d1cc54498512198dd7241fc13a10f13ede7497e5fe8483331b211cbc187",
+  "strictDigest": "399c6b119b30d0b29a8996c97bc074a8de36509adaa67fb3141e6eae1884fa28",
+  "strict": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/framework-git-published-main-source-acceptance.json",
+    "sha256": "3bb0f3a40ef9f7f2ef302d11e172212b245a117fffb089bede154a9966c987c3",
+    "bytes": 721
+  },
+  "strictLog": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/framework-git-published-main-strict.log",
+    "sha256": "f72cd073939e72b8c1946482bbd1c54d1bce6cdc6c21bb0810797752739e5e15",
+    "bytes": 148
+  },
+  "rawMainCommit": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/git-branch-switch/final-main-commit-readonly.json",
+    "sha256": "fb2b49f3981cd463ec32379b19ec7c5796912dce3e45dfe274d4f5931923112f",
+    "bytes": 3310
+  },
+  "rawMainCi": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/git-branch-switch/final-main-ci-readonly.json",
+    "sha256": "67de89a42755b692d3164ff45d2276211e3998e0f1588fa285d545073c8fcbe2",
+    "bytes": 12075
+  },
+  "rawPR": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/git-branch-switch/final-pr186-readonly.json",
+    "sha256": "85f68063b51d6533146158109e02ad9d3b55019ca85a50e836df22f7969fa0a8",
+    "bytes": 266
+  },
+  "originalPendingSourceReceiptPreserved": {
+    "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/git-branch-switch/main-acceptance-source.json",
+    "sha256": "67e85e87355ea91afefdb9d14bd52436eef72114f513c1f5060badc5631839b9",
+    "bytes": 537
+  }
+}

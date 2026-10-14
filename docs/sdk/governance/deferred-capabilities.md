@@ -1,5 +1,17 @@
 # 未接受能力的产品处置
 
+## 当前有限验收（2026-10-15）
+
+SDK Host 精确依赖已发布框架 `00782b8a`，八个框架包同一 Git 来源、没有 path patch；框架合并后七项 CI 已成功。SDK [14 条 Rust 门禁](evidence/sdk-00782-final-rust-gates/README.md)实际全0，workspace 主计数474，不累加重叠 feature profiles。[完整语言入口](evidence/sdk-language-00782-reviewed-final/README.md)实际退出0：TypeScript329、Python394加18子测试、Java351/75份XML及三个quickstart；793项执行输入前后相同，随后逐项保存为可恢复Git。预期负例的运行时WARN按原字节保留，编译告警为0。
+
+当前按实际语义对象读取：52项Finding本地resolved、4项open。Git分支切换同名dirty覆盖与SDK worktree入口栈溢出已各自完成特定修复、消费者验证和独立复审链；本地闭合不宣SDK main或外部Issue已关闭。剩余为12项accepted source/kind迁移，以及cleanup/Sandbox/Task resume三个宽Finding共同关联的5秒物理结算B；只涉及两个待人的裁决单位，不自动退役合同或接受风险。
+
+[完整合同只读检查](evidence/sdk-contract-00782-readonly/README.md)真实退出1，保留13项连续性错误：12项提案未批准，另1项已有独立批准的Curator保存项仍按原证据归因；本轮没有update/accept/retire或seed修改，未到达的后续命令不算通过。40格审查是五个in_scope区域的有界风险映射（38 covered、2根manifest not_applicable），不是41族全部verified或完整生成通过。库存和行为模型闭合仍待最终条件核对；当前源码摘要和全项目strict在最终文稿冻结后更新。Windows原生consumer、适用SDK CI与精确SDK main验收另有边界；registry发布及CLI/官网外部写入不由本表授权。
+
+具名审查范围见[能力处置](capability-review-dispositions.md)，三链及开放对象见[Finding账本](finding-ledger.md)。历史段中的“当前”“未运行”“open”只描述该段原观察，不作为当前待办；原日志、输入、sourcecut与限制不改写。
+
+## 原延期范围说明（历史来源及D01–D14保留）
+
 本页是 SDK 能力治理的范围解释和后续接受条件，不是新的合同或生成器分类权威。
 本页下方1,448项集合仍绑定 framework `27c7701e` 库存epoch，只作遥测。当前 Host pin 为已发布 main `a6346643`，无临时 patch；旧 b909/be5 布局、method identity 与计数保原来源，不能用后继 pin 默认为新的 inventory。客户端局部关闭问题与 events/resources 已按具体证据提交有限审查里程碑，未扩大 deferred 接受范围。Session/Run 意图A已获批准且正在实现，后继 Host 原因转换、live journal、A2A 和新源码切点的最终整套门禁仍待；12项 source/kind 迁移与5秒B选择、完整生成/SDK main仍独立。D01–D14的产品分组、保留Rust/Host与延期理由不变，原accepted操作/字段不因本页被退役。
 

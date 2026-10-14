@@ -2,21 +2,13 @@
 
 ## 当前有限验收（2026-10-15）
 
-SDK精确依赖已发布框架a634，八个包同一Git来源、无本地path patch。最新同一官方语言入口真实退出0：[正式完整语言包](evidence/sdk-language-negotiation-reviewed-final/README.md)记录TypeScript328、Python393加18子测试、Java350/74份XML与三个quickstart；787项输入与真实执行Git b7e6前后完全相同，实际Host da873。编译、Ruff与SLF4J告警为0，22条预期错误响应运行时WARN原字节保留。旧790/782、be5及原失败链仍属于原切点，不改写为本次运行。
+SDK Host 精确依赖已发布框架 `00782b8a`，八个框架包同一 Git 来源、没有 path patch；框架合并后七项 CI 已成功。SDK [14 条 Rust 门禁](evidence/sdk-00782-final-rust-gates/README.md)实际全0，workspace 主计数474，不累加重叠 feature profiles。[完整语言入口](evidence/sdk-language-00782-reviewed-final/README.md)实际退出0：TypeScript329、Python394加18子测试、Java351/75份XML及三个quickstart；793项执行输入前后相同，随后逐项保存为可恢复Git。预期负例的运行时WARN按原字节保留，编译告警为0。
 
-原正式14条Rust门禁与其源码切点已有真实命令/独审；后继cfg-only Workflow补证另有真实Host AgentNode A→B消费、Host lib187、严格Clippy及fmt/check，[增量证据](evidence/live-service-llm-proof/README.md)保持自己的执行时间，不将旧命令伪写成新运行。默认30分钟TTL三语言已实测，精确50组duplicate提示例外已由用户接受、实施并复审；其范围不扩其它警告。
+当前按实际语义对象读取：52项Finding本地resolved、4项open。Git分支切换同名dirty覆盖与SDK worktree入口栈溢出已各自完成特定修复、消费者验证和独立复审链；本地闭合不宣SDK main或外部Issue已关闭。剩余为12项accepted source/kind迁移，以及cleanup/Sandbox/Task resume三个宽Finding共同关联的5秒物理结算B；只涉及两个待人的裁决单位，不自动退役合同或接受风险。
 
-各组实际有界风险审查与具体bug闭合已记入语义对象；局部resolved不表示远端Issue或SDK main已关闭。41项Behavior仍保needs_review，有限examined/mapped不等于全族verified。新Git分支切换缺陷已由真实源码审发现并登记open，当前a634尚未修；同名dirty tracked路径可能被路径恢复覆盖。不能用上述完整语言通过否定这个尚未有具名consumer反例的窗口。
+[完整合同只读检查](evidence/sdk-contract-00782-readonly/README.md)真实退出1，保留13项连续性错误：12项提案未批准，另1项已有独立批准的Curator保存项仍按原证据归因；本轮没有update/accept/retire或seed修改，未到达的后续命令不算通过。40格审查是五个in_scope区域的有界风险映射（38 covered、2根manifest not_applicable），不是41族全部verified或完整生成通过。库存和行为模型闭合仍待最终条件核对；当前源码摘要和全项目strict在最终文稿冻结后更新。Windows原生consumer、适用SDK CI与精确SDK main验收另有边界；registry发布及CLI/官网外部写入不由本表授权。
 
-两项待人的选择仍是12项accepted source/kind迁移与5秒物理结算B。cleanup、Sandbox和Task resume三个宽Finding的物理残余关联同一B，不建立三套authority。完整28-profile生成按12连续性义务正确阻写，与已修的库存自动接受旧bug分开。Windows原生consumer、最终源码摘要/全项目strict、适用远端CI与精确SDK main独立；CLI/官网外部写入及registry发布不从SDK授权扩张。
-
-机器读取本地Finding当前状态：50项resolved、5项open。开放对象如下：
-
-- [finding.sdk-accepted-source-continuity](../../../.echo-semantic/findings/finding.sdk-accepted-source-continuity.md)
-- [finding.sdk-cleanup-retry-owner](../../../.echo-semantic/findings/finding.sdk-cleanup-retry-owner.md)
-- [finding.sdk-git-branch-switch-dirty-path-overwrite](../../../.echo-semantic/findings/finding.sdk-git-branch-switch-dirty-path-overwrite.md)
-- [finding.sdk-sandbox-cleanup-order](../../../.echo-semantic/findings/finding.sdk-sandbox-cleanup-order.md)
-- [finding.sdk-task-resume-extension-invocation-conflict](../../../.echo-semantic/findings/finding.sdk-task-resume-extension-invocation-conflict.md)
+具名审查范围见[能力处置](capability-review-dispositions.md)，三链及开放对象见[Finding账本](finding-ledger.md)。历史段中的“当前”“未运行”“open”只描述该段原观察，不作为当前待办；原日志、输入、sourcecut与限制不改写。
 
 ## 前一阶段文字与证据（历史，原正文保留）
 
