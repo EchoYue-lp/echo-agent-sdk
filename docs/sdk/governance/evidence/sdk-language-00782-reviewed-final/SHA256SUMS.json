@@ -1,0 +1,374 @@
+{
+  "README.md": {
+    "sha256": "2703d8553ef1afa4f2a4ba04c61455856903dccfbf44b90007aee1408bd17820",
+    "bytes": 3947
+  },
+  "executed-runner.py": {
+    "sha256": "aa0cb18cc479f93fa3af9464c315f30a51c72ad7ee571f8de0e4f01daad6aa66",
+    "bytes": 6150
+  },
+  "full-language.log": {
+    "sha256": "02119719d56ced55f13ca35d9ccc5f28d72d189433857666b60eaa2a88ff7119",
+    "bytes": 109080
+  },
+  "java-summary.json": {
+    "sha256": "4285625dc1a32081673a3d22c8f382beca645d50083770ddb94cca7e8a8adc3c",
+    "bytes": 16920
+  },
+  "java-xml/TEST-com.echoagent.sdk.A2AHostTest.xml": {
+    "sha256": "c3620ab2abe84de7da8a31c48de85975641300f0fc4276186ef6f9b869390d18",
+    "bytes": 8904
+  },
+  "java-xml/TEST-com.echoagent.sdk.A2ATaskStateTest.xml": {
+    "sha256": "cebc02b771c5b3eaf27b95b662f958770e9de48f1a0facdec3e95c7713ec1898",
+    "bytes": 8826
+  },
+  "java-xml/TEST-com.echoagent.sdk.A2AValueTest.xml": {
+    "sha256": "e1fb69002db0c0ea03dc0990d646f2dc90bb283904f8c9ff64a7b83de31e9103",
+    "bytes": 17631
+  },
+  "java-xml/TEST-com.echoagent.sdk.AckSubmissionTest.xml": {
+    "sha256": "b7e9e51b98451d84987ace28d6fb2547d3b36f3e62213792e5f0839a151afade",
+    "bytes": 11091
+  },
+  "java-xml/TEST-com.echoagent.sdk.CallbackAndEffectsTest.xml": {
+    "sha256": "3e7b983a7cbe2f3f42ae4e1a7394ae261333404860e46e8917d4d345ec6df995",
+    "bytes": 9016
+  },
+  "java-xml/TEST-com.echoagent.sdk.CallbackHostTest.xml": {
+    "sha256": "04baa21dfaebe95bcf7e8a6da265f9688e2db054706803aa45e823ffedaa22e9",
+    "bytes": 8740
+  },
+  "java-xml/TEST-com.echoagent.sdk.ChannelHandlerForwardHostTest.xml": {
+    "sha256": "1728fa4249e6a3160c94db147ec6495e271212fdeccd8d5749351bb797120449",
+    "bytes": 9068
+  },
+  "java-xml/TEST-com.echoagent.sdk.ComputationHostTest.xml": {
+    "sha256": "f052ac51c1a3d2e29e3684237b323f8a33d45ef30079d3f586cd3f91df0ac12d",
+    "bytes": 9171
+  },
+  "java-xml/TEST-com.echoagent.sdk.DelayedSubscriberHostTest.xml": {
+    "sha256": "f4d724a4073c093f827c2d0d9a42c33864bb76dd9c97b90521d69fd97d98a769",
+    "bytes": 8920
+  },
+  "java-xml/TEST-com.echoagent.sdk.EvalImproveTopologyHostTest.xml": {
+    "sha256": "b7605c60db0afe854102cd0dee77e75572a8f0bfe0bb6b49ca4dee2eb7d1c68f",
+    "bytes": 10036
+  },
+  "java-xml/TEST-com.echoagent.sdk.EventIdentityTest.xml": {
+    "sha256": "86ad61a28284eb0f74cc3b890a4c1474ecf20ac8e4a855408c532c9167b8d7f9",
+    "bytes": 8833
+  },
+  "java-xml/TEST-com.echoagent.sdk.ExecutionUsageTest.xml": {
+    "sha256": "ea2852e5656fcb20230db3ce378e507b7e1554b8c00dea800fc33f33cd3628dd",
+    "bytes": 8819
+  },
+  "java-xml/TEST-com.echoagent.sdk.ExternalAckHostTest.xml": {
+    "sha256": "d155fd40c944cdfb7611ec479d9b2e7766cd93ca13280195f4a7260da05a3cc8",
+    "bytes": 9222
+  },
+  "java-xml/TEST-com.echoagent.sdk.FacadeParityTest.xml": {
+    "sha256": "4ce789ac6014291f15ceb0a52073eb424e1042e354d0c3977b9b6cb240ed26ae",
+    "bytes": 8841
+  },
+  "java-xml/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml": {
+    "sha256": "fadffc96305fdfd3d47c046e700370e860efa4516262036025c64f47462a357f",
+    "bytes": 12524
+  },
+  "java-xml/TEST-com.echoagent.sdk.FactoryHostTest.xml": {
+    "sha256": "61687a3a0ddfb2a85ea7afa22be65f76127935466bbcda94aaedcfef75adc61f",
+    "bytes": 8732
+  },
+  "java-xml/TEST-com.echoagent.sdk.FamilyRouteHostTest.xml": {
+    "sha256": "3b5e94bf84ab130aa79b525de785afcfe18e237b995e8e89ce7b8822e3234fae",
+    "bytes": 8702
+  },
+  "java-xml/TEST-com.echoagent.sdk.FileAuthorityIdentityHostTest.xml": {
+    "sha256": "999feac83fbc1f450aa4cdf2288e3b0b9bfff74b23e3f535c89e97fce319e027",
+    "bytes": 9296
+  },
+  "java-xml/TEST-com.echoagent.sdk.GapAckHostTest.xml": {
+    "sha256": "2b47f6898985e6dce46b05b57f339ac2980cd4f787126ec850735c44e498c49c",
+    "bytes": 9718
+  },
+  "java-xml/TEST-com.echoagent.sdk.GitToolHostTest.xml": {
+    "sha256": "dc7c5f1892f0c26f28f7da5ee1ff6133aaafc231cd006b8f532102d67d405771",
+    "bytes": 8950
+  },
+  "java-xml/TEST-com.echoagent.sdk.HookEventTest.xml": {
+    "sha256": "ee1ecf90a541bd37edb478e4aa0756fc0849ef5c11b81f1c93e2690412e6924a",
+    "bytes": 8810
+  },
+  "java-xml/TEST-com.echoagent.sdk.HostEarlyExitTest.xml": {
+    "sha256": "e0be4151d32e7c7e400207c65cc7424c40009d59e3c329e7cc56bfc2bcd7985b",
+    "bytes": 10984
+  },
+  "java-xml/TEST-com.echoagent.sdk.InterventionResultTest.xml": {
+    "sha256": "6212f1025c60d778bced032bfd576457a0f327185577052046e32c855c0dec53",
+    "bytes": 8851
+  },
+  "java-xml/TEST-com.echoagent.sdk.IntrinsicToolValueTest.xml": {
+    "sha256": "da38a6ab38334a305e0115d4da8fcb2617133111be264d7f1e15a3f0a1bcd65e",
+    "bytes": 8983
+  },
+  "java-xml/TEST-com.echoagent.sdk.JavaClientCloseLifecycleTest.xml": {
+    "sha256": "b47f1b4f5d6769a25a47ba18fc0ffdd47b94a3aaba2b1680061b5874bbb6c3b6",
+    "bytes": 9061
+  },
+  "java-xml/TEST-com.echoagent.sdk.JsonSupportTest.xml": {
+    "sha256": "b597f858694a0ed49af535c36a3774bd6af0e06588d10f1738398231a23fdf7a",
+    "bytes": 9808
+  },
+  "java-xml/TEST-com.echoagent.sdk.LateFactoryHostTest.xml": {
+    "sha256": "60502c8cf68a72ce16fa0ed1ea84e2e870ae874b2fddf44d5ce4f9598bae4a5e",
+    "bytes": 9230
+  },
+  "java-xml/TEST-com.echoagent.sdk.LifecycleTest.xml": {
+    "sha256": "c556c295936efeda22a3be281a6367996b084071cf9c42812f27b81609efbdf3",
+    "bytes": 10799
+  },
+  "java-xml/TEST-com.echoagent.sdk.LlmApiProtocolTest.xml": {
+    "sha256": "f15106c6f6374b6e6d754d4de9f0c289a9053f4f0fa45840c899beaaff5c2531",
+    "bytes": 8824
+  },
+  "java-xml/TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml": {
+    "sha256": "f60ac37b0229e8b302789f94a76ff4aefd2c16ab11787dea8c1245c2a2edaa93",
+    "bytes": 10452
+  },
+  "java-xml/TEST-com.echoagent.sdk.LspDiagnosticsHostTest.xml": {
+    "sha256": "c4cde9c9e85ee49d97c79b69d173abb0503c896408fe08c55f4c50831134aa72",
+    "bytes": 8907
+  },
+  "java-xml/TEST-com.echoagent.sdk.LspHostTest.xml": {
+    "sha256": "ec36c584302216022c429e95377e354dccd6a49d96eda462981228fd36e40834",
+    "bytes": 8845
+  },
+  "java-xml/TEST-com.echoagent.sdk.ManagedComponentOperationsTest.xml": {
+    "sha256": "008c2cde5337fcda45b12d173f8f0b84749179af49f8444564eb11bd71f79404",
+    "bytes": 9073
+  },
+  "java-xml/TEST-com.echoagent.sdk.ManagedPersistenceTest.xml": {
+    "sha256": "1b399ac17e46942b192a890c59033c815086b3825cb68c7cfa66588bd8016590",
+    "bytes": 10016
+  },
+  "java-xml/TEST-com.echoagent.sdk.ManagedRetirementHostTest.xml": {
+    "sha256": "e020bc15890c7bb3cd61f73e537699e09f95fecf321be47e12ed5a6b45d902b3",
+    "bytes": 9397
+  },
+  "java-xml/TEST-com.echoagent.sdk.ManagedStoreHostTest.xml": {
+    "sha256": "4d4a27599e955b241fc74f5558d7ab462da38659ca9195d249cf4206c1f3b3d0",
+    "bytes": 9041
+  },
+  "java-xml/TEST-com.echoagent.sdk.McpChannelHostTest.xml": {
+    "sha256": "96f4cbe1dac052cbe6d985f063a7416e02fee3b460bcfff6f47521c36279b6c9",
+    "bytes": 10085
+  },
+  "java-xml/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml": {
+    "sha256": "88af766e84e30650bc115086dc8bcf803674842ab3f9aa2ca209ee7211a9a754",
+    "bytes": 8932
+  },
+  "java-xml/TEST-com.echoagent.sdk.MemoryPolicyValuesTest.xml": {
+    "sha256": "c77f2ddaf16dc91f249f48b172c07a21e2d49c6f21547e8bf8449f441c308f19",
+    "bytes": 8849
+  },
+  "java-xml/TEST-com.echoagent.sdk.MemoryScopeTest.xml": {
+    "sha256": "4ab63f2fe829d161ce129c4856cb6a3ab6a495e5860fb8911755db9a73bc0f92",
+    "bytes": 8817
+  },
+  "java-xml/TEST-com.echoagent.sdk.ModelInputModalityTest.xml": {
+    "sha256": "b5d27ea4ffc2c838a45601afbc05c1ce6321a95a73a5bc66fab2b4a3f8b0c213",
+    "bytes": 8837
+  },
+  "java-xml/TEST-com.echoagent.sdk.ModelProfileTest.xml": {
+    "sha256": "95f3fd71d638e6ddc660a6fb49d5a456f686c9de6dadde2fd12dacb8236ab1d3",
+    "bytes": 8960
+  },
+  "java-xml/TEST-com.echoagent.sdk.ParallelSessionHostTest.xml": {
+    "sha256": "fa5f047baa1404143c3de2b21aa2795ce09dbc3f0f73a9ffd72ec5907a654674",
+    "bytes": 8735
+  },
+  "java-xml/TEST-com.echoagent.sdk.PromptCacheLayoutTest.xml": {
+    "sha256": "4ace6542fe17d4e3bbbf3aa5ff89c48ffbc696875cb19660c018b8768d3b8285",
+    "bytes": 8829
+  },
+  "java-xml/TEST-com.echoagent.sdk.ProtocolHostTest.xml": {
+    "sha256": "a38db96ae6efe384a2b44fee3608e93c8d258c01a4362e8bbc8acae3e0b676ac",
+    "bytes": 11349
+  },
+  "java-xml/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml": {
+    "sha256": "d9cee0a494d5f18ecc2e1c403e3b3211d9288a670b52df7a5903811d7e92610a",
+    "bytes": 9777
+  },
+  "java-xml/TEST-com.echoagent.sdk.ProviderCapabilitiesTest.xml": {
+    "sha256": "a673989d379902871be3c85fa551469f6204634031d5c5e8af357369fba56bb9",
+    "bytes": 8851
+  },
+  "java-xml/TEST-com.echoagent.sdk.RagProjectRulesHostTest.xml": {
+    "sha256": "b5ceec8fdf31bdf3f2160ad348a06621b28b34cf31ab59fd39a959b44b2195e8",
+    "bytes": 9291
+  },
+  "java-xml/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml": {
+    "sha256": "4168af166593583b81711b94e914e789e7e8beb9dcfef5afb7582e01de582f1a",
+    "bytes": 8746
+  },
+  "java-xml/TEST-com.echoagent.sdk.ResourceLimitsTest.xml": {
+    "sha256": "66cdfcd2e26acab44d676a8332a723460906867325a43c9d9e86d9be30b3b388",
+    "bytes": 8829
+  },
+  "java-xml/TEST-com.echoagent.sdk.ResponseFormatTest.xml": {
+    "sha256": "7d8ce0f4cb3a7ebb30b68c54c2b24b70fccbeeea1e11907eb29219e49ed1461d",
+    "bytes": 8824
+  },
+  "java-xml/TEST-com.echoagent.sdk.RetryPolicyTest.xml": {
+    "sha256": "a4273b4c28a8157e61628152225f4a05d23d5fd59298c9c0e0440de1e2045126",
+    "bytes": 8812
+  },
+  "java-xml/TEST-com.echoagent.sdk.RunReceiptApiTest.xml": {
+    "sha256": "8735488bab800de1582a2fc8745f59528ad60bc3bc79dab4c5ddd8b7e4bb10ab",
+    "bytes": 8990
+  },
+  "java-xml/TEST-com.echoagent.sdk.RunSteerHostTest.xml": {
+    "sha256": "50fd7a398b88369b5c82c9cc74c93021edcdcbed3c032805e2a954dccac763e8",
+    "bytes": 9132
+  },
+  "java-xml/TEST-com.echoagent.sdk.SecretScanHostTest.xml": {
+    "sha256": "69ca249c48958fddbf2630df3c4e2c0481175e47e7bd726976b6778580c4a4ca",
+    "bytes": 9096
+  },
+  "java-xml/TEST-com.echoagent.sdk.SessionRulesPromptHostTest.xml": {
+    "sha256": "4f0a52784df2268673653535ba54bdba4e351c2f592a3d49ee795b8e4136b4ca",
+    "bytes": 9745
+  },
+  "java-xml/TEST-com.echoagent.sdk.SessionRunIdempotencyHostTest.xml": {
+    "sha256": "8987259749c0816cae7a00660b0693785061cf237eb11113d5124480eaac80a3",
+    "bytes": 9041
+  },
+  "java-xml/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml": {
+    "sha256": "2ad320e6a7ffcc6bd2d5498765e3eec71fc8c120884b8d080c90b4fdc6fca7a4",
+    "bytes": 9560
+  },
+  "java-xml/TEST-com.echoagent.sdk.StreamCancellationRouteHostTest.xml": {
+    "sha256": "b9f45333f306450e9c6786713acfff0b04bad76aaddd0eaec328928271f76e93",
+    "bytes": 8729
+  },
+  "java-xml/TEST-com.echoagent.sdk.StreamCancellationRoutesTest.xml": {
+    "sha256": "0ca48361beb01bf97a3375669864571339379c17c44db8450176aa875f10fe90",
+    "bytes": 9200
+  },
+  "java-xml/TEST-com.echoagent.sdk.TaskStoreTest.xml": {
+    "sha256": "99b80fefad67a0f5eba21d44ed0a43e4716f403b94748bad250a3a7fdd70e08c",
+    "bytes": 8979
+  },
+  "java-xml/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml": {
+    "sha256": "7656461ceba2867af4de09548bc729ace6559f9b20c778800e6a145ed6a404ba",
+    "bytes": 9786
+  },
+  "java-xml/TEST-com.echoagent.sdk.TelemetryHostTest.xml": {
+    "sha256": "568ddce3ca02af379a5b078f0d3b823f4674983c69617156732d24ce96cb7aba",
+    "bytes": 9506
+  },
+  "java-xml/TEST-com.echoagent.sdk.TestingContractTest.xml": {
+    "sha256": "fdb8a971f61cbdae6f40738f7b25a776d473aafbb537a1fffde776603d104f17",
+    "bytes": 8852
+  },
+  "java-xml/TEST-com.echoagent.sdk.ThinkingConfigTest.xml": {
+    "sha256": "1b65fc8cc5fe21e6dd51ab51972ae36bc4f9ff0783610c2be92db5a657b47868",
+    "bytes": 8828
+  },
+  "java-xml/TEST-com.echoagent.sdk.ThinkingProfileTest.xml": {
+    "sha256": "e354e1ab5eb31d99d6c02f6a0c007d619df2fdcfcbf1a2ac642a42dd91b47c8b",
+    "bytes": 8836
+  },
+  "java-xml/TEST-com.echoagent.sdk.ThinkingProtocolTest.xml": {
+    "sha256": "adb04f8db5493f219ea4226da5741b94dc1953b558bcd6a688e49407fe5879ba",
+    "bytes": 8837
+  },
+  "java-xml/TEST-com.echoagent.sdk.TimeValuesTest.xml": {
+    "sha256": "26be634583f68af6d3760e0fa5279b787456783c9de5b99a62425d577076f6b5",
+    "bytes": 8811
+  },
+  "java-xml/TEST-com.echoagent.sdk.TokenBudgetTest.xml": {
+    "sha256": "ccc9322e00ef41b2d9ed78082a46d3fa21433e33131cc77487136ca896c6cea3",
+    "bytes": 8819
+  },
+  "java-xml/TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml": {
+    "sha256": "4890fd094c1e0ff8f2bc97bcbc5f5e6c95c4d3f41b7417f72bf4843ff13914e5",
+    "bytes": 9099
+  },
+  "java-xml/TEST-com.echoagent.sdk.ToolValueEffectHostTest.xml": {
+    "sha256": "9a201e46f2b8e5f0a75d550a8881bcac1731c97f17b3a3dbe4a7f41fe1e6ccab",
+    "bytes": 10669
+  },
+  "java-xml/TEST-com.echoagent.sdk.TurnModeTest.xml": {
+    "sha256": "77105710439d47a5761dc77c5d01a008301bd1a9dfba26b006feedce1630359b",
+    "bytes": 8798
+  },
+  "java-xml/TEST-com.echoagent.sdk.TypedExtensionTest.xml": {
+    "sha256": "e674a99ed8af211ae8dc5cf02df5fec1d934d169135f9d7c2441f2c1783ebaf0",
+    "bytes": 9244
+  },
+  "java-xml/TEST-com.echoagent.sdk.Utf8SupportTest.xml": {
+    "sha256": "e698e89f6d8be7f6401a1b7315b0591a18a5f39c370111afb2d4b72edceda42a",
+    "bytes": 9202
+  },
+  "java-xml/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml": {
+    "sha256": "cd23792abe924d08f492b7d5bb59e93747f1e992158f55e6bfff1805b0065b49",
+    "bytes": 10642
+  },
+  "manifest.json": {
+    "sha256": "216341e2bae4f22e1d3b85d194a8eb4adb564b93adbdcf8862dc110e9e82cb83",
+    "bytes": 2332
+  },
+  "preflight-metadata.json": {
+    "sha256": "ed1bee4a6f5510d29aa84c70f1ec7c770984252d0c483acd4002670ad07dc86b",
+    "bytes": 3490116
+  },
+  "preflight-metadata.stderr.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "receipt.json": {
+    "sha256": "c9717846ffc2b303fa0919910f6a57e9498d4b811b263abc11a527b543c097bf",
+    "bytes": 18088
+  },
+  "run.json": {
+    "sha256": "14fb168fab36f7f1e025f6f150e472ce991d6b7b2586d7d5f7a9965a9a4d9292",
+    "bytes": 870
+  },
+  "runner.log": {
+    "sha256": "7a2e69efa343efebcc25b37c2d7e4135a647fc3821656bd71eeaf71813dca027",
+    "bytes": 590
+  },
+  "runtime-warning-classification.json": {
+    "sha256": "29e9bf8a7608a597676ae99645404818e6839f424dfcec7722d228775bae157f",
+    "bytes": 396
+  },
+  "sdk-channel-comparator-current-run.json": {
+    "sha256": "b3de52c5bd48d665005469a367dd0c141a5a4e9e348e17259d1c6b1f0e9edfe4",
+    "bytes": 1137
+  },
+  "sdk-channel-comparator-current.log": {
+    "sha256": "066006ac376ef193158ea4c2bf594b472af2f32f0276d968cb257778bf401d6a",
+    "bytes": 119
+  },
+  "source-after.json": {
+    "sha256": "c42dbb230948b42708922ac50fffd597b7570413268e8a94f676c8f4d2c8398c",
+    "bytes": 101348
+  },
+  "source-before.json": {
+    "sha256": "c42dbb230948b42708922ac50fffd597b7570413268e8a94f676c8f4d2c8398c",
+    "bytes": 101348
+  },
+  "source-git-binding.json": {
+    "sha256": "8a02474d0dd081c54a95da46afc9d092aa5aa93b091a3838859e2a4f7afd23b2",
+    "bytes": 1605
+  },
+  "source-scope.json": {
+    "sha256": "b04f7540fd6499865514bd87c8f995231d1c568eac5af69a062ea559405baad9",
+    "bytes": 685
+  },
+  "untracked-input/sdks/shared/testing/compare_channel_forward_results.py": {
+    "sha256": "0a687973e1e5d5db74fcf01ea2b96afa75bb5b65a69e75f0a8023ec8cbe7293f",
+    "bytes": 3631
+  }
+}

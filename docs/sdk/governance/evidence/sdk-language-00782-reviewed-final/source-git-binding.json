@@ -1,0 +1,35 @@
+{
+  "executionStartCommit": "c1213de0e76589070322ad8137b68b7a84435a24",
+  "laterConsumerCommit": "fe8451d8f6190ad80405a7717efbd9d505cd74ed",
+  "frozenInputFiles": 793,
+  "beforeAfterBytesEqual": true,
+  "allCurrentFilesystemBytesMatch": true,
+  "notInStartCommitTree": [
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/GitToolHostTest.java",
+      "sha256": "a2024ffc944d1ee08bdaa5cff5cc238c79ec909586e11996a8cd0bd7e8991d28",
+      "trackedInLaterConsumerCommit": true
+    },
+    {
+      "path": "sdks/python/tests/test_git_tool_host.py",
+      "sha256": "65b702caca7ce550652c0c44f8ba19eb93395cb0dc36be1348bdf1fd4a53b8e2",
+      "trackedInLaterConsumerCommit": true
+    },
+    {
+      "path": "sdks/shared/testing/compare_channel_forward_results.py",
+      "sha256": "0a687973e1e5d5db74fcf01ea2b96afa75bb5b65a69e75f0a8023ec8cbe7293f",
+      "trackedInLaterConsumerCommit": false
+    },
+    {
+      "path": "sdks/shared/testing/git_tool_host_fixture.py",
+      "sha256": "56b241f6f4ba6820cfa3aa53a855e61fd0ee6bd475fb927d6d99d8a1c94daab8",
+      "trackedInLaterConsumerCommit": true
+    },
+    {
+      "path": "sdks/typescript/test/git-tool-host.test.js",
+      "sha256": "480a601890f3d57607dda72f282b72224ca606d50518e3e87e52c0e58dbf9d55",
+      "trackedInLaterConsumerCommit": true
+    }
+  ],
+  "qualification": "The run includes four new Git consumer/fixture files plus one older untracked comparison helper. It is a frozen working-tree byte snapshot; not all 793 inputs exist in the c121 commit tree. The helper is an input/lint file, not evidence that its own comparison was executed."
+}
