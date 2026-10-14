@@ -9,11 +9,14 @@ framework, connected through a source-built ACP Host and the
 The SDK-owned import and extraction history includes the original clean pin
 `27c7701e1eb116db1076da7f84bb68898544a44c`. The current Host governance candidate
 resolves published framework revision
-`a6346643bda47679a96760f56f45e41fd73b61b0` from
-[framework PR #185](https://github.com/EchoYue-lp/echo-agent/pull/185).
+`00782b8aeddefe2ea8c566922cbdee6aedc80d70` from
+[framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186).
+It includes the framework Git branch-switch repair; this SDK lock also selects
+rustls 0.23.46. Exact signed source/tree is verified, while post-main framework
+CI and this new SDK pin's build/dependency/native/final gates remain separate.
 The earlier be5 [published-pin provenance](docs/sdk/governance/evidence/sdk-chart-published-pin/published-pin-provenance.json)
 remains historical. The protocol remains framework-free, and full Rust
-inventory remains telemetry. The [a634 Rust gates](docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)
+inventory remains telemetry. The [historical a634 Rust gates](docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)
 and [complete language gate](docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
 bind their exact execution inputs; later runtime repairs require their own
 verification and do not inherit those earlier passes.

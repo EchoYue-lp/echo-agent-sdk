@@ -197,3 +197,8 @@ docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/me
 docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/non-git-poll-disassembly.log -diff
 docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/remove-poll-disassembly.log -diff
 docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/thin-entry-constructor-disassembly.log -diff
+
+# Immutable original dependency command output; keep emitted whitespace intact.
+docs/sdk/governance/evidence/sdk-published-00782-pin/raw/deny.log -diff
+docs/sdk/governance/evidence/sdk-published-00782-pin/raw/lock.after-tempfile-once.patch -diff
+docs/sdk/governance/evidence/sdk-published-00782-pin/raw/selected-deny.log -diff

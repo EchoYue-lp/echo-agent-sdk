@@ -1,0 +1,137 @@
+{
+  "scope": "originalbeforewholelockcopiedthenoriginaltwoCargoargv replay, notfieldedited lock",
+  "exact_original_candidate_sha256_matched": "88d99f3880f75315f60c8eca48035eb6151a1a055aeda7f621e689b354d411b3",
+  "two_original_argv_equal_and_exit_zero": true,
+  "original_full_candidate_not_preserved_initially": true,
+  "process_gap": "fullbefore-tempfile candidate notsaved; onlypriorSHA/records/diff. Recovered byexactCargo replay and sameSHA nowfullbytes preserved",
+  "fiveWindowsedge_graph_notadopted_andretained": "not-adopted-windows-edge-graph/Cargo.lock",
+  "count658": true,
+  "change_scope": "8gitpackage sources +rustls2scalar +tempfilegetrandom1edge .4\u2192.3",
+  "same_identity_delta": [
+    {
+      "name": "tempfile",
+      "version": "3.27.0",
+      "before": {
+        "name": "tempfile",
+        "version": "3.27.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd",
+        "dependencies": [
+          "fastrand",
+          "getrandom 0.4.3",
+          "once_cell",
+          "rustix",
+          "windows-sys 0.61.2"
+        ]
+      },
+      "after": {
+        "name": "tempfile",
+        "version": "3.27.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd",
+        "dependencies": [
+          "fastrand",
+          "getrandom 0.3.4",
+          "once_cell",
+          "rustix",
+          "windows-sys 0.61.2"
+        ]
+      }
+    }
+  ],
+  "newIdentities": [
+    [
+      "echo_execution",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "echo_core",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "echo_state",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "echo_tools",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "echo_orchestration",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "echo_macros",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "echo_agent",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "echo_integration",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    ],
+    [
+      "rustls",
+      "0.23.46",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ]
+  ],
+  "oldIdentities": [
+    [
+      "echo_agent",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "echo_integration",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "echo_execution",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "echo_core",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "echo_tools",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "echo_state",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "echo_orchestration",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "echo_macros",
+      "0.2.0",
+      "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
+    ],
+    [
+      "rustls",
+      "0.23.45",
+      "registry+https://github.com/rust-lang/crates.io-index"
+    ]
+  ],
+  "policy_rules_unchanged": true
+}

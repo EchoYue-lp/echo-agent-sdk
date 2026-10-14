@@ -1,0 +1,11 @@
+# SDK Host 固定到已发布 Git 修复框架
+
+当前构建pin固定到00782b8aeddefe2ea8c566922cbdee6aedc80d70，其签名与treeb77ee48同独审候选；八个framework package来源均由actualCargo lockedmetadata与checkout HEAD/tree核对，未pathpatch。这里只更新Hostmanifest、Cargo.lock、精确provenance脚本及三份当前说明，Protocol/客户端/seed/生成合同与原治理权限政策不改，历史a634证据不全局替换。
+
+选定锁SHA88d99f3880f75315f60c8eca48035eb6151a1a055aeda7f621e689b354d411b3：658完整(name,version,source)identity，八Git source替换、rustls.45→.46 version/checksum、tempfile3.27的getrandom.4.3→.3.4单edge归并；其它648记录完整相同。tempfile声明Unix/Windows/Wasi允许>=.3,<.5，publishedframework锁同.3.4及windows-sys.61.2，actualselectedallfeaturegraph一致。这是既有依赖选择，无新公共合同。
+
+候选最初只保存SHA/diff而未保存完整单边锁字节，是流程缺口。一次经授权Cargo tempfile同版本update尝试产生额外五Windowsedges，原整锁/日志/成功门禁保存为未采用结果。随后恢复原before整锁字节，并按前两条完全同argv/环境正规Cargo命令重放，真实exit0且输出精确匹配原88d99SHA才采用，现完整候选字节保存。没有手编锁字段或无穷resolver试探；五边图的audit/deny通过不能借给选图。
+
+选图重新cargo audit --deny warnings与cargo deny --workspace --all-features --locked check均真实0。两个freshRustSec repo HEAD与一次官方remoteHEAD同caee11f41fab07d676c0a4655a2a5dd1f94da97c，1314advisories/658deps；deny唯一50warning[duplicate]逐组name和版本集合匹配已接受表，其它WARN0，原四exceptions/config未改。完整日志保留提示，不声称所有工具输出零WARN。
+
+同选图Host sdk-facade-all --locked真实build0，61编译输入前后不变，immutablebinarySHA0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df，SDKsource2df薄入口代码保。独立有限审查PASS0已核锁/provenance/图/当前文稿/build，本正式copy材料复审另承接。FullRust14、三语言完整门禁、Git28真实副作用语料、新frameworkpostmainCI、完整accepted-source和SDKmain交付仍独立结算；本包不宣registry发布。依赖更新不新增示例或网站surface/API，现examples仍须最终全语言执行。

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "steps": [
+    {
+      "label": "sdk-selected-newpin-fresh-dependency-policy",
+      "command": [
+        "cargo",
+        "deny",
+        "--workspace",
+        "--all-features",
+        "--locked",
+        "check"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-git-branch-published-pin/selected-deny.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 725098,
+      "bytesWritten": 725098,
+      "startedAt": "2026-10-14T18:38:31.703Z",
+      "finishedAt": "2026-10-14T18:38:34.389Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T18:38:34.389Z"
+}

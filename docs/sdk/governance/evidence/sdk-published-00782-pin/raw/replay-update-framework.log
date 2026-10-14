@@ -1,0 +1,20 @@
+    Updating `rsproxy-sparse` index
+    Updating git repository `https://github.com/EchoYue-lp/echo-agent.git`
+     Locking 8 packages to highest Rust 1.95 compatible versions
+      Adding echo_agent v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_agent v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+      Adding echo_core v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_core v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+      Adding echo_execution v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_execution v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+      Adding echo_integration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_integration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+      Adding echo_macros v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_macros v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+      Adding echo_orchestration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_orchestration v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+      Adding echo_state v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_state v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+      Adding echo_tools v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8a)
+    Removing echo_tools v0.2.0 (https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643)
+note: pass `--verbose` to see 129 unchanged dependencies behind latest

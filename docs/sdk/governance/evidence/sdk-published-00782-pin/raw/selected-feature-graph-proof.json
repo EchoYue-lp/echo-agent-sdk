@@ -1,0 +1,67 @@
+{
+  "scope": "actual --all-features locked resolve graph, targetdeclaration feasibility pluscurrentcompiledchecksseparate",
+  "tempfilePackageId": "registry+https://github.com/rust-lang/crates.io-index#tempfile@3.27.0",
+  "features": [
+    "default",
+    "getrandom"
+  ],
+  "getrandomDeclaration": {
+    "name": "getrandom",
+    "source": "registry+https://github.com/rust-lang/crates.io-index",
+    "req": ">=0.3.0, <0.5",
+    "kind": null,
+    "rename": null,
+    "optional": true,
+    "uses_default_features": false,
+    "features": [],
+    "target": "cfg(any(unix, windows, target_os = \"wasi\"))",
+    "registry": null
+  },
+  "selectedRandom": {
+    "id": "registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4",
+    "version": "0.3.4"
+  },
+  "targetWindowsSys": {
+    "id": "registry+https://github.com/rust-lang/crates.io-index#windows-sys@0.61.2",
+    "version": "0.61.2"
+  },
+  "publishedFrameworkLockSameTempfileChoice": true,
+  "actualTargetConfig": "cfg(any(unix, windows, target_os = wasi)); satisfies declaredrange no manifesto change",
+  "eightPublishedGitSources": [
+    {
+      "name": "echo_agent",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    },
+    {
+      "name": "echo_core",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    },
+    {
+      "name": "echo_execution",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    },
+    {
+      "name": "echo_integration",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    },
+    {
+      "name": "echo_macros",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    },
+    {
+      "name": "echo_orchestration",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    },
+    {
+      "name": "echo_state",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    },
+    {
+      "name": "echo_tools",
+      "source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+    }
+  ],
+  "rustlsVersion": "0.23.46",
+  "metadataSHA": "50e3c0e87b4c70499d34794fd16496cffef06083d079ff68a44ae36811f88995",
+  "notClaimed": "No Windows/wasi nativeexecution proof; exact declaredgraph feasibility andnewcompatbuild currentplatform only"
+}

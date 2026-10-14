@@ -57,12 +57,16 @@ boundary remains recorded in `contracts/sdk/source-contract.json` and
 ## Current Governance Candidate Pin
 
 The current Host dependency target is published framework revision
-`a6346643bda47679a96760f56f45e41fd73b61b0`, merged through
-[framework PR #185](https://github.com/EchoYue-lp/echo-agent/pull/185).
+`00782b8aeddefe2ea8c566922cbdee6aedc80d70`, merged through
+[framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186).
+The signed published source tree matches the independently reviewed candidate;
+it repairs Git branch switching through the original framework authority.
+The SDK lock additionally selects rustls 0.23.46. Framework post-main CI and
+SDK checks against this new pin/lock remain pending their actual receipts.
 The earlier `be5f0a8405b593c4ef964cd6fd2df4beabf4956c`
 [published-pin provenance](docs/sdk/governance/evidence/sdk-chart-published-pin/published-pin-provenance.json)
 remains historical evidence for that older dependency/build, not validation of
-this new Host target. The [a634 Rust gates](docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)
+this new Host target. The [historical a634 Rust gates](docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)
 and [complete language gate](docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
 retain their exact source input hashes. Runtime repairs made after those runs,
 including stream failure classification and current publication/idempotency

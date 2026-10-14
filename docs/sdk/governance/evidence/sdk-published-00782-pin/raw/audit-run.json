@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "steps": [
+    {
+      "label": "sdk-newpin-fresh-audit",
+      "command": [
+        "cargo",
+        "audit",
+        "--deny",
+        "warnings"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-git-branch-published-pin/audit.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 253,
+      "bytesWritten": 253,
+      "startedAt": "2026-10-14T18:32:09.019Z",
+      "finishedAt": "2026-10-14T18:32:11.532Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T18:32:11.532Z"
+}

@@ -1,0 +1,130 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 064286f..ce7b4cb 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1249,7 +1249,7 @@ dependencies = [
+ [[package]]
+ name = "echo_agent"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "agent-client-protocol",
+  "async-stream",
+@@ -1296,7 +1296,7 @@ dependencies = [
+ [[package]]
+ name = "echo_core"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "async-stream",
+  "chrono",
+@@ -1325,7 +1325,7 @@ dependencies = [
+ [[package]]
+ name = "echo_execution"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "dashmap",
+  "dirs",
+@@ -1350,7 +1350,7 @@ dependencies = [
+ [[package]]
+ name = "echo_integration"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "async-stream",
+  "async-trait",
+@@ -1381,7 +1381,7 @@ dependencies = [
+ [[package]]
+ name = "echo_macros"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "proc-macro-crate",
+  "proc-macro2",
+@@ -1392,7 +1392,7 @@ dependencies = [
+ [[package]]
+ name = "echo_orchestration"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "async-stream",
+  "async-trait",
+@@ -1420,7 +1420,7 @@ dependencies = [
+ [[package]]
+ name = "echo_state"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "chrono",
+  "echo_core",
+@@ -1438,7 +1438,7 @@ dependencies = [
+ [[package]]
+ name = "echo_tools"
+ version = "0.2.0"
+-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
++source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70"
+ dependencies = [
+  "async-trait",
+  "base64",
+@@ -1526,7 +1526,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
+ dependencies = [
+  "libc",
+- "windows-sys 0.61.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -4411,7 +4411,7 @@ dependencies = [
+  "once_cell",
+  "socket2 0.6.5",
+  "tracing",
+- "windows-sys 0.61.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -4828,14 +4828,14 @@ dependencies = [
+  "errno",
+  "libc",
+  "linux-raw-sys",
+- "windows-sys 0.61.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+ name = "rustls"
+-version = "0.23.45"
++version = "0.23.46"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0d41d731c7d2f962d1ccc364cec258de3c0e93b38c2fb3ba97ac74513048d634"
++checksum = "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf"
+ dependencies = [
+  "once_cell",
+  "ring",
+@@ -5826,7 +5826,7 @@ dependencies = [
+  "getrandom 0.4.3",
+  "once_cell",
+  "rustix",
+- "windows-sys 0.61.2",
++ "windows-sys 0.52.0",
+ ]
+ 
+ [[package]]
+@@ -6741,7 +6741,7 @@ version = "0.1.11"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
+ dependencies = [
+- "windows-sys 0.61.2",
++ "windows-sys 0.48.0",
+ ]
+ 
+ [[package]]

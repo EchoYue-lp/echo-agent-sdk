@@ -1,0 +1,19 @@
+{
+  "binary": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+  "binarySHA256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "binaryBytes": 706935504,
+  "frameworkPublishedGit": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "frameworkTree": "b77ee48e14daf7ffa9437a900efc48f162d807ed",
+  "signedSourceAcceptanceFile": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/git-branch-switch/main-acceptance-source.json",
+  "lockSHA256": "88d99f3880f75315f60c8eca48035eb6151a1a055aeda7f621e689b354d411b3",
+  "rustlsVersion": "0.23.46",
+  "sourceOperationsSHA256": "2df1bbe8ff3221c690d016379030dee6f76afa8f1893f8ccadb1791d14769649",
+  "sdkObservedHEAD": "f7999ef8adf6069dfd693dabc3f568386a6a2578",
+  "compiled61InputBeforeAfterUnchanged": true,
+  "compiledSourcesCount": 61,
+  "buildReceipt": "compat-build-run.json",
+  "noPathPatch": "actualmetadata8Git exactnewpublished source",
+  "selectedDependencyEvidence": "selected-audit/deny both0/freshofficialDB/50dupexactsets same",
+  "frameworkPostmainCI": "Root receipt independent/pending, not proved by build",
+  "limits": "focused build/metadata/auditdeny only; fullRust14/native3language/fullacceptedcontract/main separate"
+}

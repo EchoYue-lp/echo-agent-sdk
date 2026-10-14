@@ -1,0 +1,33 @@
+{
+  "old_pin": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "new_pin": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "git_package_names": [
+    "echo_agent",
+    "echo_core",
+    "echo_execution",
+    "echo_integration",
+    "echo_macros",
+    "echo_orchestration",
+    "echo_state",
+    "echo_tools"
+  ],
+  "main_source_acceptance": {
+    "main": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+    "candidate": "ca702925b5c22cf0798836584926dca041ffcee9",
+    "candidateTree": "b77ee48e14daf7ffa9437a900efc48f162d807ed",
+    "mainTree": "b77ee48e14daf7ffa9437a900efc48f162d807ed",
+    "exactTreeMatch": true,
+    "signatureVerified": true,
+    "signatureReason": "valid",
+    "matchingFinalBuildInputs": 570,
+    "publicLineageAncestor": "a6346643bda47679a96760f56f45e41fd73b61b0",
+    "mainCi": "pending",
+    "scope": "exact squash tree and signed source; independent main CI still required"
+  },
+  "before_hashes": {
+    "Cargo.lock": "a7a331cf94a24842e0b892d44f842e5663434009c9187b4306af7df524344bb3",
+    "echo-sdk-host/Cargo.toml": "4245fe4e2c249470a99878ef2dc4c4f80a60777b2e9b17ae697f594c9b9078f7",
+    "scripts/check-sdk-contracts.sh": "7153843a83d02eada4f0a215498781b754bbde9f4db5a49a2f124b17a7eb3a3e"
+  },
+  "desired_registry_delta": "onlyrustls0.23.45\u21920.23.46 pluschecksum"
+}
