@@ -1,0 +1,142 @@
+{
+  "result": "pass",
+  "scope": "3 languages x Sandbox complete/pendingcancel/pendingclose + SearchProvider success/error framework-retry groups only",
+  "sandbox_producer_count": 9,
+  "physical_exits": 9,
+  "details": [
+    {
+      "language": "python",
+      "normal_sequence": [
+        "1",
+        "2",
+        "3"
+      ],
+      "normal_output": "sandbox 中文🙂\n",
+      "modes": [
+        {
+          "mode": "success",
+          "pid": 76535,
+          "exit_code": 0,
+          "meaning": "exited normally",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": false,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": true
+        },
+        {
+          "mode": "cancel",
+          "pid": 76536,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": false
+        },
+        {
+          "mode": "close",
+          "pid": 76537,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": true
+        }
+      ]
+    },
+    {
+      "language": "typescript",
+      "normal_sequence": [
+        "1",
+        "2",
+        "3"
+      ],
+      "normal_output": "sandbox 中文🙂\n",
+      "modes": [
+        {
+          "mode": "success",
+          "pid": 76867,
+          "exit_code": 0,
+          "meaning": "exited normally",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": false,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": true
+        },
+        {
+          "mode": "cancel",
+          "pid": 76872,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": false
+        },
+        {
+          "mode": "close",
+          "pid": 76877,
+          "exit_code": -15,
+          "meaning": "terminated by SIGTERM",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": true
+        }
+      ]
+    },
+    {
+      "language": "java",
+      "normal_sequence": [
+        "1",
+        "2",
+        "3"
+      ],
+      "normal_output": "sandbox 中文🙂\n",
+      "modes": [
+        {
+          "mode": "success",
+          "pid": 77013,
+          "exit_code": 0,
+          "meaning": "exited normally",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": false,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": true
+        },
+        {
+          "mode": "cancel",
+          "pid": 77014,
+          "exit_code": 143,
+          "meaning": "terminated by SIGTERM",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": false
+        },
+        {
+          "mode": "close",
+          "pid": 77015,
+          "exit_code": 143,
+          "meaning": "terminated by SIGTERM",
+          "finally": 1,
+          "cleanup_calls": 1,
+          "cancel_observed": true,
+          "pid_alive_after": false,
+          "terminal_or_control_returned_after_cleanup": true
+        }
+      ]
+    }
+  ],
+  "semantic_signal_equality": "Python/Node -15 and Java143 both represent Unix SIGTERM; no coercion to success or 0",
+  "open": "49 tool input rows per language: original DB describe NULL projection and ClinicalTrials missing total remain failures until final framework pin"
+}

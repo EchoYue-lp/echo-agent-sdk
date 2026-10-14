@@ -2,63 +2,88 @@
 schema_version: 1
 id: evidence.sdk-framework-pin
 kind: evidence
-observed_at: 6f743d1f37b604dbeb315c75b9e608a5254dcfe2
+observed_at: 91c50cf3d8fbb8fea1cdf8069a30be2c2f7f1039
 source_refs:
-  - .github/workflows/rust-ci.yml
-  - AGENTS.md
-  - Cargo.lock
-  - deny.toml
-  - MIGRATION-SOURCE.md
-  - README.md
-  - README.zh.md
-  - contracts/sdk/accepted-external-contract.json
-  - contracts/sdk/accepted-external-contract.schema.json
-  - contracts/sdk/accepted-facade-operation-catalog.json
-  - contracts/sdk/inventory-telemetry.json
-  - contracts/sdk/parity-manifest.json
-  - contracts/sdk/public-api.txt
-  - contracts/sdk/schema/echo-agent-extension-v1.schema.json
-  - contracts/sdk/source-contract.json
-  - docs/adr/0001-sdk-repository-boundary.md
-  - docs/adr/0032-sdk-contract-scope-classification.md
-  - docs/sdk/README.md
-  - docs/sdk/protocol.md
-  - docs/sdk/sdk-core-profile.md
-  - echo-sdk-host/Cargo.toml
-  - echo-sdk-host/src/core_profile/facade/source_operations.rs
-  - echo-sdk-host/src/core_profile/wire.rs
-  - echo-sdk-host/src/features.rs
-  - echo-sdk-protocol/Cargo.toml
-  - echo-sdk-protocol/src/bin/export_schema.rs
-  - echo-sdk-protocol/src/capability.rs
-  - echo-sdk-protocol/src/error.rs
-  - echo-sdk-protocol/src/event.rs
-  - echo-sdk-protocol/src/facade.rs
-  - echo-sdk-protocol/src/inventory.rs
-  - echo-sdk-protocol/src/methods.rs
-  - echo-sdk-protocol/src/schema.rs
-  - echo-sdk-protocol/tests/facade_inventory.rs
-  - scripts/check-language-sdks.sh
-  - scripts/check-sdk-contracts.sh
-  - scripts/check-sdk-inventory-telemetry.sh
-  - scripts/export-language-sdk-catalog.sh
-  - sdks/shared/README.md
-  - sdks/shared/contract-digests.json
-  - sdks/shared/facade-operation-catalog.json
-supports: [behavior.sdk-repository-ownership, rule.framework-runtime-authority, asset.sdk-source-product]
-limitations: ["验证在 macOS 本地完成；Windows Host 编译与 Linux job 由独立 SDK CI 继续提供平台信号。"]
+- .github/workflows/rust-ci.yml
+- AGENTS.md
+- Cargo.lock
+- deny.toml
+- MIGRATION-SOURCE.md
+- README.md
+- README.zh.md
+- contracts/sdk/accepted-external-contract.json
+- contracts/sdk/accepted-external-contract.schema.json
+- contracts/sdk/accepted-facade-operation-catalog.json
+- contracts/sdk/inventory-telemetry.json
+- contracts/sdk/parity-manifest.json
+- contracts/sdk/public-api.txt
+- contracts/sdk/schema/echo-agent-extension-v1.schema.json
+- contracts/sdk/source-contract.json
+- docs/adr/0001-sdk-repository-boundary.md
+- docs/adr/0032-sdk-contract-scope-classification.md
+- docs/sdk/README.md
+- docs/sdk/protocol.md
+- docs/sdk/sdk-core-profile.md
+- echo-sdk-host/Cargo.toml
+- echo-sdk-host/src/core_profile/facade/source_operations.rs
+- echo-sdk-host/src/core_profile/wire.rs
+- echo-sdk-host/src/features.rs
+- echo-sdk-protocol/Cargo.toml
+- echo-sdk-protocol/src/bin/export_schema.rs
+- echo-sdk-protocol/src/capability.rs
+- echo-sdk-protocol/src/error.rs
+- echo-sdk-protocol/src/event.rs
+- echo-sdk-protocol/src/facade.rs
+- echo-sdk-protocol/src/inventory.rs
+- echo-sdk-protocol/src/methods.rs
+- echo-sdk-protocol/src/schema.rs
+- echo-sdk-protocol/tests/facade_inventory.rs
+- scripts/check-language-sdks.sh
+- scripts/check-sdk-contracts.sh
+- scripts/check-sdk-inventory-telemetry.sh
+- scripts/export-language-sdk-catalog.sh
+- sdks/shared/README.md
+- sdks/shared/contract-digests.json
+- sdks/shared/facade-operation-catalog.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/README.md
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-acceptance.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-ci-readonly.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-commit-readonly.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-source-verification.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-pr186-readonly.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/framework-git-published-main-source-acceptance.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/framework-git-published-main-strict.log
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/archive-manifest.json
+- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/SHA256SUMS
+supports:
+- behavior.sdk-repository-ownership
+- rule.framework-runtime-authority
+- asset.sdk-source-product
+limitations:
+- 验证在 macOS 本地完成；Windows Host 编译与 Linux job 由独立 SDK CI 继续提供平台信号。
 command_results:
-  - { command: "cargo fmt --all -- --check", exit_code: 0 }
-  - { command: "cargo check --workspace --all-features --locked", exit_code: 0 }
-  - { command: "cargo test -p echo-sdk-protocol --locked", exit_code: 0 }
-  - { command: "cargo test -p echo-sdk-host --features sdk-core-profile --lib --tests --locked", exit_code: 0 }
-  - { command: "cargo test -p echo-sdk-host --features sdk-extension-bridge --locked --test extension_bridge_e2e", exit_code: 0 }
-  - { command: "cargo test -p echo-sdk-host --features sdk-facade-all --locked --test facade_feature_adapters_e2e --test core_profile_e2e", exit_code: 0 }
-  - { command: "./scripts/check-sdk-contracts.sh", exit_code: 0 }
-  - { command: "./scripts/check-sdk-inventory-telemetry.sh", exit_code: 0 }
-  - { command: "./scripts/check-language-sdks.sh", exit_code: 0 }
-  - { command: "cargo audit --deny warnings", exit_code: 0 }
-  - { command: "cargo deny check all", exit_code: 0 }
+- command: cargo fmt --all -- --check
+  exit_code: 0
+- command: cargo check --workspace --all-features --locked
+  exit_code: 0
+- command: cargo test -p echo-sdk-protocol --locked
+  exit_code: 0
+- command: cargo test -p echo-sdk-host --features sdk-core-profile --lib --tests --locked
+  exit_code: 0
+- command: cargo test -p echo-sdk-host --features sdk-extension-bridge --locked --test extension_bridge_e2e
+  exit_code: 0
+- command: cargo test -p echo-sdk-host --features sdk-facade-all --locked --test facade_feature_adapters_e2e --test core_profile_e2e
+  exit_code: 0
+- command: ./scripts/check-sdk-contracts.sh
+  exit_code: 0
+- command: ./scripts/check-sdk-inventory-telemetry.sh
+  exit_code: 0
+- command: ./scripts/check-language-sdks.sh
+  exit_code: 0
+- command: cargo audit --deny warnings
+  exit_code: 0
+- command: cargo deny check all
+  exit_code: 0
 ---
 
 # SDK clean framework pin evidence
@@ -93,3 +118,14 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 本证据不证明尚未运行的 Windows/Linux CI 环境结果，也不代表已经发布二进制或 registry 包。
 依赖审计使用修复后的 `rustls` 版本与显式允许的 framework Git 源；cargo-deny 的重复版本
 提示属于现有依赖图告警，不改变审计退出结果。
+
+
+## 当前框架pin与发布后验观察（00782）
+
+本Evidence本次observed_at定位SDK Git `91c50cf3d8fbb8fea1cdf8069a30be2c2f7f1039` 对已保存来源与当前pin的复核。前述正文及command_results是原 `6f743d1f37b604dbeb315c75b9e608a5254dcfe2`／framework `1754877996778afac4e4db77ce37c330496760ea` 阶段记录，保留原source/time/结果；不是在91c50重新运行，也不证明当前完整合同生成通过。
+
+当前SDK八个framework包精确来自已发布 `00782b8aeddefe2ea8c566922cbdee6aedc80d70`，无path patch；SDK锁SHA `88d99f3880f75315f60c8eca48035eb6151a1a055aeda7f621e689b354d411b3`。Protocol继续无framework依赖，运行权威由原framework持有，SDK仅薄转换/owner/resource地址；本观察不新增运行服务或契约。
+
+[正式框架main后验](../../docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/README.md)保留原八个Admin文件字节及清单。实际commit response签名valid、main与已审ca702树同为b77ee48、main运行38614384013七个job成功；source receipt的570项构建输入没有改变，精确main官方strict exit0，当前/Git摘要同399c6b119。完整570输入表及六工程门禁仍在published framework原包；本最小SDK归档不声称包含或重新执行它们。原main-acceptance-source及旧pin包里的CI pending是原时点文字，不被覆盖。
+
+这些是框架signature/tree/CI/source/strict的后验，并非SDK平台、完整生成或main通过。SDK自身00782 Rust14、793输入完整语言及Git84消费者由各已审正式包单独证明；完整合同只读检查真实exit1/13及12待答、B物理结算残余、Windows原生SDK和registry范围保持。supports仍限既有仓库归属/框架唯一权威/源码产品资产，不据框架七CI提升41族verified。

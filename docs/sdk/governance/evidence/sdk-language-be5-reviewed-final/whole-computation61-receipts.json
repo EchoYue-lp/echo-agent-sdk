@@ -1,0 +1,23 @@
+{
+  "typescript": {
+    "nativeCalls": 61,
+    "typedErrors": 25,
+    "hostSha256": "bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345",
+    "resultsSha256": "cc8ef0c1af006d9e385b348f9cf539ff5be976d077c8fff127e5817e8b142f3e",
+    "originalWork": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-be5-reviewed-final/runtime/sdk-computation-native-typescript-FbzcGF"
+  },
+  "java": {
+    "nativeCalls": 61,
+    "typedErrors": 25,
+    "hostSha256": "bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345",
+    "resultsSha256": "9dbe767670fe0af701559e81471fdf69d5a8f1b371cf8900543ff8f057cae8a7",
+    "originalWork": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-be5-reviewed-final/runtime/sdk-computation-native-java-4262877023215670231"
+  },
+  "python": {
+    "nativeCalls": 61,
+    "typedErrors": 25,
+    "hostSha256": "bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345",
+    "resultsSha256": "77174b2a018721e9a58f4d3bc333bfc6f8107daad704421a721043263df4cad2",
+    "originalWork": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-language-be5-reviewed-final/runtime/pytest-of-ls/pytest-0/test_computation_host_exact_va0"
+  }
+}

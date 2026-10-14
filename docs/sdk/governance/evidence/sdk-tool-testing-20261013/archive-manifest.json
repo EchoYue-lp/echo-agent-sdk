@@ -1,0 +1,175 @@
+{
+  "archived_evidence": [
+    {
+      "origin": "/tmp/sdk-tool-behavior-evidence.json",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-tool-behavior-evidence.json",
+      "sha256": "2564e1cd3ee23838102b3879378701c9698e555fd4519941fc65f186931002b9"
+    },
+    {
+      "origin": "/tmp/sdk-testing-value-evidence.json",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-value-evidence.json",
+      "sha256": "35dfa79add07c2f13f0a54f0cc35dbeed73267527d543fa8b282a90d4d07e4b8"
+    },
+    {
+      "origin": "/tmp/sdk-testing-value-contract-scope.json",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-value-contract-scope.json",
+      "sha256": "757f7ad1bf83a75db8c829da98693c270621ca798f5f89e3d2e53a6ea1e58c69"
+    },
+    {
+      "origin": "/tmp/sdk-tool-behavior-typescript-final.log",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-tool-behavior-typescript-final.log",
+      "sha256": "643c3506664b120c6977a66a24a36a4c6ecd425a79e0c0f387b56c90efa11e35"
+    },
+    {
+      "origin": "/tmp/sdk-tool-behavior-python-exact-final.log",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-tool-behavior-python-exact-final.log",
+      "sha256": "67dfec2af83953e839309a9d8c742a68cf5f7e359befac43cf619c075686bbf2"
+    },
+    {
+      "origin": "/tmp/sdk-tool-behavior-rust-valid-hello.log",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-tool-behavior-rust-valid-hello.log",
+      "sha256": "a30e539730934f574103a418375ed2a3a91874fc6bd80fd322832b01d4929557"
+    },
+    {
+      "origin": "/tmp/sdk-tool-behavior-rust-clippy.log",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-tool-behavior-rust-clippy.log",
+      "sha256": "4514347f7b2316e2077afe32930395841c5b52e7ccd76d8e19d9ca65bfc81734"
+    },
+    {
+      "origin": "/tmp/sdk-java-factory-whole-final-verified-maven.log",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-java-factory-whole-final-verified-maven.log",
+      "sha256": "8e45ef8dc37c70829df8d0ab17ecf51d8cdbd927e4d89b72813617be5974c47a"
+    },
+    {
+      "origin": "/tmp/sdk-testing-typescript-current.log",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-typescript-current.log",
+      "sha256": "6a4f3ab30f6cae6d5786e6a9798dded7d3c236fc0f139a0255009f1f1336bdb3"
+    },
+    {
+      "origin": "/tmp/sdk-testing-python.log",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-python.log",
+      "sha256": "b84a5f56832006ce4e2bf9f759666949900308668a781b362e5aab41c6c2b8e8"
+    },
+    {
+      "origin": "/tmp/sdk-testing-typescript-observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-typescript-observed.json",
+      "sha256": "f6a3b33a64e140790db18acdf9d703bdcdd55cf2e18dfb638f16ac24efa4d221"
+    },
+    {
+      "origin": "/tmp/sdk-testing-python-observed.json",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-python-observed.json",
+      "sha256": "037ca142bfcd7f83abe98f53537163b21df51308a3f0f7f4a406259f5aff6e31"
+    },
+    {
+      "origin": "/tmp/sdk-testing-typescript-rejections.json",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-typescript-rejections.json",
+      "sha256": "6fa320dc519d695ba6e46870a3c24d1170511a18dbc7e0ef0d1fde76adeeb646"
+    },
+    {
+      "origin": "/tmp/sdk-testing-python-rejections.json",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-testing-python-rejections.json",
+      "sha256": "2a5de9d1fc503f01d58cb6fc6a41cc8cbd335d1fde6f63609570c9961dfa0b45"
+    },
+    {
+      "origin": "/tmp/sdk-java-factory-whole-final-review/logs/xml/TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/TEST-com.echoagent.sdk.ToolBehaviorsHostTest.xml",
+      "sha256": "cfa8876cc78b8d32603e85fc5f302e70883a47ffe9061e9463edaec1342f2756"
+    },
+    {
+      "origin": "/tmp/sdk-java-factory-whole-final-review/logs/xml/TEST-com.echoagent.sdk.TestingContractTest.xml",
+      "archived": "docs/sdk/governance/evidence/sdk-tool-testing-20261013/TEST-com.echoagent.sdk.TestingContractTest.xml",
+      "sha256": "3b2133b7a5a96ecc7818e3e15db129ce085d3cb0850751e4576b618776d7f747"
+    }
+  ],
+  "current_source_observation": [
+    {
+      "path": "echo-sdk-host/tests/tool_behavior_governance_e2e.rs",
+      "tested_sha256": "9a7aafdfe7b93d446315dbe864e74e9b3636e868befd44736102c761633ff3ca",
+      "current_sha256": "9a7aafdfe7b93d446315dbe864e74e9b3636e868befd44736102c761633ff3ca",
+      "same": true
+    },
+    {
+      "path": "sdks/shared/testing/tool_behavior_fixture.py",
+      "tested_sha256": "a0e3ed9feb0f8fe2c0350c6cac0cd86a64089071b41e5549f2a6f64c92a41072",
+      "current_sha256": "a0e3ed9feb0f8fe2c0350c6cac0cd86a64089071b41e5549f2a6f64c92a41072",
+      "same": true
+    },
+    {
+      "path": "sdks/typescript/test/tool-behaviors.test.js",
+      "tested_sha256": "ee725eec6ef48ff96ec05337a3790bab0b39e59fd2901082153cc20dee75752c",
+      "current_sha256": "ee725eec6ef48ff96ec05337a3790bab0b39e59fd2901082153cc20dee75752c",
+      "same": true
+    },
+    {
+      "path": "sdks/python/tests/test_tool_behaviors.py",
+      "tested_sha256": "4b29993c770b8c2ed9d376e97df625d10e01cca34fa4bf124ef17a59593ccd8c",
+      "current_sha256": "4b29993c770b8c2ed9d376e97df625d10e01cca34fa4bf124ef17a59593ccd8c",
+      "same": true
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/ToolBehaviorsHostTest.java",
+      "tested_sha256": "327176c11a3463a6a75739c4b1ce2d7a71af2b5afeca5a841044403a3ea06a21",
+      "current_sha256": "327176c11a3463a6a75739c4b1ce2d7a71af2b5afeca5a841044403a3ea06a21",
+      "same": true
+    },
+    {
+      "path": "sdks/shared/fixtures/testing-contract-values.json",
+      "tested_sha256": "9d7c13f0b03ece4259d7e72e3b0e23c526cc248b43f05b90c7f8574f9216f011",
+      "current_sha256": "9d7c13f0b03ece4259d7e72e3b0e23c526cc248b43f05b90c7f8574f9216f011",
+      "same": true
+    },
+    {
+      "path": "sdks/typescript/test/testing-contract.test.js",
+      "tested_sha256": "237b12508914ce3fdb9c5a4572be3ee77619d501d2aa81e3444455f9d546c3f2",
+      "current_sha256": "237b12508914ce3fdb9c5a4572be3ee77619d501d2aa81e3444455f9d546c3f2",
+      "same": true
+    },
+    {
+      "path": "sdks/python/tests/test_testing_contract.py",
+      "tested_sha256": "66c558d6edb87add394b02a9ca08bc66fef211b7ee7d49ba29482afd65d45cec",
+      "current_sha256": "66c558d6edb87add394b02a9ca08bc66fef211b7ee7d49ba29482afd65d45cec",
+      "same": true
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/TestingContractTest.java",
+      "tested_sha256": "b2f27e51dda07f4ba5e0139379f3ac491dac1b48a57018c0c84656e3a1b51c91",
+      "current_sha256": "b2f27e51dda07f4ba5e0139379f3ac491dac1b48a57018c0c84656e3a1b51c91",
+      "same": true
+    },
+    {
+      "path": "sdks/typescript/src/wire.ts",
+      "tested_sha256": "99d2dd237af4abffd6b17c013dcbb46d3c640ecc62fc496babdcb4df3f35ec70",
+      "current_sha256": "99d2dd237af4abffd6b17c013dcbb46d3c640ecc62fc496babdcb4df3f35ec70",
+      "same": true
+    },
+    {
+      "path": "sdks/python/src/echo_agent_sdk/wire.py",
+      "tested_sha256": "50d132ec93ebc09110ed52e549335ff6c789bf198a1cfc94253023d75966c374",
+      "current_sha256": "50d132ec93ebc09110ed52e549335ff6c789bf198a1cfc94253023d75966c374",
+      "same": true
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/WireValues.java",
+      "tested_sha256": "57305f5f276a266dd1d5e016db4179c4c7bda5fb9b2c6acbe77dfbb2aee0e545",
+      "current_sha256": "57305f5f276a266dd1d5e016db4179c4c7bda5fb9b2c6acbe77dfbb2aee0e545",
+      "same": true
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/JsonSupport.java",
+      "tested_sha256": "56d05f02022141827f5f942dd3d390aa336dc2243453210ee9cec68c9980e745",
+      "current_sha256": "56d05f02022141827f5f942dd3d390aa336dc2243453210ee9cec68c9980e745",
+      "same": true
+    }
+  ],
+  "source_only_observation": {
+    "sdk_host_tools": "f1aed97fde97185218d8babdedf914da8564b9a8c9be05d721f17357dd96c7c1",
+    "accepted_external_contract": "901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45"
+  },
+  "scope_corrections": [
+    "29 scenario rows consist of 28 tool calls and 1 SessionClose operation.",
+    "10 typed RPC errors plus one separate ToolResult.success=false database rejection.",
+    "Invalid branch checks repo A HEAD and sdk-proof and repo B refs; no complete before/after repo A refs assertion.",
+    "HTTP fixture records only GET; no dynamic no-POST proof. Leaf execution path is source evidence, not HTTP logger evidence."
+  ],
+  "not_final_main": true
+}

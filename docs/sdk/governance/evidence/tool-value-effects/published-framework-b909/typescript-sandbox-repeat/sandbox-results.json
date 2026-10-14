@@ -1,0 +1,390 @@
+{
+  "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-sandbox-BwlXZs",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-b909-published-framework-candidate-host",
+  "host_sha256": "ee9ff37598f4061b0cc33a79d9c58e1ad4481d6592607fb308a28b7b425fc621",
+  "facts": [
+    {
+      "mode": "success",
+      "started": true,
+      "cancel_observed": false,
+      "finally": 1,
+      "pid": 82278,
+      "exit_code": 0,
+      "sent": [
+        {
+          "channel": "stdout",
+          "chunk": "sandbox 中文🙂\n"
+        }
+      ],
+      "stream": {
+        "id": "stream-b5da8aab-8c86-4b02-92af-04693a9cc639",
+        "generation": "1",
+        "kind": "stream"
+      },
+      "command": {
+        "kind": {
+          "Shell": "printf 'sandbox 中文🙂\\n'"
+        },
+        "minimum_isolation": null,
+        "working_dir": null,
+        "env": {},
+        "timeout": {
+          "secs": "30",
+          "nanos": "0"
+        },
+        "stdin": null
+      },
+      "invocation_id": "invocation-18d4efa546cf4c13b09120121c9c7cf6-0",
+      "events": [
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_sdk::FacadeStreamEvent",
+            "variant": "item",
+            "fields": [
+              {
+                "name": "stream",
+                "value": {
+                  "kind": "handle",
+                  "value": {
+                    "id": "stream-b5da8aab-8c86-4b02-92af-04693a9cc639",
+                    "generation": "1",
+                    "kind": "stream"
+                  }
+                }
+              },
+              {
+                "name": "sequence",
+                "value": {
+                  "kind": "u64",
+                  "value": "1"
+                }
+              },
+              {
+                "name": "value",
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "event_type"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "output"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "channel"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "stdout"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "chunk"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "sandbox 中文🙂\n"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_sdk::FacadeStreamEvent",
+            "variant": "item",
+            "fields": [
+              {
+                "name": "stream",
+                "value": {
+                  "kind": "handle",
+                  "value": {
+                    "id": "stream-b5da8aab-8c86-4b02-92af-04693a9cc639",
+                    "generation": "1",
+                    "kind": "stream"
+                  }
+                }
+              },
+              {
+                "name": "sequence",
+                "value": {
+                  "kind": "u64",
+                  "value": "2"
+                }
+              },
+              {
+                "name": "value",
+                "value": {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "event_type"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "complete"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "exit_code"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "stdout"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "sandbox 中文🙂\n"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "stderr"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": ""
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "duration"
+                      },
+                      "value": {
+                        "kind": "map",
+                        "value": [
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "secs"
+                            },
+                            "value": {
+                              "kind": "u64",
+                              "value": "0"
+                            }
+                          },
+                          {
+                            "key": {
+                              "kind": "string",
+                              "value": "nanos"
+                            },
+                            "value": {
+                              "kind": "u64",
+                              "value": "1"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "sandbox_type"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "owned-native-fixture"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "timed_out"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "cancelled"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "output_truncated"
+                      },
+                      "value": {
+                        "kind": "bool",
+                        "value": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "stdout_bytes"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "19"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "stderr_bytes"
+                      },
+                      "value": {
+                        "kind": "u64",
+                        "value": "0"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "variant",
+          "value": {
+            "type_id": "echo_sdk::FacadeStreamEvent",
+            "variant": "complete",
+            "fields": [
+              {
+                "name": "stream",
+                "value": {
+                  "kind": "handle",
+                  "value": {
+                    "id": "stream-b5da8aab-8c86-4b02-92af-04693a9cc639",
+                    "generation": "1",
+                    "kind": "stream"
+                  }
+                }
+              },
+              {
+                "name": "sequence",
+                "value": {
+                  "kind": "u64",
+                  "value": "3"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "exit_signal": null,
+      "terminal_returned_after_cleanup": true,
+      "pid_alive": false,
+      "repeated_close": false,
+      "protected": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "cleanup_calls": 1
+    },
+    {
+      "mode": "cancel",
+      "started": true,
+      "cancel_observed": true,
+      "finally": 1,
+      "pid": 82283,
+      "exit_code": -15,
+      "sent": [],
+      "stream": {
+        "id": "stream-c6240aa8-9a7e-40ce-8086-65364b93cff9",
+        "generation": "1",
+        "kind": "stream"
+      },
+      "command": {
+        "kind": {
+          "Shell": "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-sandbox-BwlXZs/tail.txt"
+        },
+        "minimum_isolation": null,
+        "working_dir": null,
+        "env": {},
+        "timeout": {
+          "secs": "30",
+          "nanos": "0"
+        },
+        "stdin": null
+      },
+      "invocation_id": "invocation-18d4efa546cf4c13b09120121c9c7cf6-2",
+      "close_result": true,
+      "control_elapsed_ms": 0.6733750000000214,
+      "control_returned_after_cleanup": false,
+      "exit_signal": "SIGTERM",
+      "pid_alive": false,
+      "repeated_close": false,
+      "protected": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "cleanup_calls": 1
+    },
+    {
+      "mode": "close",
+      "started": true,
+      "cancel_observed": true,
+      "finally": 1,
+      "pid": 82288,
+      "exit_code": -15,
+      "sent": [],
+      "stream": {
+        "id": "stream-fa617a89-5a6d-4e01-bbef-e1a1c3b6cc6f",
+        "generation": "1",
+        "kind": "stream"
+      },
+      "command": {
+        "kind": {
+          "Shell": "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/tool-value-effects/typescript-sandbox-BwlXZs/tail.txt"
+        },
+        "minimum_isolation": null,
+        "working_dir": null,
+        "env": {},
+        "timeout": {
+          "secs": "30",
+          "nanos": "0"
+        },
+        "stdin": null
+      },
+      "invocation_id": "invocation-18d4efa546cf4c13b09120121c9c7cf6-4",
+      "exit_signal": "SIGTERM",
+      "close_result": false,
+      "control_elapsed_ms": 1.527290999999991,
+      "control_returned_after_cleanup": true,
+      "pid_alive": false,
+      "repeated_close": false,
+      "protected": {
+        "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+        "fixture.db": "6f4642ff22bb9861ceee34f42548497a8cbe09d40a7d6ff554100db7dda3476d",
+        "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+      },
+      "cleanup_calls": 1
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "classification": "candidate scope findings from actual consumer evidence, no producer changes",
+  "permission_approval_receipt": {
+    "framework_source": "echo-orchestration/src/human_loop/service.rs PermissionCheck.approval_receipt and PermissionCheck::for_input",
+    "host_source": "echo-sdk-host/src/core_profile/facade/permission.rs check_value projects only decision and updated_input",
+    "actual_result": "all three actual context-modification checks returned allow plus identical updated_input; approval_receipt absent",
+    "accepted_contract": "accepted-external-contract.json contains PermissionCheck::decision and ::updated_input; no ::approval_receipt or ToolApprovalReceipt accepted entries",
+    "disposition": "new framework field outside currently accepted field inventory; propose explicit Rust/Host-only or reviewed additive contract decision. Do not automatically add a three-language field, and do not call this current accepted-field regression without further contract decision.",
+    "producer_modified": false
+  },
+  "permission_ttl": {
+    "actual_stats_ttl_ms": "1800000",
+    "actual_cleanup_expired_for_young_entries": "0",
+    "expiry_observed": false,
+    "reason": "accepted API exposes no TTL setter/clock advance; real 30-minute expiration is not exercised by these short runs",
+    "remaining_evidence": "named real wall-clock expiry test, or precise deferred evidence scope without a new API"
+  },
+  "store_registration": {
+    "actual_conflict": "two concurrent Store registrations rejected with extension_conflict regardless descriptor search_modes",
+    "implementation": "HandleRegistry extension_semantic_identity_conflicts matches Store vs Store",
+    "scenario": "unregister A after its actual calls finish, register B, replace same Session live Store; observe B-only subsequent calls and retained A test-backend data",
+    "claim_limit": "does not prove simultaneous independent registered Store instances"
+  },
+  "numeric_native_projection": {
+    "observed": "TypeScript native integral Number1 encoded u64; Python float1.0 and Java Double encoded f64. Explicit existing f64 wire wrapper used for known float confidence to preserve same intended JSON number type.",
+    "generic_store_callback": "from_wire canonical integer text followed by to_wire would encode text, not the original numeric WireValue. Opaque or typed wire preservation is required for generic numeric domains; test callback values here cover strings/maps and native resource timestamps separately.",
+    "producer_modified": false
+  }
+}

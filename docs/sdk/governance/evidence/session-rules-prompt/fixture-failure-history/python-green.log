@@ -1,0 +1,76 @@
+F
+=================================== FAILURES ===================================
+__________ test_session_cwd_rules_reach_actual_model_and_new_session ___________
+
+tmp_path = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/session-rules-prompt/python-green/test_session_cwd_rules_reach_a0')
+
+    async def test_session_cwd_rules_reach_actual_model_and_new_session(tmp_path):
+        work = tmp_path.resolve()
+        await helper(work)
+        model = await asyncio.create_subprocess_exec(
+            "python3", str(FIXTURE), "--work", str(work), "--serve"
+        )
+        rows = []
+        try:
+            async with asyncio.timeout(10):
+                while not (work / "ready").exists():
+                    assert model.returncode is None
+                    await asyncio.sleep(0.01)
+            async with await EchoAgentClient.spawn(
+                HOST, "--config", str(work / "host.json")
+            ) as sdk:
+                agent = await sdk.create_agent()
+                for step in json.loads((work / "scenario.json").read_text()):
+                    if step["id"] == "a2":
+                        await helper(work, "--mutate")
+                    session = await agent.create_session(str(work / step["cwd"]))
+                    run = await session.start_run(step["user"])
+                    assert (await run.wait(timeout=15))["settled"]
+                    rows.append(
+                        {
+                            "id": step["id"],
+                            "outcome": await run.outcome_status(),
+                            "replay": await run.replay(),
+                        }
+                    )
+                    await session.close()
+                await agent.close()
+            (work / "native-results.json").write_text(json.dumps(rows, ensure_ascii=False))
+>           proof = json.loads(await helper(work, "--verify"))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_session_rules_prompt_host.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+work = PosixPath('/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/session-rules-prompt/python-green/test_session_cwd_rules_reach_a0')
+args = ('--verify',)
+
+    async def helper(work, *args):
+        process = await asyncio.create_subprocess_exec(
+            "python3",
+            str(FIXTURE),
+            "--work",
+            str(work),
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+        )
+        output, _ = await process.communicate()
+>       assert process.returncode == 0, output.decode()
+E       AssertionError: Traceback (most recent call last):
+E           File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/session_rules_prompt_fixture.py", line 229, in <module>
+E             main()
+E           File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/session_rules_prompt_fixture.py", line 223, in main
+E             verify(args.work)
+E           File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/session_rules_prompt_fixture.py", line 67, in verify
+E             if event["envelope"]["payload"]["event_type"] == "final_answer"
+E                ~~~~~^^^^^^^^^^^^
+E         KeyError: 'envelope'
+E         
+E       assert 1 == 0
+E        +  where 1 = <Process 47810>.returncode
+
+tests/test_session_rules_prompt_host.py:36: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_session_rules_prompt_host.py::test_session_cwd_rules_reach_actual_model_and_new_session
+1 failed in 1.41s

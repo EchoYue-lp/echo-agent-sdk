@@ -1,0 +1,7 @@
+{
+  "sharedCurrentBridge": "b045bf65932f226bd70789d980df04d6b1fe4d9f5475dfa8b2e0e537d264bd09",
+  "copyBridgeBefore": "ed5f3446bdca72cdbc324ff0fe7fbbfdf2cdd6c4ea7430a6070aa2580732b0a6",
+  "beforeSlowBridge": "57ec0875d3cd109c5cd9fdacc539ec4f9ec6fc6c74bc8d624315bd97b260b050",
+  "unchangedCopyEvents": "e4ae808abb8f916a7318faec3643c5a56cd1bbd143e9e88cb447e0cf7127f7de",
+  "scope": "one missing callback-response deadline cancellation line; counterexample for the new consumer slice, not a historical whole Host baseline"
+}

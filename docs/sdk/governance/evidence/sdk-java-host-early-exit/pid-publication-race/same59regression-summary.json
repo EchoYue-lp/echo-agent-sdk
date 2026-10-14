@@ -1,0 +1,44 @@
+{
+  "HostEarlyExitTest": {
+    "tests": 9,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "JavaClientCloseLifecycleTest": {
+    "tests": 3,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "LifecycleTest": {
+    "tests": 17,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "AckSubmissionTest": {
+    "tests": 18,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "StreamCancellationRoutesTest": {
+    "tests": 4,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "StreamCancellationRouteHostTest": {
+    "tests": 1,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "ProtocolHostTest": {
+    "tests": 7,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  }
+}

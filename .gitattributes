@@ -215,3 +215,34 @@ docs/sdk/governance/evidence/sdk-00782-final-rust-gates/10-ci-core-profile.log -
 docs/sdk/governance/evidence/sdk-00782-final-rust-gates/12-ci-bridge-e2e.log -diff
 docs/sdk/governance/evidence/sdk-00782-final-rust-gates/13-ci-facade-e2e.log -diff
 docs/sdk/governance/evidence/sdk-00782-final-rust-gates/14-ci-no-bridge-source-admission.log -diff
+
+# Historical command witnesses retained in their original emitted byte form.
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/callback-prefix-final-epoch/prefix-final-hostlib-all-fresh.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/callback-prefix-final-epoch/prefix-final-hostlib-all.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/combined-callback-ownership-93de/hostlib-all.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/counters/old-common-after.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/counters/slow-after.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/final-stream-settlement-epoch/combined-current-hostlib-all.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/final-stream-settlement-epoch/late-setup-after.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/fused-sandbox-final-epoch/fused-hostlib-all.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-after-fresh.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-after.log -diff
+docs/sdk/governance/evidence/channel-bridge-callback-settlement/raw/actual-response-six.log -diff
+docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-java-attempt1.log -diff
+docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt1.log -diff
+docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt2.log -diff
+docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt3.log -diff
+docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt4.log -diff
+docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-typescript-attempt1.log -diff
+docs/sdk/governance/evidence/sdk-channel-forward-protocol/extension-contract-tests.log -diff
+docs/sdk/governance/evidence/sdk-channel-forward-protocol/protocol-focused-retry.log -diff
+docs/sdk/governance/evidence/sdk-dependency-be5-current/retry-once/deny.log -diff
+docs/sdk/governance/evidence/sdk-external-timeout-oracle/raw/scope.patch -diff
+docs/sdk/governance/evidence/sdk-java-host-early-exit/pid-publication-race/whole-before-full-language.log -diff
+docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/required-host-guard/guard-only-source.patch -diff
+docs/sdk/governance/evidence/sdk-stream-cancellation-routing/client-routing-source-slice.patch -diff
+docs/sdk/governance/evidence/sdk-stream-cancellation-routing/java-native-before-corrected.log -diff
+docs/sdk/governance/evidence/sdk-stream-cancellation-routing/java-native-before.log -diff
+docs/sdk/governance/evidence/sdk-stream-cancellation-routing/python-native-before.log -diff
+docs/sdk/governance/evidence/session-rules-prompt/fixture-failure-history/python-green.log -diff
+docs/sdk/governance/evidence/session-rules-prompt/fixture-failure-history/typescript-config-corrected.log -diff

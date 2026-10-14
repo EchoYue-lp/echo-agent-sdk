@@ -1,0 +1,16 @@
+{
+  "algorithm": "sha256-length-prefixed-v1",
+  "inputs": [
+    {
+      "path": "contracts/sdk/accepted-external-contract.json",
+      "bytes": 10660878,
+      "sha256": "sha256:901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45"
+    },
+    {
+      "path": "contracts/sdk/accepted-facade-operation-catalog.json",
+      "bytes": 654124,
+      "sha256": "sha256:f5fa4b2794018cd24734ac89d8e3e4e544efb558db2aa3a3ff5819731ed2f5a4"
+    }
+  ],
+  "aggregate_digest": "sha256:3cd835dbf40abf1d0aec04e02f3b51411631fcaa50ba7e5f0f2d2d2f500ed9a6"
+}

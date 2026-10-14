@@ -1,0 +1,47 @@
+[
+  {
+    "id": "a1",
+    "cwd": "a/nested",
+    "user": "QUESTION_a1 用户🙂",
+    "required": [
+      "CUSTOM_SYSTEM_KEEP 中文😀",
+      "A_ROOT_RULE",
+      "A_NESTED_V1"
+    ],
+    "forbidden": [
+      "B_ROOT_RULE",
+      "B_NESTED_RULE",
+      "A_NESTED_V2"
+    ]
+  },
+  {
+    "id": "b1",
+    "cwd": "b/nested",
+    "user": "QUESTION_b1 用户🙂",
+    "required": [
+      "CUSTOM_SYSTEM_KEEP 中文😀",
+      "B_ROOT_RULE",
+      "B_NESTED_RULE"
+    ],
+    "forbidden": [
+      "A_ROOT_RULE",
+      "A_NESTED_V1",
+      "A_NESTED_V2"
+    ]
+  },
+  {
+    "id": "a2",
+    "cwd": "a/nested",
+    "user": "QUESTION_a2 用户🙂",
+    "required": [
+      "CUSTOM_SYSTEM_KEEP 中文😀",
+      "A_ROOT_RULE",
+      "A_NESTED_V2"
+    ],
+    "forbidden": [
+      "B_ROOT_RULE",
+      "B_NESTED_RULE",
+      "A_NESTED_V1"
+    ]
+  }
+]

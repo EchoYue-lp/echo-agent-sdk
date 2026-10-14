@@ -1,0 +1,128 @@
+TAP version 13
+# Subtest: official serialized writer: low successful ACK cannot commit pending terminal ACK
+ok 1 - official serialized writer: low successful ACK cannot commit pending terminal ACK
+  ---
+  duration_ms: 11.225458
+  type: 'test'
+  ...
+# Subtest: official writer 2 success then other ACK failure retains exact successful floor
+ok 2 - official writer 2 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 2.24175
+  type: 'test'
+  ...
+# Subtest: official writer 10 success then other ACK failure retains exact successful floor
+ok 3 - official writer 10 success then other ACK failure retains exact successful floor
+  ---
+  duration_ms: 5.621542
+  type: 'test'
+  ...
+# Subtest: official failed send preserves queue prefix and does not accept a future ACK
+ok 4 - official failed send preserves queue prefix and does not accept a future ACK
+  ---
+  duration_ms: 1.650166
+  type: 'test'
+  ...
+# Subtest: official writer sends the same immutable stream identity that it commits
+ok 5 - official writer sends the same immutable stream identity that it commits
+  ---
+  duration_ms: 0.831125
+  type: 'test'
+  ...
+# Subtest: official replay retention bridge commits only a successful returned cursor
+ok 6 - official replay retention bridge commits only a successful returned cursor
+  ---
+  duration_ms: 1.894167
+  type: 'test'
+  ...
+# Subtest: gap plus empty after-gap page never grants an absent ACK cursor
+ok 7 - gap plus empty after-gap page never grants an absent ACK cursor
+  ---
+  duration_ms: 0.504
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage empty_gap_tail
+ok 8 - public replay connected coverage empty_gap_tail
+  ---
+  duration_ms: 1.105833
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_gap
+ok 9 - public replay connected coverage reverse_gap
+  ---
+  duration_ms: 1.310791
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage reverse_plain
+ok 10 - public replay connected coverage reverse_plain
+  ---
+  duration_ms: 1.429334
+  type: 'test'
+  ...
+# Subtest: public replay connected coverage disconnected
+ok 11 - public replay connected coverage disconnected
+  ---
+  duration_ms: 0.839667
+  type: 'test'
+  ...
+# Subtest: successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+ok 12 - successful earlier-missing ACK cannot retire prefix after failed recovery and real live continuation
+  ---
+  duration_ms: 0.650292
+  type: 'test'
+  ...
+# Subtest: real Host cancellation after setup ACK reaches retained native stream producer
+ok 13 - real Host cancellation after setup ACK reaches retained native stream producer
+  ---
+  duration_ms: 5584.457667
+  type: 'test'
+  ...
+# Subtest: official writer wrong stream identity cannot retire original cancellation address
+ok 14 - official writer wrong stream identity cannot retire original cancellation address
+  ---
+  duration_ms: 11.303166
+  type: 'test'
+  ...
+# Subtest: official failed terminal writer preserves cancellation address and immutable request identity
+ok 15 - official failed terminal writer preserves cancellation address and immutable request identity
+  ---
+  duration_ms: 6.49375
+  type: 'test'
+  ...
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-ts-task-pause-ZLUGO8
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-ts-task-cancel-WYg5Fq
+# Subtest: exact Task pause preserves independent B/C
+ok 16 - exact Task pause preserves independent B/C
+  ---
+  duration_ms: 6059.937542
+  type: 'test'
+  ...
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-ts-task-subagent-await-e4tVNo
+# Subtest: exact Task cancel preserves independent B/C
+ok 17 - exact Task cancel preserves independent B/C
+  ---
+  duration_ms: 5438.540833
+  type: 'test'
+  ...
+# Task evidence /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime/sdk-ts-task-crud-only-noGTqZ
+# Subtest: real Task/Subagent subagent-await
+ok 18 - real Task/Subagent subagent-await
+  ---
+  duration_ms: 5324.489292
+  type: 'test'
+  ...
+# Subtest: real Task/Subagent crud-only
+ok 19 - real Task/Subagent crud-only
+  ---
+  duration_ms: 5259.242958
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 22283.426083

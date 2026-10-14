@@ -1,0 +1,40 @@
+{
+  "binary": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-stream-fused-candidate-host",
+  "binarySha256": "06bb60d207d8abe5adfe8f0b3a609c79a3865dc69f0e79ed205c0d3b2e9d195b",
+  "sdkSources": {
+    "echo-sdk-host/src/core_profile/extension_bridge.rs": "3b4d65e464568694cb917e663a8a888183e111f9bf95a3e0c91b9d09a7061a19",
+    "echo-sdk-host/src/core_profile/handler.rs": "cca0f365a12d9d7bea2dce82a57e71386803f2cfb123077b0d8423fee7052562",
+    "echo-sdk-host/src/core_profile/facade/mod.rs": "ea4ecd447745701d27beb5f0ad194b1a04f383583771911b94e497662c36355f",
+    "echo-sdk-host/src/core_profile/facade/stream.rs": "1defec3e27aade8fdb906841280a5a7a62dc85b8d2770eceffcbbc3ea2fcdfa6",
+    "Cargo.lock": "a4f93d36245e4c6367b8050abef7d61e175f2c39e94b931a813bd06174eb01ae",
+    ".cargo/config.toml": "65e87a54d615e7cc202c662b03dda190e770a1eb6474429db06c20922081ab6b",
+    "echo-sdk-host/Cargo.toml": "7e6482c5192d4e839326277a0c89c8042f020154e749928c763313d3d01ddf84",
+    "echo-sdk-protocol/src/methods.rs": "9e9deb481eb7850a039fc930971a2f9363db6e7905490165121dd28a57641000",
+    "echo-sdk-protocol/src/facade.rs": "5f0c44138d8a595145735c2c7b6b5e5bf836b6a615cb1487fa47b5373461a24b",
+    "contracts/sdk/schema/echo-agent-extension-v1.schema.json": "df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61",
+    "contracts/sdk/source-contract.json": "e689bb8fee5e8aabbf517264bb608f47a0bd19e6ef665b54b5d26ea2c248d394",
+    "contracts/sdk/accepted-facade-operation-catalog.json": "f5fa4b2794018cd24734ac89d8e3e4e544efb558db2aa3a3ff5819731ed2f5a4",
+    "contracts/sdk/facade-operation-catalog.json": "87fe186ea7812b82b064e999969837bd83edf6fede8a756725c819ce1c657bb6",
+    "docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md": "1bfc0385d310af0114354c491c75ba1ed0407f1408bcefd0473d7647bac407f9",
+    "docs/adr/0035-channel-handler-forward-consumption.md": "3e7178aa2b4b04d63cbb4602e001a174d0e62abaee10713916713d7be3051098"
+  },
+  "validation": {
+    "Hostlib": {
+      "passed": 161,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0
+    },
+    "clippyAllTargetsDwarnings": 0,
+    "clippyProductionPanic4": 0,
+    "fmtCheck": 0,
+    "buildAllFeatures": 0
+  },
+  "delta": "Facade Sandbox source fused before the existing read loop and cancellation cleanup drain; no second poll panic after normal EOF",
+  "counterexample": "Prior f852 native Sandbox callbacks produced valid output and terminal content, then the facade producer panicked on a repeated exhausted Unfold poll; exact raw native proofs are owned by the Tool/Value lane and remain separate",
+  "limits": [
+    "Candidate path-patched framework; exact published pin and main acceptance pending",
+    "Native three-language full after evidence dispatched separately; not inferred from this Rust unit manifest",
+    "No new Channel or CustomAgent production changes relative to the previous 3b4d source epoch"
+  ]
+}
