@@ -1,0 +1,94 @@
+{
+  "scope": "previous actualemptyremote8 baseline + exact9 actualremoteincrement; no localobjectcopy/alternates; no registry/main claim",
+  "status": "all9_recovered_and_exact_annotated_object_commit_tree_match",
+  "exitCode": 0,
+  "baseline8StillMatch": true,
+  "baseline_receipt_sha256": "6d724c1fd3b84aeb59e403246782c3518307010798f2e29732c52b07b4f93fa4",
+  "freshEmpty9AttemptSucceeded": false,
+  "original3failed_empty_fetch_preserved": "../sdk-evidence-observed-successor-fresh-fetch/result.json",
+  "newExactAnnotatedTagCount": 9,
+  "totalBaselinePlusNewRefs": 17,
+  "usesLocalAlternates": false,
+  "fetchReceiptSHA256": "d8c30683751f0ed327df55f5cfeb830ab4b8ce465f4f87fee5195fb0558f7dd6",
+  "fetchLogSHA256": "80a9c6d8619469c9f9c86998b6f50c6debb917e20cf67d38af51f421d8cfc712",
+  "fetchLogBytes": 29021,
+  "packProgressActual": {
+    "receiving1796complete": true,
+    "resolvingDeltasComplete": true
+  },
+  "rows": [
+    {
+      "ref": "refs/tags/evidence/sdk-governance/02059dd3014633a23c188e30e73b0634a8c5621d",
+      "objectType": "tag",
+      "tag_object": "a57bec2f21a58d39298e736d7c6489d1fc154a48",
+      "commit": "02059dd3014633a23c188e30e73b0634a8c5621d",
+      "tree": "077e6ebe364d9aed7f55bedc31c66b93bb767e6d",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/146f69a923e7df02417528c3dce6533312be85e1",
+      "objectType": "tag",
+      "tag_object": "d5ba9c52ea96beebfbf7bc1ea72ebad9019a0c34",
+      "commit": "146f69a923e7df02417528c3dce6533312be85e1",
+      "tree": "258f7699ed6095ac315b387fb3b899c9270a0690",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/30d7e219cc7d3aef0f75a19217c82898c363f50d",
+      "objectType": "tag",
+      "tag_object": "1fd0be9a73ff4d9cf0fabd4cb7452c948e371eb4",
+      "commit": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+      "tree": "8c10344cfa7780735127fb58beee3089c7eb7c29",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/5bcbad2437e5c19f61101883044c4f67944cb97c",
+      "objectType": "tag",
+      "tag_object": "cce9a860cea57dc11209966c88b36538662d74a3",
+      "commit": "5bcbad2437e5c19f61101883044c4f67944cb97c",
+      "tree": "6ff4d6c64b62256379d1df32f2cc93b3b06b848d",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/6f743d1f37b604dbeb315c75b9e608a5254dcfe2",
+      "objectType": "tag",
+      "tag_object": "e97acd13bd438e33d3b8c821858e2f28079f2e85",
+      "commit": "6f743d1f37b604dbeb315c75b9e608a5254dcfe2",
+      "tree": "af16e72122ceb753d4e57ae7d486fdd3a7d20612",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/8763c67bcfd6d98fe57449c88bb93f28f32bf78f",
+      "objectType": "tag",
+      "tag_object": "793768f34f2bc03818372e2cc4d490f58474f427",
+      "commit": "8763c67bcfd6d98fe57449c88bb93f28f32bf78f",
+      "tree": "d49a17c1cfbcd4b9af3b77dbd98924213bf495b7",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/b80cf068b2fb69b62913f23260980b4ce2ebf941",
+      "objectType": "tag",
+      "tag_object": "b3ecb54c42a5850f1dfcb9ed9a3baf5322f6262a",
+      "commit": "b80cf068b2fb69b62913f23260980b4ce2ebf941",
+      "tree": "7acdfa4e832fefaaed3aa550943707db1af43d99",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/c8941c6033c8cd5f698502483fb28a80953be48d",
+      "objectType": "tag",
+      "tag_object": "9b80d2c924260a2292fabf25ab67f2b295c1afca",
+      "commit": "c8941c6033c8cd5f698502483fb28a80953be48d",
+      "tree": "258f7699ed6095ac315b387fb3b899c9270a0690",
+      "allExpectedObjectCommitTreeMatch": true
+    },
+    {
+      "ref": "refs/tags/evidence/sdk-governance/ea21dfc58fa576296a0b1d0d3267c9632d84f0ae",
+      "objectType": "tag",
+      "tag_object": "b46ff7839cc51aae16261526c4c360ee28dcbbfc",
+      "commit": "ea21dfc58fa576296a0b1d0d3267c9632d84f0ae",
+      "tree": "234cc4d6185aee78a44c482609d9f80655f3693a",
+      "allExpectedObjectCommitTreeMatch": true
+    }
+  ],
+  "recordedAt": "2026-10-14T15:21:09.561855+00:00"
+}

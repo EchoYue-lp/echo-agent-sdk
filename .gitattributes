@@ -162,3 +162,6 @@ docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-ow
 docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/candidate.patch -diff
 docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/initialization-owner-before.log -diff
 docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/typescript-build.log -diff
+
+# Original Git progress includes carriage returns and trailing spaces.
+docs/sdk/governance/evidence/semantic-source-provenance/successor-observed-tags/incremental/fetch.log -diff

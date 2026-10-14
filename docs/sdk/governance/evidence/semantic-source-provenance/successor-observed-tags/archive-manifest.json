@@ -1,0 +1,102 @@
+{
+  "scope": "exact original remote evidence tag recovery artifacts; previous freshremote8 + actualremote9 incremental, no release/currentfuturecoverage",
+  "original_files": {
+    "incremental/result.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-successor-incremental-fetch/result.json",
+      "sha256": "8744c4f259983dd13f8830a8378c11d2cbc2a0d8870ae7c117cf9f08cfd06b66",
+      "bytes": 4221
+    },
+    "incremental/fetch.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-successor-incremental-fetch/fetch.log",
+      "sha256": "80a9c6d8619469c9f9c86998b6f50c6debb917e20cf67d38af51f421d8cfc712",
+      "bytes": 29021
+    },
+    "incremental/baseline.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-successor-incremental-fetch/baseline.json",
+      "sha256": "7671d19556b9a99a28e0e75977be60c720ceaa7310cc829eb6f6054de86a5952",
+      "bytes": 6015
+    },
+    "incremental/SHA256SUMS.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-successor-incremental-fetch/SHA256SUMS.json",
+      "sha256": "cc5a705d00ad2fed1a015e35d6b01222cbc622c5eae603be2e2643a1a99d16d3",
+      "bytes": 350
+    },
+    "incremental/fetch-receipt.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-successor-incremental-fetch/fetch-receipt.json",
+      "sha256": "d8c30683751f0ed327df55f5cfeb830ab4b8ce465f4f87fee5195fb0558f7dd6",
+      "bytes": 2032
+    },
+    "history/empty-bare-attempts/expected.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/expected.json",
+      "sha256": "ecaae3707fef026ea54460a1958b541664ab009b7dcc03d866ff2cb6bf3876c5",
+      "bytes": 2871
+    },
+    "history/empty-bare-attempts/result.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/result.json",
+      "sha256": "c355a7dba76e5293c400c0ae4fa3bab3a67c183787c1ca08a3f8df374bb11cde",
+      "bytes": 1699
+    },
+    "history/empty-bare-attempts/fetch-retry-bounded-ssh.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/fetch-retry-bounded-ssh.log",
+      "sha256": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+      "bytes": 17
+    },
+    "history/empty-bare-attempts/fetch.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/fetch.log",
+      "sha256": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+      "bytes": 17
+    },
+    "history/empty-bare-attempts/transport-diagnosis.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/transport-diagnosis.json",
+      "sha256": "998108385900862aa3da4b59441509e1d4b4c6b95ccbb852812b8469df00487e",
+      "bytes": 95
+    },
+    "history/empty-bare-attempts/fetch-https-fallback-receipt.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/fetch-https-fallback-receipt.json",
+      "sha256": "20275b57a0f37708bb32653f7aacfd37efd49ed278a0bb45fe01a36e49b641ba",
+      "bytes": 2032
+    },
+    "history/empty-bare-attempts/fetch-https-fallback.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/fetch-https-fallback.log",
+      "sha256": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+      "bytes": 17
+    },
+    "history/empty-bare-attempts/SHA256SUMS.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/SHA256SUMS.json",
+      "sha256": "658a46a1eaae3a6dac880ce30bc09f21c58779c13f1f2241b967fc3056cb9b64",
+      "bytes": 946
+    },
+    "history/empty-bare-attempts/init.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/init.log",
+      "sha256": "8a07bbea79915cefb77077dd2412891b9f0b86600ee77a312913a67b00485d93",
+      "bytes": 717
+    },
+    "history/empty-bare-attempts/fetch-retry-bounded-ssh-receipt.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/fetch-retry-bounded-ssh-receipt.json",
+      "sha256": "e7a9e1dd08ca8cd898c16d2cf68705ced6291168acb90286af996d945f821074",
+      "bytes": 1994
+    },
+    "history/empty-bare-attempts/fetch-receipt.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-observed-successor-fresh-fetch/fetch-receipt.json",
+      "sha256": "50e3a4701c42c19dd97ba62ec1877c1d227e872d1757dcd72e324089937fd965",
+      "bytes": 1957
+    },
+    "created-new-tags.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-evidence-new-observed-tags.json",
+      "sha256": "7de51ccf021f7501e29e8a2a6b03f6bf99465d13c22b51c7c84188e285a2e4a0",
+      "bytes": 790
+    }
+  },
+  "new_tags_recovered": 9,
+  "baseline_tags_preserved": 8,
+  "new_tag_annotated_object_commit_tree_all_match": true,
+  "no_alternates_or_local_object_copy": true,
+  "three_original_empty_bare_attempts_preserved": true,
+  "original8formal_archive_unchanged": true,
+  "excluded": [
+    "bare object databases",
+    "new production source622d or future final snapshot tags outside actualnine list",
+    "SDK main/release/CI capability completion claims"
+  ],
+  "material_review_status": "pending independent archive artifact review"
+}

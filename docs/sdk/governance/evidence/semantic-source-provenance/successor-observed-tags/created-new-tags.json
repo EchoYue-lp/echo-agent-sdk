@@ -1,0 +1,15 @@
+{
+  "created": [
+    "evidence/sdk-governance/02059dd3014633a23c188e30e73b0634a8c5621d",
+    "evidence/sdk-governance/146f69a923e7df02417528c3dce6533312be85e1",
+    "evidence/sdk-governance/30d7e219cc7d3aef0f75a19217c82898c363f50d",
+    "evidence/sdk-governance/5bcbad2437e5c19f61101883044c4f67944cb97c",
+    "evidence/sdk-governance/6f743d1f37b604dbeb315c75b9e608a5254dcfe2",
+    "evidence/sdk-governance/8763c67bcfd6d98fe57449c88bb93f28f32bf78f",
+    "evidence/sdk-governance/b80cf068b2fb69b62913f23260980b4ce2ebf941",
+    "evidence/sdk-governance/c8941c6033c8cd5f698502483fb28a80953be48d",
+    "evidence/sdk-governance/ea21dfc58fa576296a0b1d0d3267c9632d84f0ae"
+  ],
+  "force": false,
+  "purpose": "preserve exact observed SDK revisions before eventual squash; no registry publication"
+}

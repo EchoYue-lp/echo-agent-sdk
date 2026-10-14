@@ -1,0 +1,12 @@
+{
+  "expected.json": "ecaae3707fef026ea54460a1958b541664ab009b7dcc03d866ff2cb6bf3876c5",
+  "result.json": "c355a7dba76e5293c400c0ae4fa3bab3a67c183787c1ca08a3f8df374bb11cde",
+  "fetch-retry-bounded-ssh.log": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+  "fetch.log": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+  "transport-diagnosis.json": "998108385900862aa3da4b59441509e1d4b4c6b95ccbb852812b8469df00487e",
+  "fetch-https-fallback-receipt.json": "20275b57a0f37708bb32653f7aacfd37efd49ed278a0bb45fe01a36e49b641ba",
+  "fetch-https-fallback.log": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+  "init.log": "8a07bbea79915cefb77077dd2412891b9f0b86600ee77a312913a67b00485d93",
+  "fetch-retry-bounded-ssh-receipt.json": "e7a9e1dd08ca8cd898c16d2cf68705ced6291168acb90286af996d945f821074",
+  "fetch-receipt.json": "50e3a4701c42c19dd97ba62ec1877c1d227e872d1757dcd72e324089937fd965"
+}

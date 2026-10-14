@@ -1,0 +1,21 @@
+{
+  "README.md": "c9f225ebcb4514d00791e5295ecfdac43b076ee1ff3c064bb702ed4521e98948",
+  "archive-manifest.json": "291d56766be10e5b046d373a4464b7aebd48778211367cdd395a5e5563a4fabe",
+  "created-new-tags.json": "7de51ccf021f7501e29e8a2a6b03f6bf99465d13c22b51c7c84188e285a2e4a0",
+  "history/empty-bare-attempts/SHA256SUMS.json": "658a46a1eaae3a6dac880ce30bc09f21c58779c13f1f2241b967fc3056cb9b64",
+  "history/empty-bare-attempts/expected.json": "ecaae3707fef026ea54460a1958b541664ab009b7dcc03d866ff2cb6bf3876c5",
+  "history/empty-bare-attempts/fetch-https-fallback-receipt.json": "20275b57a0f37708bb32653f7aacfd37efd49ed278a0bb45fe01a36e49b641ba",
+  "history/empty-bare-attempts/fetch-https-fallback.log": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+  "history/empty-bare-attempts/fetch-receipt.json": "50e3a4701c42c19dd97ba62ec1877c1d227e872d1757dcd72e324089937fd965",
+  "history/empty-bare-attempts/fetch-retry-bounded-ssh-receipt.json": "e7a9e1dd08ca8cd898c16d2cf68705ced6291168acb90286af996d945f821074",
+  "history/empty-bare-attempts/fetch-retry-bounded-ssh.log": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+  "history/empty-bare-attempts/fetch.log": "105c6214f060951fda0e185b7ab07f7fe0eb4b15b3ef388ca165af222364fdf6",
+  "history/empty-bare-attempts/init.log": "8a07bbea79915cefb77077dd2412891b9f0b86600ee77a312913a67b00485d93",
+  "history/empty-bare-attempts/result.json": "c355a7dba76e5293c400c0ae4fa3bab3a67c183787c1ca08a3f8df374bb11cde",
+  "history/empty-bare-attempts/transport-diagnosis.json": "998108385900862aa3da4b59441509e1d4b4c6b95ccbb852812b8469df00487e",
+  "incremental/SHA256SUMS.json": "cc5a705d00ad2fed1a015e35d6b01222cbc622c5eae603be2e2643a1a99d16d3",
+  "incremental/baseline.json": "7671d19556b9a99a28e0e75977be60c720ceaa7310cc829eb6f6054de86a5952",
+  "incremental/fetch-receipt.json": "d8c30683751f0ed327df55f5cfeb830ab4b8ce465f4f87fee5195fb0558f7dd6",
+  "incremental/fetch.log": "80a9c6d8619469c9f9c86998b6f50c6debb917e20cf67d38af51f421d8cfc712",
+  "incremental/result.json": "8744c4f259983dd13f8830a8378c11d2cbc2a0d8870ae7c117cf9f08cfd06b66"
+}
