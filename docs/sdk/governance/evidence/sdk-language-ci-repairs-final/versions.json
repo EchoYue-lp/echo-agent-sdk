@@ -1,0 +1,66 @@
+[
+  {
+    "command": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+    "exitCode": 0,
+    "stdout": "v20.20.2\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "npm",
+      "--version"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+    "exitCode": 0,
+    "stdout": "10.9.4\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "python",
+      "-c",
+      "import sys; print(sys.version); print(sys.executable)"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+    "exitCode": 0,
+    "stdout": "3.10.19 (main, Dec  9 2025, 19:17:38) [Clang 21.1.4 ]\n/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/.venv/bin/python3\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "java",
+      "-version"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "java version \"21.0.5\" 2024-10-15 LTS\nJava(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)\nJava HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)\n"
+  },
+  {
+    "command": [
+      "mvn",
+      "-version"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+    "exitCode": 0,
+    "stdout": "Apache Maven 3.9.0 (9b58d2bad23a66be161c4664ef21ce219c2c8584)\nMaven home: /Users/ls/MyWork/kits/apache-maven-3.9.0\nJava version: 21.0.5, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home\nDefault locale: zh_CN_#Hans, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6.2\", arch: \"aarch64\", family: \"mac\"\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "cargo",
+      "--version"
+    ],
+    "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+    "exitCode": 0,
+    "stdout": "cargo 1.99.0 (5f94df478 2026-08-27)\n",
+    "stderr": ""
+  }
+]

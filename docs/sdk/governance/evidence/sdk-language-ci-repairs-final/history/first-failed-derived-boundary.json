@@ -1,0 +1,25 @@
+{
+  "scope": "derived boundary for first failed complete official language attempt",
+  "originalReceiptSha256": "91db9d267ee13a6a4cda15fabff1d4d7d53caa157e041b23b0f0b6bb05af607d",
+  "originalReceiptPreserved": true,
+  "scriptExit": 1,
+  "typescript": {
+    "tests": 336,
+    "passed": 335,
+    "failed": 1,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "failedTest": "computation exact values, errors and protected effects",
+  "causeObserved": "python3 import of file_sha256 evaluates Path | str and raises TypeError",
+  "pythonSdkTestsExecuted": false,
+  "javaSdkTestsExecuted": false,
+  "typescriptQuickstartExecuted": false,
+  "pythonQuickstartExecuted": false,
+  "javaExampleExecuted": false,
+  "javaDirectoryStatisticsInOriginalReceipt": "pre-existing reports, not execution evidence for this attempt; allJavaXmlFresh false",
+  "all800InputsUnchanged": true,
+  "runtimeAndLogSha": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "logSha256": "bceaedfdb43d224a3cda60846a0706c51fad87715bffc132245257924617a1ee",
+  "status": "failed; no final SDK acceptance"
+}

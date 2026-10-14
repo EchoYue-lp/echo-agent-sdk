@@ -1,0 +1,23 @@
+{
+  "runtime_input_git_commit": "b0e43b92d9be74aff7835b28692acd4f523ccae4",
+  "runtime_files": 800,
+  "every_blob_sha_and_current_file_mode_match": true,
+  "mismatches": [],
+  "one_production_input_at_execution_start": {
+    "path": "sdks/python/src/echo_agent_sdk/client.py",
+    "sha256": "399961d089a9dcc59af871c377d700d6a8f4c0b5d4fd209f50a3c7a0ac6a1f8b",
+    "status": "uncommitted at original 9dd run; actual exact bytes now committed at b0e43, original receipt unchanged"
+  },
+  "rust_gate_separate_scope": {
+    "original_manifest": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-00782-final-rust-gates/inputs-after.json",
+    "original_manifest_sha256": "fa949cda9e40ec5794f493dccf07467b6b49dcd780e75f34169a39f52c951049",
+    "rust_gate_inputs": 61,
+    "overlapping_language_inputs": 60,
+    "excluded_from_language800": [
+      "rust-toolchain.toml"
+    ],
+    "separately_verified_toolchain_sha256": "9499564fd7988135e5d9c59a303274a930d1ebc25b42879b9eea38db76cb7230",
+    "all61_current_bytes_still_match_rust_gate": true,
+    "original_rust_gates_reexecuted": false
+  }
+}

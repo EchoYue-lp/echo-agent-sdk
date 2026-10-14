@@ -1,0 +1,15 @@
+{
+  "head_at_execution_start": "9dd50a08a3f33430ea7d9a1b11df3403e9e6abde",
+  "head_at_execution_finish": "9dd50a08a3f33430ea7d9a1b11df3403e9e6abde",
+  "head_at_archive": "b0e43b92d9be74aff7835b28692acd4f523ccae4",
+  "uncommitted_inputs_at_start": [
+    {
+      "path": "sdks/python/src/echo_agent_sdk/client.py",
+      "sha256": "399961d089a9dcc59af871c377d700d6a8f4c0b5d4fd209f50a3c7a0ac6a1f8b"
+    }
+  ],
+  "not_tracked_at_start": [],
+  "all_inputs_tracked_at_archive": true,
+  "all_input_bytes_currently_equal": true,
+  "qualification": "800 unchanged working-tree input bytes; do not claim uncommitted production input was already in the starting Git tree"
+}

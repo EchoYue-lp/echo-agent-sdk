@@ -1,0 +1,24 @@
+{
+  "originalReceiptSha256": "c22cc8fd68cecdbfe1b983e4b14d76bb5c61dc3899102ab58d341d547a8a54e5",
+  "originalReceiptPreserved": true,
+  "scriptExit": 1,
+  "typescript": {
+    "tests": 336,
+    "passed": 335,
+    "failed": 1,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "failedTest": "paused consumer window 1 external replay ACK merges queued gap without covered re-delivery",
+  "assertion": "line 202: replay next_cursor.last_processed_sequence actual 6 versus preceding run.get().last_sequence expected 5; distinct RPC observations, cause under investigation",
+  "previousComputationImportFailure": "not reproduced after exact future-annotations fix; test passed in this attempt",
+  "pythonSdkTestsExecuted": false,
+  "javaSdkTestsExecuted": false,
+  "typescriptQuickstartExecuted": false,
+  "pythonQuickstartExecuted": false,
+  "javaExampleExecuted": false,
+  "javaDirectoryStatisticsInOriginalReceipt": "pre-existing reports, not execution evidence for this attempt; allJavaXmlFresh false",
+  "all800InputsUnchanged": true,
+  "logSha256": "3b22d6da08109f796f4cc0715b6216a3b48d06566cac42405c73b1c8386f3b37",
+  "status": "failed; no final SDK acceptance"
+}
