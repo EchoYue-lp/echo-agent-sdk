@@ -8,6 +8,7 @@ freshness: examined
 revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
 finding_refs:
 - finding.sdk-feature-failure-cause-fidelity
+- finding.sdk-managed-store-adaptation
 challenges:
   builtin-tool-and-reverse-bridge-obligation:
     revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
@@ -43,6 +44,21 @@ challenges:
     - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
     evidence_refs:
     - evidence.sdk-tools-bridge-finite-observation
+  specific-managed-store-adaptation:
+    revision: 622d7931e01556161441d22de0697f6f35f24f17
+    source_refs:
+    - echo-sdk-protocol/src/managed.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#missing_managed_capability_fails_before_store_mutation
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#managed_persistence_deadline_and_lost_ack_preserve_commit_authority
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt
+    - echo-sdk-host/src/core_profile/wire.rs#managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    - evidence.sdk-managed-retirement
+    - evidence.sdk-managed-supporting-operation-boundary
 ---
 
 # Tools/Bridge contract_evidence 有限审查
@@ -74,3 +90,8 @@ challenges:
 ## 原Workflow/Memory/Eval三域新实际独审
 
 后继frameworkFinal独立有限源码审真实PASS C0/I0/M0明确补齐原Workflow/Memory/Eval三个错误域：Memory1532的liveStore.search_with→framework_error/semanticunsupported测试396，category=memory/terminalfailed/code=memory/retryfalse/原operation，旧namespacevalue/len1保无mutation；Eval91bd原run_all factoryErr由FailedEvalAgent第一次取Mutex<Option<originalReactError>>而非displaytext重造，真实EvalRunner对Cancelled/Timeout/Llm429 FailedResult保原violation/清空workspace（不伪每项RPCthrow或三native全部错误域已执行）；Workflow f631 graph.run和startup/stream每eventErr原canonicalconverter，实际Host2190取消RPC完整Cancelled/Never/operation/causequartet，stream failed variant仍Cancelledcause非Complete。Memory/Eval/wire当前和622d相同；workflow当前90e6仅cfgtest LLMA→B新增，生产prefix/原错误路径不变，未在这次审/未终态测试不借成果。原最新finalRust05/13日志逐具名实际ok。 该newchallenge绑定真实622d原错误路径，主5bcb原remote/工具审查revision不变；不会用sharedEvidence名字偷换scope。原宣其它三域未决是早期审查历史，真正补审后此精确root可closed。
+
+## finding.sdk-managed-store-adaptation 原故障义务准确复核
+
+原 managed capability/deadline/revision/receipt 适配义务结合既有 managed-retirement 独审与 supporting-operation-boundary：missing capability 先于 mutation 拒绝，deadline 过期不 commit，commit 后丢 ACK 保 OutcomeUnknown，disconnect/restart 使用同 exact receipt，typed checkpoint 大 revision 与 subsecond 字段无损；具名 tests 在最新原05真实通过。第八个 native consumer 与 backend20 证据保原 epoch，不宣全部11 forward；三逆 DTO 保 schema/RustHost supporting 边界，无已接受 forward 不新造 API。
+current_tool_boundary_review 本次真实有限审查明确该原缺陷 closeeligible；本新 challenge 保主5bcb/旧审正文及已知范围，不借宽 tools family PASS。

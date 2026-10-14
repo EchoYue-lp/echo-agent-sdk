@@ -8,6 +8,7 @@ freshness: examined
 revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
 finding_refs:
 - finding.sdk-feature-failure-cause-fidelity
+- finding.sdk-extension-pending-stream-owner
 challenges:
   builtin-tool-and-reverse-bridge-obligation:
     revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
@@ -28,6 +29,16 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
     - docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/regression-review-manifest.json
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+  specific-extension-pending-stream-owner:
+    revision: 622d7931e01556161441d22de0697f6f35f24f17
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs#dropped_pending_stream_releases_sink_and_session_reentry_guard
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#tool_manager_timeout_before_stream_ack_releases_callback_owner
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#cancelled_initial_stream_response_releases_session_callback_owner
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
     evidence_refs:
     - evidence.sdk-tools-bridge-finite-observation
 ---
@@ -57,3 +68,8 @@ tool流complete/EOF/cancel/cleanup、ShellchildPID真实exit、Sandbox原finally
 ## 未检查项
 
 任意codec/network故障重试可靠导出或强kill后远端物理工作已停止，不由本scope强推；原callback所有秘密过滤也未承诺。
+
+## finding.sdk-extension-pending-stream-owner 原故障义务准确复核
+
+原初始应答被外层 ToolManager timeout/drop 的缺陷由原 PendingStream RAII 守护 sink、已发 stream 地址和 callback/reentry guard。具名 unit 实际 drop 后资源释放，两个真实 Host 回归分别 outer timeout before ACK 与 cancelled initial response，保原 Session owner/低配额再入强断言；最新正式原05逐名已执行通过。不是只借 teardown prefix 修复或整体测试数。
+current_tool_boundary_review 本次真实有限审查明确该原缺陷 closeeligible；本新 challenge 保主5bcb/旧审正文及已知范围，不借宽 tools family PASS。

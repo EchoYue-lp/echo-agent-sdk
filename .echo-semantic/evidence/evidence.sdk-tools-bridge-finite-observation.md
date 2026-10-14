@@ -28,6 +28,16 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
 - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
 - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+- echo-sdk-host/src/core_profile/extension_bridge.rs#dropped_pending_stream_releases_sink_and_session_reentry_guard
+- echo-sdk-host/tests/extension_bridge_e2e.rs#tool_manager_timeout_before_stream_ack_releases_callback_owner
+- echo-sdk-host/tests/extension_bridge_e2e.rs#cancelled_initial_stream_response_releases_session_callback_owner
+- echo-sdk-protocol/src/managed.rs
+- echo-sdk-host/tests/extension_bridge_e2e.rs#missing_managed_capability_fails_before_store_mutation
+- echo-sdk-host/tests/extension_bridge_e2e.rs#managed_persistence_deadline_and_lost_ack_preserve_commit_authority
+- echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt
+- echo-sdk-host/src/core_profile/wire.rs#managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds
+- echo-sdk-host/src/core_profile/facade/tools.rs#direct_tool_validation_precedes_custom_rules_and_execution
+- echo-sdk-host/src/core_profile/facade/tools.rs#validate_tool_input
 supports:
 - behavior.sdk-family-files
 - behavior.sdk-family-shell
@@ -44,6 +54,8 @@ supports:
 - behavior.sdk-family-workflow
 - behavior.sdk-family-memory
 - behavior.sdk-family-eval
+- behavior.sdk-family-state
+- behavior.sdk-integrations
 limitations:
 - Ten builtin families and six reverse integration roles are named finite scopes,
   not all Rust identities or new APIs.
@@ -109,3 +121,21 @@ FileAuthority当前three-language-final包尚未进入此Git，故具体source_r
 ## 后继原三域错误原因精确独立复审与闭合
 
 后继frameworkFinal独立有限源码审真实PASS C0/I0/M0明确补齐原Workflow/Memory/Eval三个错误域：Memory1532的liveStore.search_with→framework_error/semanticunsupported测试396，category=memory/terminalfailed/code=memory/retryfalse/原operation，旧namespacevalue/len1保无mutation；Eval91bd原run_all factoryErr由FailedEvalAgent第一次取Mutex<Option<originalReactError>>而非displaytext重造，真实EvalRunner对Cancelled/Timeout/Llm429 FailedResult保原violation/清空workspace（不伪每项RPCthrow或三native全部错误域已执行）；Workflow f631 graph.run和startup/stream每eventErr原canonicalconverter，实际Host2190取消RPC完整Cancelled/Never/operation/causequartet，stream failed variant仍Cancelledcause非Complete。Memory/Eval/wire当前和622d相同；workflow当前90e6仅cfgtest LLMA→B新增，生产prefix/原错误路径不变，未在这次审/未终态测试不借成果。原最新finalRust05/13日志逐具名实际ok。 本段是补到旧remoteTool/Llm专用scope之后的实际新有限复核，不改原scope当时仍未决的历史句子；合原remote3真红绿，本Finding原所有具名原因丢失root义务三链足够可局部闭合，非全桥资源或physicalB/12/main。
+
+## 三个具名工具/桥适配缺陷的局部闭合
+
+本次依据 current_tool_boundary_review 的真实原源码审和逐 Finding 有限 closure 复核，C0/I0/M0；622d 是本次具体源码与保存收据的观察版本，不声称原运行重跑于此。
+
+### finding.sdk-extension-pending-stream-owner
+
+原初始应答被外层 ToolManager timeout/drop 的缺陷由原 PendingStream RAII 守护 sink、已发 stream 地址和 callback/reentry guard。具名 unit 实际 drop 后资源释放，两个真实 Host 回归分别 outer timeout before ACK 与 cancelled initial response，保原 Session owner/低配额再入强断言；最新正式原05逐名已执行通过。不是只借 teardown prefix 修复或整体测试数。
+
+### finding.sdk-managed-store-adaptation
+
+原 managed capability/deadline/revision/receipt 适配义务结合既有 managed-retirement 独审与 supporting-operation-boundary：missing capability 先于 mutation 拒绝，deadline 过期不 commit，commit 后丢 ACK 保 OutcomeUnknown，disconnect/restart 使用同 exact receipt，typed checkpoint 大 revision 与 subsecond 字段无损；具名 tests 在最新原05真实通过。第八个 native consumer 与 backend20 证据保原 epoch，不宣全部11 forward；三逆 DTO 保 schema/RustHost supporting 边界，无已接受 forward 不新造 API。
+
+### finding.sdk-tool-input-validator-bypass
+
+原 adapter 跳过唯一 framework schema/custom validator 的具体 bug 已改为同一 validate_tool_input，参数绑定拒 excess arity（含 null），没有第二 validator。真实 prototype not_a_chart_type→假 line 的原成功和修后 typed InvalidParameter 保在旧专属 Evidence；正式 spy 强断言 missing/type/enum/excessNull/customBad 全 executes0、valid 精确 executes1，最新原05真实通过。后继 Chart 整数义务独立已有61原生/独审闭合，不以旧非法 enum 修复替整数证明，不把 helper 自动接受为三语言 API。
+
+原 managed-retirement 与 supporting-operation-boundary 的各自 supports/limits 全保；pending owner 不宣任意外部 producer 物理强停。Sandbox/Task/cleanup 关联同 B 未决，12 身份/平台/main 独立，未升整个 family verified。

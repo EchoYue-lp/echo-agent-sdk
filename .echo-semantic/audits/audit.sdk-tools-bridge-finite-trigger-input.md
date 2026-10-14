@@ -8,6 +8,7 @@ freshness: examined
 revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
 finding_refs:
 - finding.sdk-feature-failure-cause-fidelity
+- finding.sdk-tool-input-validator-bypass
 challenges:
   builtin-tool-and-reverse-bridge-obligation:
     revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
@@ -30,6 +31,16 @@ challenges:
     - docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/regression-review-manifest.json
     evidence_refs:
     - evidence.sdk-tools-bridge-finite-observation
+  specific-tool-input-validator-bypass:
+    revision: 622d7931e01556161441d22de0697f6f35f24f17
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs#direct_tool_validation_precedes_custom_rules_and_execution
+    - echo-sdk-host/src/core_profile/facade/tools.rs#validate_tool_input
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
+    - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+    - evidence.sdk-tool-input-validation-candidate
 ---
 
 # Tools/Bridge trigger_input 有限审查
@@ -57,3 +68,8 @@ challenges:
 ## 未检查项
 
 任意codec/network故障重试可靠导出或强kill后远端物理工作已停止，不由本scope强推；原callback所有秘密过滤也未承诺。
+
+## finding.sdk-tool-input-validator-bypass 原故障义务准确复核
+
+原 adapter 跳过唯一 framework schema/custom validator 的具体 bug 已改为同一 validate_tool_input，参数绑定拒 excess arity（含 null），没有第二 validator。真实 prototype not_a_chart_type→假 line 的原成功和修后 typed InvalidParameter 保在旧专属 Evidence；正式 spy 强断言 missing/type/enum/excessNull/customBad 全 executes0、valid 精确 executes1，最新原05真实通过。后继 Chart 整数义务独立已有61原生/独审闭合，不以旧非法 enum 修复替整数证明，不把 helper 自动接受为三语言 API。
+current_tool_boundary_review 本次真实有限审查明确该原缺陷 closeeligible；本新 challenge 保主5bcb/旧审正文及已知范围，不借宽 tools family PASS。

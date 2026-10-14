@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-managed-store-adaptation
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: failure_concurrency
 focus:
@@ -18,11 +18,22 @@ rule_refs:
 evidence_refs:
 - evidence.sdk-managed-retirement
 - evidence.sdk-managed-supporting-operation-boundary
-audit_refs: []
+- evidence.sdk-tools-bridge-finite-observation
+audit_refs:
+- audit.sdk-tools-bridge-finite-contract-evidence
+- audit.sdk-managed-retirement-rereview
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-tools-bridge-finite-observation
+- evidence.sdk-managed-retirement
+- evidence.sdk-managed-supporting-operation-boundary
+verification_evidence_refs:
+- evidence.sdk-tools-bridge-finite-observation
+- evidence.sdk-managed-retirement
+- evidence.sdk-managed-supporting-operation-boundary
+rereview_audit_refs:
+- audit.sdk-tools-bridge-finite-contract-evidence
+- audit.sdk-managed-retirement-rereview
 discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 ---
 
@@ -54,3 +65,8 @@ discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 ## 已审的三逆操作处置
 
 新增staticEvidence将原“剩余3consumer必须全部跑”改为准确合同边界：不撤销accepted逆DTO，不暗接受新forwardAPI，Rust/Host调用原frameworkstabledelete。原广义缺陷状态不由静态取证自动resolved；缺原精确修复/失败签名复审refs需归档，不把无APIconsumer当新增产品裁决。
+
+## 具体本地修复、验证与复审已完成
+
+原 managed capability/deadline/revision/receipt 适配义务结合既有 managed-retirement 独审与 supporting-operation-boundary：missing capability 先于 mutation 拒绝，deadline 过期不 commit，commit 后丢 ACK 保 OutcomeUnknown，disconnect/restart 使用同 exact receipt，typed checkpoint 大 revision 与 subsecond 字段无损；具名 tests 在最新原05真实通过。第八个 native consumer 与 backend20 证据保原 epoch，不宣全部11 forward；三逆 DTO 保 schema/RustHost supporting 边界，无已接受 forward 不新造 API。
+真实 current_tool_boundary_review 原 source review 与本次具体 closure 复核支持三链局部 resolved。原正文等待语句是原阶段历史，保原字节；不以 SDK main 未交付长期假 open。B/12/宽资源/平台/main 仍各自独立。
