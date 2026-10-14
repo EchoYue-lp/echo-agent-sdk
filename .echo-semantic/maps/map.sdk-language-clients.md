@@ -35,6 +35,9 @@ finding_refs:
 - finding.sdk-wire-data-fidelity
 - finding.sdk-family-catalog-method-routing
 - finding.sdk-java-original-child-exit-lifecycle
+- finding.sdk-test-host-binary-whole-buffer-limit
+- finding.sdk-telemetry-fixture-pretry-owner-leak
+- finding.sdk-state-trace-timezone-oracle
 audit_refs:
 - audit.sdk-language-client-lifecycle-trigger-input
 - audit.sdk-language-client-lifecycle-result-side-effect
@@ -469,3 +472,14 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 - family-intrinsic：现accepted helper纯值codec与三语言具名构造/校验/完整payload读取是supporting角色，原Testing14 controltransport/purecodec明确，非inventory count=全部helper或Mock运行服务。
 
 本次将原“候选/whole/main待”通用模板收敛到具名原审范围mapped，并不升级Behavior verified。当前Map主observed保原版本；后继Evidence/Audit分别保存自己的真实源码审/执行切点。Git另新Important保needs_review具体Finding，B/12/Windows与最终交付独立。
+
+
+## 后继Linux CI测试支撑缺陷（9a发现，尚未修复）
+
+旧eebd远端语言job权威终态Cancelled；Admin原166086字节日志与9a冻结测试源码显示Host二进制全buffer超2GiB（6个已输出not ok）、State/Trace时区oracle（2个已输出not ok），另Telemetry5组pretry hash异常未进入清理的owner缺口不能当已输出5个终态测试。分别由新三个具名open Finding承接，属于本三语言能力图的测试/证明支撑角色，不判生产Host语义退化或新增能力。旧macOS完整793证明与原全部Map场景/审计保持原epoch；Windows/nativeLinux后验及新liveCI不能据其推过。
+
+- `finding.sdk-test-host-binary-whole-buffer-limit`：open，缺实际修复、有限验证和复审三链。
+- `finding.sdk-telemetry-fixture-pretry-owner-leak`：open，缺实际修复、有限验证和复审三链。
+- `finding.sdk-state-trace-timezone-oracle`：open，缺实际修复、有限验证和复审三链。
+
+map原observed_at76601仍定位原场景源码，此后继文字明确观察9a及原eebd日志；不把新路径塞旧Git source_refs、不提升41族verified/取消B或12义务。
