@@ -1,0 +1,10 @@
+{
+  "reviewer": "/root/current_tool_boundary_review",
+  "decision": "finite SecretScan PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "scope": "three existing accepted Security root aliases; complete scan fields and UTF-8 byte offset 11 canonical text, exact Unicode redaction, no-match controls, full typed errors, zero provider/Run/protected-file effects, actual immutable Host/source/three native raw receipts",
+  "closedMaterialMinor": "first-run effect assertions below failing raw-tag assertion were not reached; observed facts were separately checked, final runs executed every assertion",
+  "exclusions": "all Security patterns, new canonical/source-kind acceptance, full SDK/current main/CI"
+}

@@ -1,0 +1,145 @@
+"""Real accepted Security source helpers preserve Unicode and zero model effects."""
+
+import asyncio
+import json
+import os
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
+
+from echo_agent_sdk import EchoAgentClient, EchoAgentError, to_wire
+
+HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
+if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
+    raise RuntimeError("required Security Host missing")
+FIXTURE = (
+    Path(__file__).resolve().parents[2] / "shared/testing/secret_scan_host_fixture.py"
+)
+pytestmark = [
+    pytest.mark.asyncio,
+    pytest.mark.skipif(not HOST, reason="real Host required"),
+]
+
+
+async def test_security_root_aliases_preserve_utf8_byte_offset_and_redacted_span():
+    root = Path(os.environ.get("ECHO_AGENT_SDK_SECRET_ROOT", tempfile.gettempdir()))
+    root.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="python-", dir=root))
+
+    async def helper(*args):
+        process = await asyncio.create_subprocess_exec(
+            sys.executable,
+            str(FIXTURE),
+            "--work",
+            str(work),
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            output, error = await asyncio.wait_for(process.communicate(), 5)
+            assert process.returncode == 0, error.decode()
+            return json.loads(output) if output else None
+        finally:
+            if process.returncode is None:
+                process.kill()
+                await process.wait()
+
+    await helper()
+    spec = json.loads((work / "scenario.json").read_text())
+    provider = 0
+    facts = {"rows": []}
+    async with await EchoAgentClient.spawn(
+        HOST, "--config", str(work / "host.json")
+    ) as sdk:
+
+        async def callback(_call, _cancellation):
+            nonlocal provider
+            provider += 1
+            raise AssertionError("Security helpers must not invoke model")
+
+        registration = await sdk.register_extension(
+            "llm_client",
+            "security-unused-model",
+            {
+                "kind": "llm_client",
+                "descriptor_version": 1,
+                "model_name": "security-unused-model",
+                "supports_streaming": False,
+            },
+            callback,
+        )
+        agent = await sdk.create_agent()
+        session = await agent.create_session(str(work))
+        facts["identity"] = {
+            "agent": agent.wire.to_dict(),
+            "session": session.wire.to_dict(),
+        }
+        facts["before"] = await helper("--snapshot")
+        for operation in spec["operations"]:
+            for item in spec["texts"]:
+                facts["rows"].append(
+                    {
+                        "operation": operation,
+                        "mode": "value",
+                        "text_id": item["id"],
+                        "result": await session.invoke(operation, [item["text"]]),
+                    }
+                )
+            for mode in ("wrong-signature", "missing-text"):
+                resolved = sdk.catalog.resolve(operation)
+                request = {
+                    "operation": operation,
+                    "signature_digest": "sha256:" + "0" * 64
+                    if mode == "wrong-signature"
+                    else resolved.signature,
+                    "handle": agent.wire.to_dict(),
+                    "arguments": [to_wire(session.wire)]
+                    + (
+                        [to_wire(spec["texts"][0]["text"])]
+                        if mode == "wrong-signature"
+                        else []
+                    ),
+                }
+                with pytest.raises(EchoAgentError) as caught:
+                    await sdk.request(resolved.method.removeprefix("_"), request)
+                error = caught.value
+                facts["rows"].append(
+                    {
+                        "operation": operation,
+                        "mode": mode,
+                        "request": request,
+                        "error": {
+                            "code": error.code,
+                            "retryable": error.retryable,
+                            "operation": error.operation,
+                            "details": error.details,
+                            "handle": error.handle.to_dict() if error.handle else None,
+                            "message": error.message,
+                        },
+                    }
+                )
+        scan = next(
+            value for value in spec["operations"] if value.endswith("scan_secrets")
+        )
+        resolved = sdk.catalog.resolve(scan)
+        facts["raw_scan"] = await sdk.request(
+            resolved.method.removeprefix("_"),
+            {
+                "operation": scan,
+                "signature_digest": resolved.signature,
+                "handle": agent.wire.to_dict(),
+                "arguments": [to_wire(session.wire), to_wire(spec["texts"][0]["text"])],
+            },
+        )
+        facts["provider_calls"] = provider
+        facts["after"] = await helper("--snapshot")
+        await session.close()
+        await agent.close()
+        await registration.close()
+    (work / "observed.json").write_text(
+        json.dumps(facts, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print("Security native evidence:", work, await helper("--verify"))

@@ -1,0 +1,39 @@
+TAP version 13
+# Subtest: accepted Security root aliases preserve Unicode secret span and byte offset without model effects
+not ok 1 - accepted Security root aliases preserve Unicode secret span and byte offset without model effects
+  ---
+  duration_ms: 884.811959
+  type: 'test'
+  location: '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/secret-scan-host.test.js:13:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Command failed: python3 /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/secret_scan_host_fixture.py --work /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/secret-scan-native/typescript-N04v13 --verify
+    Traceback (most recent call last):
+      File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/secret_scan_host_fixture.py", line 163, in <module>
+        main()
+      File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/secret_scan_host_fixture.py", line 157, in main
+        print(json.dumps(verify(args.work)))
+      File "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/secret_scan_host_fixture.py", line 131, in verify
+        assert fields["position"] == {"kind": "u64", "value": "11"}
+    AssertionError
+    
+  code: 1
+  stack: |-
+    genericNodeError (node:internal/errors:983:15)
+    wrappedFn (node:internal/errors:537:14)
+    ChildProcess.exithandler (node:child_process:417:12)
+    ChildProcess.emit (node:events:519:28)
+    maybeClose (node:internal/child_process:1101:16)
+    Socket.<anonymous> (node:internal/child_process:456:11)
+    Socket.emit (node:events:519:28)
+    Pipe.<anonymous> (node:net:346:12)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1071.698584

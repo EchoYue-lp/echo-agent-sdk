@@ -1,0 +1,53 @@
+{
+  "scope": "explicit existing echo_agent::security root aliases, existing UTF-8-byte scanner and dynamic-map canonical decimal text; no source relocation acceptance",
+  "framework": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "frameworkGitBlobSHA256": {
+    "src/security.rs": "88b3b2d327642dade601e9ea34d3b4fa232daa1452c23247132f607bba63d4cd",
+    "echo-core/src/utils/retention.rs": "2ceee985b95438ea99c4560694df16c69fd0b6ad720df7486adef34f1ccefad8"
+  },
+  "hostSHA256": "da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444",
+  "hostSourceSHA256": "91bd8f84f3a05b272b52911c7ba52d7cc54537d9f88790cfbb11578a57817a94",
+  "native": {
+    "typescript": {
+      "tests": 1,
+      "calls": 16,
+      "exit": 0,
+      "skipped": 0
+    },
+    "python": {
+      "tests": 1,
+      "calls": 16,
+      "exit": 0,
+      "skipped": 0
+    },
+    "java": {
+      "tests": 1,
+      "calls": 16,
+      "exit": 0,
+      "skipped": 0
+    }
+  },
+  "firstFailureClassification": "test oracle wrongly expected WireValue u64 tag; existing WireU64 serde-to-JSON snapshot yields canonical decimal-text string in a dynamic map; first value/error assertions passed before that failure; zero-provider/no-Run/protected-file facts were recorded and separately rechecked, but first-run effect assertions after the failing tag assertion were not reached; not a production red",
+  "sources": {
+    "sdks/shared/testing/secret_scan_host_fixture.py": "02487272d9fbd4eac4983aaa75917d6a2b24ca7da1358c119fbc013f1208d37b",
+    "sdks/typescript/test/secret-scan-host.test.js": "ce60db631e30dcea0cdc01b01aacf5a24672497ad2b934c0a45006f734c9fe88",
+    "sdks/python/tests/test_secret_scan_host.py": "e2d5fbfc63bcc2efeb18832805b35d0f24bca86c232a9c036d9efc29a1d45f45",
+    "sdks/java/src/test/java/com/echoagent/sdk/SecretScanHostTest.java": "e7287d5d9b292464025d25cc17a80f4e33e2be1cfcfb618dde148e6d36249050"
+  },
+  "currentHeadAtArchive": "b1737a266bed9fdb1f0c5c1ae04fa3b2c13bc854",
+  "allFourSourcesRemainFrozen": true,
+  "MavenLease": "released",
+  "hostSourceMatchesPrior790Hash": true,
+  "actualHostImmutableBytesVerifiedSHA256": "da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444",
+  "sourceFrameworkAndClientChanges": "none in this slice",
+  "staticChecks": {
+    "ruff-check": 0,
+    "ruff-format": 0,
+    "node-syntax": 0,
+    "MavenCompilerFailOnWarning": 0
+  },
+  "immutableHostPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host",
+  "buildProvenanceReference": "../session-run-idempotency-native/final-rpc-host/rpc-final-source-freeze.json",
+  "independentReview": "independent-review.json",
+  "status": "finite source/consumer/evidence PASS C0/I0/M0; focused development commit ready; not whole SDK acceptance"
+}

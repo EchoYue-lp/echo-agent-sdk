@@ -144,3 +144,7 @@ docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/
 
 # Original Maven failure output retains its exact whitespace.
 docs/sdk/governance/evidence/run-steer-native/java-original/focused.log -diff
+
+# Original SecretScan oracle failures are immutable raw output.
+docs/sdk/governance/evidence/secret-scan-native/python-first.log -diff
+docs/sdk/governance/evidence/secret-scan-native/typescript-first.log -diff

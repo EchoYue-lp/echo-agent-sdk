@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "steps": [
+    {
+      "label": "security-python-first",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_secret_scan_host.py",
+        "-q"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/secret-scan-native/python-first.log",
+      "exitCode": 1,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 7484,
+      "bytesWritten": 7484,
+      "startedAt": "2026-10-14T09:45:38.308Z",
+      "finishedAt": "2026-10-14T09:45:39.725Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T09:45:39.725Z"
+}
