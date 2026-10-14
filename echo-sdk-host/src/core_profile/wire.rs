@@ -12,14 +12,22 @@ use echo_agent::error::{AgentFailure, ReactError};
 use echo_agent::error::{AgentFailureCategory, AgentTerminalKind};
 use echo_agent::llm::types::{FunctionCall, Message, MessageContent, ReasoningBlock, ToolCall};
 use echo_agent::runtime::{TurnDeliveryOutcome, TurnOutcome, TurnReceipt};
+use echo_agent::tools::ToolResult;
 use echo_sdk_protocol::error::{
     AgentFailureWire, EchoSdkError, ExtensionErrorCode, MAX_FAILURE_MESSAGE_CHARS, Retryability,
 };
 use echo_sdk_protocol::event::{EventWireError, WireEventEnvelope, WireEventPayload};
 use echo_sdk_protocol::handle::{HandleKind, WireHandle};
 use echo_sdk_protocol::methods::{
-    LlmMessageWire, LlmReasoningBlockWire, RunReceiptWire, RunStatus, RunTerminal,
+    LlmMessageWire, LlmReasoningBlockWire, RunReceiptWire, RunStatus, RunTerminal, ToolEffectWire,
+    ToolResultContentWire, ToolResultKindWire, ToolResultWire,
 };
+#[cfg(any(
+    feature = "sdk-extension-bridge",
+    feature = "sdk-facade-adapters",
+    test
+))]
+use echo_sdk_protocol::methods::{ToolFailureWire, ToolOutputArtifactRefWire};
 use echo_sdk_protocol::scalar::{WireI64, WireNonZeroU64, WireTimestamp, WireU64, WireValue};
 
 /// Wire handle of a live object issued by this Host generation.
@@ -62,12 +70,42 @@ pub(crate) fn into_jsonrpc_error(error: EchoSdkError) -> agent_client_protocol::
 /// message is truncated UTF-8 safely before emission; secrets never enter
 /// these messages because framework errors already redact credentials.
 pub(crate) fn framework_error(error: &ReactError, operation: &str) -> EchoSdkError {
-    sdk_error(
-        ExtensionErrorCode::FrameworkError,
+    let failure = AgentFailure::from(error);
+    let projected = failure_wire(&failure);
+    let code = if failure.terminal_kind == echo_agent::error::AgentTerminalKind::Cancelled {
+        ExtensionErrorCode::Cancelled
+    } else {
+        // ExtensionTimeout describes a reverse-extension deadline. Framework
+        // timeouts keep their domain and canonical terminal cause below.
+        ExtensionErrorCode::FrameworkError
+    };
+    let mut error = sdk_error(
+        code,
         bounded_message(&error.to_string()),
+        // A retryable cause does not by itself authorize repeating an entire
+        // operation that may already have produced effects. Preserve that
+        // cause as a fact without changing the operation's retry contract.
         Retryability::Never,
         operation,
-    )
+    );
+    let field = |key: &str, value: String| echo_sdk_protocol::error::DetailField {
+        key: key.to_string(),
+        value,
+    };
+    let mut fields = vec![
+        field("framework_failure_category", projected.category),
+        field("framework_terminal_kind", projected.terminal_kind),
+        field("framework_failure_code", projected.code),
+        field("framework_retryable", projected.retryable.to_string()),
+    ];
+    if let Some(status) = projected.http_status {
+        fields.push(field("framework_http_status", status.to_string()));
+    }
+    error.details = Some(echo_sdk_protocol::error::ErrorDetails {
+        fields: Some(fields),
+        ..Default::default()
+    });
+    error
 }
 
 #[allow(dead_code)]
@@ -78,6 +116,297 @@ pub(crate) fn bounded_framework_message(message: &str) -> String {
 pub(crate) fn bounded_message(message: &str) -> String {
     const MAX_MESSAGE_CHARS: usize = 2048;
     message.chars().take(MAX_MESSAGE_CHARS).collect()
+}
+
+/// Restore tool facts without discarding failure, artifact or model payloads.
+#[cfg_attr(not(feature = "sdk-extension-bridge"), allow(dead_code))]
+pub(crate) fn tool_result_from_wire(
+    wire: ToolResultWire,
+) -> std::result::Result<ToolResult, String> {
+    use echo_agent::tools::{
+        ToolFailure, ToolFailureCategory, ToolRecoveryAction, ToolResultContent, ToolResultKind,
+        ToolSideEffect,
+    };
+    let kind = match wire.kind {
+        ToolResultKindWire::Text => ToolResultKind::Text,
+        ToolResultKindWire::Json => ToolResultKind::Json,
+        ToolResultKindWire::Image { mime_type } => ToolResultKind::Image { mime_type },
+        ToolResultKindWire::Table { columns, rows } => ToolResultKind::Table { columns, rows },
+        ToolResultKindWire::Diff { unified_diff } => ToolResultKind::Diff { unified_diff },
+        ToolResultKindWire::FileReference { path } => ToolResultKind::FileReference { path },
+        ToolResultKindWire::CommandOutput { exit_code } => {
+            ToolResultKind::CommandOutput { exit_code }
+        }
+        ToolResultKindWire::SkillActivation { name } => ToolResultKind::SkillActivation { name },
+        ToolResultKindWire::StructuredError { error_code } => {
+            ToolResultKind::StructuredError { error_code }
+        }
+    };
+    let failure = wire
+        .failure
+        .map(|failure| -> std::result::Result<ToolFailure, String> {
+            let category = match failure.category.as_str() {
+                "invalid_arguments" => Ok(ToolFailureCategory::InvalidArguments),
+                "unavailable" => Ok(ToolFailureCategory::Unavailable),
+                "timeout" => Ok(ToolFailureCategory::Timeout),
+                "cancelled" => Ok(ToolFailureCategory::Cancelled),
+                "transient" => Ok(ToolFailureCategory::Transient),
+                "permanent" => Ok(ToolFailureCategory::Permanent),
+                "partial_side_effect" => Ok(ToolFailureCategory::PartialSideEffect),
+                _ => Err("unknown tool failure category".to_string()),
+            }?;
+            let recovery = match failure.recovery.as_str() {
+                "correct_arguments" => Ok(ToolRecoveryAction::CorrectArguments),
+                "retry" => Ok(ToolRecoveryAction::Retry),
+                "restore_then_retry" => Ok(ToolRecoveryAction::RestoreThenRetry),
+                "verify_then_retry" => Ok(ToolRecoveryAction::VerifyThenRetry),
+                "stop" => Ok(ToolRecoveryAction::Stop),
+                _ => Err("unknown tool recovery action".to_string()),
+            }?;
+            let side_effect = match failure.side_effect.as_str() {
+                "none" => Ok(ToolSideEffect::None),
+                "possible" => Ok(ToolSideEffect::Possible),
+                "confirmed" => Ok(ToolSideEffect::Confirmed),
+                _ => Err("unknown tool side-effect status".to_string()),
+            }?;
+            Ok(ToolFailure {
+                category,
+                recovery,
+                side_effect,
+                retry_after_ms: failure
+                    .retry_after_ms
+                    .map(|value| {
+                        value
+                            .to_u64()
+                            .ok_or_else(|| "invalid retry_after_ms".to_string())
+                    })
+                    .transpose()?,
+                idempotency_key: failure.idempotency_key,
+                postcondition: failure.postcondition,
+            })
+        })
+        .transpose()?;
+    let artifact =
+        wire.artifact
+            .map(
+                |artifact| -> std::result::Result<
+                    echo_agent::tools::artifact::ToolOutputArtifactRef,
+                    String,
+                > {
+                    Ok(echo_agent::tools::artifact::ToolOutputArtifactRef {
+                        path: path_from_wire(&artifact.path)?,
+                        artifact_bytes: artifact
+                            .artifact_bytes
+                            .to_u64()
+                            .ok_or_else(|| "invalid artifact byte count".to_string())?,
+                        payload_bytes: artifact
+                            .payload_bytes
+                            .to_u64()
+                            .ok_or_else(|| "invalid payload byte count".to_string())?,
+                        sha256: artifact.sha256,
+                        retention: artifact.retention,
+                    })
+                },
+            )
+            .transpose()?;
+    Ok(ToolResult {
+        kind,
+        success: wire.success,
+        output: wire.output,
+        error: wire.error,
+        failure,
+        data: wire
+            .data
+            .map(|value| value.into_json().map_err(|error| error.to_string()))
+            .transpose()?,
+        truncated: wire.truncated,
+        mime_type: wire.mime_type,
+        artifact,
+        effects: wire
+            .effects
+            .into_iter()
+            .map(|effect| {
+                use echo_agent::tools::ToolEffect;
+                Ok(match effect {
+                    ToolEffectWire::FileRead { path } => ToolEffect::FileRead { path },
+                    ToolEffectWire::FileEdit { path } => ToolEffect::FileEdit { path },
+                    ToolEffectWire::TestRun {
+                        command,
+                        passed,
+                        failure_count,
+                    } => ToolEffect::TestRun {
+                        command,
+                        passed,
+                        failure_count: failure_count
+                            .map(|count| {
+                                count
+                                    .to_u64()
+                                    .and_then(|value| usize::try_from(value).ok())
+                                    .ok_or_else(|| {
+                                        "tool failure_count exceeds platform range".to_string()
+                                    })
+                            })
+                            .transpose()?,
+                    },
+                    ToolEffectWire::SubagentRun {
+                        agent_name,
+                        task,
+                        outcome,
+                    } => ToolEffect::SubagentRun {
+                        agent_name,
+                        task,
+                        outcome,
+                    },
+                })
+            })
+            .collect::<Result<Vec<_>, String>>()?,
+        metadata: wire.metadata.into_iter().collect(),
+        model_content: wire
+            .model_content
+            .into_iter()
+            .map(|content| match content {
+                ToolResultContentWire::ImageUrl { url, detail } => {
+                    ToolResultContent::ImageUrl { url, detail }
+                }
+            })
+            .collect(),
+    })
+}
+
+/// Share one complete tool projection across core and reverse-extension paths.
+#[cfg(any(
+    feature = "sdk-extension-bridge",
+    feature = "sdk-facade-adapters",
+    test
+))]
+pub(crate) fn tool_result_to_wire(
+    result: &ToolResult,
+) -> std::result::Result<ToolResultWire, String> {
+    use echo_agent::tools::ToolResultKind;
+    let kind = match &result.kind {
+        ToolResultKind::Text => ToolResultKindWire::Text,
+        ToolResultKind::Json => ToolResultKindWire::Json,
+        ToolResultKind::Image { mime_type } => ToolResultKindWire::Image {
+            mime_type: mime_type.clone(),
+        },
+        ToolResultKind::Table { columns, rows } => ToolResultKindWire::Table {
+            columns: columns.clone(),
+            rows: rows.clone(),
+        },
+        ToolResultKind::Diff { unified_diff } => ToolResultKindWire::Diff {
+            unified_diff: unified_diff.clone(),
+        },
+        ToolResultKind::FileReference { path } => {
+            ToolResultKindWire::FileReference { path: path.clone() }
+        }
+        ToolResultKind::CommandOutput { exit_code } => ToolResultKindWire::CommandOutput {
+            exit_code: *exit_code,
+        },
+        ToolResultKind::SkillActivation { name } => {
+            ToolResultKindWire::SkillActivation { name: name.clone() }
+        }
+        ToolResultKind::StructuredError { error_code } => ToolResultKindWire::StructuredError {
+            error_code: error_code.clone(),
+        },
+    };
+    let failure = result.failure.as_ref().map(|failure| ToolFailureWire {
+        category: failure.category.as_str().to_string(),
+        recovery: failure.recovery.as_str().to_string(),
+        side_effect: match failure.side_effect {
+            echo_agent::tools::ToolSideEffect::None => "none",
+            echo_agent::tools::ToolSideEffect::Possible => "possible",
+            echo_agent::tools::ToolSideEffect::Confirmed => "confirmed",
+        }
+        .to_string(),
+        retry_after_ms: failure.retry_after_ms.map(WireU64::from_u64),
+        idempotency_key: failure.idempotency_key.clone(),
+        postcondition: failure.postcondition.clone(),
+    });
+    let artifact = result
+        .artifact
+        .as_ref()
+        .map(|artifact| -> Result<ToolOutputArtifactRefWire, String> {
+            Ok(ToolOutputArtifactRefWire {
+                path: path_to_wire(&artifact.path)?,
+                artifact_bytes: WireU64::from_u64(artifact.artifact_bytes),
+                payload_bytes: WireU64::from_u64(artifact.payload_bytes),
+                sha256: artifact.sha256.clone(),
+                retention: artifact.retention.clone(),
+            })
+        })
+        .transpose()?;
+    let model_content = result
+        .model_content
+        .iter()
+        .map(|content| match content {
+            echo_agent::tools::ToolResultContent::ImageUrl { url, detail } => {
+                ToolResultContentWire::ImageUrl {
+                    url: url.clone(),
+                    detail: detail.clone(),
+                }
+            }
+        })
+        .collect();
+    Ok(ToolResultWire {
+        kind,
+        success: result.success,
+        output: result.output.clone(),
+        error: result.error.clone(),
+        failure,
+        data: result
+            .data
+            .as_ref()
+            .map(|data| WireValue::from_json(data.clone()).map_err(|error| error.to_string()))
+            .transpose()?,
+        truncated: result.truncated,
+        mime_type: result.mime_type.clone(),
+        artifact,
+        effects: result
+            .effects
+            .iter()
+            .map(|effect| {
+                use echo_agent::tools::ToolEffect;
+                Ok(match effect {
+                    ToolEffect::FileRead { path } => {
+                        ToolEffectWire::FileRead { path: path.clone() }
+                    }
+                    ToolEffect::FileEdit { path } => {
+                        ToolEffectWire::FileEdit { path: path.clone() }
+                    }
+                    ToolEffect::TestRun {
+                        command,
+                        passed,
+                        failure_count,
+                    } => ToolEffectWire::TestRun {
+                        command: command.clone(),
+                        passed: *passed,
+                        failure_count: failure_count
+                            .map(|count| {
+                                u64::try_from(count).map(WireU64::from_u64).map_err(|_| {
+                                    "tool failure_count exceeds wire range".to_string()
+                                })
+                            })
+                            .transpose()?,
+                    },
+                    ToolEffect::SubagentRun {
+                        agent_name,
+                        task,
+                        outcome,
+                    } => ToolEffectWire::SubagentRun {
+                        agent_name: agent_name.clone(),
+                        task: task.clone(),
+                        outcome: outcome.clone(),
+                    },
+                })
+            })
+            .collect::<Result<Vec<_>, String>>()?,
+        metadata: result
+            .metadata
+            .iter()
+            .map(|(key, value)| (key.clone(), value.clone()))
+            .collect(),
+        model_content,
+    })
 }
 
 /// Project one framework failure into its lossless wire record. This adapter
@@ -562,6 +891,89 @@ pub(crate) fn framework_from_wire(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn framework_error_preserves_cause_without_reclassifying_reverse_deadlines()
+    -> Result<(), String> {
+        use echo_agent::error::{AgentError, LlmError, MemoryError};
+        let cases = [
+            (
+                ReactError::from(AgentError::Cancelled("中文🙂 stop".to_string())),
+                ExtensionErrorCode::Cancelled,
+            ),
+            (
+                ReactError::from(AgentError::Timeout("deadline".to_string())),
+                ExtensionErrorCode::FrameworkError,
+            ),
+            (
+                ReactError::from(LlmError::ApiError {
+                    status: 429,
+                    message: "rate limited".to_string(),
+                }),
+                ExtensionErrorCode::FrameworkError,
+            ),
+            (
+                ReactError::from(LlmError::ApiError {
+                    status: 403,
+                    message: "forbidden".to_string(),
+                }),
+                ExtensionErrorCode::FrameworkError,
+            ),
+            (
+                ReactError::from(MemoryError::DeadlineExceeded("store deadline".to_string())),
+                ExtensionErrorCode::FrameworkError,
+            ),
+            (
+                ReactError::Other("cancelled timeout 429 are display text".to_string()),
+                ExtensionErrorCode::FrameworkError,
+            ),
+        ];
+        for (source, expected_code) in cases {
+            let expected = failure_wire(&AgentFailure::from(&source));
+            let bound_handle = handle("subagent-owner", HandleKind::Subagent, 9);
+            let wire = framework_error(&source, "_echo_agent/subagent/await")
+                .with_handle(bound_handle.clone());
+            wire.validate().map_err(str::to_string)?;
+            assert_eq!(wire.code, expected_code);
+            assert_ne!(wire.code, ExtensionErrorCode::ExtensionTimeout);
+            assert_eq!(wire.retryable, Retryability::Never);
+            let encoded = wire.into_jsonrpc_error();
+            let restored = EchoSdkError::from_jsonrpc_data(encoded.data.as_ref())?;
+            assert_eq!(
+                restored.operation.as_deref(),
+                Some("_echo_agent/subagent/await")
+            );
+            assert_eq!(restored.handle, Some(bound_handle));
+            let fields = restored
+                .details
+                .and_then(|details| details.fields)
+                .ok_or("missing cause fields")?;
+            let find = |key| {
+                fields
+                    .iter()
+                    .find(|field| field.key == key)
+                    .map(|field| field.value.as_str())
+            };
+            assert_eq!(
+                find("framework_failure_category"),
+                Some(expected.category.as_str())
+            );
+            assert_eq!(
+                find("framework_terminal_kind"),
+                Some(expected.terminal_kind.as_str())
+            );
+            assert_eq!(find("framework_failure_code"), Some(expected.code.as_str()));
+            assert_eq!(
+                find("framework_retryable"),
+                Some(if expected.retryable { "true" } else { "false" })
+            );
+            assert_eq!(
+                find("framework_http_status").map(str::to_string),
+                expected.http_status.map(|status| status.to_string())
+            );
+        }
+        Ok(())
+    }
     use echo_agent::agent::{AgentEvent, EventIdentity};
 
     #[test]
@@ -602,4 +1014,767 @@ mod tests {
         assert_eq!(restored.as_os_str().as_bytes(), path.as_os_str().as_bytes());
         Ok(())
     }
+
+    #[cfg(feature = "sdk-facade-adapters")]
+    #[test]
+    fn managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds()
+    -> Result<(), String> {
+        use super::managed::Projection as _;
+        let mut checkpoint = echo_agent::state::AgentCheckpoint::new("中文🙂-generation");
+        checkpoint.messages_json =
+            r#"{"schema_version":2,"messages":[],"transcript_projection":null}"#.to_string();
+        checkpoint.current_plan = Some("artifact-only".to_string());
+        checkpoint.active_skills = vec!["技能".to_string()];
+        checkpoint.blocked_reason = Some("pending receipt".to_string());
+        checkpoint.timestamp =
+            chrono::DateTime::from_timestamp(-1, 123_456_789).ok_or("invalid fixture timestamp")?;
+        let wire = checkpoint.clone().project()?;
+        assert_eq!(wire.timestamp.unix_seconds.to_i64(), Some(-1));
+        assert_eq!(wire.timestamp.nanos, 123_456_789);
+        let restored = echo_agent::state::AgentCheckpoint::restore(wire)?;
+        assert_eq!(
+            serde_json::to_value(restored).map_err(|error| error.to_string())?,
+            serde_json::to_value(checkpoint).map_err(|error| error.to_string())?
+        );
+        let receipt = echo_agent::state::RuntimeCheckpointCasReceipt {
+            scope: echo_agent::state::RuntimeScopeAuthority {
+                scope_id: "中文🙂".to_string(),
+                conversation_epoch: Some(u64::MAX),
+                revision: u64::MAX,
+                lifecycle: echo_agent::state::RuntimeScopeLifecycle::Active,
+            },
+            runtime_state_id: "generation".to_string(),
+            version: echo_agent::state::RuntimeStateVersion::Managed { revision: u64::MAX },
+            status: echo_agent::state::RuntimeCheckpointCasStatus::RevisionConflict,
+        };
+        let projected = receipt.clone().project()?;
+        assert_eq!(projected.scope.revision.as_str(), "18446744073709551615");
+        let restored = echo_agent::state::RuntimeCheckpointCasReceipt::restore(projected)?;
+        assert_eq!(
+            serde_json::to_value(restored).map_err(|error| error.to_string())?,
+            serde_json::to_value(receipt).map_err(|error| error.to_string())?
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn tool_effects_and_model_content_survive_shared_projection() -> Result<(), String> {
+        use echo_agent::tools::{ToolEffect, ToolResultContent};
+        let mut result = ToolResult::success("中文🙂");
+        result.effects = vec![
+            ToolEffect::FileRead {
+                path: "文件.rs".to_string(),
+            },
+            ToolEffect::FileEdit {
+                path: "文件.rs".to_string(),
+            },
+            ToolEffect::TestRun {
+                command: "cargo test".to_string(),
+                passed: false,
+                failure_count: Some(42),
+            },
+            ToolEffect::SubagentRun {
+                agent_name: "探索".to_string(),
+                task: "工作".to_string(),
+                outcome: "done".to_string(),
+            },
+        ];
+        result.model_content = vec![ToolResultContent::ImageUrl {
+            url: "https://example.invalid/image".to_string(),
+            detail: Some("high".to_string()),
+        }];
+        let restored = tool_result_from_wire(tool_result_to_wire(&result)?)?;
+        assert_eq!(
+            serde_json::to_value(restored).map_err(|error| error.to_string())?,
+            serde_json::to_value(result).map_err(|error| error.to_string())?
+        );
+        Ok(())
+    }
+
+    #[cfg(feature = "sdk-facade-adapters")]
+    #[test]
+    fn task_store_projection_keeps_large_revision_null_result_and_interrupt() -> Result<(), String>
+    {
+        use super::managed::Projection as _;
+        let execution = echo_agent::tasks::TaskExecution {
+            task_id: "任务🙂".to_string(),
+            status: echo_agent::tasks::TaskStatus::Completed,
+            retry_count: 3,
+            failure_fingerprint: Some("fingerprint".to_string()),
+            claim: Some(echo_agent::tasks::TaskClaim {
+                claim_id: "claim".to_string(),
+                revision: u64::MAX,
+                attempt: 3,
+                spec_hash: "hash".to_string(),
+            }),
+            result: Some(serde_json::Value::Null),
+            interruption_requested: Some(
+                echo_agent::tasks::RuntimeInterruptionDisposition::Paused {
+                    reason: "暂停".to_string(),
+                },
+            ),
+        };
+        let projected = execution.clone().project()?;
+        assert_eq!(projected.result, Some(WireValue::Null));
+        assert_eq!(
+            projected
+                .claim
+                .as_ref()
+                .map(|claim| claim.revision.as_str()),
+            Some("18446744073709551615")
+        );
+        let restored = echo_agent::tasks::TaskExecution::restore(projected)?;
+        assert_eq!(restored, execution);
+        let mut absent = execution;
+        absent.result = None;
+        assert_eq!(absent.project()?.result, None);
+        Ok(())
+    }
+}
+
+/// Explicit field projections for the framework's managed persistence facts.
+/// The adapter transports requests and receipts; it never computes CAS,
+/// fencing, retries or receipt settlement itself.
+#[cfg(all(
+    feature = "sdk-facade-adapters",
+    any(feature = "sdk-extension-bridge", test)
+))]
+pub(crate) mod managed {
+    use echo_agent::tasks;
+    use echo_agent::{memory, state};
+    use echo_sdk_protocol::managed::*;
+    use echo_sdk_protocol::methods::WireTaskStatus;
+    use echo_sdk_protocol::scalar::{WireI64, WirePath, WireTimestamp, WireU64};
+    use echo_sdk_protocol::task_store::*;
+
+    pub(crate) trait Projection: Sized {
+        type Wire;
+        fn project(self) -> Result<Self::Wire, String>;
+        fn restore(wire: Self::Wire) -> Result<Self, String>;
+    }
+    macro_rules! identity {
+        ($($ty:ty),*) => {$(
+            impl Projection for $ty {
+                type Wire = Self;
+                fn project(self) -> Result<Self, String> { Ok(self) }
+                fn restore(wire: Self) -> Result<Self, String> { Ok(wire) }
+            }
+        )*};
+    }
+    identity!(String, u16, u32, bool);
+    impl Projection for u64 {
+        type Wire = WireU64;
+        fn project(self) -> Result<Self::Wire, String> {
+            Ok(WireU64::from_u64(self))
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            wire.to_u64()
+                .ok_or_else(|| "invalid managed u64".to_string())
+        }
+    }
+    impl Projection for i64 {
+        type Wire = WireI64;
+        fn project(self) -> Result<Self::Wire, String> {
+            Ok(WireI64::from_i64(self))
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            wire.to_i64()
+                .ok_or_else(|| "invalid managed i64".to_string())
+        }
+    }
+    impl<T: Projection> Projection for Option<T> {
+        type Wire = Option<T::Wire>;
+        fn project(self) -> Result<Self::Wire, String> {
+            self.map(T::project).transpose()
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            wire.map(T::restore).transpose()
+        }
+    }
+    impl<T: Projection> Projection for Vec<T> {
+        type Wire = Vec<T::Wire>;
+        fn project(self) -> Result<Self::Wire, String> {
+            self.into_iter().map(T::project).collect()
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            wire.into_iter().map(T::restore).collect()
+        }
+    }
+    impl<T: Projection> Projection for std::collections::BTreeMap<String, T> {
+        type Wire = std::collections::BTreeMap<String, T::Wire>;
+        fn project(self) -> Result<Self::Wire, String> {
+            self.into_iter()
+                .map(|(key, value)| Ok((key, value.project()?)))
+                .collect()
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            wire.into_iter()
+                .map(|(key, value)| Ok((key, T::restore(value)?)))
+                .collect()
+        }
+    }
+    impl Projection for serde_json::Value {
+        type Wire = echo_sdk_protocol::scalar::WireValue;
+        fn project(self) -> Result<Self::Wire, String> {
+            Self::Wire::from_json(self).map_err(|error| error.to_string())
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            wire.into_json().map_err(|error| error.to_string())
+        }
+    }
+    impl Projection for tasks::TaskStatus {
+        type Wire = WireTaskStatus;
+        fn project(self) -> Result<Self::Wire, String> {
+            Ok(match self {
+                Self::Pending => WireTaskStatus::Pending,
+                Self::Running => WireTaskStatus::Running,
+                Self::Blocked(reason) => WireTaskStatus::Blocked { reason },
+                Self::Completed => WireTaskStatus::Completed,
+                Self::Failed(error) => WireTaskStatus::Failed { error },
+                Self::Skipped => WireTaskStatus::Skipped,
+                Self::Cancelled => WireTaskStatus::Cancelled,
+                Self::TimedOut { error } => WireTaskStatus::TimedOut { error },
+                Self::Retrying {
+                    attempt,
+                    last_error,
+                } => WireTaskStatus::Retrying {
+                    attempt,
+                    last_error,
+                },
+                Self::Paused(reason) => WireTaskStatus::Paused { reason },
+            })
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            Ok(match wire {
+                WireTaskStatus::Pending => Self::Pending,
+                WireTaskStatus::Running => Self::Running,
+                WireTaskStatus::Blocked { reason } => Self::Blocked(reason),
+                WireTaskStatus::Completed => Self::Completed,
+                WireTaskStatus::Failed { error } => Self::Failed(error),
+                WireTaskStatus::Skipped => Self::Skipped,
+                WireTaskStatus::Cancelled => Self::Cancelled,
+                WireTaskStatus::TimedOut { error } => Self::TimedOut { error },
+                WireTaskStatus::Retrying {
+                    attempt,
+                    last_error,
+                } => Self::Retrying {
+                    attempt,
+                    last_error,
+                },
+                WireTaskStatus::Paused { reason } => Self::Paused(reason),
+            })
+        }
+    }
+    impl Projection for std::path::PathBuf {
+        type Wire = WirePath;
+        fn project(self) -> Result<Self::Wire, String> {
+            super::path_to_wire(&self)
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            super::path_from_wire(&wire)
+        }
+    }
+    impl Projection for chrono::DateTime<chrono::Utc> {
+        type Wire = WireTimestamp;
+        fn project(self) -> Result<Self::Wire, String> {
+            WireTimestamp::from_unix_parts(self.timestamp(), self.timestamp_subsec_nanos())
+                .map_err(|error| error.to_string())
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            wire.validate().map_err(|error| error.to_string())?;
+            chrono::DateTime::from_timestamp(
+                wire.unix_seconds
+                    .to_i64()
+                    .ok_or_else(|| "invalid checkpoint timestamp".to_string())?,
+                wire.nanos,
+            )
+            .ok_or_else(|| "checkpoint timestamp is out of range".to_string())
+        }
+    }
+    macro_rules! structure {
+        ($source:path, $target:ident, $($field:ident),+ $(,)?) => {
+            impl Projection for $source {
+                type Wire = $target;
+                fn project(self) -> Result<Self::Wire, String> {
+                    Ok($target { $($field: self.$field.project()?),+ })
+                }
+                fn restore(wire: Self::Wire) -> Result<Self, String> {
+                    Ok(Self { $($field: Projection::restore(wire.$field)?),+ })
+                }
+            }
+        };
+    }
+    macro_rules! enumeration {
+        ($source:path, $target:ident, $($variant:ident $( { $($field:ident),+ } )?),+ $(,)?) => {
+            impl Projection for $source {
+                type Wire = $target;
+                fn project(self) -> Result<Self::Wire, String> {
+                    Ok(match self {
+                        $(Self::$variant $( { $($field),+ } )? =>
+                            $target::$variant $( { $($field: $field.project()?),+ } )?),+
+                    })
+                }
+                fn restore(wire: Self::Wire) -> Result<Self, String> {
+                    Ok(match wire {
+                        $($target::$variant $( { $($field),+ } )? =>
+                            Self::$variant $( { $($field: Projection::restore($field)?),+ } )?),+
+                    })
+                }
+            }
+        };
+    }
+    structure!(
+        memory::ConversationProjectionAuthority,
+        ConversationProjectionAuthorityWire,
+        conversation_id,
+        epoch,
+        revision,
+        lifecycle,
+        delete_receipt_retention_floor_epoch
+    );
+    structure!(
+        memory::NewConversation,
+        NewConversationWire,
+        conversation_id,
+        user_id,
+        agent_type,
+        title
+    );
+    structure!(
+        memory::StoredMessage,
+        StoredMessageWire,
+        id,
+        conversation_id,
+        role,
+        content,
+        attachments_json,
+        tool_calls_json,
+        tool_result_json,
+        created_at
+    );
+    structure!(
+        memory::EnsureConversationProjectionRequest,
+        EnsureConversationProjectionRequestWire,
+        conversation,
+        expected_tombstone_epoch
+    );
+    structure!(
+        memory::ConversationProjectionEpochReceipt,
+        ConversationProjectionEpochReceiptWire,
+        authority,
+        status
+    );
+    structure!(
+        memory::TranscriptProjectionItem,
+        TranscriptProjectionItemWire,
+        ordinal,
+        digest,
+        message
+    );
+    structure!(
+        memory::TranscriptProjectionBatch,
+        TranscriptProjectionBatchWire,
+        schema_version,
+        operation_id,
+        payload_digest,
+        conversation_id,
+        conversation_epoch,
+        generation_id,
+        items
+    );
+    structure!(
+        memory::TranscriptProjectionApplyReceipt,
+        TranscriptProjectionApplyReceiptWire,
+        operation_id,
+        payload_digest,
+        authority,
+        status
+    );
+    structure!(
+        memory::TranscriptProjectionSettlement,
+        TranscriptProjectionSettlementWire,
+        status,
+        operation_id,
+        conversation_id,
+        generation_id,
+        attempt,
+        error_class,
+        detail
+    );
+    structure!(
+        memory::ManagedConversationDelete,
+        ManagedConversationDeleteWire,
+        schema_version,
+        operation_id,
+        payload_digest,
+        conversation_id,
+        expected_epoch
+    );
+    structure!(
+        memory::ManagedConversationDeleteReceipt,
+        ManagedConversationDeleteReceiptWire,
+        operation_id,
+        payload_digest,
+        deleted_epoch,
+        retention_floor_epoch,
+        status
+    );
+    structure!(
+        memory::ManagedConversationImport,
+        ManagedConversationImportWire,
+        schema_version,
+        operation_id,
+        payload_digest,
+        conversation_id,
+        expected_epoch,
+        expected_revision,
+        generation_id,
+        messages
+    );
+    structure!(
+        state::RuntimeScopeAuthority,
+        RuntimeScopeAuthorityWire,
+        scope_id,
+        conversation_epoch,
+        revision,
+        lifecycle
+    );
+    structure!(
+        state::ManagedRuntimeStateSnapshot,
+        ManagedRuntimeStateSnapshotWire,
+        scope,
+        runtime_state_id,
+        version,
+        checkpoint
+    );
+    structure!(
+        state::RuntimeCheckpointCasRequest,
+        RuntimeCheckpointCasRequestWire,
+        scope_id,
+        runtime_state_id,
+        conversation_epoch,
+        expected_scope_revision,
+        expected_state_version,
+        checkpoint,
+        managed_import
+    );
+    structure!(
+        state::ManagedImportEpochTransition,
+        ManagedImportEpochTransitionWire,
+        request,
+        receipt
+    );
+    structure!(
+        state::RuntimeCheckpointCasReceipt,
+        RuntimeCheckpointCasReceiptWire,
+        scope,
+        runtime_state_id,
+        version,
+        status
+    );
+    structure!(
+        state::RuntimeTranscriptAckRequest,
+        RuntimeTranscriptAckRequestWire,
+        scope_id,
+        runtime_state_id,
+        conversation_epoch,
+        expected_scope_revision,
+        expected_state_version,
+        projection_receipt,
+        checkpoint
+    );
+    structure!(
+        state::RuntimeGenerationRetireRequest,
+        RuntimeGenerationRetireRequestWire,
+        schema_version,
+        operation_id,
+        payload_digest,
+        scope_id,
+        runtime_state_id,
+        expected_scope_revision,
+        expected_state_version
+    );
+    structure!(
+        state::RuntimeGenerationRetireReceipt,
+        RuntimeGenerationRetireReceiptWire,
+        scope,
+        runtime_state_id,
+        version,
+        status
+    );
+    structure!(
+        state::ScopeRetirementItem,
+        ScopeRetirementItemWire,
+        runtime_state_id,
+        state_version,
+        pending_operation_id,
+        status
+    );
+    structure!(
+        state::ScopeRetirementManifest,
+        ScopeRetirementManifestWire,
+        delete_operation_id,
+        payload_digest,
+        expected_conversation_epoch,
+        items,
+        conversation_delete_receipt
+    );
+    structure!(
+        state::ScopeRetirementRequest,
+        ScopeRetirementRequestWire,
+        schema_version,
+        delete_operation_id,
+        payload_digest,
+        scope_id,
+        expected_scope_revision,
+        expected_conversation_epoch
+    );
+    structure!(
+        state::ScopeRetirementReceipt,
+        ScopeRetirementReceiptWire,
+        scope,
+        manifest,
+        dropped_operation_ids,
+        retention_floor_epoch,
+        status
+    );
+    structure!(
+        state::AgentCheckpoint,
+        AgentCheckpointWire,
+        conversation_id,
+        messages_json,
+        current_plan,
+        active_skills,
+        blocked_reason,
+        working_dir,
+        timestamp
+    );
+    enumeration!(
+        memory::ConversationProjectionLifecycle,
+        ConversationProjectionLifecycleWire,
+        Live,
+        Deleted
+    );
+    enumeration!(
+        memory::ConversationProjectionEpochStatus,
+        ConversationProjectionEpochStatusWire,
+        Created,
+        AdoptedLegacy,
+        Existing,
+        Recreated,
+        Tombstoned,
+        EpochConflict
+    );
+    enumeration!(
+        memory::TranscriptProjectionConflictKind,
+        TranscriptProjectionConflictKindWire,
+        OperationIdentity,
+        OrdinalDigest,
+        Revision,
+        ManagedImport
+    );
+    enumeration!(
+        memory::TranscriptProjectionApplyStatus,
+        TranscriptProjectionApplyStatusWire,
+        Applied,
+        AlreadyApplied,
+        Fenced {
+            current_epoch,
+            lifecycle
+        },
+        Conflict {
+            current_epoch,
+            current_revision,
+            kind
+        }
+    );
+    enumeration!(
+        memory::TranscriptProjectionSettlementStatus,
+        TranscriptProjectionSettlementStatusWire,
+        Settled,
+        Deferred,
+        Blocked,
+        Conflict
+    );
+    enumeration!(
+        memory::TranscriptProjectionErrorClass,
+        TranscriptProjectionErrorClassWire,
+        OutcomeUnknown,
+        TransientNoCommit,
+        RevisionConflict,
+        DeadlineExceeded,
+        Unsupported,
+        InvalidConfiguration,
+        CorruptState,
+        SemanticConflict
+    );
+    enumeration!(
+        memory::ManagedConversationDeleteStatus,
+        ManagedConversationDeleteStatusWire,
+        Deleted,
+        AlreadyDeleted,
+        EpochConflict,
+        ReceiptExpired,
+        IdentityConflict
+    );
+    enumeration!(
+        state::RuntimeStateVersion,
+        RuntimeStateVersionWire,
+        Absent,
+        Unmanaged { digest },
+        Managed { revision },
+        Retired {
+            revision,
+            operation_id
+        }
+    );
+    enumeration!(
+        state::RuntimeStateExpectedVersion,
+        RuntimeStateExpectedVersionWire,
+        Absent,
+        Unmanaged { digest },
+        Managed { revision }
+    );
+    enumeration!(
+        state::RuntimeScopeLifecycle,
+        RuntimeScopeLifecycleWire,
+        Active,
+        Retiring,
+        Tombstoned
+    );
+    enumeration!(
+        state::RuntimeCheckpointCasStatus,
+        RuntimeCheckpointCasStatusWire,
+        Applied,
+        AlreadyCurrent,
+        RevisionConflict,
+        GenerationRetired,
+        ScopeFenced
+    );
+    enumeration!(
+        state::RuntimeGenerationRetireStatus,
+        RuntimeGenerationRetireStatusWire,
+        Retired,
+        AlreadyRetired,
+        Conflict,
+        PendingProjection,
+        ScopeFenced
+    );
+    enumeration!(
+        state::ScopeRetirementItemStatus,
+        ScopeRetirementItemStatusWire,
+        Pending,
+        DroppedByDelete
+    );
+    enumeration!(
+        state::ScopeRetirementAdvance,
+        ScopeRetirementAdvanceWire,
+        ConversationDeleted { receipt },
+        GenerationDropped {
+            runtime_state_id,
+            pending_operation_id
+        },
+        Complete
+    );
+    enumeration!(
+        state::ScopeRetirementStatus,
+        ScopeRetirementStatusWire,
+        Begun,
+        InProgress,
+        Completed,
+        AlreadyCompleted,
+        RevisionConflict,
+        EpochConflict,
+        ReceiptExpired,
+        IdentityConflict
+    );
+    structure!(
+        tasks::TaskSpec,
+        TaskSpecWire,
+        id,
+        title,
+        description,
+        depends_on,
+        max_retries,
+        extension
+    );
+    structure!(
+        tasks::TaskClaim,
+        TaskClaimWire,
+        claim_id,
+        revision,
+        attempt,
+        spec_hash
+    );
+    structure!(
+        tasks::TaskExecution,
+        TaskExecutionWire,
+        task_id,
+        status,
+        retry_count,
+        failure_fingerprint,
+        claim,
+        result,
+        interruption_requested
+    );
+    structure!(tasks::Task, TaskWire, spec, execution);
+    structure!(
+        tasks::RuntimePlanSnapshot,
+        RuntimePlanSnapshotWire,
+        revision,
+        tasks
+    );
+    structure!(
+        tasks::TaskGraphContext,
+        TaskGraphContextWire,
+        goal,
+        assumptions,
+        risks,
+        execution_mode,
+        metadata
+    );
+    structure!(
+        tasks::RevisionedTaskGraph,
+        RevisionedTaskGraphWire,
+        snapshot,
+        context
+    );
+    structure!(
+        tasks::TaskPatchEffects,
+        TaskPatchEffectsWire,
+        inserted_task_ids,
+        updated_task_ids,
+        skipped_task_ids,
+        reset_task_ids,
+        progressed_task_ids,
+        reordered
+    );
+    structure!(
+        tasks::TaskGraphCommit,
+        TaskGraphCommitWire,
+        expected_revision,
+        expected_executions,
+        next,
+        reason,
+        effects
+    );
+    structure!(
+        tasks::TaskExecutionCommit,
+        TaskExecutionCommitWire,
+        expected_revision,
+        expected_executions,
+        next
+    );
+    enumeration!(
+        tasks::RuntimeInterruptionDisposition,
+        RuntimeInterruptionDispositionWire,
+        Cancelled,
+        Paused { reason }
+    );
+    enumeration!(
+        tasks::TaskGraphExecutionMode,
+        TaskGraphExecutionModeWire,
+        Sequential,
+        Parallel
+    );
 }

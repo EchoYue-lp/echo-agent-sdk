@@ -29,6 +29,23 @@ use super::super::state::CoreProfileState;
 use super::super::wire;
 use crate::factory::SessionAuthorityServices;
 
+/// Resolve the Session lifecycle fence for a TaskRun before admitting work.
+pub(crate) fn task_session_record(
+    state: &CoreProfileState,
+    task_run: &WireHandle,
+    method: &str,
+) -> Result<Arc<super::super::handles::SessionRecord>, EchoSdkError> {
+    let record = state.handles.task_run(task_run)?;
+    state
+        .handles
+        .session(&WireHandle {
+            id: record.session_handle_id.clone(),
+            generation: task_run.generation.clone(),
+            kind: HandleKind::Session,
+        })
+        .map_err(|error| wire::handle_error(error.code, error.message, method, task_run))
+}
+
 fn task_error(error: echo_agent::tasks::TaskRevisionError, method: &str) -> EchoSdkError {
     wire::sdk_error(
         ExtensionErrorCode::FrameworkError,
@@ -190,6 +207,19 @@ pub(crate) async fn task_create(
             method,
         ));
     }
+    let session = match task_session_record(&state, &request.task_run, method) {
+        Ok(session) => session,
+        Err(error) => fail!(error),
+    };
+    let _session_permit = session.lifecycle.read().await;
+    if session.closing.load(std::sync::atomic::Ordering::Acquire) {
+        fail!(wire::sdk_error(
+            ExtensionErrorCode::ClosedHandle,
+            "task owner Session is closing",
+            Retryability::Never,
+            method
+        ));
+    }
     let authorities = match session_services(&state, &request.task_run, method) {
         Ok(authorities) => authorities,
         Err(error) => fail!(error),
@@ -204,7 +234,10 @@ pub(crate) async fn task_create(
         Err(error) => fail!(error),
     };
     let context = scope_context(&scope);
-    let outcome = match service.create_from_tool(input, &context).await {
+    let outcome = match tokio::select! {
+        result = service.create_from_tool(input, &context) => result,
+        _ = session.cancel_operations.cancelled() => fail!(wire::sdk_error(ExtensionErrorCode::ClosedHandle, "task owner Session is closing", Retryability::Never, method)),
+    } {
         Ok(outcome) => outcome,
         Err(error) => fail!(task_error(error, method)),
     };
@@ -244,6 +277,19 @@ pub(crate) async fn task_update(
         ($error:expr) => {
             return responder.respond_with_error(wire::into_jsonrpc_error($error))
         };
+    }
+    let session = match task_session_record(&state, &request.task_run, method) {
+        Ok(session) => session,
+        Err(error) => fail!(error),
+    };
+    let _session_permit = session.lifecycle.read().await;
+    if session.closing.load(std::sync::atomic::Ordering::Acquire) {
+        fail!(wire::sdk_error(
+            ExtensionErrorCode::ClosedHandle,
+            "task owner Session is closing",
+            Retryability::Never,
+            method
+        ));
     }
     let authorities = match session_services(&state, &request.task_run, method) {
         Ok(authorities) => authorities,
@@ -295,7 +341,10 @@ pub(crate) async fn task_update(
         Err(error) => fail!(error),
     };
     let context = scope_context(&scope);
-    let graph = match service.update_from_tool(input, &context).await {
+    let graph = match tokio::select! {
+        result = service.update_from_tool(input, &context) => result,
+        _ = session.cancel_operations.cancelled() => fail!(wire::sdk_error(ExtensionErrorCode::ClosedHandle, "task owner Session is closing", Retryability::Never, method)),
+    } {
         Ok(graph) => graph,
         Err(error) => fail!(task_error(error, method)),
     };
@@ -335,16 +384,61 @@ pub(crate) async fn task_list(
             return responder.respond_with_error(wire::into_jsonrpc_error($error))
         };
     }
+    let session = match task_session_record(&state, &request.task_run, method) {
+        Ok(session) => session,
+        Err(error) => fail!(error),
+    };
+    let _session_permit = session.lifecycle.read().await;
+    if session.closing.load(std::sync::atomic::Ordering::Acquire) {
+        fail!(wire::sdk_error(
+            ExtensionErrorCode::ClosedHandle,
+            "task owner Session is closing",
+            Retryability::Never,
+            method
+        ));
+    }
     let authorities = match session_services(&state, &request.task_run, method) {
         Ok(authorities) => authorities,
         Err(error) => fail!(error),
     };
+    let drive_failure = authorities
+        .latest_task_execution_error
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    if let Some(mut error) = drive_failure {
+        // A failed drive may leave an inaccessible backend's tasks Pending.
+        // Report its cause without inventing a new task terminal or status.
+        if let Some(origin) = error.operation.as_ref() {
+            let details = error.details.get_or_insert_with(Default::default);
+            let fields = details.fields.get_or_insert_with(Vec::new);
+            if fields.len() >= echo_sdk_protocol::error::MAX_ERROR_DETAIL_ENTRIES {
+                fail!(
+                    wire::sdk_error(
+                        ExtensionErrorCode::SerializationViolation,
+                        "execution failure details exceed the diagnostic envelope bound",
+                        Retryability::Never,
+                        method
+                    )
+                    .with_handle(request.task_run.clone())
+                );
+            }
+            fields.push(echo_sdk_protocol::error::DetailField {
+                key: "origin_operation".to_string(),
+                value: origin.clone(),
+            });
+        }
+        fail!(error.with_operation(method));
+    }
     let service = authorities.task_revision_service.clone();
     let scope = match task_scope(&state, &request.task_run, method) {
         Ok(scope) => scope,
         Err(error) => fail!(error),
     };
-    let graph = match service.load(&scope).await {
+    let graph = match tokio::select! {
+        result = service.load(&scope) => result,
+        _ = session.cancel_operations.cancelled() => fail!(wire::sdk_error(ExtensionErrorCode::ClosedHandle, "task owner Session is closing", Retryability::Never, method)),
+    } {
         Ok(Some(graph)) => graph,
         Ok(None) => {
             fail!(wire::sdk_error(

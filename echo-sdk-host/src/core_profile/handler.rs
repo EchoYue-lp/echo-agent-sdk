@@ -231,29 +231,23 @@ pub(crate) async fn agent_close(
         }
         Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
     };
+    let _lifecycle = agent_record.lifecycle.lock().await;
+    if state.handles.is_closed(&request.agent) {
+        return responder.respond(AgentCloseResponse { released: false });
+    }
+    agent_record
+        .closing
+        .store(true, std::sync::atomic::Ordering::Release);
     let sessions = state.handles.sessions_for_agent(&request.agent.id);
     let mut close_error = None;
-    for (session_handle, acp_session_id) in &sessions {
-        let session_id = agent_client_protocol::schema::v1::SessionId::new(acp_session_id.clone());
-        match services.sessions().close_session(&session_id).await {
-            Ok(_) => {
-                let run_ids = state.handles.runs_for_session(acp_session_id);
-                for run_id in run_ids {
-                    let _ = services.remove_run(&run_id).await;
-                    state.handles.remove_run(&run_id);
-                    state.remove_delivery_for_run(&run_id);
-                }
-                let _ = state.handles.close_session(session_handle);
-            }
-            Err(error) => close_error = Some(error),
+    for (session_handle, _) in &sessions {
+        if let Err(error) = close_session_owned(&state, &services, session_handle, method).await {
+            close_error = Some(error);
         }
     }
     let definition_id = agent_record.definition.id().to_string();
     if let Some(error) = close_error {
-        return respond_error(
-            |error| responder.respond_with_error(error),
-            wire::framework_error(&error, method),
-        );
+        return respond_error(|error| responder.respond_with_error(error), error);
     }
     let closed = match state.handles.close_agent(&request.agent) {
         Ok(released) => released,
@@ -296,6 +290,20 @@ pub(crate) async fn session_create(
         Ok(record) => record,
         Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
     };
+    let _lifecycle = record.lifecycle.lock().await;
+    if state.handles.is_closed(&request.agent)
+        || record.closing.load(std::sync::atomic::Ordering::Acquire)
+    {
+        return respond_error(
+            |error| responder.respond_with_error(error),
+            wire::sdk_error(
+                ExtensionErrorCode::ClosedHandle,
+                "Agent is closing",
+                Retryability::Never,
+                method,
+            ),
+        );
+    }
     let working_dir = match wire::working_dir_from_wire(request.working_dir.as_ref()) {
         Ok(path) => path,
         Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
@@ -310,6 +318,7 @@ pub(crate) async fn session_create(
         record.definition.as_ref(),
         session_id,
         working_dir,
+        method,
     )
     .await
     {
@@ -423,6 +432,7 @@ async fn create_session_on(
     definition: &PreparedAgentDefinition,
     session_id: String,
     working_dir: Option<std::path::PathBuf>,
+    method: &'static str,
 ) -> std::result::Result<String, EchoSdkError> {
     let cwd = match working_dir {
         Some(path) if path.is_absolute() => path,
@@ -431,7 +441,7 @@ async fn create_session_on(
                 ExtensionErrorCode::InvalidValue,
                 format!("working_dir must be absolute: {}", path.display()),
                 Retryability::Never,
-                "_echo_agent/session/create",
+                method,
             ));
         }
         None => std::env::current_dir().map_err(|error| {
@@ -439,7 +449,7 @@ async fn create_session_on(
                 ExtensionErrorCode::InvalidConfig,
                 format!("no working directory available: {error}"),
                 Retryability::Never,
-                "_echo_agent/session/create",
+                method,
             )
         })?,
     };
@@ -447,7 +457,7 @@ async fn create_session_on(
         .sessions()
         .capabilities()
         .await
-        .map_err(|error| wire::framework_error(&error, "_echo_agent/session/create"))?;
+        .map_err(|error| wire::framework_error(&error, method))?;
     // The definition id rides the Session context meta so the connection's
     // single session factory can build this Session from the exact Agent
     // definition the handle references (no second factory, no second map).
@@ -464,11 +474,60 @@ async fn create_session_on(
         client_capabilities: capabilities,
         meta: Some(meta),
     };
-    services
+    let inserted = services
         .insert_session(context)
         .await
-        .map(|session_id| session_id.to_string())
-        .map_err(|error| wire::framework_error(&error, "_echo_agent/session/create"))
+        .map_err(|error| wire::framework_error(&error, method))?;
+    let reserve = (|| {
+        let recovered = state
+            .persistence
+            .load_recovered_runs()
+            .map_err(|error| wire::framework_error(&error, method))?;
+        Ok::<_, EchoSdkError>(
+            recovered
+                .into_iter()
+                .filter(|run| run.record.session_id == session_id)
+                .map(|run| run.record.run_id)
+                .collect::<Vec<_>>(),
+        )
+    })();
+    let reserve = match reserve {
+        Ok(run_ids) => match services.sessions().get(&inserted).await {
+            Some(session) => session
+                .reserve_recovered_turn_ids(&run_ids)
+                .map_err(|error| wire::framework_error(&error, method)),
+            None => Err(wire::sdk_error(
+                ExtensionErrorCode::FrameworkError,
+                "Session disappeared before recovered turn identities were reserved",
+                Retryability::Never,
+                method,
+            )),
+        },
+        Err(error) => Err(error),
+    };
+    if let Err(error) = reserve {
+        // Framework owns both the opaque turn namespace and rollback. Keep
+        // the unpublished Session in its registry if cleanup fails so the
+        // retained connection close owner can settle it later.
+        match services.sessions().close_session(&inserted).await {
+            Ok(_) => {
+                state.session_factory.remove_session_services(&session_id);
+            }
+            Err(cleanup) => {
+                return Err(wire::sdk_error(
+                    ExtensionErrorCode::FrameworkError,
+                    format!(
+                        "turn identity reservation failed: {}; Session cleanup pending: {cleanup}",
+                        error.message
+                    ),
+                    Retryability::AfterDelay,
+                    method,
+                ));
+            }
+        }
+        return Err(error);
+    }
+    Ok(inserted.to_string())
 }
 
 pub(crate) async fn session_load(
@@ -502,6 +561,20 @@ pub(crate) async fn session_load(
         Ok(record) => record,
         Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
     };
+    let _lifecycle = record.lifecycle.lock().await;
+    if state.handles.is_closed(&request.agent)
+        || record.closing.load(std::sync::atomic::Ordering::Acquire)
+    {
+        return respond_error(
+            |error| responder.respond_with_error(error),
+            wire::sdk_error(
+                ExtensionErrorCode::ClosedHandle,
+                "Agent is closing",
+                Retryability::Never,
+                method,
+            ),
+        );
+    }
     let requested_working_dir = match wire::working_dir_from_wire(request.working_dir.as_ref()) {
         Ok(path) => path,
         Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
@@ -585,6 +658,7 @@ pub(crate) async fn session_load(
         record.definition.as_ref(),
         request.session_id.clone(),
         effective_working_dir,
+        method,
     )
     .await
     {
@@ -705,55 +779,85 @@ pub(crate) async fn session_close(
     {
         return respond_error(|error| responder.respond_with_error(error), error);
     }
-    let acp_session_id = match state.handles.session(&request.session) {
-        Ok(record) => record.acp_session_id.clone(),
-        Err(error) if error.code == ExtensionErrorCode::ClosedHandle => {
-            return responder.respond(SessionCloseResponse { released: false });
-        }
-        Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
+    match close_session_owned(&state, &services, &request.session, method).await {
+        Ok(released) => responder.respond(SessionCloseResponse { released }),
+        Err(error) => respond_error(|error| responder.respond_with_error(error), error),
+    }
+}
+
+/// Agent cascade and explicit Session close use the same settlement path.
+/// Keep the issued owner until all fallible cleanup succeeds, so cancellation
+/// and timeout leave a retryable close address instead of orphaned debt.
+async fn close_session_owned(
+    state: &CoreProfileState,
+    services: &echo_agent::acp::AcpConnectionServices,
+    handle: &echo_sdk_protocol::handle::WireHandle,
+    method: &str,
+) -> Result<bool, EchoSdkError> {
+    let record = match state.handles.session(handle) {
+        Ok(record) => record,
+        Err(error) if error.code == ExtensionErrorCode::ClosedHandle => return Ok(false),
+        Err(error) => return Err(error),
     };
-    // Close the underlying ACP Session too: cancel its active run, wait for
-    // the framework receipt, then close the Session Agent.
-    let close = services
+    record
+        .closing
+        .store(true, std::sync::atomic::Ordering::Release);
+    record.cancel_operations.cancel();
+    let _lifecycle = record.lifecycle.write().await;
+    if state.handles.is_closed(handle) {
+        return Ok(false);
+    }
+    let owner = &record.acp_session_id;
+    #[cfg(feature = "sdk-facade-adapters")]
+    {
+        let ids = state.handles.facade_resource_ids_of(owner);
+        state
+            .facade
+            .drop_session_resources_of(&state.handles, owner, &ids)
+            .await
+            .map_err(|error| {
+                wire::sdk_error(
+                    ExtensionErrorCode::FrameworkError,
+                    error,
+                    Retryability::AfterDelay,
+                    method,
+                )
+            })?;
+        state.handles.close_facade_resources_of(owner);
+    }
+    services
         .sessions()
         .close_session(&agent_client_protocol::schema::v1::SessionId::new(
-            acp_session_id.clone(),
+            owner.clone(),
         ))
-        .await;
-    if let Err(error) = close {
-        return respond_error(
-            |error| responder.respond_with_error(error),
-            wire::framework_error(&error, method),
-        );
-    }
-    let released = match state.handles.close_session(&request.session) {
-        Ok((released, _)) => released,
-        Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
-    };
-    let run_ids = state.handles.runs_for_session(&acp_session_id);
-    for run_id in run_ids {
-        let _ = services.remove_run(&run_id).await;
+        .await
+        .map_err(|error| wire::framework_error(&error, method))?;
+    for run_id in state.handles.runs_for_session(owner) {
+        let run = wire::handle(run_id.clone(), HandleKind::Run, state.handles.generation());
+        if let Ok(record) = state.handles.run(&run)
+            && let RunRecord::Live { entry } = record.as_ref()
+        {
+            let receipt = entry.wait_receipt().await;
+            state
+                .persist_settled_receipt(&run_id, &receipt, entry.ledger.last_sequence())
+                .map_err(|error| {
+                    wire::sdk_error(
+                        ExtensionErrorCode::FrameworkError,
+                        error,
+                        Retryability::AfterDelay,
+                        method,
+                    )
+                })?;
+        }
+        services.remove_run(&run_id).await;
         state.handles.remove_run(&run_id);
         state.remove_delivery_for_run(&run_id);
     }
-    // Drop the Session's captured authority services with the Session: the
-    // task/subagent RPC surfaces can no longer resolve them afterwards.
+    state.session_factory.remove_session_services(owner);
     state
-        .session_factory
-        .remove_session_services(&acp_session_id);
-    // Facade resources are owner-bound: close their handles in the unified
-    // authority first, then cancel task executions and subagent dispatches
-    // of this session and drop workflow/state/delivery/trace/integration
-    // business records with their session instead of leaking them.
-    #[cfg(feature = "sdk-facade-adapters")]
-    {
-        let closed = state.handles.close_facade_resources_of(&acp_session_id);
-        state
-            .facade
-            .drop_session_resources_of(&acp_session_id, &closed)
-            .await;
-    }
-    responder.respond(SessionCloseResponse { released })
+        .handles
+        .close_session(handle)
+        .map(|(released, _)| released)
 }
 
 // ── Runs ────────────────────────────────────────────────────────────────────
@@ -789,10 +893,26 @@ pub(crate) async fn run_start(
         Ok(resolved) => resolved,
         Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
     };
-    let agent_handle_id = match state.handles.session(&request.session) {
-        Ok(record) => record.agent_handle_id.clone(),
+    let session_record = match state.handles.session(&request.session) {
+        Ok(record) => record,
         Err(error) => return respond_error(|error| responder.respond_with_error(error), error),
     };
+    let _publication = session_record.lifecycle.read().await;
+    if session_record
+        .closing
+        .load(std::sync::atomic::Ordering::Acquire)
+    {
+        return respond_error(
+            |error| responder.respond_with_error(error),
+            wire::handle_error(
+                ExtensionErrorCode::ClosedHandle,
+                "Session is closing",
+                method,
+                &request.session,
+            ),
+        );
+    }
+    let agent_handle_id = session_record.agent_handle_id.clone();
     let agent_fingerprint = match state.handles.agent_fingerprint(&wire::handle(
         agent_handle_id.clone(),
         HandleKind::Agent,
@@ -816,6 +936,20 @@ pub(crate) async fn run_start(
         }
     };
     let run_id = active.turn.id().to_string();
+    let durable = match state.reserve_durable_settlement(&run_id) {
+        Ok(reservation) => reservation,
+        Err(error) => {
+            return respond_error(
+                |error| responder.respond_with_error(error),
+                wire::sdk_error(
+                    ExtensionErrorCode::PayloadTooLarge,
+                    error,
+                    Retryability::AfterDelay,
+                    method,
+                ),
+            );
+        }
+    };
     let identity = match EventIdentity::for_chat(
         Some(acp_session_id.clone()),
         run_id.clone(),
@@ -1020,27 +1154,22 @@ pub(crate) async fn run_start(
         }
         return responder.respond_with_error(error);
     }
+    durable.admit();
     let settle_state = state.clone();
     let settle_entry = entry.clone();
     tokio::spawn(async move {
         let receipt = settle_entry.wait_receipt().await;
-        let result = wire::terminal_of(&receipt)
-            .and_then(|terminal| {
-                wire::receipt_wire(&receipt).map(|receipt_wire| (terminal, receipt_wire))
-            })
-            .and_then(|(terminal, receipt_wire)| {
-                settle_state
-                    .persistence
-                    .record_run_settled(
-                        &settle_entry.run_id,
-                        terminal,
-                        receipt_wire,
-                        settle_entry.ledger.last_sequence(),
-                    )
-                    .map_err(|error| error.to_string())
-            });
-        settle_state.cleanup_settled_run(&settle_entry.run_id);
-        settle_state.finish_settlement(result);
+        let result = settle_state.persist_settled_receipt(
+            &settle_entry.run_id,
+            &receipt,
+            settle_entry.ledger.last_sequence(),
+        );
+        if let Err(error) = result {
+            tracing::warn!("durable Run settlement pending: {error}");
+        }
+        // Pending durable projection is retained separately by Run identity;
+        // count completion is not a claim that the write succeeded.
+        settle_state.finish_settlement(Ok(()));
     });
     responder.respond(RunStartResponse {
         run: run_handle,
@@ -1061,32 +1190,16 @@ fn persist_receipt_now(
     entry: &echo_agent::acp::RunEntry,
     receipt: &echo_agent::runtime::TurnReceipt,
 ) -> std::result::Result<(), EchoSdkError> {
-    let terminal = wire::terminal_of(receipt).map_err(|error| {
-        wire::sdk_error(
-            ExtensionErrorCode::SerializationViolation,
-            error,
-            Retryability::Never,
-            "_echo_agent/run/wait",
-        )
-    })?;
-    let receipt_wire = wire::receipt_wire(receipt).map_err(|error| {
-        wire::sdk_error(
-            ExtensionErrorCode::SerializationViolation,
-            error,
-            Retryability::Never,
-            "_echo_agent/run/wait",
-        )
-    })?;
     state
-        .persistence
-        .record_run_settled(
-            &entry.run_id,
-            terminal,
-            receipt_wire,
-            entry.ledger.last_sequence(),
-        )
-        .map_err(|error| wire::framework_error(&error, "_echo_agent/run/wait"))
-        .map(|_| ())
+        .persist_settled_receipt(&entry.run_id, receipt, entry.ledger.last_sequence())
+        .map_err(|error| {
+            wire::sdk_error(
+                ExtensionErrorCode::FrameworkError,
+                error,
+                Retryability::AfterDelay,
+                "_echo_agent/run/wait",
+            )
+        })
 }
 
 /// Resolve a session handle to the shared ACP Session.
@@ -1095,6 +1208,14 @@ async fn resolve_session(
     handle: &WireHandle,
 ) -> std::result::Result<(Arc<AcpSession>, String), EchoSdkError> {
     let record = state.handles.session(handle)?;
+    if record.closing.load(std::sync::atomic::Ordering::Acquire) {
+        return Err(wire::handle_error(
+            ExtensionErrorCode::ClosedHandle,
+            "Session is closing",
+            "_echo_agent/session",
+            handle,
+        ));
+    }
     let services = state.services().map_err(|error| {
         wire::sdk_error(
             ExtensionErrorCode::HostShuttingDown,
@@ -1257,13 +1378,10 @@ pub(crate) async fn run_wait(
                 });
             }
             let timeout = request.timeout.as_ref().map(|duration| {
-                let nanos = duration
-                    .seconds
-                    .to_u64()
-                    .unwrap_or(u64::MAX)
-                    .saturating_mul(1_000_000_000)
-                    .saturating_add(u64::from(duration.nanos));
-                Duration::from_nanos(nanos)
+                Duration::new(
+                    duration.seconds.to_u64().unwrap_or(u64::MAX),
+                    duration.nanos,
+                )
             });
             let wait_state = state.clone();
             connection.spawn(async move {
@@ -1509,7 +1627,16 @@ pub(crate) async fn run_replay(
         after,
         limit,
     ) {
-        Ok(response) => responder.respond(response),
+        Ok(response) => match state.delivery(&request.stream.id) {
+            Some(delivery) => {
+                delivery
+                    .publish_replay(&request.stream, response, |response| {
+                        responder.respond(response)
+                    })
+                    .await
+            }
+            None => responder.respond(response),
+        },
         Err(error) => respond_error(|error| responder.respond_with_error(error), error),
     }
 }
@@ -1663,7 +1790,7 @@ mod extension_handlers {
         event: ExtensionStreamEvent,
     ) -> std::result::Result<(), String> {
         let services = state.services().map_err(|error| error.to_string())?;
-        if !services.is_extended().await || services.ensure_admission().is_err() {
+        if !services.is_extended().await {
             return Ok(());
         }
         let method = "_echo_agent/extension/stream";
@@ -1673,6 +1800,31 @@ mod extension_handlers {
             .is_err()
         {
             return Ok(());
+        }
+        if services.ensure_admission().is_err() {
+            // Teardown closes new work, while an already admitted producer
+            // must still deliver its bounded, ordered prefix and terminal.
+            // Dropping an in-flight chunk would make its later terminal fail
+            // the original sink's contiguous sequence check. This path creates
+            // no new resource or invocation and keeps that one sink authority.
+            let Ok(stream) = state.handles.stream(event.stream()) else {
+                return Ok(());
+            };
+            if stream.facade || stream.resource_id.is_some() {
+                return Ok(());
+            }
+            let extension = echo_sdk_protocol::handle::WireHandle {
+                id: stream.run_handle_id.clone(),
+                kind: HandleKind::Extension,
+                generation: event.stream().generation.clone(),
+            };
+            if state.handles.extension_for_cleanup(&extension).is_err()
+                || !state
+                    .extension_shared
+                    .owns_settlement_stream(event.stream(), &extension.id)
+            {
+                return Ok(());
+            }
         }
         let encoded = serde_json::to_vec(&event)
             .map_err(|error| format!("stream event is not encodable: {error}"))?;
@@ -1689,3 +1841,129 @@ mod extension_handlers {
 
 #[cfg(feature = "sdk-extension-bridge")]
 pub(crate) use extension_handlers::{extension_register, extension_stream, extension_unregister};
+
+#[cfg(test)]
+mod recovered_identity_tests {
+    use super::*;
+    use echo_agent::agent::{Agent, AgentEvent};
+    use futures::{future::BoxFuture, stream::BoxStream};
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+
+    #[derive(Default)]
+    struct ReservationCloseProbe {
+        fail: AtomicBool,
+        attempts: AtomicUsize,
+    }
+    struct ReservationCloseAgent(Arc<ReservationCloseProbe>);
+    impl Agent for ReservationCloseAgent {
+        fn name(&self) -> &str {
+            "recovery-close-fixture"
+        }
+        fn model_name(&self) -> &str {
+            "fixture"
+        }
+        fn system_prompt(&self) -> &str {
+            "fixture"
+        }
+        fn execute<'a>(&'a self, _: &'a str) -> BoxFuture<'a, echo_agent::error::Result<String>> {
+            Box::pin(async { Ok("unused".to_string()) })
+        }
+        fn execute_stream<'a>(
+            &'a self,
+            _: &'a str,
+        ) -> BoxFuture<
+            'a,
+            echo_agent::error::Result<BoxStream<'a, echo_agent::error::Result<AgentEvent>>>,
+        > {
+            Box::pin(async { Ok(Box::pin(futures::stream::empty()) as BoxStream<'a, _>) })
+        }
+        fn close(&self) -> BoxFuture<'_, echo_agent::error::Result<()>> {
+            Box::pin(async move {
+                self.0.attempts.fetch_add(1, Ordering::AcqRel);
+                if self.0.fail.load(Ordering::Acquire) {
+                    return Err(echo_agent::error::ReactError::Other(
+                        "reservation cleanup fixture failure".to_string(),
+                    ));
+                }
+                Ok(())
+            })
+        }
+    }
+
+    #[tokio::test]
+    async fn failed_reservation_retains_unpublished_framework_session_for_same_owner_cleanup()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = tempfile::tempdir()?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
+            "schema_version":1,"default_agent":{
+                "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+                "agent":{"name":"fixture","enable_tools":true}
+            }
+        }))?;
+        let prepared = config.prepare()?;
+        let state = CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )?;
+        let probe = Arc::new(ReservationCloseProbe::default());
+        probe.fail.store(true, Ordering::Release);
+        let factory = {
+            let probe = probe.clone();
+            move |_: AcpSessionContext| {
+                let probe = probe.clone();
+                async move { Ok(Box::new(ReservationCloseAgent(probe)) as Box<dyn Agent>) }
+            }
+        };
+        let registry = Arc::new(echo_agent::acp::SessionRegistry::new(Arc::new(factory), 1));
+        registry
+            .initialize(agent_client_protocol::schema::v1::ClientCapabilities::default())
+            .await;
+        let services = Arc::new(echo_agent::acp::AcpConnectionServices::new(
+            registry,
+            Arc::new(echo_agent::acp::AcpAdapterConfig::default()),
+        ));
+        state.bind_services(services.clone());
+        let stable_id = "cleanup-reservation-session";
+        state.persistence.record_run_started(
+            "cleanup-reservation-session:turn:01",
+            "fixture-stream",
+            stable_id,
+            "historical-agent",
+            "",
+            None,
+            "chat",
+        )?;
+        let result = create_session_on(
+            &state,
+            &services,
+            state.default_definition.as_ref(),
+            stable_id.to_string(),
+            Some(root.path().to_path_buf()),
+            "_echo_agent/session/load",
+        )
+        .await;
+        let error = match result {
+            Err(error) => error,
+            Ok(_) => return Err("invalid historical identity admitted a Session".into()),
+        };
+        assert_eq!(error.operation.as_deref(), Some("_echo_agent/session/load"));
+        assert_eq!(error.retryable, Retryability::AfterDelay);
+        assert!(error.message.contains("cleanup pending"));
+        assert!(state.handles.session_handle_for_acp(stable_id).is_none());
+        let id = agent_client_protocol::schema::v1::SessionId::new(stable_id.to_string());
+        let retained = services
+            .sessions()
+            .get(&id)
+            .await
+            .ok_or("failed close lost framework Session owner")?;
+        assert_eq!(probe.attempts.load(Ordering::Acquire), 1);
+        probe.fail.store(false, Ordering::Release);
+        services.close_sessions().await?;
+        assert!(services.sessions().get(&id).await.is_none());
+        assert_eq!(probe.attempts.load(Ordering::Acquire), 2);
+        drop(retained);
+        Ok(())
+    }
+}

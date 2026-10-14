@@ -10,10 +10,13 @@ That feature also enables `sdk-facade-adapters`, because compressor callbacks
 invoke their temporary Host tokenizer through the canonical facade route;
 feature-surface advertisement therefore reflects both compiled handlers.
 
-Status: delivered in the Rust Host and all three source-built language SDKs.
-TypeScript, Python and Java expose the same registration, callback,
-cancellation and stream boundaries; the full intrinsic/all-feature parity
-matrix remains open.
+Status: implemented in the Rust Host and three source-built language SDKs.
+Current governance changes to lifecycle, persistence and callback routing are
+candidates pending final real-Host language validation and exact-main
+acceptance. Compatibility is limited to the explicitly accepted external
+contract; complete intrinsic membership is telemetry. Evidence and unresolved
+items are maintained in the [governance matrix](governance/behavior-evidence-matrix.md),
+not inferred from catalog `done` labels.
 
 Build the Host from source with `cargo build -p echo-sdk-host
 --features sdk-extension-bridge --locked`; this feature includes the core
@@ -51,7 +54,7 @@ is rejected before any callback leaves the process.
 |---|---|---|
 | `tool` | `tool_execute`, `tool_execute_stream`, `tool_validate_parameters` | `ReactAgent::add_tool` |
 | `llm_client` | `llm_chat`, `llm_chat_stream` | `ReactAgent::set_llm_client` |
-| `store` | `store_put/get/search/search_with/delete/list_namespaces/list` (+prune/dedup) | `set_memory_store` (memory tools re-registered against the extension) |
+| `store` | `store_put/get/search/search_with/delete/list_namespaces/list` (+prune/dedup) | `set_memory_store` for approved memory recall/search; explicit `set_store` and raw KV operations retain separate caller semantics |
 | `human_loop_provider` | `human_loop_request` | `set_approval_provider` + the appeal tool |
 | `hook` | `hook_run` | `HookRegistry::set_programmatic_hook` |
 | `agent_callback` | `callback_on_*` (observational) | `add_callback` |
@@ -85,7 +88,7 @@ session/run correlation context, the deadline and — for streaming operations
 
 The protocol crate exposes the operation-discriminated `ExtensionInvocation`
 and `ExtensionResult` unions, plus public DTOs for each extension kind. The
-generated schema is the source consumed by future TypeScript, Python and Java
+generated schema defines the shapes consumed by TypeScript, Python and Java
 dispatchers; `WireValue` remains only at explicitly open leaf fields such as
 user parameters, metadata and provider-specific raw values.
 
@@ -142,6 +145,23 @@ renew, acknowledge and requeue calls. Its descriptor declares a canonical
 renewal from that negotiated capability. Missing operations, owner mismatch or
 unsupported settlement fail before a continuation can be reported as settled.
 
+Managed ConversationStore/RuntimeStateStore callbacks expose the eleven
+explicit managed persistence operations, including capability declarations,
+atomic transcript application, revision/generation CAS, projection receipts,
+acknowledgement and scope retirement. `PersistenceCallContext` retains the
+exact deadline and cause; a backend must check the deadline at its actual
+commit boundary. Unsupported operations fail explicitly, and an unknown
+commit outcome remains `OutcomeUnknown` until resolved from the backend's
+receipt/authority; the bridge cannot fill in success or a default revision.
+
+RevisionedTaskStore registration declares `execution_cas_v1` explicitly
+(default false). A CRUD-only store is valid for task creation/update/list, but
+execution without execution-CAS support fails before dispatch or mutation.
+Execution commits preserve the exact claim, expected executions, result
+(including absent versus explicit null) and Cancelled/Paused disposition in
+one authoritative CAS. TaskRun control and a Session Run's cancellation scope
+remain distinct; the bridge does not add a scheduler or terminal authority.
+
 Cancel-aware Sandbox callbacks preserve the framework error domain: extension
 cancel and timeout settle as `SandboxError::Cancelled` / `SandboxError::Timeout`,
 and Run cancellation waits for the component cleanup call before publishing
@@ -165,19 +185,42 @@ No public `extension` item is relabeled as a same-topic family/core operation.
 Traits with a live Host consumption point use a typed proxy. Rust generic,
 borrowed-view, `FnOnce`, marker/builder, event-bus registration and
 runtime-owned construction traits without a Host call site carry an exact
-process-local evidence route and remain language interface/helper obligations.
-A frozen intrinsic-membership digest makes any new intrinsic item an explicit
-contract change.
+process-local evidence route. Only an explicitly accepted portable contract
+creates a language interface/helper obligation.
+The complete intrinsic membership and its digest are inventory telemetry.
+Only explicitly accepted external contracts participate in compatibility
+negotiation; a new Rust intrinsic item does not create a language obligation.
 
 AgentFactory results are invocation-scoped instances rather than direct
-CustomAgent registrations. Repeated or concurrent factory results may use the
-same logical name; each instance receives its own handle and is sent
-`agent_close` before its dispatch terminal is released. A drop/cancellation
-fallback inside the Host runtime schedules the same close and releases the
-handle; outside a Tokio runtime it still releases the handle fail-closed but
-cannot send an asynchronous request. Factory instances are excluded from the
-Session-visible registration view, so a concurrently created Session cannot
-capture another Session's temporary agent.
+CustomAgent registrations. The Host reserves a unique child handle for each
+construction; the result must echo that exact instance. Subsequent callbacks
+carry typed `factory_origin` binding the child to its parent registration, so
+SDK dispatch never guesses by logical name or falls back to an unrelated
+implementation. Same-name concurrent constructions are independent; each
+child's mutable execution remains exclusive.
+
+A construction deadline or cancellation does not prove construction stopped.
+The SDK retains the pending construction/child cleanup owner until actual
+completion and closes a late-created child exactly once. Parent unregister
+cannot discard this pending ownership. Child cleanup failure remains an error
+with a retry owner; successful cleanup releases the handle. A failed child
+close can be retried through that same owner. Concurrent close callers share
+successful cleanup, and later closes do not repeat it. A failed acknowledgement
+does not become a permanent cached close result or release the child address.
+
+For streaming children, the original RPC answer and a validated remote stream
+terminal must both arrive before the invocation is released. That release
+precedes delivery of its terminal to a consumer that may immediately close the
+same child. A pending answer, a missing or invalid terminal, and a caller drop
+do not release an active invocation. Factory children are excluded from the
+Session-visible registration view, so another Session cannot capture a
+temporary instance.
+
+Store injection does not promote raw data to approved memory. `set_memory_store`
+binds the framework's approved-memory recall/search interface; automatic
+memory writing/promotion requires the framework `MemoryLayerManager` path.
+Explicit `set_store` and accepted `memory.put/get` KV calls remain raw Store
+operations and must not implicitly turn a value into Active memory.
 
 The SDK answers with exactly one of:
 
@@ -195,7 +238,12 @@ Failure semantics (no built-in fallbacks, design §12.1):
   notifies with reason `cancelled`; the framework's terminal stays the
   only one;
 - **disconnect** — the official transport reports the closed connection and
-  the invocation settles `extension_disconnected`;
+  the invocation settles `extension_disconnected`. Java's actual Host process
+  exit promptly ends pending requests and event/update subscriptions with
+  `transport_error`; initialize cancellation closes that same spawned Host,
+  retaining retry ownership on failed close. Stdout EOF with a still-live child
+  is outside this guarantee. Transport failure proves neither a framework Run
+  terminal nor cleanup of an external producer;
 - **late response** — an answer after settlement is discarded with bounded
   diagnostics; it can never overwrite settled state;
 - **re-entry** — a second exclusive invocation on the same registration, or an
@@ -211,11 +259,23 @@ sequences starting at 1 and exactly one terminal (`complete`, `failed` or
 continuity at a bounded sink. A wrong payload kind, gap, duplicate before
 settlement or mailbox overflow settles a typed failed terminal immediately;
 events for unknown or already-released streams are discarded with bounded
-diagnostics. The Rust stream ends exactly at the terminal and releases the
-stream handle — a consumer can never observe a stream that keeps waiting
-past its terminal. The callback mailbox capacity uses the negotiated
+diagnostics. A terminal ends payload delivery. For Channel and CustomAgent
+callbacks, it also remains distinct from the actual original response/producer settlement:
+the retained owner must finish before its stream address is released. See
+[Channel consumption](channel-handler-consumption.md) for the Channel callback
+return and CustomAgent early-setup-ACK contracts. The callback mailbox capacity
+uses the negotiated
 `max_stream_buffer_events` / Host `max_outstanding_live_events` bound, so the
 advertised limit and runtime allocation cannot drift.
+
+A valid asynchronous producer may return its Stream setup ACK immediately.
+The SDK continues forwarding cancellation to that original producer's signal
+while the stream is active, including cancellation received before the ACK.
+After its cleanup finishes, the producer must successfully send the terminal
+for the original matching stream handle and generation. A wrong-generation
+terminal, failed terminal send or failed close does not release that route;
+retry using the same stream. An early terminal and a later ACK are handled as
+separate facts. The SDK does not infer physical cleanup from either message.
 
 The contract uses different named unions for chunks and completion. Tool
 chunks can only be progress/output while Tool completion carries a result;
@@ -233,9 +293,14 @@ contains only final answer, error or cancellation.
 - Every handler walks the fixed ladder: extended-mode gate → capability
   gate → handle shape/kind/generation/closed → descriptor and payload
   bounds → framework work.
-- Connection teardown order (design §12.3): close admission → cancel
+- Connection teardown order (design §12.3): close new admission → cancel
   in-flight invocations → bounded settlement drain → profile flush →
   Session Agent/MCP close → release extension registrations and handles.
+  Already issued streams may still deliver their bounded, ordered prefix and
+  terminal through the original owner/generation checks. Closing admission
+  does not discard the prefix needed to validate that producer's terminal.
+  Cooperative cleanup timeout retains the same retry owner; it is not a
+  successful callback close.
 
 ## Secrets and output discipline
 
@@ -249,8 +314,15 @@ The facade feature adapters
 ([facade-feature-adapters.md](facade-feature-adapters.md)) route the
 feature-family surfaces to the framework's own services; the bridge remains
 the only reverse-call path for consumer-implemented traits. A facade family
-never simulates a result when a bridge callback fails — typed errors
-propagate unchanged.
+never simulates a result when a bridge callback fails. Tool stream `Failed`
+and remote `Cancelled` terminals retain their typed timeout/cancellation
+classification in `ToolResult.failure`: the adapter uses the framework's
+`ToolFailure::from_error`, with possible side effects derived from the registered
+Tool risk (read-only versus standard/dangerous). The original failure message
+is preserved. This is necessary because ToolManager consumes a `Complete`
+result directly. LLM remote cancellation likewise remains the framework's
+Agent cancellation domain. Opaque SDK error details have no corresponding Rust
+failure field and are not invented as another DTO or inferred from messages.
 
 ## Verification
 
@@ -264,7 +336,8 @@ propagate unchanged.
   (`echo-sdk-host/tests/extension_bridge_e2e.rs`): tool round trip with
   callbacks, intervention and hooks; Store/HITL; AgentFactory/CustomAgent;
   streaming and non-streaming LlmClient; ContextCompressor injection,
-  late binding and compression; Agent component consumption; channel plugin lifecycle/send;
+  late binding and compression; Agent component consumption; ChannelPlugin
+  lifecycle/send and original MessageHandler forward consumption;
   malformed kind, oversized chunk and
   out-of-order immediate failure; duplicate terminal; real Host mailbox
   backpressure; registration deadline with late response; framework

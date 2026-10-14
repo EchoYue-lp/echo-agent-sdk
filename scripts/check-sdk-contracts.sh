@@ -34,9 +34,9 @@ fi
 framework_source=$(cargo metadata --format-version 1 --locked | jq -r '
   .packages[] | select(.name == "echo_agent") | .source // empty
 ')
-expected_framework_source="git+https://github.com/EchoYue-lp/echo-agent.git?rev=27c7701e1eb116db1076da7f84bb68898544a44c#27c7701e1eb116db1076da7f84bb68898544a44c"
+expected_framework_source="git+https://github.com/EchoYue-lp/echo-agent.git?rev=a6346643bda47679a96760f56f45e41fd73b61b0#a6346643bda47679a96760f56f45e41fd73b61b0"
 [[ "$framework_source" == "$expected_framework_source" ]] || {
-  echo "error: echo_agent provenance is not pinned to the SDK extraction revision" >&2
+  echo "error: echo_agent provenance is not pinned to the SDK governance target revision" >&2
   printf 'expected: %s\nactual: %s\n' "$expected_framework_source" "$framework_source" >&2
   exit 1
 }

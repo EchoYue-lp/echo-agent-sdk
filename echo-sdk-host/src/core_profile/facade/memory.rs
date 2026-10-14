@@ -31,7 +31,7 @@ fn invalid(message: impl Into<String>) -> EchoSdkError {
 }
 
 fn json_of(value: &WireValue, position: usize) -> Result<serde_json::Value, EchoSdkError> {
-    value.clone().into_json().map_err(|error| {
+    super::family_argument_json(value).map_err(|error| {
         invalid(format!(
             "memory argument {position} is not a lossless wire value: {error}"
         ))
@@ -39,16 +39,30 @@ fn json_of(value: &WireValue, position: usize) -> Result<serde_json::Value, Echo
 }
 
 fn namespace_of(value: &serde_json::Value) -> Result<Vec<String>, EchoSdkError> {
-    value
+    let items = value
         .as_array()
-        .map(|items| {
-            items
-                .iter()
-                .filter_map(|item| item.as_str().map(str::to_string))
-                .collect::<Vec<_>>()
-        })
         .filter(|items| !items.is_empty())
-        .ok_or_else(|| invalid("memory namespace must be a non-empty string array"))
+        .ok_or_else(|| invalid("memory namespace must be a non-empty string array"))?;
+    items
+        .iter()
+        .map(|item| {
+            item.as_str()
+                .map(str::to_string)
+                .ok_or_else(|| invalid("every memory namespace component must be a string"))
+        })
+        .collect()
+}
+
+fn limit_of(value: Option<&serde_json::Value>, page_limit: usize) -> Result<usize, EchoSdkError> {
+    match value {
+        None | Some(serde_json::Value::Null) => Ok(page_limit.min(64)),
+        Some(value) => {
+            let limit = value
+                .as_u64()
+                .ok_or_else(|| invalid("memory limit must be an unsigned integer"))?;
+            Ok(usize::try_from(limit).unwrap_or(usize::MAX).min(page_limit))
+        }
+    }
 }
 
 fn string_at(
@@ -82,7 +96,7 @@ fn item_to_json(item: &echo_agent::memory::StoreItem) -> serde_json::Value {
     })
 }
 
-fn store_for_request<'a>(
+async fn store_for_request<'a>(
     authorities: &Arc<SessionAuthorityServices>,
     resource_stores: &std::sync::Mutex<HashMap<String, Arc<MemoryStoreAuthority>>>,
     handles: &HandleRegistry,
@@ -90,9 +104,12 @@ fn store_for_request<'a>(
     request: &'a FeatureOperationRequest,
 ) -> Result<(Arc<dyn echo_agent::memory::Store>, usize, &'a str), EchoSdkError> {
     if !request.operation.starts_with("memory.resource.") {
+        // Resolve the live Agent authority: accepted set_store operations can
+        // replace the factory-time store without creating a second authority.
         let store = authorities
-            .memory_store
-            .clone()
+            .agent_handle
+            .read(|agent| agent.store().cloned())
+            .await
             .ok_or_else(|| invalid("session has no memory store"))?;
         return Ok((store, 0, request.operation.as_str()));
     }
@@ -136,7 +153,7 @@ pub(crate) async fn dispatch(
     page_limit: usize,
 ) -> Result<WireValue, EchoSdkError> {
     let (store, offset, operation) =
-        store_for_request(authorities, resource_stores, handles, owner, request)?;
+        store_for_request(authorities, resource_stores, handles, owner, request).await?;
     let arguments: Vec<serde_json::Value> = request
         .arguments
         .iter()
@@ -184,7 +201,8 @@ pub(crate) async fn dispatch(
                 .put(&namespace_refs, &key, value)
                 .await
                 .map_err(framework)?;
-            Ok(WireValue::from_json(serde_json::json!({"ok": true})).unwrap_or(WireValue::Null))
+            WireValue::from_json(serde_json::json!({"ok": true}))
+                .map_err(|error| invalid(error.to_string()))
         }
         "memory.store.get" => {
             let key = string_at(&arguments, offset.saturating_add(1), "a key")?;
@@ -217,12 +235,7 @@ pub(crate) async fn dispatch(
         }
         "memory.store.search" => {
             let query = string_at(&arguments, offset.saturating_add(1), "a query")?;
-            let limit = arguments
-                .get(offset.saturating_add(2))
-                .and_then(serde_json::Value::as_u64)
-                .map(|limit| limit.min(page_limit as u64))
-                .unwrap_or(page_limit.min(64) as u64)
-                .min(page_limit as u64) as usize;
+            let limit = limit_of(arguments.get(offset.saturating_add(2)), page_limit)?;
             let items = store
                 .search_with(
                     &namespace_refs,
@@ -248,11 +261,7 @@ pub(crate) async fn dispatch(
                 .and_then(serde_json::Value::as_str)
                 .filter(|text| !text.trim().is_empty())
                 .ok_or_else(|| invalid("memory search query requires non-empty text"))?;
-            let limit = query
-                .get("limit")
-                .and_then(serde_json::Value::as_u64)
-                .unwrap_or(page_limit.min(64) as u64)
-                .min(page_limit as u64) as usize;
+            let limit = limit_of(query.get("limit"), page_limit)?;
             let mode = query
                 .get("mode")
                 .cloned()
@@ -296,10 +305,168 @@ pub(crate) async fn dispatch(
 }
 
 fn framework(error: echo_agent::error::ReactError) -> EchoSdkError {
-    wire::sdk_error(
-        ExtensionErrorCode::FrameworkError,
-        wire::bounded_framework_message(&error.to_string()),
-        Retryability::Never,
-        METHOD,
-    )
+    wire::framework_error(&error, METHOD)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use echo_agent::memory::Store as _;
+    use serde_json::json;
+
+    fn request(
+        operation: &str,
+        values: Vec<serde_json::Value>,
+    ) -> Result<FeatureOperationRequest, Box<dyn std::error::Error>> {
+        Ok(FeatureOperationRequest {
+            operation: operation.to_string(),
+            signature_digest: String::new(),
+            handle: None,
+            arguments: values
+                .into_iter()
+                .map(WireValue::from_json)
+                .collect::<Result<_, _>>()?,
+        })
+    }
+
+    #[tokio::test]
+    async fn malformed_namespace_never_writes_and_replacement_store_is_live_authority()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let first = Arc::new(echo_agent::memory::InMemoryStore::new());
+        let second = Arc::new(echo_agent::memory::InMemoryStore::new());
+        let mut agent = echo_agent::agent::ReactAgent::new(echo_agent::agent::AgentConfig::new(
+            "unused", "test", "test",
+        ));
+        agent.set_store(first.clone());
+        let handle = echo_agent::agent::AgentHandle::new(agent);
+        let authorities = Arc::new(
+            handle
+                .read(|agent| {
+                    SessionAuthorityServices::of(handle.clone(), agent, std::path::PathBuf::new())
+                })
+                .await,
+        );
+        let stores = std::sync::Mutex::new(HashMap::new());
+        let handles = HandleRegistry::new(1, 8);
+        let malformed = request(
+            "memory.store.put",
+            vec![json!(["合法", 7]), json!("key"), json!("value")],
+        )?;
+        assert!(
+            dispatch(&authorities, &stores, &handles, "owner", &malformed, 8)
+                .await
+                .is_err_and(|error| error.code == ExtensionErrorCode::InvalidValue)
+        );
+        assert!(first.get(&["合法"], "key").await?.is_none());
+        handle.write(|agent| agent.set_store(second.clone())).await;
+        let put = request(
+            "memory.store.put",
+            vec![json!(["中文🌳"]), json!("key"), json!("B")],
+        )?;
+        dispatch(&authorities, &stores, &handles, "owner", &put, 8)
+            .await
+            .map_err(|error| std::io::Error::other(error.message))?;
+        assert!(first.get(&["中文🌳"], "key").await?.is_none());
+        assert!(second.get(&["中文🌳"], "key").await?.is_some());
+        let get = request("memory.store.get", vec![json!(["中文🌳"]), json!("key")])?;
+        let result = dispatch(&authorities, &stores, &handles, "owner", &get, 8)
+            .await
+            .map_err(|error| std::io::Error::other(error.message))?
+            .into_json()?;
+        assert_eq!(result.get("value"), Some(&json!("B")));
+        Ok(())
+    }
+
+    #[test]
+    fn explicit_invalid_limits_are_not_defaulted() {
+        for value in [json!("5"), json!(-1), json!(2.5), json!(true)] {
+            assert!(limit_of(Some(&value), 8).is_err());
+        }
+        assert_eq!(limit_of(None, 8).ok(), Some(8));
+        assert_eq!(limit_of(Some(&json!(3)), 8).ok(), Some(3));
+    }
+}
+
+#[cfg(test)]
+mod failure_fidelity_regressions {
+    use super::*;
+    use echo_agent::memory::Store as _;
+
+    #[tokio::test]
+    async fn unsupported_store_operation_keeps_memory_cause_without_mutation()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let store = Arc::new(echo_agent::memory::InMemoryStore::new());
+        store
+            .put(&["中文🙂"], "before", serde_json::json!("preserved"))
+            .await?;
+        let mut agent = echo_agent::agent::ReactAgent::new(echo_agent::agent::AgentConfig::new(
+            "unused", "test", "test",
+        ));
+        agent.set_store(store.clone());
+        let handle = echo_agent::agent::AgentHandle::new(agent);
+        let authorities = Arc::new(
+            handle
+                .read(|agent| {
+                    SessionAuthorityServices::of(handle.clone(), agent, std::path::PathBuf::new())
+                })
+                .await,
+        );
+        let request = FeatureOperationRequest {
+            operation: "memory.store.search_with".to_string(),
+            signature_digest: String::new(),
+            handle: None,
+            arguments: vec![
+                WireValue::from_json(serde_json::json!(["中文🙂"]))?,
+                WireValue::from_json(
+                    serde_json::json!({"text":"query", "mode":"Semantic", "limit":1}),
+                )?,
+            ],
+        };
+        let error = match dispatch(
+            &authorities,
+            &std::sync::Mutex::new(HashMap::new()),
+            &HandleRegistry::new(1, 8),
+            "owner",
+            &request,
+            8,
+        )
+        .await
+        {
+            Ok(value) => {
+                return Err(format!(
+                    "unsupported semantic Store search unexpectedly returned {value:?}"
+                )
+                .into());
+            }
+            Err(error) => error,
+        };
+        assert_eq!(error.code, ExtensionErrorCode::FrameworkError);
+        assert_eq!(error.retryable, Retryability::Never);
+        assert_eq!(error.operation.as_deref(), Some(METHOD));
+        let fields = error
+            .details
+            .and_then(|details| details.fields)
+            .ok_or("Store failure lost its canonical cause")?;
+        for (key, expected) in [
+            ("framework_failure_category", "memory"),
+            ("framework_terminal_kind", "failed"),
+            ("framework_failure_code", "memory"),
+            ("framework_retryable", "false"),
+        ] {
+            assert_eq!(
+                fields
+                    .iter()
+                    .find(|field| field.key == key)
+                    .map(|field| field.value.as_str()),
+                Some(expected)
+            );
+        }
+        let before = store
+            .get(&["中文🙂"], "before")
+            .await?
+            .ok_or("Store failure deleted the existing record")?;
+        assert_eq!(before.value, serde_json::json!("preserved"));
+        assert_eq!(store.list(&["中文🙂"]).await?.len(), 1);
+        Ok(())
+    }
 }
