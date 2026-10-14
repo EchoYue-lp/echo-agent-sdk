@@ -253,3 +253,8 @@ docs/sdk/governance/evidence/host-binary-streaming-sha/existing-callers.patch -d
 docs/sdk/governance/evidence/host-binary-streaming-sha/history/language-cancelled.log -diff
 docs/sdk/governance/evidence/state-trace-timezone-oracle/before-ci/language-cancelled.log -diff
 docs/sdk/governance/evidence/state-trace-timezone-oracle/native/typescript-build.log -diff
+
+# Original Telemetry failure and repair witnesses.
+docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/history/language-cancelled.log -diff
+docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/source-review-v2/implementation.patch -diff
+docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/source-review/implementation.patch -diff

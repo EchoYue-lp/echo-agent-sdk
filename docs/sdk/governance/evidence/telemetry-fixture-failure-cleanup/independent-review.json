@@ -1,0 +1,21 @@
+{
+  "reviewer": "framework_final_review",
+  "mode": "independent read-only source and actual focused-native evidence",
+  "conclusion": "PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "actions": 0,
+  "reviewedNativeReceiptSHA256": "7a4310d8f7d0c83c613e8e672fc51fa9a004dcf80e1203ad61773144e3e234e4",
+  "reviewedSourceV2ManifestSHA256": "7afcb4d370df346303468bfb93cb606e79d8c4c9d95b1ce76dea03fd9a31d582",
+  "verified": [
+    "four source current hashes exact; original proxy/prepare/verify/cleanup_host unchanged",
+    "all cleanup callbacks attempted; original primary and cleanup errors preserved; no noqa",
+    "actual old hash setup leak with original two PIDs and later normal diagnostic reap",
+    "TS6/Python3.10.19 four/JavaXML3 actual0 failed0 skip0",
+    "seven source/helper inputs before-after-current exact; raw runners/log bytes consistent",
+    "15 scenes/35 original PIDs match actual artifacts and are dead",
+    "genuine fresh Git00782 collector provenance and immutable Host SHA"
+  ],
+  "scope": "local test-fixture repair only; not whole SDK language/remote Linux/B-policy/main acceptance"
+}

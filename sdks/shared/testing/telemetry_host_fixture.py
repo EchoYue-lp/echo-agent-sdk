@@ -10,6 +10,7 @@ import subprocess
 import sys
 import threading
 import time
+from contextlib import ExitStack
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -30,6 +31,21 @@ def prepare(work: Path, console: bool) -> None:
 
 
 def serve(work: Path) -> None:
+    # Only this fixture owner handles TERM. Proxy mode must keep the original
+    # SDK public-close/EOF behavior and never substitute a cleanup signal.
+    previous = signal.getsignal(signal.SIGTERM)
+
+    def interrupted(signum, _frame):
+        raise SystemExit(128 + signum)
+
+    signal.signal(signal.SIGTERM, interrupted)
+    try:
+        _serve_owned(work)
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def _serve_owned(work: Path) -> None:
     executable = os.environ.get("ECHO_AGENT_SDK_OTLP_COLLECTOR")
     if not executable:
         raise RuntimeError("real telemetry collector executable is required")
@@ -38,156 +54,231 @@ def serve(work: Path) -> None:
         (work / "collector.stdout").open("w") as output,
         (work / "collector.stderr").open("w") as error,
     ):
-        collector = subprocess.Popen(
-            [executable, "--exact", "native_sdk_collector_fixture", "--nocapture"],
-            env=environment,
-            stdout=output,
-            stderr=error,
-        )
-        try:
-            deadline = time.monotonic() + 10
-            while not (work / "collector.json").exists():
-                assert collector.poll() is None, "collector exited before ready"
-                assert time.monotonic() < deadline, "collector ready timeout"
-                time.sleep(0.01)
-            scenario = json.loads((work / "scenario.json").read_text())
-            scenario.update(json.loads((work / "collector.json").read_text()))
-            scenario.update(collector_started=True, fixture_pid=os.getpid())
-            (work / "scenario.json").write_text(
-                json.dumps(scenario, ensure_ascii=False)
-            )
-            lock = threading.Lock()
+        collector = server = thread = primary = None
+        failures = []
+        model_stop = threading.Event()
 
-            class Handler(BaseHTTPRequestHandler):
-                def log_message(self, *args):
-                    pass
+        def stop_model():
+            model_stop.set()
+            # A failed Thread.start() has no thread to join. Shutdown of a
+            # never-started serve_forever() would wait forever instead.
+            if thread is not None and thread.ident is not None:
+                thread.join(timeout=5)
+                if thread.is_alive():
+                    raise RuntimeError("model fixture thread did not stop")
 
-                def do_POST(self):
-                    assert self.headers.get("Authorization") == "Bearer " + TOKEN
-                    request = json.loads(
-                        self.rfile.read(int(self.headers["Content-Length"]))
-                    )
-                    with (
-                        lock,
-                        (work / "model.jsonl").open("a", encoding="utf8") as records,
-                    ):
-                        records.write(json.dumps(request, ensure_ascii=False) + "\n")
-                    messages = request["messages"]
-                    if any(message.get("role") == "tool" for message in messages):
-                        assert CONTENT.strip() in json.dumps(
-                            messages, ensure_ascii=False
-                        ), messages
-                        message = {"role": "assistant", "content": ANSWER}
-                        reason = "stop"
-                    else:
-                        message = {
-                            "role": "assistant",
-                            "content": None,
-                            "tool_calls": [
-                                {
-                                    "id": "telemetry-read",
-                                    "type": "function",
-                                    "function": {
-                                        "name": "read_file",
-                                        "arguments": json.dumps(
-                                            {"path": str(work / "probe.txt")}
-                                        ),
-                                    },
-                                }
-                            ],
-                        }
-                        reason = "tool_calls"
-                    usage = {
-                        "prompt_tokens": 17,
-                        "completion_tokens": 5,
-                        "total_tokens": 22,
-                    }
-                    if request.get("stream"):
-                        delta = dict(message)
-                        if "tool_calls" in delta:
-                            delta["tool_calls"] = [
-                                {"index": 0, **call} for call in delta["tool_calls"]
-                            ]
-                        chunks = [
-                            {
-                                "id": "telemetry-model",
-                                "model": "telemetry-model",
-                                "choices": [
-                                    {"index": 0, "delta": delta, "finish_reason": None}
-                                ],
-                            },
-                            {
-                                "id": "telemetry-model",
-                                "model": "telemetry-model",
-                                "choices": [
-                                    {"index": 0, "delta": {}, "finish_reason": reason}
-                                ],
-                                "usage": usage,
-                            },
-                        ]
-                        body = (
-                            "".join(
-                                "data: "
-                                + json.dumps(chunk, ensure_ascii=False)
-                                + "\n\n"
-                                for chunk in chunks
-                            )
-                            + "data: [DONE]\n\n"
-                        ).encode()
-                        content_type = "text/event-stream"
-                    else:
-                        body = json.dumps(
-                            {
-                                "id": "telemetry-model",
-                                "model": "telemetry-model",
-                                "choices": [
-                                    {
-                                        "index": 0,
-                                        "message": message,
-                                        "finish_reason": reason,
-                                    }
-                                ],
-                                "usage": usage,
-                            },
-                            ensure_ascii=False,
-                        ).encode()
-                        content_type = "application/json"
-                    self.send_response(200)
-                    self.send_header("Content-Type", content_type)
-                    self.send_header("Content-Length", str(len(body)))
-                    self.end_headers()
-                    self.wfile.write(body)
-
-            server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
-            config = {
-                "schema_version": 1,
-                "default_agent": {
-                    "model": {
-                        "provider": "fixture",
-                        "name": "telemetry-model",
-                        "base_url": f"http://127.0.0.1:{server.server_port}/v1",
-                        "api_protocol": "chat_completions",
-                        "auth_token": TOKEN,
-                    },
-                    "agent": {"name": "telemetry-proof", "enable_tools": True},
-                },
-                "sdk_profile": {"state_root": str(work / "state")},
-            }
-            (work / "host.json").write_text(json.dumps(config))
-            thread = threading.Thread(target=server.serve_forever, daemon=True)
-            thread.start()
-            (work / "ready").write_text("ready")
-            while not (work / "stop").exists():
-                assert collector.poll() is None, "collector exited during scenario"
-                time.sleep(0.01)
-            server.shutdown()
-            thread.join()
-            server.server_close()
-            assert collector.wait(timeout=5) == 0
-        finally:
-            if collector.poll() is None:
+        def close_collector():
+            if collector is not None and collector.poll() is None:
                 collector.terminate()
-                collector.wait(timeout=5)
+                try:
+                    collector.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    collector.kill()
+                    collector.wait(timeout=5)
+                    raise RuntimeError("collector required forced cleanup")
+
+        def run_cleanup(cleanup):
+            try:
+                cleanup()
+            except BaseException as error:
+                failures.append(error)
+                raise
+
+        try:
+            with ExitStack() as stack:
+                for cleanup in reversed(
+                    (
+                        stop_model,
+                        lambda: server.server_close() if server is not None else None,
+                        close_collector,
+                    )
+                ):
+                    stack.callback(run_cleanup, cleanup)
+                try:
+                    collector = subprocess.Popen(
+                        [
+                            executable,
+                            "--exact",
+                            "native_sdk_collector_fixture",
+                            "--nocapture",
+                        ],
+                        env=environment,
+                        stdout=output,
+                        stderr=error,
+                    )
+                    deadline = time.monotonic() + 10
+                    while not (work / "collector.json").exists():
+                        assert collector.poll() is None, "collector exited before ready"
+                        assert time.monotonic() < deadline, "collector ready timeout"
+                        time.sleep(0.01)
+                    scenario = json.loads((work / "scenario.json").read_text())
+                    scenario.update(json.loads((work / "collector.json").read_text()))
+                    scenario.update(collector_started=True, fixture_pid=os.getpid())
+                    (work / "scenario.json").write_text(
+                        json.dumps(scenario, ensure_ascii=False)
+                    )
+                    lock = threading.Lock()
+
+                    class Handler(BaseHTTPRequestHandler):
+                        def log_message(self, *args):
+                            pass
+
+                        def do_POST(self):
+                            assert (
+                                self.headers.get("Authorization") == "Bearer " + TOKEN
+                            )
+                            request = json.loads(
+                                self.rfile.read(int(self.headers["Content-Length"]))
+                            )
+                            with (
+                                lock,
+                                (work / "model.jsonl").open(
+                                    "a", encoding="utf8"
+                                ) as records,
+                            ):
+                                records.write(
+                                    json.dumps(request, ensure_ascii=False) + "\n"
+                                )
+                            messages = request["messages"]
+                            if any(
+                                message.get("role") == "tool" for message in messages
+                            ):
+                                assert CONTENT.strip() in json.dumps(
+                                    messages, ensure_ascii=False
+                                ), messages
+                                message = {"role": "assistant", "content": ANSWER}
+                                reason = "stop"
+                            else:
+                                message = {
+                                    "role": "assistant",
+                                    "content": None,
+                                    "tool_calls": [
+                                        {
+                                            "id": "telemetry-read",
+                                            "type": "function",
+                                            "function": {
+                                                "name": "read_file",
+                                                "arguments": json.dumps(
+                                                    {"path": str(work / "probe.txt")}
+                                                ),
+                                            },
+                                        }
+                                    ],
+                                }
+                                reason = "tool_calls"
+                            usage = {
+                                "prompt_tokens": 17,
+                                "completion_tokens": 5,
+                                "total_tokens": 22,
+                            }
+                            if request.get("stream"):
+                                delta = dict(message)
+                                if "tool_calls" in delta:
+                                    delta["tool_calls"] = [
+                                        {"index": 0, **call}
+                                        for call in delta["tool_calls"]
+                                    ]
+                                chunks = [
+                                    {
+                                        "id": "telemetry-model",
+                                        "model": "telemetry-model",
+                                        "choices": [
+                                            {
+                                                "index": 0,
+                                                "delta": delta,
+                                                "finish_reason": None,
+                                            }
+                                        ],
+                                    },
+                                    {
+                                        "id": "telemetry-model",
+                                        "model": "telemetry-model",
+                                        "choices": [
+                                            {
+                                                "index": 0,
+                                                "delta": {},
+                                                "finish_reason": reason,
+                                            }
+                                        ],
+                                        "usage": usage,
+                                    },
+                                ]
+                                body = (
+                                    "".join(
+                                        "data: "
+                                        + json.dumps(chunk, ensure_ascii=False)
+                                        + "\n\n"
+                                        for chunk in chunks
+                                    )
+                                    + "data: [DONE]\n\n"
+                                ).encode()
+                                content_type = "text/event-stream"
+                            else:
+                                body = json.dumps(
+                                    {
+                                        "id": "telemetry-model",
+                                        "model": "telemetry-model",
+                                        "choices": [
+                                            {
+                                                "index": 0,
+                                                "message": message,
+                                                "finish_reason": reason,
+                                            }
+                                        ],
+                                        "usage": usage,
+                                    },
+                                    ensure_ascii=False,
+                                ).encode()
+                                content_type = "application/json"
+                            self.send_response(200)
+                            self.send_header("Content-Type", content_type)
+                            self.send_header("Content-Length", str(len(body)))
+                            self.end_headers()
+                            self.wfile.write(body)
+
+                    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+                    config = {
+                        "schema_version": 1,
+                        "default_agent": {
+                            "model": {
+                                "provider": "fixture",
+                                "name": "telemetry-model",
+                                "base_url": f"http://127.0.0.1:{server.server_port}/v1",
+                                "api_protocol": "chat_completions",
+                                "auth_token": TOKEN,
+                            },
+                            "agent": {"name": "telemetry-proof", "enable_tools": True},
+                        },
+                        "sdk_profile": {"state_root": str(work / "state")},
+                    }
+                    (work / "host.json").write_text(json.dumps(config))
+                    server.timeout = 0.05
+
+                    def model_loop():
+                        while not model_stop.is_set():
+                            server.handle_request()
+
+                    thread = threading.Thread(target=model_loop, daemon=True)
+                    thread.start()
+                    (work / "ready").write_text("ready")
+                    while not (work / "stop").exists():
+                        assert collector.poll() is None, (
+                            "collector exited during scenario"
+                        )
+                        time.sleep(0.01)
+                    assert collector.wait(timeout=5) == 0
+                finally:
+                    primary = sys.exc_info()[1]
+        finally:
+            if primary is not None and failures:
+                primary.cleanup_errors = tuple(failures)
+                raise primary from RuntimeError(
+                    f"fixture cleanup failures: {failures!r}"
+                )
+            if primary is None and failures:
+                raise RuntimeError(
+                    f"fixture cleanup failures: {failures!r}"
+                ) from failures[0]
 
 
 def verify(work: Path) -> None:

@@ -1,0 +1,26 @@
+{
+  "head": "ab87d70ebccece5ceb7987931d244bab7ac069fb",
+  "sourceSHA256": {
+    "sdks/typescript/test/telemetry-host.test.js": "a3ef71510e9ee562f02ea0bc9e0e74dae39dd472e92a0abd66978b6176553cc2",
+    "sdks/python/tests/test_telemetry_host.py": "c627c22b4636ad580cf1e763deb0fb55a10369bb62327465fa0ae3d9f3f4d03f",
+    "sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java": "8fc6e7bf2e4a56e7352913b922ad869c12c3f9f21f4040030e418a66776e9a26",
+    "sdks/shared/testing/telemetry_host_fixture.py": "f6ac25991e3069600606917251dc4d953cf0800ee1eafe8513b2725d1349f44f"
+  },
+  "phase": "static freeze after source-review Important fixes; no native tests",
+  "previousCutManifest": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-telemetry-fixture-cleanup/source-review/manifest.json",
+  "addressed": [
+    "asyncio.TimeoutError for Python3.10 actual wait_for timeout",
+    "serve Event+handle_request bounded model stop; never-started thread not joined",
+    "stdlib ExitStack/AsyncExitStack preserve primary outside context repair; all four noqa removed"
+  ],
+  "persistentRegression": "Python single fault method includes stop publication failure and actual five-second wait_for timeout/serve TERM plus separate genuine collector with model Thread.start failure; TS and Java one existing fault method unchanged",
+  "staticGates": {
+    "officialPythonRuffCheck": 0,
+    "officialPythonRuffFormatCheck": 0,
+    "extraStrictRuffWithTrueSdkPy310AndFirstParty": 0
+  },
+  "extraCheckHistory": "Original S-root additional Ruff inherited parent py311/firstparty assumptions and proposed incorrect builtin TimeoutError; corrected extra invocation sets actual SDK py310+echo_agent_sdk firstparty, without disabling any rule; projectless uv warning removed by omitting inapplicable --no-project",
+  "native": "pending Root lease; no passed-native claim",
+  "javaSourceUnchangedFromCompiled37Cut": true,
+  "proxyPrepareVerifyCleanupHostFunctionSourceUnchanged": true
+}

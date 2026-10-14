@@ -1,0 +1,9 @@
+{
+  "sdks/typescript/test/telemetry-host.test.js": "a3ef71510e9ee562f02ea0bc9e0e74dae39dd472e92a0abd66978b6176553cc2",
+  "sdks/python/tests/test_telemetry_host.py": "c627c22b4636ad580cf1e763deb0fb55a10369bb62327465fa0ae3d9f3f4d03f",
+  "sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java": "8fc6e7bf2e4a56e7352913b922ad869c12c3f9f21f4040030e418a66776e9a26",
+  "sdks/shared/testing/telemetry_host_fixture.py": "f6ac25991e3069600606917251dc4d953cf0800ee1eafe8513b2725d1349f44f",
+  "sdks/shared/testing/file-sha256.mjs": "382961de7e3b0ba05c90da942f6c5a9ea9d498d145719b829ef2594a5db9c8f1",
+  "sdks/shared/testing/file_sha256.py": "e0902802828617dbaa98a93f16e8dceb538a989adcd813a6a4612a5b926c7ba8",
+  "sdks/java/src/test/java/com/echoagent/sdk/FileSha256.java": "38718b6a03e577ebabb015f8cf74b57e728c88cc1b2be10e52ece66d2d17afb7"
+}

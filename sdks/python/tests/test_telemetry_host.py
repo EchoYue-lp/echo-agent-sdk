@@ -1,11 +1,12 @@
 """Accepted telemetry: real Agent records, local OTLP receipt and lifecycle."""
 
 import asyncio
-import hashlib
+import inspect
 import json
 import os
 import sys
 import tempfile
+from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 
 import pytest
@@ -25,6 +26,10 @@ FIXTURE = (
     Path(__file__).resolve().parents[2] / "shared/testing/telemetry_host_fixture.py"
 )
 
+SHARED = Path(__file__).resolve().parents[2] / "shared/testing"
+sys.path.insert(0, str(SHARED))
+from file_sha256 import file_sha256
+
 
 async def helper(work, *args):
     process = await asyncio.create_subprocess_exec(
@@ -41,6 +46,79 @@ async def helper(work, *args):
     return output.decode()
 
 
+@asynccontextmanager
+async def fixture_scope(work, *, close=lambda: None, evidence=lambda: None):
+    service = primary = None
+    failures = []
+
+    async def close_sdk():
+        outcome = close()
+        if inspect.isawaitable(outcome):
+            await asyncio.wait_for(outcome, 5)
+
+    async def stop_service():
+        if service is None:
+            return
+        try:
+            await asyncio.wait_for(service.wait(), 5)
+        except asyncio.TimeoutError as error:
+            failures.append(error)
+            if service.returncode is None:
+                service.terminate()
+            try:
+                await asyncio.wait_for(service.wait(), 5)
+            except asyncio.TimeoutError as term_error:
+                failures.append(term_error)
+                if service.returncode is None:
+                    service.kill()
+                await asyncio.wait_for(service.wait(), 5)
+        assert service.returncode == 0, service.returncode
+
+    async def run_cleanup(cleanup):
+        try:
+            outcome = cleanup()
+            if inspect.isawaitable(outcome):
+                await outcome
+        except BaseException as error:
+            failures.append(error)
+            raise
+
+    try:
+        # The standard stack attempts every callback even if an earlier one
+        # raises, including cancellation. No exception is suppressed.
+        async with AsyncExitStack() as stack:
+            for cleanup in reversed(
+                (
+                    lambda: (work / "release-export").write_text(
+                        "cleanup actual response"
+                    ),
+                    close_sdk,
+                    lambda: helper(work, "--cleanup-host"),
+                    lambda: (work / "stop").write_text("stop"),
+                    stop_service,
+                    evidence,
+                )
+            ):
+                stack.push_async_callback(run_cleanup, cleanup)
+            try:
+                service = await asyncio.create_subprocess_exec(
+                    sys.executable, str(FIXTURE), "--work", str(work), "--serve"
+                )
+                yield service
+            finally:
+                primary = sys.exc_info()[1]
+    finally:
+        # Project after the stack has unwound, retaining the original exception
+        # object without creating a cycle in ExitStack's context repair.
+        if primary is not None and failures:
+            primary.cleanup_errors = tuple(failures)
+            raise primary from RuntimeError(f"telemetry cleanup failures: {failures!r}")
+        if primary is None and failures:
+            raise RuntimeError(
+                f"telemetry cleanup failures: {failures!r}"
+            ) from failures[0]
+
+
 @pytest.mark.asyncio
 @pytest.mark.skipif(not HOST, reason="real Host required")
 @pytest.mark.parametrize("console_enabled", [False, True])
@@ -48,16 +126,25 @@ async def test_accepted_telemetry_exports_and_flushes(console_enabled):
     ROOT.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT)).resolve()
     await helper(work, *(["--console"] if console_enabled else []))
-    service = await asyncio.create_subprocess_exec(
-        sys.executable, str(FIXTURE), "--work", str(work), "--serve"
-    )
     facts = {
         "work": str(work),
         "host": HOST,
-        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
         "errors": {},
     }
-    try:
+    sdk = None
+
+    async def close_sdk():
+        if sdk is not None:
+            await sdk.close()
+
+    def evidence():
+        (work / "observed.json").write_text(
+            json.dumps(facts, ensure_ascii=False, indent=2)
+        )
+        print(f"Telemetry evidence: {work}")
+
+    async with fixture_scope(work, close=close_sdk, evidence=evidence) as service:
+        facts["host_sha256"] = file_sha256(HOST)
 
         async def ready():
             while not (work / "ready").exists():
@@ -117,17 +204,6 @@ async def test_accepted_telemetry_exports_and_flushes(console_enabled):
         )
         proof = json.loads(await helper(work, "--verify"))
         assert proof["shutdown_flush"] and proof["business_file_content_consumed"]
-    finally:
-        (work / "observed.json").write_text(
-            json.dumps(facts, ensure_ascii=False, indent=2)
-        )
-        (work / "stop").write_text("stop")
-        try:
-            await asyncio.wait_for(service.wait(), 5)
-        except TimeoutError:
-            service.terminate()
-            await asyncio.wait_for(service.wait(), 5)
-        print(f"Telemetry evidence: {work}")
 
 
 @pytest.mark.asyncio
@@ -136,14 +212,10 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
     ROOT.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="python-public-close-", dir=ROOT)).resolve()
     await helper(work)
-    service = await asyncio.create_subprocess_exec(
-        sys.executable, str(FIXTURE), "--work", str(work), "--serve"
-    )
     facts = {
         "work": str(work),
         "host": HOST,
         "mode": "Python public sdk.close only; no fixture EOF",
-        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
     }
     sdk = shutdown = closing = None
 
@@ -154,7 +226,20 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
 
         await asyncio.wait_for(ready(), 10)
 
-    try:
+    async def close_sdk():
+        if sdk is not None:
+            await sdk.close()
+        if shutdown is not None:
+            await asyncio.wait_for(asyncio.gather(shutdown, return_exceptions=True), 5)
+
+    def evidence():
+        (work / "wire-observed.json").write_text(
+            json.dumps(facts, ensure_ascii=False, indent=2)
+        )
+        print(f"Telemetry Python publicclose evidence: {work}")
+
+    async with fixture_scope(work, close=close_sdk, evidence=evidence):
+        facts["host_sha256"] = file_sha256(HOST)
         await barrier("ready")
         scenario = json.loads((work / "scenario.json").read_text())
         sdk = await EchoAgentClient.spawn(
@@ -204,16 +289,104 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
         assert facts["exit"]["returncode"] == 0
         facts["collector_after_exit"] = (work / "otlp.jsonl").read_text()
         assert "llm.calls" in facts["collector_after_exit"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(
+    not os.environ.get("ECHO_AGENT_SDK_OTLP_COLLECTOR"),
+    reason="real collector required",
+)
+async def test_telemetry_setup_and_cleanup_faults_reap_original_processes(monkeypatch):
+    ROOT.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="python-cleanup-fault-", dir=ROOT)).resolve()
+    await helper(work)
+    service = collector_pid = None
+    close_error = RuntimeError("controlled SDK close failure")
+    evidence_error = OSError("controlled evidence write failure")
+    stop_error = OSError("controlled stop publication failure")
+
+    async def failed_close():
+        raise close_error
+
+    def failed_evidence():
+        raise evidence_error
+
+    original_write = Path.write_text
+
+    def failed_stop(path, *args, **kwargs):
+        if path == work / "stop":
+            raise stop_error
+        return original_write(path, *args, **kwargs)
+
+    # A real absent stop keeps the original service alive until wait_for's
+    # actual timeout. This exercises the Python 3.10 TimeoutError branch and
+    # serve-only TERM cleanup, rather than faking a timeout receipt.
+    with monkeypatch.context() as faults:
+        faults.setattr(Path, "write_text", failed_stop)
+        with pytest.raises(FileNotFoundError) as caught:
+            async with fixture_scope(
+                work, close=failed_close, evidence=failed_evidence
+            ) as owned:
+                service = owned
+
+                async def ready():
+                    while not (work / "ready").exists():
+                        assert owned.returncode is None
+                        await asyncio.sleep(0.005)
+
+                await asyncio.wait_for(ready(), 10)
+                collector_pid = json.loads((work / "collector.json").read_text())["pid"]
+                assert collector_pid > 0 and service.pid > 0
+                file_sha256(work / "missing-host")
+    assert close_error in caught.value.cleanup_errors
+    assert evidence_error in caught.value.cleanup_errors
+    assert stop_error in caught.value.cleanup_errors
+    assert any(
+        isinstance(error, asyncio.TimeoutError) for error in caught.value.cleanup_errors
+    )
+    assert service.returncode == 128 + 15
+    for pid in (service.pid, collector_pid):
+        with pytest.raises(ProcessLookupError):
+            os.kill(pid, 0)
+    assert not (work / "stop").exists()
+
+    # Fail Thread.start after the real collector/model socket exists. A
+    # never-started model must not be joined or passed to server.shutdown().
+    startup_work = Path(
+        tempfile.mkdtemp(prefix="python-startup-fault-", dir=ROOT)
+    ).resolve()
+    await helper(startup_work)
+    startup_code = """
+import runpy, sys
+from pathlib import Path
+module = runpy.run_path(sys.argv[1])
+def fail_start(_thread):
+    raise RuntimeError("controlled model thread startup failure")
+module["threading"].Thread.start = fail_start
+module["serve"](Path(sys.argv[2]))
+"""
+    startup = await asyncio.create_subprocess_exec(
+        sys.executable,
+        "-c",
+        startup_code,
+        str(FIXTURE),
+        str(startup_work),
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    try:
+        _, stderr = await asyncio.wait_for(startup.communicate(), 5)
     finally:
-        (work / "release-export").write_text("cleanup actual response")
-        if sdk:
-            await sdk.close()
-        if shutdown:
-            await asyncio.gather(shutdown, return_exceptions=True)
-        await helper(work, "--cleanup-host")
-        (work / "stop").write_text("stop")
-        await asyncio.wait_for(service.wait(), 5)
-        (work / "wire-observed.json").write_text(
-            json.dumps(facts, ensure_ascii=False, indent=2)
-        )
-        print(f"Telemetry Python publicclose evidence: {work}")
+        if startup.returncode is None:
+            startup.terminate()
+            try:
+                await asyncio.wait_for(startup.wait(), 5)
+            except asyncio.TimeoutError:
+                startup.kill()
+                await asyncio.wait_for(startup.wait(), 5)
+    assert startup.returncode == 1
+    assert b"controlled model thread startup failure" in stderr
+    startup_collector = json.loads((startup_work / "collector.json").read_text())["pid"]
+    for pid in (startup.pid, startup_collector):
+        with pytest.raises(ProcessLookupError):
+            os.kill(pid, 0)

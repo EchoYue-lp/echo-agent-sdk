@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "steps": [
+    {
+      "label": "telemetry-python310-all",
+      "command": [
+        "uv",
+        "run",
+        "--no-project",
+        "--python",
+        "3.10",
+        "--with",
+        "pytest",
+        "--with",
+        "pytest-asyncio",
+        "--with",
+        "agent-client-protocol==0.12.1",
+        "python",
+        "-m",
+        "pytest",
+        "-v",
+        "tests/test_telemetry_host.py"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-telemetry-fixture-cleanup/native/03-python310.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 1026,
+      "bytesWritten": 1026,
+      "startedAt": "2026-10-14T23:06:46.289Z",
+      "finishedAt": "2026-10-14T23:06:56.162Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T23:06:56.162Z"
+}

@@ -1,0 +1,6 @@
+{
+  "scope": "archive metadata only; not source/native failure",
+  "status": "superseded before stage/commit/review",
+  "reason": "first enumeration excluded nested files named manifest.json as well as top-level controls; 3 nested source-cut manifests must also be bound",
+  "originalRawAndSourceBytesUnchanged": true
+}

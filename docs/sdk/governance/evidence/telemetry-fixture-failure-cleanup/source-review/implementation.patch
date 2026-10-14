@@ -1,0 +1,714 @@
+diff --git a/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java b/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java
+index 34e46ea..68c53b4 100644
+--- a/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java
++++ b/sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java
+@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
+ import java.nio.charset.StandardCharsets;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+-import java.security.MessageDigest;
+ import java.time.Duration;
+ import java.util.ArrayList;
+-import java.util.HexFormat;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.concurrent.CompletionStage;
+@@ -36,6 +34,58 @@ class TelemetryHostTest {
+         var cause = assertInstanceOf(EchoAgentException.class, exception.getCause());
+         errors.put(name, cause.code());
+     }
++    @FunctionalInterface interface Cleanup { void run() throws Exception; }
++
++    /** Test-only owner: a setup or evidence failure cannot abandon --serve. */
++    static final class FixtureOwner implements AutoCloseable {
++        final Path work;
++        final Process service;
++        EchoAgentClient sdk;
++        Cleanup closeSdk = () -> {
++            if (sdk != null) sdk.closeAsync().toCompletableFuture().get(5, TimeUnit.SECONDS);
++        };
++        Cleanup evidence = () -> {};
++
++        FixtureOwner(Path work) throws Exception {
++            this.work = work;
++            // No metadata/hash/readiness operation follows start outside the
++            // try-with-resources owner in the caller.
++            service = new ProcessBuilder("python3", FIXTURE.toString(), "--work", work.toString(), "--serve")
++                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
++                    .redirectError(work.resolve("service.stderr").toFile()).start();
++        }
++
++        void reap() throws Exception {
++            if (!service.waitFor(5, TimeUnit.SECONDS)) {
++                service.destroy();
++                if (!service.waitFor(5, TimeUnit.SECONDS)) {
++                    service.destroyForcibly();
++                    assertTrue(service.waitFor(5, TimeUnit.SECONDS), "original fixture still alive after KILL");
++                }
++                throw new java.io.IOException("fixture required forced cleanup after stop deadline");
++            }
++            assertEquals(0, service.exitValue(), "fixture failed while cleaning up original collector");
++        }
++
++        @Override public void close() throws Exception {
++            var failures = new ArrayList<Throwable>();
++            for (Cleanup cleanup : List.<Cleanup>of(
++                    () -> Files.writeString(work.resolve("release-export"), "cleanup actual response"),
++                    () -> closeSdk.run(),
++                    () -> helper(work, "--cleanup-host"),
++                    () -> Files.writeString(work.resolve("stop"), "stop"),
++                    this::reap,
++                    () -> evidence.run())) {
++                try { cleanup.run(); } catch (Throwable error) { failures.add(error); }
++            }
++            if (!failures.isEmpty()) {
++                var failure = new Exception("telemetry fixture cleanup failed", failures.get(0));
++                failures.stream().skip(1).forEach(failure::addSuppressed);
++                throw failure;
++            }
++        }
++    }
++
+     @Test void acceptedTelemetryExportsRealBusinessRecordsAndFlushes() throws Exception {
+         String host = System.getenv("ECHO_AGENT_SDK_HOST");
+         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank());
+@@ -45,13 +95,16 @@ class TelemetryHostTest {
+             Files.createDirectories(root);
+             Path work = Files.createTempDirectory(root, "java-");
+             helper(work, console ? new String[]{"--console"} : new String[]{});
+-            var service = new ProcessBuilder("python3", FIXTURE.toString(), "--work", work.toString(), "--serve")
+-                    .redirectOutput(ProcessBuilder.Redirect.DISCARD).redirectError(work.resolve("service.stderr").toFile()).start();
+-            ObjectNode facts = JsonSupport.MAPPER.createObjectNode().put("work", work.toString()).put("host", host)
+-                    .put("host_sha256", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of(host)))));
+-            var errors = facts.putObject("errors");
+-            EchoAgentClient sdk = null;
+-            try {
++            try (var owned = new FixtureOwner(work)) {
++                var service = owned.service;
++                ObjectNode facts = JsonSupport.MAPPER.createObjectNode().put("work", work.toString()).put("host", host);
++                owned.evidence = () -> {
++                    JsonSupport.MAPPER.writerWithDefaultPrettyPrinter().writeValue(work.resolve("observed.json").toFile(), facts);
++                    System.out.println("Telemetry evidence: " + work);
++                };
++                facts.put("host_sha256", FileSha256.sha256(Path.of(host)));
++                var errors = facts.putObject("errors");
++                EchoAgentClient sdk;
+                 long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+                 while (!Files.exists(work.resolve("ready"))) {
+                     assertTrue(service.isAlive(), "collector/model fixture exited");
+@@ -63,6 +116,7 @@ class TelemetryHostTest {
+                 sdk = await(EchoAgentClient.spawn(host, List.of("--config", work.resolve("host.json").toString()),
+                         Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"),
+                         Map.of("RUST_LOG", "info", "OTEL_METRIC_EXPORT_INTERVAL", "60000", "OTEL_BSP_SCHEDULE_DELAY", "60000")));
++                owned.sdk = sdk;
+                 var agent = await(sdk.createAgent()); var session = await(agent.createSession(work.toString()));
+                 facts.set("before", await(session.invoke("telemetry.status", List.of())));
+                 failure(errors, "shutdown_before", session.invoke("telemetry.shutdown", List.of()));
+@@ -85,12 +139,6 @@ class TelemetryHostTest {
+                 var proof = JsonSupport.MAPPER.readTree(helper(work, "--verify"));
+                 assertTrue(proof.path("shutdown_flush").asBoolean());
+                 assertTrue(proof.path("business_file_content_consumed").asBoolean());
+-            } finally {
+-                JsonSupport.MAPPER.writerWithDefaultPrettyPrinter().writeValue(work.resolve("observed.json").toFile(), facts);
+-                if (sdk != null) await(sdk.closeAsync());
+-                Files.writeString(work.resolve("stop"), "stop");
+-                if (!service.waitFor(5, TimeUnit.SECONDS)) { service.destroy(); assertTrue(service.waitFor(5, TimeUnit.SECONDS)); }
+-                System.out.println("Telemetry evidence: " + work);
+             }
+         }
+     }
+@@ -108,16 +156,20 @@ class TelemetryHostTest {
+         Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", "../../target/telemetry-host")).toAbsolutePath().normalize();
+         Files.createDirectories(root); Path work = Files.createTempDirectory(root, "java-public-close-");
+         helper(work);
+-        var service = new ProcessBuilder("python3", FIXTURE.toString(), "--work", work.toString(), "--serve")
+-                .redirectOutput(ProcessBuilder.Redirect.DISCARD).redirectError(work.resolve("service.stderr").toFile()).start();
+-        var facts = JsonSupport.MAPPER.createObjectNode().put("work", work.toString()).put("host", host)
+-                .put("mode", "Java public sdk.closeAsync only; no fixture EOF");
+-        EchoAgentClient sdk = null;
+-        try {
++        try (var owned = new FixtureOwner(work)) {
++            var facts = JsonSupport.MAPPER.createObjectNode().put("work", work.toString()).put("host", host)
++                    .put("mode", "Java public sdk.closeAsync only; no fixture EOF");
++            owned.evidence = () -> {
++                JsonSupport.MAPPER.writerWithDefaultPrettyPrinter().writeValue(work.resolve("wire-observed.json").toFile(), facts);
++                System.out.println("Telemetry Java publicclose evidence: " + work);
++            };
++            facts.put("host_sha256", FileSha256.sha256(Path.of(host)));
++            EchoAgentClient sdk;
+             barrier(work, "ready"); var scenario = JsonSupport.MAPPER.readTree(work.resolve("scenario.json").toFile());
+             sdk = await(EchoAgentClient.spawn("python3", List.of(FIXTURE.toString(), "--work", work.toString(), "--proxy-host", host),
+                     Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"),
+                     Map.of("RUST_LOG", "info", "OTEL_METRIC_EXPORT_INTERVAL", "60000", "OTEL_BSP_SCHEDULE_DELAY", "60000")));
++            owned.sdk = sdk;
+             var agent = await(sdk.createAgent()); var session = await(agent.createSession(work.toString()));
+             await(session.invoke("telemetry.init", List.of(scenario.path("endpoint").textValue(), scenario.path("service_name").textValue(), false)));
+             var run = await(session.startChat("Read probe.txt using read_file and consume its full content."));
+@@ -141,14 +193,35 @@ class TelemetryHostTest {
+             assertEquals(0, exit.path("returncode").asInt());
+             facts.put("collector_after_exit", Files.readString(work.resolve("otlp.jsonl")));
+             assertTrue(facts.path("collector_after_exit").textValue().contains("llm.calls"));
+-        } finally {
+-            Files.writeString(work.resolve("release-export"), "cleanup actual response");
+-            if (sdk != null) await(sdk.closeAsync());
+-            helper(work, "--cleanup-host"); Files.writeString(work.resolve("stop"), "stop");
+-            assertTrue(service.waitFor(5, TimeUnit.SECONDS));
+-            JsonSupport.MAPPER.writerWithDefaultPrettyPrinter().writeValue(work.resolve("wire-observed.json").toFile(), facts);
+-            System.out.println("Telemetry Java publicclose evidence: " + work);
+         }
+     }
+ 
++    @Test void setupAndCleanupFaultsReapOriginalFixtureAndCollector() throws Exception {
++        assumeTrue(System.getenv("ECHO_AGENT_SDK_OTLP_COLLECTOR") != null, "real collector required");
++        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", "../../target/telemetry-host")).toAbsolutePath().normalize();
++        Files.createDirectories(root);
++        Path work = Files.createTempDirectory(root, "java-cleanup-fault-");
++        helper(work);
++        long[] pids = new long[2];
++        var closeError = new java.io.IOException("controlled SDK close failure");
++        var evidenceError = new java.io.IOException("controlled evidence write failure");
++        var primary = assertThrows(java.nio.file.NoSuchFileException.class, () -> {
++            try (var owned = new FixtureOwner(work)) {
++                pids[0] = owned.service.pid();
++                owned.closeSdk = () -> { throw closeError; };
++                owned.evidence = () -> { throw evidenceError; };
++                barrier(work, "ready");
++                pids[1] = JsonSupport.MAPPER.readTree(work.resolve("collector.json").toFile()).path("pid").longValue();
++                assertTrue(pids[0] > 0 && pids[1] > 0);
++                FileSha256.sha256(work.resolve("missing-host"));
++            }
++        });
++        assertEquals(1, primary.getSuppressed().length);
++        var cleanup = primary.getSuppressed()[0];
++        assertSame(closeError, cleanup.getCause());
++        assertTrue(List.of(cleanup.getSuppressed()).contains(evidenceError));
++        for (long pid : pids) assertFalse(ProcessHandle.of(pid).map(ProcessHandle::isAlive).orElse(false), "original PID still alive: " + pid);
++        assertTrue(Files.exists(work.resolve("stop")));
++    }
++
+ }
+diff --git a/sdks/python/tests/test_telemetry_host.py b/sdks/python/tests/test_telemetry_host.py
+index ea934aa..e616d77 100644
+--- a/sdks/python/tests/test_telemetry_host.py
++++ b/sdks/python/tests/test_telemetry_host.py
+@@ -1,11 +1,12 @@
+ """Accepted telemetry: real Agent records, local OTLP receipt and lifecycle."""
+ 
+ import asyncio
+-import hashlib
++import inspect
+ import json
+ import os
+ import sys
+ import tempfile
++from contextlib import asynccontextmanager
+ from pathlib import Path
+ 
+ import pytest
+@@ -25,6 +26,10 @@ FIXTURE = (
+     Path(__file__).resolve().parents[2] / "shared/testing/telemetry_host_fixture.py"
+ )
+ 
++SHARED = Path(__file__).resolve().parents[2] / "shared/testing"
++sys.path.insert(0, str(SHARED))
++from file_sha256 import file_sha256
++
+ 
+ async def helper(work, *args):
+     process = await asyncio.create_subprocess_exec(
+@@ -41,6 +46,63 @@ async def helper(work, *args):
+     return output.decode()
+ 
+ 
++@asynccontextmanager
++async def fixture_scope(work, *, close=lambda: None, evidence=lambda: None):
++    service = primary = None
++    failures = []
++    try:
++        service = await asyncio.create_subprocess_exec(
++            sys.executable, str(FIXTURE), "--work", str(work), "--serve"
++        )
++        yield service
++    except BaseException as error:  # noqa: BLE001 - re-raised after all owner cleanup
++        primary = error
++
++    async def close_sdk():
++        outcome = close()
++        if inspect.isawaitable(outcome):
++            await asyncio.wait_for(outcome, 5)
++
++    async def stop_service():
++        if service is None:
++            return
++        try:
++            await asyncio.wait_for(service.wait(), 5)
++        except TimeoutError as error:
++            failures.append(error)
++            service.terminate()
++            try:
++                await asyncio.wait_for(service.wait(), 5)
++            except TimeoutError as term_error:
++                failures.append(term_error)
++                service.kill()
++                await asyncio.wait_for(service.wait(), 5)
++        assert service.returncode == 0, service.returncode
++
++    # Failure of any release must not skip later releases or original-PID wait.
++    for cleanup in (
++        lambda: (work / "release-export").write_text("cleanup actual response"),
++        close_sdk,
++        lambda: helper(work, "--cleanup-host"),
++        lambda: (work / "stop").write_text("stop"),
++        stop_service,
++        evidence,
++    ):
++        try:
++            outcome = cleanup()
++            if inspect.isawaitable(outcome):
++                await outcome
++        except BaseException as error:  # noqa: BLE001 - re-raised after all owner cleanup
++            failures.append(error)
++    if primary is not None:
++        if failures:
++            primary.cleanup_errors = tuple(failures)
++            raise primary from RuntimeError(f"telemetry cleanup failures: {failures!r}")
++        raise primary
++    if failures:
++        raise RuntimeError(f"telemetry cleanup failures: {failures!r}") from failures[0]
++
++
+ @pytest.mark.asyncio
+ @pytest.mark.skipif(not HOST, reason="real Host required")
+ @pytest.mark.parametrize("console_enabled", [False, True])
+@@ -48,16 +110,25 @@ async def test_accepted_telemetry_exports_and_flushes(console_enabled):
+     ROOT.mkdir(parents=True, exist_ok=True)
+     work = Path(tempfile.mkdtemp(prefix="python-", dir=ROOT)).resolve()
+     await helper(work, *(["--console"] if console_enabled else []))
+-    service = await asyncio.create_subprocess_exec(
+-        sys.executable, str(FIXTURE), "--work", str(work), "--serve"
+-    )
+     facts = {
+         "work": str(work),
+         "host": HOST,
+-        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+         "errors": {},
+     }
+-    try:
++    sdk = None
++
++    async def close_sdk():
++        if sdk is not None:
++            await sdk.close()
++
++    def evidence():
++        (work / "observed.json").write_text(
++            json.dumps(facts, ensure_ascii=False, indent=2)
++        )
++        print(f"Telemetry evidence: {work}")
++
++    async with fixture_scope(work, close=close_sdk, evidence=evidence) as service:
++        facts["host_sha256"] = file_sha256(HOST)
+ 
+         async def ready():
+             while not (work / "ready").exists():
+@@ -117,17 +188,6 @@ async def test_accepted_telemetry_exports_and_flushes(console_enabled):
+         )
+         proof = json.loads(await helper(work, "--verify"))
+         assert proof["shutdown_flush"] and proof["business_file_content_consumed"]
+-    finally:
+-        (work / "observed.json").write_text(
+-            json.dumps(facts, ensure_ascii=False, indent=2)
+-        )
+-        (work / "stop").write_text("stop")
+-        try:
+-            await asyncio.wait_for(service.wait(), 5)
+-        except TimeoutError:
+-            service.terminate()
+-            await asyncio.wait_for(service.wait(), 5)
+-        print(f"Telemetry evidence: {work}")
+ 
+ 
+ @pytest.mark.asyncio
+@@ -136,14 +196,10 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
+     ROOT.mkdir(parents=True, exist_ok=True)
+     work = Path(tempfile.mkdtemp(prefix="python-public-close-", dir=ROOT)).resolve()
+     await helper(work)
+-    service = await asyncio.create_subprocess_exec(
+-        sys.executable, str(FIXTURE), "--work", str(work), "--serve"
+-    )
+     facts = {
+         "work": str(work),
+         "host": HOST,
+         "mode": "Python public sdk.close only; no fixture EOF",
+-        "host_sha256": hashlib.sha256(Path(HOST).read_bytes()).hexdigest(),
+     }
+     sdk = shutdown = closing = None
+ 
+@@ -154,7 +210,20 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
+ 
+         await asyncio.wait_for(ready(), 10)
+ 
+-    try:
++    async def close_sdk():
++        if sdk is not None:
++            await sdk.close()
++        if shutdown is not None:
++            await asyncio.wait_for(asyncio.gather(shutdown, return_exceptions=True), 5)
++
++    def evidence():
++        (work / "wire-observed.json").write_text(
++            json.dumps(facts, ensure_ascii=False, indent=2)
++        )
++        print(f"Telemetry Python publicclose evidence: {work}")
++
++    async with fixture_scope(work, close=close_sdk, evidence=evidence):
++        facts["host_sha256"] = file_sha256(HOST)
+         await barrier("ready")
+         scenario = json.loads((work / "scenario.json").read_text())
+         sdk = await EchoAgentClient.spawn(
+@@ -204,16 +273,46 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
+         assert facts["exit"]["returncode"] == 0
+         facts["collector_after_exit"] = (work / "otlp.jsonl").read_text()
+         assert "llm.calls" in facts["collector_after_exit"]
+-    finally:
+-        (work / "release-export").write_text("cleanup actual response")
+-        if sdk:
+-            await sdk.close()
+-        if shutdown:
+-            await asyncio.gather(shutdown, return_exceptions=True)
+-        await helper(work, "--cleanup-host")
+-        (work / "stop").write_text("stop")
+-        await asyncio.wait_for(service.wait(), 5)
+-        (work / "wire-observed.json").write_text(
+-            json.dumps(facts, ensure_ascii=False, indent=2)
+-        )
+-        print(f"Telemetry Python publicclose evidence: {work}")
++
++
++@pytest.mark.asyncio
++@pytest.mark.skipif(
++    not os.environ.get("ECHO_AGENT_SDK_OTLP_COLLECTOR"),
++    reason="real collector required",
++)
++async def test_telemetry_setup_and_cleanup_faults_reap_original_processes():
++    ROOT.mkdir(parents=True, exist_ok=True)
++    work = Path(tempfile.mkdtemp(prefix="python-cleanup-fault-", dir=ROOT)).resolve()
++    await helper(work)
++    service = collector_pid = None
++    close_error = RuntimeError("controlled SDK close failure")
++    evidence_error = OSError("controlled evidence write failure")
++
++    async def failed_close():
++        raise close_error
++
++    def failed_evidence():
++        raise evidence_error
++
++    with pytest.raises(FileNotFoundError) as caught:
++        async with fixture_scope(
++            work, close=failed_close, evidence=failed_evidence
++        ) as owned:
++            service = owned
++
++            async def ready():
++                while not (work / "ready").exists():
++                    assert owned.returncode is None
++                    await asyncio.sleep(0.005)
++
++            await asyncio.wait_for(ready(), 10)
++            collector_pid = json.loads((work / "collector.json").read_text())["pid"]
++            assert collector_pid > 0 and service.pid > 0
++            file_sha256(work / "missing-host")
++    assert close_error in caught.value.cleanup_errors
++    assert evidence_error in caught.value.cleanup_errors
++    assert service.returncode == 0
++    for pid in (service.pid, collector_pid):
++        with pytest.raises(ProcessLookupError):
++            os.kill(pid, 0)
++    assert (work / "stop").exists()
+diff --git a/sdks/shared/testing/telemetry_host_fixture.py b/sdks/shared/testing/telemetry_host_fixture.py
+index 09ef607..fe9ee9c 100644
+--- a/sdks/shared/testing/telemetry_host_fixture.py
++++ b/sdks/shared/testing/telemetry_host_fixture.py
+@@ -30,6 +30,21 @@ def prepare(work: Path, console: bool) -> None:
+ 
+ 
+ def serve(work: Path) -> None:
++    # Only this fixture owner handles TERM. Proxy mode must keep the original
++    # SDK public-close/EOF behavior and never substitute a cleanup signal.
++    previous = signal.getsignal(signal.SIGTERM)
++
++    def interrupted(signum, _frame):
++        raise SystemExit(128 + signum)
++
++    signal.signal(signal.SIGTERM, interrupted)
++    try:
++        _serve_owned(work)
++    finally:
++        signal.signal(signal.SIGTERM, previous)
++
++
++def _serve_owned(work: Path) -> None:
+     executable = os.environ.get("ECHO_AGENT_SDK_OTLP_COLLECTOR")
+     if not executable:
+         raise RuntimeError("real telemetry collector executable is required")
+@@ -38,13 +53,14 @@ def serve(work: Path) -> None:
+         (work / "collector.stdout").open("w") as output,
+         (work / "collector.stderr").open("w") as error,
+     ):
+-        collector = subprocess.Popen(
+-            [executable, "--exact", "native_sdk_collector_fixture", "--nocapture"],
+-            env=environment,
+-            stdout=output,
+-            stderr=error,
+-        )
++        collector = server = thread = None
+         try:
++            collector = subprocess.Popen(
++                [executable, "--exact", "native_sdk_collector_fixture", "--nocapture"],
++                env=environment,
++                stdout=output,
++                stderr=error,
++            )
+             deadline = time.monotonic() + 10
+             while not (work / "collector.json").exists():
+                 assert collector.poll() is None, "collector exited before ready"
+@@ -180,14 +196,43 @@ def serve(work: Path) -> None:
+             while not (work / "stop").exists():
+                 assert collector.poll() is None, "collector exited during scenario"
+                 time.sleep(0.01)
+-            server.shutdown()
+-            thread.join()
+-            server.server_close()
+             assert collector.wait(timeout=5) == 0
+         finally:
+-            if collector.poll() is None:
+-                collector.terminate()
+-                collector.wait(timeout=5)
++            primary = sys.exc_info()[1]
++            failures = []
++            # Each release is independent: a model-server error cannot abandon
++            # the original Rust collector, and TERM is observed by wait().
++            for cleanup in (
++                lambda: server.shutdown() if server and thread else None,
++                lambda: thread.join(timeout=5) if thread else None,
++                lambda: server.server_close() if server else None,
++            ):
++                try:
++                    cleanup()
++                except BaseException as error:  # noqa: BLE001 - retained and re-raised after all releases
++                    failures.append(error)
++            if thread and thread.is_alive():
++                failures.append(RuntimeError("model fixture thread did not stop"))
++            try:
++                if collector is not None and collector.poll() is None:
++                    collector.terminate()
++                    try:
++                        collector.wait(timeout=5)
++                    except subprocess.TimeoutExpired:
++                        collector.kill()
++                        collector.wait(timeout=5)
++                        failures.append(
++                            RuntimeError("collector required forced cleanup")
++                        )
++            except BaseException as error:  # noqa: BLE001 - retained and re-raised after all releases
++                failures.append(error)
++            if failures:
++                if primary is not None:
++                    primary.cleanup_errors = tuple(failures)
++                    raise primary from failures[0]
++                raise RuntimeError(
++                    f"fixture cleanup failed: {failures!r}"
++                ) from failures[0]
+ 
+ 
+ def verify(work: Path) -> None:
+diff --git a/sdks/typescript/test/telemetry-host.test.js b/sdks/typescript/test/telemetry-host.test.js
+index 390942b..aa51b20 100644
+--- a/sdks/typescript/test/telemetry-host.test.js
++++ b/sdks/typescript/test/telemetry-host.test.js
+@@ -1,26 +1,79 @@
+ import test from "node:test";
+ import assert from "node:assert/strict";
+ import { spawn, execFileSync } from "node:child_process";
+-import { createHash } from "node:crypto";
+ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+ import { join } from "node:path";
+ import { fileURLToPath } from "node:url";
+ import { EchoAgentClient } from "../dist/index.js";
++import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
+ const host = process.env.ECHO_AGENT_SDK_HOST;
+ if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === "1" && !host) throw Error("required telemetry Host missing");
+ const root = process.env.ECHO_AGENT_SDK_TELEMETRY_ROOT ?? fileURLToPath(new URL("../../../target/telemetry-host", import.meta.url));
+ const fixture = fileURLToPath(new URL("../../shared/testing/telemetry_host_fixture.py", import.meta.url));
+ 
++async function bounded(action, label) {
++  let timer;
++  try {
++    return await Promise.race([Promise.resolve().then(action), new Promise((_, reject) => {
++      timer = setTimeout(() => reject(Error(`${label} did not settle within fixture cleanup deadline`)), 5000);
++    })]);
++  } finally { clearTimeout(timer); }
++}
++
++async function fixtureScope(work, body, { close = async () => {}, evidence = () => {} } = {}) {
++  let service, exited, primary, result;
++  const failures = [];
++  try {
++    service = spawn("python3", [fixture, "--work", work, "--serve"], { stdio: ["ignore", "ignore", "inherit"] });
++    exited = new Promise(resolve => {
++      service.once("exit", (code, signal) => resolve({ code, signal }));
++      service.once("error", error => resolve({ error }));
++    });
++    result = await body(service);
++  } catch (error) { primary = error; }
++  // Keep the genuine collector available until SDK close has been attempted.
++  // No evidence/close failure is allowed to skip stop or original-child wait.
++  for (const cleanup of [
++    () => writeFileSync(join(work, "release-export"), "cleanup release"),
++    () => bounded(close, "SDK close"),
++    () => execFileSync("python3", [fixture, "--work", work, "--cleanup-host"], { stdio: "pipe" }),
++    () => writeFileSync(join(work, "stop"), "stop"),
++    async () => {
++      if (!service) return;
++      let outcome;
++      try { outcome = await bounded(() => exited, "fixture stop"); }
++      catch (error) {
++        failures.push(error);
++        service.kill("SIGTERM");
++        try { outcome = await bounded(() => exited, "fixture TERM"); }
++        catch (termError) {
++          failures.push(termError);
++          service.kill("SIGKILL");
++          outcome = await bounded(() => exited, "fixture KILL");
++        }
++      }
++      if (outcome.error) throw outcome.error;
++      assert.equal(outcome.code, 0, `fixture exited by ${outcome.signal ?? outcome.code}`);
++    },
++    evidence,
++  ]) {
++    try { await cleanup(); } catch (error) { failures.push(error); }
++  }
++  if (primary && failures.length) throw new AggregateError([primary, ...failures], "telemetry scenario and cleanup failed", { cause: primary });
++  if (primary) throw primary;
++  if (failures.length) throw new AggregateError(failures, "telemetry cleanup failed");
++  return result;
++}
++
+ for (const consoleEnabled of [false, true]) test(`accepted telemetry exports real business records and flushes (console=${consoleEnabled})`, { skip: !host, timeout: 30000 }, async () => {
+   mkdirSync(root, { recursive: true });
+   const work = mkdtempSync(join(root, "typescript-"));
+   const helper = (...args) => execFileSync("python3", [fixture, "--work", work, ...args], { encoding: "utf8" });
+   helper(...(consoleEnabled ? ["--console"] : []));
+-  const service = spawn("python3", [fixture, "--work", work, "--serve"], { stdio: ["ignore", "ignore", "inherit"] });
+-  const serviceExit = new Promise(resolve => service.once("exit", resolve));
+-  const facts = { stderr: [], errors: {}, work, host, host_sha256: createHash("sha256").update(readFileSync(host)).digest("hex") };
++  const facts = { stderr: [], errors: {}, work, host, host_sha256: undefined };
+   let sdk;
+-  try {
++  await fixtureScope(work, async service => {
++    facts.host_sha256 = fileSha256(host);
+     const deadline = Date.now() + 10000;
+     while (!existsSync(join(work, "ready"))) {
+       assert.equal(service.exitCode, null, "collector/model fixture exited");
+@@ -55,16 +108,13 @@ for (const consoleEnabled of [false, true]) test(`accepted telemetry exports rea
+     writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2));
+     const proof = JSON.parse(helper("--verify"));
+     assert.equal(proof.shutdown_flush, true); assert.equal(proof.business_file_content_consumed, true);
+-  } finally {
+-    writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2));
+-    await sdk?.close();
+-    writeFileSync(join(work, "stop"), "stop");
+-    const deadline = Date.now() + 5000;
+-    while (service.exitCode === null && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 10));
+-    if (service.exitCode === null) service.kill("SIGTERM");
+-    await serviceExit;
+-    console.log(`Telemetry evidence: ${work}`);
+-  }
++  }, {
++    close: () => sdk?.close(),
++    evidence: () => {
++      writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2));
++      console.log(`Telemetry evidence: ${work}`);
++    },
++  });
+ });
+ 
+ // These cases prove Host wire cancellation and physical close ownership. The
+@@ -74,8 +124,6 @@ for (const mode of ["rpc_cancel", "input_eof", "public_close"]) test(`telemetry
+   mkdirSync(root, { recursive: true });
+   const work = mkdtempSync(join(root, `typescript-wire-${mode}-`));
+   execFileSync("python3", [fixture, "--work", work]);
+-  const service = spawn("python3", [fixture, "--work", work, "--serve"], { stdio: ["ignore", "ignore", "inherit"] });
+-  const serviceExit = new Promise(resolve => service.once("exit", resolve));
+   const barrier = async file => {
+     const deadline = Date.now() + 10000;
+     while (!existsSync(join(work, file))) {
+@@ -83,9 +131,10 @@ for (const mode of ["rpc_cancel", "input_eof", "public_close"]) test(`telemetry
+       await new Promise(resolve => setTimeout(resolve, 5));
+     }
+   };
+-  const facts = { mode, work, host, host_sha256: createHash("sha256").update(readFileSync(host)).digest("hex") };
++  const facts = { mode, work, host, host_sha256: undefined };
+   let sdk, shutdown, close;
+-  try {
++  await fixtureScope(work, async () => {
++    facts.host_sha256 = fileSha256(host);
+     await barrier("ready"); const scenario = JSON.parse(readFileSync(join(work, "scenario.json"), "utf8"));
+     sdk = await EchoAgentClient.spawn({ hostCommand: "python3", args: [fixture, "--work", work, "--proxy-host", host], env: { RUST_LOG: "info", OTEL_METRIC_EXPORT_INTERVAL: "60000", OTEL_BSP_SCHEDULE_DELAY: "60000" }, onStderr: text => writeFileSync(join(work, "host.stderr"), text, { flag: "a" }) });
+     const agent = await sdk.createAgent(), session = await agent.createSession(work);
+@@ -128,12 +177,45 @@ for (const mode of ["rpc_cancel", "input_eof", "public_close"]) test(`telemetry
+       assert.equal(facts.cancel.method, "$/cancel_request");
+       assert.equal(facts.cancel.params.requestId, request.id);
+     }
+-  } finally {
+-    writeFileSync(join(work, "release-export"), "cleanup release");
+-    await sdk?.close();
+-    writeFileSync(join(work, "stop"), "stop");
+-    await serviceExit;
+-    writeFileSync(join(work, "wire-observed.json"), JSON.stringify(facts, null, 2));
+-    console.log(`Telemetry wire evidence: ${work}`);
+-  }
++  }, {
++    close: () => sdk?.close(),
++    evidence: () => {
++      writeFileSync(join(work, "wire-observed.json"), JSON.stringify(facts, null, 2));
++      console.log(`Telemetry wire evidence: ${work}`);
++    },
++  });
++});
++
++
++test("telemetry setup and cleanup faults reap the original fixture and collector", { skip: !process.env.ECHO_AGENT_SDK_OTLP_COLLECTOR, timeout: 30000 }, async () => {
++  mkdirSync(root, { recursive: true });
++  const work = mkdtempSync(join(root, "typescript-cleanup-fault-"));
++  execFileSync("python3", [fixture, "--work", work]);
++  let service, collectorPid, primary;
++  const closeFailure = Error("controlled SDK close failure");
++  const evidenceFailure = Error("controlled evidence write failure");
++  await assert.rejects(fixtureScope(work, async owned => {
++    service = owned;
++    const deadline = Date.now() + 10000;
++    while (!existsSync(join(work, "ready"))) {
++      assert.equal(owned.exitCode, null);
++      assert.ok(Date.now() < deadline, "fixture ready timeout");
++      await new Promise(resolve => setTimeout(resolve, 5));
++    }
++    collectorPid = JSON.parse(readFileSync(join(work, "collector.json"), "utf8")).pid;
++    assert.ok(collectorPid > 0 && service.pid > 0);
++    try { fileSha256(join(work, "missing-host")); } catch (error) { primary = error; throw error; }
++  }, {
++    close: async () => { throw closeFailure; },
++    evidence: () => { throw evidenceFailure; },
++  }), error => {
++    assert.ok(error instanceof AggregateError);
++    assert.equal(error.cause, primary);
++    assert.equal(primary.code, "ENOENT");
++    assert.ok(error.errors.includes(closeFailure) && error.errors.includes(evidenceFailure));
++    return true;
++  });
++  assert.equal(service.exitCode, 0);
++  for (const pid of [service.pid, collectorPid]) assert.throws(() => process.kill(pid, 0), { code: "ESRCH" });
++  assert.equal(existsSync(join(work, "stop")), true);
+ });
