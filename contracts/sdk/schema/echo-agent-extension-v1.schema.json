@@ -3863,7 +3863,7 @@
           "minLength": 1
         },
         "request": {
-          "description": "DispatchRequest payload for the session's SubagentExecutor.",
+          "description": "Lossless projection for this session's SubagentExecutor. Accepted fields are agent_name/task/mode_override/parent_agent/delegation_policy, runtime_context, message, prompt_payload/prompt_context, constraints and background. This RPC starts a background attempt: an explicit `background: false`, unknown fields and process-local parent_context are rejected. The Host supplies cancellation and execution identity; caller runtime_context cannot substitute another owner Session.",
           "allOf": [
             {
               "$ref": "#/definitions/WireValue"
@@ -3951,7 +3951,7 @@
           ]
         },
         {
-          "description": "Queue guidance for the attempt's next planning step.",
+          "description": "Deliver guidance through the current attempt's tracked message safe point. It never promises a nonexistent next attempt or planning loop.",
           "type": "string",
           "enum": [
             "guidance"
@@ -4025,10 +4025,39 @@
             }
           ]
         },
+        "conversation_projection": {
+          "default": "unsupported",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConversationProjectionCapabilityWire"
+            }
+          ]
+        },
+        "execution_cas_v1": {
+          "description": "Explicit promise that this revisioned task store supports atomic execution CAS. CRUD registration alone does not authorize dispatch.",
+          "default": false,
+          "type": "boolean"
+        },
         "isolation_level": {
           "type": [
             "string",
             "null"
+          ]
+        },
+        "persistence_call": {
+          "default": "unsupported",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PersistenceCallCapabilityWire"
+            }
+          ]
+        },
+        "runtime_state": {
+          "default": "unsupported",
+          "allOf": [
+            {
+              "$ref": "#/definitions/RuntimeStateCapabilityWire"
+            }
           ]
         },
         "supports_notifications": {
@@ -4091,6 +4120,13 @@
       "enum": [
         "direct",
         "group"
+      ]
+    },
+    "ConversationProjectionCapabilityWire": {
+      "type": "string",
+      "enum": [
+        "unsupported",
+        "atomic_v1"
       ]
     },
     "ExtensionDescriptor": {
@@ -4537,6 +4573,10 @@
           "properties": {
             "capabilities": {
               "default": {
+                "execution_cas_v1": false,
+                "conversation_projection": "unsupported",
+                "runtime_state": "unsupported",
+                "persistence_call": "unsupported",
                 "supports_streaming": false,
                 "supports_notifications": false
               },
@@ -4662,6 +4702,30 @@
       "description": "Model input modality a Tool descriptor may require (wire projection of the framework `ModelInputModality`).",
       "type": "string"
     },
+    "PersistenceCallCapabilityWire": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "unsupported"
+          ]
+        },
+        {
+          "description": "Reject calls whose absolute deadline has elapsed before durable work begins.",
+          "type": "string",
+          "enum": [
+            "absolute_deadline_v1"
+          ]
+        }
+      ]
+    },
+    "RuntimeStateCapabilityWire": {
+      "type": "string",
+      "enum": [
+        "unsupported",
+        "revisioned_v1"
+      ]
+    },
     "SearchModeWire": {
       "enum": [
         "keyword",
@@ -4778,8 +4842,426 @@
         "released"
       ]
     },
+    "AgentCheckpointWire": {
+      "description": "The checkpoint history is a framework-owned JSON string, kept byte-for-byte. Path and capture time remain typed so platform and subsecond information survive.",
+      "type": "object",
+      "required": [
+        "active_skills",
+        "conversation_id",
+        "messages_json",
+        "timestamp"
+      ],
+      "properties": {
+        "active_skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocked_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "conversation_id": {
+          "type": "string"
+        },
+        "current_plan": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "messages_json": {
+          "type": "string"
+        },
+        "timestamp": {
+          "$ref": "#/definitions/WireTimestamp"
+        },
+        "working_dir": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WirePath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "AgentComponentCallInputWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "request"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "request": {
+                  "$ref": "#/definitions/EnsureConversationProjectionRequestWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_ensure_projection_epoch_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "conversation_id"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "conversation_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_get_projection_authority_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "batch",
+                "context"
+              ],
+              "properties": {
+                "batch": {
+                  "$ref": "#/definitions/TranscriptProjectionBatchWire"
+                },
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_apply_transcript_projection_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "request"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "request": {
+                  "$ref": "#/definitions/ManagedConversationDeleteWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_delete_managed_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "runtime_state_id",
+                "scope_id"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "runtime_state_id": {
+                  "type": "string"
+                },
+                "scope_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_load_managed_state_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "scope_id"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "scope_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_load_scope_authority_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "request"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "request": {
+                  "$ref": "#/definitions/RuntimeCheckpointCasRequestWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_compare_and_save_checkpoint_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "request"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "request": {
+                  "$ref": "#/definitions/RuntimeTranscriptAckRequestWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_acknowledge_transcript_projection_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "request"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "request": {
+                  "$ref": "#/definitions/RuntimeGenerationRetireRequestWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_retire_generation_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "context",
+                "request"
+              ],
+              "properties": {
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "request": {
+                  "$ref": "#/definitions/ScopeRetirementRequestWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_begin_scope_retirement_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "advance",
+                "context",
+                "delete_operation_id",
+                "expected_scope_revision",
+                "scope_id"
+              ],
+              "properties": {
+                "advance": {
+                  "$ref": "#/definitions/ScopeRetirementAdvanceWire"
+                },
+                "context": {
+                  "$ref": "#/definitions/PersistenceCallContextWire"
+                },
+                "delete_operation_id": {
+                  "type": "string"
+                },
+                "expected_scope_revision": {
+                  "$ref": "#/definitions/WireU64"
+                },
+                "scope_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_continue_scope_retirement_with_context"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [
@@ -6096,7 +6578,7 @@
               ],
               "properties": {
                 "commit": {
-                  "$ref": "#/definitions/WireValue"
+                  "$ref": "#/definitions/TaskGraphCommitWire"
                 },
                 "scope_id": {
                   "type": "string"
@@ -6108,6 +6590,38 @@
               "type": "string",
               "enum": [
                 "revisioned_task_compare_and_commit"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "commit",
+                "scope_id"
+              ],
+              "properties": {
+                "commit": {
+                  "$ref": "#/definitions/TaskExecutionCommitWire"
+                },
+                "scope_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "revisioned_task_compare_and_commit_execution"
               ]
             }
           },
@@ -6548,12 +7062,21 @@
     "AgentFactoryConfigWire": {
       "type": "object",
       "required": [
+        "instance",
         "model",
         "name",
         "system_prompt",
         "tool_count"
       ],
       "properties": {
+        "instance": {
+          "description": "Host-reserved child identity provided before construction so the SDK can bind the exact created object. It is published only after the descriptor commits; create/publish failure closes this same identity.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireHandle"
+            }
+          ]
+        },
         "model": {
           "type": "string"
         },
@@ -6682,6 +7205,12 @@
         "agent": {
           "type": "string"
         },
+        "call_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "result": {
           "type": "string"
         },
@@ -6702,8 +7231,43 @@
         "agent": {
           "type": "string"
         },
+        "call_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "error": {
           "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CallbackToolInterruptedInput": {
+      "description": "An admitted tool invocation interrupted before a captured result exists. Its canonical identity and full input survive even if the start callback did not run.",
+      "type": "object",
+      "required": [
+        "agent",
+        "call_id",
+        "error",
+        "input",
+        "tool"
+      ],
+      "properties": {
+        "agent": {
+          "type": "string"
+        },
+        "call_id": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/definitions/WireValue"
         },
         "tool": {
           "type": "string"
@@ -6724,6 +7288,12 @@
         },
         "args": {
           "$ref": "#/definitions/WireValue"
+        },
+        "call_id": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "tool": {
           "type": "string"
@@ -6919,6 +7489,46 @@
       },
       "additionalProperties": false
     },
+    "ConversationProjectionAuthorityWire": {
+      "type": "object",
+      "required": [
+        "conversation_id",
+        "delete_receipt_retention_floor_epoch",
+        "epoch",
+        "lifecycle",
+        "revision"
+      ],
+      "properties": {
+        "conversation_id": {
+          "type": "string"
+        },
+        "delete_receipt_retention_floor_epoch": {
+          "description": "Highest deleted epoch whose exact operation receipt is no longer retained.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireU64"
+            }
+          ]
+        },
+        "epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "lifecycle": {
+          "$ref": "#/definitions/ConversationProjectionLifecycleWire"
+        },
+        "revision": {
+          "$ref": "#/definitions/WireU64"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ConversationProjectionLifecycleWire": {
+      "type": "string",
+      "enum": [
+        "live",
+        "deleted"
+      ]
+    },
     "CritiqueInput": {
       "description": "Inputs for one non-streaming Critic callback. The three strings mirror the framework `Critic::critique` contract without exposing any Host-owned runtime state or a second verifier authority.",
       "type": "object",
@@ -6939,6 +7549,29 @@
         "task": {
           "type": "string",
           "maxLength": 65536
+        }
+      },
+      "additionalProperties": false
+    },
+    "EnsureConversationProjectionRequestWire": {
+      "type": "object",
+      "required": [
+        "conversation"
+      ],
+      "properties": {
+        "conversation": {
+          "$ref": "#/definitions/NewConversationWire"
+        },
+        "expected_tombstone_epoch": {
+          "description": "Required when recreating a conversation whose managed tombstone exists.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WireU64"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -7339,6 +7972,25 @@
               "type": "string",
               "enum": [
                 "callback_on_tool_error"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "$ref": "#/definitions/CallbackToolInterruptedInput"
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "callback_on_tool_interrupted"
               ]
             }
           },
@@ -8095,6 +8747,513 @@
       },
       "additionalProperties": false
     },
+    "ManagedConversationDeleteReceiptWire": {
+      "type": "object",
+      "required": [
+        "deleted_epoch",
+        "operation_id",
+        "payload_digest",
+        "retention_floor_epoch",
+        "status"
+      ],
+      "properties": {
+        "deleted_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "payload_digest": {
+          "type": "string"
+        },
+        "retention_floor_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "status": {
+          "$ref": "#/definitions/ManagedConversationDeleteStatusWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ManagedConversationDeleteStatusWire": {
+      "type": "string",
+      "enum": [
+        "deleted",
+        "already_deleted",
+        "epoch_conflict",
+        "receipt_expired",
+        "identity_conflict"
+      ]
+    },
+    "ManagedConversationDeleteWire": {
+      "type": "object",
+      "required": [
+        "conversation_id",
+        "expected_epoch",
+        "operation_id",
+        "payload_digest",
+        "schema_version"
+      ],
+      "properties": {
+        "conversation_id": {
+          "type": "string"
+        },
+        "expected_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "payload_digest": {
+          "type": "string"
+        },
+        "schema_version": {
+          "type": "integer",
+          "format": "uint16",
+          "minimum": 0.0
+        }
+      },
+      "additionalProperties": false
+    },
+    "ManagedConversationImportWire": {
+      "type": "object",
+      "required": [
+        "conversation_id",
+        "expected_epoch",
+        "expected_revision",
+        "messages",
+        "operation_id",
+        "payload_digest",
+        "schema_version"
+      ],
+      "properties": {
+        "conversation_id": {
+          "type": "string"
+        },
+        "expected_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "expected_revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "generation_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StoredMessageWire"
+          }
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "payload_digest": {
+          "type": "string"
+        },
+        "schema_version": {
+          "type": "integer",
+          "format": "uint16",
+          "minimum": 0.0
+        }
+      },
+      "additionalProperties": false
+    },
+    "ManagedImportEpochTransitionWire": {
+      "type": "object",
+      "required": [
+        "receipt",
+        "request"
+      ],
+      "properties": {
+        "receipt": {
+          "$ref": "#/definitions/TranscriptProjectionApplyReceiptWire"
+        },
+        "request": {
+          "$ref": "#/definitions/ManagedConversationImportWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "NewConversationWire": {
+      "type": "object",
+      "required": [
+        "conversation_id",
+        "user_id"
+      ],
+      "properties": {
+        "agent_type": {
+          "description": "Agent type this conversation belongs to",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "conversation_id": {
+          "description": "External unique ID (generated by frontend, e.g. `conv-1709000000-abc123`)",
+          "type": "string"
+        },
+        "title": {
+          "description": "Conversation title (first-turn summary)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "user_id": {
+          "description": "User ID (multi-user isolation)",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PersistenceCallContextWire": {
+      "type": "object",
+      "required": [
+        "absolute_deadline_unix_ms"
+      ],
+      "properties": {
+        "absolute_deadline_unix_ms": {
+          "$ref": "#/definitions/WireI64"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RevisionedTaskGraphWire": {
+      "type": "object",
+      "required": [
+        "context",
+        "snapshot"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "#/definitions/TaskGraphContextWire"
+        },
+        "snapshot": {
+          "$ref": "#/definitions/RuntimePlanSnapshotWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeCheckpointCasRequestWire": {
+      "type": "object",
+      "required": [
+        "checkpoint",
+        "expected_scope_revision",
+        "expected_state_version",
+        "runtime_state_id",
+        "scope_id"
+      ],
+      "properties": {
+        "checkpoint": {
+          "$ref": "#/definitions/AgentCheckpointWire"
+        },
+        "conversation_epoch": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WireU64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_scope_revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "expected_state_version": {
+          "$ref": "#/definitions/RuntimeStateExpectedVersionWire"
+        },
+        "managed_import": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ManagedImportEpochTransitionWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runtime_state_id": {
+          "type": "string"
+        },
+        "scope_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeGenerationRetireRequestWire": {
+      "type": "object",
+      "required": [
+        "expected_scope_revision",
+        "expected_state_version",
+        "operation_id",
+        "payload_digest",
+        "runtime_state_id",
+        "schema_version",
+        "scope_id"
+      ],
+      "properties": {
+        "expected_scope_revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "expected_state_version": {
+          "$ref": "#/definitions/RuntimeStateExpectedVersionWire"
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "payload_digest": {
+          "type": "string"
+        },
+        "runtime_state_id": {
+          "type": "string"
+        },
+        "schema_version": {
+          "type": "integer",
+          "format": "uint16",
+          "minimum": 0.0
+        },
+        "scope_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeInterruptionDispositionWire": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "cancelled"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "paused"
+          ],
+          "properties": {
+            "paused": {
+              "type": "object",
+              "required": [
+                "reason"
+              ],
+              "properties": {
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "RuntimePlanSnapshotWire": {
+      "type": "object",
+      "required": [
+        "revision",
+        "tasks"
+      ],
+      "properties": {
+        "revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TaskWire"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeStateExpectedVersionWire": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "absent"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "unmanaged"
+          ],
+          "properties": {
+            "unmanaged": {
+              "type": "object",
+              "required": [
+                "digest"
+              ],
+              "properties": {
+                "digest": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "managed"
+          ],
+          "properties": {
+            "managed": {
+              "type": "object",
+              "required": [
+                "revision"
+              ],
+              "properties": {
+                "revision": {
+                  "$ref": "#/definitions/WireU64"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "RuntimeTranscriptAckRequestWire": {
+      "type": "object",
+      "required": [
+        "checkpoint",
+        "conversation_epoch",
+        "expected_scope_revision",
+        "expected_state_version",
+        "projection_receipt",
+        "runtime_state_id",
+        "scope_id"
+      ],
+      "properties": {
+        "checkpoint": {
+          "$ref": "#/definitions/AgentCheckpointWire"
+        },
+        "conversation_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "expected_scope_revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "expected_state_version": {
+          "$ref": "#/definitions/RuntimeStateExpectedVersionWire"
+        },
+        "projection_receipt": {
+          "$ref": "#/definitions/TranscriptProjectionApplyReceiptWire"
+        },
+        "runtime_state_id": {
+          "type": "string"
+        },
+        "scope_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ScopeRetirementAdvanceWire": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "complete"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "conversation_deleted"
+          ],
+          "properties": {
+            "conversation_deleted": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/ManagedConversationDeleteReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "generation_dropped"
+          ],
+          "properties": {
+            "generation_dropped": {
+              "type": "object",
+              "required": [
+                "runtime_state_id"
+              ],
+              "properties": {
+                "pending_operation_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "runtime_state_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ScopeRetirementRequestWire": {
+      "type": "object",
+      "required": [
+        "delete_operation_id",
+        "expected_conversation_epoch",
+        "expected_scope_revision",
+        "payload_digest",
+        "schema_version",
+        "scope_id"
+      ],
+      "properties": {
+        "delete_operation_id": {
+          "type": "string"
+        },
+        "expected_conversation_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "expected_scope_revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "payload_digest": {
+          "type": "string"
+        },
+        "schema_version": {
+          "type": "integer",
+          "format": "uint16",
+          "minimum": 0.0
+        },
+        "scope_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "SkillDescriptorPolicyWire": {
       "description": "Lossless public projection passed to a host-language [`SkillLoadPolicy`]. Fields skipped by the framework's persistence serde remain explicit here because a live policy may legitimately inspect their runtime values.",
       "type": "object",
@@ -8435,6 +9594,361 @@
       },
       "additionalProperties": false
     },
+    "StoredMessageWire": {
+      "type": "object",
+      "required": [
+        "conversation_id",
+        "created_at",
+        "role"
+      ],
+      "properties": {
+        "attachments_json": {
+          "description": "Attachment metadata (JSON)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "content": {
+          "description": "Message content",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "conversation_id": {
+          "description": "Owning conversation external ID",
+          "type": "string"
+        },
+        "created_at": {
+          "description": "Creation time",
+          "type": "string"
+        },
+        "id": {
+          "description": "Database auto-increment ID (None for new messages)",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WireI64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "role": {
+          "description": "Role: user / assistant / tool / system",
+          "type": "string"
+        },
+        "tool_calls_json": {
+          "description": "Tool call records (JSON)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tool_result_json": {
+          "description": "Tool execution result (JSON)",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskClaimWire": {
+      "type": "object",
+      "required": [
+        "attempt",
+        "claim_id",
+        "revision",
+        "spec_hash"
+      ],
+      "properties": {
+        "attempt": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "spec_hash": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskExecutionCommitWire": {
+      "type": "object",
+      "required": [
+        "expected_executions",
+        "expected_revision",
+        "next"
+      ],
+      "properties": {
+        "expected_executions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/TaskExecutionWire"
+          }
+        },
+        "expected_revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "next": {
+          "$ref": "#/definitions/RevisionedTaskGraphWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskExecutionWire": {
+      "type": "object",
+      "required": [
+        "retry_count",
+        "status",
+        "task_id"
+      ],
+      "properties": {
+        "claim": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TaskClaimWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failure_fingerprint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "interruption_requested": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RuntimeInterruptionDispositionWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result": {
+          "description": "Absence means no supplied result; an explicit JSON null is `Some(WireValue::Null)` and cannot collapse into absence.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retry_count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "status": {
+          "$ref": "#/definitions/WireTaskStatus"
+        },
+        "task_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskGraphCommitWire": {
+      "type": "object",
+      "required": [
+        "effects",
+        "next",
+        "reason"
+      ],
+      "properties": {
+        "effects": {
+          "$ref": "#/definitions/TaskPatchEffectsWire"
+        },
+        "expected_executions": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/TaskExecutionWire"
+          }
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WireU64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "next": {
+          "$ref": "#/definitions/RevisionedTaskGraphWire"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskGraphContextWire": {
+      "type": "object",
+      "required": [
+        "assumptions",
+        "execution_mode",
+        "goal",
+        "metadata",
+        "risks"
+      ],
+      "properties": {
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "execution_mode": {
+          "$ref": "#/definitions/TaskGraphExecutionModeWire"
+        },
+        "goal": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/definitions/WireValue"
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskGraphExecutionModeWire": {
+      "type": "string",
+      "enum": [
+        "sequential",
+        "parallel"
+      ]
+    },
+    "TaskPatchEffectsWire": {
+      "type": "object",
+      "required": [
+        "inserted_task_ids",
+        "progressed_task_ids",
+        "reordered",
+        "reset_task_ids",
+        "skipped_task_ids",
+        "updated_task_ids"
+      ],
+      "properties": {
+        "inserted_task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "progressed_task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reordered": {
+          "type": "boolean"
+        },
+        "reset_task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skipped_task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated_task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskSpecWire": {
+      "type": "object",
+      "required": [
+        "depends_on",
+        "description",
+        "extension",
+        "id",
+        "max_retries",
+        "title"
+      ],
+      "properties": {
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "extension": {
+          "description": "Product-owned extension; its JSON domain remains lossless wire data.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            }
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "max_retries": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TaskWire": {
+      "type": "object",
+      "required": [
+        "execution",
+        "spec"
+      ],
+      "properties": {
+        "execution": {
+          "$ref": "#/definitions/TaskExecutionWire"
+        },
+        "spec": {
+          "$ref": "#/definitions/TaskSpecWire"
+        }
+      },
+      "additionalProperties": false
+    },
     "TokenizerReferenceWire": {
       "type": "object",
       "required": [
@@ -8588,6 +10102,165 @@
       },
       "additionalProperties": false
     },
+    "TranscriptProjectionApplyReceiptWire": {
+      "type": "object",
+      "required": [
+        "authority",
+        "operation_id",
+        "payload_digest",
+        "status"
+      ],
+      "properties": {
+        "authority": {
+          "$ref": "#/definitions/ConversationProjectionAuthorityWire"
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "payload_digest": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/TranscriptProjectionApplyStatusWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TranscriptProjectionApplyStatusWire": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "applied",
+            "already_applied"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "fenced"
+          ],
+          "properties": {
+            "fenced": {
+              "type": "object",
+              "required": [
+                "current_epoch",
+                "lifecycle"
+              ],
+              "properties": {
+                "current_epoch": {
+                  "$ref": "#/definitions/WireU64"
+                },
+                "lifecycle": {
+                  "$ref": "#/definitions/ConversationProjectionLifecycleWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "conflict"
+          ],
+          "properties": {
+            "conflict": {
+              "type": "object",
+              "required": [
+                "current_epoch",
+                "current_revision",
+                "kind"
+              ],
+              "properties": {
+                "current_epoch": {
+                  "$ref": "#/definitions/WireU64"
+                },
+                "current_revision": {
+                  "$ref": "#/definitions/WireU64"
+                },
+                "kind": {
+                  "$ref": "#/definitions/TranscriptProjectionConflictKindWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "TranscriptProjectionBatchWire": {
+      "type": "object",
+      "required": [
+        "conversation_epoch",
+        "conversation_id",
+        "generation_id",
+        "items",
+        "operation_id",
+        "payload_digest",
+        "schema_version"
+      ],
+      "properties": {
+        "conversation_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "conversation_id": {
+          "type": "string"
+        },
+        "generation_id": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TranscriptProjectionItemWire"
+          }
+        },
+        "operation_id": {
+          "type": "string"
+        },
+        "payload_digest": {
+          "type": "string"
+        },
+        "schema_version": {
+          "type": "integer",
+          "format": "uint16",
+          "minimum": 0.0
+        }
+      },
+      "additionalProperties": false
+    },
+    "TranscriptProjectionConflictKindWire": {
+      "type": "string",
+      "enum": [
+        "operation_identity",
+        "ordinal_digest",
+        "revision",
+        "managed_import"
+      ]
+    },
+    "TranscriptProjectionItemWire": {
+      "type": "object",
+      "required": [
+        "digest",
+        "message",
+        "ordinal"
+      ],
+      "properties": {
+        "digest": {
+          "type": "string"
+        },
+        "message": {
+          "$ref": "#/definitions/StoredMessageWire"
+        },
+        "ordinal": {
+          "$ref": "#/definitions/WireU64"
+        }
+      },
+      "additionalProperties": false
+    },
     "ExtensionInvokeCall": {
       "additionalProperties": false,
       "title": "ExtensionInvokeCall",
@@ -8621,6 +10294,17 @@
         },
         "extension": {
           "$ref": "#/definitions/WireHandle"
+        },
+        "factory_origin": {
+          "description": "Present only for a Host-minted custom Agent instance. This identifies its original registered factory; `extension` remains the instance target.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WireHandle"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "invocation": {
           "description": "Operation-discriminated input. Keeping it as a named field makes the generated call schema reference `ExtensionInvocation` directly, so every language SDK can reuse one stable dispatcher union.",
@@ -8667,6 +10351,326 @@
     },
     "AgentComponentCallResultWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_ensure_projection_epoch_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/ConversationProjectionEpochReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_get_projection_authority_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "properties": {
+                "authority": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ConversationProjectionAuthorityWire"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_apply_transcript_projection_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/TranscriptProjectionApplyReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "conversation_delete_managed_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/ManagedConversationDeleteReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_load_managed_state_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "properties": {
+                "snapshot": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ManagedRuntimeStateSnapshotWire"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_load_scope_authority_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "properties": {
+                "authority": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/RuntimeScopeAuthorityWire"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_compare_and_save_checkpoint_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/RuntimeCheckpointCasReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_acknowledge_transcript_projection_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/RuntimeCheckpointCasReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_retire_generation_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/RuntimeGenerationRetireReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_begin_scope_retirement_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/ScopeRetirementReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "runtime_continue_scope_retirement_with_context"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "receipt"
+              ],
+              "properties": {
+                "receipt": {
+                  "$ref": "#/definitions/ScopeRetirementReceiptWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [
@@ -9698,7 +11702,7 @@
                 "graph": {
                   "anyOf": [
                     {
-                      "$ref": "#/definitions/WireValue"
+                      "$ref": "#/definitions/RevisionedTaskGraphWire"
                     },
                     {
                       "type": "null"
@@ -9731,7 +11735,35 @@
               ],
               "properties": {
                 "graph": {
-                  "$ref": "#/definitions/WireValue"
+                  "$ref": "#/definitions/RevisionedTaskGraphWire"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "revisioned_task_compare_and_commit_execution"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "required": [
+                "graph"
+              ],
+              "properties": {
+                "graph": {
+                  "$ref": "#/definitions/RevisionedTaskGraphWire"
                 }
               },
               "additionalProperties": false
@@ -10165,6 +12197,33 @@
         }
       },
       "additionalProperties": false
+    },
+    "ConversationProjectionEpochReceiptWire": {
+      "type": "object",
+      "required": [
+        "authority",
+        "status"
+      ],
+      "properties": {
+        "authority": {
+          "$ref": "#/definitions/ConversationProjectionAuthorityWire"
+        },
+        "status": {
+          "$ref": "#/definitions/ConversationProjectionEpochStatusWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ConversationProjectionEpochStatusWire": {
+      "type": "string",
+      "enum": [
+        "created",
+        "adopted_legacy",
+        "existing",
+        "recreated",
+        "tombstoned",
+        "epoch_conflict"
+      ]
     },
     "CritiqueWire": {
       "description": "Typed Critic callback result. `score` follows the framework's documented 0..=10 scale and the remaining fields preserve the framework `Critique` value losslessly.",
@@ -10604,6 +12663,25 @@
               "type": "string",
               "enum": [
                 "callback_on_tool_error"
+              ]
+            },
+            "value": {
+              "$ref": "#/definitions/ExtensionUnit"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation",
+            "value"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "callback_on_tool_interrupted"
               ]
             },
             "value": {
@@ -11292,6 +13370,36 @@
       },
       "additionalProperties": false
     },
+    "ManagedRuntimeStateSnapshotWire": {
+      "type": "object",
+      "required": [
+        "runtime_state_id",
+        "scope",
+        "version"
+      ],
+      "properties": {
+        "checkpoint": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AgentCheckpointWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runtime_state_id": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/definitions/RuntimeScopeAuthorityWire"
+        },
+        "version": {
+          "$ref": "#/definitions/RuntimeStateVersionWire"
+        }
+      },
+      "additionalProperties": false
+    },
     "PermissionDecisionWire": {
       "oneOf": [
         {
@@ -11367,6 +13475,303 @@
         }
       ]
     },
+    "RuntimeCheckpointCasReceiptWire": {
+      "type": "object",
+      "required": [
+        "runtime_state_id",
+        "scope",
+        "status",
+        "version"
+      ],
+      "properties": {
+        "runtime_state_id": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/definitions/RuntimeScopeAuthorityWire"
+        },
+        "status": {
+          "$ref": "#/definitions/RuntimeCheckpointCasStatusWire"
+        },
+        "version": {
+          "$ref": "#/definitions/RuntimeStateVersionWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeCheckpointCasStatusWire": {
+      "type": "string",
+      "enum": [
+        "applied",
+        "already_current",
+        "revision_conflict",
+        "generation_retired",
+        "scope_fenced"
+      ]
+    },
+    "RuntimeGenerationRetireReceiptWire": {
+      "type": "object",
+      "required": [
+        "runtime_state_id",
+        "scope",
+        "status",
+        "version"
+      ],
+      "properties": {
+        "runtime_state_id": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/definitions/RuntimeScopeAuthorityWire"
+        },
+        "status": {
+          "$ref": "#/definitions/RuntimeGenerationRetireStatusWire"
+        },
+        "version": {
+          "$ref": "#/definitions/RuntimeStateVersionWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeGenerationRetireStatusWire": {
+      "type": "string",
+      "enum": [
+        "retired",
+        "already_retired",
+        "conflict",
+        "pending_projection",
+        "scope_fenced"
+      ]
+    },
+    "RuntimeScopeAuthorityWire": {
+      "type": "object",
+      "required": [
+        "lifecycle",
+        "revision",
+        "scope_id"
+      ],
+      "properties": {
+        "conversation_epoch": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WireU64"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lifecycle": {
+          "$ref": "#/definitions/RuntimeScopeLifecycleWire"
+        },
+        "revision": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "scope_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeScopeLifecycleWire": {
+      "type": "string",
+      "enum": [
+        "active",
+        "retiring",
+        "tombstoned"
+      ]
+    },
+    "RuntimeStateVersionWire": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "absent"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "unmanaged"
+          ],
+          "properties": {
+            "unmanaged": {
+              "type": "object",
+              "required": [
+                "digest"
+              ],
+              "properties": {
+                "digest": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "managed"
+          ],
+          "properties": {
+            "managed": {
+              "type": "object",
+              "required": [
+                "revision"
+              ],
+              "properties": {
+                "revision": {
+                  "$ref": "#/definitions/WireU64"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "retired"
+          ],
+          "properties": {
+            "retired": {
+              "type": "object",
+              "required": [
+                "operation_id",
+                "revision"
+              ],
+              "properties": {
+                "operation_id": {
+                  "type": "string"
+                },
+                "revision": {
+                  "$ref": "#/definitions/WireU64"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ScopeRetirementItemStatusWire": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "dropped_by_delete"
+      ]
+    },
+    "ScopeRetirementItemWire": {
+      "type": "object",
+      "required": [
+        "runtime_state_id",
+        "state_version",
+        "status"
+      ],
+      "properties": {
+        "pending_operation_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "runtime_state_id": {
+          "type": "string"
+        },
+        "state_version": {
+          "$ref": "#/definitions/RuntimeStateVersionWire"
+        },
+        "status": {
+          "$ref": "#/definitions/ScopeRetirementItemStatusWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ScopeRetirementManifestWire": {
+      "type": "object",
+      "required": [
+        "delete_operation_id",
+        "expected_conversation_epoch",
+        "items",
+        "payload_digest"
+      ],
+      "properties": {
+        "conversation_delete_receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ManagedConversationDeleteReceiptWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delete_operation_id": {
+          "type": "string"
+        },
+        "expected_conversation_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ScopeRetirementItemWire"
+          }
+        },
+        "payload_digest": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ScopeRetirementReceiptWire": {
+      "type": "object",
+      "required": [
+        "dropped_operation_ids",
+        "manifest",
+        "retention_floor_epoch",
+        "scope",
+        "status"
+      ],
+      "properties": {
+        "dropped_operation_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "manifest": {
+          "$ref": "#/definitions/ScopeRetirementManifestWire"
+        },
+        "retention_floor_epoch": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "scope": {
+          "$ref": "#/definitions/RuntimeScopeAuthorityWire"
+        },
+        "status": {
+          "$ref": "#/definitions/ScopeRetirementStatusWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ScopeRetirementStatusWire": {
+      "type": "string",
+      "enum": [
+        "begun",
+        "in_progress",
+        "completed",
+        "already_completed",
+        "revision_conflict",
+        "epoch_conflict",
+        "receipt_expired",
+        "identity_conflict"
+      ]
+    },
     "StoreItemWire": {
       "type": "object",
       "required": [
@@ -11429,6 +13834,109 @@
         }
       },
       "additionalProperties": false
+    },
+    "ToolEffectWire": {
+      "description": "Execution facts emitted by the framework tool implementation; they are not inferred from display output. Unknown facts fail decoding instead of disappearing.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "effect",
+            "path"
+          ],
+          "properties": {
+            "effect": {
+              "type": "string",
+              "enum": [
+                "file_read"
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "effect",
+            "path"
+          ],
+          "properties": {
+            "effect": {
+              "type": "string",
+              "enum": [
+                "file_edit"
+              ]
+            },
+            "path": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "command",
+            "effect",
+            "passed"
+          ],
+          "properties": {
+            "command": {
+              "type": "string"
+            },
+            "effect": {
+              "type": "string",
+              "enum": [
+                "test_run"
+              ]
+            },
+            "failure_count": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/WireU64"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "passed": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "agent_name",
+            "effect",
+            "outcome",
+            "task"
+          ],
+          "properties": {
+            "agent_name": {
+              "type": "string"
+            },
+            "effect": {
+              "type": "string",
+              "enum": [
+                "subagent_run"
+              ]
+            },
+            "outcome": {
+              "type": "string"
+            },
+            "task": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
     },
     "ToolFailureWire": {
       "type": "object",
@@ -11741,6 +14249,12 @@
             }
           ]
         },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ToolEffectWire"
+          }
+        },
         "error": {
           "type": [
             "string",
@@ -11963,6 +14477,34 @@
     },
     "AgentStreamChunkWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "settlement"
+              ],
+              "properties": {
+                "settlement": {
+                  "$ref": "#/definitions/TranscriptProjectionSettlementWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "transcript_projection_settlement"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [
@@ -13116,6 +15658,80 @@
         }
       ]
     },
+    "TranscriptProjectionErrorClassWire": {
+      "type": "string",
+      "enum": [
+        "outcome_unknown",
+        "transient_no_commit",
+        "revision_conflict",
+        "deadline_exceeded",
+        "unsupported",
+        "invalid_configuration",
+        "corrupt_state",
+        "semantic_conflict"
+      ]
+    },
+    "TranscriptProjectionSettlementStatusWire": {
+      "type": "string",
+      "enum": [
+        "settled",
+        "deferred",
+        "blocked",
+        "conflict"
+      ]
+    },
+    "TranscriptProjectionSettlementWire": {
+      "type": "object",
+      "required": [
+        "attempt",
+        "status"
+      ],
+      "properties": {
+        "attempt": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "conversation_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "error_class": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TranscriptProjectionErrorClassWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generation_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "operation_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/TranscriptProjectionSettlementStatusWire"
+        }
+      },
+      "additionalProperties": false
+    },
     "WorkflowStreamChunkWire": {
       "oneOf": [
         {
@@ -13421,6 +16037,34 @@
     },
     "AgentEventWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "settlement"
+              ],
+              "properties": {
+                "settlement": {
+                  "$ref": "#/definitions/TranscriptProjectionSettlementWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "transcript_projection_settlement"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [
@@ -14053,6 +16697,7 @@
         "callback_on_tool_start",
         "callback_on_tool_end",
         "callback_on_tool_error",
+        "callback_on_tool_interrupted",
         "callback_on_final_answer",
         "callback_on_iteration",
         "intervention_on_tool_call",
@@ -14140,6 +16785,71 @@
       "required": [
         "path"
       ]
+    },
+    "DeliveryClaimWire": {
+      "additionalProperties": false,
+      "title": "DeliveryClaimWire",
+      "description": "JSON-domain claim returned by the delivery family, before the surrounding `WireValue` projection. Route and payload are caller-owned: this adapter accepts JSON payloads and rejects non-JSON wire values. The framework owns attempt identity, validation and transitions.",
+      "type": "object",
+      "required": [
+        "attempt",
+        "attempt_id",
+        "claimed_at",
+        "message_id",
+        "payload",
+        "route"
+      ],
+      "properties": {
+        "attempt": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "attempt_id": {
+          "type": "string"
+        },
+        "claimed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "message_id": {
+          "type": "string"
+        },
+        "payload": true,
+        "route": {
+          "type": "string"
+        }
+      }
+    },
+    "DeliveryClaimNextResultWire": {
+      "additionalProperties": false,
+      "title": "DeliveryClaimNextResultWire",
+      "type": "object",
+      "properties": {
+        "claim": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DeliveryClaimWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "DeliveryMutationResultWire": {
+      "additionalProperties": false,
+      "title": "DeliveryMutationResultWire",
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        }
+      }
     }
   }
 }
