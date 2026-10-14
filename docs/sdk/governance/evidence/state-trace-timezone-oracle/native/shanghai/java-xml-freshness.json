@@ -1,0 +1,27 @@
+{
+  "counts": {
+    "tests": "2",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "original_xml_mtime": 1792018155.0887856,
+  "written_during_run": true,
+  "xml_sha256": "ae3ca0d0f461fa2760e0a6133bc60361c856be194c8891bc9c2d32286d222cc7",
+  "scenes": [
+    {
+      "scene": "state",
+      "actual_work": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-state-11881679909257919516",
+      "observed_sha256": "5a1811dd983e343812f8884aa6f2c956fc171dcab7f0a27c30cc82451dad22a6",
+      "time_fields": 4,
+      "source_work_tmp_qualification": "Surefire kept original java.io.tmpdir; actual emitted work path retained"
+    },
+    {
+      "scene": "trace",
+      "actual_work": "/var/folders/mp/_hr1lbvx27b613b3jpp4jqj00000gn/T/sdk-java-trace-5896810274794157659",
+      "observed_sha256": "a01c5694da7ce869b0fae5b4f69de912b869e67de26f1224d392dd41bc8df170",
+      "time_fields": 10,
+      "source_work_tmp_qualification": "Surefire kept original java.io.tmpdir; actual emitted work path retained"
+    }
+  ]
+}

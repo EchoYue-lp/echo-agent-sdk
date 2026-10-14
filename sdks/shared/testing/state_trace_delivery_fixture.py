@@ -1,7 +1,11 @@
 """Temporary real-Host input/fault fixture; owns no SDK/framework state logic."""
 
 import argparse
+import calendar
+import datetime
 import json
+import re
+import sys
 from pathlib import Path
 
 
@@ -85,6 +89,27 @@ def prepare(work):
     expected_trace = json.loads(json.dumps(trace))
     expected_trace["input"] = "输入🙂 [REDACTED]"
     expected_trace["events"][2]["message"] = "诊断🙂 [REDACTED]"
+    summary_expected = {
+        key: expected_trace[key]
+        for key in (
+            "run_id",
+            "parent_run_id",
+            "session_id",
+            "agent_name",
+            "model",
+            "provider",
+            "turn_id",
+            "execution_id",
+            "status",
+            "started_at",
+            "finished_at",
+            "token_usage",
+        )
+    }
+    summary_expected["input_preview"] = expected_trace["input"]
+    summary_expected["total_duration_ms"] = expected_trace["timings"][
+        "total_duration_ms"
+    ]
     write(
         work / "fixture.json",
         {
@@ -94,6 +119,7 @@ def prepare(work):
             "checkpoint_b": second,
             "trace": trace,
             "trace_expected": expected_trace,
+            "trace_summary_expected": summary_expected,
             "delivery": {
                 "message_id": "message-中文🙂",
                 "route": "channel/local",
@@ -154,14 +180,113 @@ def unblock(work):
     (work / "fault.json").unlink()
 
 
+# Test oracle only: the original framework serializes DateTime<Utc> in the
+# Host local offset. Keep nanoseconds independent of datetime microseconds.
+_RFC3339 = re.compile(
+    r"([0-9]{4})-([0-9]{2})-([0-9]{2})T"
+    r"([0-9]{2}):([0-9]{2}):([0-9]{2})"
+    r"(?:\.([0-9]{1,9}))?(Z|[+-][0-9]{2}:[0-9]{2})"
+)
+_TIMESTAMP_FIELD_SETS = {("timestamp",), ("started_at", "finished_at")}
+_LOCAL_OFFSETS = {"UTC": "+00:00", "Asia/Shanghai": "+08:00"}
+
+
+def exact_timestamp(value):
+    """Return an exact instant without floating point or fractional truncation."""
+    if not isinstance(value, str):
+        raise TypeError("timestamp must be an RFC3339 string")
+    match = _RFC3339.fullmatch(value)
+    if match is None:
+        raise AssertionError(f"invalid RFC3339 timestamp: {value!r}")
+    year, month, day, hour, minute, second = map(int, match.groups()[:6])
+    # Validate the whole-second calendar independently of the captured fraction.
+    datetime.datetime(
+        year, month, day, hour, minute, second, tzinfo=datetime.timezone.utc
+    )
+    offset = match.group(8)
+    offset_seconds = 0
+    if offset != "Z":
+        offset_hour, offset_minute = int(offset[1:3]), int(offset[4:6])
+        if offset_hour >= 24 or offset_minute >= 60:
+            raise AssertionError(f"invalid RFC3339 offset: {offset!r}")
+        offset_seconds = (offset_hour * 3600 + offset_minute * 60) * (
+            1 if offset[0] == "+" else -1
+        )
+    seconds = calendar.timegm((year, month, day, hour, minute, second))
+    return {
+        "epoch_seconds": str(seconds - offset_seconds),
+        "nanos": int((match.group(7) or "").ljust(9, "0")),
+    }
+
+
+def compare_timestamp_documents(actual, expected, fields, host_timezone=None):
+    """Compare full DTO copies; only explicit root timestamp fields use instants."""
+    fields = tuple(fields)
+    if fields not in _TIMESTAMP_FIELD_SETS:
+        raise AssertionError("timestamp comparison requires one declared DTO field set")
+    if not isinstance(actual, dict) or not isinstance(expected, dict):
+        raise TypeError("timestamp comparison requires complete DTO objects")
+    actual_copy, expected_copy = dict(actual), dict(expected)
+    observations = []
+    for field in fields:
+        # Presence remains a full-document obligation: absent is never null.
+        for value in (actual, expected):
+            if field not in value:
+                raise AssertionError(f"required timestamp field is missing: {field}")
+        a, e = actual[field], expected[field]
+        if a is None or e is None:
+            if field != "finished_at" or a is not None or e is not None:
+                raise AssertionError(f"timestamp null mismatch: {field}")
+            observations.append({"field": field, "actual_raw": a, "expected_raw": e})
+            continue
+        a_instant, e_instant = exact_timestamp(a), exact_timestamp(e)
+        if host_timezone in _LOCAL_OFFSETS:
+            required = _LOCAL_OFFSETS[host_timezone]
+            if not a.endswith(required):
+                raise AssertionError(
+                    f"Host {host_timezone} timestamp must end in {required}: {a!r}"
+                )
+        actual_copy[field], expected_copy[field] = a_instant, e_instant
+        observations.append(
+            {
+                "field": field,
+                "actual_raw": a,
+                "expected_raw": e,
+                "actual_instant": a_instant,
+                "expected_instant": e_instant,
+                "host_timezone": host_timezone,
+            }
+        )
+    # Serialized equality keeps unknown keys, null, nested values, array order
+    # and bool/number distinctions. Callers already canonicalize wire integers.
+    if json.dumps(actual_copy, sort_keys=True, ensure_ascii=False) != json.dumps(
+        expected_copy, sort_keys=True, ensure_ascii=False
+    ):
+        raise AssertionError(
+            "complete timestamp DTO mismatch: "
+            + json.dumps({"actual": actual, "expected": expected}, ensure_ascii=False)
+        )
+    return observations
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--work", type=Path, required=True)
     p.add_argument(
-        "action", choices=["prepare", "block-owners", "block-trace", "unblock"]
+        "action",
+        choices=[
+            "prepare",
+            "block-owners",
+            "block-trace",
+            "unblock",
+            "compare-timestamps",
+        ],
     )
     a = p.parse_args()
-    if a.action == "prepare":
+    if a.action == "compare-timestamps":
+        request = json.load(sys.stdin)
+        print(json.dumps(compare_timestamp_documents(**request), ensure_ascii=False))
+    elif a.action == "prepare":
         prepare(a.work)
     elif a.action == "block-owners":
         block(a.work, "state/runtime_state/_runtime_owners")

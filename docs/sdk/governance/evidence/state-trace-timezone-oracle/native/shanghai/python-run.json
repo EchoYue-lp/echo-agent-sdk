@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "steps": [
+    {
+      "label": "state-trace-shanghai-python",
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-project",
+        "--with",
+        "pytest",
+        "--with",
+        "pytest-asyncio",
+        "--with",
+        "agent-client-protocol==0.12.1",
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-s",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_state_trace_delivery_host.py::test_state_trace_delivery_real_host_effects[state]",
+        "tests/test_state_trace_delivery_host.py::test_state_trace_delivery_real_host_effects[trace]"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/python.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 671,
+      "bytesWritten": 671,
+      "startedAt": "2026-10-14T22:39:43.022Z",
+      "finishedAt": "2026-10-14T22:39:45.147Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T22:39:45.147Z"
+}

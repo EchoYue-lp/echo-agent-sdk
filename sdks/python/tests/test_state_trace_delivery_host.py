@@ -18,7 +18,12 @@ import pytest
 from echo_agent_sdk import EchoAgentClient, EchoAgentError, wire_u64
 
 sys.path.insert(0, str(Path(__file__).parents[2] / "shared/testing"))
-from state_trace_delivery_fixture import block, prepare, unblock
+from state_trace_delivery_fixture import (
+    block,
+    compare_timestamp_documents,
+    prepare,
+    unblock,
+)
 
 
 def canonical(value):
@@ -32,6 +37,14 @@ def canonical(value):
     if isinstance(value, dict):
         return {key: canonical(item) for key, item in value.items()}
     return value
+
+
+def same_time(actual, expected, fields, proof):
+    rows = compare_timestamp_documents(
+        canonical(actual), canonical(expected), fields, os.environ.get("TZ")
+    )
+    proof.setdefault("timestamp_observations", []).extend(rows)
+    proof["host_timezone"] = os.environ.get("TZ")
 
 
 async def start(host, work):
@@ -74,7 +87,7 @@ async def state_scene(host, work, fixture):
             read = await session.invoke(
                 "state.checkpoint.get", [checkpoint["conversation_id"]]
             )
-            assert canonical(read["checkpoint"]) == canonical(checkpoint)
+            same_time(read["checkpoint"], checkpoint, ["timestamp"], proof)
             ids = await session.invoke("state.runtime.list", [scope])
             assert ids["runtime_state_ids"] == [checkpoint["conversation_id"]]
             proof["checkpoints"][label] = read["checkpoint"]
@@ -129,13 +142,12 @@ async def state_scene(host, work, fixture):
                 "state.checkpoint.get", [fixture["checkpoint_a"]["conversation_id"]]
             )
         )["checkpoint"] is None
-        assert canonical(
-            (
-                await session.invoke(
-                    "state.checkpoint.get", [fixture["checkpoint_b"]["conversation_id"]]
-                )
-            )["checkpoint"]
-        ) == canonical(fixture["checkpoint_b"])
+        remaining = (
+            await session.invoke(
+                "state.checkpoint.get", [fixture["checkpoint_b"]["conversation_id"]]
+            )
+        )["checkpoint"]
+        same_time(remaining, fixture["checkpoint_b"], ["timestamp"], proof)
         # Rebuildable index deletion affects projection only, never owners.
         index_dir = work / "state/runtime_state/_scope_index"
         for p in index_dir.glob("*.json"):
@@ -154,7 +166,7 @@ async def state_scene(host, work, fixture):
                 "state.checkpoint.get", [fixture["checkpoint_b"]["conversation_id"]]
             )
         )["checkpoint"]
-        assert canonical(recovered) == canonical(fixture["checkpoint_b"])
+        same_time(recovered, fixture["checkpoint_b"], ["timestamp"], proof)
         proof["after_real_host_restart"] = recovered
     finally:
         await client.close()
@@ -183,7 +195,9 @@ async def trace_scene(host, work, fixture):
         loaded = (
             await session.invoke("trace.run.load", [store, fixture["trace"]["run_id"]])
         )["run"]
-        assert canonical(loaded) == canonical(fixture["trace_expected"])
+        same_time(
+            loaded, fixture["trace_expected"], ["started_at", "finished_at"], proof
+        )
         run_file = next(
             p
             for p in Path(fixture["trace_dir"]).glob("*.jsonl")
@@ -192,9 +206,13 @@ async def trace_scene(host, work, fixture):
         )
         durable_before = run_file.read_bytes()
         assert "sk-abcdefghijklmnopqrstuvwxyz123456" not in durable_before.decode()
-        assert canonical(
-            json.loads(durable_before.decode().splitlines()[0])
-        ) == canonical(fixture["trace_expected"])
+        same_time(
+            json.loads(durable_before.decode().splitlines()[0]),
+            fixture["trace_expected"],
+            ["started_at", "finished_at"],
+            proof,
+        )
+        proof["durable_raw"] = durable_before.decode()
         block(work, "traces")
         try:
             proof["errors"].append(
@@ -203,13 +221,12 @@ async def trace_scene(host, work, fixture):
                     "trace.run.save",
                 )
             )
-            assert canonical(
-                (
-                    await session.invoke(
-                        "trace.run.load", [store, fixture["trace"]["run_id"]]
-                    )
-                )["run"]
-            ) == canonical(loaded)
+            after_fault = (
+                await session.invoke(
+                    "trace.run.load", [store, fixture["trace"]["run_id"]]
+                )
+            )["run"]
+            same_time(after_fault, loaded, ["started_at", "finished_at"], proof)
         finally:
             unblock(work)
         assert run_file.read_bytes() == durable_before
@@ -222,24 +239,13 @@ async def trace_scene(host, work, fixture):
             )
         )["summaries"]
         assert len(summaries) == 1
-        for key in (
-            "run_id",
-            "parent_run_id",
-            "session_id",
-            "agent_name",
-            "model",
-            "provider",
-            "turn_id",
-            "execution_id",
-            "status",
-            "started_at",
-            "finished_at",
-            "token_usage",
-        ):
-            assert canonical(summaries[0][key]) == canonical(
-                fixture["trace_expected"][key]
-            )
-        assert canonical(summaries[0]["total_duration_ms"]) == "9007199254740993"
+        same_time(
+            summaries[0],
+            fixture["trace_summary_expected"],
+            ["started_at", "finished_at"],
+            proof,
+        )
+        proof["summaries"] = summaries
         proof["loaded"] = loaded
         proof["durable_sha256"] = hashlib.sha256(run_file.read_bytes()).hexdigest()
     finally:
@@ -252,7 +258,9 @@ async def trace_scene(host, work, fixture):
         reopened = (
             await session.invoke("trace.run.load", [store, fixture["trace"]["run_id"]])
         )["run"]
-        assert canonical(reopened) == canonical(fixture["trace_expected"])
+        same_time(
+            reopened, fixture["trace_expected"], ["started_at", "finished_at"], proof
+        )
         proof["after_real_host_restart"] = reopened
     finally:
         await client.close()

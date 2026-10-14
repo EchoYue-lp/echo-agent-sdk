@@ -1,0 +1,522 @@
+{
+  "copied_files": [
+    {
+      "archive_path": "native/before.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/before.json",
+      "sha256": "b7da01549c7b3569fbcd23dd2f98c631fc8c4842ae3c95dfcbecff2c25202c64",
+      "bytes": 1192
+    },
+    {
+      "archive_path": "native/typescript-python-after.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/typescript-python-after.json",
+      "sha256": "dda44161ceb067362282d4e6830d488f6e68ffe79852f8bb67947a5f0fb369e8",
+      "bytes": 4852
+    },
+    {
+      "archive_path": "native/java-before.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/java-before.json",
+      "sha256": "9a1df180af85cb907aa931490fb4cf442e488cc8700a938d6db368f41a267fd7",
+      "bytes": 12906
+    },
+    {
+      "archive_path": "native/executor-environment-provenance.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/executor-environment-provenance.json",
+      "sha256": "b65dd63a592f7457198664768e22bd23260e6f9e6979ac46ee833be02e3f8eb9",
+      "bytes": 11856
+    },
+    {
+      "archive_path": "native/typescript-build.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/typescript-build.log",
+      "sha256": "ecaabe720cdb6e456b6ea808f53ecdcf6b96fa864c581db00d35c2ce4fe6ee46",
+      "bytes": 73
+    },
+    {
+      "archive_path": "native/typescript-build-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/typescript-build-run.json",
+      "sha256": "0217ea7e46f1b6563b329e44e35091eefac5b363b7b0dd1d43e944d403fa4e34",
+      "bytes": 871
+    },
+    {
+      "archive_path": "native/java-after-and-complete-summary.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/java-after-and-complete-summary.json",
+      "sha256": "8a6fec8409391bddd11d4b3d770dc1b5cd73416d98be2801b61b38d0d7b4184c",
+      "bytes": 1080
+    },
+    {
+      "archive_path": "native/utc/typescript.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/typescript.log",
+      "sha256": "c4bf746003bc55d1e1fcf5f0aa3d0829c31dbf9b829a75eca78c903bae810877",
+      "bytes": 816
+    },
+    {
+      "archive_path": "native/utc/typescript-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/typescript-run.json",
+      "sha256": "a3563c42d7d4054c25f41cfa16d9aee8641db02061e09612e2ca0c4e4db86d96",
+      "bytes": 964
+    },
+    {
+      "archive_path": "native/utc/typescript/state/state-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-state-JT0PnK/state-observed.json",
+      "sha256": "1560c259c4c702f6e85172287595929c6b372c91afab02351ed40e21867659e8",
+      "bytes": 2662
+    },
+    {
+      "archive_path": "native/utc/typescript/state/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-state-JT0PnK/fixture.json",
+      "sha256": "3f0da7f5dd72062470d9fefc7385102560924d70b5782c46c2dcb667ec3921ee",
+      "bytes": 5310
+    },
+    {
+      "archive_path": "native/utc/typescript/state/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-state-JT0PnK/host.json",
+      "sha256": "fd23f2f394ccaf145c3b798ba3c54dd164fa7438cb75ae1fa28e740e2e4537b4",
+      "bytes": 557
+    },
+    {
+      "archive_path": "native/utc/typescript/state/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-state-JT0PnK/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/utc/typescript/trace/trace-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-trace-CJUSCX/trace-observed.json",
+      "sha256": "e00603997606a9748baee4672f13453e328d2e419b4203a636c1315c7098d022",
+      "bytes": 9696
+    },
+    {
+      "archive_path": "native/utc/typescript/trace/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-trace-CJUSCX/fixture.json",
+      "sha256": "e5d6806968bdf8d959a9daa1b6a135537bdaa0469dd25e0192e1b9763cb4b6ab",
+      "bytes": 5310
+    },
+    {
+      "archive_path": "native/utc/typescript/trace/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-trace-CJUSCX/host.json",
+      "sha256": "69a4eacc9beb9345feec65e430a82e04b0850a4b11bec94578018d5fc248f877",
+      "bytes": 557
+    },
+    {
+      "archive_path": "native/utc/typescript/trace/original-trace.jsonl",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-trace-CJUSCX/traces/trace-中文🙂.jsonl",
+      "sha256": "5a5ba558953cc162e60416262eebade99158c23a0ad906267012cff6bf1d045f",
+      "bytes": 1120
+    },
+    {
+      "archive_path": "native/utc/typescript/trace/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-typescript-trace-CJUSCX/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/utc/python.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/python.log",
+      "sha256": "19d7a80c05b406d4fa10936476a4cd18e8772dbc9d30edf8a97c3d231dbdeacd",
+      "bytes": 651
+    },
+    {
+      "archive_path": "native/utc/python-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/python-run.json",
+      "sha256": "bad1035c32d1e46155dd88dbd1a7a64df363355de0219ccc33ae1a6fc773fd59",
+      "bytes": 1362
+    },
+    {
+      "archive_path": "native/utc/python/state/state-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-state-l4dxwdxk/state-observed.json",
+      "sha256": "3d468842c22fd1f81030760428a83271726aba81bd3ba5da5eb6f0e9504189ad",
+      "bytes": 3612
+    },
+    {
+      "archive_path": "native/utc/python/state/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-state-l4dxwdxk/fixture.json",
+      "sha256": "b1e0de0a155b03f500ca89dc97c7ec300e9f30327b31b46c4280c0d39162c1b1",
+      "bytes": 5304
+    },
+    {
+      "archive_path": "native/utc/python/state/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-state-l4dxwdxk/host.json",
+      "sha256": "80cf087e2b24f97a8e423dbf4f39f5fae74a81cfc41a87712c909480bacb29ab",
+      "bytes": 555
+    },
+    {
+      "archive_path": "native/utc/python/state/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-state-l4dxwdxk/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/utc/python/trace/trace-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-trace-b_8dalhd/trace-observed.json",
+      "sha256": "569c81fbdcf491c03ac333dde228ae0471999c9b71f647cc4c4c8f3e23151f8c",
+      "bytes": 9785
+    },
+    {
+      "archive_path": "native/utc/python/trace/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-trace-b_8dalhd/fixture.json",
+      "sha256": "e5405ce85bb5a660c7426e710e8a77f10ea1af040c3a75bfab71455d059e6c41",
+      "bytes": 5304
+    },
+    {
+      "archive_path": "native/utc/python/trace/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-trace-b_8dalhd/host.json",
+      "sha256": "aff572be3ceb0f5826e4654fa122395ebf86a4fbc563d075d444633289cdaf2a",
+      "bytes": 555
+    },
+    {
+      "archive_path": "native/utc/python/trace/original-trace.jsonl",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-trace-b_8dalhd/traces/trace-中文🙂.jsonl",
+      "sha256": "5a5ba558953cc162e60416262eebade99158c23a0ad906267012cff6bf1d045f",
+      "bytes": 1120
+    },
+    {
+      "archive_path": "native/utc/python/trace/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime/sdk-python-trace-b_8dalhd/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/utc/java.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java.log",
+      "sha256": "1fb2f674c5b8763121ea69b100c3c23bb973f843ebb7073dcaf3aab1c91c32a7",
+      "bytes": 242
+    },
+    {
+      "archive_path": "native/utc/java-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-run.json",
+      "sha256": "bd0d67830b8def1b6505fccdb3e446e67954230c57b25a8c624e393c252ea081",
+      "bytes": 1119
+    },
+    {
+      "archive_path": "native/utc/java/state/state-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-artifacts/state/state-observed.json",
+      "sha256": "c5546b4e4f306bc35f324a34c999070d411874355c85bbf3e91a2ce819af3c57",
+      "bytes": 2484
+    },
+    {
+      "archive_path": "native/utc/java/state/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-artifacts/state/fixture.json",
+      "sha256": "2377745f62196e7f2877bee367c58bbf0bcd7d0633b9fab81b3d95dc97a80090",
+      "bytes": 5178
+    },
+    {
+      "archive_path": "native/utc/java/state/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-artifacts/state/host.json",
+      "sha256": "4010f1aa9cab4c5c280628273ea6c5dc63aba555abe73e85dbdcc431c0259b07",
+      "bytes": 513
+    },
+    {
+      "archive_path": "native/utc/java/trace/trace-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-artifacts/trace/trace-observed.json",
+      "sha256": "a90236b0a86c95bd0f97c97db430de567147ffa225e10b6605d55f7d424ecf8b",
+      "bytes": 9408
+    },
+    {
+      "archive_path": "native/utc/java/trace/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-artifacts/trace/fixture.json",
+      "sha256": "e61bc29db936af2f93999070044859a0ccfc2975297d7b460b00ba2c22dc9948",
+      "bytes": 5178
+    },
+    {
+      "archive_path": "native/utc/java/trace/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-artifacts/trace/host.json",
+      "sha256": "66072928aee1204a0a64f9f7545d99d410eb0ee2feaacc80067ed3c3a3534b34",
+      "bytes": 513
+    },
+    {
+      "archive_path": "native/utc/java/trace/original-trace.jsonl",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-artifacts/trace/original-trace.jsonl",
+      "sha256": "5a5ba558953cc162e60416262eebade99158c23a0ad906267012cff6bf1d045f",
+      "bytes": 1120
+    },
+    {
+      "archive_path": "native/utc/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml",
+      "sha256": "11d8d9b7a0cd6a2624f2af46e527bde16c17a0d635e9ee5c6db0271dcedb1523",
+      "bytes": 9422
+    },
+    {
+      "archive_path": "native/utc/java-xml-freshness.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-xml-freshness.json",
+      "sha256": "46f1e13a9e15430138bbc56630a01866dfd73dabf85335630e125a25b0e2bbe5",
+      "bytes": 1134
+    },
+    {
+      "archive_path": "native/shanghai/typescript.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/typescript.log",
+      "sha256": "57357c41d23a5533ae72555a5eebf7501b6bac65b3f256edf1a78a20886f4857",
+      "bytes": 827
+    },
+    {
+      "archive_path": "native/shanghai/typescript-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/typescript-run.json",
+      "sha256": "00bd663d7e92d1a0d07d6fa18fe98097a4ba418b883318c9720331f2f38fb163",
+      "bytes": 974
+    },
+    {
+      "archive_path": "native/shanghai/typescript/state/state-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-state-t10xlT/state-observed.json",
+      "sha256": "808eae7b1c62d10ced06ac35c43cdccc7ca4f40f5b637abc36c7a23aaf13422b",
+      "bytes": 2722
+    },
+    {
+      "archive_path": "native/shanghai/typescript/state/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-state-t10xlT/fixture.json",
+      "sha256": "a5b84a34f29241fa7890d23037e8ee7165021bd4b92234ca54ea19003583bed1",
+      "bytes": 5325
+    },
+    {
+      "archive_path": "native/shanghai/typescript/state/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-state-t10xlT/host.json",
+      "sha256": "76decd847896ff99aa75b7a5e1aa56f8a2fde674ae4a0a1c5a412a61d6f83490",
+      "bytes": 562
+    },
+    {
+      "archive_path": "native/shanghai/typescript/state/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-state-t10xlT/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/shanghai/typescript/trace/trace-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-trace-zQKamf/trace-observed.json",
+      "sha256": "92e28bb92ce69993d946a10967eaab73786c2bfa616062714911b1ae28888ab2",
+      "bytes": 9806
+    },
+    {
+      "archive_path": "native/shanghai/typescript/trace/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-trace-zQKamf/fixture.json",
+      "sha256": "2fbc7a6efa96de28bb77a8da6838e2475f56da01d690d9d2ff5763715d88df5b",
+      "bytes": 5325
+    },
+    {
+      "archive_path": "native/shanghai/typescript/trace/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-trace-zQKamf/host.json",
+      "sha256": "9edce8a138edad02c9ffd3600ad1bf48cc71141fd0555975b58e477ea85603cc",
+      "bytes": 562
+    },
+    {
+      "archive_path": "native/shanghai/typescript/trace/original-trace.jsonl",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-trace-zQKamf/traces/trace-中文🙂.jsonl",
+      "sha256": "678d50ea17e52863bab1c74deca26842c70e13038eef832cf121f55ecd5b6a3c",
+      "bytes": 1120
+    },
+    {
+      "archive_path": "native/shanghai/typescript/trace/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-typescript-trace-zQKamf/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/shanghai/python.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/python.log",
+      "sha256": "9f6650f12ffa64a69093605b29f21250dad17a9765afe0d5d60d01f5203b0403",
+      "bytes": 671
+    },
+    {
+      "archive_path": "native/shanghai/python-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/python-run.json",
+      "sha256": "3fb6fdf3618b4fab6b780cd9c8ba68394c4c95c72a5728c175cc32374c1fd37d",
+      "bytes": 1372
+    },
+    {
+      "archive_path": "native/shanghai/python/state/state-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-state-y6dzir3h/state-observed.json",
+      "sha256": "979a026a3e303efc32dddc75d28e66d2dbe4a2cb44755d1cd42d47e313a99ceb",
+      "bytes": 3682
+    },
+    {
+      "archive_path": "native/shanghai/python/state/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-state-y6dzir3h/fixture.json",
+      "sha256": "8d2e662e53f3936e693f7af7b6a0c79168887984136216c30b9103f4c9f7bad4",
+      "bytes": 5319
+    },
+    {
+      "archive_path": "native/shanghai/python/state/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-state-y6dzir3h/host.json",
+      "sha256": "dd4ec1f847eecce3d61d2ff567cb96b6d536f5b28252e88e59edf5231b413a9b",
+      "bytes": 560
+    },
+    {
+      "archive_path": "native/shanghai/python/state/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-state-y6dzir3h/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/shanghai/python/trace/trace-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-trace-1x_nu7vi/trace-observed.json",
+      "sha256": "8db454ebe9197f1add08dcc37f0027705571c53ffb01887106db3a156b418157",
+      "bytes": 9895
+    },
+    {
+      "archive_path": "native/shanghai/python/trace/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-trace-1x_nu7vi/fixture.json",
+      "sha256": "8ec7fae9dada8e4389bbdcba864e1be07654908dae8064ab622a56c8afe43e06",
+      "bytes": 5319
+    },
+    {
+      "archive_path": "native/shanghai/python/trace/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-trace-1x_nu7vi/host.json",
+      "sha256": "da75126ef7ccbcae42b2e03f3ef6829622fffa23825090556595ca90e9253239",
+      "bytes": 560
+    },
+    {
+      "archive_path": "native/shanghai/python/trace/original-trace.jsonl",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-trace-1x_nu7vi/traces/trace-中文🙂.jsonl",
+      "sha256": "678d50ea17e52863bab1c74deca26842c70e13038eef832cf121f55ecd5b6a3c",
+      "bytes": 1120
+    },
+    {
+      "archive_path": "native/shanghai/python/trace/host-generation.txt",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime/sdk-python-trace-1x_nu7vi/state/host/generation",
+      "sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "bytes": 1
+    },
+    {
+      "archive_path": "native/shanghai/java.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java.log",
+      "sha256": "a542a62b148e5312591229b489917169798acc799340d2657378f195059005da",
+      "bytes": 243
+    },
+    {
+      "archive_path": "native/shanghai/java-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-run.json",
+      "sha256": "d6a366007752813968957d46eced5802867cf4e8f16239eb395360431545e251",
+      "bytes": 1134
+    },
+    {
+      "archive_path": "native/shanghai/java/state/state-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-artifacts/state/state-observed.json",
+      "sha256": "5a1811dd983e343812f8884aa6f2c956fc171dcab7f0a27c30cc82451dad22a6",
+      "bytes": 2536
+    },
+    {
+      "archive_path": "native/shanghai/java/state/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-artifacts/state/fixture.json",
+      "sha256": "be1c1e704d3bbde3af4b83d7140b88044e5517dd9c16040c067d52e519df4532",
+      "bytes": 5181
+    },
+    {
+      "archive_path": "native/shanghai/java/state/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-artifacts/state/host.json",
+      "sha256": "fe3c0b3d4927d1c0dd315512f4f5ef5e8a8f1aa7e65977d4ee81bf2f7891dc67",
+      "bytes": 514
+    },
+    {
+      "archive_path": "native/shanghai/java/trace/trace-observed.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-artifacts/trace/trace-observed.json",
+      "sha256": "a01c5694da7ce869b0fae5b4f69de912b869e67de26f1224d392dd41bc8df170",
+      "bytes": 9518
+    },
+    {
+      "archive_path": "native/shanghai/java/trace/fixture.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-artifacts/trace/fixture.json",
+      "sha256": "817f91d1f645662cbe34c519be95259e5f049d18cd89f70ce17e971577567c23",
+      "bytes": 5178
+    },
+    {
+      "archive_path": "native/shanghai/java/trace/host.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-artifacts/trace/host.json",
+      "sha256": "69121abc9654095e7536a1142fb36c112370f4d6162dbcc52e2183f6567dd6f9",
+      "bytes": 513
+    },
+    {
+      "archive_path": "native/shanghai/java/trace/original-trace.jsonl",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-artifacts/trace/original-trace.jsonl",
+      "sha256": "678d50ea17e52863bab1c74deca26842c70e13038eef832cf121f55ecd5b6a3c",
+      "bytes": 1120
+    },
+    {
+      "archive_path": "native/shanghai/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/TEST-com.echoagent.sdk.StateTraceDeliveryHostTest.xml",
+      "sha256": "ae3ca0d0f461fa2760e0a6133bc60361c856be194c8891bc9c2d32286d222cc7",
+      "bytes": 9438
+    },
+    {
+      "archive_path": "native/shanghai/java-xml-freshness.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-xml-freshness.json",
+      "sha256": "29bb46e8bf188701a039146e6f6c10eb16fadbb21df830d57aaedf2e267f2fee",
+      "bytes": 1029
+    },
+    {
+      "archive_path": "preparation/pure-unit.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/pure-unit.log",
+      "sha256": "f7a3bec363ef6cea193d4cc7fa9ad2b56c5a7474291c49994461aa80347dc518",
+      "bytes": 99
+    },
+    {
+      "archive_path": "preparation/pure-unit-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/pure-unit-run.json",
+      "sha256": "07f7b64f5159671aa40b37f3bc4fa9cbc31cb2375c6130ea07040f28a961ea21",
+      "bytes": 1120
+    },
+    {
+      "archive_path": "preparation/pure-unit-after-lint.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/pure-unit-after-lint.log",
+      "sha256": "f7a3bec363ef6cea193d4cc7fa9ad2b56c5a7474291c49994461aa80347dc518",
+      "bytes": 99
+    },
+    {
+      "archive_path": "preparation/pure-unit-after-lint-run.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/pure-unit-after-lint-run.json",
+      "sha256": "9cb71fbcec69e81314de107a9bbef6f43584b0663a2f971f5f1ec999cf31b86b",
+      "bytes": 1137
+    },
+    {
+      "archive_path": "preparation/existing-counterexample-observation.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/existing-counterexample-observation.json",
+      "sha256": "ead4de4ed60003f5f410741637427b3eafe2c9c3b9951a54fcd2e82a7adfbbeb",
+      "bytes": 1119
+    },
+    {
+      "archive_path": "preparation/source-freeze.json",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/source-freeze.json",
+      "sha256": "584b7b21e0e79f0ee42a7665e84745d74475da52184d8bea52891567a4da16d1",
+      "bytes": 1601
+    },
+    {
+      "archive_path": "preparation/proposal.md",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/proposal.md",
+      "sha256": "a736280e7aa9a8223a6561af9f33e69d7b6340262ad1c38ec6f482541c35a3b0",
+      "bytes": 6018
+    },
+    {
+      "archive_path": "before-ci/language-cancelled.log",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-pr5-eebd-ci-evidence/language-cancelled.log",
+      "sha256": "d4a85d86d1af20f0025d157e66dceed3b4893059c2ae67da2370f254f4dad2ca",
+      "bytes": 166086
+    },
+    {
+      "archive_path": "executed-source/sdks/shared/testing/state_trace_delivery_fixture.py",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/state_trace_delivery_fixture.py",
+      "sha256": "bc63faed018676620295ef93c1972cec609ed34026282d978f509167c3faf627",
+      "bytes": 10736
+    },
+    {
+      "archive_path": "executed-source/sdks/shared/testing/test_state_trace_delivery_timestamps.py",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/shared/testing/test_state_trace_delivery_timestamps.py",
+      "sha256": "099eed23175976f1433dd7ad29436f72851253f013db51027c284d1a1769e4d9",
+      "bytes": 4139
+    },
+    {
+      "archive_path": "executed-source/sdks/typescript/test/state-trace-delivery-host.test.js",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/state-trace-delivery-host.test.js",
+      "sha256": "0bd902acb0e28eb96b74ada914dd9683bd8135de30dcbf1a0e75f849162c7062",
+      "bytes": 11084
+    },
+    {
+      "archive_path": "executed-source/sdks/python/tests/test_state_trace_delivery_host.py",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_state_trace_delivery_host.py",
+      "sha256": "ff1fe81b6549410cd1cedaa88a68831b46a35dc1b0e42698b7f9b83351592af3",
+      "bytes": 17477
+    },
+    {
+      "archive_path": "executed-source/sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java",
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java",
+      "sha256": "06787443d7520408955a369d5dadb3044af54a1a8f401062ff3f66538dc2c5c6",
+      "bytes": 14671
+    }
+  ],
+  "all_copied_bytes_equal_original": true,
+  "generated_documents_not_mislabeled_raw": true
+}

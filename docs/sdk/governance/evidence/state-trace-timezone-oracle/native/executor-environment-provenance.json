@@ -1,0 +1,200 @@
+{
+  "host_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+  "host_sha256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "hash_read_mode": "1 MiB streamed",
+  "host_size_bytes": 706935504,
+  "source_qualification": "captured after execution from original tool-call arguments and existing run receipts; no Host rerun, no invented runtime environment print",
+  "calls": [
+    {
+      "zone": "utc",
+      "language": "typescript",
+      "actual_exec_session_id": 10704,
+      "command_environment_from_tool_call": {
+        "TZ": "UTC",
+        "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+        "ECHO_AGENT_SDK_REQUIRE_HOST_E2E": "1",
+        "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime"
+      },
+      "actual_child_command": [
+        "node",
+        "--test",
+        "--test-name-pattern=real Host (state|trace)",
+        "test/state-trace-delivery-host.test.js"
+      ],
+      "actual_cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+      "run_receipt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/typescript-run.json",
+      "run_receipt_sha256": "a3563c42d7d4054c25f41cfa16d9aee8641db02061e09612e2ca0c4e4db86d96",
+      "started_at": "2026-10-14T22:39:43.022Z",
+      "finished_at": "2026-10-14T22:39:45.476Z",
+      "exit_code": 0,
+      "declaration_source": "exact functions.exec exec_command cmd environment assignments from this task tool-call transcript, not a newly executed environment dump",
+      "observed_timezone_source": "native proof.host_timezone plus exact serializer offsets; both actual proof fields checked",
+      "host_binary_source": "streamed original filesystem Host hashing before both producer phases: before.json and java-before.json; assigned exact path in each tool call"
+    },
+    {
+      "zone": "utc",
+      "language": "python",
+      "actual_exec_session_id": 22827,
+      "command_environment_from_tool_call": {
+        "TZ": "UTC",
+        "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+        "ECHO_AGENT_SDK_REQUIRE_HOST_E2E": "1",
+        "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime"
+      },
+      "actual_child_command": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-project",
+        "--with",
+        "pytest",
+        "--with",
+        "pytest-asyncio",
+        "--with",
+        "agent-client-protocol==0.12.1",
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-s",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_state_trace_delivery_host.py::test_state_trace_delivery_real_host_effects[state]",
+        "tests/test_state_trace_delivery_host.py::test_state_trace_delivery_real_host_effects[trace]"
+      ],
+      "actual_cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "run_receipt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/python-run.json",
+      "run_receipt_sha256": "bad1035c32d1e46155dd88dbd1a7a64df363355de0219ccc33ae1a6fc773fd59",
+      "started_at": "2026-10-14T22:39:43.023Z",
+      "finished_at": "2026-10-14T22:39:45.149Z",
+      "exit_code": 0,
+      "declaration_source": "exact functions.exec exec_command cmd environment assignments from this task tool-call transcript, not a newly executed environment dump",
+      "observed_timezone_source": "native proof.host_timezone plus exact serializer offsets; both actual proof fields checked",
+      "host_binary_source": "streamed original filesystem Host hashing before both producer phases: before.json and java-before.json; assigned exact path in each tool call"
+    },
+    {
+      "zone": "shanghai",
+      "language": "typescript",
+      "actual_exec_session_id": 45525,
+      "command_environment_from_tool_call": {
+        "TZ": "Asia/Shanghai",
+        "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+        "ECHO_AGENT_SDK_REQUIRE_HOST_E2E": "1",
+        "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime"
+      },
+      "actual_child_command": [
+        "node",
+        "--test",
+        "--test-name-pattern=real Host (state|trace)",
+        "test/state-trace-delivery-host.test.js"
+      ],
+      "actual_cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+      "run_receipt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/typescript-run.json",
+      "run_receipt_sha256": "00bd663d7e92d1a0d07d6fa18fe98097a4ba418b883318c9720331f2f38fb163",
+      "started_at": "2026-10-14T22:39:43.022Z",
+      "finished_at": "2026-10-14T22:39:45.477Z",
+      "exit_code": 0,
+      "declaration_source": "exact functions.exec exec_command cmd environment assignments from this task tool-call transcript, not a newly executed environment dump",
+      "observed_timezone_source": "native proof.host_timezone plus exact serializer offsets; both actual proof fields checked",
+      "host_binary_source": "streamed original filesystem Host hashing before both producer phases: before.json and java-before.json; assigned exact path in each tool call"
+    },
+    {
+      "zone": "shanghai",
+      "language": "python",
+      "actual_exec_session_id": 18062,
+      "command_environment_from_tool_call": {
+        "TZ": "Asia/Shanghai",
+        "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+        "ECHO_AGENT_SDK_REQUIRE_HOST_E2E": "1",
+        "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime"
+      },
+      "actual_child_command": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-project",
+        "--with",
+        "pytest",
+        "--with",
+        "pytest-asyncio",
+        "--with",
+        "agent-client-protocol==0.12.1",
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-s",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_state_trace_delivery_host.py::test_state_trace_delivery_real_host_effects[state]",
+        "tests/test_state_trace_delivery_host.py::test_state_trace_delivery_real_host_effects[trace]"
+      ],
+      "actual_cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "run_receipt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/python-run.json",
+      "run_receipt_sha256": "3fb6fdf3618b4fab6b780cd9c8ba68394c4c95c72a5728c175cc32374c1fd37d",
+      "started_at": "2026-10-14T22:39:43.022Z",
+      "finished_at": "2026-10-14T22:39:45.147Z",
+      "exit_code": 0,
+      "declaration_source": "exact functions.exec exec_command cmd environment assignments from this task tool-call transcript, not a newly executed environment dump",
+      "observed_timezone_source": "native proof.host_timezone plus exact serializer offsets; both actual proof fields checked",
+      "host_binary_source": "streamed original filesystem Host hashing before both producer phases: before.json and java-before.json; assigned exact path in each tool call"
+    },
+    {
+      "zone": "utc",
+      "language": "java",
+      "actual_exec_session_id": 48817,
+      "command_environment_from_tool_call": {
+        "TZ": "UTC",
+        "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+        "ECHO_AGENT_SDK_REQUIRE_HOST_E2E": "1",
+        "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime"
+      },
+      "actual_child_command": [
+        "mvn",
+        "-q",
+        "-Djava.io.tmpdir=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/runtime",
+        "-Dtest=StateTraceDeliveryHostTest#stateFullFieldsFaultAndRealHostRestart+traceJsonlFullSanitizedFieldsFaultAndRealHostRestart",
+        "test"
+      ],
+      "actual_cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+      "run_receipt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/utc/java-run.json",
+      "run_receipt_sha256": "bd0d67830b8def1b6505fccdb3e446e67954230c57b25a8c624e393c252ea081",
+      "started_at": "2026-10-14T22:47:13.987Z",
+      "finished_at": "2026-10-14T22:47:20.955Z",
+      "exit_code": 0,
+      "declaration_source": "exact functions.exec exec_command cmd environment assignments from this task tool-call transcript, not a newly executed environment dump",
+      "observed_timezone_source": "native proof.host_timezone plus exact serializer offsets; both actual proof fields checked",
+      "host_binary_source": "streamed original filesystem Host hashing before both producer phases: before.json and java-before.json; assigned exact path in each tool call"
+    },
+    {
+      "zone": "shanghai",
+      "language": "java",
+      "actual_exec_session_id": 49845,
+      "command_environment_from_tool_call": {
+        "TZ": "Asia/Shanghai",
+        "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+        "ECHO_AGENT_SDK_REQUIRE_HOST_E2E": "1",
+        "TMPDIR": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime"
+      },
+      "actual_child_command": [
+        "mvn",
+        "-q",
+        "-Djava.io.tmpdir=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/runtime",
+        "-Dtest=StateTraceDeliveryHostTest#stateFullFieldsFaultAndRealHostRestart+traceJsonlFullSanitizedFieldsFaultAndRealHostRestart",
+        "test"
+      ],
+      "actual_cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+      "run_receipt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-native/shanghai/java-run.json",
+      "run_receipt_sha256": "d6a366007752813968957d46eced5802867cf4e8f16239eb395360431545e251",
+      "started_at": "2026-10-14T22:49:11.076Z",
+      "finished_at": "2026-10-14T22:49:15.113Z",
+      "exit_code": 0,
+      "declaration_source": "exact functions.exec exec_command cmd environment assignments from this task tool-call transcript, not a newly executed environment dump",
+      "observed_timezone_source": "native proof.host_timezone plus exact serializer offsets; both actual proof fields checked",
+      "host_binary_source": "streamed original filesystem Host hashing before both producer phases: before.json and java-before.json; assigned exact path in each tool call"
+    }
+  ],
+  "surefire_qualification": "-Djava.io.tmpdir was passed in the original Maven command but Surefire actual fixture paths remained /var/folders; archive records those original paths rather than claiming AdminTMP was effective"
+}

@@ -1,0 +1,58 @@
+{
+  "execution_source_head": "9a59943e70da06b1af231b1fb22bddc879885f28",
+  "archive_source_head": "ab87d70ebccece5ceb7987931d244bab7ac069fb",
+  "framework_revision": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "host_sha256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "host_bytes": 706935504,
+  "host_hash_method": "1 MiB streamed chunks",
+  "time_native_scenes": 12,
+  "time_native_failed": 0,
+  "time_native_selected_skipped": 0,
+  "native_breakdown": {
+    "typescript": 4,
+    "python": 4,
+    "java": 4
+  },
+  "timestamp_observations": 84,
+  "pure_oracle_tests": 14,
+  "pure_oracle_failed": 0,
+  "source_frozen_sha256": {
+    "sdks/shared/testing/state_trace_delivery_fixture.py": "bc63faed018676620295ef93c1972cec609ed34026282d978f509167c3faf627",
+    "sdks/shared/testing/test_state_trace_delivery_timestamps.py": "099eed23175976f1433dd7ad29436f72851253f013db51027c284d1a1769e4d9",
+    "sdks/typescript/test/state-trace-delivery-host.test.js": "0bd902acb0e28eb96b74ada914dd9683bd8135de30dcbf1a0e75f849162c7062",
+    "sdks/python/tests/test_state_trace_delivery_host.py": "ff1fe81b6549410cd1cedaa88a68831b46a35dc1b0e42698b7f9b83351592af3",
+    "sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java": "06787443d7520408955a369d5dadb3044af54a1a8f401062ff3f66538dc2c5c6"
+  },
+  "repair_source_count_during_java": 37,
+  "repair_sources_before_after_unchanged_during_java": true,
+  "rust_input_count_during_java": 61,
+  "rust_inputs_unchanged_during_java": true,
+  "lock_unchanged_during_java": true,
+  "java_actual": "Oracle JDK21.0.5; local qualification, not Temurin17 CI",
+  "maven_actual": "3.9.0",
+  "fixture_original_field_qualification": "original +08 payload and all original non-path fields unchanged; owned root path substitutions and added trace_summary_expected prevent any claim of complete fixture byte identity",
+  "linux_ci_after_validation": false,
+  "official_whole_language_after_validation": false,
+  "independent_source_review": {
+    "reviewer": "/root/sdk_capability_acceptance_audit",
+    "critical": 0,
+    "important": 0,
+    "minor": 0
+  },
+  "original_ci_failure_log_sha256": "d4a85d86d1af20f0025d157e66dceed3b4893059c2ae67da2370f254f4dad2ca",
+  "scope_limits": [
+    "no production/API/schema/persistence behavior change",
+    "no global CI TZ override",
+    "no claim of current full SDK main acceptance",
+    "separate authorized HashJava3 result retained only in raw source-preservation summary; excluded from Time totals",
+    "current other-lane changes after Java lease are outside this 37-file captured source cut"
+  ],
+  "independent_actual_review": {
+    "reviewer": "/root/sdk_capability_acceptance_audit",
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "scope": "five source files and full12 actual scenes/84 timestamp fields, original environment binding/Host streamhash/raw copies; archive material hash review follows",
+    "machine_signature": false
+  }
+}

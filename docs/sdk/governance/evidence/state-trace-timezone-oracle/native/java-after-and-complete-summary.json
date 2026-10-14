@@ -1,0 +1,40 @@
+{
+  "state_trace_scenes_passed": 12,
+  "state_trace_scenes_failed": 0,
+  "state_trace_selected_skipped": 0,
+  "typescript_scenes": 4,
+  "python_scenes": 4,
+  "java_scenes": 4,
+  "java_time_xml_each": [
+    {
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "file_sha256_java_unit": {
+    "tests": 3,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "file_sha256_xml_sha256": "18baa745801c532506ec68d28ee775552fc70ffca4905d43a0b171ace20630fa",
+  "repair_source_count": 37,
+  "repair_source_before_after_unchanged": true,
+  "rust_input_count": 61,
+  "rust_inputs_before_after_unchanged": true,
+  "cargo_lock_unchanged": true,
+  "host_sha256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "actual_java": "Oracle JDK 21.0.5; local, not Temurin17 CI",
+  "actual_maven": "3.9.0",
+  "full_official_language_gate_performed": false,
+  "linux_ci_gate_performed": false,
+  "native_producer_released": true
+}

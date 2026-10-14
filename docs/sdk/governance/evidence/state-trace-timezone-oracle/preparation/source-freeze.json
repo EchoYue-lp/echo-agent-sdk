@@ -1,0 +1,27 @@
+{
+  "sourceHead": "9a59943e70da06b1af231b1fb22bddc879885f28",
+  "sourceSHA256": {
+    "sdks/shared/testing/state_trace_delivery_fixture.py": "bc63faed018676620295ef93c1972cec609ed34026282d978f509167c3faf627",
+    "sdks/shared/testing/test_state_trace_delivery_timestamps.py": "099eed23175976f1433dd7ad29436f72851253f013db51027c284d1a1769e4d9",
+    "sdks/typescript/test/state-trace-delivery-host.test.js": "0bd902acb0e28eb96b74ada914dd9683bd8135de30dcbf1a0e75f849162c7062",
+    "sdks/python/tests/test_state_trace_delivery_host.py": "ff1fe81b6549410cd1cedaa88a68831b46a35dc1b0e42698b7f9b83351592af3",
+    "sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java": "06787443d7520408955a369d5dadb3044af54a1a8f401062ff3f66538dc2c5c6"
+  },
+  "originalFixtureInputsUnchanged": true,
+  "onlyAddedExpectedFixtureKey": "trace_summary_expected",
+  "currentHostNativeRuns": 0,
+  "javaCompilePerformed": false,
+  "pureUnitTests": {
+    "passed": 14,
+    "failed": 0,
+    "runReceipt": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-state-trace-timezone-oracle-proposal/pure-unit-after-lint-run.json"
+  },
+  "lint": {
+    "ruffCheck": 0,
+    "ruffFormatCheck": 0,
+    "nodeSyntax": 0,
+    "diffCheck": 0
+  },
+  "firstLintFailure": "TRY004 types; DTZ001 calendar validation tzinfo; I001 import grouping; fixed without skips or suppression",
+  "semanticImpact": "test-only existing State/Trace datetime equality; framework DateTimeUTC/local serializer stays authority, no production code/API/contracts change; summary full object equality strengthens unknown-key coverage"
+}
