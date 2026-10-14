@@ -63,6 +63,16 @@ Session authority for reads and writes. Remaining builders and process-local
 trait seams stay explicit language-local helpers; they are not fabricated as
 remote handles.
 
+The four accepted Git worktree source calls pass through a thin synchronous
+entry directly to one private boxed future per operation. Other source calls
+retain their original general coroutine. Boxing that large general dispatcher
+or using an async match for all four Git operations still lets polling inherit
+unrelated temporary stack slots. The separate entry and construction boundaries
+forward the same arguments through the same Session owner and call the original
+framework create/list/merge/remove functions. They do not add a worktree
+registry, policy, state authority or thread-stack override; the original
+non-Git mutation guard and feature-off/error paths are retained.
+
 The canonical `echo_core::agent::Agent::chat` and `::execute` source operations
 are now thin adapters over `_echo_agent/run/start`: the request uses the
 issued Agent handle plus `arguments = [Handle(Session), String(input)]`, and

@@ -1,0 +1,22 @@
+(lldb) target create /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-thin-entry-2df1-host
+Current executable set to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-thin-entry-2df1-host' (arm64).
+(lldb) disassemble --name echo_sdk_host::core_profile::facade::source_operations::dispatch --count 18
+echo-sdk-a634-worktree-thin-entry-2df1-host`echo_sdk_host::core_profile::facade::source_operations::dispatch:
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b1680] <+0>:  stp    x28, x27, [sp, #-0x20]!
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b1684] <+4>:  stp    x29, x30, [sp, #0x10]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b1688] <+8>:  add    x29, sp, #0x10
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b168c] <+12>: sub    sp, sp, #0x1, lsl #12     ; =0x1000 
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b1690] <+16>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b1694] <+20>: sub    sp, sp, #0x7a0
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b1698] <+24>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b169c] <+28>: str    x0, [sp, #0x10]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16a0] <+32>: str    x1, [sp, #0x18]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16a4] <+36>: mov    x0, x2
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16a8] <+40>: str    x0, [sp, #0x20]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16ac] <+44>: bl     0x1009cd664               ; <alloc::string::String>::as_str
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16b0] <+48>: str    x0, [sp, #0x28]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16b4] <+52>: str    x1, [sp, #0x30]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16b8] <+56>: adrp   x2, 41204
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16bc] <+60>: add    x2, x2, #0xaa9
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16c0] <+64>: mov    w8, #0x29                 ; =41 
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x1007b16c4] <+68>: mov    x3, x8

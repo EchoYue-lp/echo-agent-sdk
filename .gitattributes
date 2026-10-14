@@ -169,3 +169,31 @@ docs/sdk/governance/evidence/semantic-source-provenance/successor-observed-tags/
 # Exact live-provider test output retains original final blank lines.
 docs/sdk/governance/evidence/live-service-llm-proof/focused-correct-state.log -diff
 docs/sdk/governance/evidence/live-service-llm-proof/host-lib.log -diff
+
+# Exact worktree stack diagnostics, disassembly and patches preserve original bytes.
+docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/disassembly-0.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/disassembly-1.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/disassembly-2.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/outer-disassembly-0.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/outer-disassembly-1.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/outer-disassembly-2.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/candidate/source-only.patch -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/aggregate333-failed/build/poll-disassembly-0.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/aggregate333-failed/build/poll-disassembly-1.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/create-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/dispatch-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/list-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/merge-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/remove-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/router-constructor-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/merge-diagnosis/frame-0.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/merge-diagnosis/frame-1.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/merge-diagnosis/frame-2.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/per-operation-candidate/per-operation.patch -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/create-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/git-router-constructor-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/list-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/merge-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/non-git-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/remove-poll-disassembly.log -diff
+docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/thin-entry-constructor-disassembly.log -diff

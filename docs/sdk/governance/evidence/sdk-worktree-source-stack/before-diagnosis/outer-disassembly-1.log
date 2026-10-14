@@ -1,0 +1,16 @@
+(lldb) target create /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host
+Current executable set to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host' (arm64).
+(lldb) disassemble --name _RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree15remove_worktree0B5_ --count 12
+echo-sdk-session-run-idempotency-rpc-final-host`echo_tools::git_worktree::remove_worktree::{closure#0}:
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb288] <+0>:  stp    x28, x27, [sp, #-0x20]!
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb28c] <+4>:  stp    x29, x30, [sp, #0x10]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb290] <+8>:  add    x29, sp, #0x10
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb294] <+12>: sub    x9, sp, #0x10, lsl #12    ; =0x10000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb298] <+16>: sub    sp, sp, #0x1, lsl #12     ; =0x1000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb29c] <+20>: ldr    xzr, [sp]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb2a0] <+24>: cmp    sp, x9
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb2a4] <+28>: b.ne   0x1020fb298               ; <+16>
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb2a8] <+32>: sub    sp, sp, #0xb90
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb2ac] <+36>: ldr    xzr, [sp]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb2b0] <+40>: sub    x9, x29, #0x58
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020fb2b4] <+44>: str    x9, [sp, #0x28]

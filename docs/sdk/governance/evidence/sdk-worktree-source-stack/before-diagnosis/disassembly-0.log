@@ -1,0 +1,20 @@
+(lldb) target create /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host
+Current executable set to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host' (arm64).
+(lldb) disassemble --name _RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree23verify_managed_worktree0B5_ --count 16
+echo-sdk-session-run-idempotency-rpc-final-host`echo_tools::git_worktree::verify_managed_worktree::{closure#0}:
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff0ec] <+0>:  stp    x28, x27, [sp, #-0x20]!
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff0f0] <+4>:  stp    x29, x30, [sp, #0x10]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff0f4] <+8>:  add    x29, sp, #0x10
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff0f8] <+12>: sub    x9, sp, #0x21, lsl #12    ; =0x21000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff0fc] <+16>: sub    sp, sp, #0x1, lsl #12     ; =0x1000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff100] <+20>: ldr    xzr, [sp]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff104] <+24>: cmp    sp, x9
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff108] <+28>: b.ne   0x1020ff0fc               ; <+16>
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff10c] <+32>: sub    sp, sp, #0x890
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff110] <+36>: ldr    xzr, [sp]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff114] <+40>: sub    x9, x29, #0x30
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff118] <+44>: str    x9, [sp, #0x148]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff11c] <+48>: add    x9, sp, #0x21, lsl #12    ; =0x21000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff120] <+52>: add    x9, x9, #0x738
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff124] <+56>: str    x9, [sp, #0x168]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1020ff128] <+60>: add    x9, sp, #0x21, lsl #12    ; =0x21000 

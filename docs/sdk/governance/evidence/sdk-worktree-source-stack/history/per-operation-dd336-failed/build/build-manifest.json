@@ -1,0 +1,12 @@
+{
+  "binary": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-per-operation-dd336-host",
+  "binarySHA256": "2578fd07ddd75c85d88f6b3184abf43b3de948c69d7d366382227bfd6d7274ce",
+  "sourceOperationsSHA256": "dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32",
+  "frameworkGit": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "manifestSHA256": "4245fe4e2c249470a99878ef2dc4c4f80a60777b2e9b17ae697f594c9b9078f7",
+  "lockSHA256": "a7a331cf94a24842e0b892d44f842e5663434009c9187b4306af7df524344bb3",
+  "buildReceipt": "build-run.json",
+  "inputCount": 61,
+  "beforeAfterUnchanged": true,
+  "scope": "same olda634/.45 causaldiagnosis only, not newframeworkbranchfix/advisoryreleasecertification"
+}

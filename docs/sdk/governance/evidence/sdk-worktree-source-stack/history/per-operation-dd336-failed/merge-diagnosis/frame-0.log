@@ -1,0 +1,16 @@
+(lldb) target create /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-per-operation-dd336-host
+Current executable set to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-per-operation-dd336-host' (arm64).
+(lldb) disassemble --name _RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree13find_git_root0B5_ --count 12
+echo-sdk-a634-worktree-per-operation-dd336-host`echo_tools::git_worktree::find_git_root::{closure#0}:
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabc4] <+0>:  stp    x28, x27, [sp, #-0x20]!
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabc8] <+4>:  stp    x29, x30, [sp, #0x10]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabcc] <+8>:  add    x29, sp, #0x10
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabd0] <+12>: sub    x9, sp, #0x10, lsl #12    ; =0x10000 
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabd4] <+16>: sub    sp, sp, #0x1, lsl #12     ; =0x1000 
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabd8] <+20>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabdc] <+24>: cmp    sp, x9
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabe0] <+28>: b.ne   0x1020fabd4               ; <+16>
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabe4] <+32>: sub    sp, sp, #0xaa0
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabe8] <+36>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabec] <+40>: add    x9, sp, #0x10, lsl #12    ; =0x10000 
+echo-sdk-a634-worktree-per-operation-dd336-host[0x1020fabf0] <+44>: add    x9, x9, #0x900

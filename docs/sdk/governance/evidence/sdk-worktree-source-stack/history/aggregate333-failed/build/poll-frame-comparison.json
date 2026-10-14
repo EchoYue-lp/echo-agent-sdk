@@ -1,0 +1,21 @@
+{
+  "same_profile_binary_sha": "efcd306518b8c00c44e31e428cda08b550efce05e41f8c9dd8169b008563faff",
+  "rows": [
+    {
+      "function": "echo_sdk_host::core_profile::facade::source_operations::dispatch::",
+      "prologue_bytes": 910192,
+      "before_dispatch_prologue_bytes": 1216096,
+      "log": "poll-disassembly-0.log"
+    },
+    {
+      "function": "echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_source::",
+      "prologue_bytes": 307216,
+      "before_dispatch_prologue_bytes": null,
+      "log": "poll-disassembly-1.log"
+    }
+  ],
+  "note": "measuredprologueallocation notFutureSize norOSstacklimit; privatehelpernewscopebodyunchanged",
+  "not_a_fix_success": "NativeTS/PY actual first efcd diagnostic failed at dirtyremove withtransportclosed; dispatcher reduction offsetbyhelperframe, no resolvedclaim",
+  "measured_parent_plus_helper_bytes": 1217408,
+  "next_minimal_candidate": "nonasync router returningBoxFuture +four peroperation privateboxedasync functions; originalsinglebranchbody; notnewauthority/API"
+}

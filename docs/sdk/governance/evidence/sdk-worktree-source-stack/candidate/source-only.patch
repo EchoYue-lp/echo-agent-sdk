@@ -1,0 +1,161 @@
+--- before/source_operations.rs
++++ after/source_operations.rs
+@@ -3851,65 +3851,11 @@
+             }
+         }
+         #[cfg(feature = "framework-git")]
+-        "echo_tools::git_worktree::create_worktree" => {
+-            let _owner = source_session_owner(state, request).await?;
+-            if request.arguments.len() != 3 {
+-                return Err(invalid(
+-                    "create_worktree accepts [Session, repo Path, config]",
+-                ));
+-            }
+-            let repo = path_argument(request, 1)?;
+-            let config = worktree_config_argument(request, 2)?;
+-            let worktree = echo_agent::tools::git_worktree::create_worktree(&repo, &config)
+-                .await
+-                .map_err(|error| framework(&request.operation, error))?;
+-            managed_worktree_value(&request.operation, worktree)
+-        }
+-        #[cfg(feature = "framework-git")]
+-        "echo_tools::git_worktree::list_worktrees" => {
+-            let _owner = source_session_owner(state, request).await?;
+-            if request.arguments.len() != 2 {
+-                return Err(invalid("list_worktrees accepts [Session, repo Path]"));
+-            }
+-            let repo = path_argument(request, 1)?;
+-            let worktrees = echo_agent::tools::git_worktree::list_worktrees(&repo)
+-                .await
+-                .map_err(|error| framework(&request.operation, error))?
+-                .into_iter()
+-                .map(|worktree| managed_worktree_value(&request.operation, worktree))
+-                .collect::<Result<Vec<_>, EchoSdkError>>()?;
+-            Ok(WireValue::List(worktrees))
+-        }
+-        #[cfg(feature = "framework-git")]
+-        "echo_tools::git_worktree::merge_worktree" => {
+-            let _owner = source_session_owner(state, request).await?;
+-            if request.arguments.len() != 4 {
+-                return Err(invalid(
+-                    "merge_worktree accepts [Session, repo Path, worktree, target_branch]",
+-                ));
+-            }
+-            let repo = path_argument(request, 1)?;
+-            let worktree = managed_worktree_argument(request, 2)?;
+-            let target = string_argument(request, 3, "target branch")?;
+-            let output = echo_agent::tools::git_worktree::merge_worktree(&repo, &worktree, &target)
+-                .await
+-                .map_err(|error| framework(&request.operation, error))?;
+-            Ok(WireValue::String(output))
+-        }
+-        #[cfg(feature = "framework-git")]
+-        "echo_tools::git_worktree::remove_worktree" => {
+-            let _owner = source_session_owner(state, request).await?;
+-            if request.arguments.len() != 3 {
+-                return Err(invalid(
+-                    "remove_worktree accepts [Session, repo Path, worktree]",
+-                ));
+-            }
+-            let repo = path_argument(request, 1)?;
+-            let worktree = managed_worktree_argument(request, 2)?;
+-            echo_agent::tools::git_worktree::remove_worktree(&repo, &worktree)
+-                .await
+-                .map_err(|error| framework(&request.operation, error))?;
+-            Ok(WireValue::Null)
++        "echo_tools::git_worktree::create_worktree"
++        | "echo_tools::git_worktree::list_worktrees"
++        | "echo_tools::git_worktree::merge_worktree"
++        | "echo_tools::git_worktree::remove_worktree" => {
++            dispatch_git_worktree_source(state, request).await
+         }
+         "echo_agent::state::clear_persisted_runtime_incarnation"
+         | "echo_agent::state::delete_persisted_conversation" => {
+@@ -6515,6 +6461,87 @@
+     }
+ }
+ 
++// Keep worktree futures out of the large source dispatcher's poll frame.
++// Boxing the outer dispatcher alone does not bound its temporary stack slots.
++// This private partition only constructs/polls the original framework calls;
++// framework ownership, dirty-check rejection and cleanup remain authoritative.
++#[cfg(feature = "framework-git")]
++fn dispatch_git_worktree_source<'a>(
++    state: &'a CoreProfileState,
++    request: &'a FeatureOperationRequest,
++) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
++    Box::pin(async move {
++        match request.operation.as_str() {
++            #[cfg(feature = "framework-git")]
++            "echo_tools::git_worktree::create_worktree" => {
++                let _owner = source_session_owner(state, request).await?;
++                if request.arguments.len() != 3 {
++                    return Err(invalid(
++                        "create_worktree accepts [Session, repo Path, config]",
++                    ));
++                }
++                let repo = path_argument(request, 1)?;
++                let config = worktree_config_argument(request, 2)?;
++                let worktree = echo_agent::tools::git_worktree::create_worktree(&repo, &config)
++                    .await
++                    .map_err(|error| framework(&request.operation, error))?;
++                managed_worktree_value(&request.operation, worktree)
++            }
++            #[cfg(feature = "framework-git")]
++            "echo_tools::git_worktree::list_worktrees" => {
++                let _owner = source_session_owner(state, request).await?;
++                if request.arguments.len() != 2 {
++                    return Err(invalid("list_worktrees accepts [Session, repo Path]"));
++                }
++                let repo = path_argument(request, 1)?;
++                let worktrees = echo_agent::tools::git_worktree::list_worktrees(&repo)
++                    .await
++                    .map_err(|error| framework(&request.operation, error))?
++                    .into_iter()
++                    .map(|worktree| managed_worktree_value(&request.operation, worktree))
++                    .collect::<Result<Vec<_>, EchoSdkError>>()?;
++                Ok(WireValue::List(worktrees))
++            }
++            #[cfg(feature = "framework-git")]
++            "echo_tools::git_worktree::merge_worktree" => {
++                let _owner = source_session_owner(state, request).await?;
++                if request.arguments.len() != 4 {
++                    return Err(invalid(
++                        "merge_worktree accepts [Session, repo Path, worktree, target_branch]",
++                    ));
++                }
++                let repo = path_argument(request, 1)?;
++                let worktree = managed_worktree_argument(request, 2)?;
++                let target = string_argument(request, 3, "target branch")?;
++                let output =
++                    echo_agent::tools::git_worktree::merge_worktree(&repo, &worktree, &target)
++                        .await
++                        .map_err(|error| framework(&request.operation, error))?;
++                Ok(WireValue::String(output))
++            }
++            #[cfg(feature = "framework-git")]
++            "echo_tools::git_worktree::remove_worktree" => {
++                let _owner = source_session_owner(state, request).await?;
++                if request.arguments.len() != 3 {
++                    return Err(invalid(
++                        "remove_worktree accepts [Session, repo Path, worktree]",
++                    ));
++                }
++                let repo = path_argument(request, 1)?;
++                let worktree = managed_worktree_argument(request, 2)?;
++                echo_agent::tools::git_worktree::remove_worktree(&repo, &worktree)
++                    .await
++                    .map_err(|error| framework(&request.operation, error))?;
++                Ok(WireValue::Null)
++            }
++            _ => Err(framework(
++                &request.operation,
++                "source operation is not in the private Git worktree partition",
++            )),
++        }
++    })
++}
++
+ // Agent accessors and configuration mutations have a separate private future
+ // so evaluating an analysis operation does not inherit their temporary stack
+ // slots. This preserves exact dispatch and the live Agent authority.

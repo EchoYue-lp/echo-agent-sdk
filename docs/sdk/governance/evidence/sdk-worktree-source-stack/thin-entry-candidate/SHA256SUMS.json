@@ -1,0 +1,7 @@
+{
+  "source_operations.per-operation-before.rs": "dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32",
+  "source_operations.after.rs": "2df1bbe8ff3221c690d016379030dee6f76afa8f1893f8ccadb1791d14769649",
+  "thin-entry.patch": "648004f0f2271ebe4eeb34b47e90e15d58804ea0779b6c1b53d9cb3243e51949",
+  "README.md": "da8b79afd2efba34dc4e2ecaa2114e034091bdbfb18b5093a265edd675bfa0e7",
+  "static-impact.json": "3c8842a8deae84658a0bacacb19d00a22843d04db6b9ade80ffc9fc1809bd2e6"
+}

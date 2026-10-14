@@ -1,0 +1,61 @@
+        #[cfg(feature = "framework-git")]
+        "echo_tools::git_worktree::create_worktree" => {
+            let _owner = source_session_owner(state, request).await?;
+            if request.arguments.len() != 3 {
+                return Err(invalid(
+                    "create_worktree accepts [Session, repo Path, config]",
+                ));
+            }
+            let repo = path_argument(request, 1)?;
+            let config = worktree_config_argument(request, 2)?;
+            let worktree = echo_agent::tools::git_worktree::create_worktree(&repo, &config)
+                .await
+                .map_err(|error| framework(&request.operation, error))?;
+            managed_worktree_value(&request.operation, worktree)
+        }
+        #[cfg(feature = "framework-git")]
+        "echo_tools::git_worktree::list_worktrees" => {
+            let _owner = source_session_owner(state, request).await?;
+            if request.arguments.len() != 2 {
+                return Err(invalid("list_worktrees accepts [Session, repo Path]"));
+            }
+            let repo = path_argument(request, 1)?;
+            let worktrees = echo_agent::tools::git_worktree::list_worktrees(&repo)
+                .await
+                .map_err(|error| framework(&request.operation, error))?
+                .into_iter()
+                .map(|worktree| managed_worktree_value(&request.operation, worktree))
+                .collect::<Result<Vec<_>, EchoSdkError>>()?;
+            Ok(WireValue::List(worktrees))
+        }
+        #[cfg(feature = "framework-git")]
+        "echo_tools::git_worktree::merge_worktree" => {
+            let _owner = source_session_owner(state, request).await?;
+            if request.arguments.len() != 4 {
+                return Err(invalid(
+                    "merge_worktree accepts [Session, repo Path, worktree, target_branch]",
+                ));
+            }
+            let repo = path_argument(request, 1)?;
+            let worktree = managed_worktree_argument(request, 2)?;
+            let target = string_argument(request, 3, "target branch")?;
+            let output = echo_agent::tools::git_worktree::merge_worktree(&repo, &worktree, &target)
+                .await
+                .map_err(|error| framework(&request.operation, error))?;
+            Ok(WireValue::String(output))
+        }
+        #[cfg(feature = "framework-git")]
+        "echo_tools::git_worktree::remove_worktree" => {
+            let _owner = source_session_owner(state, request).await?;
+            if request.arguments.len() != 3 {
+                return Err(invalid(
+                    "remove_worktree accepts [Session, repo Path, worktree]",
+                ));
+            }
+            let repo = path_argument(request, 1)?;
+            let worktree = managed_worktree_argument(request, 2)?;
+            echo_agent::tools::git_worktree::remove_worktree(&repo, &worktree)
+                .await
+                .map_err(|error| framework(&request.operation, error))?;
+            Ok(WireValue::Null)
+        }

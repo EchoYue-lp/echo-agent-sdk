@@ -1,0 +1,13 @@
+{
+  "host_sha256": "03e795c3a9e047534706ad0f2ecef25742a24896e72f1eaab8b6edbb6871e1b7",
+  "source_sha256": "2df1bbe8ff3221c690d016379030dee6f76afa8f1893f8ccadb1791d14769649",
+  "script_sha256": {
+    "typescript.mjs": "8960fe69ced9b9c5ab25721ac0e8add8deda48561007fe60751c3f05d8abd67d",
+    "python.py": "57d43b855f4bcc0fc4d9ec3def4ce0261ba18be1ff1a56a0abdbf6077911643d"
+  },
+  "run_receipts": {
+    "python-run.json": "d9ef71069638574d1bde4cf645a80a15c495972f67f69eee7b2a15aabac055ad",
+    "typescript-run.json": "ae2f08a481b64235d5c491d7995d7092f42dcbf91c432d931d4ae1ef2dc0e468"
+  },
+  "comparison_sha256": "887387e971ed69ee43945da0cd82a4296f8cefea8e3afb7b2020b1bc2befaecf"
+}

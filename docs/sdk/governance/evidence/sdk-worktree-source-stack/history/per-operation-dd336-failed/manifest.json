@@ -1,0 +1,199 @@
+{
+  "scope": "secondperoperationdd336firstactual2native failure retained; dirtyremove originalcause corrected but Git4notclosed",
+  "hostSHA": "2578fd07ddd75c85d88f6b3184abf43b3de948c69d7d366382227bfd6d7274ce",
+  "compiledSourceSHA": "dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32",
+  "frameworkPin": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "buildExit": 0,
+  "strictProductionClippyExit": 0,
+  "dirtyremoveActual": "eachfirst4calls includingtypedFrameworkError/never/fullop/nullhandle/details+originalwholeSnapshotEqual+followupalivelistPASS",
+  "remaining_failure": "fifthlegitimatemerge Hoststackoverflow/TransportClosed bothfirstnative. Cleanremove notexecuted. No repeats maskedfailure",
+  "compiledSDKFrames": {
+    "generalPoll": 910192,
+    "routerConstructor": 112,
+    "perMergePoll": 78400,
+    "perRemovePoll": 76576
+  },
+  "compiledFrameworkMergeFrames": {
+    "findGitRoot": 68288,
+    "mergeWithContext": 680752,
+    "merge": 69104
+  },
+  "frameScope": "prologuemeasurement notOSlimit; neworiginalIPS finitechain showsGit stillnestedlargegeneralpoll",
+  "files": {
+    "build/inputs-after.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/inputs-after.json",
+      "sha256": "a0c627414131d4a4e0f2f192b23b1faed5af75c49c7c2e6e5e46bf0a016542a7",
+      "bytes": 6830
+    },
+    "build/poll-frame-comparison.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/poll-frame-comparison.json",
+      "sha256": "2e8e6ff951d3d96bba8445c5123c1a3237877f8521ef79f053b0ddfee9dc6e48",
+      "bytes": 2795
+    },
+    "build/dispatch-poll-disassembly.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/dispatch-poll-disassembly.log",
+      "sha256": "4f93ea2c4a835797e11a0d3606292c06920f9e5cd697b370ebd08b183aa8080e",
+      "bytes": 2348
+    },
+    "build/build-run.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/build-run.json",
+      "sha256": "a9cec7c5432569db822b6e367f3a14f7b60b4cf835a05510b38d667f50970dde",
+      "bytes": 1245
+    },
+    "build/clippy.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/clippy.log",
+      "sha256": "6dea3ec5e2b696a3a433a65ecb70637d7644c2279b584d83b38037ea1907a90c",
+      "bytes": 482
+    },
+    "build/remove-poll-disassembly.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/remove-poll-disassembly.log",
+      "sha256": "e760820f699b580fd3aa76b10465555a59ecac2665646ed48db015bdfb2860d8",
+      "bytes": 2305
+    },
+    "build/build-manifest.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/build-manifest.json",
+      "sha256": "e36310881db5addb112b9074deee6b61ee1fe523a9fbd9c9bd25bf7c45e541cb",
+      "bytes": 751
+    },
+    "build/clippy-run.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/clippy-run.json",
+      "sha256": "337b8dbd454c029bc5631c345338570d049c609e3babdd1862170fe68d65ae81",
+      "bytes": 1505
+    },
+    "build/merge-poll-disassembly.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/merge-poll-disassembly.log",
+      "sha256": "6f4b968f4d5f2c25eb8791396749ed5ac745dfb753051ea29f7c91d81f482903",
+      "bytes": 2289
+    },
+    "build/inputs-before.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/inputs-before.json",
+      "sha256": "a0c627414131d4a4e0f2f192b23b1faed5af75c49c7c2e6e5e46bf0a016542a7",
+      "bytes": 6830
+    },
+    "build/inputs-after-clippy.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/inputs-after-clippy.json",
+      "sha256": "a0c627414131d4a4e0f2f192b23b1faed5af75c49c7c2e6e5e46bf0a016542a7",
+      "bytes": 6830
+    },
+    "build/list-poll-disassembly.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/list-poll-disassembly.log",
+      "sha256": "682e0dd76698e704b9bfe768a52cde947e56557b0d1dabd4c2b9720737fb6671",
+      "bytes": 2281
+    },
+    "build/build.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/build.log",
+      "sha256": "97986af10c7d18b716cb1d45c0bb3fe85158dbf48e5e5025c603058c90fab1e7",
+      "bytes": 482
+    },
+    "build/router-constructor-disassembly.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/router-constructor-disassembly.log",
+      "sha256": "e7bfa8c5e57fbd2a5c6a6d8fa18438b69ed5db6ba7e45475d78fc0971111873d",
+      "bytes": 2316
+    },
+    "build/create-poll-disassembly.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-per-operation-after/create-poll-disassembly.log",
+      "sha256": "9c627d59f08f67ffdde200b906e4f4b3f6137afe3f1eba6374a6c460cfeb71ae",
+      "bytes": 2284
+    },
+    "native/typescript.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript.log",
+      "sha256": "cb9c16df2ca461fa878deb97dd276934fb221ece515f059d084a3b021585a559",
+      "bytes": 691
+    },
+    "native/python-run.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/python-run.json",
+      "sha256": "153c77026aec9b7a8017c0f8c708acdca599317f2e860439243b56edd5db9acb",
+      "bytes": 1147
+    },
+    "native/typescript-run.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript-run.json",
+      "sha256": "4b9cdd8fccb89d5619aa176c369c378831842606849315b8ef356959643df8c0",
+      "bytes": 913
+    },
+    "native/python.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/python.log",
+      "sha256": "1134bd2cf14ca46195fe7cae345e8f1edbd5bc34e99350473630a925ed245b4a",
+      "bytes": 7134
+    },
+    "native/typescript-QpskKD/host.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript-QpskKD/host.json",
+      "sha256": "694d7e96e51de9deeb44c750a3f604cc8c6b809d2075f75ccfee843ba45d1720",
+      "bytes": 609
+    },
+    "native/typescript-QpskKD/host.stderr": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript-QpskKD/host.stderr",
+      "sha256": "a79c553e43cab9f883ded6282af34f291d77c83a0d410e93a6ca5ef257f06242",
+      "bytes": 600
+    },
+    "native/typescript-QpskKD/results.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript-QpskKD/results.json",
+      "sha256": "6dc2557e12fdf77271584465c736aa7e9a9b9d8b5e65b1809a6542af68650db3",
+      "bytes": 38114
+    },
+    "native/typescript-QpskKD/baseline.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript-QpskKD/baseline.json",
+      "sha256": "ec52327856c5f33fba434a9ee1457dc7235ab424d14cd76da5343931c8d37348",
+      "bytes": 1368
+    },
+    "native/typescript-QpskKD/scenario.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript-QpskKD/scenario.json",
+      "sha256": "3bdd6eac25bd0092e9c3950fa20f97fa4ca55453866656308e4f636396dd4653",
+      "bytes": 8626
+    },
+    "native/typescript-QpskKD/state/host/session-index.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript-QpskKD/state/host/session-index.json",
+      "sha256": "e6d23378fa3ec836827b79f2e5a45d86bc4209669bf99ed7cee3a8c2a6b0257f",
+      "bytes": 367
+    },
+    "native/python-xfo_dsuu/host.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/python-xfo_dsuu/host.json",
+      "sha256": "9405fa7ec187926a30fb11133790d1be17b6950a6c997bbbb5a80ee6591ce1bb",
+      "bytes": 607
+    },
+    "native/python-xfo_dsuu/results.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/python-xfo_dsuu/results.json",
+      "sha256": "bbdd6ac4ed65be7614eb85731204f5883f1e3a913a6b444baea039ab6228c9aa",
+      "bytes": 38045
+    },
+    "native/python-xfo_dsuu/baseline.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/python-xfo_dsuu/baseline.json",
+      "sha256": "586ef17b941f92fc2f9bf39aeed7ee22d8dbfb064180584575086f24598aefff",
+      "bytes": 1366
+    },
+    "native/python-xfo_dsuu/scenario.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/python-xfo_dsuu/scenario.json",
+      "sha256": "0f124d66b2ff59921a535ab6210249236ac8222afca3d5f78a643841e0f407bb",
+      "bytes": 8602
+    },
+    "native/python-xfo_dsuu/state/host/session-index.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/python-xfo_dsuu/state/host/session-index.json",
+      "sha256": "ce57ad7530d0c15b35504fa44256305c62fbbe6ddcd042bc277a12b84ba2db93",
+      "bytes": 365
+    },
+    "merge-diagnosis/cause.json": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-merge-stack-readonly/cause.json",
+      "sha256": "73c9329c81bdc47871715476ca30d27042888d653797e7d1ffd7d4e7d84a1f08",
+      "bytes": 3188
+    },
+    "merge-diagnosis/frame-2.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-merge-stack-readonly/frame-2.log",
+      "sha256": "7328323c651d16a8cc09b5935ad17907346036b49879aae6b3d3b571c1829ce8",
+      "bytes": 1652
+    },
+    "merge-diagnosis/frame-1.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-merge-stack-readonly/frame-1.log",
+      "sha256": "98d9b5c302ca17d18271921234d1bc6c73c3a517337ea78424c78cd7ce468bc9",
+      "bytes": 1706
+    },
+    "merge-diagnosis/frame-0.log": {
+      "source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-merge-stack-readonly/frame-0.log",
+      "sha256": "7ce760f898a8cd47d0375a35b522949355c358ef69d5b93f0675a74a1417d5d9",
+      "bytes": 1672
+    },
+    "merge-diagnosis/original-merge-crash.ips": {
+      "source": "/Users/ls/Library/Logs/DiagnosticReports/echo-sdk-a634-worktree-per-operation-dd336-host-2026-10-15-014246.ips",
+      "sha256": "040653e6a361f2c0e55d92197ea49650e53aedaf2230b634b48c4d7805358d11",
+      "bytes": 192836
+    }
+  }
+}

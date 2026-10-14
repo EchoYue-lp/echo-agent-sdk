@@ -1,0 +1,66 @@
+{
+  "originalReport": "/Users/ls/Library/Logs/DiagnosticReports/echo-sdk-session-run-idempotency-rpc-final-host-2026-10-15-002024.ips",
+  "originalSHA": "b00cbcfe40c26ce2ed5cc1b82face76ab5d50ca339c4775a2114f9ee94917b27",
+  "pid": 25628,
+  "captureTime": "2026-10-15 00:20:11.1327 +0800",
+  "binary": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host",
+  "binarySHA": "da873b4aa94fe0b9f1f255e22337c16acb3cd719a939d8b1fdc57ec47c7ce444",
+  "faultingThread": 2,
+  "relevantOriginalFrames": [
+    {
+      "imageOffset": 34600708,
+      "symbol": "_RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree23verify_managed_worktree0B5_",
+      "symbolLocation": 1560,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 34600708,
+      "symbol": "_RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree23verify_managed_worktree0B5_",
+      "symbolLocation": 1560,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 34593984,
+      "symbol": "_RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree23remove_worktree_checked0B5_",
+      "symbolLocation": 1352,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 34636124,
+      "symbol": "_RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree28remove_worktree_with_context0B5_",
+      "symbolLocation": 400,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 34583648,
+      "symbol": "_RNCNvNtCshlB0egxLMyZ_10echo_tools12git_worktree15remove_worktree0B5_",
+      "symbolLocation": 472,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 5388188,
+      "symbol": "_RNCNvNtNtNtCsdP27xSHiJM9_13echo_sdk_host12core_profile6facade17source_operations8dispatch0Cs5CUCt6xHepn_19echo_agent_sdk_host",
+      "symbolLocation": 196216,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 5604360,
+      "symbol": "_RNvXs_NtNtCsjIpoRzUjyHQ_4core6future6futureINtNtB8_3pin3PinINtNtCs6zY7rJBZy9D_5alloc5boxed3BoxNCNvNtNtNtCsdP27xSHiJM9_13echo_sdk_host12core_profile6facade17source_operations8dispatch0EENtB4_6Future4pollCs5CUCt6xHepn_19echo_agent_sdk_host",
+      "symbolLocation": 36,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 7901180,
+      "symbol": "_RNCNCNvNtNtCsdP27xSHiJM9_13echo_sdk_host12core_profile6facade16facade_admission0sn_0Cs5CUCt6xHepn_19echo_agent_sdk_host",
+      "symbolLocation": 24416,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 5603900,
+      "symbol": "_RNvXs_NtNtCsjIpoRzUjyHQ_4core6future6futureINtNtB8_3pin3PinINtNtCs6zY7rJBZy9D_5alloc5boxed3BoxNCNCNvNtNtCsdP27xSHiJM9_13echo_sdk_host12core_profile6facade16facade_admission0sn_0EENtB4_6Future4pollCs5CUCt6xHepn_19echo_agent_sdk_host",
+      "symbolLocation": 36,
+      "imageIndex": 0
+    }
+  ],
+  "scope": "read existingOSreport+binarydisassembly, no rerun/compile/sourcewrite"
+}

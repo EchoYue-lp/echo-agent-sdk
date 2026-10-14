@@ -1,0 +1,55 @@
+{
+  "binary": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-per-operation-dd336-host",
+  "binary_sha256": "2578fd07ddd75c85d88f6b3184abf43b3de948c69d7d366382227bfd6d7274ce",
+  "source_sha256": "dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32",
+  "same_profile": "Cargo sdk-facade-all debug0/inc0/j2 repoMacflags exacta634 samecompiler",
+  "rows": [
+    {
+      "role": "dispatch-poll",
+      "symbol": "echo_sdk_host::core_profile::facade::source_operations::dispatch::{closure#0}",
+      "measured_prologue_bytes": 910192,
+      "log": "dispatch-poll-disassembly.log",
+      "log_sha256": "4f93ea2c4a835797e11a0d3606292c06920f9e5cd697b370ebd08b183aa8080e"
+    },
+    {
+      "role": "router-constructor",
+      "symbol": "echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_source",
+      "measured_prologue_bytes": 112,
+      "log": "router-constructor-disassembly.log",
+      "log_sha256": "e7bfa8c5e57fbd2a5c6a6d8fa18438b69ed5db6ba7e45475d78fc0971111873d"
+    },
+    {
+      "role": "create-poll",
+      "symbol": "echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_create::{closure#0}",
+      "measured_prologue_bytes": 76272,
+      "log": "create-poll-disassembly.log",
+      "log_sha256": "9c627d59f08f67ffdde200b906e4f4b3f6137afe3f1eba6374a6c460cfeb71ae"
+    },
+    {
+      "role": "list-poll",
+      "symbol": "echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_list::{closure#0}",
+      "measured_prologue_bytes": 76752,
+      "log": "list-poll-disassembly.log",
+      "log_sha256": "682e0dd76698e704b9bfe768a52cde947e56557b0d1dabd4c2b9720737fb6671"
+    },
+    {
+      "role": "merge-poll",
+      "symbol": "echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_merge::{closure#0}",
+      "measured_prologue_bytes": 78400,
+      "log": "merge-poll-disassembly.log",
+      "log_sha256": "6f4b968f4d5f2c25eb8791396749ed5ac745dfb753051ea29f7c91d81f482903"
+    },
+    {
+      "role": "remove-poll",
+      "symbol": "echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_remove::{closure#0}",
+      "measured_prologue_bytes": 76576,
+      "log": "remove-poll-disassembly.log",
+      "log_sha256": "e760820f699b580fd3aa76b10465555a59ecac2665646ed48db015bdfb2860d8"
+    }
+  ],
+  "original_main_dispatch_poll_bytes": 1216096,
+  "aggregate333_main_dispatch_poll_bytes": 910192,
+  "aggregate333_git4_helper_poll_bytes": 307216,
+  "dd336_remove_source_chain_measured_sdk_poll_bytes": 986768,
+  "note": "routerconstructor runswhenreturningfuture, notpersistentlynestedpoll; no arbitraryOSstacklimit assumption; frameworkwrapperframes remain originalauthority; nativeRPCafter independentproofneeded"
+}

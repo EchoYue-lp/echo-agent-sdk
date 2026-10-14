@@ -1,0 +1,7 @@
+# 薄 source 入口候选（未编译）
+
+第二版dd336已真实修复原dirtyremovetyped拒绝+Hostalive，但第五合法merge仍stackabort，两firstnative失败与新OSreport/源码测量保history/per-operation-dd336-failed。合法cleanremove尚未执行，不能把partialpass当Git4closed。
+
+第三版使pub(crate) dispatch成为同步薄入口返回BoxFuture，cfgGit4直接路由到原四个独立helper，不进入仍910KiB的通用coroutine；其余操作进入改名privateasync dispatch_non_git_source。原通用body除4Git启用delegatearm外去空白token完整相同；四helper及其后的全文byte相同；原mutationguard对非Git保留、对四Git名字纯suffixmatches原为false，featureoff仍走原genericfallback/default。唯一caller仍Box::pin(dispatch(...)).await，无新spawn/task/authority/API/stackflags。
+
+源码2df1bbe8ff3221c690d016379030dee6f76afa8f1893f8ccadb1791d14769649；targetfmt/diffcheck0，等待静态implementationrefinement审查及Root独Cargo真实编译/新小entry机器帧/原7sourceTS-PY after。新frameworkbranch/安全补丁pin与完整三语言28calls最终门禁另验；此静态候选不宣closed。

@@ -1,0 +1,18 @@
+{
+  "classification": "sameacceptedbugfiximplementationfuturepartition",
+  "reuse": [
+    "dispatch_agent_context_source",
+    "dispatch_analysis_source"
+  ],
+  "authority": "originalecho_agent.tools.git_worktree functions via sourceSessionowner/exacttypedDTO",
+  "permitted_body_changes": "4originalarms indentation only, outer closedselector delegation to privateBoxFuture",
+  "new_public_API": false,
+  "new_runtime_authority": false,
+  "new_protocol": false,
+  "thread_stack_config_change": false,
+  "before_sha256": "91bd8f84f3a05b272b52911c7ba52d7cc54537d9f88790cfbb11578a57817a94",
+  "design_authority": "docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md acceptedthinadapterboundary; Rootapprovedboundedfuturepartition",
+  "after_sha256": "333253ca571376640f9790edd080048e3e29325d675a0aedd6e7c579279dd50d",
+  "all4arms_whitespace_normalized_token_bytes_equal": true,
+  "originalbody_codegen_equivalence": "notyetcompiled; source-only equality requiresfocused runtimeafter"
+}

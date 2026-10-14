@@ -1,0 +1,22 @@
+(lldb) target create /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-per-operation-dd336-host
+Current executable set to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-per-operation-dd336-host' (arm64).
+(lldb) disassemble --name echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_create::{closure#0} --count 18
+echo-sdk-a634-worktree-per-operation-dd336-host`echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_create::{closure#0}:
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae805c] <+0>:  stp    x28, x27, [sp, #-0x20]!
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8060] <+4>:  stp    x29, x30, [sp, #0x10]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8064] <+8>:  add    x29, sp, #0x10
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8068] <+12>: sub    x9, sp, #0x12, lsl #12    ; =0x12000 
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae806c] <+16>: sub    sp, sp, #0x1, lsl #12     ; =0x1000 
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8070] <+20>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8074] <+24>: cmp    sp, x9
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8078] <+28>: b.ne   0x100ae806c               ; <+16>
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae807c] <+32>: sub    sp, sp, #0x9d0
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8080] <+36>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8084] <+40>: add    x9, sp, #0x12, lsl #12    ; =0x12000 
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8088] <+44>: add    x9, x9, #0xf0
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae808c] <+48>: str    x9, [sp, #0xe0]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8090] <+52>: mov    x9, x8
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8094] <+56>: ldr    x8, [sp, #0xe0]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae8098] <+60>: str    x9, [sp, #0xe8]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae809c] <+64>: str    x0, [sp, #0xf0]
+echo-sdk-a634-worktree-per-operation-dd336-host[0x100ae80a0] <+68>: str    x1, [x8, #0x318]

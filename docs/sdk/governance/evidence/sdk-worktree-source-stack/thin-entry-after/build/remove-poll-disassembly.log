@@ -1,0 +1,22 @@
+(lldb) target create /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-thin-entry-2df1-host
+Current executable set to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-a634-worktree-thin-entry-2df1-host' (arm64).
+(lldb) disassemble --name echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_remove::{closure#0} --count 18
+echo-sdk-a634-worktree-thin-entry-2df1-host`echo_sdk_host::core_profile::facade::source_operations::dispatch_git_worktree_remove::{closure#0}:
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a70] <+0>:  stp    x28, x27, [sp, #-0x20]!
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a74] <+4>:  stp    x29, x30, [sp, #0x10]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a78] <+8>:  add    x29, sp, #0x10
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a7c] <+12>: sub    x9, sp, #0x12, lsl #12    ; =0x12000 
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a80] <+16>: sub    sp, sp, #0x1, lsl #12     ; =0x1000 
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a84] <+20>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a88] <+24>: cmp    sp, x9
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a8c] <+28>: b.ne   0x100784a80               ; <+16>
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a90] <+32>: sub    sp, sp, #0xb00
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a94] <+36>: ldr    xzr, [sp]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a98] <+40>: add    x9, sp, #0x12, lsl #12    ; =0x12000 
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784a9c] <+44>: add    x9, x9, #0x9d0
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784aa0] <+48>: str    x9, [sp, #0xa8]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784aa4] <+52>: add    x9, sp, #0x12, lsl #12    ; =0x12000 
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784aa8] <+56>: add    x9, x9, #0x2a8
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784aac] <+60>: str    x9, [sp, #0xb0]
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784ab0] <+64>: mov    x9, x8
+echo-sdk-a634-worktree-thin-entry-2df1-host[0x100784ab4] <+68>: ldr    x8, [sp, #0xb0]

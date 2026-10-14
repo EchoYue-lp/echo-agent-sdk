@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+  "steps": [
+    {
+      "label": "git-source-dd336-typescript",
+      "command": [
+        "node",
+        "docs/sdk/governance/evidence/git-tool-native/diagnostic-source-only/typescript.mjs"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-a634-worktree-per-operation-dd336-native/typescript.log",
+      "exitCode": 1,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 691,
+      "bytesWritten": 691,
+      "startedAt": "2026-10-14T17:42:28.391Z",
+      "finishedAt": "2026-10-14T17:42:34.465Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T17:42:34.465Z"
+}

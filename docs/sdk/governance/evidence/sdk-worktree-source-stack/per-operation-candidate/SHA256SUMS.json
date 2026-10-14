@@ -1,0 +1,8 @@
+{
+  "source_operations.after.rs": "dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32",
+  "per-operation.patch": "8286796867c05ea93d2a990f231ff44b20c1b9ef22c681f8f9e7f7512c1af94a",
+  "original-extracted-bodies.json": "33818d0f624486fa6f112de273f5940c751f387d71584c868ddb2aec1fe8ff9e",
+  "README.md": "d1568084c4712cabad4b85d1f204f998bec4e2aff4213936de1c0db05321e804",
+  "static-impact.json": "201609878be74c783b1e884de64ee8dc157f08f8b8b08cec8295ec71ddb3dd10",
+  "source_operations.aggregate-before.rs": "333253ca571376640f9790edd080048e3e29325d675a0aedd6e7c579279dd50d"
+}

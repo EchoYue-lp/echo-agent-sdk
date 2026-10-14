@@ -1,0 +1,7 @@
+# 第二个局部 future 构造候选（未编译）
+
+第一aggregate333方案build/lint静态通过，但两原native调用在dirtyremove仍失败，原始after失败与frame测量保存于../history/aggregate333-failed；不重写原candidate25或将其变绿。
+
+第二方案把router改成普通同步fn match返回同一BoxFuture类型，四个独立privatefn各只Box::pin(async move {原单分支body})。4originalbody非空白token逐字相同，owner/DTO/error/frameworkfunctions均保。没有线程stacksize、新API、注册器或新worktree authority。
+
+源码dd3365690aa6f9c36ec2297b556222595a63f261c54ba6e4f0bbe1be4a98cc32；targetfmt/check与diffcheck0，尚未Cargo构建、测新pollframes或运行after。Root先安排静态复审，再待framework生产lease归还后有界实际新binary/native验证，不能把新构造当已修复。旧a634GitBranch问题仍独立，需要publishednewpin最终消费者和门禁。

@@ -1,0 +1,137 @@
+{
+  "scope": "sameGoal bounded knownstackbugfix; no novel semantic model IDs/sourceRefs write",
+  "authority": "frameworkecho_tools git_worktree originalfunctions remain唯一worktree lifecycle/state/dirtychecks; SDK Sessionowner+typed conversion unchanged",
+  "flow_before": "source_operation match4 inline await frameworkGitfuture in largeSDKpoll",
+  "flow_after": "same4selector → private dispatch_git_worktree_source BoxFuture → unchanged original4bodies → frameworkGit",
+  "new_public_API": false,
+  "new_runtime_state_authority": false,
+  "new_wire_or_schema": false,
+  "thread_stack_size_change": false,
+  "allowed_production_path": "echo-sdk-host/src/core_profile/facade/source_operations.rs",
+  "source_4arm_whitespace_token_equivalence": true,
+  "validation_completed": [
+    "rustfmt targetfile0",
+    "git diff --check targetedfile0",
+    "whitespace-normalized4armbodymatch"
+  ],
+  "validation_pending": [
+    "rootexclusiveCargo build/focusedchecks",
+    "compiledSDKdispatcher pollframe reduction measuredsameprofile",
+    "sameoriginaldirtyremove typedframeworkerror plus liveHost",
+    "legitimaterepo sourcecleanmerge/removesideeffects +finitefull28corpus",
+    "newframeworkpublishedpin final3nativegates"
+  ],
+  "no_problem_claim_closed": true,
+  "raw_provenance": {
+    "before-diagnosis/root-cause-summary.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/root-cause-summary.json",
+      "sha256": "2b06a99f4607562b6be4bcebdbf9dc3e2e1852419ac5810d2c3adb3b79c7fad9",
+      "bytes": 4175
+    },
+    "before-diagnosis/disassembly-2.log": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/disassembly-2.log",
+      "sha256": "d44f9172d9b0a588c87da5825e3eaab7f409f2e1245a79005e53cfcdad324286",
+      "bytes": 2167
+    },
+    "before-diagnosis/SHA256SUMS.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/SHA256SUMS.json",
+      "sha256": "54f9cbfc1ddd2e7c69ad4ed64bf231133e56fed2bbd4d605dfd688d22406e027",
+      "bytes": 765
+    },
+    "before-diagnosis/disassembly-0.log": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/disassembly-0.log",
+      "sha256": "696089d2e2ad26bb5f0e78193c1d5819eb5600bd063fa537d419d2019cd229a9",
+      "bytes": 2079
+    },
+    "before-diagnosis/disassembly-1.log": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/disassembly-1.log",
+      "sha256": "3e110fd4bae1079af01db9b41e89ca09e57d8e51756afa953b9fe77616fb324c",
+      "bytes": 2079
+    },
+    "before-diagnosis/crash-source-reference.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/crash-source-reference.json",
+      "sha256": "9cc4f04b2695fcf26fdd1884e873f336b595bcc7f506fd52d3b4e42bb4864adb",
+      "bytes": 2784
+    },
+    "before-diagnosis/outer-disassembly-2.log": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/outer-disassembly-2.log",
+      "sha256": "1582ece54b645387da359964eb45f048926ac88f1041970b780637c079b52f31",
+      "bytes": 1753
+    },
+    "before-diagnosis/outer-disassembly-0.log": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/outer-disassembly-0.log",
+      "sha256": "e66e9ec13ecb391a758c5cef5dbc320c5a5b9918ebd17e304cb0f1faaad4c8be",
+      "bytes": 1679
+    },
+    "before-diagnosis/outer-disassembly-1.log": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-stack-readonly/outer-disassembly-1.log",
+      "sha256": "b823a198e0f1bcb8bc48554adbecb7d121be9d5d3f4ad467fc21f1559ea82a3a",
+      "bytes": 1654
+    },
+    "before-diagnosis/original-crash.ips": {
+      "original_path": "/Users/ls/Library/Logs/DiagnosticReports/echo-sdk-session-run-idempotency-rpc-final-host-2026-10-15-002024.ips",
+      "sha256": "b00cbcfe40c26ce2ed5cc1b82face76ab5d50ca339c4775a2114f9ee94917b27",
+      "bytes": 191463
+    },
+    "before-native/results.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-eaExGf/results.json",
+      "sha256": "a4060c58c68bed7f190a4a01045249c474834bf81614183e389fe7df1e5a226b",
+      "bytes": 132064
+    },
+    "before-native/host.stderr": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-eaExGf/host.stderr",
+      "sha256": "8f8a4b2d42be371ed66ac03732f1654028e296e80932820ab2acdb7d89678972",
+      "bytes": 5691
+    },
+    "before-native/scenario.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-eaExGf/scenario.json",
+      "sha256": "4a7d2a8f4456da81d6bfb8cf9d690ec889a6557b42941ea37ddb7b5cfc2f2d6d",
+      "bytes": 9286
+    },
+    "before-native/baseline.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-eaExGf/baseline.json",
+      "sha256": "def12a5f7052d92e0679dec28d2ff6cc2466f2d6e68f5421577a88b9abdaeb3f",
+      "bytes": 1203
+    },
+    "before-native/host.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/docs/sdk/governance/evidence/git-tool-native/before-a634/typescript-eaExGf/host.json",
+      "sha256": "a823c4a1ffdc10acbe5aaa6fb2a69f2a009d27ee878c31e09b05d521df512c00",
+      "bytes": 664
+    },
+    "candidate/source_operations.before.rs": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-candidate/source_operations.before.rs",
+      "sha256": "91bd8f84f3a05b272b52911c7ba52d7cc54537d9f88790cfbb11578a57817a94",
+      "bytes": 387273
+    },
+    "candidate/source_operations.after.rs": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-candidate/source_operations.after.rs",
+      "sha256": "333253ca571376640f9790edd080048e3e29325d675a0aedd6e7c579279dd50d",
+      "bytes": 388659
+    },
+    "candidate/source-only.patch": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-candidate/source-only.patch",
+      "sha256": "aa8698d04030f522611502dbf32d44542aca87b8205743e2dab006de6b6f6f09",
+      "bytes": 8033
+    },
+    "candidate/moved-original-arms.rs.txt": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-candidate/moved-original-arms.rs.txt",
+      "sha256": "0b93408dc468d2d6b6f31ebde0dcb24d8644f69b487fd71bb708195da16f7493",
+      "bytes": 3021
+    },
+    "candidate/static-reuse.json": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-candidate/static-reuse.json",
+      "sha256": "bc187493130276c090d35e7ffc9e39a22ec14ac2be16ea325bcbc8ef6ff95042",
+      "bytes": 998
+    },
+    "candidate/facade-feature-adapters.before.md": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-candidate/facade-feature-adapters.before.md",
+      "sha256": "379f3ede4b99093f6115fbb812b904acc219dc7e7cf8bde8fbfef95e5a97c5e3",
+      "bytes": 29889
+    },
+    "candidate/facade-feature-adapters.after.md": {
+      "original_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-worktree-source-stack-candidate/facade-feature-adapters.after.md",
+      "sha256": "994f3bba078c395f8ab52a236e3965d7913a493b829388dad9be97d0dec3ce2b",
+      "bytes": 30416
+    }
+  }
+}

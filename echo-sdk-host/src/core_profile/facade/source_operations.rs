@@ -2344,7 +2344,28 @@ pub(crate) fn agent_close_request(
 /// Host-issued Agent record; Session-aware accessors resolve the same live
 /// ACP Session Agent used by the standard Prompt/Run authority. Operations
 /// without a bound framework authority remain explicit framework errors.
-pub(crate) async fn dispatch(
+pub(crate) fn dispatch<'a>(
+    state: &'a CoreProfileState,
+    handles: &'a HandleRegistry,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    // Git worktree calls must bypass the general source coroutine entirely:
+    // its unrelated await states still reserve a large poll frame when boxed.
+    // Each selected private operation keeps its original framework authority.
+    #[cfg(feature = "framework-git")]
+    if matches!(
+        request.operation.as_str(),
+        "echo_tools::git_worktree::create_worktree"
+            | "echo_tools::git_worktree::list_worktrees"
+            | "echo_tools::git_worktree::merge_worktree"
+            | "echo_tools::git_worktree::remove_worktree"
+    ) {
+        return dispatch_git_worktree_source(state, request);
+    }
+    Box::pin(dispatch_non_git_source(state, handles, request))
+}
+
+async fn dispatch_non_git_source(
     state: &CoreProfileState,
     handles: &HandleRegistry,
     request: &FeatureOperationRequest,
@@ -3849,67 +3870,6 @@ pub(crate) async fn dispatch(
                     Ok(WireValue::Null)
                 }
             }
-        }
-        #[cfg(feature = "framework-git")]
-        "echo_tools::git_worktree::create_worktree" => {
-            let _owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 3 {
-                return Err(invalid(
-                    "create_worktree accepts [Session, repo Path, config]",
-                ));
-            }
-            let repo = path_argument(request, 1)?;
-            let config = worktree_config_argument(request, 2)?;
-            let worktree = echo_agent::tools::git_worktree::create_worktree(&repo, &config)
-                .await
-                .map_err(|error| framework(&request.operation, error))?;
-            managed_worktree_value(&request.operation, worktree)
-        }
-        #[cfg(feature = "framework-git")]
-        "echo_tools::git_worktree::list_worktrees" => {
-            let _owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 2 {
-                return Err(invalid("list_worktrees accepts [Session, repo Path]"));
-            }
-            let repo = path_argument(request, 1)?;
-            let worktrees = echo_agent::tools::git_worktree::list_worktrees(&repo)
-                .await
-                .map_err(|error| framework(&request.operation, error))?
-                .into_iter()
-                .map(|worktree| managed_worktree_value(&request.operation, worktree))
-                .collect::<Result<Vec<_>, EchoSdkError>>()?;
-            Ok(WireValue::List(worktrees))
-        }
-        #[cfg(feature = "framework-git")]
-        "echo_tools::git_worktree::merge_worktree" => {
-            let _owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 4 {
-                return Err(invalid(
-                    "merge_worktree accepts [Session, repo Path, worktree, target_branch]",
-                ));
-            }
-            let repo = path_argument(request, 1)?;
-            let worktree = managed_worktree_argument(request, 2)?;
-            let target = string_argument(request, 3, "target branch")?;
-            let output = echo_agent::tools::git_worktree::merge_worktree(&repo, &worktree, &target)
-                .await
-                .map_err(|error| framework(&request.operation, error))?;
-            Ok(WireValue::String(output))
-        }
-        #[cfg(feature = "framework-git")]
-        "echo_tools::git_worktree::remove_worktree" => {
-            let _owner = source_session_owner(state, request).await?;
-            if request.arguments.len() != 3 {
-                return Err(invalid(
-                    "remove_worktree accepts [Session, repo Path, worktree]",
-                ));
-            }
-            let repo = path_argument(request, 1)?;
-            let worktree = managed_worktree_argument(request, 2)?;
-            echo_agent::tools::git_worktree::remove_worktree(&repo, &worktree)
-                .await
-                .map_err(|error| framework(&request.operation, error))?;
-            Ok(WireValue::Null)
         }
         "echo_agent::state::clear_persisted_runtime_incarnation"
         | "echo_agent::state::delete_persisted_conversation" => {
@@ -6513,6 +6473,114 @@ pub(crate) async fn dispatch(
             "source operation is canonical but has no Host authority adapter",
         )),
     }
+}
+
+// Keep each worktree operation's future on a private construction boundary.
+// A single async match still inherits the largest sibling operation's poll
+// frame. The synchronous router stores only a BoxFuture; each implementation
+// below delegates the unchanged body to the sole framework worktree authority.
+#[cfg(feature = "framework-git")]
+fn dispatch_git_worktree_source<'a>(
+    state: &'a CoreProfileState,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    match request.operation.as_str() {
+        "echo_tools::git_worktree::create_worktree" => dispatch_git_worktree_create(state, request),
+        "echo_tools::git_worktree::list_worktrees" => dispatch_git_worktree_list(state, request),
+        "echo_tools::git_worktree::merge_worktree" => dispatch_git_worktree_merge(state, request),
+        "echo_tools::git_worktree::remove_worktree" => dispatch_git_worktree_remove(state, request),
+        _ => Box::pin(async move {
+            Err(framework(
+                &request.operation,
+                "source operation is not in the private Git worktree partition",
+            ))
+        }),
+    }
+}
+
+#[cfg(feature = "framework-git")]
+fn dispatch_git_worktree_create<'a>(
+    state: &'a CoreProfileState,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    Box::pin(async move {
+        let _owner = source_session_owner(state, request).await?;
+        if request.arguments.len() != 3 {
+            return Err(invalid(
+                "create_worktree accepts [Session, repo Path, config]",
+            ));
+        }
+        let repo = path_argument(request, 1)?;
+        let config = worktree_config_argument(request, 2)?;
+        let worktree = echo_agent::tools::git_worktree::create_worktree(&repo, &config)
+            .await
+            .map_err(|error| framework(&request.operation, error))?;
+        managed_worktree_value(&request.operation, worktree)
+    })
+}
+
+#[cfg(feature = "framework-git")]
+fn dispatch_git_worktree_list<'a>(
+    state: &'a CoreProfileState,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    Box::pin(async move {
+        let _owner = source_session_owner(state, request).await?;
+        if request.arguments.len() != 2 {
+            return Err(invalid("list_worktrees accepts [Session, repo Path]"));
+        }
+        let repo = path_argument(request, 1)?;
+        let worktrees = echo_agent::tools::git_worktree::list_worktrees(&repo)
+            .await
+            .map_err(|error| framework(&request.operation, error))?
+            .into_iter()
+            .map(|worktree| managed_worktree_value(&request.operation, worktree))
+            .collect::<Result<Vec<_>, EchoSdkError>>()?;
+        Ok(WireValue::List(worktrees))
+    })
+}
+
+#[cfg(feature = "framework-git")]
+fn dispatch_git_worktree_merge<'a>(
+    state: &'a CoreProfileState,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    Box::pin(async move {
+        let _owner = source_session_owner(state, request).await?;
+        if request.arguments.len() != 4 {
+            return Err(invalid(
+                "merge_worktree accepts [Session, repo Path, worktree, target_branch]",
+            ));
+        }
+        let repo = path_argument(request, 1)?;
+        let worktree = managed_worktree_argument(request, 2)?;
+        let target = string_argument(request, 3, "target branch")?;
+        let output = echo_agent::tools::git_worktree::merge_worktree(&repo, &worktree, &target)
+            .await
+            .map_err(|error| framework(&request.operation, error))?;
+        Ok(WireValue::String(output))
+    })
+}
+
+#[cfg(feature = "framework-git")]
+fn dispatch_git_worktree_remove<'a>(
+    state: &'a CoreProfileState,
+    request: &'a FeatureOperationRequest,
+) -> futures::future::BoxFuture<'a, Result<WireValue, EchoSdkError>> {
+    Box::pin(async move {
+        let _owner = source_session_owner(state, request).await?;
+        if request.arguments.len() != 3 {
+            return Err(invalid(
+                "remove_worktree accepts [Session, repo Path, worktree]",
+            ));
+        }
+        let repo = path_argument(request, 1)?;
+        let worktree = managed_worktree_argument(request, 2)?;
+        echo_agent::tools::git_worktree::remove_worktree(&repo, &worktree)
+            .await
+            .map_err(|error| framework(&request.operation, error))?;
+        Ok(WireValue::Null)
+    })
 }
 
 // Agent accessors and configuration mutations have a separate private future

@@ -1,0 +1,13 @@
+{
+  "source_sha256": "2df1bbe8ff3221c690d016379030dee6f76afa8f1893f8ccadb1791d14769649",
+  "original_non_git_body_minus_four_git_arm_whitespace_token_exact": true,
+  "original_four_helpers_full_tail_bytes_exact": true,
+  "before_entry_above_body_bytes_exact": true,
+  "caller_path": "echo-sdk-host/src/core_profile/facade/mod.rs:2065 Box::pin(dispatch(...)).await unchanged",
+  "lifetime": "same3borrowinputs commona outputBoxFuture Send, no newtask/cancelstate",
+  "Git4prefix_reentry_guard": "pure is_session_agent_mutation suffixmatches false for4Gitnames; nonGitguard retained unchanged",
+  "featureoff": "cfgGit directroute absent\u2192originalgeneralunchangedfallback/defaulterror",
+  "scope": "implementation afterRootapproval; design/plan none existingADR0034 boundary reference",
+  "compile_status": "pending",
+  "rootcause": "2578 removespecific typedrefusal alivePASS but merge5abort parent910192 plusFW680752; bypassparentfutureforGitall4 required"
+}

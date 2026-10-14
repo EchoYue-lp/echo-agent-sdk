@@ -1,0 +1,20 @@
+(lldb) target create /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host
+Current executable set to '/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-idempotency-rpc-final-host' (arm64).
+(lldb) disassemble --name _RNCNvNtNtNtCsdP27xSHiJM9_13echo_sdk_host12core_profile6facade17source_operations8dispatch0Cs5CUCt6xHepn_19echo_agent_sdk_host --count 16
+echo-sdk-session-run-idempotency-rpc-final-host`echo_sdk_host::core_profile::facade::source_operations::dispatch::{closure#0}:
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3924] <+0>:  stp    x28, x27, [sp, #-0x20]!
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3928] <+4>:  stp    x29, x30, [sp, #0x10]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f392c] <+8>:  add    x29, sp, #0x10
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3930] <+12>: sub    x9, sp, #0x128, lsl #12   ; =0x128000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3934] <+16>: sub    sp, sp, #0x1, lsl #12     ; =0x1000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3938] <+20>: ldr    xzr, [sp]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f393c] <+24>: cmp    sp, x9
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3940] <+28>: b.ne   0x1004f3934               ; <+16>
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3944] <+32>: sub    sp, sp, #0xe40
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3948] <+36>: ldr    xzr, [sp]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f394c] <+40>: add    x9, sp, #0x128, lsl #12   ; =0x128000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3950] <+44>: add    x9, x9, #0xad0
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3954] <+48>: add    x10, sp, #0x8, lsl #12    ; =0x8000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3958] <+52>: str    x9, [x10, #0x818]
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f395c] <+56>: add    x9, sp, #0x122, lsl #12   ; =0x122000 
+echo-sdk-session-run-idempotency-rpc-final-host[0x1004f3960] <+60>: add    x9, x9, #0x210
