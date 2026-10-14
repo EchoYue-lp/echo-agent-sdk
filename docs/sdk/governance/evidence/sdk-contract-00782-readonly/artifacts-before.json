@@ -1,0 +1,494 @@
+{
+  "contracts/sdk/accepted-external-contract.json": {
+    "sha256": "901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45",
+    "bytes": 10660878
+  },
+  "contracts/sdk/accepted-external-contract.schema.json": {
+    "sha256": "90c84c32902d2cf0eb1cf6bc05e7b12d162345fe2864f6a43422d653a0b1b2e7",
+    "bytes": 8834
+  },
+  "contracts/sdk/accepted-facade-operation-catalog.json": {
+    "sha256": "f5fa4b2794018cd24734ac89d8e3e4e544efb558db2aa3a3ff5819731ed2f5a4",
+    "bytes": 654124
+  },
+  "contracts/sdk/acp-baseline.json": {
+    "sha256": "9ea7a83ac66564948da6fa634a3ad8ebf179d2b1c227237c38225e76b96d0024",
+    "bytes": 2073
+  },
+  "contracts/sdk/facade-operation-catalog.json": {
+    "sha256": "87fe186ea7812b82b064e999969837bd83edf6fede8a756725c819ce1c657bb6",
+    "bytes": 728407
+  },
+  "contracts/sdk/fixtures/acp/v1/prompt-resource-link-valid.json": {
+    "sha256": "b1e51b93b5ef2e774ac292bd04ac67ab6dbc467cc364adef90144b5dfd76a312",
+    "bytes": 522
+  },
+  "contracts/sdk/fixtures/acp/v1/session-relative-cwd-invalid.json": {
+    "sha256": "c6da8061426a3d29e293757d6407f735125d5fae5713ce9547fd0e0d577e2572",
+    "bytes": 54
+  },
+  "contracts/sdk/fixtures/extension/v1/agent-config-explicit-env-credential-valid.json": {
+    "sha256": "17959fc76e7779f6fa753ec7b805ec542ef4ffcf441f0c52e62986ba51cfb2ec",
+    "bytes": 741
+  },
+  "contracts/sdk/fixtures/extension/v1/agent-config-host-default-valid.json": {
+    "sha256": "84b15a6fb851a0305dd49c96ef047580ebf53107f9633d587c50e0b5746b83f2",
+    "bytes": 260
+  },
+  "contracts/sdk/fixtures/extension/v1/agent-config-unsupported-knob-invalid.json": {
+    "sha256": "e1878910ef1aeb3544b69d109c907281f0115c4ff04c74e6a30a7940eb547c81",
+    "bytes": 667
+  },
+  "contracts/sdk/fixtures/extension/v1/boundary-standard-method-rejected-invalid.json": {
+    "sha256": "0b44bb9650e6fe96c1433fca3a2c83594a9a5308beb374e46e897ccdc1f1ad33",
+    "bytes": 287
+  },
+  "contracts/sdk/fixtures/extension/v1/boundary-unnegotiated-method-rejected-invalid.json": {
+    "sha256": "878c0f1b19e39dcc6c83e6b76d76b66772f82d05521df8d4be1d8bf5df38737c",
+    "bytes": 284
+  },
+  "contracts/sdk/fixtures/extension/v1/capability-meta-valid.json": {
+    "sha256": "ff349b4f5866b053f87447832f4d65ff7adef898f9a99e72146d14f116c68433",
+    "bytes": 1518
+  },
+  "contracts/sdk/fixtures/extension/v1/capability-unsorted-features-invalid.json": {
+    "sha256": "c9ee6de0381891aa74bcd61c94f0ee0011b53364d441482a67366ec6320e7857",
+    "bytes": 1373
+  },
+  "contracts/sdk/fixtures/extension/v1/channel-forward-handle-stream-valid.json": {
+    "sha256": "eac085a65dd1bd5aa0797ff4fbd88751199dedab4cbddefd6cd2930e2848d518",
+    "bytes": 3836
+  },
+  "contracts/sdk/fixtures/extension/v1/channel-forward-handle-valid.json": {
+    "sha256": "c7092905bd411d6f70e69cf14082b49b7a661e65f563b3cfdea2c5b6fe0bcf31",
+    "bytes": 3822
+  },
+  "contracts/sdk/fixtures/extension/v1/channel-forward-reply-valid.json": {
+    "sha256": "4e321044923add9cd9befa79d0cbdf98b52a15ad15819c99c699b809d143196a",
+    "bytes": 3293
+  },
+  "contracts/sdk/fixtures/extension/v1/channel-forward-stream-cancel-valid.json": {
+    "sha256": "12870d9dd1c639beaf0eefee451f25d76f6eb86847ee5b3fda826bcd382bfa8e",
+    "bytes": 717
+  },
+  "contracts/sdk/fixtures/extension/v1/channel-forward-stream-close-valid.json": {
+    "sha256": "f09e8857ac416128b88f5318d39eb2d74ccd8fd62f5e9c281a741edbfbed5ac2",
+    "bytes": 715
+  },
+  "contracts/sdk/fixtures/extension/v1/channel-forward-stream-next-valid.json": {
+    "sha256": "e8ade13ad4679cd7211f80766c36fb3599f7e87d1d282aa95de6f52480183f50",
+    "bytes": 713
+  },
+  "contracts/sdk/fixtures/extension/v1/delivery-complete-claim-valid.json": {
+    "sha256": "6c9a50bd11bf18bc1b50962212c519ffa81fa8f0004fb3c115a77d6bfab2ce8d",
+    "bytes": 404
+  },
+  "contracts/sdk/fixtures/extension/v1/delivery-id-only-claim-invalid.json": {
+    "sha256": "07cccd34df6d82256766af6d3c76a5e61a905cd861291c235c6757d3f5cb3d32",
+    "bytes": 244
+  },
+  "contracts/sdk/fixtures/extension/v1/error-details-duplicate-invalid.json": {
+    "sha256": "0b96f6ac284a0dffaa26b9a7b3824419ef46e66d488e23a7d740b60ae03b8de5",
+    "bytes": 499
+  },
+  "contracts/sdk/fixtures/extension/v1/error-event-gap-valid.json": {
+    "sha256": "549b7bb576f6c1a70ef61953cd80be501ee1eae0a6dd133711aa34eb746b0223",
+    "bytes": 273
+  },
+  "contracts/sdk/fixtures/extension/v1/error-feature-unavailable-valid.json": {
+    "sha256": "4faefcb25010b141b3c8b394a84114fcd308cf53d8f30ce9e2cb9c3ec73469ff",
+    "bytes": 326
+  },
+  "contracts/sdk/fixtures/extension/v1/error-stale-handle-valid.json": {
+    "sha256": "95a010d8cd658f830c5360b1a6de47350ef7d65b03f797b52eb5fb62f8ce0562",
+    "bytes": 417
+  },
+  "contracts/sdk/fixtures/extension/v1/event-ack-valid.json": {
+    "sha256": "4280b46bbb8e28eba4018b240778cfefa4f2674257f2722278cbcfd54200adfe",
+    "bytes": 350
+  },
+  "contracts/sdk/fixtures/extension/v1/event-ack-zero-cursor-invalid.json": {
+    "sha256": "951180ef54cfd42b0851275b2bf44adc1474cce81a54199e98fef2f8d2af3e85",
+    "bytes": 375
+  },
+  "contracts/sdk/fixtures/extension/v1/event-envelope-full-valid.json": {
+    "sha256": "c2a86d61979014d02bd24b0e90df7100324fbc32c2d9725e951dfc553b1f552a",
+    "bytes": 664
+  },
+  "contracts/sdk/fixtures/extension/v1/event-envelope-sequence-zero-invalid.json": {
+    "sha256": "8055a5ea694a6a1d0c82402e95989747174f20ddccada746a4f13f5383f837ed",
+    "bytes": 582
+  },
+  "contracts/sdk/fixtures/extension/v1/event-live-gap-valid.json": {
+    "sha256": "ac9c54df2bea20242fb344da590c07b99623a2b4a17655845369bfd955877cf9",
+    "bytes": 421
+  },
+  "contracts/sdk/fixtures/extension/v1/event-live-gap-watermark-invalid.json": {
+    "sha256": "93c7edb09feca0fff9e8a18918dc1d86bfd89d040aa522fe33b7ef24d730fada",
+    "bytes": 464
+  },
+  "contracts/sdk/fixtures/extension/v1/event-replay-empty-stream-invalid.json": {
+    "sha256": "49f65cc4ec1dce887071e89b8e48a0b0c224559f7c95345148141117b06a4ddc",
+    "bytes": 353
+  },
+  "contracts/sdk/fixtures/extension/v1/event-replay-gap-valid.json": {
+    "sha256": "e184ba61138c94d7028c5cce1cac157af4dddc839e98d8cac6ea8618d1151876",
+    "bytes": 486
+  },
+  "contracts/sdk/fixtures/extension/v1/event-replay-request-valid.json": {
+    "sha256": "c47a377ffcc794faf5103a6632525c689807d5df327f1d1aa1819f4aca95da29",
+    "bytes": 333
+  },
+  "contracts/sdk/fixtures/extension/v1/event-replay-request-wrong-kind-invalid.json": {
+    "sha256": "28d4efe8b7ae2a14920baa8dca8ea9a918ffcc6070f6baa22d157bcf8dbe73a5",
+    "bytes": 362
+  },
+  "contracts/sdk/fixtures/extension/v1/event-replay-zero-limit-invalid.json": {
+    "sha256": "a9ef56eabd73c22502865294654d749702e029ea33bf9b09e2c8b4a661b5f26c",
+    "bytes": 357
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-callback-interrupted-canonical-id-valid.json": {
+    "sha256": "242eefb636718086e3032527387eb0f8c56ac990e432af67bc3a9eded5afba67",
+    "bytes": 474
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-cancel-notice-empty-reason-invalid.json": {
+    "sha256": "1ac67754e4821e2eeb512a69cd90744512ef6daab0056deefd3c0de8ecc67f13",
+    "bytes": 298
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-cancel-notice-valid.json": {
+    "sha256": "533e979c15e1df52f30f3ccb08a967c21139c8b4dd86341e0edf7fc2bf1e0046",
+    "bytes": 269
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-factory-instance-origin-valid.json": {
+    "sha256": "fe38c62962ac25f371bbe6016d16ff43774b64793adcd4060b747e872658fb15",
+    "bytes": 641
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-invoke-stream-handle-valid.json": {
+    "sha256": "93524b5584197051ef3ce1148c45211bf2f17b6f2644cdeeb3771638a4a8b557",
+    "bytes": 618
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-invoke-stream-without-handle-invalid.json": {
+    "sha256": "c345f8c0b98239dc7836b4b36dc7820dab057a301fb370680ab6ba35e0d6702f",
+    "bytes": 578
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-invoke-tool-valid.json": {
+    "sha256": "65c076108d5b169e55f7ea838def4288958d12e1032725dae245765ec92e1e72",
+    "bytes": 1049
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-invoke-wrong-handle-kind-invalid.json": {
+    "sha256": "645a217ce5dc193a7ff862a1f60da46847b96f2ffb9d10bc3fded7e50bc14e69",
+    "bytes": 679
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-outcome-empty-invalid.json": {
+    "sha256": "af8b655418ebbd906724a03e7886fc0cf341f4b8ee1e70cf641804032b32ec25",
+    "bytes": 237
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-outcome-result-valid.json": {
+    "sha256": "ba3998437af5cf434e8ef548ec9b75cfab8c5bc547f476914aa0c1011b09634a",
+    "bytes": 319
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-outcome-stream-valid.json": {
+    "sha256": "f3d1aa144ff34a41cb6406bdbda773abc9a76406888947c3fed43419387b961e",
+    "bytes": 338
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-outcome-typed-error-valid.json": {
+    "sha256": "1ac6e6f7908111fe9f9ca581abc1d4797e7fb483be99c19c5bfcf870b30d0e78",
+    "bytes": 396
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-register-empty-identity-invalid.json": {
+    "sha256": "4a5167f8bfc6135b533a96e329d19134c9193404561ffb62c9523fe8f355b7c1",
+    "bytes": 427
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-register-intervention-valid.json": {
+    "sha256": "8090c9f7bf7e18f52b30e0d6a3fa36a7a67f304924d367f30184bc15769f8420",
+    "bytes": 416
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-register-kind-mismatch-invalid.json": {
+    "sha256": "155a7b5efe87f53e62a2863ebcda3a228d72348ed280ba0e6f0589c216639e1d",
+    "bytes": 460
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-register-llm-client-valid.json": {
+    "sha256": "281e702cf11dcd9e64dca954b7f83c9dc69db63fe0574531dab0cb6a2cf39645",
+    "bytes": 425
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-register-tool-valid.json": {
+    "sha256": "8256dfa5c9da9ded76a11ad28f8e53e3d98d6667c301dd2677f17165291b3c11",
+    "bytes": 1096
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-register-unknown-version-invalid.json": {
+    "sha256": "8b5a785a8ec2517f037aaa4d0cecaa375f14d53de16f7f1d27d4fa9ead81f21e",
+    "bytes": 462
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-agent-final-chunk-invalid.json": {
+    "sha256": "deca90b26b540ed4afbd026c6d8e17a73dc84e10644bcb5ef7fa38eaac07a861",
+    "bytes": 548
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-agent-token-terminal-invalid.json": {
+    "sha256": "4ab99b140fe49b2361a07b8018da0e211e32aefa910a1c793b0a663da466c77d",
+    "bytes": 545
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-agent-tool-complete-chunk-invalid.json": {
+    "sha256": "ba3e661978fd5ab66c8275f05862cf6caa0f06ac6904d703b7d240f72ad8f69f",
+    "bytes": 945
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-chunk-valid.json": {
+    "sha256": "d992b35501425cd36beceadd39538ed1a3f42c8eb3d1e4d4f4487333c7fff652",
+    "bytes": 443
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-complete-terminal-valid.json": {
+    "sha256": "6ab9bcb2cb25aa5326e13cebd4cee4cded6c0c20b5110cbc2ff2afe2aeb048eb",
+    "bytes": 452
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-llm-empty-finish-invalid.json": {
+    "sha256": "14bc6c0d4f8e89781475312adf4c951a9a765be3c3ae55669f423a6fc0bfcb02",
+    "bytes": 481
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-sequence-zero-invalid.json": {
+    "sha256": "9710f4483a2339a39c15a109db561fcbed315353fc3739116bd4b874c16cd2b8",
+    "bytes": 458
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-tool-complete-chunk-invalid.json": {
+    "sha256": "b736d9d7b4681a21ee61827781e2cdc34bf629b2cc4263c0ecb9a3056b87903b",
+    "bytes": 721
+  },
+  "contracts/sdk/fixtures/extension/v1/extension-stream-tool-progress-terminal-invalid.json": {
+    "sha256": "1e3816364f2009fe773d43034642a857229f52bf3701e2b62ff1c13761d4056e",
+    "bytes": 555
+  },
+  "contracts/sdk/fixtures/extension/v1/facade-failure-detail-digest-invalid.json": {
+    "sha256": "cbdee20c7d5e160a32960407a0735fbb8de0764cc2ac9babe473d50705b36380",
+    "bytes": 350
+  },
+  "contracts/sdk/fixtures/extension/v1/facade-failure-detail-valid.json": {
+    "sha256": "6fb3d4999e7d7e702654eb1e5efede254606ea4e7635eda56e34bb275a7e1d01",
+    "bytes": 463
+  },
+  "contracts/sdk/fixtures/extension/v1/facade-operation-empty-invalid.json": {
+    "sha256": "d651a018fa54e8683994f1f3adb1fe1e59c8e623ecd09e06a1165e4c4953f0e4",
+    "bytes": 368
+  },
+  "contracts/sdk/fixtures/extension/v1/facade-operation-request-valid.json": {
+    "sha256": "a19fbabb1151bb2fd0b863ef0106f1b8b941854470ef09f1d4ce9eb188800f94",
+    "bytes": 696
+  },
+  "contracts/sdk/fixtures/extension/v1/facade-operation-signature-invalid.json": {
+    "sha256": "1c20f919ded4ade86e9d8de0702c1be92b92d6ab20ac6c308c541080f9630163",
+    "bytes": 342
+  },
+  "contracts/sdk/fixtures/extension/v1/facade-operation-wildcard-invalid.json": {
+    "sha256": "0885f6013349486fb652054074c1a93e473d120f3d049b159dfd35faba959175",
+    "bytes": 413
+  },
+  "contracts/sdk/fixtures/extension/v1/facade-resource-handle-valid.json": {
+    "sha256": "06919a86ddfe7bee37948439ac1e377a8f01cf11137e3557618cd872e7b076bf",
+    "bytes": 293
+  },
+  "contracts/sdk/fixtures/extension/v1/factory-create-missing-instance-invalid.json": {
+    "sha256": "230c3f12d8b45211c7f4aa3309fa2815241cbc03a9eeefa44a059cc713375296",
+    "bytes": 674
+  },
+  "contracts/sdk/fixtures/extension/v1/factory-create-reserved-instance-valid.json": {
+    "sha256": "3c5f35cb430bdc10016f9fb7e9415f64604443df9205115ba9b727897dd6d900",
+    "bytes": 767
+  },
+  "contracts/sdk/fixtures/extension/v1/handle-empty-id-invalid.json": {
+    "sha256": "1628b61ce3d3881520347206eb8c031cda41bea1c01de112bb1131a725fbe953",
+    "bytes": 285
+  },
+  "contracts/sdk/fixtures/extension/v1/handle-run-valid.json": {
+    "sha256": "34b68067e06004d7c443d720786b1b13f6d14f9c1be84001d69aaa6a1ac56066",
+    "bytes": 212
+  },
+  "contracts/sdk/fixtures/extension/v1/hello-client-valid.json": {
+    "sha256": "26c326e25db746d82be8c2aa38a8d756ffb00aeba39b9058340778a2f3d1b63c",
+    "bytes": 524
+  },
+  "contracts/sdk/fixtures/extension/v1/hello-duplicate-capability-invalid.json": {
+    "sha256": "4a351e6b0c5fbbcfd9ae67b66815043e6b4de946d84d136c2ca8d74763c45fcc",
+    "bytes": 553
+  },
+  "contracts/sdk/fixtures/extension/v1/managed-deadline-context-i64-valid.json": {
+    "sha256": "4d751d982d361bd948214679859f11a9acfb4a92804f9a725aa7bcb4dbbe9b51",
+    "bytes": 259
+  },
+  "contracts/sdk/fixtures/extension/v1/managed-deadline-context-number-invalid.json": {
+    "sha256": "92d494b97bd5135639e3ab2b327361e6ab45828eb6ba0de48060886d4baa5232",
+    "bytes": 306
+  },
+  "contracts/sdk/fixtures/extension/v1/managed-projection-authority-u64-valid.json": {
+    "sha256": "3b91f7e32dde84d8b7d062fcdecc8d0ba67f41e2dbf8da9fba8e74ee13df6060",
+    "bytes": 434
+  },
+  "contracts/sdk/fixtures/extension/v1/run-input-chat-valid.json": {
+    "sha256": "613c16e7ca1e23a7af977443f14e2986c5a4f36b4f8fa8a668751e1ecd07bc8e",
+    "bytes": 223
+  },
+  "contracts/sdk/fixtures/extension/v1/run-input-empty-text-invalid.json": {
+    "sha256": "513ecaf2cc7bd06fae18687982b21186253bad64fb14ae6f36ed7033c55cf3a1",
+    "bytes": 236
+  },
+  "contracts/sdk/fixtures/extension/v1/run-input-execute-message-valid.json": {
+    "sha256": "b6011d410b5c770b6658d15017ec4b1b827a0674e4bde29386d7490cee0bf249",
+    "bytes": 364
+  },
+  "contracts/sdk/fixtures/extension/v1/run-input-execute-valid.json": {
+    "sha256": "e1eab551d21878a2fefa5c8578b77f1e7e1286353c631b9fa152f9a439345e2a",
+    "bytes": 216
+  },
+  "contracts/sdk/fixtures/extension/v1/run-receipt-completed-valid.json": {
+    "sha256": "454d441af7c472f99b790829f7f783093075ea1831516eb6fc040cef641cc923",
+    "bytes": 489
+  },
+  "contracts/sdk/fixtures/extension/v1/run-receipt-delivery-failed.json": {
+    "sha256": "8c5d2f7822fe3670e02c734a3701a8697e40c48d239066aa44872e3748fccb05",
+    "bytes": 662
+  },
+  "contracts/sdk/fixtures/extension/v1/run-recovered-interrupted-valid.json": {
+    "sha256": "f4ec777970c8f9575a0d68ca49a491ab5c01a39b462b8ef9f404b81858017051",
+    "bytes": 441
+  },
+  "contracts/sdk/fixtures/extension/v1/run-terminal-completed-valid.json": {
+    "sha256": "3945e9b97ac54f4e3896b853c1f627baca32a657989fba5657709ca402ea5956",
+    "bytes": 240
+  },
+  "contracts/sdk/fixtures/extension/v1/run-terminal-failed-valid.json": {
+    "sha256": "072f80b015bcc9b371f564146019d9390775567c9593f5997526e1cb31f64c97",
+    "bytes": 414
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-bytes-base64-invalid.json": {
+    "sha256": "4b301803f8080c888a452aa24aec99f1f74cba58bdd7253532e8639433c92b6c",
+    "bytes": 225
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-bytes-empty-valid.json": {
+    "sha256": "fa7851243f812c069cd136363287c9dc67ca927123dfaecffeb4b4882366bb75",
+    "bytes": 213
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-bytes-length-invalid.json": {
+    "sha256": "b85b57d7735369b09ecc5117c3d5a09c9ce9f3edd737d1c87710e6287f91a257",
+    "bytes": 248
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-duration-nanos-valid.json": {
+    "sha256": "ed3c9cc7bb11a7ccd978612657ce5662f50d569320ed217a5bda66430ac9665e",
+    "bytes": 243
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-base64-invalid.json": {
+    "sha256": "11816b62100b011c8bdf407c0ddb3c35f2ed47d5a5f1ce6ef8fb8aa86287d2e8",
+    "bytes": 271
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-native-empty-invalid.json": {
+    "sha256": "06eb74f9af15884357c3224f0a7b723c932ca6c04b2be8503bfac855e5c46cdd",
+    "bytes": 256
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-relative-invalid.json": {
+    "sha256": "8435dadca16260828df1ffd714dc3b02b2bb99bee952876fb78e5bb039b5a3ce",
+    "bytes": 279
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-root-valid.json": {
+    "sha256": "b0c86a36f471028ee9f9c9ad04038fc05afcbcbd9b54061cc703c384619a150e",
+    "bytes": 204
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-unix-lossless-valid.json": {
+    "sha256": "7d052a6b7f30c252dcdb24a88e0b65dd16273333c1edf9e74593672bf21af77d",
+    "bytes": 292
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-unix-relative-encoded-invalid.json": {
+    "sha256": "289531721f03e5ee7566320610ec197a61f9783252058a5cd20b462c40191b52",
+    "bytes": 301
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-windows-relative-encoded-invalid.json": {
+    "sha256": "689b9831f8f8553c1fd11644a61444d5ae27e18a5f599e66576eec9dfe1f8bdf",
+    "bytes": 308
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-path-windows-valid.json": {
+    "sha256": "67f0992db600dd0eeab2093533a07fa27c0cdfc270ece401ac7c1007b7b436cf",
+    "bytes": 234
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-u64-float-invalid.json": {
+    "sha256": "7fc5012edf2477f0de5f5d0c0faf89291aa3dc2e954ff4d2ccba48e9a1b77b2a",
+    "bytes": 204
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-u64-leading-zeros-invalid.json": {
+    "sha256": "fe0b0e9dc8e4d2c597db6992893acfa0042e3267e5985c6341e3eb1655f89611",
+    "bytes": 213
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-u64-max-valid.json": {
+    "sha256": "516d906e52a67429caed540d1263cc070e16ab85aba666b60549e01a519a2a1a",
+    "bytes": 187
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-u64-overflow-invalid.json": {
+    "sha256": "c8bc2b38e1726da214a5eebf0c9d9c3540c581beafd010243ca4f4e471dbbc70",
+    "bytes": 248
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-unknown-additive-valid.json": {
+    "sha256": "713937d632c512dca075b9b13afeb7cf792d67c226802c5a7689051361a32189",
+    "bytes": 361
+  },
+  "contracts/sdk/fixtures/extension/v1/scalar-unknown-empty-tag-invalid.json": {
+    "sha256": "33249a8a3cfa0a4e322c592e742b218d3d42571ffe26091344d2013620d886ba",
+    "bytes": 316
+  },
+  "contracts/sdk/fixtures/extension/v1/task-execution-claim-result-null-valid.json": {
+    "sha256": "e12da1e3feb76e3f3bd0dcc76a58131e76f910ea56a36061698396a6132715c4",
+    "bytes": 556
+  },
+  "contracts/sdk/fixtures/extension/v1/task-execution-unsafe-claim-revision-invalid.json": {
+    "sha256": "dc74354c1916be5dd5abba0f5d2fd7f950bf37572504b65517e2c0c09d685ba5",
+    "bytes": 516
+  },
+  "contracts/sdk/fixtures/extension/v1/task-store-execution-cas-opt-in-valid.json": {
+    "sha256": "ca2d4bcab68b1277eb187aad3a47115b592150325e68818ddc1da9f777e8caa1",
+    "bytes": 532
+  },
+  "contracts/sdk/fixtures/extension/v1/task-store-execution-cas-string-invalid.json": {
+    "sha256": "770f85d1c796c93ef08d6788d8c929f103fa02fc98902c891746e1e0af4b1646",
+    "bytes": 538
+  },
+  "contracts/sdk/fixtures/extension/v1/tool-result-authoritative-effects-valid.json": {
+    "sha256": "13988b247e2c2d03dc1772e433e4a1ed107aac5de30e358a10fe4ccf099e183e",
+    "bytes": 589
+  },
+  "contracts/sdk/fixtures/extension/v1/tool-result-unknown-effect-invalid.json": {
+    "sha256": "1e32046b745e51cbf486676902ba87a3716e2a1c6fbfffd24247a068473679fc",
+    "bytes": 452
+  },
+  "contracts/sdk/fixtures/extension/v1/transcript-projection-settlement-observation-valid.json": {
+    "sha256": "edc7b5f23da6acfa8fc79bd685c25610055e7498aa4ca109bf7e54a00880a31e",
+    "bytes": 597
+  },
+  "contracts/sdk/inventory-telemetry.json": {
+    "sha256": "6e6f3695a20f56a89d0c033fe0794e17da4d574c90fcdf65136937bf28067356",
+    "bytes": 1459
+  },
+  "contracts/sdk/parity-manifest.json": {
+    "sha256": "73cc165e1e2b7d428dcf6d0906d80a55ce62216bf44f6716907da849aa206ab0",
+    "bytes": 32926597
+  },
+  "contracts/sdk/parity-manifest.schema.json": {
+    "sha256": "ea107c427bf95b4b608e1eb8caac027867fc9c4b3e7c8f2295bcf8e350fa4bb4",
+    "bytes": 9230
+  },
+  "contracts/sdk/public-api.txt": {
+    "sha256": "7795c763274a5ed6d0814cc5502694b57e87fa330ceaeb60229866cd0f2610fe",
+    "bytes": 16785736
+  },
+  "contracts/sdk/schema/echo-agent-extension-v1.schema.json": {
+    "sha256": "df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61",
+    "bytes": 429061
+  },
+  "contracts/sdk/source-contract.json": {
+    "sha256": "e689bb8fee5e8aabbf517264bb608f47a0bd19e6ef665b54b5d26ea2c248d394",
+    "bytes": 548
+  },
+  "contracts/sdk/toolchain.json": {
+    "sha256": "0c9193fb2b381bc607a5171bfaa5909227f80b2e1686b1cd3d82a5f672d3799c",
+    "bytes": 513
+  },
+  "sdks/shared/contract-digests.json": {
+    "sha256": "2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7",
+    "bytes": 193
+  },
+  "sdks/shared/facade-operation-catalog.json": {
+    "sha256": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+    "bytes": 521273
+  }
+}

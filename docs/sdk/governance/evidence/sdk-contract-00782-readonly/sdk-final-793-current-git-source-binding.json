@@ -1,0 +1,8 @@
+{
+  "candidateGit": "db34a76226732d50892be5718cd48836576aea9c",
+  "inputFiles": 793,
+  "all793GitBlobsMatchExecutedInputSHA": true,
+  "mismatches": [],
+  "scope": "current db34 tracked-source recovery binding; original execution startc121/untracked5 context retained, not claimed run on later Gitcommit",
+  "sourceMapSHA256": "c42dbb230948b42708922ac50fffd597b7570413268e8a94f676c8f4d2c8398c"
+}
