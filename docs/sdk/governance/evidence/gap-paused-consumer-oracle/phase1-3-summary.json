@@ -1,0 +1,72 @@
+{
+  "classification": "test oracle race; not protocol/client failure",
+  "originalWholeFailure": {
+    "expected": "5",
+    "actual": "6",
+    "logSHA256": "3b22d6da08109f796f4cc0715b6216a3b48d06566cac42405c73b1c8386f3b37"
+  },
+  "controlledTrace": {
+    "getStatus": "running",
+    "getSequence": "5",
+    "getStream": {
+      "id": "107362c4-9610-43e3-b16a-1a3b89e64c2b",
+      "generation": "1",
+      "kind": "stream"
+    },
+    "runIdentity": {
+      "id": "sess_45d7aeac-5a00-4f3b-9ac0-ac93c4e20e2d:turn:1",
+      "generation": "1",
+      "kind": "run"
+    },
+    "terminalSettled": true,
+    "terminalSequence": "8",
+    "replayCursor": {
+      "stream_id": "107362c4-9610-43e3-b16a-1a3b89e64c2b",
+      "last_processed_sequence": "8"
+    },
+    "replayEvents": [
+      {
+        "sequence": "3",
+        "event_id": "evt_d5cfbcf7997f1690e44354a5fb13879b3f677b6995c5a65614e5f3c72a3a8940",
+        "type": "tool_call"
+      },
+      {
+        "sequence": "4",
+        "event_id": "evt_e782ed512a49f23972570267738e9e62645241963db23d970875c349b1744977",
+        "type": "tool_result"
+      },
+      {
+        "sequence": "5",
+        "event_id": "evt_9eae395c9d786e9aafd2b446ca767ccf61bfeb450b4615005f00f2653b74a7a9",
+        "type": "tool_batch_end"
+      },
+      {
+        "sequence": "6",
+        "event_id": "evt_7ffd45ea12bb70adae5e56dd2c3b8eba647c88a780ba0b7dc9a41be09b8d6b55",
+        "type": "llm_usage"
+      },
+      {
+        "sequence": "7",
+        "event_id": "evt_9fc971b12c7bda60e7846f4998b5f1fac913d9f3d97129a21055162c78a44701",
+        "type": "token"
+      },
+      {
+        "sequence": "8",
+        "event_id": "evt_45d421f0af931586e9337089b4179bf31f1634dfba31ad0949955cbb5ba432de",
+        "type": "final_answer"
+      }
+    ]
+  },
+  "controlledOriginalEquality": {
+    "expected": "5",
+    "actual": "8",
+    "runnerExit": 1
+  },
+  "originalOneFocusedRun": {
+    "runnerExit": 0,
+    "conclusion": "one pass does not disprove the observed race"
+  },
+  "delta": "public wait barrier inserted after GET before replay, no production change, original equality unchanged",
+  "rawTeeFrames": 16,
+  "retainedWork": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-gap-paused-consumer-debug/runtime/echo-sdk-coalesced-ts-4Diovm"
+}

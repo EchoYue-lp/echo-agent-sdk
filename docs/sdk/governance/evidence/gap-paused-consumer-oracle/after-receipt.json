@@ -1,0 +1,33 @@
+{
+  "sourceBeforeAfterExact": true,
+  "sourceSHA256": {
+    "sdks/typescript/test/gap-ack-host.test.js": "b695a7ef9077e69f863e7fcac8f2e06ec95ce41df519be77f011fffe9499e0e0",
+    "sdks/python/tests/test_gap_ack_host.py": "79135f92f27f211393f1919b14b6273f3977e0c1ab208a4fad1b06a96910fe10",
+    "sdks/shared/testing/gap_ack_fixture.py": "895a86fe37ae15235f62f5fbd1990efd585c4c74b4db70c960cd34c35b4de5cc",
+    "sdks/shared/testing/gap_ack_host_proxy.py": "66ecb3feb5099394ef52a37c84a1df9baa260699a6fa7336f3e2a052603889c5",
+    "sdks/typescript/src/client.ts": "611b1a873a6e2be845fa13a1c208844b4aa6bdbf347b3293b04a6f57d2d4ee70",
+    "sdks/python/src/echo_agent_sdk/client.py": "fc843caf105c9e755f8976c4307533a560da98607965f63a3c5d5d21446924a9"
+  },
+  "head": "054d6515b2c08946803475c573766f2221646b56",
+  "controlledOld": {
+    "get": "5",
+    "replay": "8",
+    "originalEqualityExit": 1
+  },
+  "controlledNew": {
+    "get": "6",
+    "replay": "8",
+    "strictOracleExit": 0
+  },
+  "typescript": {
+    "executedSelected": 2,
+    "passed": 2,
+    "selectionSkippedOtherTests": 10
+  },
+  "python310": {
+    "executedSelected": 2,
+    "passed": 2,
+    "skipped": 0
+  },
+  "scope": "test-only snapshot-oracle correction; no production/fixture/runtime changes"
+}

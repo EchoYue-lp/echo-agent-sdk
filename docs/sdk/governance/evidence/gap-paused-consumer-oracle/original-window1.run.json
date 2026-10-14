@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+  "steps": [
+    {
+      "label": "original-gap-window1",
+      "command": [
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-hash-streaming/node20-npm-cache/_npx/185e25162edaacfb/node_modules/node/bin/node",
+        "--test",
+        "--test-name-pattern=^paused consumer window 1 external replay ACK merges queued gap without covered re-delivery$",
+        "test/gap-ack-host.test.js"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-gap-paused-consumer-debug/original-window1.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 2935,
+      "bytesWritten": 2935,
+      "startedAt": "2026-10-14T23:23:18.998Z",
+      "finishedAt": "2026-10-14T23:23:20.076Z"
+    }
+  ],
+  "updatedAt": "2026-10-14T23:23:20.076Z"
+}

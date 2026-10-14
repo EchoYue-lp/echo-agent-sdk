@@ -1,0 +1,6 @@
+{
+  "sourceOriginal": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/typescript/test/gap-ack-host.test.js",
+  "originalSHA256": "264683fd5c4a8f46617ad94e0ec1f6f65a4850d104ce477db4cdd4d0bad3bc47",
+  "diagnosticCopySHA256": "93b1d6470cdea56e51c6524f731ac3e399da103cfa1c748e902fff8abd950c5b",
+  "delta": "absolute original imports/fixtures; retained owned work; public run.wait terminal barrier after first run.get before replay; stdout fullobservations. Original assertions unchanged. No production logic changed."
+}

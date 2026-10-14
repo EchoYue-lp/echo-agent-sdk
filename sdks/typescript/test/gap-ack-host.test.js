@@ -197,12 +197,22 @@ for(const window of [1,2])test(`paused consumer window ${window} external replay
   assert.ok("gap" in item);assert.equal(item.gap.from_sequence,(BigInt(cursor)+1n).toString());assert.ok(BigInt(item.gap.snapshot_watermark)>BigInt(cursor));
   await iterator.return();
   const parked=await run.get();const parkedPage=await run.replay(cursor,64);
-  for(const event of parkedPage.events){assert.ok(!covered.has(event.envelope.sequence));covered.set(event.envelope.sequence,event.envelope.event_id);}
+  assert.ok(parkedPage.events.length>0);
+  let pageCursor=BigInt(cursor);
+  for(const event of parkedPage.events){assert.equal(BigInt(event.envelope.sequence),pageCursor+1n);pageCursor=BigInt(event.envelope.sequence);assert.ok(!covered.has(event.envelope.sequence));covered.set(event.envelope.sequence,event.envelope.event_id);}
+  assert.equal(parkedPage.next_cursor.last_processed_sequence,pageCursor.toString());
   cursor=parkedPage.next_cursor.last_processed_sequence;await sdk.acknowledge(run.stream,cursor);
-  assert.equal(cursor,parked.last_sequence);
+  // GET samples before replay; the released model may append between RPCs.
+  assert.ok(BigInt(cursor)>=BigInt(parked.last_sequence));
   await writeFile(join(work,"release"),"");assert.equal((await run.wait({timeoutMs:10000})).settled,true);
+  const terminal=await run.get();assert.equal(terminal.status,"completed");assert.deepEqual(terminal.stream,run.stream);assert.ok(BigInt(cursor)<=BigInt(terminal.last_sequence));
   const continuation=await run.replay(cursor,64);for(const event of continuation.events){assert.ok(!covered.has(event.envelope.sequence));covered.set(event.envelope.sequence,event.envelope.event_id);}
   const final=await run.replay("0",64);
+  assert.ok(final.events.length>0 && final.events.length<=64);
+  assert.equal(final.next_cursor.stream_id,run.stream.id);
+  let finalCursor=0n;const finalIds=new Set();
+  for(const event of final.events){assert.equal(BigInt(event.envelope.sequence),finalCursor+1n);finalCursor=BigInt(event.envelope.sequence);assert.equal(event.stream.id,run.stream.id);assert.equal(event.stream.generation,run.stream.generation);assert.equal(event.stream.kind,run.stream.kind);assert.ok(!finalIds.has(event.envelope.event_id));finalIds.add(event.envelope.event_id);}
+  assert.equal(final.next_cursor.last_processed_sequence,finalCursor.toString());assert.equal(finalCursor.toString(),terminal.last_sequence);
   assert.deepEqual([...covered.entries()].sort((a,b)=>Number(BigInt(a[0])-BigInt(b[0]))).map(([,id])=>id),final.events.map(event=>event.envelope.event_id));
   assert.equal(final.events.filter(event=>event.envelope.payload.event_type==="final_answer").length,1);
   await session.close();await agent.close();

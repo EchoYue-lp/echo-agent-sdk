@@ -262,3 +262,7 @@ docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/source-review/imp
 # Immutable Python launcher regression witnesses.
 docs/sdk/governance/evidence/host-sha-python-launcher-compat/fix.patch -diff
 docs/sdk/governance/evidence/host-sha-python-launcher-compat/history/full-language-failed.log -diff
+
+# Exact gap-oracle counterexample command output.
+docs/sdk/governance/evidence/gap-paused-consumer-oracle/terminal-barrier.log -diff
+docs/sdk/governance/evidence/gap-paused-consumer-oracle/whole-before/full-language.log -diff

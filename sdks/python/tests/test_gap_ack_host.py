@@ -359,9 +359,14 @@ async def test_paused_consumer_external_replay_ack_coalesces_covered_tail(
             await iterator.aclose()
             parked = await run.get()
             page = await run.replay(cursor, 64)
+            assert page["events"]
+            page_cursor = int(cursor)
             for event in page["events"]:
+                assert int(event["sequence"]) == page_cursor + 1
+                page_cursor = int(event["sequence"])
                 assert event["sequence"] not in covered
                 covered[event["sequence"]] = event["event_id"]
+            assert page["next_cursor"]["last_processed_sequence"] == str(page_cursor)
             cursor = page["next_cursor"]["last_processed_sequence"]
             await sdk.notify(
                 "echo_agent/event/ack",
@@ -372,14 +377,31 @@ async def test_paused_consumer_external_replay_ack_coalesces_covered_tail(
                     }
                 },
             )
-            assert cursor == parked["last_sequence"]
+            # GET samples before replay; the released model may append between RPCs.
+            assert int(cursor) >= int(parked["last_sequence"])
             (tmp_path / "release").touch()
             assert (await run.wait(timeout=10))["settled"]
+            terminal = await run.get()
+            assert terminal["status"] == "completed"
+            assert terminal["stream"] == run.stream.to_dict()
+            assert int(cursor) <= int(terminal["last_sequence"])
             continuation = await run.replay(cursor, 64)
             for event in continuation["events"]:
                 assert event["sequence"] not in covered
                 covered[event["sequence"]] = event["event_id"]
             final = await run.replay("0", 64)
+            assert 0 < len(final["events"]) <= 64
+            assert final["next_cursor"]["stream_id"] == run.stream.id
+            final_cursor = 0
+            final_ids = set()
+            for event in final["events"]:
+                assert int(event["sequence"]) == final_cursor + 1
+                final_cursor = int(event["sequence"])
+                assert event["stream_id"] == run.stream.id
+                assert event["event_id"] not in final_ids
+                final_ids.add(event["event_id"])
+            assert final["next_cursor"]["last_processed_sequence"] == str(final_cursor)
+            assert str(final_cursor) == terminal["last_sequence"]
             assert [covered[key] for key in sorted(covered, key=int)] == [
                 event["event_id"] for event in final["events"]
             ]
