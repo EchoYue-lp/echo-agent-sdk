@@ -4,7 +4,7 @@ id: map.sdk-integrations
 kind: capability_map
 title: 集成能力与精确 source invoke
 risk: high
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: bd8e42e732588181b7a2589d91e9ffdce02d23e1
 boundary_refs:
 - boundary.sdk-integrations
 behavior_refs:
@@ -50,6 +50,7 @@ evidence_refs:
 - evidence.sdk-rag-scalar-verification
 - evidence.sdk-task-memory-workflow-finite-observation
 - evidence.sdk-tools-bridge-finite-observation
+- evidence.sdk-integrations-finite-observation
 finding_refs:
 - finding.sdk-adapter-invalid-input
 - finding.sdk-delivery-exact-claim
@@ -85,6 +86,14 @@ audit_refs:
 - audit.sdk-tools-bridge-finite-failure-concurrency
 - audit.sdk-tools-bridge-finite-permission-external
 - audit.sdk-tools-bridge-finite-contract-evidence
+- audit.sdk-integrations-finite-trigger-input
+- audit.sdk-integrations-finite-result-side-effect
+- audit.sdk-integrations-finite-state-authority
+- audit.sdk-integrations-finite-data-durability
+- audit.sdk-integrations-finite-time-lifecycle
+- audit.sdk-integrations-finite-failure-concurrency
+- audit.sdk-integrations-finite-permission-external
+- audit.sdk-integrations-finite-contract-evidence
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
@@ -100,9 +109,6 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/state_delivery.rs
     - echo-sdk-host/src/core_profile/facade/tools.rs
     - echo-sdk-host/src/core_profile/facade/observability.rs
-    - sdks/typescript/test/lsp-diagnostics-host.test.js
-    - sdks/python/tests/test_lsp_diagnostics_host.py
-    - sdks/java/src/test/java/com/echoagent/sdk/LspDiagnosticsHostTest.java
     behavior_refs:
     - behavior.sdk-integrations
     finding_refs:
@@ -168,7 +174,7 @@ scenarios:
       via linked Evidence/Audit; this map retains original observation for unrelated
       families; memory/checkpoint volatile, contextnative gap andphysicalB remain.
   family-delivery:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -181,15 +187,16 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-delivery
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-state:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -202,15 +209,16 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-state
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-trace:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -223,15 +231,16 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-trace
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-eval:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -244,14 +253,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-eval
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-improve:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -264,14 +274,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-improve
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-permission:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -284,15 +295,16 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-permission
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-memory-permission-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-mcp:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -305,14 +317,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-mcp
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-a2a:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -325,14 +338,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-a2a
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-lsp:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -345,14 +359,15 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-lsp
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-channels:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -365,13 +380,14 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-channels
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
     - evidence.sdk-channel-message-handler-consumer-audit
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-telemetry:
     status: needs_review
     source_refs:
@@ -393,7 +409,7 @@ scenarios:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
   family-topology:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -406,12 +422,13 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-topology
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-web:
     status: mapped
     source_refs:
@@ -677,7 +694,7 @@ scenarios:
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
   family-testing:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -690,11 +707,12 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-testing
-    unknown: 14个已接受field payload与12positive+7invalid共享值corpus已有三语言局部证据；无remote method/operation、无Rust
-      mock重建或runtime承诺，最后正式pin/签名/独立复审/精确main仍待。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-testing-value-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-structured-output:
     status: needs_review
     source_refs:
@@ -716,7 +734,7 @@ scenarios:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
   family-source-operation:
-    status: needs_review
+    status: mapped
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
     - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -729,12 +747,13 @@ scenarios:
     - echo-sdk-host/src/core_profile/facade/observability.rs
     behavior_refs:
     - behavior.sdk-family-source-operation
-    unknown: 该family已有具名候选断言；完整最低充分行为及最终published pin/source、独立复审仍未闭合。testing的14个接受field
-      payload已有独立纯值投影证据，不包含远程Mock runtime。
-    next_step: 沿关联family Behavior的最低充分证据补未列场景；最终源码/二进制/合同冻结后独立复审及精确main对账，不重跑或抹除已有反例。
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
   family-invoke:
     status: needs_review
     source_refs:
@@ -755,6 +774,182 @@ scenarios:
     evidence_refs:
     - evidence.sdk-candidate-behavior-verification
     - evidence.sdk-parent-driver-candidate-verification
+  integration-finite-trigger-input:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-trigger-input
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-result-side-effect:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-result-side-effect
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-state-authority:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-state-authority
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-data-durability:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-data-durability
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-time-lifecycle:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-time-lifecycle
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-failure-concurrency:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-failure-concurrency
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-permission-external:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-permission-external
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-contract-evidence:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-contract-evidence
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
 ---
 
 # 集成能力与精确 source invoke
@@ -783,7 +978,7 @@ Framework 拥有 Run/Task/Store 的事实与终态；Host 只拥有寻址、可�
 
 CompiledOperationCatalog按确切accepted identity/signature/feature寻址，薄adapter调用live framework service。memory/workflow读取当前Agent服务，mixednamespace/配置错误在副作用前拒绝；Delivery携完整claim而不以id重建当前attempt；trace构造验证后发布，quota失败可复用。MCP config/file批量SDKalias原子发布保原best-effort native连接权威及exact Arc+Session；工具投影完整ToolResult/effects/artifact/canonical cause。LSP真实29request场景+manager生命周期有30观测/44原始请求；新诊断另42观测/42原始通知跨三语言全字段匹配，severity缺失与integer/text code无损、每URI错误/恢复/清空隔离、无URI走原runtime fatal/PID退出。两份证据各绑定fc63/4d43不同不可变Host，不互冒同一final输入。
 
-仍缺：Workflow48行覆盖17/24已接受操作，原剩7项已有0744后继真实消费者证据；Memory/Permission59行、State/Trace/Delivery9项、MCP4项、LSP29请求/42诊断分别有来源。Guard/Pivot后继189ff与Tool新validator源须匹配自己的运行/复审；Channel inbound合同缺口单列。
+原阶段缺口（历史）：Workflow48行覆盖17/24已接受操作，原剩7项已有0744后继真实消费者证据；Memory/Permission59行、State/Trace/Delivery9项、MCP4项、LSP29请求/42诊断分别有来源。Guard/Pivot后继189ff与Tool新validator源须匹配自己的运行/复审；Channel inbound合同缺口单列。
 
 ## 权限与敏感信息
 
@@ -824,3 +1019,11 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## 内置十工具族后继有限关系
 
 只对files/shell/web/database/rag/chart/media/data/statistics/research十targetscene追加5bcb共享Evidence/8lensAudit与mapped范围；此Map其它能力的原observation、不确定性与状态不变。schema/parser/Store等唯一frameworkauthority不重复，任意未接受sourceoperation不自动进入菜单。
+
+## 原辅助测试出处
+
+sdks/typescript/test/lsp-diagnostics-host.test.js, sdks/python/tests/test_lsp_diagnostics_host.py, sdks/java/src/test/java/com/echoagent/sdk/LspDiagnosticsHostTest.java 保原569与历史收据，不假bd8已经提交；其原字段义务保，具体新group17source refs真实Git可查。
+
+## 当前Integration八视角范围
+
+原12family与2support角色scope按bd8真实Git观察，8审计具名examined、Map入口mapped；先前Task/Tool组后继Audit各自版本不改，原family其余范围/unknown/开放Finding继续保。memoryvolatile/Delivery8opsnonDurable、State7/Trace17、A2Afuturegen非restart/localSSE非remotephysical/Testingvalue非Mock必须按具体表，不以count或Catalog闭合。

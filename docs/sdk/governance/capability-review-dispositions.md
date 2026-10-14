@@ -81,3 +81,7 @@ SDK Host 已精确依赖已发布框架 `be5f0a84`，八个框架包来自同一
 ## 内置十工具与反向桥有限收口
 
 沿原currentTool实际8lens审查，files/shell/web/database/rag/chart/media/data/statistics/research十族及Tool/LLM/Store/Hook/AgentCallback/Intervention六角色按原authority/字段/effect/lifecycle/typederror具名mapped/examined，行为仍needs_review。观察5bcb runtime69b source同；remoteTool/LLM原因3合法真红绿及独review补原whole前scope，Feature宽Finding仅两remote子根因局部闭，其它cause不自动关闭。provider时点、内存无crossprocess、未接受codec/构造器、5秒B/12/新A最终全gate/main明确独立，原4feb取证与未提交FileAuthority附包来源不伪当前Git。
+
+## Integration与supporting角色有限收口
+
+原独立reviewer的MCP/LSP/channels/EvalImproveTopology/Permission/StateTraceDelivery/Testing范围绑定bd8恢复的69b运行源，790原case按实际assertions支持；A2A原consumer缺口后由三语各24steps/9ops/8HTTP与明确typederrors/stream/owner/noeffect另epoch补齐。registry/skill只归现source_operation/intrinsic支持角色，不自动所有methodverified。具体Mapscene仅mapped/8lensAuditexamined，Behaviorneeds_review保。Statecheckpoint7/Trace17字段区别、Deliverymemory无跨process、Testingpurevalue非Mock、网络时点/5sB/12/currentA/main边界全部保。

@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-integrations
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: bd8e42e732588181b7a2589d91e9ffdce02d23e1
 code_refs:
 - echo-sdk-host/src/core_profile/facade/mod.rs
 - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -30,6 +30,7 @@ evidence_refs:
 - evidence.sdk-parent-driver-candidate-verification
 - evidence.sdk-memory-permission-candidate
 - evidence.sdk-real-permission-default-ttl
+- evidence.sdk-integrations-finite-observation
 finding_refs: []
 ---
 
@@ -73,7 +74,7 @@ source permission_mode setter/getter 和真实 HumanLoop 回调消费；部分 p
 
 实际来源：`echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed`；`echo-sdk-host/tests/extension_bridge_e2e.rs#store_and_human_loop_extensions_round_trip`。
 
-仍缺：完整 matcher/cache/context/TTL、两 Session live tool 决策隔离与撤销失败未覆盖。 published framework pin、最后变更后的独立复审和精确main验收
+原阶段缺口（历史，本次finite范围见下）：完整 matcher/cache/context/TTL、两 Session live tool 决策隔离与撤销失败未覆盖。 published framework pin、最后变更后的独立复审和精确main验收
 仍待；本证据不证明未列出的生命周期、字段或错误组合，也不自动扩大accepted合同。
 
 ## 裁决记录
@@ -105,3 +106,11 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## 默认TTL实际补证的范围
 
 原“到期未观察”因素已由evidence.sdk-real-permission-default-ttl原真实30分钟clock证据补，runtime569/17cf/bb4f/b909原源码及当前形式归档切点分开。Permission/Memory全族status仍needs_review，其余场景未自动verified、不新配置或持久性承诺；其原observedGit569保Runtime模型source，不因newdocsroll全部model。
+
+## 当前集成能力与supporting角色有界收口
+
+原frameworkFinal独立source审查基于790/a634真实runtime，后A2A第一次missing具名consumer另由bd8三native24step/9ops/8HTTP补齐并审PASS。这是两个真实epoch，不把原A2Apendingreview文稿当今天未审，也不伪当时已审。九所选runtime69b在bd8逐Gitblob相同；currenthandles新A变动排除，旧source审不借成latestA或全部Host已验。
+
+具体本family和registry/skill支持角色按sharedEvidence表/8Audit定位行为/唯一authority/lifecycle/失败：MCP/LSP owner/PID/全字段/derived不复活；Channel六forward原2facts/RWclose/peer隔离；EvalImprove cleanup/deadline/workspace；topologynodeedge；Permissionlive/TTL另scope；Statecheckpoint7、TraceRun17/nanotime/bigDuration/JSONLcold；Deliverymemory8ops同实例exactclaim；Testing14纯值controltransport非Mock业务。源码/API/模型不成为第二权威。
+
+Behavior保持needs_review；入口具名mapped/examined不自动41verified、fullaccepted生成/main。Delivery无额外crossprocessdurability，configuredredaction不承诺未知所有secret；registry/skill归既有source_operation/intrinsic，无新family或任意skill执行。newAfinal、5秒physicalB/12identity及平台/main另验，支持范围未审的sourceoperationmethod保具体菜单理由，不以无限所有组合扩大义务。
