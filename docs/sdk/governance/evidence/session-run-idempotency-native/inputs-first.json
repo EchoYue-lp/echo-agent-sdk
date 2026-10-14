@@ -1,0 +1,19 @@
+{
+  "head": "4e734936d6f0f06f60220747c57655eaeb64bfd7",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-admission-classification-host",
+  "hostSHA256": "06a5619dba80229108fef09544916a85c2c1e97a58747973606b3d2094e89b04",
+  "inputs": {
+    "sdks/shared/testing/session_run_idempotency_fixture.py": "894ede4702659c9343a75a8a0b4a27f3ced6f898f4267a4279bcf5a501c31e92",
+    "sdks/typescript/test/session-run-idempotency-host.test.js": "0f507d78da45f446461755bfe334522e15292736b8cd2a44fe0cd62c49ca5a17",
+    "sdks/python/tests/test_session_run_idempotency_host.py": "552baf898baf64ff7cf4da2f99baff7f2cebc4b081305821ba23fb2a18112e20",
+    "sdks/java/src/test/java/com/echoagent/sdk/SessionRunIdempotencyHostTest.java": "30bbc4af61c0fe6708e8248c599a5c7cb523a280db9559024952df356f50e829",
+    "sdks/shared/testing/gap_ack_host_proxy.py": "66ecb3feb5099394ef52a37c84a1df9baa260699a6fa7336f3e2a052603889c5",
+    "sdks/shared/contract-digests.json": "2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7",
+    "sdks/shared/facade-operation-catalog.json": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+    "sdks/typescript/dist/client.js": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+    "sdks/python/src/echo_agent_sdk/client.py": "30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "86efd3959d478723949910ff97058f26a6fd32b3e050b54713f83288a2ca6131",
+    "echo-sdk-host/src/core_profile/handler.rs": "41027d36e098a8e756cd7b81658c0fe9ee77a5125452ad15493bb4ef25026054",
+    "echo-sdk-host/src/factory.rs": "da35484425efdf2242b2d27e54e839eade274a8b4e25f2a9bcaac859f412c159"
+  }
+}

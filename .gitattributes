@@ -54,3 +54,8 @@ docs/sdk/governance/evidence/session-run-idempotency-implementation/current/gate
 docs/sdk/governance/evidence/session-run-idempotency-implementation/history/06/core32.log -diff
 docs/sdk/governance/evidence/session-run-idempotency-implementation/history/06/hostlib184.log -diff
 docs/sdk/governance/evidence/session-run-idempotency-implementation/history/bf1/candidate.diff -diff
+docs/sdk/governance/evidence/session-run-idempotency-native/final-rpc-host/java.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-native/java-config-corrected.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-native/java-final.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-native/java-first.log -diff
+docs/sdk/governance/evidence/session-run-idempotency-native/python-first.log -diff

@@ -1,0 +1,1 @@
+echo-agent-sdk-host: default_agent.agent.enable_tools must be true for ACP stdio MCP support

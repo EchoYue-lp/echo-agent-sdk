@@ -1,0 +1,73 @@
+{
+  "head": "4e734936d6f0f06f60220747c57655eaeb64bfd7",
+  "immutableHost": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-session-run-admission-classification-host",
+  "immutableHostSHA256": "06a5619dba80229108fef09544916a85c2c1e97a58747973606b3d2094e89b04",
+  "framework": "a6346643bda47679a96760f56f45e41fd73b61b0",
+  "executedPublicationHostSourceEpoch": {
+    "handler": "41027d36e098a8e756cd7b81658c0fe9ee77a5125452ad15493bb4ef25026054",
+    "factory": "da35484425efdf2242b2d27e54e839eade274a8b4e25f2a9bcaac859f412c159"
+  },
+  "observedSourceAfter": {
+    "sdks/shared/testing/session_run_idempotency_fixture.py": "510a82945254307a22eb19a5c0b5ced3dc667c2f29e14038f73d91c6d1f70294",
+    "sdks/typescript/test/session-run-idempotency-host.test.js": "edff19c1df737beba178d88785b1d44b3de20c077d1d93fe4e9fa091d575ea6e",
+    "sdks/python/tests/test_session_run_idempotency_host.py": "e23e77a3869a9c491decf3fa29f2a4adaefc58856489e5fa1e8bda869abb6d3e",
+    "sdks/java/src/test/java/com/echoagent/sdk/SessionRunIdempotencyHostTest.java": "28618622f0e37c41fd46e24b9770d9f9cf84f51465e698e4cae0b215f6ab6e45",
+    "sdks/shared/testing/gap_ack_host_proxy.py": "66ecb3feb5099394ef52a37c84a1df9baa260699a6fa7336f3e2a052603889c5",
+    "sdks/shared/contract-digests.json": "2c22e7941f9dc7e6518b442363bcdd429a7692fd89b4b449f2a7293f200e09a7",
+    "sdks/shared/facade-operation-catalog.json": "569c184c85a427085a9e05003de82771f4dae938098b1097b3032b70471e18ce",
+    "sdks/typescript/dist/client.js": "5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c",
+    "sdks/python/src/echo_agent_sdk/client.py": "30ca4fb5f2a008160290fe3664d16bb70b2d168d57b693f23bab6f2a9628e38e",
+    "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "86efd3959d478723949910ff97058f26a6fd32b3e050b54713f83288a2ca6131",
+    "echo-sdk-host/src/core_profile/handler.rs": "e31b5307af49c2dbf090a014ddeb819381c6bc99d5932f9f99024efaef62323a",
+    "echo-sdk-host/src/factory.rs": "da35484425efdf2242b2d27e54e839eade274a8b4e25f2a9bcaac859f412c159"
+  },
+  "currentSourceDifferencesAgainstFirstCapture": [
+    "sdks/shared/testing/session_run_idempotency_fixture.py",
+    "sdks/typescript/test/session-run-idempotency-host.test.js",
+    "sdks/python/tests/test_session_run_idempotency_host.py",
+    "sdks/java/src/test/java/com/echoagent/sdk/SessionRunIdempotencyHostTest.java",
+    "echo-sdk-host/src/core_profile/handler.rs"
+  ],
+  "finalTestInputs": {
+    "sdks/shared/testing/session_run_idempotency_fixture.py": "510a82945254307a22eb19a5c0b5ced3dc667c2f29e14038f73d91c6d1f70294",
+    "sdks/typescript/test/session-run-idempotency-host.test.js": "edff19c1df737beba178d88785b1d44b3de20c077d1d93fe4e9fa091d575ea6e",
+    "sdks/python/tests/test_session_run_idempotency_host.py": "e23e77a3869a9c491decf3fa29f2a4adaefc58856489e5fa1e8bda869abb6d3e",
+    "sdks/java/src/test/java/com/echoagent/sdk/SessionRunIdempotencyHostTest.java": "28618622f0e37c41fd46e24b9770d9f9cf84f51465e698e4cae0b215f6ab6e45"
+  },
+  "counts": {
+    "nativeMethodsPerLanguage": 1,
+    "sharedGroupsPerLanguage": 5,
+    "providerCallbacksPerLanguage": 4,
+    "providerFinallyPerLanguage": 4,
+    "realSessionIndexRecordsPerLanguage": 2
+  },
+  "javaXML": {
+    "tests": "1",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "firstFailure": "fixture enable_tools=false rejected by real Host config; no idempotency behavior reached; initial native errors and genuine startup stderr preserved",
+  "firstEvent": "optional first_event absent in all actual RunStartResponse objects; complete responses are compared without synthesizing an event",
+  "scope": "sameconnection/generation public requests and registered real LLM callbacks; not before/after RPC cancellation hardbarriers/budget/EOF/generation-reset proof; those depend on separate Host focused source tests",
+  "remaining": "06 immutable is pre-RPC-cancellation-selector epoch; later immutable/current whole gates remain separate",
+  "leases": "Maven released; Cargo never invoked",
+  "comparison": "comparison.json",
+  "staticChecks": {
+    "ruff-check": 0,
+    "ruff-format": 0,
+    "node-syntax": 0,
+    "JavaCompilerFailOnWarning": 0
+  },
+  "fullResponses": "per-language observed.json plus normalized.json retain complete response/error/index object fields; timings/provider inputs/individual frames remain raw and are not normalized into equality",
+  "sourceFrozenAfterRuns": true,
+  "independentReview06": {
+    "reviewer": "/root/framework_final_review",
+    "critical": 0,
+    "important": 0,
+    "minor": 0,
+    "decision": "limited consumer PASS"
+  },
+  "latestNativeRepeat": "final-rpc-host/receipt.json",
+  "finalIndependentReview": "independent-review-final.json"
+}
