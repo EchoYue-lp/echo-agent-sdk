@@ -1,10 +1,10 @@
 package com.echoagent.sdk;
 
 import com.agentclientprotocol.sdk.client.transport.AgentParameters;
-import com.agentclientprotocol.sdk.client.transport.StdioAcpClientTransport;
 import com.agentclientprotocol.sdk.json.AcpJsonMapper;
 import com.agentclientprotocol.sdk.json.TypeRef;
 import com.agentclientprotocol.sdk.spec.AcpClientSession;
+import com.agentclientprotocol.sdk.spec.AcpClientTransport;
 import com.agentclientprotocol.sdk.spec.AcpSchema;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,18 +28,226 @@ import java.util.function.Function;
 public final class EchoAgentClient implements AutoCloseable {
     private static final TypeRef<JsonNode> JSON_NODE = new TypeRef<>() {};
 
+    /** Own one Process; the official stream transport remains the sole ACP codec/writer. */
+    private static final class OwnedStdioTransport implements AcpClientTransport {
+        private final AgentParameters parameters;
+        private final AcpJsonMapper mapper;
+        private final Object admission = new Object();
+        private final CompletableFuture<Void> ready = new CompletableFuture<>();
+        private final CompletableFuture<Integer> exited = new CompletableFuture<>();
+        private final CompletableFuture<Void> stderrDrained = new CompletableFuture<>();
+        private final CompletableFuture<Throwable> failure = new CompletableFuture<>();
+        private final java.util.concurrent.atomic.AtomicBoolean expectedClose = new java.util.concurrent.atomic.AtomicBoolean();
+        private final java.util.concurrent.atomic.AtomicReference<Throwable> observedExit = new java.util.concurrent.atomic.AtomicReference<>();
+        private final java.util.concurrent.atomic.AtomicReference<Throwable> nativeFailure = new java.util.concurrent.atomic.AtomicReference<>();
+        private final java.util.concurrent.atomic.AtomicReference<CompletableFuture<Void>> writing = new java.util.concurrent.atomic.AtomicReference<>();
+        private CompletableFuture<Void> writeTail = ready;
+        private Mono<Void> connection;
+        private CompletableFuture<Void> closeStage;
+        private volatile Process process;
+        private volatile com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport delegate;
+        private volatile java.io.OutputStream output;
+        private boolean accepting = true;
+        private volatile boolean cleaned;
+        private volatile boolean stderrStarted;
+        private boolean delegateClosed;
+        private boolean stdoutClosed;
+        private boolean stderrClosed;
+
+        OwnedStdioTransport(AgentParameters parameters, AcpJsonMapper mapper) { this.parameters=parameters;this.mapper=mapper; }
+        private static void offThread(Runnable action) { reactor.core.scheduler.Schedulers.boundedElastic().schedule(action); }
+        private void failed(Throwable error) {
+            observedExit.compareAndSet(null,error);
+            if(!expectedClose.get())failure.complete(observedExit.get());
+        }
+        private void writeFailed(Throwable error) {
+            nativeFailure.compareAndSet(null,error);
+            var current=writing.getAndSet(null);
+            if(current!=null)offThread(()->current.completeExceptionally(error));
+            failed(error);
+        }
+        @Override public synchronized Mono<Void> connect(Function<Mono<AcpSchema.JSONRPCMessage>,Mono<AcpSchema.JSONRPCMessage>> handler) {
+            if(connection!=null)return connection;
+            connection=Mono.defer(()->{
+                try {
+                    var command=new ArrayList<String>();command.add(parameters.getCommand());command.addAll(parameters.getArgs());
+                    var builder=new ProcessBuilder(command);builder.environment().putAll(parameters.getEnv());
+                    Process original=builder.start();process=original;
+                    output=new java.io.OutputStream() {
+                        private final java.io.OutputStream originalInput=original.getOutputStream();
+                        @Override public void write(int value)throws IOException{originalInput.write(value);}
+                        @Override public void write(byte[] bytes,int offset,int length)throws IOException{originalInput.write(bytes,offset,length);}
+                        @Override public void flush()throws IOException{
+                            originalInput.flush();
+                            var current=writing.getAndSet(null);
+                            // Never execute dependent user code or advance the tail under the writer monitor.
+                            if(current!=null)offThread(()->current.complete(null));
+                        }
+                        @Override public void close()throws IOException{originalInput.close();}
+                    };
+                    delegate=new com.agentclientprotocol.sdk.agent.transport.StdioAcpAgentTransport(mapper,original.getInputStream(),output);
+                    delegate.setExceptionHandler(this::writeFailed);
+                    Mono.fromCallable(original::waitFor).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()).subscribe(code->{
+                        var cause=nativeFailure.get();
+                        if(cause==null)cause=new IllegalStateException("Host process exited before the ACP connection closed (exit "+code+")");
+                        ready.completeExceptionally(cause);
+                        var pendingWrite=writing.getAndSet(null);
+                        if(pendingWrite!=null){var originalCause=cause;nativeFailure.compareAndSet(null,cause);offThread(()->pendingWrite.completeExceptionally(originalCause));}
+                        exited.complete(code);
+                        observedExit.compareAndSet(null,cause);
+                        if(!expectedClose.get()||nativeFailure.get()!=null)failure.complete(observedExit.get());
+                    },error->{exited.completeExceptionally(error);failed(error);});
+                    stderrStarted=true;
+                    Mono.fromRunnable(()->{
+                        try(var reader=new java.io.BufferedReader(new java.io.InputStreamReader(original.getErrorStream(),java.nio.charset.StandardCharsets.UTF_8))){
+                            String line;while((line=reader.readLine())!=null)org.slf4j.LoggerFactory.getLogger(OwnedStdioTransport.class).info("STDERR Message received: {}",line);
+                        }catch(IOException error){if(!expectedClose.get())failed(error);}
+                    }).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()).doFinally(ignored->stderrDrained.complete(null)).subscribe(ignored->{},this::failed);
+                    return delegate.start(handler).doOnSuccess(ignored->ready.complete(null));
+                }catch(IOException|RuntimeException error){return Mono.error(error);}
+            }).doOnError(error->{ready.completeExceptionally(error);failed(error);closeGracefully().subscribe(ignored->{},ignored->{});}).cache();
+            return connection;
+        }
+        private static Throwable frameFailure(Throwable error) {
+            var cause=error;
+            while(cause instanceof java.util.concurrent.CompletionException && cause.getCause()!=null)cause=cause.getCause();
+            if(cause instanceof EchoAgentException)return cause;
+            var typed=new EchoAgentException("transport_error","Native frame was not written: "+(cause.getMessage()==null?cause.getClass().getSimpleName():cause.getMessage()),"never",null,null);
+            typed.initCause(cause);return typed;
+        }
+        @Override public Mono<Void> sendMessage(AcpSchema.JSONRPCMessage message) {
+            // One retained receipt per accepted native frame; repeated subscribers only join it.
+            return Mono.defer(()->{
+                var written=new CompletableFuture<Void>();final CompletableFuture<Void> previous;
+                synchronized(admission){
+                    if(!accepting||exited.isDone()||(process!=null&&!process.isAlive()))return Mono.error(new EchoAgentException("transport_error","Host transport is closing or has exited","never",null,null));
+                    previous=writeTail;writeTail=written;
+                }
+                previous.whenComplete((ignored,error)->offThread(()->{
+                    if(error!=null){written.completeExceptionally(error);return;}
+                    writing.set(written);
+                    if(exited.isDone()){writeFailed(new IllegalStateException("original Host exited before this accepted frame was written"));return;}
+                    try{delegate.sendMessage(message).subscribe(unused->{},this::writeFailed);}
+                    catch(RuntimeException sendFailure){writeFailed(sendFailure);}
+                }));
+                return Mono.fromFuture(written,true);
+            }).onErrorMap(OwnedStdioTransport::frameFailure).cache();
+        }
+        @Override public <T>T unmarshalFrom(Object value,TypeRef<T> type){return mapper.convertValue(value,type);}
+        private synchronized void disposeAfterExit() {
+            // Keep successful releases on retry, and never turn a failed I/O close into clean EOF.
+            if(!delegateClosed){if(delegate!=null)delegate.closeGracefully().block();delegateClosed=true;}
+            if(process!=null){
+                try {
+                    if(!stdoutClosed){process.getInputStream().close();stdoutClosed=true;}
+                    if(!stderrClosed){process.getErrorStream().close();stderrClosed=true;}
+                } catch(IOException error){throw new java.util.concurrent.CompletionException(error);}
+            }
+            if(stderrStarted)stderrDrained.join();
+            cleaned=true;
+        }
+        @Override public synchronized Mono<Void> closeGracefully() {
+            if(cleaned)return Mono.empty();
+            if(closeStage!=null){
+                if(closeStage.isCompletedExceptionally()&&process!=null&&!process.isAlive()){
+                    // A retry releases the same exited child's remaining local I/O.
+                    var retry=new CompletableFuture<Void>();closeStage=retry;
+                    offThread(()->{try{disposeAfterExit();retry.complete(null);}catch(RuntimeException error){retry.completeExceptionally(error);}});
+                }
+                return Mono.fromFuture(closeStage,true);
+            }
+            final CompletableFuture<Void> tail;
+            synchronized(admission){accepting=false;tail=writeTail;}
+            var result=new CompletableFuture<Void>();closeStage=result;
+            if(process==null){cleaned=true;result.complete(null);return Mono.fromFuture(result,true);}
+            var timeout=new EchoAgentException("timeout","Host transport did not exit within the five-second close deadline","after_delay","client/close",null);
+            // Independent of the output monitor: a blocked write must not block the deadline/kill.
+            var watchdog=Mono.delay(Duration.ofSeconds(5)).subscribe(ignored->{
+                if(!cleaned){
+                    nativeFailure.compareAndSet(null,timeout);expectedClose.set(true);
+                    process.destroyForcibly();
+                    var current=writing.getAndSet(null);if(current!=null)current.completeExceptionally(nativeFailure.get());
+                    result.completeExceptionally(nativeFailure.get());
+                }
+            });
+            Mono.fromFuture(tail,true)
+                    .then(Mono.fromRunnable(()->{
+                        synchronized(output){
+                            expectedClose.set(true);
+                            try{output.close();}catch(IOException error){throw new java.util.concurrent.CompletionException(error);}
+                        }
+                    }).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
+                    .then(Mono.fromFuture(exited,true))
+                    .then(Mono.fromRunnable(this::disposeAfterExit).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
+                    .doOnError(error->nativeFailure.compareAndSet(null,error))
+                    .onErrorResume(error->Mono.fromFuture(exited,true)
+                            .then(Mono.fromRunnable(this::disposeAfterExit).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
+                            .then(Mono.error(error)))
+                    .subscribe(ignored->{},error->{watchdog.dispose();result.completeExceptionally(nativeFailure.get()==null?error:nativeFailure.get());},()->{watchdog.dispose();result.complete(null);});
+            return Mono.fromFuture(result,true);
+        }
+        void closeFailed() {
+            if(!expectedClose.get()){var cause=observedExit.get();if(cause!=null)failure.complete(cause);}
+        }
+        <T> Mono<T> untilExit(Mono<T> response,String operation) {
+            Mono<T> end=Mono.fromFuture(failure,true).flatMap(error->Mono.error(new EchoAgentException("transport_error","Host transport ended: "+(error.getMessage()==null?error.getClass().getSimpleName():error.getMessage()),"never",operation,null)));
+            return Mono.firstWithSignal(response,end).onErrorMap(error->{
+                if(error instanceof EchoAgentException typed && "transport_error".equals(typed.code()) && typed.operation()==null){
+                    var projected=new EchoAgentException("transport_error",typed.getMessage(),typed.retryable(),operation,null);projected.initCause(typed);return projected;
+                }
+                return error;
+            });
+        }
+    }
+
     private final AcpClientSession session;
+    private final AcpClientTransport transport;
+    private CompletionStage<Void> closeStage;
     private final FacadeCatalog catalog;
+    private record ReplayRange(java.math.BigInteger base, java.math.BigInteger end, java.math.BigInteger recoveryBase) {}
+    private final Map<WireHandle,List<ReplayRange>> replayRanges = new ConcurrentHashMap<>();
+    private final Map<WireHandle,java.math.BigInteger> replayTerminals = new ConcurrentHashMap<>();
+    private final java.util.Set<CompletableFuture<Void>> ackSubmissions = ConcurrentHashMap.newKeySet();
     private final Map<String, BoundedPublisher> eventPublishers = new ConcurrentHashMap<>();
     private final Map<String, BoundedPublisher> updatePublishers = new ConcurrentHashMap<>();
     private final Map<String, ExtensionHandler> extensionHandlers = new ConcurrentHashMap<>();
+    private record ExtensionRegistrationMetadata(WireHandle wire, String kind) {}
+    private final Map<String, ExtensionRegistrationMetadata> extensionRegistrations = new ConcurrentHashMap<>();
+    private final Map<WireHandle, WireHandle> factoryChildren = new ConcurrentHashMap<>();
+    private final Map<WireHandle, WireHandle> closedFactoryChildren = new ConcurrentHashMap<>();
+    private final Map<WireHandle, CompletableFuture<Void>> pendingFactoryConstruction = new ConcurrentHashMap<>();
+    private record FactoryConstructionExecution(CompletionStage<JsonNode> stage, ExtensionCancellation cancellation,
+            CompletableFuture<JsonNode> completion) {}
+    private final Map<WireHandle,FactoryConstructionExecution> factoryConstructionJobs = new ConcurrentHashMap<>();
+    private final Map<WireHandle,CompletableFuture<JsonNode>> factoryCleanupJobs = new ConcurrentHashMap<>();
+    private record FactoryCleanupExecution(CompletionStage<JsonNode> stage, ExtensionCancellation cancellation) {}
+    private final Map<WireHandle,FactoryCleanupExecution> factoryCleanupExecutions = new ConcurrentHashMap<>();
+    private record FactoryCleanupRetry(JsonNode call, ExtensionHandler handler) {}
+    private final Map<WireHandle,FactoryCleanupRetry> factoryCleanupRetries = new ConcurrentHashMap<>();
+    private static final Duration FACTORY_CLEANUP_SHUTDOWN_TIMEOUT = Duration.ofSeconds(5);
     private final Map<String, ExtensionCancellation> invocationCancellations = new ConcurrentHashMap<>();
+    private record ExtensionStreamRoute(String invocationId, ExtensionCancellation cancellation, WireHandle extension, WireHandle stream) {}
+    private final Map<WireHandle,ExtensionStreamRoute> extensionStreamRoutes = new ConcurrentHashMap<>();
     private volatile boolean closed;
+    private volatile boolean closing;
     private volatile JsonNode capability;
 
-    private EchoAgentClient(AcpClientSession session, FacadeCatalog catalog) {
+    private EchoAgentClient(AcpClientSession session, FacadeCatalog catalog,AcpClientTransport transport) {
         this.session = session;
+        this.transport=transport;
         this.catalog = catalog;
+        if(transport instanceof OwnedStdioTransport owned) {
+            owned.failure.thenAccept(error->{
+                var failure=new EchoAgentException("transport_error","Host process exited before ACP transport cleanup completed","never",null,null);
+                invocationCancellations.values().forEach(ExtensionCancellation::cancel);
+                invocationCancellations.clear();extensionStreamRoutes.clear();
+                failEventPublishers(failure);updatePublishers.values().forEach(publisher->publisher.fail(failure));
+                // Actual child exit ends this local transport. Dismiss original
+                // pending RPC slots off the caller thread after exit signalling.
+                Mono.fromRunnable(session::close).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic())
+                        .subscribe(ignored->{},ignored->{});
+            });
+        }
     }
 
     public static CompletionStage<EchoAgentClient> spawn(
@@ -68,29 +276,14 @@ public final class EchoAgentClient implements AutoCloseable {
                     .args(args == null ? List.of() : args);
             if (environment != null && !environment.isEmpty()) parameters.env(environment);
             AcpJsonMapper mapper = AcpJsonMapper.createDefault();
-            StdioAcpClientTransport transport = new StdioAcpClientTransport(parameters.build(), mapper);
+            OwnedStdioTransport transport = new OwnedStdioTransport(parameters.build(), mapper);
             var requestHandlers = new ConcurrentHashMap<String, AcpClientSession.RequestHandler<?>>();
             var notificationHandlers = new ConcurrentHashMap<String, AcpClientSession.NotificationHandler>();
             FacadeCatalog catalog = new FacadeCatalog(catalogPath, digestPath);
             EchoAgentClient[] holder = new EchoAgentClient[1];
 
-            requestHandlers.put("_echo_agent/extension/invoke", (AcpClientSession.RequestHandler<JsonNode>) params -> {
-                JsonNode call = transport.unmarshalFrom(params, JSON_NODE);
-                EchoAgentClient client = holder[0];
-                String extensionId = call.path("extension").path("id").asText("");
-                ExtensionHandler handler = client.extensionHandlers.get(extensionId);
-                if (handler == null) return Mono.just(errorOutcome("extension registration is not available"));
-                String invocationId = call.path("invocation_id").asText("");
-                ExtensionCancellation cancellation = new ExtensionCancellation();
-                if (!invocationId.isEmpty()) client.invocationCancellations.put(invocationId, cancellation);
-                try {
-                    return Mono.fromFuture(handler.handle(call, cancellation).toCompletableFuture())
-                            .map(result -> cancellation.isCancelled() ? errorOutcome("extension invocation was cancelled") : normalizeOutcome(result))
-                            .doFinally(ignored -> client.invocationCancellations.remove(invocationId));
-                } catch (RuntimeException error) {
-                    return Mono.just(errorOutcome(error.getMessage() == null ? "extension failed" : error.getMessage()));
-                }
-            });
+            requestHandlers.put("_echo_agent/extension/invoke", (AcpClientSession.RequestHandler<JsonNode>) params ->
+                    holder[0].invokeExtension(transport.unmarshalFrom(params, JSON_NODE)));
             notificationHandlers.put("_echo_agent/extension/cancel", params -> {
                 JsonNode notice = transport.unmarshalFrom(params, JSON_NODE);
                 String invocationId = notice.path("invocation_id").asText("");
@@ -151,7 +344,7 @@ public final class EchoAgentClient implements AutoCloseable {
             AcpClientSession session = new AcpClientSession(
                     Duration.ofSeconds(30), transport, requestHandlers, notificationHandlers,
                     Function.identity());
-            EchoAgentClient client = new EchoAgentClient(session, catalog);
+            EchoAgentClient client = new EchoAgentClient(session, catalog,transport);
             holder[0] = client;
 
             ObjectNode hello = mapper.convertValue(Map.of(
@@ -166,9 +359,9 @@ public final class EchoAgentClient implements AutoCloseable {
             var initialize = new AcpSchema.InitializeRequest(
                     1, capabilities,
                     new AcpSchema.Implementation("echo-agent-sdk-java", "0.1.0"), Map.of());
-            return session.sendRequest("initialize", initialize, JSON_NODE)
-                    .toFuture()
-                    .thenApply(result -> {
+            var initializeSubmission=transport.untilExit(session.sendRequest("initialize", initialize, JSON_NODE), "initialize").toFuture();
+            var initialization=initializeSubmission.thenApply(result -> {
+                        if (!result.path("protocolVersion").isIntegralNumber() || result.path("protocolVersion").intValue() != 1) throw new EchoAgentException("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize", result);
                         JsonNode advertised = result.path("agentCapabilities")
                                 .path("_meta").path("echo_agent");
                         if (!advertised.isObject()) {
@@ -187,11 +380,292 @@ public final class EchoAgentClient implements AutoCloseable {
                         validateCapability(advertised, requiredFeatures, requiredCapabilities);
                         client.capability = advertised;
                         return client;
-                    });
+                    }).exceptionallyCompose(error->CompletableFuture.failedFuture(standardFailure(error,"initialize")));
+            // The handshake observer owns cleanup even when its caller cancels
+            // only the returned wait. The same official child is closed once.
+            var result=new CompletableFuture<EchoAgentClient>();
+            initialization.whenComplete((value,error)->{
+                if(error!=null){client.closeAsync();result.completeExceptionally(error);}
+                else if(!result.complete(value))client.closeAsync();
+            });
+            result.whenComplete((value,error)->{
+                if(result.isCancelled()){client.closeAsync();initializeSubmission.cancel(true);}
+            });
+            return result;
         } catch (IOException | RuntimeException error) {
             return CompletableFuture.failedFuture(new EchoAgentException(
                     "transport_error", error.getMessage(), "never", null, null));
         }
+    }
+
+    private Mono<JsonNode> invokeExtension(JsonNode call) {
+        EchoAgentClient client = this;
+        ExtensionHandler handler;
+        try { handler = client.extensionHandlerFor(call); }
+        catch (RuntimeException error) { return Mono.just(errorOutcome(error.getMessage())); }
+        if (call.hasNonNull("factory_origin") && "agent_close".equals(call.path("invocation").path("operation").asText()) && client.closedFactoryChildren.containsKey(WireHandle.fromJson(call.path("extension")))) {
+            var result = JsonSupport.MAPPER.createObjectNode().put("outcome","result");
+            result.putObject("result").put("operation","agent_close").putNull("value");
+            return Mono.just(result);
+        }
+        if (handler == null) return Mono.just(ExtensionOutcome.error("extension_failed", "extension registration is not available", "never").toJson());
+        String invocationId = call.path("invocation_id").asText("");
+        ExtensionCancellation cancellation = new ExtensionCancellation();
+        if (!invocationId.isEmpty()) client.invocationCancellations.put(invocationId, cancellation);
+        ExtensionStreamRoute capturedRoute = null;
+        if (!invocationId.isEmpty() && call.hasNonNull("stream")) {
+            try {
+                var stream=WireHandle.fromJson(call.path("stream"));var extension=WireHandle.fromJson(call.path("extension"));
+                if("stream".equals(stream.kind()) && stream.generation().equals(extension.generation())) {
+                    capturedRoute=new ExtensionStreamRoute(invocationId,cancellation,extension,stream);
+                    extensionStreamRoutes.put(stream,capturedRoute);
+                }
+            } catch(RuntimeException invalidStream) { /* Invalid setup is rejected below without retaining a route. */ }
+        }
+        final var route=capturedRoute;
+        var retained=new java.util.concurrent.atomic.AtomicBoolean();
+        try {
+            var invocationOperation=call.path("invocation").path("operation").asText();
+            var invocationChild=WireHandle.fromJson(call.path("extension"));
+            if (call.hasNonNull("factory_origin") && "agent_close".equals(invocationOperation)) {
+                var cleanup=client.factoryChildCleanup(call,handler,invocationChild);
+                return Mono.fromFuture(cleanup,true).timeout(Duration.ofMillis(cleanupWaitMillis(call)))
+                        .onErrorMap(java.util.concurrent.TimeoutException.class,error->new EchoAgentException(
+                                "extension_timeout","factory child cleanup has not settled before invocation deadline",
+                                "after_delay","_echo_agent/extension/invoke",null))
+                        .map(result->cancellation.isCancelled()
+                                ? ExtensionOutcome.error("cancelled","extension invocation was cancelled","never").toJson()
+                                : result.deepCopy())
+                        .onErrorResume(error->Mono.just(cancellation.isCancelled()
+                                ? ExtensionOutcome.error("cancelled","extension invocation was cancelled","never").toJson()
+                                : extensionFailureJson(error)))
+                        .doFinally(ignored->client.invocationCancellations.remove(invocationId));
+            }
+            return Mono.defer(()->{
+                        if("factory_create_agent".equals(invocationOperation)) {
+                            return Mono.fromFuture(client.startFactoryConstruction(call,handler,cancellation,invocationId),true);
+                        }
+                        try { return Mono.fromCompletionStage(handler.handle(call,cancellation)); }
+                        catch(RuntimeException error){ return Mono.error(error); }
+                    })
+                    .map(result -> {
+                        var declared=normalizeOutcome(result);
+                        if("stream".equals(declared.path("outcome").asText())) {
+                            if(route==null || !WireHandle.fromJson(declared.path("stream")).equals(route.stream()))
+                                return ExtensionOutcome.error("serialization_violation","stream outcome differs from its original invocation stream","never").toJson();
+                            retained.set(extensionStreamRoutes.get(route.stream())==route);
+                        }
+                        return cancellation.isCancelled()
+                            ? ExtensionOutcome.error("cancelled", "extension invocation was cancelled", "never").toJson()
+                            : declared;
+                    })
+                    .onErrorResume(error -> Mono.just(cancellation.isCancelled()
+                            ? ExtensionOutcome.error("cancelled", "extension invocation was cancelled", "never").toJson()
+                            : extensionFailureJson(error)))
+                    .doFinally(ignored -> {
+                        // Setup ACK is not the original stream's terminal receipt.
+                        if(!retained.get() && !"factory_create_agent".equals(invocationOperation)) {
+                            if(route!=null)extensionStreamRoutes.remove(route.stream(),route);
+                            client.invocationCancellations.remove(invocationId,cancellation);
+                        }
+                    });
+        } catch (RuntimeException error) {
+            if(route!=null)extensionStreamRoutes.remove(route.stream(),route);
+            client.invocationCancellations.remove(invocationId,cancellation);
+            return Mono.just(extensionFailureJson(error));
+        }
+    }
+
+    /** One local reverse-call cleanup owner, independent of per-invocation waits. */
+    private CompletableFuture<JsonNode> factoryChildCleanup(JsonNode call, ExtensionHandler handler, WireHandle child) {
+        return factoryChildCleanup(call,handler,child,false);
+    }
+
+    private CompletableFuture<JsonNode> factoryChildCleanup(JsonNode call, ExtensionHandler handler, WireHandle child, boolean shutdown) {
+        CompletableFuture<JsonNode> completion;
+        CompletableFuture<Void> construction;
+        synchronized(factoryCleanupJobs) {
+            if(closed || closing&&!shutdown)return CompletableFuture.failedFuture(new EchoAgentException(
+                    "extension_failed","connection is closing","never","_echo_agent/extension/invoke",null));
+            var completedOrigin=closedFactoryChildren.get(child);
+            if(completedOrigin!=null) {
+                var result=JsonSupport.MAPPER.createObjectNode().put("outcome","result");
+                result.putObject("result").put("operation","agent_close").putNull("value");
+                return CompletableFuture.completedFuture(result);
+            }
+            completion=factoryCleanupJobs.get(child);
+            if(completion!=null)return completion;
+            completion=new CompletableFuture<>();
+            factoryCleanupJobs.put(child,completion);
+            factoryCleanupRetries.put(child,new FactoryCleanupRetry(call.deepCopy(),handler));
+            construction=pendingFactoryConstruction.get(child);
+        }
+        var owner=completion;
+        var ownerCall=call.deepCopy();
+        var cancellation=new ExtensionCancellation();
+        Runnable start=()->{
+            final CompletionStage<JsonNode> actual;
+            try {
+                synchronized(factoryCleanupJobs) {
+                    if(closed || closing&&!shutdown)throw new EchoAgentException(
+                            "extension_failed","connection closed before child cleanup","never","_echo_agent/extension/invoke",null);
+                    // Reserve the launch before calling user code outside the
+                    // lock, so shutdown can signal and await this same owner.
+                    factoryCleanupExecutions.put(child,new FactoryCleanupExecution(null,cancellation));
+                }
+                actual=java.util.Objects.requireNonNull(handler.handle(ownerCall,cancellation),
+                        "factory child cleanup must return a CompletionStage");
+                synchronized(factoryCleanupJobs) {
+                    factoryCleanupExecutions.put(child,new FactoryCleanupExecution(actual,cancellation));
+                    if(closing||closed)cancellation.cancel();
+                }
+            }catch(RuntimeException error){
+                settleFactoryCleanup(child,owner,null,error);
+                return;
+            }
+            actual.whenComplete((result,error)->settleFactoryCleanup(child,owner,result,error));
+        };
+        if(construction==null)start.run();
+        else construction.whenComplete((ignored,error)->{
+            if(error!=null)settleFactoryCleanup(child,owner,null,error);
+            else start.run();
+        });
+        return owner;
+    }
+
+    private void settleFactoryCleanup(WireHandle child, CompletableFuture<JsonNode> owner, JsonNode result, Throwable error) {
+        JsonNode outcome=null;
+        if(error==null) {
+            try {
+                outcome=java.util.Objects.requireNonNull(result,"factory child close must return an outcome").deepCopy();
+                String kind=outcome.path("outcome").asText();
+                boolean success="result".equals(kind)
+                        && outcome.path("result").isObject()
+                        && "agent_close".equals(outcome.path("result").path("operation").asText())
+                        && outcome.path("result").has("value")
+                        && outcome.path("result").get("value").isNull();
+                boolean failure="error".equals(kind) && outcome.path("error").isObject()
+                        && outcome.path("error").path("code").isTextual()
+                        && outcome.path("error").path("message").isTextual()
+                        && java.util.Set.of("never","always","after_delay").contains(
+                                outcome.path("error").path("retryable").asText());
+                if(!success&&!failure)throw new IllegalArgumentException("factory child close must return agent_close null result or a typed error");
+            }catch(RuntimeException invalid){
+                error=new EchoAgentException("serialization_violation",invalid.getMessage(),
+                        "never","_echo_agent/extension/invoke",result);
+            }
+        }
+        synchronized(factoryCleanupJobs) {
+            if(factoryCleanupJobs.get(child)!=owner)return;
+            factoryCleanupExecutions.remove(child);
+            if(error==null && "result".equals(outcome.path("outcome").asText())) {
+                var origin=factoryChildren.get(child);
+                if(origin!=null){closedFactoryChildren.put(child,origin);factoryChildren.remove(child,origin);}
+                factoryCleanupRetries.remove(child);
+                if(closedFactoryChildren.size()>512){var oldest=closedFactoryChildren.keySet().iterator();if(oldest.hasNext())closedFactoryChildren.remove(oldest.next());}
+            }
+            // A real failure releases only this attempt; the live child remains
+            // the retry address. A successful tombstone precedes job removal.
+            factoryCleanupJobs.remove(child,owner);
+        }
+        if(error!=null)owner.completeExceptionally(error);
+        else owner.complete(outcome);
+    }
+
+    private CompletableFuture<JsonNode> startFactoryConstruction(JsonNode call, ExtensionHandler handler,
+            ExtensionCancellation cancellation, String invocationId) {
+        var instance=WireHandle.fromJson(call.path("invocation").path("input").path("instance"));
+        var completion=new CompletableFuture<JsonNode>();
+        synchronized(factoryCleanupJobs) {
+            if(closing||closed) {
+                var pending=pendingFactoryConstruction.remove(instance);
+                if(pending!=null)pending.complete(null);
+                factoryChildren.remove(instance);
+                invocationCancellations.remove(invocationId);
+                return CompletableFuture.failedFuture(new EchoAgentException("extension_failed",
+                        "connection closed before construction started","never","_echo_agent/extension/invoke",null));
+            }
+            factoryConstructionJobs.put(instance,new FactoryConstructionExecution(null,cancellation,completion));
+            var cleanupCall=JsonSupport.MAPPER.createObjectNode();
+            call.fields().forEachRemaining(field->cleanupCall.set(field.getKey(),field.getValue().deepCopy()));
+            cleanupCall.set("extension",instance.toJson());cleanupCall.set("factory_origin",call.path("extension").deepCopy());
+            cleanupCall.put("invocation_id",invocationId+"/cleanup");
+            cleanupCall.putObject("invocation").put("operation","agent_close").putObject("input");
+            factoryCleanupRetries.put(instance,new FactoryCleanupRetry(cleanupCall,handler));
+        }
+        final CompletionStage<JsonNode> actual;
+        try {
+            actual=java.util.Objects.requireNonNull(handler.handle(call,cancellation),"factory constructor must return a CompletionStage");
+            synchronized(factoryCleanupJobs) {
+                factoryConstructionJobs.put(instance,new FactoryConstructionExecution(actual,cancellation,completion));
+                if(closing||closed)cancellation.cancel();
+            }
+        }catch(RuntimeException error){
+            settleFactoryConstruction(instance,completion,null,error,invocationId);
+            return completion;
+        }
+        actual.whenComplete((value,error)->settleFactoryConstruction(instance,completion,value,error,invocationId));
+        return completion;
+    }
+
+    private void settleFactoryConstruction(WireHandle instance, CompletableFuture<JsonNode> completion,
+            JsonNode value, Throwable error, String invocationId) {
+        final CompletableFuture<Void> pending;
+        synchronized(factoryCleanupJobs) {
+            factoryConstructionJobs.remove(instance);
+            pending=pendingFactoryConstruction.remove(instance);
+            invocationCancellations.remove(invocationId);
+        }
+        // Completing this may resume a cleanup callback. Never invoke that
+        // user code while holding the ownership registry lock.
+        if(pending!=null)pending.complete(null);
+        if(error!=null)completion.completeExceptionally(error);
+        else if(value==null)completion.completeExceptionally(new EchoAgentException("serialization_violation",
+                "factory constructor must return an outcome","never","_echo_agent/extension/invoke",null));
+        else completion.complete(value.deepCopy());
+    }
+
+    private static long cleanupWaitMillis(JsonNode call){
+        var seconds=new java.math.BigInteger(call.path("deadline").path("seconds").asText("0"));
+        return Math.max(1,Math.min(5000,seconds.min(java.math.BigInteger.valueOf(5)).longValue()*1000+call.path("deadline").path("nanos").asLong()/1_000_000));
+    }
+
+    private ExtensionHandler extensionHandlerFor(JsonNode call) {
+        var child = WireHandle.fromJson(call.path("extension"));
+        if (!call.hasNonNull("factory_origin")) {
+            if ("factory_create_agent".equals(call.path("invocation").path("operation").asText())) {
+                var metadata=extensionRegistrations.get(child.id());
+                var instance=WireHandle.fromJson(call.path("invocation").path("input").path("instance"));
+                if(metadata==null || !"agent_factory".equals(metadata.kind()) || !metadata.wire().equals(child)
+                    || !"extension".equals(instance.kind()) || instance.equals(child) || !instance.generation().equals(child.generation())
+                    || factoryChildren.putIfAbsent(instance,child)!=null || closedFactoryChildren.containsKey(instance)) throw new IllegalArgumentException("factory construction requires unused reserved instance handle");
+            }
+            if ("factory_create_agent".equals(call.path("invocation").path("operation").asText()))pendingFactoryConstruction.put(WireHandle.fromJson(call.path("invocation").path("input").path("instance")),new CompletableFuture<>());
+            return extensionHandlers.get(child.id());
+        }
+        var origin = WireHandle.fromJson(call.get("factory_origin"));
+        var metadata = extensionRegistrations.get(origin.id());
+        var operation = call.path("invocation").path("operation").asText();
+        var previous = factoryChildren.get(child);
+        boolean valid = "extension".equals(origin.kind()) && "extension".equals(child.kind())
+                && !origin.equals(child) && origin.generation().equals(child.generation())
+                && metadata != null && "agent_factory".equals(metadata.kind()) && origin.equals(metadata.wire())
+                && java.util.Set.of("agent_execute", "agent_chat", "agent_execute_stream", "agent_chat_stream", "agent_close").contains(operation)
+                && (origin.equals(previous) || "agent_close".equals(operation) && origin.equals(closedFactoryChildren.get(child)));
+        if (!valid) throw new IllegalArgumentException("factory origin does not own this custom Agent invocation");
+        return extensionHandlers.get(origin.id());
+    }
+
+    private static Throwable standardFailure(Throwable error,String operation){
+        var cause=error;
+        while((cause instanceof java.util.concurrent.CompletionException||cause instanceof java.util.concurrent.ExecutionException)&&cause.getCause()!=null)cause=cause.getCause();
+        if(cause instanceof EchoAgentException)return cause;
+        Object data=cause instanceof AcpClientSession.AcpError acp?acp.getData():cause instanceof com.agentclientprotocol.sdk.error.AcpProtocolException acp?acp.getData():null;
+        if(data!=null){
+            JsonNode object=JsonSupport.MAPPER.valueToTree(data);
+            if(object.path("code").isTextual()&&object.path("message").isTextual()&&java.util.Set.of("never","always","after_delay").contains(object.path("retryable").asText()))return EchoAgentException.from(object,operation);
+        }
+        return cause;
     }
 
     private static JsonNode errorOutcome(String message) {
@@ -231,6 +705,10 @@ public final class EchoAgentClient implements AutoCloseable {
 
     private static void validateCapability(
             JsonNode advertised, Collection<String> requiredFeatures, Collection<String> requiredCapabilities) {
+        if (!advertised.path("extension_protocol_version").isIntegralNumber() || advertised.path("extension_protocol_version").intValue() != 1) {
+            throw new EchoAgentException("extension_capability_mismatch", "unsupported extension protocol version", "never", "initialize", advertised);
+        }
+        if (!advertised.path("features").isArray() || !advertised.path("capabilities").isArray() || !advertised.path("limits").isObject()) throw new EchoAgentException("extension_capability_mismatch", "malformed Host capability advertisement", "never", "initialize", advertised);
         var features = new java.util.HashSet<String>();
         advertised.path("features").elements().forEachRemaining(value -> {
             if (value.isTextual()) features.add(value.textValue());
@@ -254,19 +732,146 @@ public final class EchoAgentClient implements AutoCloseable {
     }
 
     public CompletionStage<JsonNode> request(String method, JsonNode params) {
-        if (closed) {
+        if (closed || closing) {
             return CompletableFuture.failedFuture(new EchoAgentException(
                     "host_exited", "ACP connection is closed", "never", method, null));
         }
-        return session.sendRequest(method, params, JSON_NODE).toFuture();
+        try {
+            Mono<JsonNode> response=session.sendRequest(method, params, JSON_NODE);
+            if(transport instanceof OwnedStdioTransport owned)response=owned.untilExit(response,method);
+            return response.toFuture()
+                    .handle((result, error) -> {
+                        if (error != null) throw EchoAgentException.from(error, method);
+                        return result;
+                    });
+        } catch (RuntimeException error) {
+            return CompletableFuture.failedFuture(EchoAgentException.from(error, method));
+        }
+    }
+
+    void observeReplay(WireHandle stream,JsonNode response){
+        for(var event:response.path("events")){
+            String kind=event.path("payload").path("event_type").textValue();
+            if("final_answer".equals(kind)||"cancelled".equals(kind)||"error".equals(kind))
+                replayTerminals.put(stream,new java.math.BigInteger(event.path("sequence").textValue()));
+        }
+        var base=new java.math.BigInteger(response.path("gap").path("snapshot_watermark").asText(response.path("requested_after_sequence").asText()));
+        var end=new java.math.BigInteger(response.path("next_cursor").path("last_processed_sequence").asText());
+        var ranges=replayRanges.computeIfAbsent(stream,ignored->new java.util.ArrayList<>());
+        synchronized(ranges){
+            // Empty pages have no coverage and cannot intercept later connections.
+            if(!response.hasNonNull("gap") && base.equals(end))return;
+            if(response.hasNonNull("gap")) {
+                ranges.add(new ReplayRange(base,end,new java.math.BigInteger(response.path("requested_after_sequence").textValue())));
+            } else {
+                var mergedBase=base;var mergedEnd=end;boolean changed=true;
+                while(changed) {
+                    changed=false;
+                    for(int index=ranges.size()-1;index>=0;index--) {
+                        var range=ranges.get(index);
+                        if(range.recoveryBase()!=null || range.base().compareTo(mergedEnd)>0 || range.end().compareTo(mergedBase)<0)continue;
+                        mergedBase=mergedBase.min(range.base());mergedEnd=mergedEnd.max(range.end());ranges.remove(index);changed=true;
+                    }
+                }
+                ranges.add(new ReplayRange(mergedBase,mergedEnd,null));
+            }
+            if(ranges.size()>512)ranges.remove(0);
+        }
+    }
+
+    /** A connected closure of received facts; no ordering of replay responses is authoritative. */
+    private static boolean replayCoversCursor(List<ReplayRange> ranges,java.math.BigInteger observed,java.math.BigInteger sequence) {
+        var frontier=observed;
+        for(int pass=0;pass<=ranges.size();pass++) {
+            var before=frontier;
+            for(var range:ranges) {
+                if(range.base().compareTo(frontier)>0 && (range.recoveryBase()==null || range.recoveryBase().compareTo(frontier)>0))continue;
+                if(sequence.compareTo(range.end())<=0 && (sequence.compareTo(range.base())>0 || (range.recoveryBase()!=null && sequence.equals(range.base()))))return true;
+                frontier=frontier.max(range.end());
+            }
+            if(frontier.equals(before))break;
+        }
+        return false;
+    }
+
+    private void finishExtensionStreamRoute(WireHandle stream) {
+        var route=extensionStreamRoutes.remove(stream);
+        if(route!=null)invocationCancellations.remove(route.invocationId(),route.cancellation());
     }
 
     public CompletionStage<Void> notify(String method, JsonNode params) {
-        if (closed) {
+        if (closed || closing) {
             return CompletableFuture.failedFuture(new EchoAgentException(
                     "host_exited", "ACP connection is closed", "never", method, null));
         }
-        return session.sendNotification(method, params).toFuture();
+        WireHandle capturedTerminalStream=null;
+        if("_echo_agent/extension/stream".equals(method) && params!=null
+                && java.util.Set.of("complete","failed","cancelled").contains(params.path("event").asText())) {
+            params=params.deepCopy();capturedTerminalStream=WireHandle.fromJson(params.path("stream"));
+        }
+        final var terminalStream=capturedTerminalStream;
+        BoundedPublisher observedPublisher = null;
+        WireHandle ackStream = null;
+        java.math.BigInteger ackSequence = null;
+        Object submission = new Object();
+        if("_echo_agent/event/ack".equals(method)){
+            // The official outbound scheduler can serialize later. Validation,
+            // submission and successful consumption must share this snapshot.
+            params=params.deepCopy();
+            var ack=params.path("ack");var stream=WireHandle.fromJson(ack.path("stream"));
+            var sequence=new java.math.BigInteger(TypedExtensionSupport.canonicalU64(ack.path("last_processed_sequence").asText(),"ACK cursor"));
+            var publisher=eventPublishers.get(stream.id());var ranges=replayRanges.get(stream);
+            if(publisher!=null&&publisher.ownsStream(stream)){
+                boolean covered=false;
+                if(ranges!=null){synchronized(ranges){
+                    var current=publisher.lastSequence();
+                    covered=replayCoversCursor(ranges,current,sequence);
+                }}
+                if(covered||publisher.canAcknowledgeObserved(sequence)){
+                    observedPublisher=publisher;ackStream=stream;ackSequence=sequence;
+                    publisher.beginAcknowledgement(submission,sequence);
+                }
+            }
+        }
+        var feed=observedPublisher;var stream=ackStream;var sequence=ackSequence;
+        // This completion observer belongs to the actual transport submission.
+        // Cancelling the caller's dependent future cannot erase a later success.
+        var result=new CompletableFuture<Void>();
+        final CompletableFuture<Void> submitted;
+        try { submitted=session.sendNotification(method, params).toFuture(); }
+        catch(RuntimeException error){
+            if(feed!=null)feed.endAcknowledgement(submission);
+            return CompletableFuture.failedFuture(EchoAgentException.from(error,method));
+        }
+        if(feed!=null){
+            ackSubmissions.add(submitted);
+            if(closed||closing)submitted.cancel(true);
+        }
+        submitted.whenComplete((ignored,error)->{
+            try {
+                if(error!=null){
+                    var failure=EchoAgentException.from(error,method);
+                    if(feed!=null){
+                        var details=JsonSupport.MAPPER.createObjectNode().put("ack_submission","outcome_unknown").put("sequence",sequence.toString());
+                        details.set("stream",stream.toJson());details.set("cause_details",failure.details());
+                        failure=new EchoAgentException(failure.code(),failure.getMessage(),failure.retryable(),failure.operation(),details,failure.handle());
+                    }
+                    result.completeExceptionally(failure);
+                }else{
+                    if(terminalStream!=null)finishExtensionStreamRoute(terminalStream);
+                    if(feed!=null){
+                        feed.acknowledgeConsumedCursor(stream,sequence);
+                        var terminal=replayTerminals.get(stream);
+                        if(terminal!=null && sequence.compareTo(terminal)>=0)feed.close();
+                    }
+                    result.complete(null);
+                }
+            }finally{
+                ackSubmissions.remove(submitted);
+                if(feed!=null)feed.endAcknowledgement(submission);
+            }
+        });
+        return result;
     }
 
     public CompletionStage<JsonNode> invoke(String operation, WireHandle handle, List<?> arguments) {
@@ -280,7 +885,7 @@ public final class EchoAgentClient implements AutoCloseable {
             values.add(JsonSupport.wire(argument));
         }
         return request("_echo_agent/facade/invoke", params)
-                .thenApply(response -> JsonSupport.fromWire(response.path("value")));
+                .thenApply(response -> JsonSupport.responseValue(response));
     }
 
     /** Count with the exact Host-owned tokenizer supplied to a compression callback. */
@@ -314,7 +919,12 @@ public final class EchoAgentClient implements AutoCloseable {
 
     public CompletionStage<JsonNode> family(
             String family, String operation, WireHandle sessionHandle, List<?> arguments) {
-        String method = "_echo_agent/" + family + "/op";
+        // The catalog owns the wire spelling, including hyphenated methods.
+        var resolved = catalog.resolve(operation);
+        if (!family.equals(resolved.family()) || "_echo_agent/facade/invoke".equals(resolved.method())) {
+            throw new IllegalArgumentException("operation does not belong to the requested facade family");
+        }
+        String method = resolved.method();
         ObjectNode params = JsonSupport.MAPPER.createObjectNode();
         params.put("operation", operation);
         params.put("signature_digest", catalog.familySignature(method, operation));
@@ -325,18 +935,27 @@ public final class EchoAgentClient implements AutoCloseable {
             values.add(JsonSupport.wire(argument));
         }
         return request(method, params)
-                .thenApply(response -> JsonSupport.fromWire(response.path("value")));
+                .thenApply(response -> JsonSupport.responseValue(response));
     }
 
     public CompletionStage<ExtensionRegistration> registerExtension(
             String kind, String implementationId, JsonNode descriptor, ExtensionHandler handler) {
+        return registerExtension(kind,implementationId,descriptor,handler,null);
+    }
+
+    /** Per-registration deadline already defined by the extension wire contract. */
+    public CompletionStage<ExtensionRegistration> registerExtension(
+            String kind,String implementationId,JsonNode descriptor,ExtensionHandler handler,Duration timeout) {
+        if(timeout!=null&&(timeout.isNegative()||timeout.isZero()))return CompletableFuture.failedFuture(new EchoAgentException("invalid_value","extension timeout must be positive","never","_echo_agent/extension/register",null));
         ObjectNode params = JsonSupport.MAPPER.createObjectNode();
         params.put("kind", kind);
         params.put("implementation_id", implementationId);
         params.set("descriptor", descriptor);
+        if(timeout!=null)params.set("timeout",JsonSupport.MAPPER.createObjectNode().put("seconds",Long.toString(timeout.toSeconds())).put("nanos",timeout.getNano()));
         return request("_echo_agent/extension/register", params).thenApply(result -> {
             WireHandle wire = WireHandle.fromJson(result.path("extension"));
             extensionHandlers.put(wire.id(), handler);
+            extensionRegistrations.put(wire.id(), new ExtensionRegistrationMetadata(wire, kind));
             return new ExtensionRegistration(this, wire);
         });
     }
@@ -476,6 +1095,12 @@ public final class EchoAgentClient implements AutoCloseable {
     public CompletionStage<ExtensionRegistration> registerAgentCallback(String implementationId, JsonNode descriptor, ExtensionHandler handler) {
         return registerExtensionKind("agent_callback", implementationId, descriptor, handler);
     }
+    public CompletionStage<ExtensionRegistration> registerAgentCallback(String implementationId, CallbackDescriptor descriptor, CallbackHandler handler) {
+        return registerExtension("agent_callback",implementationId,descriptor.toJson(),(raw,cancel)->{
+            try {var call=CallbackCall.from(raw);return encodeTypedOutcome(handler.handle(call,cancel),call.operation(),java.util.Set.of(call.operation()));}
+            catch(RuntimeException error){return failedExtensionOutcome(error);}
+        });
+    }
     public CompletionStage<ExtensionRegistration> registerInterventionCallback(String implementationId, JsonNode descriptor, ExtensionHandler handler) {
         return registerExtensionKind("intervention_callback", implementationId, descriptor, handler);
     }
@@ -529,15 +1154,31 @@ public final class EchoAgentClient implements AutoCloseable {
     }
 
     private static JsonNode extensionFailureJson(Throwable error) {
-        var message = error.getMessage() == null ? "typed extension handler failed" : error.getMessage();
+        var cause = error;
+        while ((cause instanceof java.util.concurrent.CompletionException || cause instanceof java.util.concurrent.ExecutionException) && cause.getCause() != null) cause = cause.getCause();
+        if (cause instanceof java.util.concurrent.CancellationException) return ExtensionOutcome.error("cancelled", "extension invocation was cancelled", "never").toJson();
+        if (cause instanceof EchoAgentException typed) {
+            var outcome = ExtensionOutcome.error(typed.code(), typed.getMessage(), typed.retryable(), typed.details()).toJson();
+            var data = (ObjectNode) outcome.path("error");
+            if (typed.operation() != null) data.put("operation", typed.operation());
+            if (typed.handle() != null) data.set("handle", typed.handle().toJson());
+            return outcome;
+        }
+        var message = cause.getMessage() == null ? "typed extension handler failed" : cause.getMessage();
         return ExtensionOutcome.error("extension_failed", message, "never").toJson();
     }
 
     CompletionStage<JsonNode> unregisterExtension(WireHandle extension) {
-        extensionHandlers.remove(extension.id());
         return request(
                 "_echo_agent/extension/unregister",
-                JsonSupport.MAPPER.createObjectNode().set("extension", extension.toJson()));
+                JsonSupport.MAPPER.createObjectNode().set("extension", extension.toJson()))
+                .thenApply(result -> {
+                    extensionHandlers.remove(extension.id()); extensionRegistrations.remove(extension.id());
+                    for(var route:extensionStreamRoutes.values())if(route.extension().equals(extension)) {
+                        route.cancellation().cancel();finishExtensionStreamRoute(route.stream());
+                    }
+                    return result;
+                });
     }
 
     public CompletionStage<AgentHandle> createAgent() {
@@ -551,13 +1192,29 @@ public final class EchoAgentClient implements AutoCloseable {
     Flow.Publisher<JsonNode> events(WireHandle stream) {
         BoundedPublisher publisher = eventPublishers.computeIfAbsent(stream.id(), ignored -> newEventPublisher(stream));
         publisher.validateExpectedStream(stream);
-        if (closed) publisher.close();
+        if (closed || closing) publisher.close();
+        else if(transport instanceof OwnedStdioTransport owned && owned.failure.isDone()) {
+            // Check after map insertion: either the exit observer's traversal
+            // sees this publisher, or the same completed exit fact fails it here.
+            publisher.fail(new EchoAgentException("transport_error","Host process exited before ACP transport cleanup completed","never",null,null));
+        }
         return publisher;
     }
 
     private BoundedPublisher newEventPublisher(WireHandle stream) {
-        return new BoundedPublisher(BoundedPublisher.DEFAULT_CAPACITY,
+        return new BoundedPublisher(eventQueueCapacity(),
                 event -> acknowledgeEvent(stream.toJson(), event), stream);
+    }
+
+    private int eventQueueCapacity(){
+        if(capability==null)return BoundedPublisher.DEFAULT_CAPACITY;
+        var advertised=capability.path("limits").get("max_outstanding_live_events");
+        if(advertised==null)advertised=capability.path("limits").get("max_stream_buffer_events");
+        if(advertised==null)return BoundedPublisher.DEFAULT_CAPACITY;
+        var text=advertised.isTextual()?advertised.textValue():advertised.isIntegralNumber()?advertised.bigIntegerValue().toString():null;
+        var value=new java.math.BigInteger(TypedExtensionSupport.canonicalU64(text,"event window"));
+        if(value.signum()<=0)throw new EchoAgentException("extension_capability_mismatch","event window must be positive","never","initialize",advertised);
+        return value.min(java.math.BigInteger.valueOf(65536)).intValue();
     }
 
     private static WireHandle incomingStream(JsonNode value) {
@@ -577,7 +1234,8 @@ public final class EchoAgentClient implements AutoCloseable {
 
     private void acknowledgeEvent(JsonNode stream, JsonNode event) {
         String sequence = event.path("envelope").path("sequence").asText("");
-        if (sequence.isEmpty()) sequence = event.path("gap").path("snapshot_watermark").asText("");
+        // Gaps are acknowledged explicitly after replay/snapshot recovery.
+        if (event.has("gap")) return;
         if (!sequence.matches("[1-9][0-9]*")) return;
         ObjectNode params = JsonSupport.MAPPER.createObjectNode();
         ObjectNode ack = JsonSupport.MAPPER.createObjectNode();
@@ -589,12 +1247,17 @@ public final class EchoAgentClient implements AutoCloseable {
 
     Flow.Publisher<JsonNode> updates(String sessionId) {
         BoundedPublisher publisher = updatePublishers.computeIfAbsent(sessionId, ignored -> new BoundedPublisher());
-        if (closed) publisher.close();
+        if (closed || closing) publisher.close();
+        else if(transport instanceof OwnedStdioTransport owned && owned.failure.isDone()) {
+            // Check after map insertion: either the exit observer's traversal
+            // sees this publisher, or the same completed exit fact fails it here.
+            publisher.fail(new EchoAgentException("transport_error","Host process exited before ACP transport cleanup completed","never",null,null));
+        }
         return publisher;
     }
 
     void publishFirstEvent(WireHandle stream, JsonNode envelope) {
-        if (envelope == null || envelope.isNull()) return;
+        if (envelope == null || envelope.isNull() || envelope.isMissingNode()) return;
         ObjectNode event = JsonSupport.MAPPER.createObjectNode();
         event.set("stream", stream.toJson());
         event.set("envelope", envelope);
@@ -633,16 +1296,107 @@ public final class EchoAgentClient implements AutoCloseable {
      * {@link #close()} is the blocking AutoCloseable convenience.
      */
     public CompletionStage<Void> closeAsync() {
+        // Each caller owns its wait. Cancelling that dependent future cannot
+        // cancel the retained native cleanup and transport completion owner.
+        return closeOwned().thenApply(ignored->null);
+    }
+
+    private Mono<Void> awaitFactoryCleanupShutdown(Map<WireHandle,CompletableFuture<JsonNode>> initialAttempts) {
+        // A previous failed close may have a settled failed cleanup attempt.
+        // Only those still-live children start one new retry; successful ones
+        // already have tombstones and never rerun user cleanup.
+        final List<Map.Entry<WireHandle,FactoryCleanupRetry>> retryCandidates;
+        var ownedAttempts=new java.util.LinkedHashSet<CompletableFuture<JsonNode>>(initialAttempts.values());
+        synchronized(factoryCleanupJobs) {
+            ownedAttempts.addAll(factoryCleanupJobs.values());
+            retryCandidates=factoryCleanupRetries.entrySet().stream()
+                    .filter(entry->!initialAttempts.containsKey(entry.getKey())&&!factoryCleanupJobs.containsKey(entry.getKey()))
+                    .map(entry->Map.entry(entry.getKey(),entry.getValue())).toList();
+        }
+        for(var candidate:retryCandidates) {
+            ownedAttempts.add(factoryChildCleanup(candidate.getValue().call(),candidate.getValue().handler(),candidate.getKey(),true));
+        }
+        final CompletableFuture<?>[] cleanupSettlements;
+        synchronized(factoryCleanupJobs) {
+            factoryCleanupExecutions.values().forEach(execution->execution.cancellation().cancel());
+            cleanupSettlements=ownedAttempts.stream().map(job->job.thenApply(outcome->{
+                if(!"result".equals(outcome.path("outcome").asText())) {
+                    throw new java.util.concurrent.CompletionException(EchoAgentException.from(outcome.path("error"),"client/close"));
+                }
+                return (Void)null;
+            })).toArray(CompletableFuture<?>[]::new);
+        }
+        return Mono.fromFuture(CompletableFuture.allOf(cleanupSettlements),true);
+    }
+
+    private synchronized CompletionStage<Void> closeOwned() {
         if (closed) return CompletableFuture.completedFuture(null);
-        closed = true;
-        extensionHandlers.clear();
+        if(closeStage!=null)return closeStage;
+        closing = true;
+        ackSubmissions.forEach(job->job.cancel(true));
+        ackSubmissions.clear();
+        var result=new CompletableFuture<Void>();
+        closeStage=result;
+        final CompletableFuture<?>[] constructors;
+        final Map<WireHandle,CompletableFuture<JsonNode>> initialCleanupAttempts;
+        synchronized(factoryCleanupJobs) {
+            // Retain failures that occur while this close waits for another
+            // child's constructor; retry belongs to the next close attempt.
+            initialCleanupAttempts=Map.copyOf(factoryCleanupJobs);
+            factoryConstructionJobs.values().forEach(execution->execution.cancellation().cancel());
+            for(var entry:List.copyOf(pendingFactoryConstruction.entrySet())) {
+                if(!factoryConstructionJobs.containsKey(entry.getKey())) {
+                    // Registration existed but user construction never started.
+                    // This closes admission; it does not fabricate an object.
+                    pendingFactoryConstruction.remove(entry.getKey(),entry.getValue());
+                    factoryChildren.remove(entry.getKey());entry.getValue().complete(null);
+                }
+            }
+            constructors=pendingFactoryConstruction.values().toArray(CompletableFuture<?>[]::new);
+        }
         invocationCancellations.values().forEach(ExtensionCancellation::cancel);
-        invocationCancellations.clear();
         eventPublishers.values().forEach(BoundedPublisher::close);
         updatePublishers.values().forEach(BoundedPublisher::close);
-        return session.closeGracefully()
-                .timeout(Duration.ofSeconds(5))
-                .onErrorResume(ignored -> Mono.empty())
-                .toFuture();
+        // Keep routing/child ownership until original native cleanup stages
+        // settle. A timeout preserves these jobs for the next close waiter.
+        Mono.fromFuture(CompletableFuture.allOf(constructors),true)
+                .then(Mono.defer(()->awaitFactoryCleanupShutdown(initialCleanupAttempts)))
+                .timeout(FACTORY_CLEANUP_SHUTDOWN_TIMEOUT)
+                .onErrorMap(java.util.concurrent.TimeoutException.class,error->new EchoAgentException(
+                        "extension_timeout","factory child cleanup did not settle before client close deadline",
+                        "after_delay","client/close",null))
+                .onErrorMap(error->{
+                    var failure=EchoAgentException.from(error,"client/close");
+                    var cause=error;
+                    while((cause instanceof java.util.concurrent.CompletionException
+                            || cause instanceof java.util.concurrent.ExecutionException)&&cause.getCause()!=null)cause=cause.getCause();
+                    if(failure!=cause && failure.getCause()==null)failure.initCause(cause);
+                    return failure;
+                })
+                .then(Mono.defer(()->{
+                    factoryCleanupRetries.clear();
+                    factoryConstructionJobs.clear();pendingFactoryConstruction.clear();
+                    extensionHandlers.clear();extensionRegistrations.clear();
+                    factoryChildren.clear();closedFactoryChildren.clear();
+                    // Expected exit begins only when original transport close
+                    // starts, after all cleanup prerequisites actually succeed.
+                    // Session owns ACP draining; the official transport owns
+                    // its native process. Neither decides factory cleanup facts.
+                    return session.closeGracefully().timeout(Duration.ofSeconds(5))
+                            .onErrorResume(ignored->Mono.empty());
+                }))
+                .then(Mono.defer(transport::closeGracefully).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
+                .toFuture().whenComplete((ignored,error)->{
+                    synchronized(this){
+                        if(error==null){invocationCancellations.clear();extensionStreamRoutes.clear();closed=true;closing=false;}
+                        else {
+                            closeStage=null;
+                            if(transport instanceof OwnedStdioTransport owned)owned.closeFailed();
+                        }
+                    }
+                    if(error==null)result.complete(null);
+                    else result.completeExceptionally(error);
+                });
+        return result;
     }
 }

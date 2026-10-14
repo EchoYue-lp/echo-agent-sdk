@@ -17,7 +17,7 @@ public record WireHandle(String id, String generation, String kind) {
     }
 
     static WireHandle fromJson(JsonNode value) {
-        if (value == null || !value.isObject()) {
+        if (value == null || !value.isObject() || value.size()!=3 || !value.has("id") || !value.has("generation") || !value.has("kind")) {
             throw new IllegalArgumentException("handle must be an object");
         }
         return new WireHandle(

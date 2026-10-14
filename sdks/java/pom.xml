@@ -31,6 +31,14 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Verification and the standalone source example use the existing NOP behavior.
+         The published library leaves provider selection to its consumers. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-nop</artifactId>
+      <version>2.0.18</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

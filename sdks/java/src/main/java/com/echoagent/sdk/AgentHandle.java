@@ -9,6 +9,7 @@ public final class AgentHandle implements AutoCloseable {
     private final EchoAgentClient client;
     private final WireHandle wire;
     private CompletionStage<Void> closeStage;
+    private boolean closed;
 
     AgentHandle(EchoAgentClient client, WireHandle wire) {
         this.client = client;
@@ -38,12 +39,20 @@ public final class AgentHandle implements AutoCloseable {
 
     /** Awaitable close used by asynchronous callers and the synchronous AutoCloseable bridge. */
     public synchronized CompletionStage<Void> closeAsync() {
+        if (closed) return java.util.concurrent.CompletableFuture.completedFuture(null);
         if (closeStage != null) return closeStage;
-        closeStage = client.request(
-                        "_echo_agent/agent/close",
-                        JsonSupport.MAPPER.createObjectNode().set("agent", wire.toJson()))
-                .thenApply(ignored -> null);
-        return closeStage;
+        var result = new java.util.concurrent.CompletableFuture<Void>();
+        closeStage = result;
+        client.request("_echo_agent/agent/close", JsonSupport.MAPPER.createObjectNode().set("agent", wire.toJson()))
+                .whenComplete((ignored, error) -> {
+                    synchronized (this) {
+                        if (error == null) closed = true;
+                        closeStage = null;
+                    }
+                    if (error == null) result.complete(null);
+                    else result.completeExceptionally(error);
+                });
+        return result;
     }
 
     @Override public void close() {
