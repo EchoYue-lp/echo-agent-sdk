@@ -56,3 +56,24 @@ live-journal包真实TS12/PY12/Java9全部零失败/跳过，以相同Host193e49
 ## 已知缺口
 
 这是具名行为、权威、生命周期、错误与恢复的finiteexamined收口，不把所有资源种类/未接受方法穷尽。宽cleanup与5秒B原Finding保，12identity/生成/平台/main独立。两个Map旧仍缺及Channel旧publishedpin句在后继段明确历史，旧raw/Audit/sourceepoch不换新。最新SessionRun意图A与远端typedcause修复各有自己的切片，不能借本资源collector或wireerror证明全部Host转换无损。
+
+
+## finding.sdk-gap-duplicate-ack-successor-observation 的有限三链出处
+
+本段当期观察e58只绑定当前可恢复测试源、原因果/修复和新实际CI，不改原observed_at、旧source_refs/command或其它原缺陷状态。
+
+原722 Python True-window line132 4!=3，不从数量差猜生产重复ACK新effect。字节保留的真实Host/gate证明前一合法ACK的gap4在dupACK2之前已由Host发出；原测试只等任何通知即捕获announced，形成receive-baseline race。三caller修复ff3等同完整stream id/generation/kind、from_sequence及snapshot_watermark都越过原watermark的successor paused gap，模型仍parked且release不存在后才记announced；dupACK后原exact count equality和完整successor frame equality不改，futureACK/replay/covered-noresend/terminal/cleanup强断言都保。
+
+原ff3正式docs/sdk/governance/evidence/gap-successor-pause-oracle/可按其Git恢复：native/receipt.json SHA0c5a251e23860e16470e3f1845ba5d96e3677b8ed3dab042ab30dc151638fda2，controlled-final-receipt.json SHAfb2df55a6784b92725963870585b7c28e634c3254a81428e2633cce61a7ef16e，independent-review.json SHAeb72140598ccea84de99f51eae878fbb131bdcede475dd95ecd4a9f8a7849420。原TS4selected/8 unrelated namefilter skips、PY3.12.4四/0skip、Java1method4rows/0fail/error/skip不是whole；controlled retry正确cwd/1pass/0warning/723B log SHA83b1a076390d03397e5c9f2cb7bdd9aa2b1f7c8015eb12b923f68f590a0f7449保旧warning invocation。原12rows执行HEAD722dirty、retry f68、seal e13、保存ff3分开。FrameFinal原有限源码/controlled before-after/12rows/字节包独审PASS，不冒本次重跑/全family。
+
+本次后验是[e58官方语言job116293151777](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293151777)与[Hostjob116293152091](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293152091)各自自然终态success；head e58a3e0c07cf0b6b24d570df07063301a888ddc6、actual PRmerge e9c7275c6f5df5652e555aa4f457c65870676b34、tree c48b54ec7a58bfe855d2724f777b1d605789b7a2与已提交源码树一致。语言原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293151777.log`，200420B/SHAaec6371714b2d2bd23612b3b6d139acccf507a541db327ef13c5c744f5115cce；TS343、Python427+18子测试、完整Maven test按set-e成功且三个quickstart均实际到达/finalmarker通过，Node20.20.2、Temurin17.0.20+1。成功静默Maven没有打印Java数量，也没有下载XML，不编Java总数。Host原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293152091.log`，164620B/SHAecc88119b62e9a9311db1dcc7860082a1b18131d584b66889ab6fa1defdf56d8：default35/core111/bridge28/facade44/noBridge selected1+24filtered各原profile通过，不重叠求和；managed restart case ok不倒推原passive-exit原因已查明。两job warning/error annotations均0，只用于各自原切点，不称全部CI或SDKmain已过。Admin language-host-success-facts.json保两job已成功组合；单独language-terminal-verification内Host未终态的资格文字是较早收据阶段，不重写原JSON或误作当前阻断。
+
+|当前测试源码（e58与原修复Git字节同）|SHA256|
+|---|---|
+|`sdks/python/tests/test_gap_ack_host.py`|`aa462130216730a6541982799e07b679eb4ceb2e9590c6cd0ec161318c3045eb`|
+|`sdks/typescript/test/gap-ack-host.test.js`|`3ad9a6caa40611e9a18a17f8ea9e3530320549454b482028dd9cb810bd719b5e`|
+|`sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java`|`017fa75ec0ce091e7def325dfc7dfd2048fbefbe6bfe2067aaccc69aef468737`|
+
+仅这些测试源同原c5/ff3。原focused使用较早客户端，TS/PY生产69cb修复了另一个ACK竞态；e58完整官方脚本的实际合并树与输入闭包补足新客户端组合，不把旧source哈希不变推全部输入不变。原强消费者断言在未过滤完整脚本执行，Host0f1只属于原Mac focused，不套远端Linux Host二进制SHA。
+
+具体Finding局部三链引用本段及对应Audit具名故障复核，仍保Host未知退出、B三宽义务、accepted12/合同13、平台/main、全局continuity1173和4365档案必要性精简阻断。没有新runtime状态权威/validator/协议/accepted schema/公共API；examples和官网无需接口同步，代码/测试本次不改。

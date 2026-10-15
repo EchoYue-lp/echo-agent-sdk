@@ -78,6 +78,7 @@ SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确�
 ## 分支、提交与交付
 
 - 新任务使用非 `main` 分支，命名 `<type>/Echoyue/<任务名>`。
+- GitHub CI 仅在 push 到 `main` 后运行；任务分支和 PR 不自动触发 CI。任务合并前完成本地适用门禁，合并后由 CI 核验精确 main。
 - 每次提交显式关闭 GPG 签名：
   `git -c commit.gpgsign=false commit -m "..."`。
 - 开发提交执行 focused 验证；合并前执行全部适用 Rust、contract、Host E2E、三语言、

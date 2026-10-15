@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-tool-pid-observation-window
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: medium
 primary_focus: contract_evidence
 focus:
@@ -13,12 +13,17 @@ behavior_refs:
 - behavior.sdk-family-shell
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
-audit_refs: []
+evidence_refs:
+- evidence.sdk-tools-bridge-finite-observation
+audit_refs:
+- audit.sdk-integrations-finite-contract-evidence
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-tools-bridge-finite-observation
+verification_evidence_refs:
+- evidence.sdk-tools-bridge-finite-observation
+rereview_audit_refs:
+- audit.sdk-integrations-finite-contract-evidence
 discovered_at: 722d09b1a0837f170d4af19cbc3e417d2131b5f3
 ---
 
@@ -92,3 +97,12 @@ Python唯一watch分支修复已806真提交，原固定50轮改发现自有PID�
 Admin `sdk-linux-ps-width-fix/causal-facts.json`（2249B，SHA256 `fbee6c2216c49320595c94498209b8daf8d0726255f7121edc08c9b537504538`）；Admin `sdk-linux-ps-width-fix/after-native-summary.json`（3004B，SHA256 `e2a8f356aa103bca8f0ba676a0d5930dda5e440a6002f40bf83cdeaa961b2030`）。真实修复Git `c5c977ef862acbe99684294cca966c559859b6be`只原ps argv加`-ww`，不改matcher/超时/identity复核/任何生产源。修后SHA62bc5fb0a8f5512060ce031303a80cbe1d0b1d1a1fad79c317aa53ac866d06ee；Darwin3.12本地49rows/48calls与protectedrows、timeout/signal物理after[]均0，SDKcap有限独审PASS。原执行HEAD185559时测试候选尚未提交，c5只是保存同字节，不能把185559 Git源码当62bc。
 
 原722 unknown和Darwin2.5925秒合法排队反例不删改；本段新增0ebe直接事实取代当前原因未知描述。Finding status仍open：新exact-source Linux原case与CI后验未得，不把Mac通过当Linux验证，不做RiskAccepted或泛资源cleanup结论。
+
+
+## 本specific缺陷的e58后继局部闭合
+
+原open/原因未知/新Linux待等正文保其原观察阶段，不改失败日志/发现点/既有强断言。当前只本项repair、verification、rereview由指定原owner承接：`evidence.sdk-tools-bridge-finite-observation` / `audit.sdk-integrations-finite-contract-evidence` 的本次具名段/挑战。原0ebe同一真实PID默认ps截断/full -ww完整命令直接因果、c5只改观察argv及原物理after[]/保护文件oracle与e58真实完整语言/Host验证相接，未新增生产shell或资源语义。
+
+本次后验是[e58官方语言job116293151777](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293151777)与[Hostjob116293152091](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293152091)各自自然终态success；head e58a3e0c07cf0b6b24d570df07063301a888ddc6、actual PRmerge e9c7275c6f5df5652e555aa4f457c65870676b34、tree c48b54ec7a58bfe855d2724f777b1d605789b7a2与已提交源码树一致。语言原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293151777.log`，200420B/SHAaec6371714b2d2bd23612b3b6d139acccf507a541db327ef13c5c744f5115cce；TS343、Python427+18子测试、完整Maven test按set-e成功且三个quickstart均实际到达/finalmarker通过，Node20.20.2、Temurin17.0.20+1。成功静默Maven没有打印Java数量，也没有下载XML，不编Java总数。Host原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293152091.log`，164620B/SHAecc88119b62e9a9311db1dcc7860082a1b18131d584b66889ab6fa1defdf56d8：default35/core111/bridge28/facade44/noBridge selected1+24filtered各原profile通过，不重叠求和；managed restart case ok不倒推原passive-exit原因已查明。两job warning/error annotations均0，只用于各自原切点，不称全部CI或SDKmain已过。Admin language-host-success-facts.json保两job已成功组合；单独language-terminal-verification内Host未终态的资格文字是较早收据阶段，不重写原JSON或误作当前阻断。
+
+仅此已证局部缺陷resolved，不接受B/12风险、不关闭Host退出未知cause或其它原open、不宣SDKmain/continuity1173/归档精简通过。新ACK投影竞态三链与旧#120不作为本项修复证据。

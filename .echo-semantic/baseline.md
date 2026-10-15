@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "de47301178090f019f8522874556e5279d47aba1e413452abd94b167f63d8de4"
+    "content_digest": "d746329469b769b96981ddbb60c54d8e50d65554a12ddf802b1ef8d5e7781c93"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",

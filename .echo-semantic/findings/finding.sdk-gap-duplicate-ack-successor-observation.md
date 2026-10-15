@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-gap-duplicate-ack-successor-observation
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: medium
 primary_focus: failure_concurrency
 focus:
@@ -13,12 +13,17 @@ behavior_refs:
 - behavior.sdk-events-recovery
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
-audit_refs: []
+evidence_refs:
+- evidence.sdk-events-resources-finite-observation
+audit_refs:
+- audit.sdk-events-resources-finite-failure-concurrency
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-events-resources-finite-observation
+verification_evidence_refs:
+- evidence.sdk-events-resources-finite-observation
+rereview_audit_refs:
+- audit.sdk-events-resources-finite-failure-concurrency
 discovered_at: 722d09b1a0837f170d4af19cbc3e417d2131b5f3
 ---
 
@@ -78,3 +83,12 @@ Root已实际受控同Host确定：gap4在duplicateACK之前已由前一个合�
 - `docs/sdk/governance/evidence/gap-successor-pause-oracle/SHA256SUMS`，SHA256 `1a3dca8639303edafdf3aad8e3caa8bca38db4e9fb1b61fd9ebc5c8dbb40486d`。
 
 源4tests已变化，先前第四whole800完整0继续保它自己的执行cut而非声称当前all800exact。生产61Rust/Cargo输入与锁未因此变化；本次不会重复原14Rust或本地大target完整门禁。新CI按focused开发门禁后实跑方案另执行，暂不关闭本Finding或提升Behavior/库存/全goal完成；B3/12、第三工具交付和官方原30d门禁各按真实当前进展处理。
+
+
+## 本specific缺陷的e58后继局部闭合
+
+原open/原因未知/新Linux待等正文保其原观察阶段，不改失败日志/发现点/既有强断言。当前只本项repair、verification、rereview由指定原owner承接：`evidence.sdk-events-resources-finite-observation` / `audit.sdk-events-resources-finite-failure-concurrency` 的本次具名段/挑战。原真实gap4在dupACK2前已经到达，ff3三caller只增强完整successor接收barrier，原notification count/full frame不变式与e58无filter完整语言/Host验证相接，未改变Host/客户端ACK业务。
+
+本次后验是[e58官方语言job116293151777](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293151777)与[Hostjob116293152091](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293152091)各自自然终态success；head e58a3e0c07cf0b6b24d570df07063301a888ddc6、actual PRmerge e9c7275c6f5df5652e555aa4f457c65870676b34、tree c48b54ec7a58bfe855d2724f777b1d605789b7a2与已提交源码树一致。语言原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293151777.log`，200420B/SHAaec6371714b2d2bd23612b3b6d139acccf507a541db327ef13c5c744f5115cce；TS343、Python427+18子测试、完整Maven test按set-e成功且三个quickstart均实际到达/finalmarker通过，Node20.20.2、Temurin17.0.20+1。成功静默Maven没有打印Java数量，也没有下载XML，不编Java总数。Host原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293152091.log`，164620B/SHAecc88119b62e9a9311db1dcc7860082a1b18131d584b66889ab6fa1defdf56d8：default35/core111/bridge28/facade44/noBridge selected1+24filtered各原profile通过，不重叠求和；managed restart case ok不倒推原passive-exit原因已查明。两job warning/error annotations均0，只用于各自原切点，不称全部CI或SDKmain已过。Admin language-host-success-facts.json保两job已成功组合；单独language-terminal-verification内Host未终态的资格文字是较早收据阶段，不重写原JSON或误作当前阻断。
+
+仅此已证局部缺陷resolved，不接受B/12风险、不关闭Host退出未知cause或其它原open、不宣SDKmain/continuity1173/归档精简通过。新ACK投影竞态三链与旧#120不作为本项修复证据。

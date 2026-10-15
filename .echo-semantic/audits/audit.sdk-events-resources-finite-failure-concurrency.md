@@ -6,7 +6,8 @@ boundary_ref: boundary.sdk-events-recovery
 lens: failure_concurrency
 freshness: examined
 revision: cd5b78467f77ac28919cf9dda6877662bed744f4
-finding_refs: []
+finding_refs:
+- finding.sdk-gap-duplicate-ack-successor-observation
 challenges:
   event-and-resource-owner-obligation:
     revision: cd5b78467f77ac28919cf9dda6877662bed744f4
@@ -30,6 +31,22 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+  specific-gap-observation-repair:
+    revision: ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56
+    source_refs:
+    - sdks/python/tests/test_gap_ack_host.py
+    - sdks/typescript/test/gap-ack-host.test.js
+    - sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java
+    evidence_refs:
+    - evidence.sdk-events-resources-finite-observation
+  specific-gap-observation-e58-after:
+    revision: e58a3e0c07cf0b6b24d570df07063301a888ddc6
+    source_refs:
+    - sdks/python/tests/test_gap_ack_host.py
+    - sdks/typescript/test/gap-ack-host.test.js
+    - sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java
     evidence_refs:
     - evidence.sdk-events-resources-finite-observation
 ---
@@ -59,3 +76,10 @@ known5秒B物理结算与宽cleanup原Finding保open。12source/kind、未接受
 ## 未检查项
 
 active-write/partial-write journal injection及任意未承诺组合，不作为本slice虚拟缺证分母；closed oldIssue状态不在本作者操作范围。
+
+
+## finding.sdk-gap-duplicate-ack-successor-observation 的具名有限复核
+
+原真实gap4到达先于dupACK、三caller fullhandle successor barrier及原count/frame/cleanup强不变量的FrameFinal实际有限审，接e58未过滤完整语言/三quickstart和Host终态success；不重开#120或借新ACK投影三链。
+
+两revision挑战保修复源与新组合执行输入的准确范围，原top revision/旧challenge/body及freshness含义不变。本次元候选需独立材料审后Root批准安装才生效；当前不伪另一次源码/工程运行。只此specific localclosed，不接受B/12、Host cause、全物理cleanup、全部CI/main或1173连续性义务。

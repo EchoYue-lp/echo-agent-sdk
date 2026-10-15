@@ -156,3 +156,24 @@ FileAuthority当前three-language-final包尚未进入此Git，故具体source_r
 |sdks/shared/testing/file_authority_identity_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|c9a5d5d00fdfaeff9e1572467c470c075950013e19b31b3e6e30eb7fed5242c3|
 
 本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
+
+
+## finding.sdk-tool-pid-observation-window 的有限三链出处
+
+本段当期观察e58只绑定当前可恢复测试源、原因果/修复和新实际CI，不改原observed_at、旧source_refs/command或其它原缺陷状态。
+
+原722空PID及Darwin2.592508709秒合法排队反例各保持自身事实；原0ebe真正直接cause为Host18445/tail18521同一0.03058024s记录：default ps把路径截为target/t，-ww保完整tail路径，严格matcher因此漏报；原未信号tail仍正确5003ms timeout，不是从未dispatch或生产shell数据丢失。修复c5只原ps argv加-ww；原原始观察协议806也保先前cut，没有加容量/改budget/放松len1/路径/身份断言。
+
+原Admin sdk-linux-ps-width-fix/causal-facts.json 2249B/SHAfbee6c2216c49320595c94498209b8daf8d0726255f7121edc08c9b537504538、after-native-summary.json 3004B/SHAe2a8f356aa103bca8f0ba676a0d5930dda5e440a6002f40bf83cdeaa961b2030保存原before/after。Darwin3.12.4/ACP0.12.1本地49rows48calls明确owned PID/PPID/command/root，signal前复核；shell timeout/signal各有实际原PID before与physical after[]，返回完整typed cause/metadata/all protected rows相等。SDKcap原source/native实际有限PASS0，不伪造本次新reviewJSON。原执行HEAD185559但修复未提交，c5是后保存相同62bc字节，不能从185559 Git取它。
+
+本次后验是[e58官方语言job116293151777](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293151777)与[Hostjob116293152091](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38696176970/job/116293152091)各自自然终态success；head e58a3e0c07cf0b6b24d570df07063301a888ddc6、actual PRmerge e9c7275c6f5df5652e555aa4f457c65870676b34、tree c48b54ec7a58bfe855d2724f777b1d605789b7a2与已提交源码树一致。语言原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293151777.log`，200420B/SHAaec6371714b2d2bd23612b3b6d139acccf507a541db327ef13c5c744f5115cce；TS343、Python427+18子测试、完整Maven test按set-e成功且三个quickstart均实际到达/finalmarker通过，Node20.20.2、Temurin17.0.20+1。成功静默Maven没有打印Java数量，也没有下载XML，不编Java总数。Host原raw `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-e58a3e0-ci-evidence/116293152091.log`，164620B/SHAecc88119b62e9a9311db1dcc7860082a1b18131d584b66889ab6fa1defdf56d8：default35/core111/bridge28/facade44/noBridge selected1+24filtered各原profile通过，不重叠求和；managed restart case ok不倒推原passive-exit原因已查明。两job warning/error annotations均0，只用于各自原切点，不称全部CI或SDKmain已过。Admin language-host-success-facts.json保两job已成功组合；单独language-terminal-verification内Host未终态的资格文字是较早收据阶段，不重写原JSON或误作当前阻断。
+
+|当前测试源码（e58与原修复Git字节同）|SHA256|
+|---|---|
+|`sdks/python/tests/test_tool_value_effect_host.py`|`62bc5fb0a8f5512060ce031303a80cbe1d0b1d1a1fad79c317aa53ac866d06ee`|
+
+仅这些测试源同原c5/ff3。原focused使用较早客户端，TS/PY生产69cb修复了另一个ACK竞态；e58完整官方脚本的实际合并树与输入闭包补足新客户端组合，不把旧source哈希不变推全部输入不变。原强消费者断言在未过滤完整脚本执行，Host0f1只属于原Mac focused，不套远端Linux Host二进制SHA。
+
+具体Finding局部三链引用本段及对应Audit具名故障复核，仍保Host未知退出、B三宽义务、accepted12/合同13、平台/main、全局continuity1173和4365档案必要性精简阻断。没有新runtime状态权威/validator/协议/accepted schema/公共API；examples和官网无需接口同步，代码/测试本次不改。
+
+唯一current页只维护本次两个具体局部闭合与现有余项：`docs/sdk/governance/capability-review-remaining.md` candidate SHA `1112c4dc5dbefb8e511b2b52aa51845eab388082b0b1bbd4a7994bea4bdf83be`。它是文稿维护依据，不是额外能力或物理回收全称证明。

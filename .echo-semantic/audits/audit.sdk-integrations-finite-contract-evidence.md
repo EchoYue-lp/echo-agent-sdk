@@ -7,6 +7,7 @@ lens: contract_evidence
 freshness: examined
 revision: bd8e42e732588181b7a2589d91e9ffdce02d23e1
 finding_refs:
+- finding.sdk-tool-pid-observation-window
 - finding.sdk-family-handle-argument-projection
 - finding.sdk-lsp-response-fidelity
 - finding.sdk-run-steer-canonical-turn-context
@@ -71,6 +72,18 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     evidence_refs:
     - evidence.sdk-integrations-finite-observation
+  specific-pid-observation-repair:
+    revision: c5c977ef862acbe99684294cca966c559859b6be
+    source_refs:
+    - sdks/python/tests/test_tool_value_effect_host.py
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
+  specific-pid-observation-e58-after:
+    revision: e58a3e0c07cf0b6b24d570df07063301a888ddc6
+    source_refs:
+    - sdks/python/tests/test_tool_value_effect_host.py
+    evidence_refs:
+    - evidence.sdk-tools-bridge-finite-observation
 ---
 
 # Integrations contract_evidence 有限审查
@@ -110,3 +123,10 @@ Delivery内存不crossprocessdurable；checkpoint7/Trace17区别；configuredsan
 ## run-steer-canonical-turn-context具体旧缺陷复核
 
 原独立frameworkFinal本session三链artifactreview确匹配：根修复frameworka634 echo-core/src/agent/mod.rs + src/acp/runtime.rs reservedcanonicalturn/fallback；Hostconsumer严格identity不放宽，3nativeHTTPsecondrequestUnicode/accepted/lateempty/2wait真实证明；oldbefore/diagcompat限制保。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。
+
+
+## finding.sdk-tool-pid-observation-window 的具名有限复核
+
+原0ebe同PID default/wide直接取证、仅-ww修复、严格身份/信号前复核/物理after[]及protectedrows的SDKcap实际原source/native审，接e58完整语言/三quickstart和Host终态success；不把旧排队反例或Host另一个超时归因混入。
+
+两revision挑战保修复源与新组合执行输入的准确范围，原top revision/旧challenge/body及freshness含义不变。本次元候选需独立材料审后Root批准安装才生效；当前不伪另一次源码/工程运行。只此specific localclosed，不接受B/12、Host cause、全物理cleanup、全部CI/main或1173连续性义务。
