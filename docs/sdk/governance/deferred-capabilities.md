@@ -1,6 +1,8 @@
 # 未接受能力的产品处置
 
-## 当前有限验收（2026-10-15）
+本页维护 D01–D14 的产品范围和接受条件。当前治理验收、开放问题及 CI 状态仅以[当前剩余验收](capability-review-remaining.md)为准；下面的前一阶段记录保留其原观察切点，不代表当前状态。
+
+## 前一阶段有限验收（历史观察，2026-10-15）
 
 SDK Host 精确依赖已发布框架 `00782b8a`，八个框架包同一 Git 来源、没有 path patch；框架合并后七项 CI 已成功。SDK [14 条 Rust 门禁](evidence/sdk-00782-final-rust-gates/README.md)实际全0，workspace 主计数474，不累加重叠 feature profiles。[完整语言入口](evidence/sdk-language-00782-reviewed-final/README.md)实际退出0：TypeScript329、Python394加18子测试、Java351/75份XML及三个quickstart；793项执行输入前后相同，随后逐项保存为可恢复Git。预期负例的运行时WARN按原字节保留，编译告警为0。
 
