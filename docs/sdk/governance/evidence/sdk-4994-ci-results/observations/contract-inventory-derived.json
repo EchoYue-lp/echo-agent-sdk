@@ -1,0 +1,351 @@
+{
+  "run": 38670390234,
+  "head": "4994a8cd49979ab8793f006d89fd955f2f0119f9",
+  "pairListsExactlyEqual": true,
+  "sameExact13AsArchived722Contract": true,
+  "source": "bounded regex extraction of complete original job logs; no generator rerun or seed change",
+  "jobs": [
+    {
+      "job": 116211906771,
+      "acceptedSourceDisappeared": [
+        {
+          "identity": "echo_agent::agent::snapshot::AgentRunSnapshot::skill_curator",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::agent::snapshot::ToolRuntime::plan_state",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::evolution::curator::CuratorState::save",
+          "kind": "Method"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch",
+          "kind": "Struct"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch::matched",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch::position",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch::secret_type",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::security::contains_secrets",
+          "kind": "Function"
+        },
+        {
+          "identity": "echo_agent::security::redact_secrets",
+          "kind": "Function"
+        },
+        {
+          "identity": "echo_agent::security::scan_secrets",
+          "kind": "Function"
+        },
+        {
+          "identity": "echo_orchestration::tasks::runtime::TaskSubagentContext::delegation_policy",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_orchestration::tasks::runtime::TaskSubagentContext::run_id",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_orchestration::tasks::runtime::TaskSubagentContext::waived_dependency_ids",
+          "kind": "StructField"
+        }
+      ],
+      "rustdocProfiles": [
+        {
+          "profile": "default",
+          "publicItems": 23552
+        },
+        {
+          "profile": "full",
+          "publicItems": 36521
+        },
+        {
+          "profile": "feature:a2a",
+          "publicItems": 23959
+        },
+        {
+          "profile": "feature:acp",
+          "publicItems": 23776
+        },
+        {
+          "profile": "feature:channels",
+          "publicItems": 24836
+        },
+        {
+          "profile": "feature:chart",
+          "publicItems": 23555
+        },
+        {
+          "profile": "feature:content-guard",
+          "publicItems": 23708
+        },
+        {
+          "profile": "feature:data",
+          "publicItems": 23593
+        },
+        {
+          "profile": "feature:database",
+          "publicItems": 23559
+        },
+        {
+          "profile": "feature:eval",
+          "publicItems": 23862
+        },
+        {
+          "profile": "feature:files",
+          "publicItems": 23690
+        },
+        {
+          "profile": "feature:git",
+          "publicItems": 23597
+        },
+        {
+          "profile": "feature:human-loop",
+          "publicItems": 25125
+        },
+        {
+          "profile": "feature:improve",
+          "publicItems": 24069
+        },
+        {
+          "profile": "feature:lsp",
+          "publicItems": 23976
+        },
+        {
+          "profile": "feature:mcp",
+          "publicItems": 24918
+        },
+        {
+          "profile": "feature:media",
+          "publicItems": 23607
+        },
+        {
+          "profile": "feature:project-rules",
+          "publicItems": 23588
+        },
+        {
+          "profile": "feature:rag",
+          "publicItems": 23565
+        },
+        {
+          "profile": "feature:research",
+          "publicItems": 23896
+        },
+        {
+          "profile": "feature:shell",
+          "publicItems": 23583
+        },
+        {
+          "profile": "feature:sqlite",
+          "publicItems": 24431
+        },
+        {
+          "profile": "feature:statistics",
+          "publicItems": 23563
+        },
+        {
+          "profile": "feature:subagent",
+          "publicItems": 28501
+        },
+        {
+          "profile": "feature:telemetry",
+          "publicItems": 23591
+        },
+        {
+          "profile": "feature:testing",
+          "publicItems": 23744
+        },
+        {
+          "profile": "feature:topology",
+          "publicItems": 23689
+        },
+        {
+          "profile": "feature:web",
+          "publicItems": 23636
+        }
+      ]
+    },
+    {
+      "job": 116211906668,
+      "acceptedSourceDisappeared": [
+        {
+          "identity": "echo_agent::agent::snapshot::AgentRunSnapshot::skill_curator",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::agent::snapshot::ToolRuntime::plan_state",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::evolution::curator::CuratorState::save",
+          "kind": "Method"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch",
+          "kind": "Struct"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch::matched",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch::position",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::security::SecretMatch::secret_type",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_agent::security::contains_secrets",
+          "kind": "Function"
+        },
+        {
+          "identity": "echo_agent::security::redact_secrets",
+          "kind": "Function"
+        },
+        {
+          "identity": "echo_agent::security::scan_secrets",
+          "kind": "Function"
+        },
+        {
+          "identity": "echo_orchestration::tasks::runtime::TaskSubagentContext::delegation_policy",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_orchestration::tasks::runtime::TaskSubagentContext::run_id",
+          "kind": "StructField"
+        },
+        {
+          "identity": "echo_orchestration::tasks::runtime::TaskSubagentContext::waived_dependency_ids",
+          "kind": "StructField"
+        }
+      ],
+      "rustdocProfiles": [
+        {
+          "profile": "default",
+          "publicItems": 23552
+        },
+        {
+          "profile": "full",
+          "publicItems": 36521
+        },
+        {
+          "profile": "feature:a2a",
+          "publicItems": 23959
+        },
+        {
+          "profile": "feature:acp",
+          "publicItems": 23776
+        },
+        {
+          "profile": "feature:channels",
+          "publicItems": 24836
+        },
+        {
+          "profile": "feature:chart",
+          "publicItems": 23555
+        },
+        {
+          "profile": "feature:content-guard",
+          "publicItems": 23708
+        },
+        {
+          "profile": "feature:data",
+          "publicItems": 23593
+        },
+        {
+          "profile": "feature:database",
+          "publicItems": 23559
+        },
+        {
+          "profile": "feature:eval",
+          "publicItems": 23862
+        },
+        {
+          "profile": "feature:files",
+          "publicItems": 23690
+        },
+        {
+          "profile": "feature:git",
+          "publicItems": 23597
+        },
+        {
+          "profile": "feature:human-loop",
+          "publicItems": 25125
+        },
+        {
+          "profile": "feature:improve",
+          "publicItems": 24069
+        },
+        {
+          "profile": "feature:lsp",
+          "publicItems": 23976
+        },
+        {
+          "profile": "feature:mcp",
+          "publicItems": 24918
+        },
+        {
+          "profile": "feature:media",
+          "publicItems": 23607
+        },
+        {
+          "profile": "feature:project-rules",
+          "publicItems": 23588
+        },
+        {
+          "profile": "feature:rag",
+          "publicItems": 23565
+        },
+        {
+          "profile": "feature:research",
+          "publicItems": 23896
+        },
+        {
+          "profile": "feature:shell",
+          "publicItems": 23583
+        },
+        {
+          "profile": "feature:sqlite",
+          "publicItems": 24431
+        },
+        {
+          "profile": "feature:statistics",
+          "publicItems": 23563
+        },
+        {
+          "profile": "feature:subagent",
+          "publicItems": 28501
+        },
+        {
+          "profile": "feature:telemetry",
+          "publicItems": 23591
+        },
+        {
+          "profile": "feature:testing",
+          "publicItems": 23744
+        },
+        {
+          "profile": "feature:topology",
+          "publicItems": 23689
+        },
+        {
+          "profile": "feature:web",
+          "publicItems": 23636
+        }
+      ]
+    }
+  ]
+}

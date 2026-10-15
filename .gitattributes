@@ -287,3 +287,13 @@ docs/sdk/governance/evidence/gap-successor-pause-oracle/ci-before/116172597308.l
 
 # Exact published semantic tool main CI output.
 docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/published-tool/main-ci.log -diff
+
+# Exact original SDK 4994 Linux/Windows CI output.
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906502.log -diff -text
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906667.log -diff
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906668.log -diff
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906745.log -diff
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906751.log -diff
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906756.log -diff
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906771.log -diff
+docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906823.log -diff
