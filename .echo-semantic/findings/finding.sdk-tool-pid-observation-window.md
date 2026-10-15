@@ -66,3 +66,20 @@ discovered_at: 722d09b1a0837f170d4af19cbc3e417d2131b5f3
 正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
 
 原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
+
+
+## 已提交修复与有限后验进展（仍open）
+
+Python唯一watch分支修复已806真提交，原固定50轮改发现自有PID或原invocationtask settled条件、10秒复用既有fixture watchdog不是productdeadline。len1/同PID复核/SIGTERM/await同result/保护文件原oracle不放宽；源码8cbc只参数绑定/格式化收RuffB023、无noqa。实际Darwin3.12完整Tool49rows/48calls及三pure诊断0；控after5.342s旧采样仍pending而新observerrelease后samePID完成。其controlled调度事实并非原Linux唯一cause；即使Mac0当前Finding仍open等待新Linux原case与完整三语/适用CI，不能RiskAccepted。
+
+当前材料观察Git `ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56`仅定位已提交源码和正式包；原722/merge5d407失败运行/发现时间不改，新remote原case仍待。以下实际Git来源可读，不把本地focused当Linux完整验收：
+
+- `sdks/python/tests/test_tool_value_effect_host.py`，SHA256 `8cbcdd12277393999231afafa48d91684232f0ef9408fa5c1b430a74e8b0df57`。
+- `docs/sdk/governance/evidence/tool-pid-observation/README.md`，SHA256 `190c6496e7c1afef69e3c3f776cda18e1cd00a9a07b1af63fd37a41919933b63`。
+- `docs/sdk/governance/evidence/tool-pid-observation/after-native-source-and-results.json`，SHA256 `0f27d379d3c5e95215254a4c6534d6a6152aee71f1d76936b4a89517178a00fa`。
+- `docs/sdk/governance/evidence/tool-pid-observation/controlled-dispatch-gate-results.json`，SHA256 `aa80ee24e0af0e3e3863ce9f00e9c7785443164bf7362e19dc3b7249bfd760e9`。
+- `docs/sdk/governance/evidence/tool-pid-observation/controlled-candidate-dispatch-results.json`，SHA256 `28f641a191443a5073eb5aaa40aedf339fb7183340f4cd9e11b4baa05c97faf1`。
+- `docs/sdk/governance/evidence/tool-pid-observation/phase4-source-freeze.json`，SHA256 `8e52a6eff9362585f126bd3f2c0bee6337969a9164e94d60c9785e58d4ad2655`。
+- `docs/sdk/governance/evidence/tool-pid-observation/SHA256SUMS`，SHA256 `4bf67fd29f509cd433805ebab60369ee9515769c8e4e20817cb713ca8f0363fd`。
+
+源4tests已变化，先前第四whole800完整0继续保它自己的执行cut而非声称当前all800exact。生产61Rust/Cargo输入与锁未因此变化；本次不会重复原14Rust或本地大target完整门禁。新CI按focused开发门禁后实跑方案另执行，暂不关闭本Finding或提升Behavior/库存/全goal完成；B3/12、第三工具交付和官方原30d门禁各按真实当前进展处理。

@@ -59,3 +59,22 @@ Root已实际受控同Host确定：gap4在duplicateACK之前已由前一个合�
 正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
 
 原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
+
+
+## 已提交修复与有限后验进展（仍open）
+
+三caller修复已ff3真提交，先等待同fullstream且from/watermark超过前次的successor paused gap再设announced基线，模型仍parked/release未发，duplicateACK之后原count等式保；旧假设4gap是dup新effect的受控反例、改正同controlledcount0以及TS4/PY4/Java4rows有限Mac场景已实际独审PASS0。原namefilter skip如包所示，不冒完整入口或新Linux；原ACK产品owner/seq authority不重开。
+
+当前材料观察Git `ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56`仅定位已提交源码和正式包；原722/merge5d407失败运行/发现时间不改，新remote原case仍待。以下实际Git来源可读，不把本地focused当Linux完整验收：
+
+- `sdks/python/tests/test_gap_ack_host.py`，SHA256 `aa462130216730a6541982799e07b679eb4ceb2e9590c6cd0ec161318c3045eb`。
+- `sdks/typescript/test/gap-ack-host.test.js`，SHA256 `3ad9a6caa40611e9a18a17f8ea9e3530320549454b482028dd9cb810bd719b5e`。
+- `sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java`，SHA256 `017fa75ec0ce091e7def325dfc7dfd2048fbefbe6bfe2067aaccc69aef468737`。
+- `docs/sdk/governance/evidence/gap-successor-pause-oracle/README.md`，SHA256 `971ec4281009739b05701ac7db99a4227e0bd84953d01495d70c84bcb7c8a5da`。
+- `docs/sdk/governance/evidence/gap-successor-pause-oracle/source-after/manifest.json`，SHA256 `a052d205badc50be2303fd20470799bff48db08c5ecce51733dcbdb67a3b3527`。
+- `docs/sdk/governance/evidence/gap-successor-pause-oracle/native/receipt.json`，SHA256 `0c5a251e23860e16470e3f1845ba5d96e3677b8ed3dab042ab30dc151638fda2`。
+- `docs/sdk/governance/evidence/gap-successor-pause-oracle/native/controlled-final-receipt.json`，SHA256 `fb2df55a6784b92725963870585b7c28e634c3254a81428e2633cce61a7ef16e`。
+- `docs/sdk/governance/evidence/gap-successor-pause-oracle/independent-review.json`，SHA256 `eb72140598ccea84de99f51eae878fbb131bdcede475dd95ecd4a9f8a7849420`。
+- `docs/sdk/governance/evidence/gap-successor-pause-oracle/SHA256SUMS`，SHA256 `1a3dca8639303edafdf3aad8e3caa8bca38db4e9fb1b61fd9ebc5c8dbb40486d`。
+
+源4tests已变化，先前第四whole800完整0继续保它自己的执行cut而非声称当前all800exact。生产61Rust/Cargo输入与锁未因此变化；本次不会重复原14Rust或本地大target完整门禁。新CI按focused开发门禁后实跑方案另执行，暂不关闭本Finding或提升Behavior/库存/全goal完成；B3/12、第三工具交付和官方原30d门禁各按真实当前进展处理。

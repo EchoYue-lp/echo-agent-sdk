@@ -65,3 +65,20 @@ bootstrap单独原dependency日志原字节为1,084,474B，SHA256 `59dc929cd16b4
 正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
 
 原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
+
+
+## 已提交修复与有限后验进展（仍open）
+
+单action input rust-version:stable已f68真提交，已有官方actionv2源码/入口顺序/AST单差与独立实施材料PASS；不静默/降级/改锁/deny4policy。此是安装顺序有限证据，新remote warning/errorfree依赖job未运行/未审，原bootstraperror虽job后来success仍保，当前Findingopen而不是漏洞或deny检查failed。
+
+当前材料观察Git `ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56`仅定位已提交源码和正式包；原722/merge5d407失败运行/发现时间不改，新remote原case仍待。以下实际Git来源可读，不把本地focused当Linux完整验收：
+
+- `.github/workflows/rust-ci.yml`，SHA256 `c788cc19d41f0bfb00b05cc4f5cc2581ea3f14b74809405d547169918028e4c3`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/README.md`，SHA256 `463e816ecca27812b3b371c7ab041e769b785336020ed8c434f056084736c202`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/installed-validation.json`，SHA256 `0deab4d51fa6ce53b8a5cf09009c56afed02401c1ee4837244496d253645f5d2`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/provenance.json`，SHA256 `6a4af51067158eb9aaac48dc6e8a0666eb8713974ec5c69cf528fea912c4bc2c`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/design-review.json`，SHA256 `d84bf610a85cf43d1d40a6ebaa3a828ed1edb911b712a0d2c915296cd99a4ff3`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/original-722-dependency-job.log`，SHA256 `59dc929cd16b4f36b4a30a6eaf8e3e3db9d6f22af695e3bf9f1fba094fb5ccff`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/manifest.json`，SHA256 `b2ff05162836d18c4cf478fff19d45fbc5f8ff953970ca5fa36b910afd4f52c0`。
+
+源4tests已变化，先前第四whole800完整0继续保它自己的执行cut而非声称当前all800exact。生产61Rust/Cargo输入与锁未因此变化；本次不会重复原14Rust或本地大target完整门禁。新CI按focused开发门禁后实跑方案另执行，暂不关闭本Finding或提升Behavior/库存/全goal完成；B3/12、第三工具交付和官方原30d门禁各按真实当前进展处理。

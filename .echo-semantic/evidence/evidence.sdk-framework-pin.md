@@ -170,3 +170,22 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 - `AGENTS.md`，SHA256 `19475457a70e09ff30d4343452541dc3f1804c14bd98431f20eb6e0d8db6d5d5`。
 
 这些更正只同步current状态、已执行与未执行范围，历史正文、旧raw与原ADR不改；AGENTS仅当前门禁事实，未改变规则。800运行输入及61Rust/config实际SHA/mode不变，文稿会改变完整source摘要，不能借eebd/旧970c摘要称当前strict0。库存closed/行为open、3个宽Finding共用B物理结算与12项连续性待选择、合同13失败/Windowsnative/远端语义CI及SDKmain边界保；第三仓工具修复仍待授权，原30d差异门禁UTF8失败不被这次文稿slice或无base快照检查改写成通过。
+
+
+## 722 Linux后继有限修复的当前文稿维护
+
+本段仅对四份已审current文稿及三份既有openFinding进展同步提供精确依据，Evidence原observed91c/旧source_refs/命令/原时间不改，不把这些后继字节写成旧Git内容。当前模型56resolved/7open；722真实PRmerge5d407八job5success3failure，语言TS336及quickstart通过、PY413通过2失败18subtests、Java未达，两个合同job原13阻断不冒通过。三新具名Finding仍open：Gap/PID已有focused修复和有限Mac后验，原Linuxcase新CI尚未执行/审查；PID唯一原Linuxcause仍unknown，bootstrap单input实施后新remote完整error/warning结算尚待，未RiskAccepted或自动关闭。
+
+本次维护文件路径和当前SHA：
+
+- `docs/sdk/governance/finding-ledger.md`，SHA256 `dd90d8a6ba9e4b5d68afeac4eb833c584d52d0abb720badd7bf098b5a3d6dba5`。
+- `docs/sdk/governance/capability-map.md`，SHA256 `b21b91114b13f19eaafc5292211ef714d8afdae47d52d0839bf163073dbd59ad`。
+- `docs/sdk/governance/capability-review-remaining.md`，SHA256 `b425345e7bb227dc52d8c2d8d274193d07ae6fb0e43caef443f30b62e9dcda8c`。
+- `docs/sdk/governance/capability-review-dispositions.md`，SHA256 `f75ee68cb7bdb430cb594345ba91630542bdab9f2b4c7ca2498b063c8e3b509e`。
+- `.echo-semantic/findings/finding.sdk-gap-duplicate-ack-successor-observation.md`，SHA256 `8da411664d09d231739f1c142040a0dad42f2c2661aaf659f2789a3ae6fbe181`。
+- `.echo-semantic/findings/finding.sdk-tool-pid-observation-window.md`，SHA256 `748205eea0a3c6b1e689d134a98c4dd62e43b22087fd4cbba9bd084285c9ea04`。
+- `.echo-semantic/findings/finding.sdk-cargo-deny-bootstrap-toolchain-probe.md`，SHA256 `575657de4fe2226685f0644f4844b4b7c64e98ab9f3e128a370de94fed93160d`。
+
+相对原第四whole800执行输入，真实差异仅5项：workflow的cargo-deny初始化input及四份测试（Gap三语言、PID Python），其余795原输入相同；不能称整个800与旧whole当前byte相同。生产61Rust/Cargo/config和锁仍同原正式门禁，Host0f1为这些已记录focused执行二进制。原第四whole/macOS0保各自cut，现focused开发提交后下一remote验收计划另行执行，不在此复制本地大target/重14矩阵或假远端green。SDK行为模型open、库存closed/40格不动，3宽Finding同B与12连续性待人、原合同13、Windowsnative/main边界不变。
+
+第三repo工具交付权限已获得，当前工具仅PR3/审查门禁进展，尚无可用于SDK官方工具消费的已发布新SHA/main；新语义CIjob未实跑。原历史permissionpending语句按原时点保留，不将现在授权等同交付通过。原30d全goal工具UTF8失败必须用本次实际输出保留；当前无base快照通过也不能取代原goal变更门禁。
