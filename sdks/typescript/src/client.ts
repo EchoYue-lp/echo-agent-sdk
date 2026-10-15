@@ -87,11 +87,50 @@ export type ExtensionInvokeOutcome = ExtensionOutcome<ExtensionResult>;
 
 type QueueItem<T> = { readonly value: T; readonly control?: boolean } | { readonly error: unknown } | { readonly done: true };
 
+interface PendingAcknowledgement {
+  readonly sequence: bigint;
+  settled: boolean;
+}
+
 class AsyncQueue<T> implements AsyncIterable<T> {
   private readonly capacity: number;
   private readonly items: QueueItem<T>[] = [];
   private readonly waiters: Array<(item: QueueItem<T>) => void> = [];
   private closed = false;
+  private admissionProgress?: {promise: Promise<void>; resolve: () => void};
+
+  get ended(): boolean { return this.closed; }
+
+  get dataCapacity(): number { return this.capacity; }
+
+  hasDataCapacity(): boolean {
+    return this.waiters.length > 0 || this.items.filter(item => "value" in item && !item.control).length < this.capacity;
+  }
+
+  canRetirePrefix(sequence: bigint): boolean {
+    return this.items.some(item => "value" in item && !item.control && isRecord(item.value)
+      && isRecord(item.value.envelope) && typeof item.value.envelope.sequence === "string"
+      && BigInt(item.value.envelope.sequence) <= sequence);
+  }
+
+  async waitForAdmission(candidates: readonly PendingAcknowledgement[]): Promise<void> {
+    while (!this.closed && !this.hasDataCapacity()) {
+      const pending = candidates.filter(candidate => !candidate.settled && this.canRetirePrefix(candidate.sequence));
+      if (pending.length === 0) return; // Preserve the original overflow policy.
+      if (!this.admissionProgress) {
+        let resolve!: () => void;
+        const promise = new Promise<void>(done => { resolve = done; });
+        this.admissionProgress = {promise, resolve};
+      }
+      await this.admissionProgress.promise;
+    }
+  }
+
+  signalAdmissionProgress(): void {
+    const progress = this.admissionProgress;
+    this.admissionProgress = undefined;
+    progress?.resolve();
+  }
 
   constructor(capacity = DEFAULT_QUEUE_CAPACITY) {
     this.capacity = Math.max(1, Math.min(MAX_QUEUE_CAPACITY, Math.trunc(capacity)));
@@ -114,6 +153,7 @@ class AsyncQueue<T> implements AsyncIterable<T> {
         });
         this.items.splice(controlIndex,this.items.length-controlIndex,{value:merged,control:true},...retained);
       }else this.items.splice(controlIndex,1,{value,control:true});
+      this.signalAdmissionProgress();
       return;
     }
     const dataCount=this.items.filter(item=>"value" in item && !item.control).length;
@@ -130,11 +170,13 @@ class AsyncQueue<T> implements AsyncIterable<T> {
       if(item && "value" in item && !item.control && isRecord(item.value) && isRecord(item.value.envelope)
         && typeof item.value.envelope.sequence==="string" && BigInt(item.value.envelope.sequence)<=sequence)this.items.splice(index,1);
     }
+    this.signalAdmissionProgress();
   }
 
   fail(error: unknown): void {
     if (this.closed) return;
     this.closed = true;
+    this.signalAdmissionProgress();
     this.shift({ error });
     while (this.waiters.length > 0) this.shift({ done: true });
   }
@@ -142,6 +184,7 @@ class AsyncQueue<T> implements AsyncIterable<T> {
   end(): void {
     if (this.closed) return;
     this.closed = true;
+    this.signalAdmissionProgress();
     while (this.waiters.length > 0) this.shift({ done: true });
   }
 
@@ -153,7 +196,7 @@ class AsyncQueue<T> implements AsyncIterable<T> {
 
   private async nextItem(): Promise<QueueItem<T>> {
     const item = this.items.shift();
-    if (item) return item;
+    if (item) { this.signalAdmissionProgress(); return item; }
     if (this.closed) return { done: true };
     return new Promise((resolve) => this.waiters.push(resolve));
   }
@@ -178,6 +221,33 @@ interface StreamFeed {
   liveRanges?: Array<{base: bigint; end: bigint}>;
   lastGapWatermark?: bigint;
   replayTerminalSequence?: bigint;
+  pendingAcknowledgements?: Set<PendingAcknowledgement>;
+  deliveryTail?: Promise<void>;
+}
+
+// Order only the official handlers already dispatched for this feed. Their
+// contexts may outlive native ACK IO; this is not a second payload buffer or a
+// bound on the official transport's independently dispatched handlers.
+function deliverStreamItem(feed: StreamFeed, item: FacadeStreamItem, control = false, terminal = false): Promise<void> {
+  const sequence = BigInt("envelope" in item ? item.envelope.sequence : item.gap.snapshot_watermark);
+  const candidates = control ? [] : [...(feed.pendingAcknowledgements ?? [])].filter(candidate =>
+    !candidate.settled && candidate.sequence < sequence
+    && sequence <= candidate.sequence + BigInt(feed.queue.dataCapacity)
+    && feed.queue.canRetirePrefix(candidate.sequence));
+  const previous = feed.deliveryTail;
+  const deliver = async (): Promise<void> => {
+    if (previous) await previous;
+    if (!control && !feed.queue.hasDataCapacity()) await feed.queue.waitForAdmission(candidates);
+    // Validation already advanced receive facts. Rechecking consumption and
+    // lifecycle here must not accept the DTO a second time after a later gap.
+    if (feed.queue.ended || sequence <= (feed.acknowledgedSequence ?? 0n)) return;
+    feed.queue.push(item, control);
+    if (terminal) feed.queue.end();
+  };
+  const completion = deliver().catch(error => { feed.queue.fail(error); });
+  feed.deliveryTail = completion;
+  void completion.then(() => { if (feed.deliveryTail === completion) feed.deliveryTail = undefined; });
+  return completion;
 }
 
 function boundedQueueCapacity(capability: EchoAgentCapability): number {
@@ -363,12 +433,8 @@ export class EchoAgentClient {
       feed.lastEventSequence = sequence;
       feed.lastLiveSequence = sequence;
       recordLiveSequence(feed, sequence);
-      feed.queue.push(event);
-      if (["final_answer", "cancelled", "error"].includes(event.envelope.payload.event_type)) {
-        // The terminal event remains available to the consumer before the
-        // iterator observes completion. Run snapshots remain authoritative.
-        feed.queue.end();
-      }
+      await deliverStreamItem(feed, event, false,
+        ["final_answer", "cancelled", "error"].includes(event.envelope.payload.event_type));
     });
     customApp.onNotification("_echo_agent/gap", (params) => params, async ({ params }) => {
       let gap: FacadeGap;
@@ -393,7 +459,7 @@ export class EchoAgentClient {
       feed.lastGapWatermark = feed.lastEventSequence;
       // One bounded control slot is reserved for the Host's pause notice.
       // The live-event window can already fill every data slot before attach.
-      feed.queue.push(gap, true);
+      await deliverStreamItem(feed, gap, true);
     });
     customApp.onNotification("_echo_agent/extension/cancel", (params) => params, async ({ params }) => {
       const invocationId = typeof params === "object" && params !== null && "invocation_id" in params
@@ -906,7 +972,7 @@ export class EchoAgentClient {
     feed.lastEventSequence = sequence;
     feed.lastLiveSequence = sequence;
     recordLiveSequence(feed, sequence);
-    feed.queue.push(event);
+    void deliverStreamItem(feed, event);
   }
 
   endEvents(streamId: string): void {
@@ -928,23 +994,38 @@ export class EchoAgentClient {
     const observed = owned && (covered || parsed === feed.lastGapWatermark
       || parsed <= (feed.acknowledgedSequence ?? 0n)
       || feed.liveRanges?.some(range => range.base <= parsed && parsed <= range.end));
-    try {
-      await this.notify("_echo_agent/event/ack", {
-        ack: { stream, last_processed_sequence: parsed.toString() },
-      });
-    } catch(error) {
-      const failure=EchoAgentError.fromUnknown(error,"_echo_agent/event/ack");
-      throw new EchoAgentError(failure.code,failure.message,failure.retryable,failure.operation,
-        {ack_submission:"outcome_unknown",stream,sequence:parsed.toString(),cause_details:failure.details},failure.handle);
+    let projection: PendingAcknowledgement | undefined;
+    if (feed && observed) {
+      projection = {sequence: parsed, settled: false};
+      (feed.pendingAcknowledgements ??= new Set()).add(projection);
     }
-    if(feed && observed){
-      // Each completion commits only its own submitted, observed cursor.
-      // Another in-flight ACK cannot supply successful consumption evidence.
-      if(parsed>(feed.acknowledgedSequence ?? 0n))feed.acknowledgedSequence=parsed;
-      if(parsed>feed.lastEventSequence)feed.lastEventSequence=parsed;
-      const committed=feed.acknowledgedSequence ?? 0n;
-      feed.queue.discardAcknowledgedEvents(committed);
-      if(feed.replayTerminalSequence!==undefined && committed>=feed.replayTerminalSequence)feed.queue.end();
+    try {
+      try {
+        await this.notify("_echo_agent/event/ack", {
+          ack: { stream, last_processed_sequence: parsed.toString() },
+        });
+      } catch(error) {
+        const failure=EchoAgentError.fromUnknown(error,"_echo_agent/event/ack");
+        throw new EchoAgentError(failure.code,failure.message,failure.retryable,failure.operation,
+          {ack_submission:"outcome_unknown",stream,sequence:parsed.toString(),cause_details:failure.details},failure.handle);
+      }
+      if(feed && observed){
+        // Each completion commits only its own submitted, observed cursor.
+        // Another in-flight ACK cannot supply successful consumption evidence.
+        if(parsed>(feed.acknowledgedSequence ?? 0n))feed.acknowledgedSequence=parsed;
+        if(parsed>feed.lastEventSequence)feed.lastEventSequence=parsed;
+        const committed=feed.acknowledgedSequence ?? 0n;
+        feed.queue.discardAcknowledgedEvents(committed);
+        if(feed.replayTerminalSequence!==undefined && committed>=feed.replayTerminalSequence)feed.queue.end();
+      }
+    } finally {
+      // A wakeup is not successful consumption. Failed native writes retain
+      // their original typed error and prefix; private signals never reject.
+      if (projection && feed) {
+        feed.pendingAcknowledgements?.delete(projection);
+        projection.settled = true;
+        feed.queue.signalAdmissionProgress();
+      }
     }
   }
 

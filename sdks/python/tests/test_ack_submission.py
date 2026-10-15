@@ -584,3 +584,360 @@ async def test_pending_recovery_live_continuation_cannot_authorize_absent_prefix
         assert feed.last_sequence == 7
     finally:
         await client.close()
+
+
+# Production spawn and these controlled official-transport fixtures share the
+# same private observer factory; no second validation or delivery handler.
+def admission_observers(events, capacity):
+    from echo_agent_sdk.client import _event_observers
+
+    return _event_observers(events, capacity)
+
+
+async def admission_fixture(capacity=1):
+    client, stream, _, _ = fixture()
+    await client.connection.close()
+    stream = WireHandle("stream", "7", "stream")
+    feed = _EventFeed(_AsyncQueue(capacity), stream)
+    client._events = {stream.id: feed}
+    client._replay_ranges = {}
+    transport = ReplayTransport({})
+    client.connection = ClientSideConnection(
+        _Callbacks({}, 8),
+        transport,
+        observers=admission_observers(client._events, capacity),
+    )
+    return client, stream, feed, transport
+
+
+def live_event(stream, sequence):
+    return {
+        "stream": stream.to_dict(),
+        "envelope": {
+            "stream_id": stream.id,
+            "sequence": str(sequence),
+            "payload": {"event_type": "delta"},
+        },
+    }
+
+
+def live_gap(stream, sequence):
+    return {
+        "stream": stream.to_dict(),
+        "gap": {
+            "from_sequence": str(sequence),
+            "to_sequence": str(sequence),
+            "snapshot_watermark": str(sequence),
+            "reason": "window pause",
+        },
+    }
+
+
+async def peer_notification(transport, method, value):
+    await transport.incoming.put({"jsonrpc": "2.0", "method": method, "params": value})
+
+
+async def until_admission(condition):
+    async def wait():
+        while not condition():
+            await asyncio.sleep(0)
+
+    await asyncio.wait_for(wait(), 2)
+
+
+@pytest.mark.asyncio
+async def test_visible_pending_ack_does_not_lose_resumed_event():
+    client, stream, feed, transport = await admission_fixture()
+    caller = None
+    try:
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 1))
+        await until_admission(lambda: feed.last_sequence == 1)
+        gap = live_gap(stream, 2)
+        await peer_notification(transport, "_echo_agent/gap", gap)
+        await until_admission(lambda: feed.last_gap_watermark == 2)
+        caller = asyncio.create_task(ack(client, stream, 2))
+        completion = await transport.entered.get()
+        assert transport.calls[0][0]["params"]["ack"] == {
+            "stream": stream.to_dict(),
+            "last_processed_sequence": "2",
+        }
+        assert not completion.done()
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 3))
+        await until_admission(lambda: feed.last_sequence == 3)
+        await asyncio.sleep(0)
+        assert not feed.queue._closed, (
+            "pending visible ACK must not permanently overflow its resumed event"
+        )
+        assert stream not in client._event_cursors
+        completion.set_result(None)
+        await caller
+        assert client._event_cursors[stream] == 2
+        assert await asyncio.wait_for(feed.queue.get(), 2) == gap
+        assert await asyncio.wait_for(feed.queue.get(), 2) == live_event(stream, 3)
+        assert not feed.queue._closed
+    finally:
+        for _, completion in transport.calls:
+            if not completion.done():
+                completion.set_result(None)
+        if caller is not None:
+            await asyncio.gather(caller, return_exceptions=True)
+        await client.close()
+
+
+async def paused_admission(capacity=1):
+    client, stream, feed, transport = await admission_fixture(capacity)
+    await peer_notification(transport, "_echo_agent/event", live_event(stream, 1))
+    await until_admission(lambda: feed.last_sequence == 1)
+    await peer_notification(transport, "_echo_agent/gap", live_gap(stream, 2))
+    await until_admission(lambda: feed.last_gap_watermark == 2)
+    caller = asyncio.create_task(ack(client, stream, 2))
+    completion = await transport.entered.get()
+    assert transport.calls[0][0]["params"]["ack"]["last_processed_sequence"] == "2"
+    assert not completion.done()
+    return client, stream, feed, transport, caller, completion
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("outcome", ["failure", "consumer", "close", "caller_cancel"])
+async def test_pending_admission_lifecycle(outcome):
+    client, stream, feed, transport, caller, completion = await paused_admission()
+    try:
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 3))
+        await until_admission(lambda: feed.last_sequence == 3)
+        await asyncio.sleep(0)
+        assert not feed.queue._closed
+        if outcome == "failure":
+            completion.set_exception(ConnectionError("native ACK unknown"))
+            with pytest.raises(EchoAgentError) as error:
+                await caller
+            assert error.value.details["ack_submission"] == "outcome_unknown"
+            await until_admission(lambda: feed.queue._closed)
+            assert feed.queue._failure.details["reason"] == "client_queue_full"
+            assert stream not in client._event_cursors
+            assert next(iter(feed.queue._items)) == live_event(stream, 1)
+        elif outcome == "consumer":
+            # Capacity is signalled before the consumer's own callback completes.
+            consumed = asyncio.Event()
+            release = asyncio.Event()
+
+            async def on_consume(_value):
+                consumed.set()
+                await release.wait()
+
+            feed.queue.set_on_consume(on_consume)
+            consumer = asyncio.create_task(feed.queue.get())
+            await consumed.wait()
+            await asyncio.wait_for(asyncio.shield(feed.delivery_tail), 2)
+            assert not completion.done()
+            assert list(feed.queue._items)[-1] == live_event(stream, 3)
+            release.set()
+            assert await consumer == live_event(stream, 1)
+            feed.queue.set_on_consume(None)
+            completion.set_result(None)
+            await caller
+            assert await feed.queue.get() == live_gap(stream, 2)
+            assert await feed.queue.get() == live_event(stream, 3)
+        elif outcome == "close":
+            tail = feed.delivery_tail
+            await client.close()
+            with pytest.raises(asyncio.CancelledError):
+                await caller
+            await asyncio.wait_for(asyncio.shield(tail), 2)
+            assert not any(
+                "envelope" in x and x["envelope"]["sequence"] == "3"
+                for x in feed.queue._items
+            )
+        else:
+            caller.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await caller
+            assert not completion.done() and not completion.cancelled()
+            completion.set_result(None)
+            await until_admission(lambda: feed.delivery_tail is None)
+            assert client._event_cursors[stream] == 2
+            assert not feed.queue._closed
+            assert list(feed.queue._items)[-1] == live_event(stream, 3)
+    finally:
+        if not completion.done():
+            completion.set_result(None)
+        await asyncio.gather(caller, return_exceptions=True)
+        await client.close()
+
+
+@pytest.mark.asyncio
+async def test_ordered_event_and_gap_delivery_survives_pending_write():
+    client, stream, feed, transport, caller, completion = await paused_admission(2)
+    try:
+        for seq in (3, 4):
+            await peer_notification(
+                transport, "_echo_agent/event", live_event(stream, seq)
+            )
+        await peer_notification(transport, "_echo_agent/gap", live_gap(stream, 5))
+        await until_admission(lambda: feed.last_gap_watermark == 5)
+        completion.set_result(None)
+        await caller
+        await until_admission(lambda: feed.delivery_tail is None)
+        assert not feed.queue._closed
+        # Existing one-control-slot coalescing retains the old gap start and
+        # removes data covered by its later watermark, without revalidation.
+        merged = live_gap(stream, 5)
+        merged["gap"]["from_sequence"] = "2"
+        assert list(feed.queue._items) == [merged]
+    finally:
+        if not completion.done():
+            completion.set_result(None)
+        await asyncio.gather(caller, return_exceptions=True)
+        await client.close()
+
+
+@pytest.mark.asyncio
+async def test_later_success_covers_held_event_without_reinsertion():
+    client, stream, feed, transport, caller, completion = await paused_admission()
+    high = None
+    try:
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 3))
+        await until_admission(lambda: feed.last_sequence == 3)
+        high = asyncio.create_task(ack(client, stream, 3))
+        high_completion = await transport.entered.get()
+        high_completion.set_result(None)
+        await high
+        await until_admission(lambda: feed.delivery_tail is None)
+        assert client._event_cursors[stream] == 3
+        assert list(feed.queue._items) == [live_gap(stream, 2)]
+        completion.set_result(None)
+        await caller
+        assert client._event_cursors[stream] == 3
+    finally:
+        if not completion.done():
+            completion.set_result(None)
+        await asyncio.gather(caller, *([high] if high else []), return_exceptions=True)
+        await client.close()
+
+
+@pytest.mark.asyncio
+async def test_unobserved_ack_cannot_borrow_capacity():
+    client, stream, feed, transport = await admission_fixture()
+    caller = None
+    try:
+        for seq in (1,):
+            await peer_notification(
+                transport, "_echo_agent/event", live_event(stream, seq)
+            )
+        await peer_notification(transport, "_echo_agent/gap", live_gap(stream, 2))
+        await until_admission(lambda: feed.last_gap_watermark == 2)
+        caller = asyncio.create_task(ack(client, stream, 3))
+        completion = await transport.entered.get()
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 3))
+        await until_admission(lambda: feed.queue._closed)
+        completion.set_result(None)
+        await caller
+        assert stream not in client._event_cursors
+    finally:
+        for _, completion in transport.calls:
+            if not completion.done():
+                completion.set_result(None)
+        if caller is not None:
+            await asyncio.gather(caller, return_exceptions=True)
+        await client.close()
+
+
+@pytest.mark.asyncio
+async def test_cancelled_middle_observer_cannot_release_its_successor_early():
+    from acp.connection import StreamDirection, StreamEvent
+
+    client, stream, feed, transport, caller, completion = await paused_admission()
+    observe = admission_observers(client._events, 1)[0]
+    middle = None
+    try:
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 3))
+        await until_admission(lambda: feed.last_sequence == 3)
+        predecessor = feed.delivery_tail
+        middle = asyncio.create_task(
+            observe(
+                StreamEvent(
+                    StreamDirection.INCOMING,
+                    {
+                        "method": "_echo_agent/event",
+                        "params": live_event(stream, 4),
+                    },
+                )
+            )
+        )
+        await until_admission(lambda: feed.last_sequence == 4)
+        cancelled_tail = feed.delivery_tail
+        middle.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await middle
+        assert not predecessor.done() and not cancelled_tail.done()
+        # The cancelled context remains ordered after its original predecessor.
+        await peer_notification(transport, "_echo_agent/gap", live_gap(stream, 5))
+        await until_admission(lambda: feed.last_gap_watermark == 5)
+        assert list(feed.queue._items)[-1] == live_gap(stream, 2)
+        completion.set_result(None)
+        await caller
+        await until_admission(lambda: feed.delivery_tail is None)
+        merged = live_gap(stream, 5)
+        merged["gap"]["from_sequence"] = "2"
+        assert list(feed.queue._items) == [merged]
+        assert not feed.queue._closed
+    finally:
+        if not completion.done():
+            completion.set_result(None)
+        if middle is not None:
+            await asyncio.gather(middle, return_exceptions=True)
+        await asyncio.gather(caller, return_exceptions=True)
+        await client.close()
+
+
+@pytest.mark.asyncio
+async def test_pending_feed_does_not_block_other_feed_response_or_duplicate():
+    client, stream, feed, transport, caller, completion = await paused_admission()
+    try:
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 3))
+        await until_admission(lambda: feed.last_sequence == 3)
+        tail = feed.delivery_tail
+        await peer_notification(transport, "_echo_agent/event", live_event(stream, 3))
+        other = WireHandle("other", "8", "stream")
+        await peer_notification(transport, "_echo_agent/event", live_event(other, 1))
+        await until_admission(lambda: other.id in client._events)
+        assert await asyncio.wait_for(
+            client._events[other.id].queue.get(), 2
+        ) == live_event(other, 1)
+        assert (
+            await asyncio.wait_for(
+                client.connection.ext_method("test/independent", {}), 2
+            )
+            == {}
+        )
+        assert feed.delivery_tail is tail and not tail.done()
+        assert not completion.done()
+        completion.set_result(None)
+        await caller
+        await until_admission(lambda: feed.delivery_tail is None)
+        assert not feed.queue._closed
+    finally:
+        if not completion.done():
+            completion.set_result(None)
+        await asyncio.gather(caller, return_exceptions=True)
+        await client.close()
+
+
+@pytest.mark.asyncio
+async def test_cleanup_cancels_not_yet_started_ack_without_orphan_projection():
+    client, stream, feed, transport = fixture()
+    # Both real owners are ready before the loop advances. ACK registration
+    # appends submit behind cleanup, so cleanup cancels it before its first step.
+    caller = asyncio.create_task(ack(client, stream, 10))
+    closer = asyncio.create_task(client._close_owned())
+    try:
+        await asyncio.wait_for(closer, 2)
+        with pytest.raises(asyncio.CancelledError):
+            await caller
+        assert transport.calls == []
+        assert stream not in client._event_cursors
+        assert not client._ack_submissions
+        assert not feed.pending_acknowledgements
+        assert not feed.pending_ack_sequences
+    finally:
+        await asyncio.gather(caller, closer, return_exceptions=True)
+        await client.close()

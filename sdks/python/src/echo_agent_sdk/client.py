@@ -2589,6 +2589,50 @@ class _AsyncQueue:
         self._closed = False
         self._failure: BaseException | None = None
         self._control_pending: Any = None
+        self._admission_progress: asyncio.Future[None] | None = None
+        # Projection of successful discard only, not received or pending ACKs.
+        self._retired_event_floor = 0
+
+    def _signal_admission_progress(self) -> None:
+        progress, self._admission_progress = self._admission_progress, None
+        if progress is not None and not progress.done():
+            progress.set_result(None)
+
+    def _has_data_capacity(self) -> bool:
+        return any(not waiter.done() for waiter in self._waiters) or (
+            len(self._items) - (1 if self._control_pending is not None else 0)
+            < self._maxsize
+        )
+
+    def _can_retire_prefix(self, sequence: int) -> bool:
+        return any(
+            isinstance(item, dict)
+            and isinstance(item.get("envelope"), dict)
+            and isinstance(item["envelope"].get("sequence"), str)
+            and int(item["envelope"]["sequence"]) <= sequence
+            for item in self._items
+        )
+
+    async def _wait_for_admission(
+        self, candidates: tuple[_PendingAcknowledgement, ...]
+    ) -> None:
+        while not self._closed and not self._has_data_capacity():
+            pending = [
+                candidate.completion
+                for candidate in candidates
+                if not candidate.completion.done()
+                and self._can_retire_prefix(candidate.sequence)
+            ]
+            if not pending:
+                return  # Keep the existing queue-full failure policy.
+            if self._admission_progress is None:
+                self._admission_progress = asyncio.get_running_loop().create_future()
+            # asyncio.wait does not cancel shared IO/progress owners when this
+            # independently dispatched observer is cancelled.
+            await asyncio.wait(
+                [self._admission_progress, *pending],
+                return_when=asyncio.FIRST_COMPLETED,
+            )
 
     def set_on_consume(self, callback: Callable[[Any], Awaitable[None]] | None) -> None:
         self._on_consume = callback
@@ -2632,6 +2676,7 @@ class _AsyncQueue:
                     else:
                         self._items[index] = value
                         self._control_pending = value
+                    self._signal_admission_progress()
                     return
         while self._waiters:
             waiter = self._waiters.popleft()
@@ -2654,6 +2699,7 @@ class _AsyncQueue:
         self._items.append(value)
 
     def discard_acknowledged_events(self, sequence: int) -> None:
+        self._retired_event_floor = max(self._retired_event_floor, sequence)
         self._items = deque(
             item
             for item in self._items
@@ -2662,6 +2708,7 @@ class _AsyncQueue:
             or not isinstance(item["envelope"].get("sequence"), str)
             or int(item["envelope"]["sequence"]) > sequence
         )
+        self._signal_admission_progress()
 
     def fail(self, error: BaseException, *, discard_pending: bool = False) -> None:
         if discard_pending:
@@ -2669,6 +2716,7 @@ class _AsyncQueue:
         if self._closed:
             return
         self._closed = True
+        self._signal_admission_progress()
         self._failure = error
         while self._waiters:
             waiter = self._waiters.popleft()
@@ -2679,6 +2727,7 @@ class _AsyncQueue:
         if self._closed:
             return
         self._closed = True
+        self._signal_admission_progress()
         while self._waiters:
             waiter = self._waiters.popleft()
             if not waiter.done():
@@ -2689,6 +2738,7 @@ class _AsyncQueue:
             value = self._items.popleft()
             if value is self._control_pending:
                 self._control_pending = None
+            self._signal_admission_progress()
             if self._on_consume is not None:
                 await self._on_consume(value)
             return value
@@ -2719,6 +2769,12 @@ class _AsyncQueue:
 
 
 @dataclass(slots=True)
+class _PendingAcknowledgement:
+    sequence: int
+    completion: asyncio.Future[None]
+
+
+@dataclass(slots=True)
 class _EventFeed:
     """One generation-fenced event feed owned by a stream id."""
 
@@ -2729,6 +2785,10 @@ class _EventFeed:
     last_gap_watermark: int = 0
     replay_terminal_sequence: int | None = None
     pending_ack_sequences: dict[object, int] = field(default_factory=dict)
+    pending_acknowledgements: dict[object, _PendingAcknowledgement] = field(
+        default_factory=dict
+    )
+    delivery_tail: asyncio.Future[None] | None = None
     live_ranges: list[tuple[int, int]] = field(default_factory=list)
 
     def bind(self, handle: WireHandle) -> None:
@@ -2877,6 +2937,135 @@ def _parse_event_stream(value: Mapping[str, Any]) -> WireHandle:
             "serialization_violation", "event notification has an invalid stream handle"
         )
     return stream
+
+
+async def _deliver_stream_item(
+    feed: _EventFeed, value: Any, *, control: bool = False, terminal: bool = False
+) -> None:
+    """Order existing official observer contexts, without another payload queue.
+
+    The official transport dispatches observers independently. Their contexts
+    can remain alive during ACK IO; a completion tail is not a total memory cap.
+    """
+    sequence = int(
+        value["gap"]["snapshot_watermark"] if control else value["envelope"]["sequence"]
+    )
+    queue = feed.queue
+    candidates = (
+        ()
+        if control
+        else tuple(
+            candidate
+            for candidate in feed.pending_acknowledgements.values()
+            if not candidate.completion.done()
+            and candidate.sequence < sequence <= candidate.sequence + queue._maxsize
+            and queue._can_retire_prefix(candidate.sequence)
+        )
+    )
+    previous = feed.delivery_tail
+    completion = asyncio.get_running_loop().create_future()
+    feed.delivery_tail = completion
+
+    def settled(_previous: asyncio.Future[None] | None = None) -> None:
+        if not completion.done():
+            completion.set_result(None)
+        if feed.delivery_tail is completion:
+            feed.delivery_tail = None
+
+    try:
+        if previous is not None:
+            await asyncio.shield(previous)
+        if not control and not queue._has_data_capacity():
+            await queue._wait_for_admission(candidates)
+        # Validation already updated receive facts. Never re-accept a held DTO
+        # after a later gap, or reinsert data covered by a real successful ACK.
+        if queue._closed or sequence <= queue._retired_event_floor:
+            return
+        queue.push(value, control=control)
+        if terminal:
+            queue.close()
+    finally:
+        # A cancelled middle observer must not let its successor overtake the
+        # still-pending predecessor. Link completion without another Task.
+        if previous is not None and not previous.done() and not queue._closed:
+            previous.add_done_callback(settled)
+        else:
+            settled()
+
+
+def _event_observers(
+    events: dict[str, _EventFeed], max_buffered_events: int
+) -> list[Callable[[StreamEvent], Awaitable[None]]]:
+    """Share the production receive/validation path with transport fixtures."""
+
+    async def observe(event: StreamEvent) -> None:
+        if event.direction is not StreamDirection.INCOMING:
+            return
+        message = event.message
+        if message.get("method") != "_echo_agent/event":
+            return
+        params = message.get("params")
+        if not isinstance(params, dict):
+            error = EchoAgentError(
+                "serialization_violation", "event notification must be an object"
+            )
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        try:
+            stream = _parse_event_stream(params)
+        except EchoAgentError as error:
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        feed = events.setdefault(
+            stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
+        )
+        try:
+            if feed.accept_event(params):
+                envelope = params["envelope"]
+                payload = envelope.get("payload")
+                terminal = isinstance(payload, Mapping) and payload.get(
+                    "event_type"
+                ) in {
+                    "final_answer",
+                    "cancelled",
+                    "error",
+                }
+                await _deliver_stream_item(feed, params, terminal=terminal)
+        except EchoAgentError as error:
+            feed.queue.fail(error)
+
+    async def observe_gap(event: StreamEvent) -> None:
+        if event.direction is not StreamDirection.INCOMING:
+            return
+        message = event.message
+        if message.get("method") != "_echo_agent/gap":
+            return
+        params = message.get("params")
+        if not isinstance(params, dict):
+            error = EchoAgentError(
+                "serialization_violation", "gap notification must be an object"
+            )
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        try:
+            stream = _parse_event_stream(params)
+        except EchoAgentError as error:
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        feed = events.setdefault(
+            stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
+        )
+        try:
+            if feed.accept_gap(params):
+                await _deliver_stream_item(feed, params, control=True)
+        except EchoAgentError as error:
+            feed.queue.fail(error)
+
+    return [observe, observe_gap]
 
 
 class _Callbacks:
@@ -3237,75 +3426,6 @@ class EchoAgentClient:
         updates: dict[str, _AsyncQueue] = {}
         events: dict[str, _EventFeed] = {}
 
-        async def observe(event: StreamEvent) -> None:
-            if event.direction is not StreamDirection.INCOMING:
-                return
-            message = event.message
-            if message.get("method") != "_echo_agent/event":
-                return
-            params = message.get("params")
-            if not isinstance(params, dict):
-                error = EchoAgentError(
-                    "serialization_violation", "event notification must be an object"
-                )
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            try:
-                stream = _parse_event_stream(params)
-            except EchoAgentError as error:
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            feed = events.setdefault(
-                stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
-            )
-            try:
-                if feed.accept_event(params):
-                    feed.queue.push(params)
-                    envelope = params["envelope"]
-                    payload = envelope.get("payload")
-                    if isinstance(payload, Mapping) and payload.get("event_type") in {
-                        "final_answer",
-                        "cancelled",
-                        "error",
-                    }:
-                        # Close only this delivery projection. Pending facts,
-                        # including the terminal event, remain available and
-                        # are ACKed at the iterator's consumption boundary.
-                        feed.queue.close()
-            except EchoAgentError as error:
-                feed.queue.fail(error)
-
-        async def observe_gap(event: StreamEvent) -> None:
-            if event.direction is not StreamDirection.INCOMING:
-                return
-            message = event.message
-            if message.get("method") != "_echo_agent/gap":
-                return
-            params = message.get("params")
-            if not isinstance(params, dict):
-                error = EchoAgentError(
-                    "serialization_violation", "gap notification must be an object"
-                )
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            try:
-                stream = _parse_event_stream(params)
-            except EchoAgentError as error:
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            feed = events.setdefault(
-                stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
-            )
-            try:
-                if feed.accept_gap(params):
-                    feed.queue.push(params, control=True)
-            except EchoAgentError as error:
-                feed.queue.fail(error)
-
         callback_client = _Callbacks(updates, max_buffered_updates)
         merged_env = dict(os.environ)
         if env:
@@ -3316,7 +3436,7 @@ class EchoAgentClient:
             *args,
             cwd=cwd,
             env=merged_env,
-            observers=[observe, observe_gap],
+            observers=_event_observers(events, max_buffered_events),
         )
         try:
             connection, process = await context_manager.__aenter__()
@@ -3637,6 +3757,17 @@ class EchoAgentClient:
                 raise EchoAgentError.from_exception(error, method) from error
             return
 
+        projection = _PendingAcknowledgement(
+            sequence, asyncio.get_running_loop().create_future()
+        )
+        feed.pending_acknowledgements[submission] = projection
+
+        def settle_projection() -> None:
+            feed.pending_ack_sequences.pop(submission, None)
+            feed.pending_acknowledgements.pop(submission, None)
+            if not projection.completion.done():
+                projection.completion.set_result(None)
+
         async def submit() -> None:
             try:
                 await self.connection.ext_notification(
@@ -3665,7 +3796,7 @@ class EchoAgentClient:
                 }
                 raise failure from error
             finally:
-                feed.pending_ack_sequences.pop(submission, None)
+                settle_projection()
 
         task = asyncio.create_task(submit(), name="echo-agent-sdk ACK submission")
         jobs = getattr(self, "_ack_submissions", None)
@@ -3675,6 +3806,9 @@ class EchoAgentClient:
         caller_cancelled = False
 
         def settled(completed: asyncio.Task[None]) -> None:
+            # Cancellation before the Task's first step never enters its
+            # coroutine finally. The same idempotent projection still settles.
+            settle_projection()
             jobs.discard(completed)
             if not completed.cancelled():
                 failure = completed.exception()
