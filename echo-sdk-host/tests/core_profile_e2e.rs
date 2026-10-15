@@ -1658,8 +1658,10 @@ fn first_catalog_invoke_operation() -> Result<(String, String), Box<dyn std::err
 
 #[cfg(feature = "sdk-facade-adapters")]
 fn catalog_source_operations() -> Result<Vec<(String, String)>, Box<dyn std::error::Error>> {
+    // Admission coverage follows the accepted contract. The full Rust catalog
+    // also contains deferred inventory without an accepted language consumer.
     let catalog_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../contracts/sdk/facade-operation-catalog.json");
+        .join("../contracts/sdk/accepted-facade-operation-catalog.json");
     let catalog: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(catalog_path)?)?;
     let mut operations: Vec<(String, String)> = catalog
         .get("routes")
@@ -8393,5 +8395,73 @@ async fn keyed_session_and_run_replay_original_publication_without_repeating_pro
     let result = drive(&mut host, events, updates, gaps, scenario).await;
     server.abort();
     result?;
+    Ok(())
+}
+
+#[cfg(feature = "sdk-facade-adapters")]
+#[tokio::test]
+async fn deferred_rust_inventory_invocations_fail_explicitly_without_success_defaults()
+-> Result<(), Box<dyn std::error::Error>> {
+    let manifest_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../contracts/sdk/parity-manifest.json");
+    let manifest: echo_sdk_protocol::inventory::ParityManifest =
+        serde_json::from_slice(&std::fs::read(manifest_path)?)?;
+    let mut cases = Vec::new();
+    for (identity, code, message) in [
+        (
+            "echo_core::tools::ToolResult::with_effect",
+            ExtensionErrorCode::InvalidValue,
+            "not a canonical route of this contract",
+        ),
+        (
+            "echo_state::audit::DiagnosticDeliveryObserver",
+            ExtensionErrorCode::FrameworkError,
+            "source operation is canonical but has no Host authority adapter",
+        ),
+    ] {
+        let entry = manifest
+            .entries
+            .iter()
+            .find(|entry| entry.canonical && entry.source_paths.contains(identity))
+            .ok_or("deferred fixture missing")?;
+        assert_eq!(
+            entry.sdk_scope,
+            echo_sdk_protocol::inventory::SdkScope::Deferred
+        );
+        let signature = entry
+            .signatures
+            .first()
+            .ok_or("deferred signature missing")?
+            .digest
+            .clone();
+        cases.push((identity.to_string(), signature, code, message.to_string()));
+    }
+    let (endpoint, _request_seen) = start_model_server("unused").await?;
+    let work = tempfile::tempdir()?;
+    let state_root = tempfile::tempdir()?;
+    let config = write_config(work.path(), &endpoint, state_root.path(), None)?;
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    drive(&mut host, events, updates, gaps, move |connection| {
+        let cases = cases.clone();
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            for (operation, signature, expected_code, message) in cases {
+                let response = connection.send_request(UntypedMessage::new(
+                    "_echo_agent/facade/invoke",
+                    serde_json::json!({"operation": operation, "signature_digest": signature, "arguments": []}),
+                )?).block_task().await;
+                let error = match response {
+                    Err(error) => error,
+                    Ok(_) => return Err(agent_client_protocol::Error::internal_error().data("deferred Rust inventory returned a success/default")),
+                };
+                let typed = typed_facade_error(&error).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                assert_eq!(typed.code, expected_code, "deferred operation: {operation}");
+                assert!(typed.message.contains(&message), "deferred operation {operation}: {}", typed.message);
+            }
+            Ok(())
+        })
+    }).await?;
+    let _ = host.child.kill().await;
     Ok(())
 }

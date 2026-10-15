@@ -69,7 +69,11 @@ test("ToolResult constructors and immutable modifiers match Rust semantics", () 
 
 test("language-local tool value routes have completed TypeScript mappings", () => {
   const manifest = JSON.parse(readFileSync(new URL("../../../contracts/sdk/parity-manifest.json", import.meta.url), "utf8"));
-  const entries = manifest.entries.filter((entry) => entry.canonical && entry.route.route === "intrinsic:language-local-wire-helper");
+  const entries = manifest.entries.filter((entry) => entry.canonical && entry.sdk_scope === "external_contract" && entry.route.route === "intrinsic:language-local-wire-helper");
   assert.equal(entries.length, 28);
   for (const entry of entries) assert.equal(entry.languages.typescript.status, "done", entry.path);
+  const unreviewed = manifest.entries.find((entry) => entry.canonical && entry.source_paths.includes("echo_core::tools::ToolResult::with_effect"));
+  assert.ok(unreviewed, "deferred Rust helper remains visible as telemetry");
+  assert.equal(unreviewed.sdk_scope, "deferred");
+  assert.ok(!entries.includes(unreviewed), "Rust discovery must not add a TypeScript obligation");
 });

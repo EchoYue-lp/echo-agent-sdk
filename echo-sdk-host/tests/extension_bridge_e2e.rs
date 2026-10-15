@@ -3225,32 +3225,63 @@ async fn cancelled_factory_stream_closes_and_releases_instance()
                 None,
             )
             .await;
+            let is_quota_pending = |error: &RpcError| {
+                EchoSdkError::from_jsonrpc_data(error.data.as_ref()).is_ok_and(|typed| {
+                    typed.code == ExtensionErrorCode::PayloadTooLarge
+                        && typed.retryable == Retryability::AfterDelay
+                        && typed.operation.as_deref() == Some("_echo_agent/extension/register")
+                        && typed.message == "registered extension limit 2 reached"
+                })
+            };
+            let error = rejected.err().ok_or_else(|| {
+                RpcError::internal_error()
+                    .data("unacknowledged remote cleanup released its owned quota")
+            })?;
             assert!(
-                rejected.is_err(),
-                "unacknowledged remote cleanup must retain its owned quota"
+                is_quota_pending(&error),
+                "expected exact held-child quota rejection: {error:?}"
             );
             hang.lock()
                 .unwrap_or_else(|error| error.into_inner())
                 .retain(|operation| *operation != "agent_close");
-            tokio::time::timeout(Duration::from_secs(10), async {
+            // The SDK callback marker precedes the actual close response.
+            // Observe the Host's quota state under the same original 10s budget.
+            // register_extension_owned rejects this exact limit before publishing
+            // a handle, so only that typed, side-effect-free condition may retry.
+            let mut last_quota_error = None;
+            let probe = tokio::time::timeout(Duration::from_secs(10), async {
                 while closed
                     .lock()
                     .unwrap_or_else(|error| error.into_inner())
                     .is_empty()
                 {
-                    tokio::time::sleep(Duration::from_millis(10)).await;
+                    tokio::task::yield_now().await;
+                }
+                loop {
+                    match register_extension(
+                        &connection,
+                        ExtensionKind::Tool,
+                        "cleanup-probe",
+                        tool_descriptor("cleanup_probe"),
+                        None,
+                    )
+                    .await
+                    {
+                        Ok(probe) => return Ok(probe),
+                        Err(error) if is_quota_pending(&error) => {
+                            last_quota_error = Some(error.to_string());
+                            tokio::task::yield_now().await;
+                        }
+                        Err(error) => return Err(error),
+                    }
                 }
             })
             .await
-            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
-            let probe = register_extension(
-                &connection,
-                ExtensionKind::Tool,
-                "cleanup-probe",
-                tool_descriptor("cleanup_probe"),
-                None,
-            )
-            .await?;
+            .map_err(|error| {
+                RpcError::internal_error().data(format!(
+                    "original child quota did not settle: {error}; last={last_quota_error:?}"
+                ))
+            })??;
             assert!(unregister(&connection, &probe).await?);
             Ok(())
         })

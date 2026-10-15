@@ -10217,7 +10217,7 @@ mod tests {
         ));
         state.bind_services(services);
         let limits = super::super::handles::ExtensionRegistrationLimits {
-            max_extensions: 4,
+            max_extensions: 2,
             max_descriptor_bytes: 65_536,
         };
         let (factory, _) = state
@@ -10237,7 +10237,7 @@ mod tests {
             .handles
             .reserve_factory_instance(
                 super::super::handles::ExtensionRegistrationLimits {
-                    max_extensions: 4,
+                    max_extensions: 2,
                     max_descriptor_bytes: 65_536,
                 },
                 &factory,
@@ -10253,6 +10253,10 @@ mod tests {
             construction_submitted: AtomicBool::new(true),
         });
         let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let close_waiting = CancellationToken::new();
+        let release_ack = CancellationToken::new();
+        let sdk_close_waiting = close_waiting.clone();
+        let sdk_release_ack = release_ack.clone();
         let finish = CancellationToken::new();
         let sdk_finish = finish.clone();
         let (host_io, sdk_io) = tokio::io::duplex(16_384);
@@ -10275,6 +10279,10 @@ mod tests {
                             ExtensionInvocation::AgentClose(_)
                         ));
                         let attempt = calls.fetch_add(1, Ordering::AcqRel);
+                        if attempt > 0 {
+                            sdk_close_waiting.cancel();
+                            sdk_release_ack.cancelled().await;
+                        }
                         responder.respond(if attempt == 0 {
                             ExtensionInvokeOutcome::Error {
                                 error: sdk_error(
@@ -10306,7 +10314,23 @@ mod tests {
                 assert!(owner.close().await.is_err());
                 assert!(state.handles.extension_for_cleanup(&child).is_ok());
                 assert!(state.handles.close_extension(&factory).is_err(), "failed cleanup must retain the same child and parent ownership");
-                let (first, second) = tokio::join!(owner.close(), owner.close());
+                let quota_probe = || state.handles.register_extension(
+                    limits, ExtensionKind::AgentFactory, "quota-probe",
+                    ExtensionDescriptor::AgentFactory { descriptor_version: 1 }, None, false,
+                );
+                let hold_original_ack = async {
+                    close_waiting.cancelled().await;
+                    assert!(!state.handles.is_closed(&child));
+                    let authority = state.services().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                    assert_eq!(authority.extensions().in_flight(), 1, "original close lease must remain live while its answer is held");
+                    let rejected = quota_probe().err().ok_or_else(|| RpcError::internal_error().data("held original close released quota"))?;
+                    assert_eq!(rejected.code, ExtensionErrorCode::PayloadTooLarge);
+                    assert_eq!(rejected.message, "registered extension limit 2 reached");
+                    release_ack.cancel();
+                    Ok::<(), RpcError>(())
+                };
+                let (first, second, held) = tokio::join!(owner.close(), owner.close(), hold_original_ack);
+                held?;
                 let passed = first.is_ok() && second.is_ok();
                 let physical_calls = calls.load(Ordering::Acquire);
                 // End the official peer regardless of assertion outcome, so a
@@ -10317,6 +10341,9 @@ mod tests {
                 assert!(owner.close().await.is_ok());
                 assert_eq!(calls.load(Ordering::Acquire), 2);
                 assert!(state.handles.is_closed(&child));
+                assert_eq!(state.services().map_err(|error| RpcError::internal_error().data(error.to_string()))?.extensions().in_flight(), 0);
+                let (probe, _) = quota_probe().map_err(|error| RpcError::internal_error().data(error.message))?;
+                assert!(state.handles.close_extension(&probe).map_err(|error| RpcError::internal_error().data(error.message))?);
                 assert!(state.handles.close_extension(&factory).map_err(|error| RpcError::internal_error().data(error.message))?);
                 Ok(())
             });

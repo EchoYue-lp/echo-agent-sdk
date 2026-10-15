@@ -3501,6 +3501,16 @@ pub fn canonical_source_identity(entry: &InventoryEntry) -> String {
 /// import/metadata APIs and Rust-owned Team controllers do not become remote
 /// operations merely because rustdoc discovers a public identity.
 pub fn governance_source_disposition(identity: &str) -> Option<&'static str> {
+    // These getters consume native Task authority in the Host. Retiring the
+    // old public fields does not create a new cross-language getter API.
+    if matches!(
+        identity,
+        "echo_orchestration::tasks::runtime::TaskSubagentContext::run_id"
+            | "echo_orchestration::tasks::runtime::TaskSubagentContext::delegation_policy"
+            | "echo_orchestration::tasks::runtime::TaskSubagentContext::waived_dependency_ids"
+    ) {
+        return Some("process-local-task-subagent-context-getter");
+    }
     if identity
         == "echo_orchestration::tasks::revisioned::TaskRevisionService::supports_runtime_execution"
     {
@@ -3569,6 +3579,23 @@ pub fn resolve_route(
     semantic_rule: &'static str,
 ) -> CanonicalRoute {
     let identity = canonical_source_identity(entry);
+    // ADR 0034 migrates only the defining Rust source. Keep the accepted
+    // operations and their existing Host adapter stable across that move.
+    let security_operation = match identity.as_str() {
+        "echo_core::utils::retention::contains_secrets" => {
+            Some("echo_agent::security::contains_secrets")
+        }
+        "echo_core::utils::retention::redact_secrets" => {
+            Some("echo_agent::security::redact_secrets")
+        }
+        "echo_core::utils::retention::scan_secrets" => Some("echo_agent::security::scan_secrets"),
+        _ => None,
+    };
+    if let Some(operation) = security_operation {
+        return CanonicalRoute::SourceOperation {
+            operation: operation.to_string(),
+        };
+    }
     if let Some(reason) = governance_source_disposition(&identity) {
         return CanonicalRoute::Intrinsic { reason };
     }

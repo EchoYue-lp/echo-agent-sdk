@@ -4,7 +4,7 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: 7d0a32a0b049013e366d9a4ed78049c7364cbb98
+observed_at: source:fdf70c9adf8169160777341ed887438217afd02529dbe1f2a3e651f9ed19b90e
 boundary_refs:
 - boundary.sdk-product
 behavior_refs:
@@ -12,6 +12,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-accepted-source-continuity-gate
 - evidence.sdk-source-import
 - evidence.sdk-source-continuity
 - evidence.sdk-framework-pin
@@ -28,6 +29,7 @@ finding_refs:
 - finding.sdk-test-feature-wiring
 - finding.sdk-cargo-deny-bootstrap-toolchain-probe
 audit_refs:
+- audit.sdk-accepted-source-continuity-rereview
 - audit.sdk-wave2-cutover-final-rereview
 - audit.sdk-cargo-deny-bootstrap-closure
 related_map_refs: []
@@ -221,3 +223,16 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 ## dependencybootstrap具名后验关联
 
 原bootstrapFinding已在本Map；本次只把specificrepair/remoteverification Evidence与contract-lensAudit加入原owner引用。原新semanticjob定义场景仍只defined/notexecuted，工具22e的SDK4994原30dactual0与dependencyjob特定SUCCESS不同scope，不能互借成整CI或SDKmain全绿。原Map7d0观察/六旧scenes/所有状态与业务义务保。
+
+
+## 2026-10-15独立SDK兼容切片
+
+用户明确接受精确12项迁移/退役，正式ADR0034授权唯一generator完整28profiles。
+Security定义归core retention且旧alias/operation/shape不变；3getter保持原Host薄映射与
+Rust/Host-only；旧snapshot owner身份退出，主Skill/Task/Plan权威不变。完整update/check、
+Rust478及三语言TS343/PY427+18/J363/3QS具有同输入新Host证据，独立复审PASS0。
+只为本Finding挂接repair/verification/rereview；原Map场景状态及41族/八lens不自动提升。
+B及工具另已批准，上游工具c0bc已发布，SDKaction/归档continuity/main由父任务整合。
+
+本切片Finding经上述repair/verification/独审及公开22e原30d完整change gate实际0后
+本地resolved；原其余open义务及场景状态保留，后继只metadata变更再次精候选复验。

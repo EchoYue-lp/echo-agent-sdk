@@ -1,6 +1,8 @@
 # SDK 能力行为与证据矩阵
 
-## 当前有限验收（2026-10-15）
+当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md#当前有限验收2026-10-15)。12项源身份迁移已批准并由独立SDK切片执行；物理结算B及工具A/B已批准，由独立上游实施待交付。本页下列原阶段计数、未批准文字和失败事实仅保留历史切点，不表示当前仍等待同一裁决。
+
+## 前一验收切点（历史原文，2026-10-15）
 
 SDK Host 精确依赖已发布框架 `00782b8a`，八个框架包同一 Git 来源、没有 path patch；框架合并后七项 CI 已成功。SDK [14 条 Rust 门禁](evidence/sdk-00782-final-rust-gates/README.md)实际全0，workspace 主计数474，不累加重叠 feature profiles。[完整语言入口](evidence/sdk-language-00782-reviewed-final/README.md)实际退出0：TypeScript329、Python394加18子测试、Java351/75份XML及三个quickstart；793项执行输入前后相同，随后逐项保存为可恢复Git。预期负例的运行时WARN按原字节保留，编译告警为0。
 

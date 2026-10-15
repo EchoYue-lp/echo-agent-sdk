@@ -33,7 +33,7 @@ SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确�
 固定各自实际源码切点；后续运行时修复与幂等验收不得借用此前通过结果。
 完整合同、新适用 CI、当前源码语义和 SDK main 最终验收仍须分别结算。
 [十二项 accepted-source 连续性方案](docs/sdk/governance/accepted-source-continuity-proposal.md)
-仍为 proposed；完整合同生成和 SDK main 验收尚未完成，不能由 pin 已发布推断 release。
+已于2026-10-15由用户明确接受，精确授权位于ADR0034；完整合同生成与消费者验收由该独立切片实际执行，SDK main 验收仍独立，不能由 pin 已发布推断 release。
 精确源快照、provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
 
 - protocol 是纯 wire/schema crate；framework 类型转换只能位于 Host adapter；

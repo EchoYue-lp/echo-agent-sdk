@@ -10,11 +10,18 @@ accepted
 ## Implementation authority
 
 Implementation is authorized by the full-governance goal. The current Host
-build pin is published framework `a6346643bda47679a96760f56f45e41fd73b61b0`.
+build pin is published framework `00782b8aeddefe2ea8c566922cbdee6aedc80d70`.
 Runtime evidence remains bound to its actual source cut; full accepted-source
 continuity generation, remaining behavior closure and SDK main acceptance are
-pending. The twelve compatibility choices remain
-[proposed](../sdk/governance/accepted-source-continuity-proposal.md).
+pending. On 2026-10-15 the user explicitly accepted the twelve bounded compatibility
+choices in the [source continuity decision](../sdk/governance/accepted-source-continuity-proposal.md).
+The exact dispositions below authorize only this SDK slice. The user separately
+approved physical-settlement option B and third-repository tool repairs; their
+independent upstream writers own those changes. Physical-settlement B is still
+pending upstream delivery. Tool A/B subsequently reached published main c0bc306;
+SDK action/continuity integration remains the parent task's responsibility. This
+slice keeps the original 22e validator and does not implement B, merge main or
+clean historical archives.
 
 ## Context
 
@@ -23,7 +30,7 @@ At the 2026-10-12 opening snapshot, the independent SDK
 behavioral baselines, pinned framework `27c7701e1eb116db1076da7f84bb68898544a44c`,
 and initially targeted `95ec66c6083a8feb17a1c28de0d01e1a24ca8a28`.
 Those are historical starting facts. Framework repairs have since been delivered
-independently and the current exact pin is a634; build provenance does not
+independently and the current exact pin is 00782; build provenance does not
 itself close the SDK compatibility or behavioral audit.
 
 Source audits found missing replay ACK coverage, teardown ownership, exact Task
@@ -152,11 +159,9 @@ Host and language clients only preserve the resulting values or typed failure.
 The following six exact source dispositions were explicitly approved: accept
 the two TaskExecution fields and the three supporting DiagnosticCode identities,
 and retire CuratorState.save. Their Action/Kind/Source anchors remain valid under
-this accepted ADR. They do not approve the separate twelve-item continuity
-choices for Security, Context fields or Snapshot fields, or any neighboring
-public identity or full-inventory language API. Those twelve choices remain
-proposed and require their own explicit approval before complete generation
-and review of the resulting source/contract diff.
+this accepted ADR. They do not approve neighboring public identities or full-inventory language
+APIs. The separate twelve-item continuity choices were explicitly approved on
+2026-10-15 as recorded below; generation and consumer validation remain required.
 
 ### Accept Task result field
 
@@ -302,3 +307,206 @@ The CustomAgent adapter overrides the existing framework cancellation and invoca
 The CustomAgent stream contract already permits a setup Stream response before later stream notifications. Its retained callback owner therefore waits for both the original RPC response and a validated remote terminal, in either order. Cancellation sends the existing cooperative notice to that exact invocation. A local timeout or backpressure failure does not become evidence that the remote producer finished. A connection-owned collector retains the original callback lease and sink after caller drop until those facts or actual incoming connection closure, while the framework turn driver remains the only authority for terminal receipts, cancellation grace and workspace retention.
 
 This differs from the newly approved Channel forward callback, whose callback return without a terminal is explicitly an invalid stream flow. The two private adapter policies share transport ownership and the existing sink sequence ledger. They do not change Tool, LLM, factory scheduling, task scheduling or other common bridge callers, and do not add a wire operation or a second lifecycle authority. A language callback's declared terminal does not cover work the user detaches outside the callback/stream contract or cleanup deliberately performed after that declared terminal.
+
+
+## Accepted source continuity decision (2026-10-15)
+
+Human approval: the user explicitly accepted item 1, the exact seven Security
+source migrations and five field identity retirements. No new language API,
+framework state owner or getter acceptance is implied. Existing Curator,
+TaskExecution and DiagnosticCode dispositions above remain in force.
+
+### Continuity retire 1
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_agent::agent::snapshot::AgentRunSnapshot::skill_curator
+- Reason: old public field identity no longer represents the canonical framework authority
+- Compatibility: retire only the obsolete snapshot field identity; preserve the existing Skill or Task/Plan capability without a second authority
+- Replacement: SkillMutationAuthority and its ChangeLog; obsolete Curator-only owner unsupported
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity retire 2
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_agent::agent::snapshot::ToolRuntime::plan_state
+- Reason: old public field identity no longer represents the canonical framework authority
+- Compatibility: retire only the obsolete snapshot field identity; preserve the existing Skill or Task/Plan capability without a second authority
+- Replacement: revisioned TaskRun graph; Plan artifact and Todo projection; obsolete plan_state owner unsupported
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity retire 3
+
+- Action: retire
+- Kind: struct
+- Source: echo_agent::security::SecretMatch
+- Reason: canonical defining source moved to core retention; facade remains compatible
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Replacement: echo_core::utils::retention::SecretMatch
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity accept 3
+
+- Action: accept
+- Kind: struct
+- Source: echo_core::utils::retention::SecretMatch
+- Reason: one-to-one defining-source replacement of echo_agent::security::SecretMatch
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together
+
+### Continuity retire 4
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_agent::security::SecretMatch::matched
+- Reason: canonical defining source moved to core retention; facade remains compatible
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Replacement: echo_core::utils::retention::SecretMatch::matched
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity accept 4
+
+- Action: accept
+- Kind: struct_field
+- Source: echo_core::utils::retention::SecretMatch::matched
+- Reason: one-to-one defining-source replacement of echo_agent::security::SecretMatch::matched
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together
+
+### Continuity retire 5
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_agent::security::SecretMatch::position
+- Reason: canonical defining source moved to core retention; facade remains compatible
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Replacement: echo_core::utils::retention::SecretMatch::position
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity accept 5
+
+- Action: accept
+- Kind: struct_field
+- Source: echo_core::utils::retention::SecretMatch::position
+- Reason: one-to-one defining-source replacement of echo_agent::security::SecretMatch::position
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together
+
+### Continuity retire 6
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_agent::security::SecretMatch::secret_type
+- Reason: canonical defining source moved to core retention; facade remains compatible
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Replacement: echo_core::utils::retention::SecretMatch::secret_type
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity accept 6
+
+- Action: accept
+- Kind: struct_field
+- Source: echo_core::utils::retention::SecretMatch::secret_type
+- Reason: one-to-one defining-source replacement of echo_agent::security::SecretMatch::secret_type
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together
+
+### Continuity retire 7
+
+- Action: retire
+- Kind: function
+- Source: echo_agent::security::contains_secrets
+- Reason: canonical defining source moved to core retention; facade remains compatible
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Replacement: echo_core::utils::retention::contains_secrets
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity accept 7
+
+- Action: accept
+- Kind: function
+- Source: echo_core::utils::retention::contains_secrets
+- Reason: one-to-one defining-source replacement of echo_agent::security::contains_secrets
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together
+
+### Continuity retire 8
+
+- Action: retire
+- Kind: function
+- Source: echo_agent::security::redact_secrets
+- Reason: canonical defining source moved to core retention; facade remains compatible
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Replacement: echo_core::utils::retention::redact_secrets
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity accept 8
+
+- Action: accept
+- Kind: function
+- Source: echo_core::utils::retention::redact_secrets
+- Reason: one-to-one defining-source replacement of echo_agent::security::redact_secrets
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together
+
+### Continuity retire 9
+
+- Action: retire
+- Kind: function
+- Source: echo_agent::security::scan_secrets
+- Reason: canonical defining source moved to core retention; facade remains compatible
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Replacement: echo_core::utils::retention::scan_secrets
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity accept 9
+
+- Action: accept
+- Kind: function
+- Source: echo_core::utils::retention::scan_secrets
+- Reason: one-to-one defining-source replacement of echo_agent::security::scan_secrets
+- Compatibility: retain echo_agent::security reexports, existing operation names, value shape and errors
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together
+
+### Continuity retire 10
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_orchestration::tasks::runtime::TaskSubagentContext::delegation_policy
+- Reason: old public field identity no longer represents the canonical framework authority
+- Compatibility: retain native claim, waiver and delegation through the existing Host adapter; no direct field or getter language API
+- Replacement: existing TaskSubagentContext read-only getter and Host mapping (Rust/Host-only)
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity retire 11
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_orchestration::tasks::runtime::TaskSubagentContext::run_id
+- Reason: old public field identity no longer represents the canonical framework authority
+- Compatibility: retain native claim, waiver and delegation through the existing Host adapter; no direct field or getter language API
+- Replacement: existing TaskSubagentContext read-only getter and Host mapping (Rust/Host-only)
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+### Continuity retire 12
+
+- Action: retire
+- Kind: struct_field
+- Source: echo_orchestration::tasks::runtime::TaskSubagentContext::waived_dependency_ids
+- Reason: old public field identity no longer represents the canonical framework authority
+- Compatibility: retain native claim, waiver and delegation through the existing Host adapter; no direct field or getter language API
+- Replacement: existing TaskSubagentContext read-only getter and Host mapping (Rust/Host-only)
+- Rollback: restore the pre-slice accepted seed, generated contracts and matching framework pin together; never revert a single identity in isolation
+
+
+### Continuity rollback boundary
+
+The recoverable task undo point is SDK `a48854a792d146c823e89fcfa2237f2559290c15`.
+Restoring this slice's complete source/accepted seed/generated files returns to
+that intentionally blocked pre-migration candidate; it does not make its old
+source-continuity gate pass. A runnable compatibility rollback must also restore
+the matching framework revision and complete catalog/digest consumers as one
+reviewed snapshot. Never restore only an individual retired field/seed key,
+reintroduce obsolete runtime owners, or claim a pre-migration blocked candidate
+is a verified release. No rollback, pin downgrade or merge is executed here.

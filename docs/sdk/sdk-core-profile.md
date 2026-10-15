@@ -241,3 +241,22 @@ profile: they add the task/subagent/structured-output families and the
 feature-family operation surfaces on top of the core handles and
 events. Core profile semantics — handle ladders, ACK-gated delivery,
 replay and recovery — stay identical with or without them.
+
+
+### Accepted Security source continuity
+
+The accepted Security defining sources are `echo_core::utils::retention::{SecretMatch,
+contains_secrets, redact_secrets, scan_secrets}`. The `echo_agent::security` Rust
+reexports and the existing three `echo_agent::security::*` wire operation names
+remain supported with the same result shape and error contract. Source signature
+digests are generated for the current framework; consumers use the matching
+catalog and Host build. See [ADR 0034](../adr/0034-sdk-governance-authority-and-lossless-adaptation.md#accepted-source-continuity-decision-2026-10-15).
+
+The former public `TaskSubagentContext` fields `run_id`, `delegation_policy` and
+`waived_dependency_ids` are retired accepted identities. Their native behavior
+continues through existing read-only Rust/Host getters and the Task adapter;
+this does not expose those getters as language APIs. The obsolete snapshot owner
+fields `AgentRunSnapshot.skill_curator` and `ToolRuntime.plan_state` are retired;
+Skill mutation authority and the revisioned TaskRun graph remain the respective
+single owners. Existing Skill, Task and Plan capabilities continue through their
+current routes.

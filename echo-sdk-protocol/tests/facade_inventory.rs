@@ -403,7 +403,9 @@ fn local_tool_value_intrinsics_have_language_behavior_evidence() -> TestResult {
         .entries
         .iter()
         .filter(|entry| {
-            entry.canonical && entry.route.route == "intrinsic:language-local-wire-helper"
+            entry.canonical
+                && entry.sdk_scope == SdkScope::ExternalContract
+                && entry.route.route == "intrinsic:language-local-wire-helper"
         })
         .collect();
     assert_eq!(entries.len(), 28, "local tool-value intrinsic set drifted");
@@ -2495,7 +2497,13 @@ fn extension_obligations_form_a_closed_bridge_set() -> TestResult {
 #[test]
 fn canonical_consumer_traits_and_streams_have_executable_routes() -> TestResult {
     let manifest = manifest()?;
-    for entry in manifest.entries.iter().filter(|entry| entry.canonical) {
+    // A newly discovered deferred Rust trait is telemetry, not an accepted
+    // reverse bridge or a language API. Keep checking all supported routes.
+    for entry in manifest
+        .entries
+        .iter()
+        .filter(|entry| entry.canonical && entry.sdk_scope != SdkScope::Deferred)
+    {
         if entry.classification == SemanticClass::Extension {
             assert!(
                 matches!(entry.route.surface.as_str(), "bridge" | "intrinsic"),
@@ -2819,8 +2827,18 @@ fn acceptance_scope_disappearing_accepted_identity_fails_atomically_without_expl
 #[test]
 fn acceptance_scope_new_task_result_field_requires_exact_accepted_delta_without_accepting_its_siblings()
 -> TestResult {
-    let seed = accepted_seed()?;
+    let mut seed = accepted_seed()?;
     let mut current = manifest()?;
+    // Build the pre-acceptance fixture explicitly: the real current seed now
+    // includes result, so re-accepting it must correctly fail as a duplicate.
+    let result_key = (
+        "echo_orchestration::tasks::runtime::TaskExecution::result".to_string(),
+        echo_sdk_protocol::inventory::ItemKind::StructField,
+    );
+    seed.entries.retain(|entry| source_key(entry) != result_key);
+    current
+        .entries
+        .retain(|entry| source_key(entry) != result_key);
     let field = seed
         .entries
         .iter()
@@ -3022,5 +3040,123 @@ fn acceptance_scope_reports_all_missing_sources_before_mutation_and_excludes_ret
         &BTreeSet::new(),
         &keys.into_iter().collect(),
     )?;
+    Ok(())
+}
+
+#[test]
+fn security_defining_source_migration_preserves_existing_operations() -> TestResult {
+    use echo_sdk_protocol::facade::{CanonicalRoute, resolve_route};
+    let inventory = manifest()?;
+    for name in ["contains_secrets", "redact_secrets", "scan_secrets"] {
+        let old = format!("echo_agent::security::{name}");
+        let new = format!("echo_core::utils::retention::{name}");
+        let original = inventory
+            .entries
+            .iter()
+            .find(|entry| entry.path == old || entry.path == new)
+            .ok_or_else(|| format!("missing Security operation {name}"))?;
+        let entry = echo_sdk_protocol::inventory::InventoryEntry {
+            path: new.clone(),
+            kind: original.kind,
+            source_paths: BTreeSet::from([new]),
+            signatures: BTreeMap::new(),
+            profiles: BTreeSet::new(),
+            declared_feature_requirements: BTreeSet::new(),
+            automatically_derived: false,
+        };
+        let route = resolve_route(
+            &entry,
+            original.classification,
+            original.acp_relationship,
+            "callable-operation",
+        );
+        assert_eq!(route, CanonicalRoute::SourceOperation { operation: old });
+    }
+    Ok(())
+}
+
+#[test]
+fn task_context_getters_remain_native_without_language_acceptance() -> TestResult {
+    use echo_sdk_protocol::inventory::ItemKind;
+    let accepted: AcceptedExternalContract =
+        serde_json::from_str(&read("contracts/sdk/accepted-external-contract.json")?)?;
+    let inventory = manifest()?;
+    for name in ["run_id", "delegation_policy", "waived_dependency_ids"] {
+        let identity = format!("echo_orchestration::tasks::runtime::TaskSubagentContext::{name}");
+        assert!(
+            !accepted
+                .entries
+                .iter()
+                .any(|entry| entry.source_paths.contains(&identity))
+        );
+        let entries: Vec<_> = inventory
+            .entries
+            .iter()
+            .filter(|entry| entry.source_paths.contains(&identity))
+            .collect();
+        assert!(!entries.is_empty(), "native getter missing: {identity}");
+        for entry in entries {
+            assert_eq!(entry.kind, ItemKind::Method);
+            assert_eq!(
+                entry.sdk_scope,
+                SdkScope::HostOrRustOnly,
+                "getter scope: {}",
+                entry.path
+            );
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn new_deferred_rust_items_do_not_create_compatibility_obligations() -> TestResult {
+    let original = manifest()?;
+    let expected = compatibility_document(&original);
+    let deferred = [
+        "echo_core::tools::ToolResult::with_effect",
+        "echo_state::audit::DiagnosticDeliveryObserver",
+    ];
+    let accepted: AcceptedExternalContract =
+        serde_json::from_str(&read("contracts/sdk/accepted-external-contract.json")?)?;
+    let catalog: serde_json::Value = serde_json::from_str(&read(
+        "contracts/sdk/accepted-facade-operation-catalog.json",
+    )?)?;
+    let routes = catalog
+        .get("routes")
+        .and_then(serde_json::Value::as_array)
+        .ok_or("accepted routes missing")?;
+    for identity in deferred {
+        let entry = original
+            .entries
+            .iter()
+            .find(|entry| entry.canonical && entry.source_paths.contains(identity))
+            .ok_or("deferred fixture missing")?;
+        assert_eq!(
+            entry.sdk_scope,
+            SdkScope::Deferred,
+            "unreviewed source must stay deferred: {identity}"
+        );
+        assert!(
+            !accepted
+                .entries
+                .iter()
+                .any(|entry| entry.source_paths.contains(identity))
+        );
+        assert!(!routes.iter().any(|route| {
+            route.get("operation").and_then(serde_json::Value::as_str) == Some(identity)
+        }));
+    }
+    let mut without = original.clone();
+    without.entries.retain(|entry| {
+        !deferred
+            .iter()
+            .any(|identity| entry.source_paths.contains(*identity))
+    });
+    assert_ne!(without, original);
+    assert_eq!(
+        compatibility_document(&without),
+        expected,
+        "deferred discovery must not change the blocking contract"
+    );
     Ok(())
 }

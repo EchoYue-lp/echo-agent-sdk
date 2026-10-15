@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "extension_protocol_version": 1,
-  "total_items": 455,
+  "total_items": 454,
   "routes": [
     {
       "family": "bridge",
@@ -566,7 +566,7 @@
       "handler_operation": "lsp.manager.load_config",
       "route": "family-operation:lsp:lsp.manager.load_config:echo_integration::lsp::manager::LspManager::load_config",
       "signature_digests": [
-        "sha256:418c6087caaf65a86b19f5c3bb7a0012f184221a35dd91323c2120fdc421e7c2"
+        "sha256:552060cb9d4d63b0fcf9a3b641004dfa43c9241bd996eaf5a39e1ceccf92a089"
       ],
       "operation_signatures": [],
       "required_feature": "lsp",
@@ -726,7 +726,7 @@
       "handler_operation": "echo_agent::mcp::McpClient::close",
       "route": "family-operation:mcp:echo_agent::mcp::McpClient::close:echo_integration::mcp::client::McpClient::close",
       "signature_digests": [
-        "sha256:17fb7a139653a8fb3ff334c6f3254eefe80c3fe9964d1e5aa6279b5a33788541"
+        "sha256:b4a5dc9a8dbccd05724a2566f98690bfb5c5506eb917306d335e9384b99e205e"
       ],
       "operation_signatures": [],
       "required_feature": "mcp",
@@ -950,7 +950,7 @@
       "handler_operation": "mcp.client.open_exact",
       "route": "family-operation:mcp:mcp.client.open_exact:echo_integration::mcp::client::McpClient::new",
       "signature_digests": [
-        "sha256:1298f7f81d31ae0d8fe1e5fb6db61643fff6a481329e82ade38a4a1967e20368"
+        "sha256:768e4950dc9bb299cc4ad569890cf83769b1155a0d3de8e670a62280d6aeb6fd"
       ],
       "operation_signatures": [],
       "required_feature": "mcp",
@@ -966,7 +966,7 @@
       "handler_operation": "mcp.manager.close_all",
       "route": "family-operation:mcp:mcp.manager.close_all:echo_integration::mcp::McpManager::close_all",
       "signature_digests": [
-        "sha256:17fb7a139653a8fb3ff334c6f3254eefe80c3fe9964d1e5aa6279b5a33788541"
+        "sha256:56918af13a24001c3ede4b3a30b20a022915ec1c2c97c631e6ace93b1e265b5d"
       ],
       "operation_signatures": [],
       "required_feature": "mcp",
@@ -1126,7 +1126,7 @@
       "handler_operation": "mcp.server.disconnect",
       "route": "family-operation:mcp:mcp.server.disconnect:echo_integration::mcp::McpManager::disconnect",
       "signature_digests": [
-        "sha256:847660c2d50fc9cf0170407cd0597b1d8eb91745ae7f0792b5779a23af18e8e5"
+        "sha256:8241dd81a340412412578e4416fa9398b264e49dad771964a9a0da9b576e114f"
       ],
       "operation_signatures": [],
       "required_feature": "mcp",
@@ -9797,7 +9797,7 @@
       "handler_operation": null,
       "route": "source:echo_agent::agent::react::ReactAgent::disconnect_mcp",
       "signature_digests": [
-        "sha256:847660c2d50fc9cf0170407cd0597b1d8eb91745ae7f0792b5779a23af18e8e5"
+        "sha256:8241dd81a340412412578e4416fa9398b264e49dad771964a9a0da9b576e114f"
       ],
       "operation_signatures": [],
       "required_feature": null,
@@ -10043,7 +10043,7 @@
       "handler_operation": null,
       "route": "source:echo_agent::agent::react::ReactAgent::load_messages",
       "signature_digests": [
-        "sha256:cd9e8446272fe1f43639fa1e061a24312e00f41243d45d3bad35d31227f7d29a"
+        "sha256:f0669e8f583c5a96acaa089cfd1f9d373f3db6d8f7bcbbd83510b31ca6693160"
       ],
       "operation_signatures": [],
       "required_feature": null,
@@ -10565,7 +10565,7 @@
       "handler_operation": null,
       "route": "source:echo_agent::agent::react::ReactAgent::shutdown",
       "signature_digests": [
-        "sha256:17fb7a139653a8fb3ff334c6f3254eefe80c3fe9964d1e5aa6279b5a33788541"
+        "sha256:b4a5dc9a8dbccd05724a2566f98690bfb5c5506eb917306d335e9384b99e205e"
       ],
       "operation_signatures": [],
       "required_feature": null,
@@ -10971,20 +10971,6 @@
         "improve"
       ],
       "feature_semantics": "any_of"
-    },
-    {
-      "family": "source_operation",
-      "method": "_echo_agent/facade/invoke",
-      "operation": "echo_agent::evolution::curator::CuratorState::save",
-      "handler_operation": null,
-      "route": "source:echo_agent::evolution::curator::CuratorState::save",
-      "signature_digests": [
-        "sha256:9c2e52961b078bc4802e16b8b8af0c03c2106f3fcc1cf45658a6cc1d2ec1868b"
-      ],
-      "operation_signatures": [],
-      "required_feature": null,
-      "required_features": [],
-      "feature_semantics": "default"
     },
     {
       "family": "source_operation",
@@ -13079,7 +13065,7 @@
       "handler_operation": null,
       "route": "source:echo_integration::mcp::client::McpClient::from_transport",
       "signature_digests": [
-        "sha256:d9e35955e253397afc61e0ccb7c471fd83e01fd09a63be28c5df69914c5cf1d6"
+        "sha256:eed76cc0160e06d7b9dcca4f24d2092d7c49971c69f7d24ee7382cc8b9450a69"
       ],
       "operation_signatures": [],
       "required_feature": null,
@@ -13477,7 +13463,7 @@
       "handler_operation": null,
       "route": "value:channels",
       "signature_digests": [
-        "sha256:5b6357bfe06872c419458d10595fdfd3cd63b99351ecee04d228d990a703d02e"
+        "sha256:663bff8c5efb04915b7670f724966d73226af541ef75f73dfc90a5a40f4a24e8"
       ],
       "operation_signatures": [],
       "required_feature": "channels",
