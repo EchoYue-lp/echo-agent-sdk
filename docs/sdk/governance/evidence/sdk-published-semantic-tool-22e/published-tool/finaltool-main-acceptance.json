@@ -1,0 +1,209 @@
+{
+  "observedAt": "2026-10-15T02:31:07.511763+00:00",
+  "scope": "Echo Semantic delivered-main acceptance and task-worktree detachment only; no SDK goal completion claim",
+  "tool": {
+    "pullRequest": {
+      "headRefOid": "45a50fca63133ff371c79e55c1de06e8b966574d",
+      "mergeCommit": {
+        "oid": "22e241f723673330e9d6bec638def0f78968c74c"
+      },
+      "mergedAt": "2026-10-15T02:22:39Z",
+      "state": "MERGED",
+      "url": "https://github.com/EchoYue-lp/echo-semantic/pull/3"
+    },
+    "publishedMain": "22e241f723673330e9d6bec638def0f78968c74c",
+    "tree": "47d63f99b54b1b13b286b1bbdd8d7e3fa0ecd5b9",
+    "reviewedCandidateRetained": "45a50fca63133ff371c79e55c1de06e8b966574d",
+    "reviewedCandidateTreeEqual": true,
+    "taskWorktree": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-semantic-worktrees/lossless-diff-decoding",
+    "taskWorktreeDetached": true,
+    "taskWorktreeClean": true,
+    "originMain": "22e241f723673330e9d6bec638def0f78968c74c",
+    "canonicalVerifierSHA256": "393f55f92126b2cc817271bcdd46017d78108be54a82a874ba143545be193da0",
+    "packageVersion": "0.3.0",
+    "mainCI": {
+      "conclusion": "success",
+      "headSha": "22e241f723673330e9d6bec638def0f78968c74c",
+      "jobs": [
+        {
+          "completedAt": "2026-10-15T02:23:15Z",
+          "conclusion": "success",
+          "databaseId": 116212754106,
+          "name": "verify",
+          "startedAt": "2026-10-15T02:22:43Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-10-15T02:22:45Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-10-15T02:22:44Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:22:46Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@v6",
+              "number": 2,
+              "startedAt": "2026-10-15T02:22:45Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:22:50Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-node@v6",
+              "number": 3,
+              "startedAt": "2026-10-15T02:22:46Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:22:51Z",
+              "conclusion": "success",
+              "name": "Run astral-sh/setup-uv@v7",
+              "number": 4,
+              "startedAt": "2026-10-15T02:22:50Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:23:12Z",
+              "conclusion": "success",
+              "name": "执行插件合同和单元测试",
+              "number": 5,
+              "startedAt": "2026-10-15T02:22:51Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:23:13Z",
+              "conclusion": "success",
+              "name": "执行语义基线门禁",
+              "number": 6,
+              "startedAt": "2026-10-15T02:23:12Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:23:13Z",
+              "conclusion": "success",
+              "name": "Post Run astral-sh/setup-uv@v7",
+              "number": 10,
+              "startedAt": "2026-10-15T02:23:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:23:13Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-node@v6",
+              "number": 11,
+              "startedAt": "2026-10-15T02:23:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:23:14Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v6",
+              "number": 12,
+              "startedAt": "2026-10-15T02:23:13Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-10-15T02:23:14Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "startedAt": "2026-10-15T02:23:14Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/EchoYue-lp/echo-semantic/actions/runs/38670657105/job/116212754106"
+        }
+      ],
+      "status": "completed"
+    },
+    "mainCIRaw": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/echo-semantic-lossless-diff-delivery/main-ci.log",
+      "bytes": 40905,
+      "sha256": "788ea832fc7e74067d82abebee054af4b9be6fe398a21cac54aa52fe57fea556"
+    },
+    "mainCIReceipt": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/echo-semantic-lossless-diff-delivery/main-ci-receipt.json",
+      "bytes": 279,
+      "sha256": "e1aedf735992606a23d70f7ea3a7960f0b936480494f8bd7ca94805f0b75a197"
+    },
+    "actualWarningAnnotations": [],
+    "actualErrorAnnotations": []
+  },
+  "originalPrimaryProtection": {
+    "root": "/Users/ls/MyWork/code/ylp_agent_learn/echo-semantic",
+    "head": "8ecb51f9119a96ac9fa09ffc500f1a3dea299fdb",
+    "headUnchanged": true,
+    "protectedRecords": 92,
+    "byteModePresenceSymlinkDifferences": [],
+    "rawStatusSHA256": "938cc2344555c8fc1ab2108d8f4333d550b4a453623d18ff8853abb36d1201e7",
+    "statusUnchanged": true,
+    "originalManifest": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/echo-semantic-lossless-diff-delivery/original-tool-protected-files-before.json",
+      "bytes": 22610,
+      "sha256": "34aff6551e76ac7fbd851a8ef54bfa4139b97d2feeeb3c7d8754e7469d6ff377"
+    },
+    "notCheckedOutPulledOrReset": true
+  },
+  "separateSDKQualification": {
+    "root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-published-tool-22e-qualification",
+    "after": {
+      "toolPublishedRevision": "22e241f723673330e9d6bec638def0f78968c74c",
+      "sdkHead": "4994a8cd49979ab8793f006d89fd955f2f0119f9",
+      "sdkTree": "800044d46d8c188e11d0c9da22e1f16bd05f53d1",
+      "statusClean": true,
+      "preflightAbsent": true,
+      "sourceDigest": "eda628ea830d7ef798210f11831ba4545dba3998c24086e653b454cf8939a0ad",
+      "sourceDigestBeforeAfterEqual": true,
+      "originalTool92Preservation": "original-tool-preservation.json",
+      "exitCode": 0,
+      "signal": null,
+      "untruncated": true,
+      "rawLogBytes": 174,
+      "rawLogSHA256": "d12f742972cdbea79b7494989c35612d93a42a008d28f9954e34db7948169a1b",
+      "wholeGoalSemanticQualification": true,
+      "scopeQualification": "official published tool canonical verifier on exact local Git SDK4994 clean artifact and true baseline30d; does not replace Cargo/language/contract/remoteCI/main acceptance"
+    },
+    "actualRunReceipt": {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-published-tool-22e-qualification/run.json",
+      "bytes": 1184,
+      "sha256": "04657d4f64ef385deb69648b59803667a98e4d8508d13f1b463da8d7259ad7c7"
+    },
+    "base": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+    "cloneKind": "local --shared object-alternates qualification, not fresh remote clone",
+    "independentReview": "FrameworkFinal PASS C0/I0/M0/action0 reported 2026-10-15; does not imply installed0.5 equivalence or SDK main/contract acceptance"
+  },
+  "excludedActions": {
+    "registryPublish": false,
+    "guiHookReload": false,
+    "originalPrimaryMutation": false,
+    "taskBranchDeletion": false,
+    "worktreeArchive": false,
+    "newBuildOrTestRun": false,
+    "sdkSourceOrSemanticWrite": false
+  },
+  "evidenceFiles": [
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/echo-semantic-lossless-diff-delivery/merged-pr.json",
+      "bytes": 233,
+      "sha256": "d7045a438effb642ab6c3d4a4f43b535d56b9df36cf98bcb659f47fd2c06fd9a"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/echo-semantic-lossless-diff-delivery/merged-tree-verification.json",
+      "bytes": 467,
+      "sha256": "fad46ac9e61d530e8c8d6cd1efe562f651c1adbf1b4d7bc2ffc1721d8da132bd"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/echo-semantic-lossless-diff-delivery/main-ci.json",
+      "bytes": 2006,
+      "sha256": "32b431774f6a2a81ed7c8d497b5b7302f2826cb7cb465e64302e0fcb89aff45f"
+    },
+    {
+      "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/echo-semantic-lossless-diff-delivery/main-ci-receipt.json",
+      "bytes": 279,
+      "sha256": "e1aedf735992606a23d70f7ea3a7960f0b936480494f8bd7ca94805f0b75a197"
+    }
+  ]
+}

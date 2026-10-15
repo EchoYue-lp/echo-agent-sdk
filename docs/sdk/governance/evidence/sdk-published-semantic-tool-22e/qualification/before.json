@@ -1,0 +1,15 @@
+{
+  "toolRevision": "22e241f723673330e9d6bec638def0f78968c74c",
+  "toolTree": "47d63f99b54b1b13b286b1bbdd8d7e3fa0ecd5b9",
+  "toolBlobsVerified": 119,
+  "toolArchiveSHA256": "c604350dcea9e1d389634e8bdb1aeda08cf62488d1bf0023bf0d8f570500ea11",
+  "canonicalSHA256": "393f55f92126b2cc817271bcdd46017d78108be54a82a874ba143545be193da0",
+  "sdkHead": "4994a8cd49979ab8793f006d89fd955f2f0119f9",
+  "sdkTree": "800044d46d8c188e11d0c9da22e1f16bd05f53d1",
+  "sourceDigest": "eda628ea830d7ef798210f11831ba4545dba3998c24086e653b454cf8939a0ad",
+  "trackedFiles": 5438,
+  "clean": true,
+  "preflightAbsent": true,
+  "alternates": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.git/objects",
+  "qualification": "local shared-object clone, not fresh remote fetch; only exact published tool archive used"
+}

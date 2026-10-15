@@ -1,0 +1,20 @@
+{
+  "sdkQualificationHead": "eebd9f952649cca20d20eabab7f88ecdbaea5813",
+  "sdkQualificationTree": "1abb70a3863f08f4e00eaca8ff07bf4927574e2d",
+  "sdkCloneCleanAfter": true,
+  "preflightAbsentAfter": true,
+  "trackedFileCount": 4824,
+  "allCheckoutBytesMatchCommitBlobs": true,
+  "nonSemanticSourceDigest": "473fb206df1cb4ee900ca23e54c955e7956c1e6363079d22d78acd35d4a3e334",
+  "baselineDigest": "473fb206df1cb4ee900ca23e54c955e7956c1e6363079d22d78acd35d4a3e334",
+  "sourceDigestMatchesBaseline": true,
+  "sourceSDKHeadBefore": "eebd9f952649cca20d20eabab7f88ecdbaea5813",
+  "sourceSDKHeadAfter": "eebd9f952649cca20d20eabab7f88ecdbaea5813",
+  "sourceSDKStatusUnchangedDuringConcurrentOwnerWork": false,
+  "sourceToolStatusUnchanged": true,
+  "alternates": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.git/objects",
+  "qualifiedToolVersion": "0.3.0",
+  "toolExit": 1,
+  "qualificationRepeated": false,
+  "limitation": "Root continued authorized SDK metadata work during this read-only qualification. Source repository global state changes cannot be attributed to or concealed as no change; this lane wrote only Admin."
+}

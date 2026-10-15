@@ -1,0 +1,10 @@
+{
+  "path": "docs/sdk/governance/evidence/rag-project-rules-scalar-delta/published-framework-raw/java/repo/nested/leaf/AGENTS.override.md",
+  "singleDiffSha256": "f3bdfe0d2fc345949229b2d827431852e57c5ce18ec279d0edf7fec6c3baa227",
+  "singleDiffBytes": 500,
+  "error": "'utf-8' codec can't decode byte 0xff in position 469: invalid start byte",
+  "errorByteOffset": 469,
+  "matchesQualificationErrorPosition": true,
+  "qualifiedToolCall": "run_git text=True via infer_signals -> added_lines -> git diff --unified=0",
+  "fullQualificationNotRepeated": true
+}

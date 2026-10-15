@@ -1,0 +1,553 @@
+﻿2026-10-15T02:22:44.6622902Z Current runner version: '2.337.0'
+2026-10-15T02:22:44.6657894Z ##[group]Runner Image Provisioner
+2026-10-15T02:22:44.6659258Z Hosted Compute Agent
+2026-10-15T02:22:44.6660303Z Version: 20261012.601
+2026-10-15T02:22:44.6661840Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-15T02:22:44.6663207Z Build Date: 2026-10-12T17:48:21Z
+2026-10-15T02:22:44.6664523Z Worker ID: {20b5ca21-cf0d-431f-8a7a-b08b2449e025}
+2026-10-15T02:22:44.6665993Z Region: eastus2
+2026-10-15T02:22:44.6667405Z Cloud: Azure
+2026-10-15T02:22:44.6668608Z ##[endgroup]
+2026-10-15T02:22:44.6670836Z ##[group]Operating System
+2026-10-15T02:22:44.6672258Z Ubuntu
+2026-10-15T02:22:44.6673335Z 24.04.5
+2026-10-15T02:22:44.6674217Z LTS
+2026-10-15T02:22:44.6675166Z ##[endgroup]
+2026-10-15T02:22:44.6676199Z ##[group]Runner Image
+2026-10-15T02:22:44.6677295Z Image: ubuntu-24.04
+2026-10-15T02:22:44.6678459Z Version: 20261012.334.1
+2026-10-15T02:22:44.6681386Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-15T02:22:44.6684560Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-15T02:22:44.6686477Z ##[endgroup]
+2026-10-15T02:22:44.6688428Z ##[group]GITHUB_TOKEN Permissions
+2026-10-15T02:22:44.6691933Z Contents: read
+2026-10-15T02:22:44.6692983Z Metadata: read
+2026-10-15T02:22:44.6693925Z ##[endgroup]
+2026-10-15T02:22:44.6696975Z Secret source: Actions
+2026-10-15T02:22:44.6698555Z Cache mode: write
+2026-10-15T02:22:44.6700094Z Prepare workflow directory
+2026-10-15T02:22:44.7172815Z Prepare all required actions
+2026-10-15T02:22:44.7243167Z Getting action download info
+2026-10-15T02:22:44.9588697Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-10-15T02:22:45.0428261Z Download action repository 'actions/setup-node@v6' (SHA:249970729cb0ef3589644e2896645e5dc5ba9c38)
+2026-10-15T02:22:45.1865487Z Download action repository 'astral-sh/setup-uv@v7' (SHA:37802adc94f370d6bfd71619e3f0bf239e1f3b78)
+2026-10-15T02:22:45.5294719Z Complete job name: verify
+2026-10-15T02:22:45.6070983Z ##[group]Run actions/checkout@v6
+2026-10-15T02:22:45.6072162Z with:
+2026-10-15T02:22:45.6072615Z   fetch-depth: 0
+2026-10-15T02:22:45.6073110Z   repository: EchoYue-lp/echo-semantic
+2026-10-15T02:22:45.6076773Z   token: ***
+2026-10-15T02:22:45.6077215Z   ssh-strict: true
+2026-10-15T02:22:45.6077654Z   ssh-user: git
+2026-10-15T02:22:45.6078092Z   persist-credentials: true
+2026-10-15T02:22:45.6078581Z   clean: true
+2026-10-15T02:22:45.6079028Z   sparse-checkout-cone-mode: true
+2026-10-15T02:22:45.6079553Z   fetch-tags: false
+2026-10-15T02:22:45.6079996Z   show-progress: true
+2026-10-15T02:22:45.6080439Z   lfs: false
+2026-10-15T02:22:45.6080856Z   submodules: false
+2026-10-15T02:22:45.6081317Z   set-safe-directory: true
+2026-10-15T02:22:45.6081989Z   allow-unsafe-pr-checkout: false
+2026-10-15T02:22:45.6082791Z ##[endgroup]
+2026-10-15T02:22:45.7202648Z Syncing repository: EchoYue-lp/echo-semantic
+2026-10-15T02:22:45.7205209Z ##[group]Getting Git version info
+2026-10-15T02:22:45.7206484Z Working directory is '/home/runner/work/echo-semantic/echo-semantic'
+2026-10-15T02:22:45.7208162Z [command]/usr/bin/git version
+2026-10-15T02:22:45.7213305Z git version 2.55.0
+2026-10-15T02:22:45.7238685Z ##[endgroup]
+2026-10-15T02:22:45.7254638Z Temporarily overriding HOME='/home/runner/work/_temp/6a65c69e-2779-4f99-942c-028d044b72fd' before making global git config changes
+2026-10-15T02:22:45.7256912Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-15T02:22:45.7261096Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/echo-semantic/echo-semantic
+2026-10-15T02:22:45.7312588Z Deleting the contents of '/home/runner/work/echo-semantic/echo-semantic'
+2026-10-15T02:22:45.7319477Z ##[group]Determining repository object format
+2026-10-15T02:22:45.7322401Z ##[endgroup]
+2026-10-15T02:22:45.7323903Z ##[group]Initializing the repository
+2026-10-15T02:22:45.7333649Z [command]/usr/bin/git init /home/runner/work/echo-semantic/echo-semantic
+2026-10-15T02:22:45.7425127Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-15T02:22:45.7427297Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-15T02:22:45.7429040Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-15T02:22:45.7430572Z hint: call:
+2026-10-15T02:22:45.7431842Z hint:
+2026-10-15T02:22:45.7432958Z hint: 	git config --global init.defaultBranch <name>
+2026-10-15T02:22:45.7434086Z hint:
+2026-10-15T02:22:45.7435184Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-15T02:22:45.7436896Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-15T02:22:45.7438185Z hint:
+2026-10-15T02:22:45.7438927Z hint: 	git branch -m <name>
+2026-10-15T02:22:45.7439825Z hint:
+2026-10-15T02:22:45.7441040Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-15T02:22:45.7443288Z Initialized empty Git repository in /home/runner/work/echo-semantic/echo-semantic/.git/
+2026-10-15T02:22:45.7446308Z [command]/usr/bin/git remote add origin https://github.com/EchoYue-lp/echo-semantic
+2026-10-15T02:22:45.7493553Z ##[endgroup]
+2026-10-15T02:22:45.7494903Z ##[group]Disabling automatic garbage collection
+2026-10-15T02:22:45.7498517Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-15T02:22:45.7532422Z ##[endgroup]
+2026-10-15T02:22:45.7534301Z ##[group]Setting up auth
+2026-10-15T02:22:45.7535515Z Removing SSH command configuration
+2026-10-15T02:22:45.7540555Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-15T02:22:45.7578286Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-15T02:22:45.7976410Z Removing HTTP extra header
+2026-10-15T02:22:45.7985408Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-15T02:22:45.8026694Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-15T02:22:45.8263934Z Removing includeIf entries pointing to credentials config files
+2026-10-15T02:22:45.8270233Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-15T02:22:45.8307004Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-15T02:22:45.8535926Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-15T02:22:45.8577236Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git.path /home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:22:45.8611880Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:22:45.8649088Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:22:45.8684763Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:22:45.8719264Z ##[endgroup]
+2026-10-15T02:22:45.8720584Z ##[group]Fetching the repository
+2026-10-15T02:22:45.8728131Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-10-15T02:22:46.1770299Z From https://github.com/EchoYue-lp/echo-semantic
+2026-10-15T02:22:46.1772281Z  * [new branch]      feature/Echoyue/multi-host-semantic-governance -> origin/feature/Echoyue/multi-host-semantic-governance
+2026-10-15T02:22:46.1773919Z  * [new branch]      fix/Echoyue/codex-stable-0.1.0 -> origin/fix/Echoyue/codex-stable-0.1.0
+2026-10-15T02:22:46.1775281Z  * [new branch]      fix/Echoyue/lossless-diff-decoding -> origin/fix/Echoyue/lossless-diff-decoding
+2026-10-15T02:22:46.1776310Z  * [new branch]      main       -> origin/main
+2026-10-15T02:22:46.1776953Z  * [new tag]         v0.2.0     -> v0.2.0
+2026-10-15T02:22:46.1777572Z  * [new tag]         v0.3.0     -> v0.3.0
+2026-10-15T02:22:46.1804239Z [command]/usr/bin/git branch --list --remote origin/main
+2026-10-15T02:22:46.1818595Z   origin/main
+2026-10-15T02:22:46.1832450Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-10-15T02:22:46.1861680Z 22e241f723673330e9d6bec638def0f78968c74c
+2026-10-15T02:22:46.1874176Z ##[endgroup]
+2026-10-15T02:22:46.1875555Z ##[group]Determining the checkout info
+2026-10-15T02:22:46.1877034Z ##[endgroup]
+2026-10-15T02:22:46.1889533Z [command]/usr/bin/git sparse-checkout disable
+2026-10-15T02:22:46.1935501Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-15T02:22:46.1970035Z ##[group]Checking out the ref
+2026-10-15T02:22:46.1973523Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-15T02:22:46.2133466Z Switched to a new branch 'main'
+2026-10-15T02:22:46.2139275Z branch 'main' set up to track 'origin/main'.
+2026-10-15T02:22:46.2146972Z ##[endgroup]
+2026-10-15T02:22:46.2191099Z [command]/usr/bin/git log -1 --format=%H
+2026-10-15T02:22:46.2218865Z 22e241f723673330e9d6bec638def0f78968c74c
+2026-10-15T02:22:46.2671851Z ##[group]Run actions/setup-node@v6
+2026-10-15T02:22:46.2673095Z with:
+2026-10-15T02:22:46.2673929Z   node-version: 20
+2026-10-15T02:22:46.2674863Z   check-latest: false
+2026-10-15T02:22:46.2685230Z   token: ***
+2026-10-15T02:22:46.2686184Z   package-manager-cache: true
+2026-10-15T02:22:46.2687284Z ##[endgroup]
+2026-10-15T02:22:46.4075771Z Attempting to download 20...
+2026-10-15T02:22:46.7713443Z Acquiring 20.20.2 - x64 from https://github.com/actions/node-versions/releases/download/20.20.2-23521894959/node-20.20.2-linux-x64.tar.gz
+2026-10-15T02:22:47.2008069Z Extracting ...
+2026-10-15T02:22:47.2128012Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/208a7223-cc77-4b93-94a9-99a49b76ed78 -f /home/runner/work/_temp/0c18e22c-be2a-493a-96aa-f7e42f204bbe
+2026-10-15T02:22:48.2431910Z Adding to the cache ...
+2026-10-15T02:22:50.0992365Z ##[group]Environment details
+2026-10-15T02:22:50.3298726Z node: v20.20.2
+2026-10-15T02:22:50.3299484Z npm: 10.8.2
+2026-10-15T02:22:50.3304774Z yarn: 1.22.22
+2026-10-15T02:22:50.3305761Z ##[endgroup]
+2026-10-15T02:22:50.3629017Z ##[group]Run astral-sh/setup-uv@v7
+2026-10-15T02:22:50.3629347Z with:
+2026-10-15T02:22:50.3629938Z   cache-dependency-glob: package.json
+skills/semantic-contract/scripts/verify_semantic.py
+
+2026-10-15T02:22:50.3630510Z   activate-environment: false
+2026-10-15T02:22:50.3630886Z   working-directory: /home/runner/work/echo-semantic/echo-semantic
+2026-10-15T02:22:50.3633815Z   github-token: ***
+2026-10-15T02:22:50.3634082Z   enable-cache: auto
+2026-10-15T02:22:50.3634315Z   restore-cache: true
+2026-10-15T02:22:50.3634544Z   save-cache: true
+2026-10-15T02:22:50.3634762Z   prune-cache: true
+2026-10-15T02:22:50.3634981Z   cache-python: false
+2026-10-15T02:22:50.3635224Z   ignore-nothing-to-cache: false
+2026-10-15T02:22:50.3635543Z   ignore-empty-workdir: false
+2026-10-15T02:22:50.3635811Z   add-problem-matchers: true
+2026-10-15T02:22:50.3636065Z   resolution-strategy: highest
+2026-10-15T02:22:50.3636314Z ##[endgroup]
+2026-10-15T02:22:50.5449138Z Trying to find version for uv in: /home/runner/work/echo-semantic/echo-semantic/uv.toml
+2026-10-15T02:22:50.5450810Z Could not find file: /home/runner/work/echo-semantic/echo-semantic/uv.toml
+2026-10-15T02:22:50.5452754Z Trying to find version for uv in: /home/runner/work/echo-semantic/echo-semantic/pyproject.toml
+2026-10-15T02:22:50.5454235Z Could not find file: /home/runner/work/echo-semantic/echo-semantic/pyproject.toml
+2026-10-15T02:22:50.5455595Z Could not determine uv version from uv.toml or pyproject.toml. Falling back to latest.
+2026-10-15T02:22:50.5457903Z Fetching version data from https://raw.githubusercontent.com/astral-sh/versions/main/v1/uv.ndjson ...
+2026-10-15T02:22:50.6337347Z Downloading uv from "https://releases.astral.sh/github/uv/releases/download/0.13.1/uv-x86_64-unknown-linux-gnu.tar.gz" ...
+2026-10-15T02:22:50.8996177Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/04a85244-06f5-4ff5-9702-9fd11e9f3142 -f /home/runner/work/_temp/9c747f6c-2590-4937-9991-b108e9ab8381
+2026-10-15T02:22:51.2058388Z Added /home/runner/.local/bin to the path
+2026-10-15T02:22:51.2062610Z Added /opt/hostedtoolcache/uv/0.13.1/x86_64 to the path
+2026-10-15T02:22:51.2064568Z Set UV_PYTHON_INSTALL_DIR to /home/runner/work/_temp/uv-python-dir
+2026-10-15T02:22:51.2065908Z Added /home/runner/work/_temp/uv-python-dir to the path
+2026-10-15T02:22:51.2073254Z Set UV_CACHE_DIR to /home/runner/work/_temp/setup-uv-cache
+2026-10-15T02:22:51.2074106Z Successfully installed uv version 0.13.1
+2026-10-15T02:22:51.2667932Z Searching files using cache dependency glob: /home/runner/work/echo-semantic/echo-semantic/package.json,/home/runner/work/echo-semantic/echo-semantic/skills/semantic-contract/scripts/verify_semantic.py
+2026-10-15T02:22:51.2712413Z /home/runner/work/echo-semantic/echo-semantic/package.json
+2026-10-15T02:22:51.2728090Z /home/runner/work/echo-semantic/echo-semantic/skills/semantic-contract/scripts/verify_semantic.py
+2026-10-15T02:22:51.2737043Z Found 2 files to hash.
+2026-10-15T02:22:51.2801956Z Trying to restore cache from GitHub Actions cache with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-pruned-2e732c17dea18d310d735ee08c580642474250ef3bc58d26ea111fccb94207f5
+2026-10-15T02:22:51.3484991Z No GitHub Actions cache found for key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-pruned-2e732c17dea18d310d735ee08c580642474250ef3bc58d26ea111fccb94207f5
+2026-10-15T02:22:51.4168498Z ##[group]Run npm test
+2026-10-15T02:22:51.4168805Z [36;1mnpm test[0m
+2026-10-15T02:22:51.4422585Z shell: /usr/bin/bash -e {0}
+2026-10-15T02:22:51.4422889Z env:
+2026-10-15T02:22:51.4423220Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-15T02:22:51.4423705Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-10-15T02:22:51.4424070Z ##[endgroup]
+2026-10-15T02:22:51.5532071Z 
+2026-10-15T02:22:51.5532874Z > echo-semantic@0.3.0 test
+2026-10-15T02:22:51.5534667Z > node scripts/validate-plugin.mjs && node scripts/validate-package.mjs && node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'
+2026-10-15T02:22:51.5535823Z 
+2026-10-15T02:22:51.5909228Z 插件静态合同校验通过
+2026-10-15T02:22:52.1344648Z 分发包内容校验通过
+2026-10-15T02:22:52.1798628Z TAP version 13
+2026-10-15T02:22:52.8253403Z # Subtest: PreCompact 保存继续包，resume 只恢复仍可信的任务
+2026-10-15T02:22:52.8254906Z ok 1 - PreCompact 保存继续包，resume 只恢复仍可信的任务
+2026-10-15T02:22:52.8262550Z   ---
+2026-10-15T02:22:52.8263221Z   duration_ms: 472.867143
+2026-10-15T02:22:52.8263822Z   ...
+2026-10-15T02:22:52.8264628Z # Subtest: PreCompact 缺少有效预检时写入 stale 终态
+2026-10-15T02:22:52.8265471Z ok 2 - PreCompact 缺少有效预检时写入 stale 终态
+2026-10-15T02:22:52.8266102Z   ---
+2026-10-15T02:22:52.8266625Z   duration_ms: 123.703204
+2026-10-15T02:22:52.8267262Z   ...
+2026-10-15T02:22:57.0154741Z # Subtest: SessionStart 为不同宿主输出对应上下文字段
+2026-10-15T02:22:57.0156738Z ok 3 - SessionStart 为不同宿主输出对应上下文字段
+2026-10-15T02:22:57.0167276Z   ---
+2026-10-15T02:22:57.0180367Z   duration_ms: 381.169619
+2026-10-15T02:22:57.0180867Z   ...
+2026-10-15T02:22:57.0181906Z # Subtest: SessionStart 在项目根生成用户可见状态
+2026-10-15T02:22:57.0182693Z ok 4 - SessionStart 在项目根生成用户可见状态
+2026-10-15T02:22:57.0183560Z   ---
+2026-10-15T02:22:57.0184057Z   duration_ms: 132.447442
+2026-10-15T02:22:57.0184756Z   ...
+2026-10-15T02:22:57.0185261Z # Subtest: 插件单独触发时注入仓库级语义维护入口
+2026-10-15T02:22:57.0196614Z ok 5 - 插件单独触发时注入仓库级语义维护入口
+2026-10-15T02:22:57.0214030Z   ---
+2026-10-15T02:22:57.0214768Z   duration_ms: 142.255848
+2026-10-15T02:22:57.0215442Z   ...
+2026-10-15T02:22:57.0216297Z # Subtest: 已采用语义基线的项目阻断预检范围外编辑
+2026-10-15T02:22:57.0217095Z ok 6 - 已采用语义基线的项目阻断预检范围外编辑
+2026-10-15T02:22:57.0217841Z   ---
+2026-10-15T02:22:57.0218469Z   duration_ms: 651.024009
+2026-10-15T02:22:57.0238307Z   ...
+2026-10-15T02:22:57.0239408Z # Subtest: 受控删除只允许已批准 repair 的目标路径
+2026-10-15T02:22:57.0240418Z ok 7 - 受控删除只允许已批准 repair 的目标路径
+2026-10-15T02:22:57.0241179Z   ---
+2026-10-15T02:22:57.0242085Z   duration_ms: 665.839811
+2026-10-15T02:22:57.0242779Z   ...
+2026-10-15T02:22:57.0243710Z # Subtest: 设计权威摘要变化后 Hook 拒绝沿用高风险预检
+2026-10-15T02:22:57.0244712Z ok 8 - 设计权威摘要变化后 Hook 拒绝沿用高风险预检
+2026-10-15T02:22:57.0245448Z   ---
+2026-10-15T02:22:57.0246145Z   duration_ms: 182.774432
+2026-10-15T02:22:57.0246796Z   ...
+2026-10-15T02:22:57.0247666Z # Subtest: Cursor 按官方工具名识别写入路径，并放行只读工具
+2026-10-15T02:22:57.0248700Z ok 9 - Cursor 按官方工具名识别写入路径，并放行只读工具
+2026-10-15T02:22:57.0249423Z   ---
+2026-10-15T02:22:57.0272197Z   duration_ms: 421.994147
+2026-10-15T02:22:57.0275910Z   ...
+2026-10-15T02:22:57.0292416Z # Subtest: 失败 Stop 不被去重且保留预检供连续重试
+2026-10-15T02:22:57.0297317Z ok 10 - 失败 Stop 不被去重且保留预检供连续重试
+2026-10-15T02:22:57.0298035Z   ---
+2026-10-15T02:22:57.0298600Z   duration_ms: 1387.416002
+2026-10-15T02:22:57.0299219Z   ...
+2026-10-15T02:22:57.0299950Z # Subtest: 成功 Stop 后同一工作树重复调用幂等放行
+2026-10-15T02:22:57.0300765Z ok 11 - 成功 Stop 后同一工作树重复调用幂等放行
+2026-10-15T02:22:57.0301387Z   ---
+2026-10-15T02:22:57.0302253Z   duration_ms: 296.75934
+2026-10-15T02:22:57.0302937Z   ...
+2026-10-15T02:22:57.0311747Z # Subtest: 明确的新会话清除上一任务的预检状态
+2026-10-15T02:22:57.0312691Z ok 12 - 明确的新会话清除上一任务的预检状态
+2026-10-15T02:22:57.0314037Z   ---
+2026-10-15T02:22:57.0314659Z   duration_ms: 113.576139
+2026-10-15T02:22:57.0315417Z   ...
+2026-10-15T02:22:57.0352540Z # Subtest: 缺少宿主 source 时保守保留上一任务的预检状态
+2026-10-15T02:22:57.0382672Z ok 13 - 缺少宿主 source 时保守保留上一任务的预检状态
+2026-10-15T02:22:57.0383546Z   ---
+2026-10-15T02:22:57.0384167Z   duration_ms: 110.697392
+2026-10-15T02:22:57.0385252Z   ...
+2026-10-15T02:22:57.0386265Z # Subtest: resume 和 compact 不消费当前任务的预检状态
+2026-10-15T02:22:57.0387368Z ok 14 - resume 和 compact 不消费当前任务的预检状态
+2026-10-15T02:22:57.0388148Z   ---
+2026-10-15T02:22:57.0388754Z   duration_ms: 201.66201
+2026-10-15T02:22:57.0389401Z   ...
+2026-10-15T02:22:57.0390225Z # Subtest: 验收探针只在显式环境变量下写入
+2026-10-15T02:22:57.0391060Z ok 15 - 验收探针只在显式环境变量下写入
+2026-10-15T02:22:57.0391968Z   ---
+2026-10-15T02:22:57.0392580Z   duration_ms: 100.515229
+2026-10-15T02:22:57.0393179Z   ...
+2026-10-15T02:22:59.7764768Z # Subtest: Cursor 单渠道安装、覆盖和卸载
+2026-10-15T02:22:59.7765585Z ok 16 - Cursor 单渠道安装、覆盖和卸载
+2026-10-15T02:22:59.7767345Z   ---
+2026-10-15T02:22:59.7768525Z   duration_ms: 1760.666562
+2026-10-15T02:22:59.7768849Z   ...
+2026-10-15T02:22:59.7772227Z # Subtest: 跨克隆安装直接覆盖当前渠道，不需要来源迁移
+2026-10-15T02:22:59.7773839Z ok 17 - 跨克隆安装直接覆盖当前渠道，不需要来源迁移
+2026-10-15T02:22:59.7774301Z   ---
+2026-10-15T02:22:59.7780201Z   duration_ms: 2760.450357
+2026-10-15T02:22:59.7780618Z   ...
+2026-10-15T02:22:59.7781213Z # Subtest: 悬空 Cursor 符号链接也会被卸载
+2026-10-15T02:22:59.7785405Z ok 18 - 悬空 Cursor 符号链接也会被卸载
+2026-10-15T02:22:59.7786127Z   ---
+2026-10-15T02:22:59.7786494Z   duration_ms: 36.551009
+2026-10-15T02:22:59.7786874Z   ...
+2026-10-15T02:22:59.7793411Z # Subtest: 一键安装会检测未安装宿主并独立报告
+2026-10-15T02:22:59.7794487Z ok 19 - 一键安装会检测未安装宿主并独立报告
+2026-10-15T02:22:59.7795265Z   ---
+2026-10-15T02:22:59.7795953Z   duration_ms: 38.948176
+2026-10-15T02:22:59.7796650Z   ...
+2026-10-15T02:22:59.7797822Z # Subtest: Codex 重命名安装清理旧 Hook、Agent 和状态
+2026-10-15T02:22:59.7798886Z ok 20 - Codex 重命名安装清理旧 Hook、Agent 和状态
+2026-10-15T02:22:59.7799536Z   ---
+2026-10-15T02:22:59.7800076Z   duration_ms: 952.710712
+2026-10-15T02:22:59.7800632Z   ...
+2026-10-15T02:22:59.7801455Z # Subtest: Codex 与 Claude Code 共用分发副本并在最后卸载时清理
+2026-10-15T02:22:59.7803039Z ok 21 - Codex 与 Claude Code 共用分发副本并在最后卸载时清理
+2026-10-15T02:22:59.7803844Z   ---
+2026-10-15T02:22:59.7804494Z   duration_ms: 1267.543216
+2026-10-15T02:22:59.7805181Z   ...
+2026-10-15T02:22:59.7806095Z # Subtest: 分发 staging 失败时保留现有副本
+2026-10-15T02:22:59.7807018Z ok 22 - 分发 staging 失败时保留现有副本
+2026-10-15T02:22:59.7807684Z   ---
+2026-10-15T02:22:59.7808323Z   duration_ms: 39.243237
+2026-10-15T02:22:59.7808992Z   ...
+2026-10-15T02:22:59.7809882Z # Subtest: 清理旧 Codex Hook 时保留用户配置的其它顶层字段
+2026-10-15T02:22:59.7810963Z ok 23 - 清理旧 Codex Hook 时保留用户配置的其它顶层字段
+2026-10-15T02:22:59.7812886Z   ---
+2026-10-15T02:22:59.7813277Z   duration_ms: 587.630815
+2026-10-15T02:22:59.7813705Z   ...
+2026-10-15T02:22:59.7817035Z # Subtest: Codex install 遇到损坏 Hook 配置时保留原文件且不调用宿主
+2026-10-15T02:22:59.7818265Z ok 24 - Codex install 遇到损坏 Hook 配置时保留原文件且不调用宿主
+2026-10-15T02:22:59.7818849Z   ---
+2026-10-15T02:22:59.7819215Z   duration_ms: 34.581215
+2026-10-15T02:22:59.7819626Z   ...
+2026-10-15T02:22:59.7821833Z # Subtest: Codex uninstall 遇到损坏 Hook 配置时保留原文件且不调用宿主
+2026-10-15T02:22:59.7823105Z ok 25 - Codex uninstall 遇到损坏 Hook 配置时保留原文件且不调用宿主
+2026-10-15T02:22:59.7823621Z   ---
+2026-10-15T02:22:59.7828286Z   duration_ms: 33.601661
+2026-10-15T02:22:59.7829024Z   ...
+2026-10-15T02:22:59.7829806Z # Subtest: 未知宿主返回非零且不创建状态
+2026-10-15T02:22:59.7830555Z ok 26 - 未知宿主返回非零且不创建状态
+2026-10-15T02:22:59.7831123Z   ---
+2026-10-15T02:22:59.7831877Z   duration_ms: 33.580721
+2026-10-15T02:22:59.7832431Z   ...
+2026-10-15T02:22:59.7901774Z # Subtest: 三个宿主清单共享插件名称和版本
+2026-10-15T02:22:59.7902783Z ok 27 - 三个宿主清单共享插件名称和版本
+2026-10-15T02:22:59.7903134Z   ---
+2026-10-15T02:22:59.7903501Z   duration_ms: 3.264865
+2026-10-15T02:22:59.7903909Z   ...
+2026-10-15T02:22:59.7904528Z # Subtest: Codex 清单保留可读中文而不是 Unicode 转义
+2026-10-15T02:22:59.7912681Z ok 28 - Codex 清单保留可读中文而不是 Unicode 转义
+2026-10-15T02:22:59.7922423Z   ---
+2026-10-15T02:22:59.7922811Z   duration_ms: 0.376626
+2026-10-15T02:22:59.7924989Z   ...
+2026-10-15T02:22:59.7925771Z # Subtest: Codex 与 Claude Code 共用原生 Hook，Cursor 保留专用事件名
+2026-10-15T02:22:59.7926669Z ok 29 - Codex 与 Claude Code 共用原生 Hook，Cursor 保留专用事件名
+2026-10-15T02:22:59.7927172Z   ---
+2026-10-15T02:22:59.7927509Z   duration_ms: 0.525825
+2026-10-15T02:22:59.7927880Z   ...
+2026-10-15T02:22:59.7928438Z # Subtest: GitHub Action 将高风险基准声明为必填
+2026-10-15T02:22:59.7929058Z ok 30 - GitHub Action 将高风险基准声明为必填
+2026-10-15T02:22:59.7929469Z   ---
+2026-10-15T02:22:59.7929824Z   duration_ms: 1.267814
+2026-10-15T02:22:59.7930189Z   ...
+2026-10-15T02:22:59.7930713Z # Subtest: Node 与 Python 共享预检合同 fixture
+2026-10-15T02:22:59.7931353Z ok 31 - Node 与 Python 共享预检合同 fixture
+2026-10-15T02:22:59.7932032Z   ---
+2026-10-15T02:22:59.7932305Z   duration_ms: 2.853455
+2026-10-15T02:22:59.7932625Z   ...
+2026-10-15T02:22:59.7933381Z # Subtest: 项目状态统一写入 .echo-semantic 并自动从 Git 状态排除
+2026-10-15T02:22:59.7934184Z ok 32 - 项目状态统一写入 .echo-semantic 并自动从 Git 状态排除
+2026-10-15T02:22:59.7934715Z   ---
+2026-10-15T02:22:59.7934954Z   duration_ms: 65.099622
+2026-10-15T02:22:59.7935182Z   ...
+2026-10-15T02:22:59.7935496Z # Subtest: 首次使用时迁移旧 Git 私有状态且不覆盖新目录文件
+2026-10-15T02:22:59.7936203Z ok 33 - 首次使用时迁移旧 Git 私有状态且不覆盖新目录文件
+2026-10-15T02:22:59.7936463Z   ---
+2026-10-15T02:22:59.7936665Z   duration_ms: 30.053459
+2026-10-15T02:22:59.7936901Z   ...
+2026-10-15T02:22:59.7937169Z # Subtest: 拒绝通过符号链接写出项目目录
+2026-10-15T02:22:59.7937458Z ok 34 - 拒绝通过符号链接写出项目目录
+2026-10-15T02:22:59.7937672Z   ---
+2026-10-15T02:22:59.7937873Z   duration_ms: 9.572357
+2026-10-15T02:22:59.7938093Z   ...
+2026-10-15T02:22:59.7938383Z # Subtest: 拒绝覆盖已被 Git 跟踪的运行态文件
+2026-10-15T02:22:59.7938691Z ok 35 - 拒绝覆盖已被 Git 跟踪的运行态文件
+2026-10-15T02:22:59.7938923Z   ---
+2026-10-15T02:22:59.7939124Z   duration_ms: 33.33321
+2026-10-15T02:22:59.7939347Z   ...
+2026-10-15T02:22:59.7939618Z # Subtest: 无法写入精确排除规则时拒绝创建运行态
+2026-10-15T02:22:59.7939926Z ok 36 - 无法写入精确排除规则时拒绝创建运行态
+2026-10-15T02:22:59.7940161Z   ---
+2026-10-15T02:22:59.7940364Z   duration_ms: 17.579606
+2026-10-15T02:22:59.7940584Z   ...
+2026-10-15T02:22:59.7940843Z # Subtest: 宿主能力矩阵可解析并拒绝未知字段
+2026-10-15T02:22:59.7941148Z ok 37 - 宿主能力矩阵可解析并拒绝未知字段
+2026-10-15T02:22:59.7941389Z   ---
+2026-10-15T02:22:59.7961736Z   duration_ms: 4.227979
+2026-10-15T02:22:59.7962193Z   ...
+2026-10-15T02:22:59.7962722Z # Subtest: 宿主探测输出安装状态、版本和生命周期
+2026-10-15T02:22:59.7963512Z ok 38 - 宿主探测输出安装状态、版本和生命周期
+2026-10-15T02:22:59.7963910Z   ---
+2026-10-15T02:22:59.7964253Z   duration_ms: 1.427624
+2026-10-15T02:22:59.7964619Z   ...
+2026-10-15T02:22:59.7965206Z # Subtest: 仅检测到宿主安装不能启用运行时门禁
+2026-10-15T02:22:59.7965770Z ok 39 - 仅检测到宿主安装不能启用运行时门禁
+2026-10-15T02:22:59.7966199Z   ---
+2026-10-15T02:22:59.7966558Z   duration_ms: 156.317013
+2026-10-15T02:22:59.7966993Z   ...
+2026-10-15T02:22:59.7967710Z # Subtest: 路由器按基线和差异选择 bootstrap、fast、standard、strict
+2026-10-15T02:22:59.7968280Z ok 40 - 路由器按基线和差异选择 bootstrap、fast、standard、strict
+2026-10-15T02:22:59.7968624Z   ---
+2026-10-15T02:22:59.7968860Z   duration_ms: 194.307295
+2026-10-15T02:22:59.7969117Z   ...
+2026-10-15T02:22:59.7969504Z # Subtest: 没有任务和工作树变化时进入仓库语义维护，明确任务时保留任务范围
+2026-10-15T02:22:59.7969947Z ok 41 - 没有任务和工作树变化时进入仓库语义维护，明确任务时保留任务范围
+2026-10-15T02:22:59.7970278Z   ---
+2026-10-15T02:22:59.7970505Z   duration_ms: 96.006664
+2026-10-15T02:22:59.7970807Z   ...
+2026-10-15T02:22:59.7971277Z # Subtest: 遗留预检没有匹配当前任务标识时仍进入仓库维护
+2026-10-15T02:22:59.7972314Z ok 42 - 遗留预检没有匹配当前任务标识时仍进入仓库维护
+2026-10-15T02:22:59.7972805Z   ---
+2026-10-15T02:22:59.7973109Z   duration_ms: 97.954662
+2026-10-15T02:22:59.7973380Z   ...
+2026-10-15T02:22:59.7973748Z # Subtest: 纯测试和示例源码走 fast，治理控制面仍走 strict
+2026-10-15T02:22:59.7974242Z ok 43 - 纯测试和示例源码走 fast，治理控制面仍走 strict
+2026-10-15T02:22:59.7974764Z   ---
+2026-10-15T02:22:59.7975103Z   duration_ms: 99.886603
+2026-10-15T02:22:59.7975572Z   ...
+2026-10-15T02:22:59.7976206Z # Subtest: 未知宿主或缺少停止 Hook 时采用保守 bootstrap
+2026-10-15T02:22:59.7976897Z ok 44 - 未知宿主或缺少停止 Hook 时采用保守 bootstrap
+2026-10-15T02:22:59.7977295Z   ---
+2026-10-15T02:22:59.7977601Z   duration_ms: 59.798303
+2026-10-15T02:22:59.7977974Z   ...
+2026-10-15T02:22:59.7978412Z # Subtest: 运行时宿主探测失败时不沿用静态能力路由
+2026-10-15T02:22:59.7978923Z ok 45 - 运行时宿主探测失败时不沿用静态能力路由
+2026-10-15T02:22:59.7979509Z   ---
+2026-10-15T02:22:59.7979807Z   duration_ms: 56.912405
+2026-10-15T02:22:59.7980167Z   ...
+2026-10-15T02:22:59.7980677Z # Subtest: .echo-semantic 长期权威变化进入 strict
+2026-10-15T02:22:59.7981311Z ok 46 - .echo-semantic 长期权威变化进入 strict
+2026-10-15T02:22:59.7982048Z   ---
+2026-10-15T02:22:59.7982353Z   duration_ms: 60.847614
+2026-10-15T02:22:59.7982710Z   ...
+2026-10-15T02:22:59.7983270Z # Subtest: semantic-status 输出基线、路由和 Frontier
+2026-10-15T02:22:59.7983977Z ok 47 - semantic-status 输出基线、路由和 Frontier
+2026-10-15T02:22:59.7984444Z   ---
+2026-10-15T02:22:59.7984788Z   duration_ms: 1381.205231
+2026-10-15T02:22:59.7985170Z   ...
+2026-10-15T02:22:59.7985453Z 1..47
+2026-10-15T02:22:59.7985743Z # tests 47
+2026-10-15T02:22:59.7986048Z # suites 0
+2026-10-15T02:22:59.7986341Z # pass 47
+2026-10-15T02:22:59.7986655Z # fail 0
+2026-10-15T02:22:59.7986980Z # cancelled 0
+2026-10-15T02:22:59.7987318Z # skipped 0
+2026-10-15T02:22:59.7987631Z # todo 0
+2026-10-15T02:22:59.7987976Z # duration_ms 7627.867453
+2026-10-15T02:23:12.9511183Z .............................................................
+2026-10-15T02:23:12.9512313Z ----------------------------------------------------------------------
+2026-10-15T02:23:12.9512960Z Ran 61 tests in 13.031s
+2026-10-15T02:23:12.9513190Z 
+2026-10-15T02:23:12.9513319Z OK
+2026-10-15T02:23:12.9831226Z Prepare all required actions
+2026-10-15T02:23:12.9891903Z ##[group]Run ./
+2026-10-15T02:23:12.9892129Z with:
+2026-10-15T02:23:12.9892320Z   root: .
+2026-10-15T02:23:12.9892554Z   base: 8ecb51f9119a96ac9fa09ffc500f1a3dea299fdb
+2026-10-15T02:23:12.9892872Z   require-change-evidence: true
+2026-10-15T02:23:12.9893120Z env:
+2026-10-15T02:23:12.9893389Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-15T02:23:12.9893788Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-10-15T02:23:12.9894109Z ##[endgroup]
+2026-10-15T02:23:12.9956722Z ##[start-action display=执行语义治理门禁;id=__self.__run]
+2026-10-15T02:23:13.0003638Z ##[group]Run args=(--root "." --strict-snapshot)
+2026-10-15T02:23:13.0004097Z [36;1margs=(--root "." --strict-snapshot)[0m
+2026-10-15T02:23:13.0004512Z [36;1mif [[ -n "8ecb51f9119a96ac9fa09ffc500f1a3dea299fdb" ]]; then[0m
+2026-10-15T02:23:13.0004974Z [36;1m  args+=(--base "8ecb51f9119a96ac9fa09ffc500f1a3dea299fdb")[0m
+2026-10-15T02:23:13.0005371Z [36;1mfi[0m
+2026-10-15T02:23:13.0005591Z [36;1mif [[ "true" == "true" ]]; then[0m
+2026-10-15T02:23:13.0006148Z [36;1m  if [[ -z "8ecb51f9119a96ac9fa09ffc500f1a3dea299fdb" || "8ecb51f9119a96ac9fa09ffc500f1a3dea299fdb" =~ ^0+$ ]]; then[0m
+2026-10-15T02:23:13.0006758Z [36;1m    echo "::error::启用高风险变更依据门禁时必须提供有效 base revision"[0m
+2026-10-15T02:23:13.0007078Z [36;1m    exit 2[0m
+2026-10-15T02:23:13.0007293Z [36;1m  fi[0m
+2026-10-15T02:23:13.0007533Z [36;1m  args+=(--require-change-evidence)[0m
+2026-10-15T02:23:13.0007821Z [36;1mfi[0m
+2026-10-15T02:23:13.0008237Z [36;1muv run "$GITHUB_ACTION_PATH/skills/semantic-contract/scripts/verify_semantic.py" "${args[@]}"[0m
+2026-10-15T02:23:13.0008755Z [36;1m[0m
+2026-10-15T02:23:13.0008967Z [36;1mcontinuity_values=([0m
+2026-10-15T02:23:13.0009213Z [36;1m  ""[0m
+2026-10-15T02:23:13.0009408Z [36;1m  ""[0m
+2026-10-15T02:23:13.0009600Z [36;1m  ""[0m
+2026-10-15T02:23:13.0009786Z [36;1m  ""[0m
+2026-10-15T02:23:13.0009963Z [36;1m)[0m
+2026-10-15T02:23:13.0010166Z [36;1mcontinuity_count=0[0m
+2026-10-15T02:23:13.0010442Z [36;1mfor value in "${continuity_values[@]}"; do[0m
+2026-10-15T02:23:13.0010762Z [36;1m  if [[ -n "$value" ]]; then[0m
+2026-10-15T02:23:13.0011075Z [36;1m    continuity_count=$((continuity_count + 1))[0m
+2026-10-15T02:23:13.0011372Z [36;1m  fi[0m
+2026-10-15T02:23:13.0011808Z [36;1mdone[0m
+2026-10-15T02:23:13.0012135Z [36;1mif [[ "$continuity_count" -ne 0 && "$continuity_count" -ne 4 ]]; then[0m
+2026-10-15T02:23:13.0012653Z [36;1m  echo "::error::语义连续性门禁必须同时提供 merge-base、target、source 和 result"[0m
+2026-10-15T02:23:13.0013024Z [36;1m  exit 2[0m
+2026-10-15T02:23:13.0013228Z [36;1mfi[0m
+2026-10-15T02:23:13.0013679Z [36;1mif [[ -n "" && "$continuity_count" -ne 4 ]]; then[0m
+2026-10-15T02:23:13.0014058Z [36;1m  echo "::error::continuity-report 只能与完整连续性输入一起使用"[0m
+2026-10-15T02:23:13.0014388Z [36;1m  exit 2[0m
+2026-10-15T02:23:13.0014591Z [36;1mfi[0m
+2026-10-15T02:23:13.0014818Z [36;1mif [[ "$continuity_count" -eq 4 ]]; then[0m
+2026-10-15T02:23:13.0015119Z [36;1m  continuity_args=([0m
+2026-10-15T02:23:13.0015369Z [36;1m    --root "."[0m
+2026-10-15T02:23:13.0015627Z [36;1m    --continuity-merge-base ""[0m
+2026-10-15T02:23:13.0015935Z [36;1m    --continuity-predecessor ""[0m
+2026-10-15T02:23:13.0016238Z [36;1m    --continuity-predecessor ""[0m
+2026-10-15T02:23:13.0016524Z [36;1m    --continuity-result ""[0m
+2026-10-15T02:23:13.0016778Z [36;1m  )[0m
+2026-10-15T02:23:13.0016993Z [36;1m  if [[ -n "" ]]; then[0m
+2026-10-15T02:23:13.0017301Z [36;1m    continuity_args+=(--continuity-report "")[0m
+2026-10-15T02:23:13.0017609Z [36;1m  fi[0m
+2026-10-15T02:23:13.0018074Z [36;1m  uv run "$GITHUB_ACTION_PATH/skills/semantic-contract/scripts/verify_semantic.py" "${continuity_args[@]}"[0m
+2026-10-15T02:23:13.0018617Z [36;1mfi[0m
+2026-10-15T02:23:13.0084666Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-15T02:23:13.0085033Z env:
+2026-10-15T02:23:13.0085534Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-10-15T02:23:13.0085963Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-10-15T02:23:13.0086274Z ##[endgroup]
+2026-10-15T02:23:13.3401321Z 语义治理校验通过：/home/runner/work/echo-semantic/echo-semantic/.echo-semantic
+2026-10-15T02:23:13.3522775Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=356]
+2026-10-15T02:23:13.3626260Z Post job cleanup.
+2026-10-15T02:23:13.4717066Z UV_CACHE_DIR is already set to /home/runner/work/_temp/setup-uv-cache
+2026-10-15T02:23:13.4720021Z UV_PYTHON_INSTALL_DIR is already set to /home/runner/work/_temp/uv-python-dir
+2026-10-15T02:23:13.4730820Z Pruning cache...
+2026-10-15T02:23:13.4748790Z [command]/opt/hostedtoolcache/uv/0.13.1/x86_64/uv cache prune --ci --force
+2026-10-15T02:23:13.4851884Z Pruning cache at: /home/runner/work/_temp/setup-uv-cache
+2026-10-15T02:23:13.4923371Z Removed 272 files (4.2MiB)
+2026-10-15T02:23:13.4952481Z Including uv cache path: /home/runner/work/_temp/setup-uv-cache
+2026-10-15T02:23:13.5116517Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/echo-semantic/echo-semantic --files-from manifest.txt --use-compress-program zstdmt
+2026-10-15T02:23:13.6759106Z Sent 63368 of 63368 (100.0%), 0.8 MBs/sec
+2026-10-15T02:23:13.7856567Z uv cache saved with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-pruned-2e732c17dea18d310d735ee08c580642474250ef3bc58d26ea111fccb94207f5
+2026-10-15T02:23:13.8499560Z Post job cleanup.
+2026-10-15T02:23:13.9890757Z Post job cleanup.
+2026-10-15T02:23:14.0816225Z [command]/usr/bin/git version
+2026-10-15T02:23:14.0859428Z git version 2.55.0
+2026-10-15T02:23:14.0907102Z Temporarily overriding HOME='/home/runner/work/_temp/547e5b20-b4d3-4449-a500-33ad350b1f9d' before making global git config changes
+2026-10-15T02:23:14.0908292Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-15T02:23:14.0915475Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/echo-semantic/echo-semantic
+2026-10-15T02:23:14.0949111Z Removing SSH command configuration
+2026-10-15T02:23:14.0957539Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-15T02:23:14.1000353Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-15T02:23:14.1252251Z Removing HTTP extra header
+2026-10-15T02:23:14.1259210Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-15T02:23:14.1298775Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-15T02:23:14.1563934Z Removing includeIf entries pointing to credentials config files
+2026-10-15T02:23:14.1575016Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-15T02:23:14.1604008Z includeif.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git.path
+2026-10-15T02:23:14.1613094Z includeif.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git/worktrees/*.path
+2026-10-15T02:23:14.1614440Z includeif.gitdir:/github/workspace/.git.path
+2026-10-15T02:23:14.1615714Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-15T02:23:14.1618505Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git.path
+2026-10-15T02:23:14.1646434Z /home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1663165Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git.path /home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1723714Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git/worktrees/*.path
+2026-10-15T02:23:14.1762699Z /home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1793872Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/echo-semantic/echo-semantic/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1814470Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-15T02:23:14.1842634Z /github/runner_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1851962Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1902667Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-15T02:23:14.1933820Z /github/runner_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1945656Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config
+2026-10-15T02:23:14.1997935Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-15T02:23:14.2307973Z Removing credentials config '/home/runner/work/_temp/git-credentials-7b3091c0-1a9b-4841-838d-3e110e96283c.config'
+2026-10-15T02:23:14.2473607Z Cleaning up orphan processes

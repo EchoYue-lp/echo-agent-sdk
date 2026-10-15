@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-published-tool-22e-qualification",
+  "steps": [
+    {
+      "label": "published-tool22e-sdk4994-full-qualification",
+      "command": [
+        "uv",
+        "run",
+        "--script",
+        "tools/skills/semantic-contract/scripts/verify_semantic.py",
+        "--root",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-published-tool-22e-qualification/sdk",
+        "--strict-snapshot",
+        "--base",
+        "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+        "--require-change-evidence"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-published-tool-22e-qualification",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-published-tool-22e-qualification/verify.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 174,
+      "bytesWritten": 174,
+      "startedAt": "2026-10-15T02:25:12.819Z",
+      "finishedAt": "2026-10-15T02:27:12.142Z"
+    }
+  ],
+  "updatedAt": "2026-10-15T02:27:12.142Z"
+}

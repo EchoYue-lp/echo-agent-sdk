@@ -1,0 +1,11 @@
+# Published Echo Semantic 22e on exact SDK 4994 — full qualification PASS
+
+The exact published Echo Semantic commit `22e241f723673330e9d6bec638def0f78968c74c`, tree `47d63f99b54b1b13b286b1bbdd8d7e3fa0ecd5b9`, was exported with `git archive`. All 119 exported blobs matched that committed tree. Its canonical verifier SHA is `393f55f92126b2cc817271bcdd46017d78108be54a82a874ba143545be193da0`. The old dirty tool working tree and installed 0.5 were not used as this execution's validator.
+
+SDK commit `4994a8cd49979ab8793f006d89fd955f2f0119f9`, tree `800044d46d8c188e11d0c9da22e1f16bd05f53d1`, was checked out clean in a new local `git clone --shared`. This keeps an explicit source-object alternates link and is not a fresh remote clone. All 5,438 checked-out files matched their Git blobs. The 32 retained recovery tags were visible locally. No ignored preflight was copied, removed from the source SDK, or fabricated, and no source risk flags were lowered.
+
+The official PEP 723 entry ran exactly once with `--strict-snapshot --base 30d7e219cc7d3aef0f75a19217c82898c363f50d --require-change-evidence`. It completed with exit 0, no signal and no truncation. The complete 174-byte output includes one normal uv package-install notice and the semantic qualification pass. Source digest stayed `eda628ea830d7ef798210f11831ba4545dba3998c24086e653b454cf8939a0ad` before and after; the clone remained clean and preflight-free.
+
+The preserved invalid UTF-8 historical fixture was not removed or changed, and the true baseline was not replaced with HEAD. The old public-8ec 100-byte UTF-8 failure remains a separate evidence packet; it was not rerun. The result now establishes that the published lossless-decoding tool passes the whole SDK semantic gate on this exact snapshot. It does not establish generic equivalence with installed 0.5 or replace Rust, dependency, accepted-contract, language, remote CI or exact merged-main acceptance.
+
+The external original tool checkout's 92 changed/untracked files were checked read-only against the earlier byte/mode/status manifest and stayed unchanged. No SDK source, `.echo-semantic` material, tool source, workflow, tag, PR or public release was modified by this qualification. Only this Admin area was written. The task branch was not deleted or switched.

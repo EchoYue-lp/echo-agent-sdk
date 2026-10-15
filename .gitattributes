@@ -284,3 +284,6 @@ docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597346.log -diff
 
 # Original Linux gap-observation failure output.
 docs/sdk/governance/evidence/gap-successor-pause-oracle/ci-before/116172597308.log -diff
+
+# Exact published semantic tool main CI output.
+docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/published-tool/main-ci.log -diff
