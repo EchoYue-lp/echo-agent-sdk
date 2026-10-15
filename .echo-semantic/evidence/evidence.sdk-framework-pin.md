@@ -213,3 +213,22 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 新增semantic job定义已7d0提交，直接uses公开action exact22e；唯一官方脚本在GitHubactionstore执行，不import/vendored SDK归档的源码副本，不新validator/服务/边界。checkout fullhistory/tags，base只用真实PRbase或push-before非零40SHA/存在/祖先，未知事件显式失败；action原strict与require-change-evidence=true保留，无fakepreflight/baseHEAD空diff/continue-on-error。仅setup-uv性能cache关闭，不改PEP723依赖或验证；原七job（八matrixentries）与runtime命令不被新job改变。工具资格在原SDK4994且源eda628，而新增workflow会改变当前全source摘要，不能借该资格假新当前树strict或semantic远端job已过。
 
 资格正式23包在117ace保存、新CI定义/来源30包在7d0保存；本次source_refs读取两真实保存cut的7d0后继树，不把原执行写成7d0。相关路径Hash见候选sourcechecks。现semantic job只defined/not yet executed，下一CI需要真实官方同base机器结果；SDK4994原8job自然终态5success3failure，其中dependency特定bootstrap后验有单独三链候选，ACK未见独立fail列表不推所有路径已验、PID只有pids[]截断cause unknown，两个合同job仍原13失败。原本地focused/整体门禁各原cut保，56resolved7open、B3共享物理B/12连续性、Windowsnative/main/registry边界保持。不新产品权限或退约，公开工具main不等SDKmain。
+
+
+## 公开工具资格及bootstrap局部闭合后的文稿维护
+
+本段只提供四份current维护文稿的精确同期依据，不新增运行证明。原Evidence观察7d0、全部source_refs、公开工具22e资格、semanticjob定义场景和旧运行命令/时间按原sourcecut读取；不回到旧91c版本覆盖新已提交模型，也不把新文稿或当前验证结果塞进旧执行。当前机器模型57resolved/6open，仅CIbootstrap在SDK4994真实dependency后验/精确50版本组复审后具体三链闭合；Gap/PID仍待新Linux原case/完整后验，PID原截断结果pids[]不构成已知PS截断或typedtimeout原因。B3共享物理结算与12连续性裁决、合同13、Windowsnative和SDKmain仍各自未完成。
+
+本次四份已审维护文稿当前SHA：
+
+- `docs/sdk/governance/finding-ledger.md`，SHA256 `5b53e8de5d57008cdc1b30f4f40887b3231df870d482fd7ea0c534ffde7dca22`。
+- `docs/sdk/governance/capability-map.md`，SHA256 `ab0d9523cfbfe69c8dde14b94dac7912573af3916a9dd7dfe43c15a8409ee5e4`。
+- `docs/sdk/governance/capability-review-remaining.md`，SHA256 `1d6585871b350f4c208f28147ce8bef7973973b4513e5fb70a52050f3762fbb9`。
+- `docs/sdk/governance/capability-review-dispositions.md`，SHA256 `715377bf5f91cf794ed81840a473a40152df40e065254ada44973f554eb08828`。
+
+公开Echo Semantic22e/393 canonical在原SDK4994清洁sharedclone对真实30d完整语义变更门禁已实际退出0，旧UTF8失败保历史且不再作该资格的当前阻断；installed0.5 taskscope513不同问题未声称被修。新增SDKsemanticjob定义固定uses22e，基准来自真实PRbase/pushbefore，尚未实际执行，不以本地artifact门禁证明远端job或合并main通过。本次维护会改变完整source摘要，须用真实当前候选树重算并运行同公开工具原30dfullrequirechange；不能借eda628/4994旧结果、空diff/baseHEAD或删除S预检高flags代替。本次不修改运行源码、合同seed/生成产物或任何原日志，不重复Rust14/本地大targetwhole。
+
+
+## 公开工具commit来源响应原件的精确角色
+
+`docs/sdk/governance/evidence/sdk-semantic-ci-consumer/published-commit.response.json`，SHA256 `bb4cce891a4fde160bb83e490889cd297f7533796b5b66c0ada328b7caba5b56`，48797字节，是已保存的官方GitHub commit API response源码/签名来源见证。它在本Evidence原观察Git7d0已真实存在，与当前原字节相同；payload声明公开EchoSemantic22e241f723673330e9d6bec638def0f78968c74c、tree47d63f99及signature verified，对应consumer provenance。response里附带工具提交diff/源码字段不成为SDK运行模块、公共API或第二validator，也不新增协议/状态权威。本slice只把这一个实际原件列为同期已有ProductCI来源依据，原sourceRefs/支持范围/command_results及所有旧运行时刻不改。原30d本候选首次fullgate缺这条路径的exit1保留，不能把它当SDK业务失败或伪改成通过；补依据后的实际重跑结果另收。
