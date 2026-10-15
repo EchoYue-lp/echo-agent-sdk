@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class StreamCancellationRouteHostTest {
     @Test void setupAckRetainsRealHostCancelRoute() throws Exception {
         String host=System.getenv("ECHO_AGENT_SDK_HOST");assumeTrue(host!=null,"real Host required");
-        Path work=Files.createTempDirectory(Path.of("/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/channel-forward-runtime").toAbsolutePath().normalize(),"sdk-java-early-ack-");
+        Path work=Files.createTempDirectory("sdk-java-early-ack-");
         var config=new ProcessBuilder("python3","../shared/testing/mcp_channel_config_fixture.py",work.toString()).inheritIO().start();assertEquals(0,config.waitFor());
         var sdk=EchoAgentClient.spawn(host,List.of("--config",work.resolve("host.json").toString()),Path.of("../shared/facade-operation-catalog.json"),Path.of("../shared/contract-digests.json"),Map.of()).toCompletableFuture().get(5,TimeUnit.SECONDS);
         var entered=new CountDownLatch(1);var cancelled=new CountDownLatch(1);var release=new CountDownLatch(1);var shutdown=new AtomicBoolean();var facts=new CopyOnWriteArrayList<String>();var jobs=new CopyOnWriteArrayList<CompletableFuture<Void>>();
