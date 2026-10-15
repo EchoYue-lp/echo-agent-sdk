@@ -1,0 +1,20 @@
+{
+  "files": {
+    "action-at-reviewed-candidate.yml": {
+      "sha256": "54b0260c1e63f54b7160b1326e40cd231a4148ead7b203af0942153713818eea",
+      "bytes": 3286
+    },
+    "input-inspection.json": {
+      "sha256": "804fb32b224f92dbd6748d3a28769e738e88562adf06c62d6e19c78717e1cc56",
+      "bytes": 402
+    },
+    "proposal.md": {
+      "sha256": "276d1418f4374c322b0f83568341e7279d09ce78d5cbfc99c7d683330d10b678",
+      "bytes": 5221
+    },
+    "semantic-job.template.yml": {
+      "sha256": "2ba58bdc500048f5adb8341453cbb34f7bb53e943374f865e3cb7213407b6b9c",
+      "bytes": 1403
+    }
+  }
+}

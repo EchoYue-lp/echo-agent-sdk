@@ -1,0 +1,35 @@
+  semantic:
+    name: SDK semantic source and change evidence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+      - name: Resolve the actual comparison base
+        id: semantic-base
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$EVENT_NAME" in
+            pull_request) base="$PR_BASE" ;;
+            push) base="$PUSH_BEFORE" ;;
+            *) echo "::error::unsupported semantic base event"; exit 2 ;;
+          esac
+          [[ "$base" =~ ^[0-9a-f]{40}$ && ! "$base" =~ ^0+$ ]] || {
+            echo "::error::missing real semantic comparison base"; exit 2;
+          }
+          git cat-file -e "$base^{commit}"
+          git merge-base --is-ancestor "$base" HEAD
+          echo "revision=$base" >> "$GITHUB_OUTPUT"
+      - name: Verify SDK with the published canonical semantic action
+        uses: EchoYue-lp/echo-semantic@PUBLISHED_REPAIRED_MAIN_SHA_REQUIRED
+        with:
+          root: ${{ github.workspace }}
+          base: ${{ steps.semantic-base.outputs.revision }}
+          require-change-evidence: "true"

@@ -1,0 +1,14 @@
+{
+  "source": "trusted Root actual subsequent report and FrameworkFinal independent qualification review, not fabricated raw machine output",
+  "subject": "clean SDK4994 using published tool22e and original full base30d",
+  "tool": "22e241f723673330e9d6bec638def0f78968c74c",
+  "sdk": "4994a8cd49979ab8793f006d89fd955f2f0119f9",
+  "base": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "result": "actual exit0 reported by Root; FrameworkFinal PASS C0/I0/M0",
+  "temporal_boundary": "successor fact after proposal waiting epoch; original proposal text retained",
+  "not_covered": [
+    "newworkflowcandidate-sourceDigest",
+    "newSDKsemanticremoteCIjob",
+    "acceptedcontract13/B/twelve choices/mainrelease"
+  ]
+}

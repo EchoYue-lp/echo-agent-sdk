@@ -1,0 +1,71 @@
+{
+  "parent_head": "4994a8cd49979ab8793f006d89fd955f2f0119f9",
+  "workflow_before_sha256": "c788cc19d41f0bfb00b05cc4f5cc2581ea3f14b74809405d547169918028e4c3",
+  "installed_workflow_sha256": "18191eb9b8fda4420500082ef355df471b8ee18328b8e4c13c5e3a2cc6324d2a",
+  "installed_equals_reviewed_candidate_bytes": true,
+  "old_job_definition_count": 7,
+  "old_matrix_expanded_run_count": 8,
+  "all_old_jobs_and_existing_AST_unchanged": true,
+  "only_ast_change": "added semantic job",
+  "bash_syntax_exit_code": 0,
+  "actual_base_checks": [
+    {
+      "case": "PR30d",
+      "event": "pull_request",
+      "PR_BASE": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+      "PUSH_BEFORE": "",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "github_output": "revision=30d7e219cc7d3aef0f75a19217c82898c363f50d\n"
+    },
+    {
+      "case": "pushBefore",
+      "event": "push",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "github_output": "revision=ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56\n"
+    },
+    {
+      "case": "zeroBefore",
+      "event": "push",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "0000000000000000000000000000000000000000",
+      "exit_code": 2,
+      "stdout": "::error::missing real semantic comparison base\n",
+      "stderr": "",
+      "github_output": null
+    },
+    {
+      "case": "missingPRbase",
+      "event": "pull_request",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "",
+      "exit_code": 2,
+      "stdout": "::error::missing real semantic comparison base\n",
+      "stderr": "",
+      "github_output": null
+    },
+    {
+      "case": "unknownEvent",
+      "event": "workflow_dispatch",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "",
+      "exit_code": 2,
+      "stdout": "::error::unsupported semantic base event\n",
+      "stderr": "",
+      "github_output": null
+    }
+  ],
+  "other799_runtime_input_bytes_equal_actual_parent4994_Git": true,
+  "mismatches": [],
+  "workflow_is_changed_one_input_not_all800same": true,
+  "diff_check_exit_code": 0,
+  "newSDKCIexecuted": false,
+  "LSPbaseline_change_by_this_lane": false,
+  "noRust_native_fullmatrix_repetition": true,
+  "first_auxiliary_attempt": "asserted8jobdefinitions incorrectly; failed before mutation/semanticgate; actual7definitions8matrixentries now exact"
+}

@@ -1,0 +1,65 @@
+{
+  "ast_only_added_semantic_job": true,
+  "all_old_jobs_triggers_permissions_concurrency_equal": true,
+  "canonical_action_input_names_valid": true,
+  "strict_snapshot_in_actual_action": true,
+  "action_runs_original_external_GITHUB_ACTION_PATH_script": true,
+  "setup_uv_runtime_cache_disabled_only": true,
+  "bash_syntax_exit": 0,
+  "base_selection_cases": [
+    {
+      "case": "actual_PR30d",
+      "event": "pull_request",
+      "PR_BASE": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+      "PUSH_BEFORE": "",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "github_output": "revision=30d7e219cc7d3aef0f75a19217c82898c363f50d\n"
+    },
+    {
+      "case": "actual_pushbefore",
+      "event": "push",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "github_output": "revision=ff3de936d22c6d5f4e68ece646f0b4cfd77e7c56\n"
+    },
+    {
+      "case": "zero_before_rejected",
+      "event": "push",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "0000000000000000000000000000000000000000",
+      "exit_code": 2,
+      "stdout": "::error::missing real semantic comparison base\n",
+      "stderr": "",
+      "github_output": null
+    },
+    {
+      "case": "missing_PRbase_rejected",
+      "event": "pull_request",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "",
+      "exit_code": 2,
+      "stdout": "::error::missing real semantic comparison base\n",
+      "stderr": "",
+      "github_output": null
+    },
+    {
+      "case": "unknown_event_rejected",
+      "event": "workflow_dispatch",
+      "PR_BASE": "",
+      "PUSH_BEFORE": "",
+      "exit_code": 2,
+      "stdout": "::error::unsupported semantic base event\n",
+      "stderr": "",
+      "github_output": null
+    }
+  ],
+  "no_base_HEAD_fallback": true,
+  "actual_semantic_validation": "not executed here; cleanSDK4994/fullbase30d run owned by Git worker, actual outcome must be preserved",
+  "new_remoteCI": "not executed",
+  "new_ci_does_not_yet_exist_in_S": true
+}
