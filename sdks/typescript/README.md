@@ -266,6 +266,13 @@ facts or establish replay-terminal EOF; transport failure reports
 has no peer acceptance receipt. Another concurrent ACK cannot borrow a
 pending submission's cursor. The framework journal remains authoritative.
 
+When a valid pending ACK can free a full queue, continuation waits for its
+local projection or real queue capacity/closure progress. A failed ACK does
+not retire its covered prefix; the existing overflow/replay policy applies.
+Events and gaps remain ordered per stream, while other streams and RPCs use
+their independent paths. The data-queue bound does not bound memory held by
+notification handlers that the official transport has already dispatched.
+
 Typed Host errors in ACP `error.data` become `EchoAgentError` and retain
 `code`, `retryable`, `operation`, `handle` and `details`. Standard ACP errors
 keep the official wire semantics; their message is not parsed into a domain

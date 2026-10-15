@@ -143,3 +143,36 @@ observed ad358是这次明确五defect复核与已保存历史收据的定位，
 |sdks/python/tests/test_execution_usage_values.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|f2265b12c574ee104c502de3e66f24a0898b535f003bb8dbeba118454f568b96|
 
 本owner表中runtime test/fixture共1项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
+
+
+## 本次三语言ACK竞态的before证据
+
+原Java Linuxhead26c/PR merge ed05c8e6c91fbcde67d955933cb28fb326c7f144，官方[job116253904798](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38683776490/job/116253904798)：ExternalAckHostTest4/1failure/0error/0skip，window1在line109报不可恢复event_gap。Admin原log sdk-26c781e-ci-evidence/116253904798.log（204864 bytes，SHA2108cdd28bb4aff26748c522b2d6e42cea07d60379c2c8660a8f93103a26be4f）。Java原三源4256逐字节同26c；旧client32c4768b/pub1d261d81/testea174e4a。Admin sdk-java-external-ack-race/phase1-3-summary.json（1996 bytes，SHAb146207869df0102405b8cd8d8e9c049e505d681690fa9b7450e8969502d8733）区别真实Host0f1成功observer进入但未retire时event3溢出，与official AcpClientSession native outcome pending的机制反例；后者不是Host E2E。未修改自然方法两window行一次通过不证明race absent。
+
+TS/PY官方mechanism counter（不是物理Host）实际source4256与2e0不变：ACK2 peer可见且native completion被hold→event3→capacity1永久失败，放行ACK成功后floor2也不恢复event3。SDKcap已独审counter validity PASS。TS typed backpressure，result SHA7c7dea0631df557dd3320f779feec9537c6717ffe549d4252095a551fb1e031a，原log497 bytes SHAa27e40680c045c73744de8f1ec8b1598f4fd65941d748e84ee7bdb3aabfb20d7；PY typed event_gap/details.reason=client_queue_full，result SHAecc5a4ae4ea58a1c1c1b7577c7e0444556caf13a5e055e2959374b45c98dc311，log1052 bytes SHA5a2d549e040af8663e7dd8472196fc3fd46150153f06a2e10495262ed6693071。原文件在 `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-ts-python-ack-capacity-race/`，summary SHA780a0cac13cf8c36566139cda3fd7a84b248c41bdcdb8248c0b8f2a5dad3ba17，原counter源码/结果17项seal保留，不把Admin路径伪Git source_ref或新建S raw副本。其TS原client611b1a87/testa2d74349，PY原client399961d0/teste61b00e4，按4256实际Git恢复；完整旧输入SHA在原before-source.json/summary保存。
+
+## 三语言ACK竞态的局部修复、验证和独立复审
+
+本段当前源码保存观察为69cbf73831775cb53c13efbcfe20541b5c6f20ef，不修改原observed_at ad358/旧source_refs/命令/限制；原before证据不改为通过，较早未安装open候选保Admin原字节。现仅本具体竞态具局部三链，不宣全部语言/Host行为通过、永久有界内存或新Linux全套完成。
+
+Java修复2e0保持原官方通知顺序，publisher成功消费投影先退休、后释放相关准入，复用同owner容量进展/关闭语义；无新容量、队列或Framework调度权威。原受控Host before1→after0，最终49和相邻28各0；reverse-final-receipt与adjacent-receipt分别保最终源及运行角色，FrameFinal已实际源码+after有限PASS0。Oracle21/release17编译不等Linux17后验。
+
+TS/PY修复69cb保actual native success-only消费、发送owner不受caller cancellation中断，准入依赖原ACK投影/原队列容量变化而不是提前丢prefix；保持原typed error、failure/pending不消费、正常需求/取消/关闭与同stream身份边界。Python pre-first-step cancel原实际红后修复清理，未降低最低3.10。SDKcap已实际source/postMinor有限PASS0。原persistent两语behavior before红→同条件after0，初persistent测试字节未单独快照的限制诚实保留；原完整受控before原源及17项seal/raw仍在Admin，不虚构缺失快照。原TS/PY官方mechanism before不是物理Host before。
+
+紧凑执行索引 `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-ts-python-ack-capacity-race/implementation/verification-index.json`，SHA5521c0b4805150d0b646be4fe244cefe3e4487e0c904faa409c472d3ebdd66a5；其中运行时HEAD2e0及dirty实际四源由postminor/source-freeze.json保存，observedHeadAfterGates69cb仅后保存观察。TS最终61 ACK/Protocol/stdio-close、Node20 ACK19、原注册handler受控2和物理Host window1/2各0；PY3.12.4/ACP0.12.1三files72、PY3.10.19 ACK34、postMinor物理Host2及Ruff均0。较早两版本三files71属于preMinor切点，不冒最终四源；TS真实Host原test成功会清工作目录，仅实际TAP/强断言源码/receipt保存，PY原notifications保其native目录。所有raw仅Admin，未新建SDK归档包。
+
+当前精确源码索引（各路径在69cb Gitblob/current SHA一致，Java源也精确存在2e0）：
+
+|路径|SHA256|
+|---|---|
+|`sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java`|`0e3181817d84578c51efb60ce4fafbe8be9e599396ab679dd8a9bacc2b06ef28`|
+|`sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java`|`7a31941c2e23fca16455cd06abbdc354ef9ef100934836ff435d23e885f64571`|
+|`sdks/java/src/test/java/com/echoagent/sdk/ExternalAckHostTest.java`|`1b04e84b3af4bc231a881c221b48e0ca96f1afaedd5cc6cd640372556aebf55e`|
+|`sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java`|`27203e61b204edd92a9bd15b9e3792f5ace75204a5cd8402cc2a344fb0b497a6`|
+|`sdks/java/README.md`|`d692aab9947c1457f85c09c55a83185d4fe3513230277e68bcf9af70986c6890`|
+|`sdks/typescript/src/client.ts`|`dd94c5af88343323a599622e3baafa991fdc2a8ae712cd1b98a3923d9e7474e1`|
+|`sdks/typescript/test/ack-submission.test.js`|`506902c45d96c0dc4fe841f574ed7f46ad022e32deeea2af8de302b0a320b63f`|
+|`sdks/python/src/echo_agent_sdk/client.py`|`2c1174c46dcfb063510db2869fe1de8702504d85d54000afc399bfc1d1a532fe`|
+|`sdks/python/tests/test_ack_submission.py`|`67fabad728818f1a2437617edfeccc8ec0d3a54f6be80d310618b321eba21efc`|
+
+本局部Finding repair/verification引用本Evidence具体段，rereview引用对应failure-concurrency具名69cb challenge；旧language-consumption-ack闭合范围与#120原framework权威不重开。PID/Gap/Host未知及其余七open/B3/12/合同13/平台/main/payload必要性和全局continuity1173阻断均保。当前唯一状态页本次只维护既有结论与新69cb范围：`docs/sdk/governance/capability-review-remaining.md`，候选SHA `130ec38df8ea338a4d006cf3dce37c89a92efc149fac8d8c68c629d8f000d7a3`；它是文稿维护输入依据，不是新runtime通过证明。未新增公共API/accepted schema，examples及官网无需外仓接口改动；JavaREADME已随2e0同步。未来69cb新Linux完整语言/CI与当前原30d语义门禁必须各有新actual，不能借旧26c或本地focused替代。

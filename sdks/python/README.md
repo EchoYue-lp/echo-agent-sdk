@@ -322,6 +322,13 @@ facts or establish replay-terminal EOF; transport failure reports
 `ack_submission: outcome_unknown` in error details, because a notification
 has no peer acceptance receipt. Another concurrent ACK cannot borrow a
 pending submission's cursor. The framework journal remains authoritative.
+
+When a valid pending ACK can free a full queue, continuation waits for its
+local projection or real queue capacity/closure progress. A failed ACK does
+not retire its covered prefix; the existing overflow/replay policy applies.
+Events and gaps remain ordered per stream, while other streams and RPCs use
+their independent paths. The data-queue bound does not bound memory held by
+notification handlers that the official transport has already dispatched.
 Cancelling an awaiting Python caller leaves its already-started submission
 owned by the client until the official transport actually completes. A late
 success commits its own cursor; a late failure is reported to the event loop

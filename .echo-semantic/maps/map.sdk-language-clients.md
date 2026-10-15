@@ -27,6 +27,7 @@ evidence_refs:
 - evidence.sdk-protocol-finite-observation
 - evidence.sdk-integrations-finite-observation
 finding_refs:
+- finding.sdk-language-external-ack-projection-admission-ordering
 - finding.sdk-event-identity-nested-parent-projection
 - finding.sdk-ack-submission-consumption
 - finding.sdk-inventory-acceptance-authority
@@ -491,3 +492,8 @@ map原observed_at76601仍定位原场景源码，此后继文字明确观察9a�
 ## EventIdentity pure-value入口与具名缺陷
 
 原scenes/观察Git/状态不变；Discovery该入口可mapped不等无bug。nested parent局部三链见 evidence.sdk-event-identity-nested-parent-closure / audit.sdk-event-identity-nested-parent-closure；修复保存185559，原执行0ebe及平台界限保。仅这一个accepted pure-value parent投影局部闭合；不是全部lineage/跨进程事件/Host集成或Linux/JDK17完整语言验证。Map/Behavior仍保持原needs_review。B3、12accepted-source、合同13、PID/Linux和Host退出未知原因独立。历史raw不新增S包，下面Admin定位可保原byte恢复，不伪source_refs已在Git。
+
+
+## 三语言ACK投影竞态的局部闭合
+
+`finding.sdk-language-external-ack-projection-admission-ordering` 的26c/4256真实before、Java2e0与TS/PY69cb修复/有限after/独审由原lifecycle Evidence和failure-concurrency Audit承接。只这一个同根因局部resolved，不重开旧iterator/gap自动ACK或#120权威，不增加queue/Framework调度器。原Map观察/scene/status及七open保持；总transport内存、新Linux完整语言/CI、B12/合同13/Hostcause/continuity/payload/main独立。

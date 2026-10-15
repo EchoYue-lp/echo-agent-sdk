@@ -7,6 +7,7 @@ lens: failure_concurrency
 freshness: examined
 revision: 76601b242d7c354352f3b5c7d4bf099873746b14
 finding_refs:
+- finding.sdk-language-external-ack-projection-admission-ordering
 - finding.sdk-factory-instance-routing
 - finding.sdk-language-close-retry
 - finding.sdk-language-consumption-ack
@@ -61,6 +62,32 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml
     evidence_refs:
     - evidence.sdk-language-client-lifecycle-current
+  specific-language-external-ack-projection-admission-ordering-before:
+    revision: 4256bb8eb17637bf70b7bf1ef7408a98b6ce1264
+    source_refs:
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java
+    - sdks/java/src/test/java/com/echoagent/sdk/ExternalAckHostTest.java
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/test/ack-submission.test.js
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/tests/test_ack_submission.py
+    evidence_refs:
+    - evidence.sdk-language-client-lifecycle-current
+  specific-language-external-ack-projection-admission-ordering-after:
+    revision: 69cbf73831775cb53c13efbcfe20541b5c6f20ef
+    source_refs:
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/BoundedPublisher.java
+    - sdks/java/src/test/java/com/echoagent/sdk/ExternalAckHostTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java
+    - sdks/java/README.md
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/test/ack-submission.test.js
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/tests/test_ack_submission.py
+    evidence_refs:
+    - evidence.sdk-language-client-lifecycle-current
 ---
 
 # 客户端 并发提交、取消与独立会话 有限复审
@@ -104,3 +131,8 @@ ACK乱序/取消pending写不充洞；earlyACK/terminal不复活取消地址，�
 ## language-consumption-ack具名复审范围
 
 原scope独立reviewer本session逐源码/实际native断言核对：原officialwriter completion提交消费而非fetch/nextpending就消费；gap不autoACK、显式snapshot/replaycoverage，failed/cancelledpending不commit、terminalcoverage自然EOF。ACKv4原独review+18/4/1强assert不是counts单证。 本条是原业务审查真实性回收，不另造engine执行。对应故障项可局部闭；主revision与原challenge仍保原76601观察，新challenge以ad实际提交源码/原运行收据定位，不把旧时间重标。
+
+
+## 本次ACK竞态的有限复审
+
+原26c Linux Java窗口及三语各自受控before→after按复用Evidence本次段保存。Java2e0由FrameFinal实际源码/after审PASS；TS/PY69cb由SDKcap实际source/postMinor/after审PASS。69cb是执行时2e0dirty精确四源的后保存观察，不冒新执行时间；成功投影与容量进展、失败/pending不消费、取消/关闭/身份边界及版本/总transport内存限制均保。只此竞态localresolved，原top76601/旧challenge/旧Finding义务不改，不推全语言/新Linux/七open/continuity绿。
