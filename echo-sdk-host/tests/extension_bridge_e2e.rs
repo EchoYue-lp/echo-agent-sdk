@@ -6270,7 +6270,34 @@ async fn managed_commit_disconnect_restart_replays_same_receipt()
         "disconnect fixture failed: {first:?}; {}",
         stderr_text(&host)
     );
-    let _ = tokio::time::timeout(Duration::from_secs(10), host.child.wait()).await??;
+    let exit_started = std::time::Instant::now();
+    let disconnected_pid = host.child.id();
+    let _ = tokio::time::timeout(Duration::from_secs(10), host.child.wait())
+        .await
+        .map_err(|error| {
+            // Report the original passive-exit failure without extending its
+            // deadline or replacing disconnect with a signal/forced exit.
+            let observed_status = host.child.try_wait();
+            let held_responses = dispatch.silent.try_lock().ok().map(|held| held.len());
+            let receipt_count = dispatch
+                .managed
+                .receipts
+                .try_lock()
+                .ok()
+                .map(|receipts| receipts.len());
+            format!(
+                "managed restart phase=first-host-exit failed: {error}; \
+                 pid={disconnected_pid:?}; elapsed={:?}; status={observed_status:?}; \
+                 stdin_taken={}; stdout_taken={}; held_responses={held_responses:?}; \
+                 projected_items={}; mutations={}; receipts={receipt_count:?}; stderr:\n{}",
+                exit_started.elapsed(),
+                host.child.stdin.is_none(),
+                host.child.stdout.is_none(),
+                dispatch.managed.projected_items.load(Ordering::Acquire),
+                dispatch.managed.mutations.load(Ordering::Acquire),
+                stderr_text(&host),
+            )
+        })??;
     let committed_receipts = dispatch
         .managed
         .receipts
