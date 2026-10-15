@@ -291,29 +291,8 @@ public final class EchoAgentClient implements AutoCloseable {
                 if (cancellation != null) cancellation.cancel();
                 return Mono.empty();
             });
-            notificationHandlers.put("_echo_agent/event", params -> {
-                JsonNode event = transport.unmarshalFrom(params, JSON_NODE);
-                final WireHandle stream;
-                try {
-                    stream = incomingStream(event);
-                } catch (RuntimeException error) {
-                    holder[0].failEventPublishers(new EchoAgentException(
-                            "serialization_violation", "event notification has an invalid stream handle",
-                            "never", "_echo_agent/event", event));
-                    return Mono.empty();
-                }
-                BoundedPublisher publisher = holder[0].eventPublishers
-                        .computeIfAbsent(stream.id(), ignored -> holder[0].newEventPublisher(stream));
-                publisher.publishEvent(event, stream.id());
-                String eventType = event.path("envelope").path("payload")
-                        .path("event_type").asText("");
-                if ("final_answer".equals(eventType)
-                        || "cancelled".equals(eventType)
-                        || "error".equals(eventType)) {
-                    publisher.close();
-                }
-                return Mono.empty();
-            });
+            notificationHandlers.put("_echo_agent/event", params ->
+                    holder[0].receiveEvent(transport.unmarshalFrom(params, JSON_NODE)));
             notificationHandlers.put("_echo_agent/gap", params -> {
                 JsonNode gap = transport.unmarshalFrom(params, JSON_NODE);
                 final WireHandle stream;
@@ -874,6 +853,8 @@ public final class EchoAgentClient implements AutoCloseable {
         WireHandle ackStream = null;
         java.math.BigInteger ackSequence = null;
         Object submission = new Object();
+        // Private ingress fence owner: never exposed as a cancellable caller wait.
+        var projection = new CompletableFuture<Void>();
         if("_echo_agent/event/ack".equals(method)){
             // The official outbound scheduler can serialize later. Validation,
             // submission and successful consumption must share this snapshot.
@@ -889,7 +870,7 @@ public final class EchoAgentClient implements AutoCloseable {
                 }}
                 if(covered||publisher.canAcknowledgeObserved(sequence)){
                     observedPublisher=publisher;ackStream=stream;ackSequence=sequence;
-                    publisher.beginAcknowledgement(submission,sequence);
+                    publisher.beginAcknowledgement(submission,sequence,projection);
                 }
             }
         }
@@ -900,8 +881,10 @@ public final class EchoAgentClient implements AutoCloseable {
         final CompletableFuture<Void> submitted;
         try { submitted=session.sendNotification(method, params).toFuture(); }
         catch(RuntimeException error){
+            var failure=EchoAgentException.from(error,method);
+            projection.completeExceptionally(failure);
             if(feed!=null)feed.endAcknowledgement(submission);
-            return CompletableFuture.failedFuture(EchoAgentException.from(error,method));
+            return CompletableFuture.failedFuture(failure);
         }
         if(feed!=null){
             ackSubmissions.add(submitted);
@@ -916,6 +899,7 @@ public final class EchoAgentClient implements AutoCloseable {
                         details.set("stream",stream.toJson());details.set("cause_details",failure.details());
                         failure=new EchoAgentException(failure.code(),failure.getMessage(),failure.retryable(),failure.operation(),details,failure.handle());
                     }
+                    projection.completeExceptionally(failure);
                     result.completeExceptionally(failure);
                 }else{
                     if(terminalStream!=null)finishExtensionStreamRoute(terminalStream);
@@ -924,14 +908,20 @@ public final class EchoAgentClient implements AutoCloseable {
                         var terminal=replayTerminals.get(stream);
                         if(terminal!=null && sequence.compareTo(terminal)>=0)feed.close();
                     }
+                    // Release ingress before user completion can synchronously
+                    // wait for its next event. Queue retirement is already done.
+                    projection.complete(null);
                     result.complete(null);
                 }
+            }catch(Throwable failure){
+                projection.completeExceptionally(failure);
+                result.completeExceptionally(failure);
             }finally{
                 ackSubmissions.remove(submitted);
                 if(feed!=null)feed.endAcknowledgement(submission);
             }
         });
-        return result;
+        return result.thenApply(ignored -> null);
     }
 
     public CompletionStage<JsonNode> invoke(String operation, WireHandle handle, List<?> arguments) {
@@ -1275,6 +1265,41 @@ public final class EchoAgentClient implements AutoCloseable {
         var value=new java.math.BigInteger(TypedExtensionSupport.canonicalU64(text,"event window"));
         if(value.signum()<=0)throw new EchoAgentException("extension_capability_mismatch","event window must be positive","never","initialize",advertised);
         return value.min(java.math.BigInteger.valueOf(65536)).intValue();
+    }
+
+    Mono<Void> receiveEvent(JsonNode event) {
+        final WireHandle stream;
+        try {
+            stream = incomingStream(event);
+        } catch (RuntimeException error) {
+            failEventPublishers(new EchoAgentException(
+                    "serialization_violation", "event notification has an invalid stream handle",
+                    "never", "_echo_agent/event", event));
+            return Mono.empty();
+        }
+        BoundedPublisher publisher = eventPublishers
+                .computeIfAbsent(stream.id(), ignored -> newEventPublisher(stream));
+        final java.math.BigInteger sequence;
+        try {
+            String raw=event.path("envelope").path("sequence").textValue();
+            sequence=new java.math.BigInteger(TypedExtensionSupport.canonicalU64(raw,"event sequence"));
+        } catch (RuntimeException invalid) {
+            publisher.publishEvent(event, stream.id()); // Keep original typed validation.
+            return Mono.empty();
+        }
+        // Malformed identity is rejected immediately by the original validator,
+        // never held behind a write whose outcome cannot repair that identity.
+        if (!stream.id().equals(event.path("envelope").path("stream_id").asText(""))) {
+            publisher.publishEvent(event, stream.id());
+            return Mono.empty();
+        }
+        return publisher.beforeEventAdmission(stream, sequence).then(Mono.fromRunnable(() -> {
+            // Failure of the ACK grants no capacity: the independent event
+            // still uses the original overflow/replay policy after the fence.
+            publisher.publishEvent(event, stream.id());
+            String eventType = event.path("envelope").path("payload").path("event_type").asText("");
+            if ("final_answer".equals(eventType) || "cancelled".equals(eventType) || "error".equals(eventType)) publisher.close();
+        }));
     }
 
     private static WireHandle incomingStream(JsonNode value) {

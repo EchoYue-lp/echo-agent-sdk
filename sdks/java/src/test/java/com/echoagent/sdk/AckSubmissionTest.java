@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Real official ACP session, controlled native submission completion, no fabricated Run receipt. */
 class AckSubmissionTest {
-    private static final class Transport implements AcpClientTransport {
+    static final class Transport implements AcpClientTransport {
         final BlockingQueue<CompletableFuture<Void>> entered = new LinkedBlockingQueue<>();
         final List<AcpSchema.JSONRPCMessage> messages = new CopyOnWriteArrayList<>();
         JsonNode replayResponse;
@@ -29,10 +29,22 @@ class AckSubmissionTest {
         @Override public <T>T unmarshalFrom(Object value,TypeRef<T> type){return mapper.convertValue(value,type);}
         @Override public Mono<Void> closeGracefully(){return Mono.empty();}
     }
-    private static EchoAgentClient client(Transport transport)throws Exception{
-        var session=new AcpClientSession(Duration.ofSeconds(1),transport,Map.of(),Map.of(),Function.identity());
+    static EchoAgentClient client(Transport transport)throws Exception{
+        return client(transport,Map.of());
+    }
+    static EchoAgentClient client(Transport transport,Map<String,AcpClientSession.RequestHandler<?>> requests)throws Exception{
+        EchoAgentClient[] holder = new EchoAgentClient[1];
+        var session=new AcpClientSession(Duration.ofSeconds(1),transport,requests,
+                Map.of("_echo_agent/event", params -> holder[0].receiveEvent(JsonSupport.MAPPER.valueToTree(params)),
+                       "_echo_agent/gap", params -> {
+                           JsonNode gap=JsonSupport.MAPPER.valueToTree(params);
+                           WireHandle stream=WireHandle.fromJson(gap.path("stream"));
+                           try { feeds(holder[0]).get(stream.id()).publishGap(gap,stream.id()); }
+                           catch(Exception error) { return Mono.error(error); }
+                           return Mono.empty();
+                       }),Function.identity());
         var catalog=new FacadeCatalog(Path.of("../shared/facade-operation-catalog.json"),Path.of("../shared/contract-digests.json"));
-        var ctor=EchoAgentClient.class.getDeclaredConstructor(AcpClientSession.class,FacadeCatalog.class,AcpClientTransport.class);ctor.setAccessible(true);return ctor.newInstance(session,catalog,transport);
+        var ctor=EchoAgentClient.class.getDeclaredConstructor(AcpClientSession.class,FacadeCatalog.class,AcpClientTransport.class);ctor.setAccessible(true);holder[0]=ctor.newInstance(session,catalog,transport);return holder[0];
     }
     @SuppressWarnings("unchecked") private static Map<String,BoundedPublisher> feeds(EchoAgentClient sdk)throws Exception{var field=EchoAgentClient.class.getDeclaredField("eventPublishers");field.setAccessible(true);return (Map<String,BoundedPublisher>)field.get(sdk);}
     private static JsonNode event(WireHandle stream,String sequence){var value=JsonSupport.MAPPER.createObjectNode();value.set("stream",stream.toJson());value.putObject("envelope").put("sequence",sequence).put("stream_id",stream.id());return value;}

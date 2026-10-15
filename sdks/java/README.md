@@ -319,6 +319,16 @@ Cancelling the returned caller future does not cancel the submission's
 completion observer. A later actual success still commits its cursor; client
 close settles pending submission ownership without claiming consumption.
 
+If a valid pending ACK's continuation reaches a full live queue, ordered
+notification delivery waits for that ACK's local projection or actual queue
+capacity/lifecycle progress. It never reserves extra data capacity or retires a
+prefix before native write success. Subscriber demand, cancellation and close
+can release this wait without waiting for ACK IO; a still-full queue after a
+failed ACK retains the existing overflow/replay error policy. Later notifications
+can temporarily wait behind this ordered admission fence; independent RPC
+responses and reverse request execution use the official session's separate
+paths. The ACK send itself has no new timeout or peer acceptance receipt.
+
 Typed ACP `error.data` becomes `EchoAgentException`, preserving `code()`,
 `retryable()`, `operation()`, `handle()` and `details()`. Standard ACP errors
 retain official wire semantics; human messages are not parsed into domain
