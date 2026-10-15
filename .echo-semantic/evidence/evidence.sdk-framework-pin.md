@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-framework-pin
 kind: evidence
-observed_at: 91c50cf3d8fbb8fea1cdf8069a30be2c2f7f1039
+observed_at: 7d0a32a0b049013e366d9a4ed78049c7364cbb98
 source_refs:
 - .github/workflows/rust-ci.yml
 - AGENTS.md
@@ -55,6 +55,19 @@ source_refs:
 - docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/framework-git-published-main-strict.log
 - docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/archive-manifest.json
 - docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/SHA256SUMS
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/README.md
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/checksums.json
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/README.md
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/before.json
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/after.json
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/checkout-byte-verification.json
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/verify.log
+- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/run.json
+- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/README.md
+- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/installed-validation.json
+- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/published-provenance.json
+- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/published-action.yml
+- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/resolve-base.sh
 supports:
 - behavior.sdk-repository-ownership
 - rule.framework-runtime-authority
@@ -70,9 +83,11 @@ command_results:
   exit_code: 0
 - command: cargo test -p echo-sdk-host --features sdk-core-profile --lib --tests --locked
   exit_code: 0
-- command: cargo test -p echo-sdk-host --features sdk-extension-bridge --locked --test extension_bridge_e2e
+- command: cargo test -p echo-sdk-host --features sdk-extension-bridge --locked --test
+    extension_bridge_e2e
   exit_code: 0
-- command: cargo test -p echo-sdk-host --features sdk-facade-all --locked --test facade_feature_adapters_e2e --test core_profile_e2e
+- command: cargo test -p echo-sdk-host --features sdk-facade-all --locked --test facade_feature_adapters_e2e
+    --test core_profile_e2e
   exit_code: 0
 - command: ./scripts/check-sdk-contracts.sh
   exit_code: 0
@@ -189,3 +204,12 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 相对原第四whole800执行输入，真实差异仅5项：workflow的cargo-deny初始化input及四份测试（Gap三语言、PID Python），其余795原输入相同；不能称整个800与旧whole当前byte相同。生产61Rust/Cargo/config和锁仍同原正式门禁，Host0f1为这些已记录focused执行二进制。原第四whole/macOS0保各自cut，现focused开发提交后下一remote验收计划另行执行，不在此复制本地大target/重14矩阵或假远端green。SDK行为模型open、库存closed/40格不动，3宽Finding同B与12连续性待人、原合同13、Windowsnative/main边界不变。
 
 第三repo工具交付权限已获得，当前工具仅PR3/审查门禁进展，尚无可用于SDK官方工具消费的已发布新SHA/main；新语义CIjob未实跑。原历史permissionpending语句按原时点保留，不将现在授权等同交付通过。原30d全goal工具UTF8失败必须用本次实际输出保留；当前无base快照通过也不能取代原goal变更门禁。
+
+
+## 公开22e全goal资格与新增semantic CI定义
+
+本Evidence当前观察7d0只复核真实保存的旧材料与新增CI定义；原91c/6f743的运行日期、command_results及原框架后验正文保历史，不据本次观察声称它们重新运行。工具22e241f723673330e9d6bec638def0f78968c74c为已公开main，canonical verifier393f55/119导出blob逐原Git同；SDK4994/tree800044在干净本地shared clone（有显式alternates，非freshremote）5438文件同原Git、32历史tag可读、不复制或伪造repo-local preflight。实际PEP723命令strict-snapshot/base30d7/require-change-evidence退出0、174B完整日志、约119s，源eda628前后同；FrameworkFinal独审PASS0。旧invalidUTF8原blob与公开8ec/installed0.5失败日志保持；仅该原全goalUTF8检查器阻断在SDK4994获实际解除，不等installed0.5task513问题也被修或全SDKgoal完成。
+
+新增semantic job定义已7d0提交，直接uses公开action exact22e；唯一官方脚本在GitHubactionstore执行，不import/vendored SDK归档的源码副本，不新validator/服务/边界。checkout fullhistory/tags，base只用真实PRbase或push-before非零40SHA/存在/祖先，未知事件显式失败；action原strict与require-change-evidence=true保留，无fakepreflight/baseHEAD空diff/continue-on-error。仅setup-uv性能cache关闭，不改PEP723依赖或验证；原七job（八matrixentries）与runtime命令不被新job改变。工具资格在原SDK4994且源eda628，而新增workflow会改变当前全source摘要，不能借该资格假新当前树strict或semantic远端job已过。
+
+资格正式23包在117ace保存、新CI定义/来源30包在7d0保存；本次source_refs读取两真实保存cut的7d0后继树，不把原执行写成7d0。相关路径Hash见候选sourcechecks。现semantic job只defined/not yet executed，下一CI需要真实官方同base机器结果；SDK4994原8job自然终态5success3failure，其中dependency特定bootstrap后验有单独三链候选，ACK未见独立fail列表不推所有路径已验、PID只有pids[]截断cause unknown，两个合同job仍原13失败。原本地focused/整体门禁各原cut保，56resolved7open、B3共享物理B/12连续性、Windowsnative/main/registry边界保持。不新产品权限或退约，公开工具main不等SDKmain。

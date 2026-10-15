@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-cargo-deny-bootstrap-toolchain-probe
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: low
 primary_focus: contract_evidence
 focus:
@@ -13,12 +13,17 @@ behavior_refs:
 - behavior.sdk-repository-ownership
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
-audit_refs: []
+evidence_refs:
+- evidence.sdk-cargo-deny-bootstrap-closure
+audit_refs:
+- audit.sdk-cargo-deny-bootstrap-closure
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-cargo-deny-bootstrap-closure
+verification_evidence_refs:
+- evidence.sdk-cargo-deny-bootstrap-closure
+rereview_audit_refs:
+- audit.sdk-cargo-deny-bootstrap-closure
 discovered_at: 722d09b1a0837f170d4af19cbc3e417d2131b5f3
 ---
 
@@ -82,3 +87,23 @@ bootstrap单独原dependency日志原字节为1,084,474B，SHA256 `59dc929cd16b4
 - `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/manifest.json`，SHA256 `b2ff05162836d18c4cf478fff19d45fbc5f8ff953970ca5fa36b910afd4f52c0`。
 
 源4tests已变化，先前第四whole800完整0继续保它自己的执行cut而非声称当前all800exact。生产61Rust/Cargo输入与锁未因此变化；本次不会重复原14Rust或本地大target完整门禁。新CI按focused开发门禁后实跑方案另执行，暂不关闭本Finding或提升Behavior/库存/全goal完成；B3/12、第三工具交付和官方原30d门禁各按真实当前进展处理。
+
+
+## 新remote局部闭合条件候选（不可安装）
+
+原722依赖job先报override stable-musl toolchain未安装，之后fallback成功和4类deny通过不抹该error。f68单input rust-version:stable修复复用action原入口，使必要install/default先于rustup show，不改action版本、工具root约束、锁、command/feature、deny检查或50group政策；设计/AST实施原独审PASS0。新dependency-policy job116211906823实际SUCCESS，PRhead4994、实际checkout merge29a2d95db11189b555fa61d25822e8a1d8043230，不冒裸head执行。新raw中withrust-versionstable与Docker参数stable实际生效，default toolchain install在show之前，原overrideerror不存在；cargoaudit成功、deny4类通过，50warning[duplicate]保原字节，其它warning/error为0。SDKcap已actualbounded rereviewPASS C0/I0/M0并核50crate版本数组与已批准6bc0ed基准完全同；模型作者仅回收该审结论，未把只数50当版本组全对。
+
+该remote job原raw1085425B/SHA89a84791...和jobJSON当前只在Admin/sdk-4994-ci-evidence，须等正式wholeCI必要归档入真实SDKGit并再次绑定当期观察/refs；本候选ready=false，S保持open。原722 before、原工作流程字节与发现时间保。不因dependency job绿推其它Linux语言、ACK/PID、合同13、B/12、SDKmain或wholeCI全绿。
+原上文缺newremote的文字是修复前阶段事实；本段只后继具体bootstrap义务，不抹旧error/原discovered722。若只安装这一项，计数57resolved6open，ACK/PID仍新Linuxpending，B3/12继续原状态。
+
+
+## 完整4994终态与待正式Git绑定
+
+Root已取得4994全部八job自然终态5success/3failure并完成正式28归档独审：source语言TS336/QS通过、PY414通过1失败和18subtests、Java未达；PID截断输出pids[]仍不推typedtimeout，ACK不在该run失败列表也不自动全覆盖。两个合同job同13连续性阻断。局部dependencybootstrap remote成功足specific闭合资格，不等全CIgreen。正式包目前workingtree已存在，但尚无已宣布提交SHA，因此本候选仍只在Admin不install、不添加这些future source_refs或假observed7d0；真实commit后只增来源/当期revision并轻核。
+
+
+## 正式9061后验归档与当期来源复核
+
+原上文“remote raw未提交/候选不可装”是Admin前稿封存时点，原字节另保before。现在完整4994原八job后验28正式文件已在真实SDK Git `9061a9551807de14edb0227249ee07c12b31b0bd`保存；本次Evidence/Audit当期观察9061只定位原源码/原后验材料，不冒新9061执行。实际job116211906823为PRhead4994、checkoutmerge29a2d95，在日志中stable必要安装/default先于show，旧overrideerror消失，audit及4deny成功，精确50crate版本数组与原6bc0ed已批准组相同，其它warnings/errors0由SDKcap真实独审PASS0，原raw完整保。
+
+原Findingspecificbootstrap的repair（f68单existinginput）/remoteverification/独立rereview三链现有事实足局部resolved资格；只待本轮元artifact审与Root安装准入，不再把已提交正式包当pending。新来源sourceRefs逐9061Git核而非把futurepaths放4994；discovered722/原失败日志/同source修复时点保。若本轮安装只有bootstrap闭合，整体57resolved6open：Gap/PID仍newLinux后验不全、原PIDuniqueLinuxcauseunknown，B3/12合同待决与全部CI5success3failure/合同13/Windowsnative/SDKmain保持独立。

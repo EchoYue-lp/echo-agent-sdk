@@ -4,7 +4,7 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 7d0a32a0b049013e366d9a4ed78049c7364cbb98
 boundary_refs:
 - boundary.sdk-product
 behavior_refs:
@@ -20,6 +20,7 @@ evidence_refs:
 - evidence.sdk-compatibility-gates
 - evidence.sdk-feature-wiring-verification
 - evidence.sdk-current-reviewed-rust-gates
+- evidence.sdk-cargo-deny-bootstrap-closure
 finding_refs:
 - finding.sdk-wave2-cutover-integrity
 - finding.sdk-accepted-source-continuity
@@ -28,6 +29,7 @@ finding_refs:
 - finding.sdk-cargo-deny-bootstrap-toolchain-probe
 audit_refs:
 - audit.sdk-wave2-cutover-final-rereview
+- audit.sdk-cargo-deny-bootstrap-closure
 related_map_refs: []
 scenarios:
   compatibility-gates:
@@ -113,6 +115,21 @@ scenarios:
     - evidence.sdk-wave2-cutover-repair
     finding_refs:
     - finding.sdk-wave2-cutover-integrity
+  semantic-ci-canonical-source-check:
+    status: mapped
+    source_refs:
+    - .github/workflows/rust-ci.yml
+    - docs/sdk/governance/evidence/sdk-semantic-ci-consumer/README.md
+    - docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/README.md
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-framework-pin
+    review_scope: CIjob定义/唯一官方action provenance/真实base失败关闭及已执行4994原30d资格；mapped不是newremoteexecutionpassed。
+    limitations: 新semanticjob尚未执行；SDKcontract13/B12/原task513/Windowsnative/SDKmain另留。
+
 ---
 
 # 独立 SDK 产品边界
@@ -194,3 +211,13 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
 
 原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
+
+
+## 公开canonical语义CI定义的当期模型观察
+
+当前Mapobserved7d0只定位已有模型展示与新增CI定义；原569以及旧段运行时间/验收scope仍保，原六scenarios字典/状态/source_refs未改，已有source路径在7d0逐Git核存在/锚点有效，不声称现有业务场景重跑或全部当前verified。新增scenario只说明SDKProductCI原owner复用公开exact22e官方action且base来自真实event，定义已提交/新job未实跑；已执行全goal资格只属4994/工具22e/localsharedclone，不能推出后继workflow或当前semanticCIgreen。权限/合同/API/运行权威未新增，B12及所有Finding原状态不动。
+
+
+## dependencybootstrap具名后验关联
+
+原bootstrapFinding已在本Map；本次只把specificrepair/remoteverification Evidence与contract-lensAudit加入原owner引用。原新semanticjob定义场景仍只defined/notexecuted，工具22e的SDK4994原30dactual0与dependencyjob特定SUCCESS不同scope，不能互借成整CI或SDKmain全绿。原Map7d0观察/六旧scenes/所有状态与业务义务保。
