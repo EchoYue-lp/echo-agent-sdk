@@ -50,7 +50,13 @@ public final class EventIdentity {
         String executionId = stringValue(runtime, "execution_id");
         String turnId = firstNonBlank(stringValue(runtime, "turn_id"), executionId, runId,
                 UUID.randomUUID().toString());
+        // Preserve flat input compatibility; nested lineage supplies the
+        // canonical parent when no flat value was provided. Convert only leaves.
         String parent = stringValue(runtime, "parent_event_id");
+        Object lineage = runtime == null ? null : runtime.get("subagent_lineage");
+        if (parent == null && lineage instanceof Map<?, ?> map) {
+            parent = stringValue(map, "parent_event_id");
+        }
         return new EventIdentity(StreamId.newId(UUID.randomUUID().toString()),
                 stringValue(runtime, "conversation_id"), runId, turnId,
                 stringValue(runtime, "message_id"), executionId, parent);
