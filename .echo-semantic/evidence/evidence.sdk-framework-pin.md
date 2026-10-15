@@ -154,3 +154,19 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 原入口 `scripts/check-language-sdks.sh` 的Host `cargo build` 与 `scripts/build-telemetry-test-collector.sh` 中framework collector `cargo test --no-run`继承job环境。jobs限制的是Cargo编译并发，未设置测试运行threads。dev/test profile debug=0只关闭编译调试信息；本差异不设置strip、debug_assertions、overflow-checks、优化等级或测试线程参数。四行增量没有修改任何原命令、target、feature、locked、timeout、错误/失败规则或其它job。CurrentTool已完成设计及该实现差异有限审查，C0/I0/M0；YAML重复键与其余AST同原的focused静态检查通过，actionlint未安装，不伪其结果。
 
 原793执行输入中workflow这一项现在发生改变，不能再称整个当前793与旧执行逐字节相同；61份Rust/Cargo/config输入与运行代码、锁、生成物、测试和原门禁日志没有因此改变。本slice只验证编译资源配置及语义候选材料；不重写或重跑原14Rust/完整三语言证明。旧eebd运行中的CI没有被取消，本候选CI尚未运行，未声称修复已运行job或新remote0；预算设置不构成新的语义snapshot CI job，不证明远端执行了官方语义工具。52resolved4open、inventoryclosed/behavioropen、B与12连续性/完整生成exit1/13、Windows native与SDK main边界均保持。
+
+
+## 第四完整入口及四具名闭合后的当前文稿维护
+
+本段只承接当前文稿与已提交具体三链状态的一致性维护，原Evidence observed91c、source_refs/原命令及所有旧运行日期不改。SDK0cbd已提交四个具名缺陷闭合，当前56resolved/4open；新三语完整入口正式包在b315真实Git保存，原执行9dd含一个当时未提交client399961→b0恢复，TS336/PY415+18/Java355/76freshXML/3QS及800相同逐包定位，不冒旧793或未来Linux通过。此处不提供新业务证明或新whole执行结果。
+
+本次唯一七份维护文稿当前字节：
+- `docs/sdk/governance/finding-ledger.md`，SHA256 `054780461a861ffe5442b3cceaac948fdf2b2370e7f6003bcecf345e2d20eced`。
+- `docs/sdk/governance/capability-map.md`，SHA256 `15ca2524b6b0292657992acd3a141ea362d03abaa8c2a87d0c0c7ec8b1def76b`。
+- `docs/sdk/governance/capability-review-remaining.md`，SHA256 `349a31de89a9c0a5bce8f8993f98b34003ca6d511508146f030a872c3b0c31fc`。
+- `docs/sdk/governance/capability-review-dispositions.md`，SHA256 `44926eab8aa8612f38ca0ac8f541355467677a6ab19de4ad51e869e4197364a8`。
+- `README.md`，SHA256 `9828351422d02002b941a5f1b60fade021b4cdbe74cdc8ee3b3f8739d254e9db`。
+- `MIGRATION-SOURCE.md`，SHA256 `45ea97df7083eb5404f70cd94bb1426acef9740236d82b109d4c7d1d1cbd77d7`。
+- `AGENTS.md`，SHA256 `19475457a70e09ff30d4343452541dc3f1804c14bd98431f20eb6e0d8db6d5d5`。
+
+这些更正只同步current状态、已执行与未执行范围，历史正文、旧raw与原ADR不改；AGENTS仅当前门禁事实，未改变规则。800运行输入及61Rust/config实际SHA/mode不变，文稿会改变完整source摘要，不能借eebd/旧970c摘要称当前strict0。库存closed/行为open、3个宽Finding共用B物理结算与12项连续性待选择、合同13失败/Windowsnative/远端语义CI及SDKmain边界保；第三仓工具修复仍待授权，原30d差异门禁UTF8失败不被这次文稿slice或无base快照检查改写成通过。

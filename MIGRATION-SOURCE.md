@@ -62,7 +62,12 @@ The current Host dependency target is published framework revision
 The signed published source tree matches the independently reviewed candidate;
 it repairs Git branch switching through the original framework authority.
 The SDK lock additionally selects rustls 0.23.46. Framework post-main CI and
-SDK checks against this new pin/lock remain pending their actual receipts.
+[SDK pin/lock build and dependency checks](docs/sdk/governance/evidence/sdk-published-00782-pin/README.md)
+have actual reviewed receipts. [Rust14](docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md)
+and the [fourth complete language run](docs/sdk/governance/evidence/sdk-language-ci-repairs-final/README.md)
+passed locally; all 800 execution inputs are recoverable at b0e43/b315.
+This local Oracle21 result does not prove Linux CI Temurin17 or new action
+warning fixes, which require their actual remote execution.
 The earlier `be5f0a8405b593c4ef964cd6fd2df4beabf4956c`
 [published-pin provenance](docs/sdk/governance/evidence/sdk-chart-published-pin/published-pin-provenance.json)
 remains historical evidence for that older dependency/build, not validation of
@@ -70,8 +75,9 @@ this new Host target. The [historical a634 Rust gates](docs/sdk/governance/evide
 and [complete language gate](docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
 retain their exact source input hashes. Runtime repairs made after those runs,
 including stream failure classification and current publication/idempotency
-verification, require separate evidence. Exact dependency metadata, framework
-post-main CI, full contract generation and final SDK acceptance remain separate.
+verification, retain separately bound evidence. Full contract generation, new
+applicable CI, current-source semantics and exact SDK main acceptance remain
+separate.
 This changes the current build input, not the initial import archive, filtered
 history or extraction ancestry hashes recorded above.
 

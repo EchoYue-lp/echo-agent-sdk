@@ -12,8 +12,13 @@ resolves published framework revision
 `00782b8aeddefe2ea8c566922cbdee6aedc80d70` from
 [framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186).
 It includes the framework Git branch-switch repair; this SDK lock also selects
-rustls 0.23.46. Exact signed source/tree is verified, while post-main framework
-CI and this new SDK pin's build/dependency/native/final gates remain separate.
+rustls 0.23.46. Signed source/tree, framework post-main CI and the SDK
+[published-pin dependency/build checks](docs/sdk/governance/evidence/sdk-published-00782-pin/README.md)
+have actual reviewed receipts. [Rust14](docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md)
+and the [fourth complete language run](docs/sdk/governance/evidence/sdk-language-ci-repairs-final/README.md)
+passed locally with all 800 execution inputs recoverable in Git. Its Oracle
+JDK21 result does not replace Linux CI Temurin17; new fixture/action revisions
+still require actual remote CI and current-source semantic/main acceptance.
 The earlier be5 [published-pin provenance](docs/sdk/governance/evidence/sdk-chart-published-pin/published-pin-provenance.json)
 remains historical. The protocol remains framework-free, and full Rust
 inventory remains telemetry. The [historical a634 Rust gates](docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)

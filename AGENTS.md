@@ -21,14 +21,17 @@ superproject 中的规则文件才能冷启动。
 `27c7701e1eb116db1076da7f84bb68898544a44c`；该历史归属保留在 `MIGRATION-SOURCE.md`。
 当前 Host 治理候选精确依赖已发布 framework `00782b8aeddefe2ea8c566922cbdee6aedc80d70`，
 来自 [framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186)，承接 Git 分支切换无损修复。
-SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名与精确源码树已核对；
-新 framework main 后验 CI、SDK 新 pin/锁门禁及最终验收仍须真实通过，不由已发布推断完成。此前
+SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确源码树与合并后 CI 已核对；
+[SDK 新 pin/锁](docs/sdk/governance/evidence/sdk-published-00782-pin/README.md)、
+[14 条 Rust 门禁](docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md)及
+[第四次完整语言入口](docs/sdk/governance/evidence/sdk-language-ci-repairs-final/README.md)具实际本地通过证据。
+800项输入已逐Git恢复；本地Oracle21不代Linux CI Temurin17，新action警告及当前源码语义/main验收仍待实际结果。此前
 `be5f0a8405b593c4ef964cd6fd2df4beabf4956c` 的 [published-pin provenance](docs/sdk/governance/evidence/sdk-chart-published-pin/published-pin-provenance.json)
 保留为历史构建证据，不证明当前升级后的 Host 已通过最终门禁。
 [历史 a634 Rust 门禁](docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)及
 [完整语言门禁](docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
 固定各自实际源码切点；后续运行时修复与幂等验收不得借用此前通过结果。
-framework main 后验 CI、完整合同和 SDK 最终验收仍须分别结算。
+完整合同、新适用 CI、当前源码语义和 SDK main 最终验收仍须分别结算。
 [十二项 accepted-source 连续性方案](docs/sdk/governance/accepted-source-continuity-proposal.md)
 仍为 proposed；完整合同生成和 SDK main 验收尚未完成，不能由 pin 已发布推断 release。
 精确源快照、provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
