@@ -1,0 +1,89 @@
+B023 Function definition does not bind loop variable `task`
+   --> tests/test_tool_value_effect_host.py:108:48
+    |
+106 | …                     while True:
+107 | …                         observed = processes(work)
+108 | …                         if observed or task.done():
+    |                                          ^^^^
+109 | …                             return observed
+110 | …                         await asyncio.sleep(0.01)
+    |
+
+B023 Function definition does not bind loop variable `observed_at`
+   --> tests/test_tool_value_effect_host.py:118:35
+    |
+116 | …                     "observation_watchdog_seconds": 10,
+117 | …                     "observation_elapsed_seconds": asyncio.get_running_loop().time()
+118 | …                     - observed_at,
+    |                         ^^^^^^^^^^^
+119 | …                     "task_done": task.done(),
+120 | …                     "task_cancelled": task.cancelled(),
+    |
+
+B023 Function definition does not bind loop variable `task`
+   --> tests/test_tool_value_effect_host.py:119:46
+    |
+117 | …                         "observation_elapsed_seconds": asyncio.get_running_loop().time()
+118 | …                         - observed_at,
+119 | …                         "task_done": task.done(),
+    |                                        ^^^^
+120 | …                         "task_cancelled": task.cancelled(),
+121 | …                     }
+    |
+
+B023 Function definition does not bind loop variable `task`
+   --> tests/test_tool_value_effect_host.py:120:51
+    |
+118 | …                         - observed_at,
+119 | …                         "task_done": task.done(),
+120 | …                         "task_cancelled": task.cancelled(),
+    |                                             ^^^^
+121 | …                     }
+122 | …                     if task.done() and not task.cancelled():
+    |
+
+B023 Function definition does not bind loop variable `task`
+   --> tests/test_tool_value_effect_host.py:122:32
+    |
+120 | …                         "task_cancelled": task.cancelled(),
+121 | …                     }
+122 | …                     if task.done() and not task.cancelled():
+    |                          ^^^^
+123 | …                         error = task.exception()
+124 | …                         if error is None:
+    |
+
+B023 Function definition does not bind loop variable `task`
+   --> tests/test_tool_value_effect_host.py:122:52
+    |
+120 | …                         "task_cancelled": task.cancelled(),
+121 | …                     }
+122 | …                     if task.done() and not task.cancelled():
+    |                                              ^^^^
+123 | …                         error = task.exception()
+124 | …                         if error is None:
+    |
+
+B023 Function definition does not bind loop variable `task`
+   --> tests/test_tool_value_effect_host.py:123:41
+    |
+121 | …                     }
+122 | …                     if task.done() and not task.cancelled():
+123 | …                         error = task.exception()
+    |                                   ^^^^
+124 | …                         if error is None:
+125 | …                             fact["settled_invocation_result"] = task.result()
+    |
+
+B023 Function definition does not bind loop variable `task`
+   --> tests/test_tool_value_effect_host.py:125:73
+    |
+123 | …                     error = task.exception()
+124 | …                     if error is None:
+125 | …                         fact["settled_invocation_result"] = task.result()
+    |                                                               ^^^^
+126 | …                     else:
+127 | …                         fact["settled_invocation_error"] = {
+    |
+
+Found 8 errors.

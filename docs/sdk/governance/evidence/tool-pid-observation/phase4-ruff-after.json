@@ -1,0 +1,33 @@
+[
+  {
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "--with",
+      "ruff",
+      "ruff",
+      "check",
+      "tests/test_tool_value_effect_host.py"
+    ],
+    "exitCode": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "--with",
+      "ruff",
+      "ruff",
+      "format",
+      "--check",
+      "tests/test_tool_value_effect_host.py"
+    ],
+    "exitCode": 0,
+    "stdout": "1 file already formatted\n",
+    "stderr": ""
+  }
+]

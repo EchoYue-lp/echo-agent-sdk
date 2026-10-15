@@ -1,0 +1,56 @@
+{
+  "status": "insufficient evidence for unique Linux CI root cause; no fix applied",
+  "sourceGit": "722d09b1a0837f170d4af19cbc3e417d2131b5f3",
+  "sources": [
+    {
+      "path": "sdks/python/tests/test_tool_value_effect_host.py",
+      "sha256": "b7b59e497d324a2b914e8ab641cfb0b70f9e16523c3d04c7acca7ae211e942a7"
+    },
+    {
+      "path": "sdks/shared/testing/tool_value_effect_fixture.py",
+      "sha256": "75c9f86c0ac1f8e91473806a95b2c8732a9039a39e1d23a925cc7844078687d6"
+    },
+    {
+      "path": "sdks/typescript/test/tool-value-effect-host.test.js",
+      "sha256": "7b65a8026d1bad2e9678764a31137befcd20d1d99607c5891c0acb4beef7b6f3"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/ToolValueEffectHostTest.java",
+      "sha256": "5ea14c6727793b1ddeb100b3c479ac7d732dbc6285012f9d87261100c0f96a6c"
+    }
+  ],
+  "CI": {
+    "log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-722-ci-evidence/116172597308.log",
+    "SHA256": "70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547",
+    "bytes": 198565,
+    "pythonFailure": "test_tool_value_effect_host.py:113 assert len(pids)==1 got[]",
+    "sameRunTypescriptCounterEvidence": "Tool family corpus49rows48calls passes using same ps argv/exactownedprefix; prevents assuming universal Linux PS width cause",
+    "pythonTaskResultOrStatusAtFailure": "not recorded",
+    "rawPSAtFailure": "not recorded",
+    "elapsedAtAssertion": "not recorded"
+  },
+  "knownMechanism": {
+    "watchObservation": "50 polls with asyncio.sleep(0.01), synchronous ps in each; nominal sleep budget0.5s",
+    "commandOperationTimeoutSeconds": 5,
+    "prefix": "tail -f <exact ownedwork>/tail.txt",
+    "frameworkAuthority": "direct Command::new(program).args; process group/timeout/cleanup in framework echo-tools/src/shell.rs, not fixture",
+    "potentialHypotheses": [
+      "operation not launched within observation interval",
+      "operation settled with a real error before PID observation",
+      "platform process rendering/matching discrepancy"
+    ]
+  },
+  "macOnlyProbe": "mac-owned-tail-ps-observation.json",
+  "nextMinimumDiagnostic": {
+    "retainAssert": "len(pids)==1 and sameidentity-before-SIGTERM must remain",
+    "capture": [
+      "task.done plus actual result/exception ifdone",
+      "monotonicelapsed from invoke admission and each observedpoll",
+      "raw original ps rows associated with ownpath/tail",
+      "wide ps output as diagnostic comparison",
+      "original operationargs/expectedowner and outcome before cleanup"
+    ],
+    "cannotInfer": "Empty PID match does not establish no physical spawn or successful cleanup."
+  },
+  "mutations": "Admin only, no SDK source/test/semantic/generated/proof mutation; no Host/Cargo/Maven run; only actual owned local tail subprocess terminated and waited"
+}

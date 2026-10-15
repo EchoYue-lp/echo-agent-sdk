@@ -1,0 +1,10 @@
+{
+  "sourcePath": "sdks/python/tests/test_tool_value_effect_host.py",
+  "sourceSHA256": "8cbcdd12277393999231afafa48d91684232f0ef9408fa5c1b430a74e8b0df57",
+  "sourceBytes": 26268,
+  "base": "722d09b1a0837f170d4af19cbc3e417d2131b5f3",
+  "preReviewCandidateSHA256": "dc790509a9899139f67916816e6a98bf2baa2c31c3217cfe52e18ec628d73e4a",
+  "phase4Difference": "bind task/observed_at as explicit local function parameters for RuffB023, format only; semantics/watchdog/matcher/strictassert unchanged",
+  "ruffCheckAndFormatExit0": true,
+  "nativeExecuted": false
+}

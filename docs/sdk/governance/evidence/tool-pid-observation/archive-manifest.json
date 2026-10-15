@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "scope": "Python test-only PID observer source/controlled queue/native49row proof, not original Linux unique-cause confirmation",
+  "originalMemberCount": 30,
+  "originals": [
+    {
+      "path": "readonly-root-cause-facts.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/readonly-root-cause-facts.json",
+      "sha256": "5906a269bc0a81e74c694310f8f8a1460fbc42a923199c54946c116cfec55550",
+      "bytes": 2821
+    },
+    {
+      "path": "mac-owned-tail-ps-observation.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/mac-owned-tail-ps-observation.json",
+      "sha256": "c73f0a074f30d8a699493948ac59ac538cf84d24d4f4a036f86249009d10e40b",
+      "bytes": 2926
+    },
+    {
+      "path": "controlled-dispatch-gate.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-dispatch-gate.py",
+      "sha256": "e48fb3b01b74c9829b2893e9feb0caca5cc2ac38e5b0b88bab12f899a89eb10f",
+      "bytes": 6857
+    },
+    {
+      "path": "controlled-dispatch-gate-results.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-dispatch-gate-results.json",
+      "sha256": "aa80ee24e0af0e3e3863ce9f00e9c7785443164bf7362e19dc3b7249bfd760e9",
+      "bytes": 9446
+    },
+    {
+      "path": "controlled-dispatch-gate.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-dispatch-gate.log",
+      "sha256": "e7244571ea1a9f7d04758973290f783cd3cbdeb51750b87f828315fdcbc9731f",
+      "bytes": 901
+    },
+    {
+      "path": "controlled-dispatch-gate-run.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-dispatch-gate-run.json",
+      "sha256": "be74a72f8d572f2a13c7b6ff4b999ea33bc9e6f021f60bebbb19380a9ef44226",
+      "bytes": 1173
+    },
+    {
+      "path": "controlled-candidate-dispatch-gate.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-candidate-dispatch-gate.py",
+      "sha256": "5e8c8b828cf9dcedc4a24411029c5ebad30f091f6b9670dffa4134e2f141e46a",
+      "bytes": 7589
+    },
+    {
+      "path": "controlled-candidate-dispatch-results.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-candidate-dispatch-results.json",
+      "sha256": "28f641a191443a5073eb5aaa40aedf339fb7183340f4cd9e11b4baa05c97faf1",
+      "bytes": 9550
+    },
+    {
+      "path": "controlled-candidate-dispatch-gate.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-candidate-dispatch-gate.log",
+      "sha256": "82d996f724177150085590e4fc9bb801cc0d85a66797cecd081adbab031f84f0",
+      "bytes": 957
+    },
+    {
+      "path": "controlled-candidate-dispatch-gate-run.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-candidate-dispatch-gate-run.json",
+      "sha256": "ce9e7c56784aea932dd7d050d25170d9fe62f9b9a1a1664f069c8d47525da62b",
+      "bytes": 1185
+    },
+    {
+      "path": "diagnostic-failure-pure-test.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/diagnostic-failure-pure-test.py",
+      "sha256": "5b06b6df6a295ca4d1063651af89ee7ec10475f191141bc08f0040b7d6b71e60",
+      "bytes": 2338
+    },
+    {
+      "path": "diagnostic-failure-pure.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/diagnostic-failure-pure.log",
+      "sha256": "964cc31e3acc57d91b72d410dbc95fb8b3c74f4a5ddf9f81b875daf78fba3f25",
+      "bytes": 1667
+    },
+    {
+      "path": "diagnostic-failure-pure-run.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/diagnostic-failure-pure-run.json",
+      "sha256": "e290c65ca294f3d105b5b5ce40a0806b6e2e1570396abb7994819f8a6ae15c2f",
+      "bytes": 1105
+    },
+    {
+      "path": "phase4-ruff-before.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/phase4-ruff-before.log",
+      "sha256": "931445d754e6a9dad013c42c896512530c9ef693e5d01513b70709e842b8cf86",
+      "bytes": 3787
+    },
+    {
+      "path": "phase4-ruff-before.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/phase4-ruff-before.json",
+      "sha256": "10c162336994f7f494dab4aa7c57c0ac752af7e4c3fbcad7ce53bcfeea9de9e1",
+      "bytes": 261
+    },
+    {
+      "path": "phase4-ruff-after.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/phase4-ruff-after.json",
+      "sha256": "3011787ccd5e8726435ee3bf8b79222e52f3bd5a3d0579935418407cb4eb4d91",
+      "bytes": 543
+    },
+    {
+      "path": "phase4-source-freeze.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/phase4-source-freeze.json",
+      "sha256": "8e52a6eff9362585f126bd3f2c0bee6337969a9164e94d60c9785e58d4ad2655",
+      "bytes": 557
+    },
+    {
+      "path": "test-tool-value-effect-phase4.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/test-tool-value-effect-phase4.py",
+      "sha256": "8cbcdd12277393999231afafa48d91684232f0ef9408fa5c1b430a74e8b0df57",
+      "bytes": 26268
+    },
+    {
+      "path": "python312-native-after.log",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/python312-native-after.log",
+      "sha256": "e992935e2c4ed61a0d19d438d1df38ccf34bbdfd19c3d946b13393a38ac4fb6e",
+      "bytes": 865
+    },
+    {
+      "path": "python312-native-after-run.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/python312-native-after-run.json",
+      "sha256": "613d1b7ce8a1926e3e002478182bcb6d38dcec0a03904b363a0cb6ff4a18eea1",
+      "bytes": 1247
+    },
+    {
+      "path": "after-native-source-and-results.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/after-native-source-and-results.json",
+      "sha256": "0f27d379d3c5e95215254a4c6534d6a6152aee71f1d76936b4a89517178a00fa",
+      "bytes": 3496
+    },
+    {
+      "path": "test-tool-value-effect-candidate.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/test-tool-value-effect-candidate.py",
+      "sha256": "dc790509a9899139f67916816e6a98bf2baa2c31c3217cfe52e18ec628d73e4a",
+      "bytes": 25306
+    },
+    {
+      "path": "test-observer-candidate.patch",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/test-observer-candidate.patch",
+      "sha256": "9f4e8593b267052a11782f73db9174ed3bd70f05f4f775469c6f36bc09953b38",
+      "bytes": 5939
+    },
+    {
+      "path": "pid-observation-proposal.md",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/pid-observation-proposal.md",
+      "sha256": "22eea6bcae84df9028463fdf3e4c2b0d4f9e98cf51a4877dc38f58bc6b9e7b50",
+      "bytes": 5885
+    },
+    {
+      "path": "proposal-manifest.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/proposal-manifest.json",
+      "sha256": "75053d8e954c2f7413ce784accae8303edd1684ff009de56fe1a751e1c2ee16d",
+      "bytes": 2839
+    },
+    {
+      "path": "native/results.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/native-after/python-4aoqafw3/results.json",
+      "sha256": "0fd88000bdb2372d8314112b08182efe2257f557139117068daa97dcb10a4005",
+      "bytes": 148926
+    },
+    {
+      "path": "native/scenario.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/native-after/python-4aoqafw3/scenario.json",
+      "sha256": "2572a3e6553c22913e53d976112526947aa6d214f1689b7347c93d8a61910c48",
+      "bytes": 13674
+    },
+    {
+      "path": "native/baseline.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/native-after/python-4aoqafw3/baseline.json",
+      "sha256": "ce5e552b2e9dd9b6c2b91ff7d975b395083b05789b717afd5dfe434be9b09734",
+      "bytes": 249
+    },
+    {
+      "path": "native/host.json",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/native-after/python-4aoqafw3/host.json",
+      "sha256": "c6e0a9a3ee22597df0485f2dc4aeb87cafefbd934ee5440a426405e6b1672237",
+      "bytes": 520
+    },
+    {
+      "path": "executed-source/sdks/python/tests/test_tool_value_effect_host.py",
+      "original": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_tool_value_effect_host.py",
+      "sha256": "8cbcdd12277393999231afafa48d91684232f0ef9408fa5c1b430a74e8b0df57",
+      "bytes": 26268
+    }
+  ],
+  "derivedMembers": [
+    {
+      "path": "test-tool-value-effect-original.py",
+      "source": "git722 blob",
+      "sha256": "b7b59e497d324a2b914e8ab641cfb0b70f9e16523c3d04c7acca7ae211e942a7",
+      "bytes": 21561
+    },
+    {
+      "path": "implemented-watch-block.patch",
+      "source": "actual gitdiff722 of only test",
+      "sha256": "c9aeb209add4c8cc3f5021041bcdf0af533868397457552efacff7cc48a58ae8",
+      "bytes": 7117
+    }
+  ],
+  "sourceAfterSHA256": "8cbcdd12277393999231afafa48d91684232f0ef9408fa5c1b430a74e8b0df57",
+  "originalCIReference": {
+    "path": "../sdk-722-ci-results/jobs/116172597308.log",
+    "sha256": "70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547",
+    "bytes": 198565,
+    "notDuplicated": true
+  },
+  "actualCounts": {
+    "diagnosticNoHost": 3,
+    "completeNativeTestMethods": 1,
+    "nativeRows": 49,
+    "nativeCalls": 48,
+    "controlledBefore": 1,
+    "controlledAfter": 1
+  },
+  "actualRuntime": "Darwin/Python3.12.4/ACP0.12.1",
+  "sourceImplementationReview": "PASS C0/I0/M0 actual SDKcap review; native/material review follows",
+  "originalLinuxUniqueCauseConfirmed": false,
+  "fullLanguageOrMainClaimed": false
+}

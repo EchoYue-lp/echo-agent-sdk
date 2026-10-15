@@ -1,0 +1,105 @@
+--- a/sdks/python/tests/test_tool_value_effect_host.py
++++ b/sdks/python/tests/test_tool_value_effect_host.py
+@@ -100,23 +100,85 @@
+                         task = asyncio.create_task(
+                             session.invoke(step["operation"], arguments)
+                         )
+-                        pids = []
+-                        for _ in range(50):
+-                            pids = processes(work)
+-                            if pids or task.done():
+-                                break
+-                            await asyncio.sleep(0.01)
+-                        row["process_before"] = pids
+-                        if step.get("terminate_observed"):
+-                            import signal
+-
+-                            assert len(pids) == 1, pids
+-                            assert processes(work) == pids, (
+-                                "own tail identity changed before signal"
+-                            )
+-                            os.kill(pids[0]["pid"], signal.SIGTERM)
+-                        row["result"] = await task
+-                        row["process_after"] = processes(work)
++                        observed_at = asyncio.get_running_loop().time()
++
++                        async def observe_owned_producer():
++                            while True:
++                                observed = processes(work)
++                                if observed or task.done():
++                                    return observed
++                                await asyncio.sleep(0.01)
++
++                        def observation_failure(reason, observed):
++                            fact = {
++                                "reason": reason,
++                                "pids": observed,
++                                "observation_watchdog_seconds": 10,
++                                "observation_elapsed_seconds": asyncio.get_running_loop().time()
++                                - observed_at,
++                                "task_done": task.done(),
++                                "task_cancelled": task.cancelled(),
++                            }
++                            if task.done() and not task.cancelled():
++                                error = task.exception()
++                                if error is None:
++                                    fact["settled_invocation_result"] = task.result()
++                                else:
++                                    fact["settled_invocation_error"] = {
++                                        "type": type(error).__name__,
++                                        "message": str(error),
++                                    }
++                            prefix = "tail -f " + str(work / "tail.txt")
++                            own_ids = {str(item["pid"]) for item in observed}
++                            for name, args in [
++                                ("owned_wide_ps", ["ps", "-ww", "-axo", "pid=,ppid=,command="]),
++                                ("owned_default_ps", ["ps", "-axo", "pid=,ppid=,command="]),
++                            ]:
++                                try:
++                                    lines = subprocess.check_output(args, text=True).splitlines()
++                                except (OSError, subprocess.CalledProcessError) as error:
++                                    fact[name + "_diagnostic_error"] = {
++                                        "type": type(error).__name__,
++                                        "message": str(error),
++                                    }
++                                    continue
++                                selected = []
++                                for line in lines:
++                                    parts = line.strip().split(None, 2)
++                                    if len(parts) != 3:
++                                        continue
++                                    if parts[2].startswith(prefix) or parts[0] in own_ids:
++                                        selected.append(line)
++                                        own_ids.add(parts[0])
++                                fact[name] = selected
++                            return fact
++
++                        try:
++                            try:
++                                # Test-only observation watchdog reuses fixture-ready's
++                                # 10s budget; it is not an ACP or tool execution deadline.
++                                pids = await asyncio.wait_for(observe_owned_producer(), 10)
++                            except asyncio.TimeoutError as error:
++                                raise AssertionError(
++                                    observation_failure("owned producer observation watchdog expired", [])
++                                ) from error
++                            row["process_before"] = pids
++                            if step.get("terminate_observed"):
++                                import signal
++
++                                assert len(pids) == 1, observation_failure(
++                                    "owned tail count is not exactly one", pids
++                                )
++                                assert processes(work) == pids, (
++                                    "own tail identity changed before signal"
++                                )
++                                os.kill(pids[0]["pid"], signal.SIGTERM)
++                            row["result"] = await task
++                            row["process_after"] = processes(work)
++                        finally:
++                            if not task.done():
++                                task.cancel()
++                            await asyncio.gather(task, return_exceptions=True)
+                     else:
+                         row["result"] = await session.invoke(
+                             step["operation"], arguments

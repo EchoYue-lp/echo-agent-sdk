@@ -1,0 +1,72 @@
+{
+  "platform": "darwin",
+  "uname": "Darwin MacBookPro 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:49 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T6000 arm64",
+  "childPID": 31834,
+  "ownedCommand": [
+    "tail",
+    "-f",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/long-owned-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/tail.txt"
+  ],
+  "observations": [
+    {
+      "argv": [
+        "ps",
+        "-axo",
+        "pid=,ppid=,command="
+      ],
+      "COLUMNS": null,
+      "rawOwnedRow": "31834 31832 tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/long-owned-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/tail.txt",
+      "matchesCurrentExactPrefix": true,
+      "commandBytes": 205,
+      "expectedCommandBytes": 205,
+      "childStillAlive": true
+    },
+    {
+      "argv": [
+        "ps",
+        "-axo",
+        "pid=,ppid=,command="
+      ],
+      "COLUMNS": "80",
+      "rawOwnedRow": "31834 31832 tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/long-owned-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/tail.txt",
+      "matchesCurrentExactPrefix": true,
+      "commandBytes": 205,
+      "expectedCommandBytes": 205,
+      "childStillAlive": true
+    },
+    {
+      "argv": [
+        "ps",
+        "-ww",
+        "-axo",
+        "pid=,ppid=,command="
+      ],
+      "COLUMNS": null,
+      "rawOwnedRow": "31834 31832 tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/long-owned-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/tail.txt",
+      "matchesCurrentExactPrefix": true,
+      "commandBytes": 205,
+      "expectedCommandBytes": 205,
+      "childStillAlive": true
+    },
+    {
+      "argv": [
+        "ps",
+        "-ww",
+        "-axo",
+        "pid=,ppid=,command="
+      ],
+      "COLUMNS": "80",
+      "rawOwnedRow": "31834 31832 tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/long-owned-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/tail.txt",
+      "matchesCurrentExactPrefix": true,
+      "commandBytes": 205,
+      "expectedCommandBytes": 205,
+      "childStillAlive": true
+    }
+  ],
+  "actualCleanupReturncode": -15,
+  "physicalChildExited": true,
+  "linuxNativeExecuted": false,
+  "CIlogSHA256": "70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547",
+  "CIcounterEvidence": "TS same ps argv/prefix passed all49rows on Linux; Python failed after50x10ms with no saved PSraw/taskresult at assertion. Cannot infer Linux truncation from [] alone.",
+  "scope": "No Host; only own tail subprocess, no SDK changes."
+}

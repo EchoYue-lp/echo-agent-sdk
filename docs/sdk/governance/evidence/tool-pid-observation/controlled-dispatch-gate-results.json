@@ -1,0 +1,427 @@
+{
+  "platform": "darwin",
+  "scriptRole": "controlled request-dispatch queue counterexample, not reproduction of Linux CI root cause",
+  "host": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+  "hostSHA256": "0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df",
+  "sourceTestSHA256": "b7b59e497d324a2b914e8ab641cfb0b70f9e16523c3d04c7acca7ae211e942a7",
+  "step": {
+    "id": "shell-signal",
+    "operation": "shell",
+    "arguments": [
+      "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-real-host-work/tail.txt",
+      5
+    ],
+    "expected": "tool_failure",
+    "watch_process": true,
+    "terminate_observed": true
+  },
+  "timestamps": {
+    "queuedBeforePublicInvokeNs": 204549458,
+    "oldObservationCompletedNs": 2797058875,
+    "requestGateReleasedNs": 2887770875,
+    "actualSessionInvokeAdmissionNs": 2931314791,
+    "ownedProducerObservedNs": 3043395083,
+    "originalInvocationSettledNs": 3174136916,
+    "clientClosedNs": 3225245916
+  },
+  "oldObservations": [
+    {
+      "iteration": 0,
+      "elapsedNs": 242795833,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 1,
+      "elapsedNs": 293036291,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 2,
+      "elapsedNs": 343946916,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 3,
+      "elapsedNs": 394054666,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 4,
+      "elapsedNs": 442596333,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 5,
+      "elapsedNs": 491286083,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 6,
+      "elapsedNs": 540708541,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 7,
+      "elapsedNs": 590143416,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 8,
+      "elapsedNs": 639474750,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 9,
+      "elapsedNs": 688760416,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 10,
+      "elapsedNs": 738349458,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 11,
+      "elapsedNs": 787691208,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 12,
+      "elapsedNs": 836815291,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 13,
+      "elapsedNs": 886339250,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 14,
+      "elapsedNs": 935522500,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 15,
+      "elapsedNs": 984610208,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 16,
+      "elapsedNs": 1034067000,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 17,
+      "elapsedNs": 1084170750,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 18,
+      "elapsedNs": 1134060666,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 19,
+      "elapsedNs": 1197167458,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 20,
+      "elapsedNs": 1249773583,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 21,
+      "elapsedNs": 1300087375,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 22,
+      "elapsedNs": 1350101208,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 23,
+      "elapsedNs": 1399982833,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 24,
+      "elapsedNs": 1449664000,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 25,
+      "elapsedNs": 1499352291,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 26,
+      "elapsedNs": 1548687250,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 27,
+      "elapsedNs": 1598006250,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 28,
+      "elapsedNs": 1647207208,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 29,
+      "elapsedNs": 1696449791,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 30,
+      "elapsedNs": 1747531125,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 31,
+      "elapsedNs": 1798223625,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 32,
+      "elapsedNs": 1849124916,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 33,
+      "elapsedNs": 1908735666,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 34,
+      "elapsedNs": 1963757500,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 35,
+      "elapsedNs": 2020397333,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 36,
+      "elapsedNs": 2077047541,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 37,
+      "elapsedNs": 2136398708,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 38,
+      "elapsedNs": 2189928416,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 39,
+      "elapsedNs": 2244275083,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 40,
+      "elapsedNs": 2297297125,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 41,
+      "elapsedNs": 2350847000,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 42,
+      "elapsedNs": 2404542583,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 43,
+      "elapsedNs": 2472939750,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 44,
+      "elapsedNs": 2531733375,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 45,
+      "elapsedNs": 2582584750,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 46,
+      "elapsedNs": 2633350541,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 47,
+      "elapsedNs": 2683516291,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 48,
+      "elapsedNs": 2733627333,
+      "taskDone": false,
+      "pids": []
+    },
+    {
+      "iteration": 49,
+      "elapsedNs": 2784896291,
+      "taskDone": false,
+      "pids": []
+    }
+  ],
+  "protectedBefore": {
+    "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+    "fixture.db": "32ac90cc99cedcfacc6756a34912513ef8e699eb81f6db880fac994f4b5d4241",
+    "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+  },
+  "oldNominalSleepBudgetNs": 500000000,
+  "oldActualObservationElapsedNs": 2592508709,
+  "oldTaskPending": true,
+  "oldDefaultPS": {
+    "argv": [
+      "ps",
+      "-axo",
+      "pid=,ppid=,command="
+    ],
+    "rows": [],
+    "stderr": ""
+  },
+  "oldWidePS": {
+    "argv": [
+      "ps",
+      "-ww",
+      "-axo",
+      "pid=,ppid=,command="
+    ],
+    "rows": [],
+    "stderr": ""
+  },
+  "oldAssertion": {
+    "failed": true,
+    "exception": "AssertionError",
+    "value": "[]"
+  },
+  "observedPIDs": [
+    {
+      "pid": 33618,
+      "ppid": 33535,
+      "command": "tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-real-host-work/tail.txt"
+    }
+  ],
+  "beforeSignalDefaultPS": {
+    "argv": [
+      "ps",
+      "-axo",
+      "pid=,ppid=,command="
+    ],
+    "rows": [
+      "33618 33535 tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-real-host-work/tail.txt"
+    ],
+    "stderr": ""
+  },
+  "beforeSignalWidePS": {
+    "argv": [
+      "ps",
+      "-ww",
+      "-axo",
+      "pid=,ppid=,command="
+    ],
+    "rows": [
+      "33618 33535 tail -f /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-real-host-work/tail.txt"
+    ],
+    "stderr": ""
+  },
+  "signal": {
+    "name": "SIGTERM",
+    "pid": 33618
+  },
+  "result": {
+    "kind": {
+      "kind": "command_output",
+      "exit_code": "-1"
+    },
+    "success": false,
+    "output": "tail-ready 中文🙂\n",
+    "error": "Command execution failed, exit code: -1\nstdout: tail-ready 中文🙂\n\nstderr: ",
+    "failure": {
+      "category": "permanent",
+      "recovery": "verify_then_retry",
+      "side_effect": "possible",
+      "postcondition": "inspect command output and affected targets before continuing"
+    },
+    "truncated": false,
+    "metadata": {
+      "duration_ms": "215",
+      "exit_code": "-1",
+      "output_truncated": "false",
+      "stderr_bytes": "0",
+      "stdout_bytes": "22",
+      "working_dir": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation/controlled-real-host-work"
+    }
+  },
+  "afterPIDs": [],
+  "protectedAfter": {
+    "sentinel.txt": "8575fd1a74130ffb2c4a1d45c5d9a4fcdf440bbc27b0a920e5033d2d2b53e88e",
+    "fixture.db": "32ac90cc99cedcfacc6756a34912513ef8e699eb81f6db880fac994f4b5d4241",
+    "src/main.py": "5b68eb273bc3e01807b5e68a3e39aaa29118cb2633334d6f272c0b9f3d92591d"
+  },
+  "conditionObservationPreservedStrictPIDAndEffects": true,
+  "finalPIDs": []
+}
