@@ -259,3 +259,14 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 公开22e工具原0ebe远端semantic job116226422797已经对真实30d完整fullmode通过；这是结构/引用/摘要/变更依据门禁，不是language/Host/contract工程全绿。当前这六份文稿/元数据候选仍须同公开22e对原30d fullrequirechange实际复验，不能借旧4994/0ebe或无base快照0冒新结果。新的Linux PID/Host诊断验收未发生，B3/12连续性人类选择、合同13与平台/main范围独立。
 
 用户要求的main文件必要性精简尚未执行任何归档删除；普通fullproject/change门禁不取代显式continuity。原parent391/完整1173诊断与A候选精确95解析修复/B未决定storage合同分别保留，不删义务、不降risk、不以本段接受新B门禁政策或宣称payload可合main。
+
+
+## 131三项Java测试support与唯一当前页的索引
+
+当前来源保存Git `131bb03f1e87dc8411ebc1f81e87dd927962dc54`，相对0bc仅三份Java测试变更（无framework/pin/锁、SDK生产、accepted seed变更）：
+
+- `sdks/java/src/test/java/com/echoagent/sdk/StreamCancellationRouteHostTest.java`，Git `8156b64a3aee785b98e93adab65744709c0c7496` SHA256 `738b216a99883318191653445a64195e4a2abce6952e57fc975bac9d67bdda72`。
+- `sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java`，Git `b9bc86ac0c6866283af912ca3da382c495d55240` SHA256 `717edf3e172c1aa3d2a0064c140b57b6a26544e293c69960f27a9ef7770855eb`。
+- `sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java`，Git `131bb03f1e87dc8411ebc1f81e87dd927962dc54` SHA256 `f8e4f11495d9bb11174cce45da686d1e1f3597976e6d33959531989c76075cc5`。
+
+具名原Linux四errors、3修复原因、focused1/16/两profile各4及原独审角色由既有 `evidence.sdk-official-current-language-gate` 与 `audit.sdk-language-client-lifecycle-contract-evidence` 的三新challenge承担，本Pin只索引来源，不扩业务支持。0bc CI6success/3failure与MacOracle21 focused/待新Linux边界保留；当前唯一状态页 `docs/sdk/governance/capability-review-remaining.md` 候选SHA256 `bdfb189243a4bb31526c0905e4c8bc29fe7b132fed04ecdbf43893330e67bd8e`，它以本次真实候选树绑定，不伪为131 Git原文。原Pin观察7d0/source_refs/旧命令/历史执行保；58resolved/7open及B/12/合同13/continuity与payload BLOCK保持。当前候选摘要和公开22e原30d完整门禁收据另核，本段本身不声明新gate或新CI已经通过。

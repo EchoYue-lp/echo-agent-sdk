@@ -6,11 +6,11 @@ Host 固定已发布 framework `00782b8a`，八包同一Git来源、无path patc
 
 当前正式模型为58项resolved、7项open。EventIdentity嵌套`subagent_lineage.parent_event_id`已在Python/Java无损投影，修复源 `185559ce`、对应pure value测试3+3与Java17编译及独立复审支持该具体局部闭合；它不新增API、改框架身份权威或自动关闭其它族。bootstrap原stable探测错误已按 `4994a8c` 真实CI在 `890abaa7` 具体三链闭合。本次0ebe及后续新增原始CI日志以Admin保全和官方job定位，不再逐轮新增main归档；既有归档尚未精简，待保义务repair审查与具体删除授权。
 
-新Linux `0ebe15f6` 的[canonical semantic job首次成功](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38674982406/job/116226422797)只证明该切点：公开工具main `22e241f723673330e9d6bec638def0f78968c74c` 的原action，真实PR base、full Git/tags、strict snapshot与change evidence实际运行通过，解除旧8ec UTF8工具执行障碍；旧失败记录不改写。此job不代完整合同、工程CI或SDK main验收，当前后继诊断/文稿树仍需最后官方完整基底验收。
+最新Linux `0bc677a0` 的[原始九job运行](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38679511245)自然终态6success/3failure：language TS336及quickstart、Python416加18子测试及quickstart通过，Java356/4errors/0skip、Javaquickstart未达；两个合同job仍原13阻断。三项test-support修复分别处理portable临时路径、pending响应前先确认frame被child读到，并隔离受控低CPU共池饥饿（两方法）；最后一项是同症状受控复现，原Linux实际pool状态未记录，不断言唯一Linux原因。修复保存8156/b9bc/131，局部class验证1、16及3CPU/default各4通过，保原断言/预算与生产实现。它们是macOS Oracle21 focused，不能借作新Linux全套通过。
 
-PID原Linux诊断已确证default `ps -axo` 截断长owned tail命令：同PID/Host PPID的wide输出有完整路径。`c5c977ef` 仅加`-ww`，保原匹配、唯一PID、身份复核、SIGTERM、10秒观察预算、完整结果和protected断言；本机49场景与独立复审通过，但修后Linux尚待，PID Finding仍open。`managed_commit_disconnect_restart_replays_same_receipt` 的首次断连后Host退出10秒等待在原CI超时，精确内部原因仍未知；`fd4326be` 仅加入await错误上下文，focused格式/编译/单例/clippy通过不代表修复该Linux退出故障，新Host Finding保持open。对应受控测试不改变事务commit/receipt、恢复权威、产品deadline或取消政策。
+PID默认ps宽度截断原根因及c5的-ww修复、Gap具名修复均保原scope；0bc Python/TS通过是该次执行事实，本次不由总计数自动关闭PID/Gap。原Host首次passive exit10秒超时精确内部原因仍未知，fd432只补上下文，0bc Host job通过也不倒推原因果已查明，Host Finding仍open。当前58resolved/7open不变，原三宽义务/12accepted-source也不被这三fixture更新关闭。
 
-仍阻塞main：①[完整合同只读门禁](evidence/sdk-contract-00782-readonly/README.md)真实exit1/13，12项source/kind兼容选择未答，另Curator已批准处置仍待正式seed更新；无update/accept/retire。②cleanup/Sandbox/Task resume三个宽义务关联的5秒物理结算B未裁决；不能由合作取消或本机focused结果接受风险。③当前Linux新源码的完整官方脚本及适用CI、最终sourceDigest/已发布工具完整原始基底gate、精确SDK main仍须实际通过。④**合入main逐文件必要性审查仍BLOCK**：只交付必要源码、可执行测试、正式长期文档和结构义务；阶段raw/重复状态/历史包不能因日志真实就自动main必要。候选仍在Admin审阅，未获具体删除授权、未声称raw已移除，也不得删除语义义务或历史可追溯链。
+仍阻塞main：①[完整合同只读门禁](evidence/sdk-contract-00782-readonly/README.md)真实exit1/13，12项source/kind兼容选择未答，另Curator已批准处置仍待正式seed更新；无update/accept/retire。②cleanup/Sandbox/Task resume三个宽义务关联的5秒物理结算B未裁决；不能由合作取消或本机focused结果接受风险。③当前131后继源码的完整Linux脚本及适用CI、同期sourceDigest与公开工具原30d完整变更门禁、精确SDK main各按真实切点验收，不继承0bc结果。④**合入main逐文件必要性审查仍BLOCK**：只交付必要源码、可执行测试、正式长期文档和结构义务；阶段raw/重复状态/历史包不能因日志真实就自动main必要。候选仍在Admin审阅，未获具体删除授权、未声称raw已移除，也不得删除语义义务或历史可追溯链。
 
 库存建模closed、行为模型open；40格仅五个in_scope区域38 covered/2根manifest not_applicable，不是41族全部verified。Discovery原unknown不因清理目标删除。Windows job只验证Rust库，不证明Windows原生SDK消费者。历史eebd strict/source473/308对象及后继无base验证各保原来源，不能替代当前已发布工具的真实原30d完整变更依据门禁。npm/PyPI/Maven发布独立且本轮不发布，CLI/官网无新增API或行为需要外仓改动。
 
