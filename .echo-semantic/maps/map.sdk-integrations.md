@@ -73,6 +73,7 @@ finding_refs:
 - finding.sdk-chart-dimension-integer-loss
 - finding.sdk-git-branch-switch-dirty-path-overwrite
 - finding.sdk-git-worktree-source-poll-stack-overflow
+- finding.sdk-tool-pid-observation-window
 audit_refs:
 - audit.sdk-computation-50-rereview
 - audit.sdk-task-memory-workflow-finite-trigger-input
@@ -1078,3 +1079,24 @@ CurrentTool本会话实际源码/84记录/所有字段与Java1/0/0/0 XML独审PA
 
 本slice不是所有平台或任意并发Git变动/远程push，不能由84计数证明所有未列Git行为。Root最新完整Rust/语言与最终SDK main/合同需自己的冻结收据，manifest当时whole pending保历史；B物理残余、12身份迁移/完整生成继续原独立Finding。
 八视角具名范围：输入由原schema/参数校验；结果逐HEAD/heads/index/files而非消息；nativeGit/原frameworkhelper唯一权威；durability限Git objects/files与原managedmarker；生命周期限boundedprocess与实际物理worktree清理；并发失败本次限dirty拒绝，原cwd隔离是历史独立证据，并非任意同repo并行；权限保持既有localtool risk菜单，无公网门控；合同以原9Tool/4source精确consumer、完整值/typederror与pubpin证明。原早期仍缺文字属历史，不升级Behavior verified或baselineclosure，也不靠84数量全族complete。原observed/source_refs作为其它历史源模型点保，后继fe845明确Evidence/Audit各自sourcecut，未把旧run重命名当前。
+
+
+## 后继722 Linux CI局部开放记录
+
+`finding.sdk-tool-pid-observation-window` 当前open：ToolValue shell采样guard真实Linux []唯一cause仍未证，Darwin合法请求排队受控原50轮实际2.5925s/taskpending/nodispatch红，release后约112ms sameownedtail/TERM/完整结果/保护文件与PID清理均保持；不能据控例冒原Linux ps截断或生产shell坏。
+
+本记录发现观察基准722及PRmerge5d407仅定位后继测试/CI材料，Map原observed_at、所有旧scene/source_refs/status、行为义务和原Evidence审查仍属原epoch；新增只本owner的Finding引用，不复制到所有Map，不提升或失效全8视角/41族。原日志目前Admin完整Hash定位，正式Git归档后再补当期来源，不伪旧Git含未来raw；旧56/4是原切点，安装这三新具体缺陷后56resolved/7open，B3共享物理B与12连续性不改变。
+
+
+## 正式CI保存材料的当期观察（f68）
+
+本段当期观察Git `f68cb49bf421ecdb71dfa4775495c363e31b3324`仅定位正式保存的722运行材料，不把运行时间或源码测试执行标成f68。原发现点`722d09b1a0837f170d4af19cbc3e417d2131b5f3`、PR实际merge5d407、候选所有原Map观察/scenes/status/锚点与对应测试源码SHA保持。正式来源逐路径与Hash如下，可从该Git读取：
+
+- `docs/sdk/governance/evidence/sdk-722-ci-results/README.md`，Git f68 SHA256 `dcd6a9e4922a05527b189a2c03108a3ac73936d5107d022600dada1e570f0b27`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/manifest.json`，Git f68 SHA256 `4eb02f38b55191bfa761cd892b667733dcb26d4462eb655cfd2a22cbd379443e`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/SHA256SUMS.json`，Git f68 SHA256 `c22f92784ad1874ffcb0bb70ad312965e50bda78dcd69871230b2073006f1e44`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597308.log`，Git f68 SHA256 `70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547`。
+
+正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
+
+原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。

@@ -25,6 +25,7 @@ finding_refs:
 - finding.sdk-accepted-source-continuity
 - finding.sdk-dependency-warning-policy-conflict
 - finding.sdk-test-feature-wiring
+- finding.sdk-cargo-deny-bootstrap-toolchain-probe
 audit_refs:
 - audit.sdk-wave2-cutover-final-rereview
 related_map_refs: []
@@ -168,3 +169,28 @@ SDK 不新增线上权限模型，凭据不得写入合同、日志或迁移证�
 review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
 
 原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+
+## 后继722 Linux CI局部开放记录
+
+`finding.sdk-cargo-deny-bootstrap-toolchain-probe` 当前open：现有CI dependency action安装前探测stable-musl工具链未装产生bootstrap error，原fallback后audit/四deny及50duplicate范围不抹error且非漏洞/deny失败；单input rust-version:stable实施已审但新remote验证未到，不自动闭合。
+
+本记录发现观察基准722及PRmerge5d407仅定位后继测试/CI材料，Map原observed_at、所有旧scene/source_refs/status、行为义务和原Evidence审查仍属原epoch；新增只本owner的Finding引用，不复制到所有Map，不提升或失效全8视角/41族。原日志目前Admin完整Hash定位，正式Git归档后再补当期来源，不伪旧Git含未来raw；旧56/4是原切点，安装这三新具体缺陷后56resolved/7open，B3共享物理B与12连续性不改变。
+
+
+## 正式CI保存材料的当期观察（f68）
+
+本段当期观察Git `f68cb49bf421ecdb71dfa4775495c363e31b3324`仅定位正式保存的722运行材料，不把运行时间或源码测试执行标成f68。原发现点`722d09b1a0837f170d4af19cbc3e417d2131b5f3`、PR实际merge5d407、候选所有原Map观察/scenes/status/锚点与对应测试源码SHA保持。正式来源逐路径与Hash如下，可从该Git读取：
+
+- `docs/sdk/governance/evidence/sdk-722-ci-results/README.md`，Git f68 SHA256 `dcd6a9e4922a05527b189a2c03108a3ac73936d5107d022600dada1e570f0b27`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/manifest.json`，Git f68 SHA256 `4eb02f38b55191bfa761cd892b667733dcb26d4462eb655cfd2a22cbd379443e`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/SHA256SUMS.json`，Git f68 SHA256 `c22f92784ad1874ffcb0bb70ad312965e50bda78dcd69871230b2073006f1e44`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597308.log`，Git f68 SHA256 `70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/README.md`，Git f68 SHA256 `463e816ecca27812b3b371c7ab041e769b785336020ed8c434f056084736c202`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/original-722-dependency-job.log`，Git f68 SHA256 `59dc929cd16b4f36b4a30a6eaf8e3e3db9d6f22af695e3bf9f1fba094fb5ccff`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/installed-validation.json`，Git f68 SHA256 `0deab4d51fa6ce53b8a5cf09009c56afed02401c1ee4837244496d253645f5d2`。
+- `docs/sdk/governance/evidence/cargo-deny-stable-toolchain/provenance.json`，Git f68 SHA256 `6a4af51067158eb9aaac48dc6e8a0666eb8713974ec5c69cf528fea912c4bc2c`。
+
+正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
+
+原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。

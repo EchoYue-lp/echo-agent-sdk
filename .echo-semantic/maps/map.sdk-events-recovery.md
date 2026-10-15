@@ -20,6 +20,7 @@ finding_refs:
 - finding.sdk-ack-submission-consumption
 - finding.sdk-gap-ack-replay-watermark
 - finding.sdk-language-consumption-ack
+- finding.sdk-gap-duplicate-ack-successor-observation
 audit_refs:
 - audit.sdk-ack-recovery-rereview
 - audit.sdk-gap-watermark-host-rereview
@@ -269,3 +270,24 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 原#120、ACK消费与stream具体缺陷三链resolved继续有效，不重复造关闭对象或操作外部Issue。新增liveJournal场景证明settledRun且Host/connection仍活时目录换代两次明确replay_unavailable/after_delay、原Runreceipt/peerSession完整page不变，restore同inode/原两fileSHA后完整page相同；三语言12/12/9零skip。它是既有正确失败路径补证，不是生产redgreen；不扩为activewritepartialcrash或任意网络故障。
 
 已接受event-replay及共享资源stream的入口、单一authority、正常生命周期/具名错误和恢复已有finiteexamined闭包；映射仅boundedmodel，Behavior保持needs_review，八个全局风险和baseline不因此全covered。宽cleanup与5秒B保持原Finding理由，12身份/完整生成/平台/main独立；其它resourcefamily/sourceoperation未审方法不从这条共享owner路径泛推全部无损。
+
+
+## 后继722 Linux CI局部开放记录
+
+`finding.sdk-gap-duplicate-ack-successor-observation` 当前open：现有Python duplicate ACK测试的观察基线未等前次合法ACK产生的paused successor gap，Linux真实4!=3及Root受控同Hostgap4 beforeduplicate因果属于测试oracle；不是重复ACK产品效应/序号权威变化，原已闭水位/消费义务不重开。
+
+本记录发现观察基准722及PRmerge5d407仅定位后继测试/CI材料，Map原observed_at、所有旧scene/source_refs/status、行为义务和原Evidence审查仍属原epoch；新增只本owner的Finding引用，不复制到所有Map，不提升或失效全8视角/41族。原日志目前Admin完整Hash定位，正式Git归档后再补当期来源，不伪旧Git含未来raw；旧56/4是原切点，安装这三新具体缺陷后56resolved/7open，B3共享物理B与12连续性不改变。
+
+
+## 正式CI保存材料的当期观察（f68）
+
+本段当期观察Git `f68cb49bf421ecdb71dfa4775495c363e31b3324`仅定位正式保存的722运行材料，不把运行时间或源码测试执行标成f68。原发现点`722d09b1a0837f170d4af19cbc3e417d2131b5f3`、PR实际merge5d407、候选所有原Map观察/scenes/status/锚点与对应测试源码SHA保持。正式来源逐路径与Hash如下，可从该Git读取：
+
+- `docs/sdk/governance/evidence/sdk-722-ci-results/README.md`，Git f68 SHA256 `dcd6a9e4922a05527b189a2c03108a3ac73936d5107d022600dada1e570f0b27`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/manifest.json`，Git f68 SHA256 `4eb02f38b55191bfa761cd892b667733dcb26d4462eb655cfd2a22cbd379443e`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/SHA256SUMS.json`，Git f68 SHA256 `c22f92784ad1874ffcb0bb70ad312965e50bda78dcd69871230b2073006f1e44`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597308.log`，Git f68 SHA256 `70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547`。
+
+正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
+
+原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
