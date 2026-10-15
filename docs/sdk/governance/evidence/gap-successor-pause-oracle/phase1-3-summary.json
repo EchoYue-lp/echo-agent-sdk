@@ -1,0 +1,31 @@
+{
+  "classification": "preexisting successor-gap in-flight; late-ACK count baseline recorded before stream became paused",
+  "CI": {
+    "source": "116172597308.log",
+    "sha256": "70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547",
+    "python": "3.12.3",
+    "failedCase": "test_gap_ack_snapshot_continuation[True-window]",
+    "actual": 4,
+    "baseline": 3
+  },
+  "controlled": {
+    "work": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-gap-late-notification-debug/runtime/controlled-before/test_gap_ack_snapshot_continua0",
+    "originalAssertionFailed": true,
+    "originalSuccessorGapReceivedNS": 2161280095367875,
+    "duplicateAckObservedNS": 2161280096402916,
+    "sameStream": {
+      "id": "81793e42-bbeb-4569-a2bd-9cbc2c7c05a9",
+      "generation": "1",
+      "kind": "stream"
+    },
+    "successorGap": {
+      "from_sequence": "4",
+      "to_sequence": "4",
+      "reason": "ack window exceeded; live delivery paused",
+      "snapshot_watermark": "4"
+    },
+    "originalGapArrivedBeforeDuplicateAck": true,
+    "baseline": 3
+  },
+  "scope": "read-only Phase1-3; Admin byte-preserving receive timing gate; no production or original-test changes"
+}

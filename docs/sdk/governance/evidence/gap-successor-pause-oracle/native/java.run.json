@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+  "steps": [
+    {
+      "label": "gap-successor-java-four",
+      "command": [
+        "mvn",
+        "-q",
+        "-Dtest=GapAckHostTest#gapAckSnapshotContinuation",
+        "test"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/java",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-gap-late-notification-debug/native/java.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 0,
+      "bytesWritten": 0,
+      "startedAt": "2026-10-15T01:53:51.352Z",
+      "finishedAt": "2026-10-15T01:54:00.441Z"
+    }
+  ],
+  "updatedAt": "2026-10-15T01:54:00.441Z"
+}

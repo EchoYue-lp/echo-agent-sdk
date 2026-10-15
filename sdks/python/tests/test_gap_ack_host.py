@@ -121,7 +121,28 @@ async def test_gap_ack_snapshot_continuation(
                     else resumed["envelope"]["sequence"]
                 )
                 assert int(resumed_sequence) > watermark
-            await wait_for(lambda: len(notifications(tmp_path)) > len(before))
+
+            # A resumed event can precede its lookahead gap on the pipe.
+            # Observe the next real pause before testing the duplicate old ACK.
+            def successor_gap():
+                return next(
+                    (
+                        frame
+                        for frame in notifications(tmp_path)
+                        if frame["method"] == "_echo_agent/gap"
+                        and frame["params"]["stream"] == run.stream.to_dict()
+                        and int(frame["params"]["gap"]["from_sequence"]) > watermark
+                        and int(frame["params"]["gap"]["snapshot_watermark"])
+                        > watermark
+                    ),
+                    None,
+                )
+
+            assert (tmp_path / "parked").exists()
+            assert not (tmp_path / "release").exists()
+            await wait_for(lambda: successor_gap() is not None)
+            paused_gap = successor_gap()
+            assert not (tmp_path / "release").exists()
             assert all(
                 sequence(value) > watermark
                 for value in notifications(tmp_path)[len(before) :]
@@ -130,6 +151,7 @@ async def test_gap_ack_snapshot_continuation(
             await sdk.notify("echo_agent/event/ack", ack)
             await run.get()
             assert len(notifications(tmp_path)) == announced
+            assert successor_gap() == paused_gap
             (tmp_path / "release").touch()
             assert (await run.wait(timeout=5))["settled"]
             assert (await run.get())["status"] == "completed"

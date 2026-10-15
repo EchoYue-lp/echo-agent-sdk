@@ -1,0 +1,30 @@
+{
+  "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "env": {
+    "TZ": "UTC",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "ECHO_AGENT_SDK_HOST": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-00782-git-branch-rustls046-host",
+    "PYTHONPATH": "src"
+  },
+  "command": [
+    "uv",
+    "run",
+    "--no-project",
+    "--python",
+    "3.12",
+    "--with",
+    "pytest",
+    "--with",
+    "pytest-asyncio",
+    "--with",
+    "agent-client-protocol==0.12.1",
+    "python",
+    "-m",
+    "pytest",
+    "-v",
+    "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-gap-late-notification-debug/test_controlled_late_gap_after.py::test_gap_ack_snapshot_continuation[True-window]",
+    "--basetemp=/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-gap-late-notification-debug/runtime/controlled-after-no-warning"
+  ],
+  "classification": "Admin invocation-only correction; unchanged test and model/proxy, preserve original WARN run, no rerun of12 native rows",
+  "status": "prepared, not executed; waiting Root lease"
+}

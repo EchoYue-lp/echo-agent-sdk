@@ -69,7 +69,16 @@ for (const mode of ["window", "oversized"]) {
         const resumed = (await iterator.next()).value;
         assert.ok(BigInt(resumed.gap?.from_sequence ?? resumed.envelope.sequence) > watermark);
       }
-      await waitFor(async () => (await notifications(work)).length > before.length);
+      // A resumed event may arrive before its lookahead gap. Wait for the
+      // actual next pause before measuring effects of the duplicate old ACK.
+      const successorGap = async () => (await notifications(work)).find(value =>
+        value.method === "_echo_agent/gap" && value.params.stream.id === run.stream.id
+        && value.params.stream.generation === run.stream.generation && value.params.stream.kind === run.stream.kind
+        && BigInt(value.params.gap.from_sequence) > watermark && BigInt(value.params.gap.snapshot_watermark) > watermark);
+      assert.equal(await exists(join(work, "parked")), true);assert.equal(await exists(join(work, "release")), false);
+      await waitFor(async () => Boolean(await successorGap()));
+      const pausedGap = await successorGap();
+      assert.equal(await exists(join(work, "release")), false);
       const after = (await notifications(work)).slice(before.length);
       assert.ok(after.every(value => BigInt(value.params.gap?.from_sequence ?? value.params.envelope.sequence) > watermark),
         "Host must not re-send snapshot-covered events or gaps, even if client deduplicates them");
@@ -78,6 +87,7 @@ for (const mode of ["window", "oversized"]) {
       await sdk.acknowledge(run.stream, watermark.toString());
       await run.get();
       assert.equal((await notifications(work)).length, announced, "late ACK cannot retract the next gap");
+      assert.deepEqual(await successorGap(), pausedGap, "late ACK must preserve the complete successor pause");
       await writeFile(join(work, "release"), "");
       assert.equal((await run.wait()).settled, true);
       assert.equal((await run.get()).status, "completed");

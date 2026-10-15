@@ -87,16 +87,30 @@ class GapAckHostTest {
                             : resumed.path("envelope").path("sequence").asText();
                     assertTrue(Long.parseLong(sequence) > watermark);
                 }
-                waitFor(() -> {
-                    try { return notifications(work).size() > before.size(); }
-                    catch (Exception error) { throw new IllegalStateException(error); }
-                });
+                // Observe the actual successor pause, not only its preceding
+                // resumed event, before measuring duplicate-old-ACK effects.
+                java.util.function.Supplier<JsonNode> successorGap = () -> {
+                    try {
+                        return notifications(work).stream().filter(frame ->
+                                "_echo_agent/gap".equals(frame.path("method").asText())
+                                && frame.path("params").path("stream").equals(run.stream().toJson())
+                                && Long.parseLong(frame.path("params").path("gap").path("from_sequence").asText()) > watermark
+                                && Long.parseLong(frame.path("params").path("gap").path("snapshot_watermark").asText()) > watermark)
+                                .findFirst().orElse(null);
+                    } catch (Exception error) { throw new IllegalStateException(error); }
+                };
+                assertTrue(Files.exists(work.resolve("parked")));
+                assertFalse(Files.exists(work.resolve("release")));
+                waitFor(() -> successorGap.get() != null);
+                JsonNode pausedGap = successorGap.get();
+                assertFalse(Files.exists(work.resolve("release")));
                 List<JsonNode> after = notifications(work);
                 assertAfterWatermark(after.subList(before.size(), after.size()), watermark);
                 int announced = notifications(work).size();
                 sdk.notify("_echo_agent/event/ack", ack).toCompletableFuture().get(5, TimeUnit.SECONDS);
                 run.get().toCompletableFuture().get(5, TimeUnit.SECONDS);
                 assertEquals(announced, notifications(work).size(), "late ACK cannot retract the next gap");
+                assertEquals(pausedGap, successorGap.get(), "late ACK must preserve the complete successor pause");
                 Files.createFile(work.resolve("release"));
                 assertTrue(run.waitForSettlement().toCompletableFuture().get(5, TimeUnit.SECONDS).path("settled").asBoolean());
                 assertEquals("completed", run.get().toCompletableFuture().get(5, TimeUnit.SECONDS).path("status").asText());

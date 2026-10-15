@@ -1,0 +1,31 @@
+{
+  "reviewer": "framework_final_review",
+  "conclusion": "PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "action": 0,
+  "scope": "finite source, controlled before-after, 12 selected native scenario rows and byte-preserving formal archive",
+  "designSHA256": "6d754e04640749d42da0c013039e08a865e29490f8a83fbac75c381e7f87db7c",
+  "sourceManifestSHA256": "a052d205badc50be2303fd20470799bff48db08c5ecce51733dcbdb67a3b3527",
+  "nativeReceiptSHA256": "0c5a251e23860e16470e3f1845ba5d96e3677b8ed3dab042ab30dc151638fda2",
+  "controlledFinalReceiptSHA256": "fb2df55a6784b92725963870585b7c28e634c3254a81428e2633cce61a7ef16e",
+  "controlledFinalLogSHA256": "83b1a076390d03397e5c9f2cb7bdd9aa2b1f7c8015eb12b923f68f590a0f7449",
+  "verified": [
+    "three existing callers only; original count/futureACK/noresend/replay/terminal/cleanup assertions preserved",
+    "actual samefullstream successor from/watermark above prior; model parked and release absent",
+    "real Host gap received before duplicate ACK proves original transport baseline race",
+    "controlled corrected barrier receives original gap before baseline; duplicate count equality unchanged",
+    "TS4 pass8 unrelated namefilter skip/Python3.12.4 four pass0skip/Java one parameterized method4rows0errorfailskip",
+    "7input hashes before-after-current exact; shared proxy/model and production clients untouched",
+    "original invocation WARN retained; correctedcwd retry1pass0warning/noSignal/noTrunc",
+    "formal50contents original copies actual byte identical; CI722 raw SHA matched"
+  ],
+  "sealHead": "e13ff977ac048764bc0d0764382813bbeab0d0aa",
+  "exclusions": [
+    "unfiltered whole-language gate",
+    "remote Linux acceptance",
+    "product B-policy",
+    "all concurrency interleavings"
+  ]
+}

@@ -1,0 +1,111 @@
+diff --git a/sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java b/sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java
+index 275ecad..919187b 100644
+--- a/sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java
++++ b/sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java
+@@ -87,16 +87,30 @@ class GapAckHostTest {
+                             : resumed.path("envelope").path("sequence").asText();
+                     assertTrue(Long.parseLong(sequence) > watermark);
+                 }
+-                waitFor(() -> {
+-                    try { return notifications(work).size() > before.size(); }
+-                    catch (Exception error) { throw new IllegalStateException(error); }
+-                });
++                // Observe the actual successor pause, not only its preceding
++                // resumed event, before measuring duplicate-old-ACK effects.
++                java.util.function.Supplier<JsonNode> successorGap = () -> {
++                    try {
++                        return notifications(work).stream().filter(frame ->
++                                "_echo_agent/gap".equals(frame.path("method").asText())
++                                && frame.path("params").path("stream").equals(run.stream().toJson())
++                                && Long.parseLong(frame.path("params").path("gap").path("from_sequence").asText()) > watermark
++                                && Long.parseLong(frame.path("params").path("gap").path("snapshot_watermark").asText()) > watermark)
++                                .findFirst().orElse(null);
++                    } catch (Exception error) { throw new IllegalStateException(error); }
++                };
++                assertTrue(Files.exists(work.resolve("parked")));
++                assertFalse(Files.exists(work.resolve("release")));
++                waitFor(() -> successorGap.get() != null);
++                JsonNode pausedGap = successorGap.get();
++                assertFalse(Files.exists(work.resolve("release")));
+                 List<JsonNode> after = notifications(work);
+                 assertAfterWatermark(after.subList(before.size(), after.size()), watermark);
+                 int announced = notifications(work).size();
+                 sdk.notify("_echo_agent/event/ack", ack).toCompletableFuture().get(5, TimeUnit.SECONDS);
+                 run.get().toCompletableFuture().get(5, TimeUnit.SECONDS);
+                 assertEquals(announced, notifications(work).size(), "late ACK cannot retract the next gap");
++                assertEquals(pausedGap, successorGap.get(), "late ACK must preserve the complete successor pause");
+                 Files.createFile(work.resolve("release"));
+                 assertTrue(run.waitForSettlement().toCompletableFuture().get(5, TimeUnit.SECONDS).path("settled").asBoolean());
+                 assertEquals("completed", run.get().toCompletableFuture().get(5, TimeUnit.SECONDS).path("status").asText());
+diff --git a/sdks/python/tests/test_gap_ack_host.py b/sdks/python/tests/test_gap_ack_host.py
+index 11b8f11..c8c5e20 100644
+--- a/sdks/python/tests/test_gap_ack_host.py
++++ b/sdks/python/tests/test_gap_ack_host.py
+@@ -121,7 +121,28 @@ async def test_gap_ack_snapshot_continuation(
+                     else resumed["envelope"]["sequence"]
+                 )
+                 assert int(resumed_sequence) > watermark
+-            await wait_for(lambda: len(notifications(tmp_path)) > len(before))
++
++            # A resumed event can precede its lookahead gap on the pipe.
++            # Observe the next real pause before testing the duplicate old ACK.
++            def successor_gap():
++                return next(
++                    (
++                        frame
++                        for frame in notifications(tmp_path)
++                        if frame["method"] == "_echo_agent/gap"
++                        and frame["params"]["stream"] == run.stream.to_dict()
++                        and int(frame["params"]["gap"]["from_sequence"]) > watermark
++                        and int(frame["params"]["gap"]["snapshot_watermark"])
++                        > watermark
++                    ),
++                    None,
++                )
++
++            assert (tmp_path / "parked").exists()
++            assert not (tmp_path / "release").exists()
++            await wait_for(lambda: successor_gap() is not None)
++            paused_gap = successor_gap()
++            assert not (tmp_path / "release").exists()
+             assert all(
+                 sequence(value) > watermark
+                 for value in notifications(tmp_path)[len(before) :]
+@@ -130,6 +151,7 @@ async def test_gap_ack_snapshot_continuation(
+             await sdk.notify("echo_agent/event/ack", ack)
+             await run.get()
+             assert len(notifications(tmp_path)) == announced
++            assert successor_gap() == paused_gap
+             (tmp_path / "release").touch()
+             assert (await run.wait(timeout=5))["settled"]
+             assert (await run.get())["status"] == "completed"
+diff --git a/sdks/typescript/test/gap-ack-host.test.js b/sdks/typescript/test/gap-ack-host.test.js
+index e7808dd..34c48c6 100644
+--- a/sdks/typescript/test/gap-ack-host.test.js
++++ b/sdks/typescript/test/gap-ack-host.test.js
+@@ -69,7 +69,16 @@ for (const mode of ["window", "oversized"]) {
+         const resumed = (await iterator.next()).value;
+         assert.ok(BigInt(resumed.gap?.from_sequence ?? resumed.envelope.sequence) > watermark);
+       }
+-      await waitFor(async () => (await notifications(work)).length > before.length);
++      // A resumed event may arrive before its lookahead gap. Wait for the
++      // actual next pause before measuring effects of the duplicate old ACK.
++      const successorGap = async () => (await notifications(work)).find(value =>
++        value.method === "_echo_agent/gap" && value.params.stream.id === run.stream.id
++        && value.params.stream.generation === run.stream.generation && value.params.stream.kind === run.stream.kind
++        && BigInt(value.params.gap.from_sequence) > watermark && BigInt(value.params.gap.snapshot_watermark) > watermark);
++      assert.equal(await exists(join(work, "parked")), true);assert.equal(await exists(join(work, "release")), false);
++      await waitFor(async () => Boolean(await successorGap()));
++      const pausedGap = await successorGap();
++      assert.equal(await exists(join(work, "release")), false);
+       const after = (await notifications(work)).slice(before.length);
+       assert.ok(after.every(value => BigInt(value.params.gap?.from_sequence ?? value.params.envelope.sequence) > watermark),
+         "Host must not re-send snapshot-covered events or gaps, even if client deduplicates them");
+@@ -78,6 +87,7 @@ for (const mode of ["window", "oversized"]) {
+       await sdk.acknowledge(run.stream, watermark.toString());
+       await run.get();
+       assert.equal((await notifications(work)).length, announced, "late ACK cannot retract the next gap");
++      assert.deepEqual(await successorGap(), pausedGap, "late ACK must preserve the complete successor pause");
+       await writeFile(join(work, "release"), "");
+       assert.equal((await run.wait()).settled, true);
+       assert.equal((await run.get()).status, "completed");
