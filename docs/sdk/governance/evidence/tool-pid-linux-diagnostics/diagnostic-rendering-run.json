@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "steps": [
+    {
+      "label": "expected-two-failures-prove-pytest-dict-truncation-vs-json-preservation",
+      "command": [
+        "uv",
+        "run",
+        "--no-project",
+        "--python",
+        "3.12",
+        "--with",
+        "pytest",
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation-4994/test_diagnostic_rendering.py"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation-4994/diagnostic-rendering.log",
+      "exitCode": 1,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 2522,
+      "bytesWritten": 2522,
+      "startedAt": "2026-10-15T02:38:34.590Z",
+      "finishedAt": "2026-10-15T02:38:35.238Z"
+    }
+  ],
+  "updatedAt": "2026-10-15T02:38:35.238Z"
+}

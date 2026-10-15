@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+  "steps": [
+    {
+      "label": "bounded-actual-candidate-ps-capture-and-full-json-no-matcher-change",
+      "command": [
+        "uv",
+        "run",
+        "--no-project",
+        "--python",
+        "3.12",
+        "python",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation-4994/diagnostic_candidate_pure_test.py",
+        "-v"
+      ],
+      "cwd": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python",
+      "logPath": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-linux-tool-pid-investigation-4994/diagnostic-candidate-pure.log",
+      "exitCode": 0,
+      "signal": null,
+      "errorCode": null,
+      "truncated": false,
+      "bytesSeen": 583,
+      "bytesWritten": 583,
+      "startedAt": "2026-10-15T02:41:17.425Z",
+      "finishedAt": "2026-10-15T02:41:17.803Z"
+    }
+  ],
+  "updatedAt": "2026-10-15T02:41:17.803Z"
+}

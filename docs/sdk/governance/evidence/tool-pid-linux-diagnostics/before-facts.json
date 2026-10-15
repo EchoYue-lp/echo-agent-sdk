@@ -1,0 +1,14 @@
+{
+  "status": "read-only cause investigation; noSDKwrites/Host",
+  "CIlogSHA256": "8941794e23ac55544bd966c70447f1b86340330dc91ccb7ab4c12417e5fc191e",
+  "CIlogBytes": 197614,
+  "testSHA256": "8cbcdd12277393999231afafa48d91684232f0ef9408fa5c1b430a74e8b0df57",
+  "known": "nonwatchdog assert after5.028703s; observer returned because invocation task done, but dictpytestrepr hides fulltaskresult. No claim exact error without rawpayload.",
+  "notKnown": [
+    "task result timeout vsother settledvalue",
+    "pending-period ps command representation",
+    "actual Linux pid/argv/work canonicalization"
+  ],
+  "availableLinuxContainerCLIs": [],
+  "diagnosticRenderingTest": "pure synthetic JSON fields only; does not reproduce tool behavior or make actualtimeout claim"
+}

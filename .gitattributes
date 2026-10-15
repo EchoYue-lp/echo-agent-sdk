@@ -297,3 +297,6 @@ docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906751.log -diff
 docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906756.log -diff
 docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906771.log -diff
 docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906823.log -diff
+
+# Original PID diagnostic candidate patch bytes.
+docs/sdk/governance/evidence/tool-pid-linux-diagnostics/diagnostic-candidate.patch -diff

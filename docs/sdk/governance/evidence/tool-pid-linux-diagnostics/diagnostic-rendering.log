@@ -1,0 +1,29 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______________ test_original_dictionary_assertion_is_abbreviated _______________
+
+    def test_original_dictionary_assertion_is_abbreviated():
+        value=fact()
+>       assert len(value["pids"])==1,value
+E       AssertionError: {'observation_elapsed_seconds': 5.028703057, 'observation_watchdog_seconds': 10, 'owned_default_ps': [], 'owned_wide_ps': [], ...}
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../../../../admin/sdk-linux-tool-pid-investigation-4994/test_diagnostic_rendering.py:10: AssertionError
+____________________ test_explicit_json_marker_is_retained _____________________
+
+    def test_explicit_json_marker_is_retained():
+        value=fact()
+        print("TOOL_PID_OBSERVATION_FAILURE_JSON "+json.dumps(value, ensure_ascii=False),flush=True)
+>       assert len(value["pids"])==1,json.dumps(value,ensure_ascii=False)
+E       AssertionError: {"reason": "owned tail count is not exactly one", "pids": [], "observation_watchdog_seconds": 10, "observation_elapsed_seconds": 5.028703057, "task_done": true, "task_cancelled": false, "settled_invocation_result": {"kind": {"kind": "command_output", "exit_code": "-1"}, "failure": {"category": "timeout"}, "output": "only synthetic diagnostic serialization input 中文🙂"}, "owned_default_ps": [], "owned_wide_ps": []}
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+../../../../admin/sdk-linux-tool-pid-investigation-4994/test_diagnostic_rendering.py:16: AssertionError
+----------------------------- Captured stdout call -----------------------------
+TOOL_PID_OBSERVATION_FAILURE_JSON {"reason": "owned tail count is not exactly one", "pids": [], "observation_watchdog_seconds": 10, "observation_elapsed_seconds": 5.028703057, "task_done": true, "task_cancelled": false, "settled_invocation_result": {"kind": {"kind": "command_output", "exit_code": "-1"}, "failure": {"category": "timeout"}, "output": "only synthetic diagnostic serialization input 中文🙂"}, "owned_default_ps": [], "owned_wide_ps": []}
+=========================== short test summary info ============================
+FAILED ../../../../admin/sdk-linux-tool-pid-investigation-4994/test_diagnostic_rendering.py::test_original_dictionary_assertion_is_abbreviated
+FAILED ../../../../admin/sdk-linux-tool-pid-investigation-4994/test_diagnostic_rendering.py::test_explicit_json_marker_is_retained
+2 failed in 0.14s

@@ -1,0 +1,60 @@
+{
+  "status": "diagnostic-only candidate, source not applied",
+  "sourceBeforeSHA256": "8cbcdd12277393999231afafa48d91684232f0ef9408fa5c1b430a74e8b0df57",
+  "candidateSHA256": "99e006edfc2a5c5a31d7f57dea6ff39e61ac027521ab5b8973fab8a56bdb0817",
+  "patchSHA256": "211f9640041043086c693ada1439f9937efce56b54c6d275fc7d1de06cb54305",
+  "onlyPurpose": "Recover full original failure and bounded owned pending process observations without changing success matcher or deadline",
+  "LinuxRootCauseConfirmed": false,
+  "members": [
+    {
+      "path": "before-facts.json",
+      "sha256": "5311fc61c0d494fe503ae96bcc56c01e3ed9078dafc4e680bc1f506180b8a7c0",
+      "bytes": 768
+    },
+    {
+      "path": "test_diagnostic_rendering.py",
+      "sha256": "a28c60cfca22f2646924cfa35e6168db4405c41649109632141a5497a4b0f936",
+      "bytes": 788
+    },
+    {
+      "path": "diagnostic-rendering.log",
+      "sha256": "7df2748073b01b47281e2f04baa855979399930cc8baffe2a0a0c1aed32984c8",
+      "bytes": 2522
+    },
+    {
+      "path": "diagnostic-rendering-run.json",
+      "sha256": "8df889f93a842a0fb539b16cb2d6531978ac3c6ed8d9dcc1a125e29de735ec5e",
+      "bytes": 1207
+    },
+    {
+      "path": "test-tool-value-effect-diagnostic-candidate.py",
+      "sha256": "99e006edfc2a5c5a31d7f57dea6ff39e61ac027521ab5b8973fab8a56bdb0817",
+      "bytes": 28783
+    },
+    {
+      "path": "diagnostic-candidate.patch",
+      "sha256": "211f9640041043086c693ada1439f9937efce56b54c6d275fc7d1de06cb54305",
+      "bytes": 5744
+    },
+    {
+      "path": "diagnostic_candidate_pure_test.py",
+      "sha256": "764bc81ef0ea1252ae1edc50d4379dd25079301d8c11aab418baecf5553bb557",
+      "bytes": 4084
+    },
+    {
+      "path": "diagnostic-candidate-pure.log",
+      "sha256": "f2d675e60caa304daef23279ab6b42dc409b3fbc56ecb064d4ce4bcbb06796df",
+      "bytes": 583
+    },
+    {
+      "path": "diagnostic-candidate-pure-run.json",
+      "sha256": "fbbf5be16d84fe9ff447c823435ec8502734f13dc001fcdd4870333fd5a8a097",
+      "bytes": 1143
+    },
+    {
+      "path": "proposal.md",
+      "sha256": "c326f6707c96f877d24ae795a610df0529b8fdcda1c8213fc73513fbbb11dc54",
+      "bytes": 2655
+    }
+  ]
+}
