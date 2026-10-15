@@ -21,6 +21,7 @@ evidence_refs:
 - evidence.sdk-tools-bridge-finite-observation
 - evidence.sdk-python310-factory-timeout-closure
 finding_refs:
+- finding.sdk-managed-restart-passive-host-exit-timeout
 - finding.sdk-extension-pending-stream-owner
 - finding.sdk-factory-instance-routing
 - finding.sdk-managed-store-adaptation
@@ -321,3 +322,8 @@ sharedEvidence/8Audit对应真实5bcb与原runtime69b；原failurecause两个rem
 ## Python3.10 Factory cleanup typed超时局部闭合
 
 新具名Finding finding.sdk-python310-factory-cleanup-timeout-classification承接受支持3.10真实wait_for异常被builtin捕获漏掉而返回extension_failed的单行生产缺陷。修后asyncio.TimeoutError恢复原extension_timeout/after_delay，shield/pendingchild owner/retry和cleanup权威不变；原测试不改、两版本各31及第四whole按各sourcecut读取，三链由上述specificEvidence/Audit承接。原map观察/场景source_refs与所有旧义务保，不因本局部closed提升Bridge/LanguageBehavior或B物理/12连续性。SDKmain/平台另验，不新增状态/contract/API。
+
+
+## Managed restart被动Host退出的具体未决
+
+新增 finding.sdk-managed-restart-passive-host-exit-timeout 只定位原0ebe第一Host child.wait10s Elapsed，restart与后续receipt断言未达。入口本已在此Map场景sourceRefs中；场景mapped不代表该失败已修。原scenes/status/观察不改，新诊断未提交不假afterGit、不推数据丢失或B5秒policy。

@@ -28,6 +28,7 @@ code_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-event-identity-nested-parent-closure
 - evidence.sdk-language-client-lifecycle-current
 - evidence.sdk-typescript-stdio-close-specific-closure
 - evidence.sdk-java-stdio-close-specific-closure
@@ -39,6 +40,7 @@ evidence_refs:
 - evidence.sdk-official-factory-final-language-gate
 - evidence.sdk-be5-official-full-language
 finding_refs:
+- finding.sdk-event-identity-nested-parent-projection
 - finding.sdk-typescript-stdio-close-ownership
 - finding.sdk-java-stdio-process-first-close
 - finding.sdk-ack-submission-consumption
@@ -111,3 +113,10 @@ TS与Java两specific stdio关闭缺陷的repair/当前same-source verification/�
 ## 原已保存源码出处 (569 historical)
 
 56929154c1851473e9e4837901b610cecf001b2d : sdks/typescript/test/lsp-host.test.js, sdks/python/tests/test_lsp_diagnostics_host.py. 这两份测试在原SDKSnapshot可恢复，不在本次76601中；原LSP行为与断言义务保留，不伪装为新提交测试源，不宣称8lens审查替代全LSP契约生成验收。
+
+
+## nested parent局部后继观察
+
+Python与Java原纯值构造入口丢失 accepted runtime.subagent_lineage.parent_event_id：Python先将lineage容器转字符串再查字段，Java只查flat字段。原0ebe同一Python/Java probe各exit1；TS原nested peer exit0。185559仅修原投影：保容器到叶值转换、原flat优先与语言各自空值校验、不变UUID/其余identity字段/immutable更新；不新增API或Host状态权威。实际after同probe各exit0；Python3.10原模块3项与JUnit类3项均0失败/0skip，Java实际Oracle21运行且--release17编译通过，不冒已执行JDK17。SDKcap原源码、具名pure-value测试及材料审PASS C0/I0/M0；本元作者只回收该有限结论。
+
+仅这一个accepted pure-value parent投影局部闭合；不是全部lineage/跨进程事件/Host集成或Linux/JDK17完整语言验证。Map/Behavior仍保持原needs_review。B3、12accepted-source、合同13、PID/Linux和Host退出未知原因独立。历史raw不新增S包，下面Admin定位可保原byte恢复，不伪source_refs已在Git。

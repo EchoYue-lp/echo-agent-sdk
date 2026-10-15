@@ -83,3 +83,12 @@ Python唯一watch分支修复已806真提交，原固定50轮改发现自有PID�
 - `docs/sdk/governance/evidence/tool-pid-observation/SHA256SUMS`，SHA256 `4bf67fd29f509cd433805ebab60369ee9515769c8e4e20817cb713ca8f0363fd`。
 
 源4tests已变化，先前第四whole800完整0继续保它自己的执行cut而非声称当前all800exact。生产61Rust/Cargo输入与锁未因此变化；本次不会重复原14Rust或本地大target完整门禁。新CI按focused开发门禁后实跑方案另执行，暂不关闭本Finding或提升Behavior/库存/全goal完成；B3/12、第三工具交付和官方原30d门禁各按真实当前进展处理。
+
+
+## 0ebe原Linux直接因果与-ww有限后继（仍open）
+
+此前unknown/排队反例段落保留为当时观察；新0ebe原CI完整JSON给同一Host18445、自有tail18521在0.03058024秒的两行：default `tail -f /home/runner/work/echo-agent-sdk/echo-agent-sdk/target/t`，wide保完整`.../tool-value-effects/python-piqww4ly/tail.txt`。严格路径matcher因此漏掉已真实spawn的tail；原tool随后5003ms正确返回timeout，不能说从未dispatch。原0ebe语言job116226422997日志200288B/SHA0fe6bf746d27ca6aaa4c7b741f1cbfdd22c056c60b66cdfdb7550fc59522b88f，公开运行38674982406，不是原722唯一cause的新推断。
+
+Admin `sdk-linux-ps-width-fix/causal-facts.json`（2249B，SHA256 `fbee6c2216c49320595c94498209b8daf8d0726255f7121edc08c9b537504538`）；Admin `sdk-linux-ps-width-fix/after-native-summary.json`（3004B，SHA256 `e2a8f356aa103bca8f0ba676a0d5930dda5e440a6002f40bf83cdeaa961b2030`）。真实修复Git `c5c977ef862acbe99684294cca966c559859b6be`只原ps argv加`-ww`，不改matcher/超时/identity复核/任何生产源。修后SHA62bc5fb0a8f5512060ce031303a80cbe1d0b1d1a1fad79c317aa53ac866d06ee；Darwin3.12本地49rows/48calls与protectedrows、timeout/signal物理after[]均0，SDKcap有限独审PASS。原执行HEAD185559时测试候选尚未提交，c5只是保存同字节，不能把185559 Git源码当62bc。
+
+原722 unknown和Darwin2.5925秒合法排队反例不删改；本段新增0ebe直接事实取代当前原因未知描述。Finding status仍open：新exact-source Linux原case与CI后验未得，不把Mac通过当Linux验证，不做RiskAccepted或泛资源cleanup结论。

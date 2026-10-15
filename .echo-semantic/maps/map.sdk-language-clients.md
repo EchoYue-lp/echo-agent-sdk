@@ -14,6 +14,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-event-identity-nested-parent-closure
 - evidence.sdk-language-client-lifecycle-current
 - evidence.sdk-typescript-stdio-close-specific-closure
 - evidence.sdk-java-stdio-close-specific-closure
@@ -26,6 +27,7 @@ evidence_refs:
 - evidence.sdk-protocol-finite-observation
 - evidence.sdk-integrations-finite-observation
 finding_refs:
+- finding.sdk-event-identity-nested-parent-projection
 - finding.sdk-ack-submission-consumption
 - finding.sdk-inventory-acceptance-authority
 - finding.sdk-language-close-retry
@@ -39,6 +41,7 @@ finding_refs:
 - finding.sdk-telemetry-fixture-pretry-owner-leak
 - finding.sdk-state-trace-timezone-oracle
 audit_refs:
+- audit.sdk-event-identity-nested-parent-closure
 - audit.sdk-language-client-lifecycle-trigger-input
 - audit.sdk-language-client-lifecycle-result-side-effect
 - audit.sdk-language-client-lifecycle-state-authority
@@ -483,3 +486,8 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 - `finding.sdk-state-trace-timezone-oracle`：open，缺实际修复、有限验证和复审三链。
 
 map原observed_at76601仍定位原场景源码，此后继文字明确观察9a及原eebd日志；不把新路径塞旧Git source_refs、不提升41族verified/取消B或12义务。
+
+
+## EventIdentity pure-value入口与具名缺陷
+
+原scenes/观察Git/状态不变；Discovery该入口可mapped不等无bug。nested parent局部三链见 evidence.sdk-event-identity-nested-parent-closure / audit.sdk-event-identity-nested-parent-closure；修复保存185559，原执行0ebe及平台界限保。仅这一个accepted pure-value parent投影局部闭合；不是全部lineage/跨进程事件/Host集成或Linux/JDK17完整语言验证。Map/Behavior仍保持原needs_review。B3、12accepted-source、合同13、PID/Linux和Host退出未知原因独立。历史raw不新增S包，下面Admin定位可保原byte恢复，不伪source_refs已在Git。
