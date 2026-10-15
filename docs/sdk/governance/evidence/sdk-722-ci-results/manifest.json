@@ -1,0 +1,383 @@
+{
+  "scope": "eight completed CI jobs and completed failure workflow terminal; retains earlier seven-job observation separately",
+  "run_id": 38658108668,
+  "run_url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668",
+  "PR": 5,
+  "head_commit": "722d09b1a0837f170d4af19cbc3e417d2131b5f3",
+  "checkout_PR_merge_commit": "5d407e160bb5c7ade01be1980ed9a4e5a6888d17",
+  "base_main_at_checkout": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
+  "jobs_observed": 8,
+  "completed_success_jobs": 5,
+  "completed_failed_jobs": 3,
+  "unobserved_terminal_job": null,
+  "workflow_terminal": "completed/failure",
+  "jobs": [
+    {
+      "id": 116172597152,
+      "name": "linux test (sdk-host)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T00:06:42Z",
+      "completed_at": "2026-10-15T00:29:14Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172597152",
+      "log_bytes": 163861,
+      "log_sha256": "94cb81e1f984b46609cfd5aac6456e3fac18142f73ee2c6d91ac319a1cfb04c0",
+      "rust_test_containers": [
+        {
+          "passed": 31,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 93,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 28,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 32,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 24
+        }
+      ],
+      "scope_note": "containers/profiles are listed separately; overlapping builds are not deduplicated or combined as unique tests"
+    },
+    {
+      "id": 116172597212,
+      "name": "linux test (protocol)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T00:06:43Z",
+      "completed_at": "2026-10-15T00:09:54Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172597212",
+      "log_bytes": 86103,
+      "log_sha256": "6a86fa5c7b088ccbdb1cfaa9898b6336e58f3d72b600eb34333b9189995c8778",
+      "rust_test_containers": [
+        {
+          "passed": 42,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 22,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 39,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        },
+        {
+          "passed": 88,
+          "failed": 0,
+          "ignored": 0,
+          "filtered": 0
+        }
+      ],
+      "scope_note": "containers/profiles are listed separately; overlapping builds are not deduplicated or combined as unique tests"
+    },
+    {
+      "id": 116172597236,
+      "name": "windows-check",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T00:06:42Z",
+      "completed_at": "2026-10-15T00:17:28Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172597236",
+      "log_bytes": 86964,
+      "log_sha256": "db3c705010dd791b21ff795680247be246ed6be89ba35cc4ae5a064b3b9a943f",
+      "rust_test_containers": [],
+      "scope_note": "containers/profiles are listed separately; overlapping builds are not deduplicated or combined as unique tests"
+    },
+    {
+      "id": 116172597289,
+      "name": "dependency-policy",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T00:06:42Z",
+      "completed_at": "2026-10-15T00:07:40Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172597289",
+      "log_bytes": 1084474,
+      "log_sha256": "59dc929cd16b4f36b4a30a6eaf8e3e3db9d6f22af695e3bf9f1fba094fb5ccff",
+      "rust_test_containers": [],
+      "scope_note": "containers/profiles are listed separately; overlapping builds are not deduplicated or combined as unique tests"
+    },
+    {
+      "id": 116172597308,
+      "name": "source language SDKs",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-15T00:06:43Z",
+      "completed_at": "2026-10-15T00:20:22Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172597308",
+      "log_bytes": 198565,
+      "log_sha256": "70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547",
+      "rust_test_containers": [],
+      "scope_note": "containers/profiles are listed separately; overlapping builds are not deduplicated or combined as unique tests"
+    },
+    {
+      "id": 116172597328,
+      "name": "sdk-contract",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-15T00:06:42Z",
+      "completed_at": "2026-10-15T00:29:33Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172597328",
+      "log_bytes": 61648,
+      "log_sha256": "c342a729f536eb7fe93362e67563f9517c345b59817e8573a2b7da64f6aad0f5",
+      "rust_test_containers": [],
+      "scope_note": "containers/profiles are listed separately; overlapping builds are not deduplicated or combined as unique tests"
+    },
+    {
+      "id": 116172597346,
+      "name": "linux-quality",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T00:06:43Z",
+      "completed_at": "2026-10-15T00:15:22Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172597346",
+      "log_bytes": 89710,
+      "log_sha256": "d0dd33d8f7bbd4c044fe1fa7177268e183ed868cbc763e984024a9d0345902c1",
+      "rust_test_containers": [],
+      "scope_note": "containers/profiles are listed separately; overlapping builds are not deduplicated or combined as unique tests"
+    },
+    {
+      "id": 116172596950,
+      "name": "Rust inventory telemetry",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-15T00:06:42Z",
+      "completed_at": "2026-10-15T00:31:13Z",
+      "url": "https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38658108668/job/116172596950",
+      "log_bytes": 61725,
+      "log_sha256": "bf3fd726a794051b255d725355de9bba75e3df70e293dc7b86e29c59eb2b3e08",
+      "scope_note": "inventory telemetry generator completed28profiles then failed exact same13 accepted-source continuity gate; full inventory count parity is not behavior acceptance"
+    }
+  ],
+  "language_scope": {
+    "typescript_passed": 336,
+    "typescript_failed": 0,
+    "typescript_skipped": 0,
+    "typescript_quickstart_completed": true,
+    "python_passed": 413,
+    "python_failed": 2,
+    "python_subtests_passed": 18,
+    "python_failed_tests": [
+      "tests/test_gap_ack_host.py::test_gap_ack_snapshot_continuation[True-window]",
+      "tests/test_tool_value_effect_host.py::test_tool_value_effect_native_host"
+    ],
+    "python_failure_assertions": [
+      "test_gap_ack_host.py:132: expected 3 steps, observed 4",
+      "test_tool_value_effect_host.py:113: expected owned process observation, observed empty list"
+    ],
+    "python_quickstart_completed": false,
+    "java_tests_reached": false,
+    "java_example_reached": false,
+    "whole_language_passed": false
+  },
+  "contract_scope": {
+    "rustdoc_profiles_completed": 28,
+    "profile_names": [
+      "default",
+      "full",
+      "feature:a2a",
+      "feature:acp",
+      "feature:channels",
+      "feature:chart",
+      "feature:content-guard",
+      "feature:data",
+      "feature:database",
+      "feature:eval",
+      "feature:files",
+      "feature:git",
+      "feature:human-loop",
+      "feature:improve",
+      "feature:lsp",
+      "feature:mcp",
+      "feature:media",
+      "feature:project-rules",
+      "feature:rag",
+      "feature:research",
+      "feature:shell",
+      "feature:sqlite",
+      "feature:statistics",
+      "feature:subagent",
+      "feature:telemetry",
+      "feature:testing",
+      "feature:topology",
+      "feature:web"
+    ],
+    "accepted_source_disappeared_count": 13,
+    "accepted_source_disappeared": [
+      "echo_agent::agent::snapshot::AgentRunSnapshot::skill_curator (StructField)",
+      "echo_agent::agent::snapshot::ToolRuntime::plan_state (StructField)",
+      "echo_agent::evolution::curator::CuratorState::save (Method)",
+      "echo_agent::security::SecretMatch (Struct)",
+      "echo_agent::security::SecretMatch::matched (StructField)",
+      "echo_agent::security::SecretMatch::position (StructField)",
+      "echo_agent::security::SecretMatch::secret_type (StructField)",
+      "echo_agent::security::contains_secrets (Function)",
+      "echo_agent::security::redact_secrets (Function)",
+      "echo_agent::security::scan_secrets (Function)",
+      "echo_orchestration::tasks::runtime::TaskSubagentContext::delegation_policy (StructField)",
+      "echo_orchestration::tasks::runtime::TaskSubagentContext::run_id (StructField)",
+      "echo_orchestration::tasks::runtime::TaskSubagentContext::waived_dependency_ids (StructField)"
+    ],
+    "explicit_human_disposition_required": true,
+    "accepted_seed_updated": false,
+    "full_contract_passed": false
+  },
+  "dependency_scope": {
+    "job_conclusion": "success",
+    "audit_and_deny_policy_checks": "succeeded in saved job",
+    "accepted_duplicate_version_groups": 50,
+    "raw_duplicate_warnings": 50,
+    "all_four_deny_categories": "advisories ok, bans ok, licenses ok, sources ok",
+    "bootstrap_error_count": 1,
+    "bootstrap_error": "error: override toolchain 'stable-x86_64-unknown-linux-musl' is not installed",
+    "bootstrap_error_is_preserved": true,
+    "success_is_not_zero_error_log_claim": true,
+    "upstream_bootstrap_package": "../cargo-deny-stable-toolchain/provenance.json",
+    "upstream_package_commit_qualification": "working-tree formal package exists; not yet claimed committed by this archive"
+  },
+  "Node24_deprecation_warning_count": 0,
+  "windows_scope": "compile workspace only; no Windows native test/runtime claim",
+  "new_CI_after_current_workflow_change_executed_by_archive": false,
+  "source_mutations_or_native_tests_by_archive": false,
+  "registry_or_main_acceptance": false,
+  "inventory_scope": {
+    "rustdoc_profiles_completed": 28,
+    "accepted_source_disappeared_count": 13,
+    "accepted_source_pairs_equal_contract_job": true,
+    "accepted_source_disappeared": [
+      "echo_agent::agent::snapshot::AgentRunSnapshot::skill_curator (StructField)",
+      "echo_agent::agent::snapshot::ToolRuntime::plan_state (StructField)",
+      "echo_agent::evolution::curator::CuratorState::save (Method)",
+      "echo_agent::security::SecretMatch (Struct)",
+      "echo_agent::security::SecretMatch::matched (StructField)",
+      "echo_agent::security::SecretMatch::position (StructField)",
+      "echo_agent::security::SecretMatch::secret_type (StructField)",
+      "echo_agent::security::contains_secrets (Function)",
+      "echo_agent::security::redact_secrets (Function)",
+      "echo_agent::security::scan_secrets (Function)",
+      "echo_orchestration::tasks::runtime::TaskSubagentContext::delegation_policy (StructField)",
+      "echo_orchestration::tasks::runtime::TaskSubagentContext::run_id (StructField)",
+      "echo_orchestration::tasks::runtime::TaskSubagentContext::waived_dependency_ids (StructField)"
+    ],
+    "failure_is_contract_continuity_not_automatic_all_identity_parity": true
+  },
+  "chronology": {
+    "earlier_seven_job_snapshot": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-722-ci-evidence/seven-job-preterminal-archive-snapshot",
+    "earlier_scope": "five success/two failure with inventory pending in observation",
+    "later_terminal_evidence": "observations/run-terminal.json and inventory-terminal-manifest.json",
+    "earlier_snapshot_not_rewritten_as_terminal": true
+  }
+}

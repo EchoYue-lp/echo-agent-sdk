@@ -181,4 +181,5 @@ jobs:
         run: cargo audit --deny warnings
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
+          rust-version: stable
           arguments: --workspace --all-features --locked

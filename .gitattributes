@@ -270,3 +270,14 @@ docs/sdk/governance/evidence/gap-paused-consumer-oracle/whole-before/full-langua
 # Immutable Python 3.10 callback timeout counterexamples.
 docs/sdk/governance/evidence/python310-factory-timeout/history/whole-retry2-failed.log -diff
 docs/sdk/governance/evidence/python310-factory-timeout/python310-original.log -diff
+
+# Original SDK Linux/Windows CI diagnostics, without byte normalization.
+docs/sdk/governance/evidence/cargo-deny-stable-toolchain/original-722-dependency-job.log -diff
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172596950.log -diff
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597152.log -diff
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597212.log -diff
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597236.log -diff -text
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597289.log -diff
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597308.log -diff
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597328.log -diff
+docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597346.log -diff

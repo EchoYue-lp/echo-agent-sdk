@@ -1,0 +1,3 @@
+#!/bin/bash
+printf 'cargo-deny %s\n' "$*" >> "$DENY_ORDER"
+exit 0

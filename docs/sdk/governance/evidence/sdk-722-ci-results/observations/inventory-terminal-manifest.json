@@ -1,0 +1,9 @@
+{
+  "job": 116172596950,
+  "status": "completed",
+  "conclusion": "failure",
+  "bytes": 61725,
+  "sha256": "bf3fd726a794051b255d725355de9bba75e3df70e293dc7b86e29c59eb2b3e08",
+  "runStatus": "completed",
+  "runConclusion": "failure"
+}

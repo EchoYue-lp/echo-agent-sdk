@@ -1,0 +1,4 @@
+rustup set profile minimal
+rustup default stable
+rustup show
+cargo-deny --log-level warn --manifest-path ./Cargo.toml --workspace --all-features --locked check

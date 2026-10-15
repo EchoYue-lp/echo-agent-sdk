@@ -1,0 +1,9 @@
+#!/bin/bash
+printf 'rustup %s\n' "$*" >> "$DENY_ORDER"
+case "$1" in
+ set) exit 0;;
+ default) touch "$DENY_INSTALLED"; exit 0;;
+ show) if test -e "$DENY_INSTALLED"; then exit 0; else echo "error: mock reproduces absent stable override" >&2;exit 1;fi;;
+ toolchain) touch "$DENY_INSTALLED";exit 0;;
+esac
+exit 2

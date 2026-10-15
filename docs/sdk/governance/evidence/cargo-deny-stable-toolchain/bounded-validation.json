@@ -1,0 +1,59 @@
+{
+  "yaml_exact_delta": "one rust-version:stable input, all other AST equal",
+  "official_entrypoint_shell_order_probe": [
+    {
+      "label": "before",
+      "argv": [
+        "bash",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-cargo-deny-stable-toolchain/entrypoint.sh",
+        "",
+        "",
+        "",
+        "",
+        "--log-level",
+        "warn",
+        "--manifest-path",
+        "./Cargo.toml",
+        "--workspace --all-features --locked",
+        "check",
+        ""
+      ],
+      "exit_code": 0,
+      "order": [
+        "rustup show",
+        "rustup toolchain install",
+        "cargo-deny --log-level warn --manifest-path ./Cargo.toml --workspace --all-features --locked check"
+      ],
+      "stderr": "error: mock reproduces absent stable override\n"
+    },
+    {
+      "label": "candidate",
+      "argv": [
+        "bash",
+        "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-cargo-deny-stable-toolchain/entrypoint.sh",
+        "stable",
+        "",
+        "",
+        "",
+        "--log-level",
+        "warn",
+        "--manifest-path",
+        "./Cargo.toml",
+        "--workspace --all-features --locked",
+        "check",
+        ""
+      ],
+      "exit_code": 0,
+      "order": [
+        "rustup set profile minimal",
+        "rustup default stable",
+        "rustup show",
+        "cargo-deny --log-level warn --manifest-path ./Cargo.toml --workspace --all-features --locked check"
+      ],
+      "stderr": ""
+    }
+  ],
+  "probe_limit": "rustup and cargo-deny are explicit mocks of command boundaries; proves ordering/arguments only, not real install/network/container or warning-free CI",
+  "real_current_CI_error_retained": true,
+  "new_remote_CI_executed": false
+}

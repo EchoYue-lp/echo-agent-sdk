@@ -1,0 +1,11 @@
+{
+  "source": "actual collaboration report from /root/current_tool_boundary_review, no invented machine output",
+  "result": "PASS",
+  "critical": 0,
+  "important": 0,
+  "minor": 0,
+  "reviewed_proposal_manifest_sha256": "7dcf80ea5f5eb7f963451082ace11c7a688dd4a4b7d1b055b00bbf8292a4f9c5",
+  "scope": "Phase1-3 one-input design; exact officialentrypoint installation-before-show and originalrawerror; no real newDocker/newCI pass",
+  "actual_original_log_sha256": "59dc929cd16b4f36b4a30a6eaf8e3e3db9d6f22af695e3bf9f1fba094fb5ccff",
+  "subsequent_runtime_validation_pending": true
+}
