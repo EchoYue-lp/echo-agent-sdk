@@ -232,3 +232,30 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 ## 公开工具commit来源响应原件的精确角色
 
 `docs/sdk/governance/evidence/sdk-semantic-ci-consumer/published-commit.response.json`，SHA256 `bb4cce891a4fde160bb83e490889cd297f7533796b5b66c0ada328b7caba5b56`，48797字节，是已保存的官方GitHub commit API response源码/签名来源见证。它在本Evidence原观察Git7d0已真实存在，与当前原字节相同；payload声明公开EchoSemantic22e241f723673330e9d6bec638def0f78968c74c、tree47d63f99及signature verified，对应consumer provenance。response里附带工具提交diff/源码字段不成为SDK运行模块、公共API或第二validator，也不新增协议/状态权威。本slice只把这一个实际原件列为同期已有ProductCI来源依据，原sourceRefs/支持范围/command_results及所有旧运行时刻不改。原30d本候选首次fullgate缺这条路径的exit1保留，不能把它当SDK业务失败或伪改成通过；补依据后的实际重跑结果另收。
+
+
+## 源码具名后继与唯一当前状态页的维护依据（286）
+
+本段只绑定四份已独审current文稿与已经提交的具名源码后继，不制造新业务/语言/工程执行。原Evidence观察7d0、source_refs/command_results、原所有sourcecut与运行时刻完整保留；新current状态唯一维护于capability-review-remaining.md，其余三页只指向该页，原独有历史尾部保持原byte。实际对象为58resolved/7open：185559的Python/Java nested parent纯值投影只有该具体缺陷三链闭合；PID已有0ebe原default/wide同一进程的截断因果与c5的-ww修复，但仅Macfocused通过、新Linux后验待；Host原0ebe首被动child.wait10s超时原因仍未知，fd432只补上下文诊断不提高deadline/kill/retry，不把原失败当receipt丢失或B策略结论。
+
+四份维护文稿的当前精确路径/Hash：
+
+- `docs/sdk/governance/capability-review-remaining.md`，SHA256 `608b2bba72d94bbc85fb082c7e85bce370f2590962e67cdbddfa240390654e81`。
+- `docs/sdk/governance/finding-ledger.md`，SHA256 `4bc1249e1f44822ad14bfd55c46b2bf7e1e0768049e29012c1ad9e4d83c6e54b`。
+- `docs/sdk/governance/capability-map.md`，SHA256 `63a61073ab5ba8f0e265d281dae121c276b8e459855de92274446b2ccd0d5f2c`。
+- `docs/sdk/governance/capability-review-dispositions.md`，SHA256 `b18149539111c0b97c09487baee6c4ec55348f06c45b408f0cd91fc101ab894c`。
+
+当前源码保存Git `286dc7542903d66fac747f30f6731cfc47dba4e6`相对原0ebe实际仅以下6源/test字节改变，不声称原800或Rust61当前全部byte仍同旧执行cut：
+
+- `echo-sdk-host/tests/extension_bridge_e2e.rs`，当前Git286 SHA256 `25b43267c672987430118d477683f58ba22d96066257661591d98b36560a19bb`；原推导角色 `test_consumer`。
+- `sdks/java/src/main/java/com/echoagent/sdk/EventIdentity.java`，当前Git286 SHA256 `070457f0796290c87b4c3003b7fd5978c51282a80080445d5489c48a9564ec53`；原推导角色 `production_source`。
+- `sdks/java/src/test/java/com/echoagent/sdk/EventIdentityTest.java`，当前Git286 SHA256 `03ba5398f2821027a23096427bfab0e1eff4cfca4a1f4c39b8f3bf986744f2cd`；原推导角色 `test_consumer`。
+- `sdks/python/src/echo_agent_sdk/event_identity_values.py`，当前Git286 SHA256 `f5943def2bf95941f6947a87bb6b487e96cd8965120bf9a7724153e2fb3ecd4f`；原推导角色 `production_source`。
+- `sdks/python/tests/test_event_identity_values.py`，当前Git286 SHA256 `ea68c63d1f8e426ac2371a5f1232576016156a93e7c82e1942e24a5c85a608f2`；原推导角色 `test_consumer`。
+- `sdks/python/tests/test_tool_value_effect_host.py`，当前Git286 SHA256 `62bc5fb0a8f5512060ce031303a80cbe1d0b1d1a1fad79c317aa53ac866d06ee`；原推导角色 `test_consumer`。
+
+其中两项生产变化只现有EventIdentity accepted nested parent投影，另外四项是两份lineage具名测试、Python PID观察和Rust被动退出诊断测试；原API/Host业务权威/accepted合同seed与权限policy不变。185559实际probe红绿与PY模块3/J类3、Oracle21运行和release17编译仅原有限执行；c5 -ww后Darwin49rows/48calls仅该平台。原第四whole、之后Linux各fail/pass与测试未达范围各保原epoch，不把当前源码绑定写成新whole工程通过。相关具体证据/审查由已提交EventIdentity E/A与两个open Findings拥有，本Pin不替代其业务审查。
+
+公开22e工具原0ebe远端semantic job116226422797已经对真实30d完整fullmode通过；这是结构/引用/摘要/变更依据门禁，不是language/Host/contract工程全绿。当前这六份文稿/元数据候选仍须同公开22e对原30d fullrequirechange实际复验，不能借旧4994/0ebe或无base快照0冒新结果。新的Linux PID/Host诊断验收未发生，B3/12连续性人类选择、合同13与平台/main范围独立。
+
+用户要求的main文件必要性精简尚未执行任何归档删除；普通fullproject/change门禁不取代显式continuity。原parent391/完整1173诊断与A候选精确95解析修复/B未决定storage合同分别保留，不删义务、不降risk、不以本段接受新B门禁政策或宣称payload可合main。
