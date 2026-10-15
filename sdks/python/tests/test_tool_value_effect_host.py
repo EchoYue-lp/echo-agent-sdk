@@ -34,7 +34,7 @@ pytestmark = [
 
 def processes(work, diagnostics=None):
     lines = subprocess.check_output(
-        ["ps", "-axo", "pid=,ppid=,command="], text=True
+        ["ps", "-ww", "-axo", "pid=,ppid=,command="], text=True
     ).splitlines()
     result = []
     diagnostic_rows = []
