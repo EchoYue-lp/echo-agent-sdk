@@ -58,9 +58,17 @@ class HostEarlyExitTest {
     }
     @org.junit.jupiter.api.Test
     void failedCleanupDoesNotSuppressLaterActualChildExitOfPendingRequest() throws Exception {
-        var child=child();
+        Path work=Files.createTempDirectory("sdk-java-pending-frame-");Path frame=work.resolve("frame.json");
+        // Establish a response-pending request, rather than racing an unwritten outbound frame.
+        String code="import json,os,pathlib,sys;p=pathlib.Path("+JsonSupport.MAPPER.writeValueAsString(frame.toString())+");line=sys.stdin.readline();assert json.loads(line)['method']=='fixture-pending';p.with_suffix('.tmp').write_text(line);os.replace(p.with_suffix('.tmp'),p);sys.stdin.read()";
+        var child=child(code);
         try {
             var pending=child.sdk().request("fixture-pending",JsonSupport.MAPPER.createObjectNode()).toCompletableFuture();
+            long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(2);
+            while(!Files.exists(frame)&&System.nanoTime()<deadline)Thread.onSpinWait();
+            assertTrue(Files.exists(frame),"original child must read the pending request before cleanup failure and exit");
+            assertEquals("fixture-pending",JsonSupport.MAPPER.readTree(frame.toFile()).path("method").asText());
+            assertFalse(pending.isDone(),"child read the request but deliberately has not answered it");
             var field=EchoAgentClient.class.getDeclaredField("factoryCleanupJobs");field.setAccessible(true);
             @SuppressWarnings("unchecked") var jobs=(Map<WireHandle,CompletableFuture<com.fasterxml.jackson.databind.JsonNode>>)field.get(child.sdk());
             jobs.put(new WireHandle("child","1","extension"),CompletableFuture.failedFuture(new EchoAgentException("extension_failed","controlled owned cleanup failure","after_delay","client/close",null)));
