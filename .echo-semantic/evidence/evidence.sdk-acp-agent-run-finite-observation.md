@@ -18,22 +18,6 @@ source_refs:
 - echo-sdk-host/tests/stdio_e2e.rs
 - docs/adr/0037-session-run-idempotent-publication.md
 - docs/sdk/governance/session-run-idempotency-proposal.md
-- docs/sdk/governance/evidence/session-run-idempotency-implementation/independent-review.json
-- docs/sdk/governance/evidence/session-run-idempotency-implementation/manifest.json
-- docs/sdk/governance/evidence/session-run-idempotency-native/final-rpc-host/receipt.json
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
-- docs/sdk/governance/evidence/sdk-a634-rust-gates/05-workspace-tests.log
-- docs/sdk/governance/evidence/sdk-a634-rust-gates/10-ci-core-profile.log
-- docs/sdk/governance/evidence/session-run-idempotency-counterexample/facts.json
-- docs/sdk/governance/evidence/session-run-idempotency-counterexample/summary.json
-- docs/sdk/governance/evidence/session-run-idempotency-counterexample/probe.mjs
-- docs/sdk/governance/evidence/session-run-idempotency-counterexample/probe.log
-- docs/sdk/governance/evidence/session-run-idempotency-counterexample/manifest.json
-- docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json
-- docs/sdk/governance/evidence/run-steer-native/java-original/receipt.json
-- docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json
-- docs/sdk/governance/evidence/session-run-idempotency-implementation/current/source/echo-sdk-host/src/core_profile/handles.rs
-- docs/sdk/governance/evidence/session-run-idempotency-implementation/current/source/echo-sdk-host/src/core_profile/state.rs
 supports:
 - behavior.sdk-acp
 - behavior.sdk-agent-session-run
@@ -42,19 +26,14 @@ supports:
 - behavior.sdk-family-session
 - behavior.sdk-family-run
 limitations:
-- Original a634/193e790 evidence and finalA/da873 native13input are separate source
-  epochs; no old whole result is relabelled as newer source.
-- Session extension only create/load/close; list is official protocolinventory without
-  accepted runtime advertisement, save is automatic projection not public new operation.
-- RunHandle.close uses canonical cancel/wait before closing the local subscription
-  (TS only if nonterminal; PY/Java always attempt); it is not a Hostrun/close wire
-  or Host record retirement. get is snapshot; events/replay/ACK are stream observation.
-- A samekey mapping is connection/generation scoped, not restartdurable idempotency
-  or a second execution/terminal authority.
-- New Java negotiation/frame bugs are independent defects outside this Hostslice;
-  old complete language result becomes historical after client changes.
-- Five-second physicalB,12sourcekind,fullgenerator/platform/main remain separate;
-  cooperativeclosing not a proof of physicalstop.
+- Original a634/193e790 evidence and finalA/da873 native13input are separate source epochs; no old whole result is relabelled as newer source.
+- Session extension only create/load/close; list is official protocolinventory without accepted runtime advertisement, save is automatic projection not public new operation.
+- RunHandle.close uses canonical cancel/wait before closing the local subscription (TS only if nonterminal; PY/Java always attempt); it is not a Hostrun/close wire or Host record retirement. get is snapshot; events/replay/ACK are stream observation.
+- A samekey mapping is connection/generation scoped, not restartdurable idempotency or a second execution/terminal authority.
+- New Java negotiation/frame bugs are independent defects outside this Hostslice; old complete language result becomes historical after client changes.
+- Five-second physicalB,12sourcekind,fullgenerator/platform/main remain separate; cooperativeclosing not a proof of physicalstop.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # ACP、Agent/Session/Run与A幂等有限观察
@@ -99,3 +78,8 @@ docs/sdk/governance/evidence/session-run-idempotency-counterexample/facts.json, 
 |sdks/shared/testing/session_run_idempotency_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|510a82945254307a22eb19a5c0b5ced3dc667c2f29e14038f73d91c6d1f70294|
 
 本owner表中runtime test/fixture共4项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

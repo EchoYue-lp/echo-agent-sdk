@@ -1,5 +1,0 @@
-{
-  "testSHA256": "09be083a8d1cb8421a3bf6039e4a3a5c3cf66862967ef02a063eefed92e799fb",
-  "proxySHA256": "4d73c26ef341f80ce762706d0b5d8c066a647d775753be305b12504457628462",
-  "delta": "diagnostic-only barrier entry marker releases same original held successor gap before new baseline; full frame bytes/order unchanged; formal S files contain no marker"
-}

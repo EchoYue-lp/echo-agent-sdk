@@ -2,28 +2,18 @@
 schema_version: 1
 id: evidence.sdk-current-reviewed-rust-gates
 kind: evidence
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
 source_refs:
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/matrix.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/run.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-before.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-after.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/workspace-tests.log
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/workspace-doctests.log
-- docs/sdk/governance/evidence/task-context-consumption/evidence-sha256.json
-- docs/sdk/governance/evidence/task-context-consumption/feature-wiring-review-manifest.json
-- docs/sdk/governance/evidence/sdk-successor-model-reviews/current-reviewed-rust-gates.json
+- docs/sdk/governance/semantic-history.md
 supports:
 - behavior.sdk-repository-ownership
 limitations:
-- ActualRust14/build proof only; independent newwholeReceipt finitePASS0C0I0M; LinuxWindows/contract/main
-  pending
-- bb4f sourcebuild authority supersedes8d819 onlyfor thisnewcut, oldruntimeevidence
-  retained
+- ActualRust14/build proof only; independent newwholeReceipt finitePASS0C0I0M; LinuxWindows/contract/main pending
+- bb4f sourcebuild authority supersedes8d819 onlyfor thisnewcut, oldruntimeevidence retained
 - Newbb4f officialwholelanguage pipeline running notterminal
 - Fullaccepted28generation/12sourcehuman/physical5s/deppolicy/globalstrict/main separate
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 
@@ -40,3 +30,9 @@ limitations:
 ## 已知缺口
 
 ActualRust14/build proof only; independent newwholeReceipt readerpending；bb4f sourcebuild authority supersedes8d819 onlyfor thisnewcut, oldruntimeevidence retained；Newbb4f officialwholelanguage pipeline running notterminal；Fullaccepted28generation/12sourcehuman/physical5s/deppolicy/globalstrict/main separate。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+当前observed source摘要只用于新locator存储表示检查；原observed_at为 `56929154c1851473e9e4837901b610cecf001b2d`，原业务复核仍属该不可变Git。

@@ -16,7 +16,7 @@ Reviewed proposal SHA-256: `4c94073065a063d72cc863d658787961bad538250296c56990a5
 
 但同仓 deny.toml 的既有 `[bans] multiple-versions = "warn"` 会在正常受支持的依赖图上产生重复版本提示。真实 `cargo deny --workspace --all-features --locked check` 返回0，报告50条 `warning[duplicate]`；配置、advisory、license、source 其它警告均0。真实 `cargo audit --deny warnings` 返回0、无警告。因而“两个工具退出0”与“所有门禁零警告”是不同结论，该规则冲突当时不能由助手自行解释豁免；用户现已通过明确裁决闭合这个有界政策选择，实际提示仍须完整记录。
 
-证据来自 [当前依赖门禁收据](evidence/sdk-current-dependency-policy/README.md)、[完整 deny 输出](evidence/sdk-current-dependency-policy/deny.log)、[原 policy 结果](evidence/sdk-current-dependency-policy/policy-result.json) 和两个工具的独立 run-command 终态。原四项 advisory exceptions 原样保留，不能把本提案理解为新增漏洞、维护状态、来源或许可证豁免。
+证据来自 [当前依赖门禁收据](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-current-dependency-policy/README.md)、[完整 deny 输出](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-current-dependency-policy/deny.log)、[原 policy 结果](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-current-dependency-policy/policy-result.json) 和两个工具的独立 run-command 终态。原四项 advisory exceptions 原样保留，不能把本提案理解为新增漏洞、维护状态、来源或许可证豁免。
 
 ## 实际50组及版本分类
 

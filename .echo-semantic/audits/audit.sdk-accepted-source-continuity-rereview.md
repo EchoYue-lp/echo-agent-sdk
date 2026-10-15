@@ -5,12 +5,12 @@ kind: audit
 boundary_ref: boundary.sdk-product
 lens: contract_evidence
 freshness: examined
-revision: source:fdf70c9adf8169160777341ed887438217afd02529dbe1f2a3e651f9ed19b90e
+revision: 7f14a1b9c751b0612ceb42224f83f29d09aea46c
 finding_refs:
 - finding.sdk-accepted-source-continuity
 challenges:
   exact-accepted-membership-and-consumers:
-    revision: source:fdf70c9adf8169160777341ed887438217afd02529dbe1f2a3e651f9ed19b90e
+    revision: 7f14a1b9c751b0612ceb42224f83f29d09aea46c
     source_refs:
     - docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md
     - docs/sdk/governance/accepted-source-continuity-proposal.md

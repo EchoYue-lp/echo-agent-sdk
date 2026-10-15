@@ -41,9 +41,9 @@ discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 
 ## 证据
 
-[精确切片清单](../../docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/manifest.json) 与[说明](../../docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/README.md)保留实际旧编译客户端的两项 Important 反例（2 fail）及同两例修复后2 pass；没有手抄旧实现或回退生产 dist。当前候选 client.ts SHA dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f，实际 dist SHA 5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c，10个真实 child 场景全部通过，零跳过，并已独立复审 PASS。deferred promise 先发布，再同步关闭原 Connection；EOF callback/已完成事实和原 child exit 共同结算，原五秒 native grace/fallback 不重置，晚到意外错误与同 owner 重试保留。
+[精确切片清单](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/manifest.json) 与[说明](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/README.md)保留实际旧编译客户端的两项 Important 反例（2 fail）及同两例修复后2 pass；没有手抄旧实现或回退生产 dist。当前候选 client.ts SHA dd822f73e5cfeb84a5d082923b255d18357b3480a03602ec6a79fcb45e9aeb3f，实际 dist SHA 5a9cee6ae1d7bfdbcf16761e3f4b9ab67014e66a5f1e461f873fc194f7fb1b7c，10个真实 child 场景全部通过，零跳过，并已独立复审 PASS。deferred promise 先发布，再同步关闭原 Connection；EOF callback/已完成事实和原 child exit 共同结算，原五秒 native grace/fallback 不重置，晚到意外错误与同 owner 重试保留。
 
-[当前实体 public-close 收据](../../docs/sdk/governance/evidence/telemetry-host/publicclose-current-source/receipt.json)保存实际 fixture 源与客户端/dist：Host 4967dd43、fixture d4516646、测试 e152c4b1；held export 时 close 未完成、原 Host 活着，release 后原父进程观察同一 Host exit0。此18项清单包与15项 stdio 清单均已独立复审通过。旧 publicclose-approved 的12项包缺少当期 fixture 实体，其历史通过保留，不能替代当前源精确证明。
+[当前实体 public-close 收据](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/telemetry-host/publicclose-current-source/receipt.json)保存实际 fixture 源与客户端/dist：Host 4967dd43、fixture d4516646、测试 e152c4b1；held export 时 close 未完成、原 Host 活着，release 后原父进程观察同一 Host exit0。此18项清单包与15项 stdio 清单均已独立复审通过。旧 publicclose-approved 的12项包缺少当期 fixture 实体，其历史通过保留，不能替代当前源精确证明。
 
 ## 处理记录
 

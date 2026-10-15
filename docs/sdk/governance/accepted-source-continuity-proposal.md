@@ -6,7 +6,7 @@ Status: accepted（2026-10-15）。用户明确接受本文件的精确12项方�
 
 明确accepted contract仍是兼容权威；public inventory仅遥测。唯一generator对canonical defining source与kind精确对账，不把同名getter、rootalias、Catalogdone或无SDKconsumer当自动接受/退役。b909 published框架全28profiles已提取并验证profileinvariants，但12个旧accepted source/kind不连续，producer exit1且artifactsWritten=false。没有seed/artifact写入，也不回退成部分最后profile“全量”生成物。
 
-事实来源是[完整缺失清单](evidence/sdk-final-framework-contract/MISSING-SOURCE-CLOSURE.md)及[原始12闭包](evidence/sdk-final-framework-contract/complete-missing-source-closure.json)。旧5622是acceptedcanonicalseed，不是全Rustparity目标。此次仅处置12条差异，不要求所有新的Rustpublicidentity三语言API。
+事实来源是[完整缺失清单](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-final-framework-contract/MISSING-SOURCE-CLOSURE.md)及[原始12闭包](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-final-framework-contract/complete-missing-source-closure.json)。旧5622是acceptedcanonicalseed，不是全Rustparity目标。此次仅处置12条差异，不要求所有新的Rustpublicidentity三语言API。
 
 ## 已观察行为与分层
 

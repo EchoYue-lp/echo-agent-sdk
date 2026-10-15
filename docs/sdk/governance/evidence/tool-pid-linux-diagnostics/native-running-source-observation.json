@@ -1,8 +1,0 @@
-{
-  "observedWhileNativeWasAlreadyRunning": true,
-  "git": "7d0a32a0b049013e366d9a4ed78049c7364cbb98",
-  "sourceSHA256": "99e006edfc2a5c5a31d7f57dea6ff39e61ac027521ab5b8973fab8a56bdb0817",
-  "sourceBytes": 28783,
-  "startHEADWasNotRecordedInNativeRunReceipt": true,
-  "scope": "Concurrent observation only, do not falsely call this a before-start HEAD capture. Root kept HEAD7d0 fixed through native lease."
-}

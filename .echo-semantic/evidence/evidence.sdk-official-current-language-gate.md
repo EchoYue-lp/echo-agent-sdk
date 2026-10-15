@@ -2,31 +2,17 @@
 schema_version: 1
 id: evidence.sdk-official-current-language-gate
 kind: evidence
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
 source_refs:
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/receipt.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/run.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/full-language.log
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/summary.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/java-summary.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/source-before.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/source-after.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/ARCHIVE-SHA256SUMS.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/warning-classification.json
-- docs/sdk/governance/evidence/sdk-language-test-nop-complete/README.md
-- docs/sdk/governance/evidence/sdk-successor-model-reviews/current-official-language-gate.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/summary.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/rust-source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/SHA256SUMS.json
+- docs/sdk/governance/semantic-history.md
 supports:
 - behavior.sdk-language-clients
 limitations:
 - Exactcurrentcandidatewholelanguagegate only, not finalcontract ormain
 - Acceptedsource12andframeworkphysical5sec humanchoices pending
-- A futureframeworkpin/client/source change requires matching wholegate; no blindrebind
-  pass
+- A futureframeworkpin/client/source change requires matching wholegate; no blindrebind pass
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # official-current-language-gate
@@ -69,3 +55,9 @@ Exactcurrentcandidatewholelanguagegate only, not finalcontract ormain；Accepted
 原始focused执行与原源码未提交时点见Admin `sdk-java-stream-route-portable-temp/receipt.json`、`sdk-java-cleanup-pending-request-race/class-after-summary.json`、`sdk-java-task-timeout-debug/after-summary.json`；原件不复制为S新包，不伪新Git source_refs。上述Git只保存对应真实after源码，本对象observed569/source_refs/commands及原历史whole文字完整保；新challenge在同一既有Audit绑定各自源码观察，不把569或76601改成这些新运行日期。
 
 以下后验为macOS/Oracle21（Maven release17编译）；Route与Task使用固定不可变Host SHA0f1ecf23a2875621caf5128327046cbf6592ce61665c6c6872aed33fdf1931df，HostEarlyExit类使用原真实stdio子进程fixture检验Client，不冒框架Host集成。这些不是新LinuxTemurin17或新完整三语言通过。SDK生产Client32c4768和共享fixture未变，三个commit仅测试support。原7个open Finding一项不自动关闭，尤其PID/Gap/Host原失败与后验原因/三链各自仍须处理；B3/12、合同13、Windowsnative/main及payload/continuity BLOCK均保。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+当前observed source摘要只用于新locator存储表示检查；原observed_at为 `56929154c1851473e9e4837901b610cecf001b2d`，原业务复核仍属该不可变Git。

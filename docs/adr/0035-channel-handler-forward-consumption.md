@@ -7,7 +7,7 @@
 
 approved
 
-The user approved retaining the three accepted MessageHandler obligations and the six-operation forward consumption scope. Implementation and independently reviewed native three-language consumers are recorded in the [Channel behavior evidence](../sdk/governance/evidence/channel-handler-forward-native/README.md). That evidence retains its actual earlier Host/source cut; it is not a claim that the current candidate passed all final gates. Complete generated contracts and exact-main delivery remain pending. This ADR does not accept every new Rust wrapper identity or close unrelated Findings.
+The user approved retaining the three accepted MessageHandler obligations and the six-operation forward consumption scope. Implementation and independently reviewed native three-language consumers are recorded in the [Channel behavior evidence](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/channel-handler-forward-native/README.md). That evidence retains its actual earlier Host/source cut; it is not a claim that the current candidate passed all final gates. Complete generated contracts and exact-main delivery remain pending. This ADR does not accept every new Rust wrapper identity or close unrelated Findings.
 
 ## Context
 

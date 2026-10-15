@@ -43,7 +43,7 @@ Host 按 canonical sess:turn:1 校验，实际 ReactAgent stream 却因未传 in
 
 ## 证据
 
-[初始反例清单](../../docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json) 保存调用链、原消费源 SHA 和诊断边界；其当时 Java 尚未执行的记录保留。后继 [Java 原 Host 收据](../../docs/sdk/governance/evidence/run-steer-native/java-original/receipt.json) 为真实一项失败，[同源诊断 Host 收据](../../docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json) 为真实一项通过；TS/Python 原 Host 与诊断 Host 原日志也在同目录。
+[初始反例清单](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json) 保存调用链、原消费源 SHA 和诊断边界；其当时 Java 尚未执行的记录保留。后继 [Java 原 Host 收据](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/run-steer-native/java-original/receipt.json) 为真实一项失败，[同源诊断 Host 收据](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json) 为真实一项通过；TS/Python 原 Host 与诊断 Host 原日志也在同目录。
 
 原 Host SHA 为 bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345，诊断 Host 为 eb00038a0be7977f936514c7df8e06e329928f6735d466f292f10201a38abbf5。原 framework be5 的 src/acp/runtime.rs SHA d8446e7728f6883e903aa2b243b19b9cb722da79c729e1c27f73f35d5a0ffefe、echo-orchestration/src/runtime/turn_driver.rs SHA 8625c2bf7236e3cc00ef32d4b24a9c53ba03357f425eb081d66d481fd36364f9，属于框架 pin 下的源，不冒充 SDK Git 文件。
 

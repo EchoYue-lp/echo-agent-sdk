@@ -1,6 +1,0 @@
-{
-  "sdks/typescript/test/telemetry-host.test.js": "e152c4b1950db19319977ba02bb58e0c7ecbff2f32a3b98517cc28b14a0f62c8",
-  "sdks/python/tests/test_telemetry_host.py": "304a4bb09a5c5e0b88667bde8d2c66c45a0b37cc4471096ab2dc756103b0909f",
-  "sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java": "f215e02cb651a16f0199e6a074e3d1485424591971822e62c99b303189c8254e",
-  "sdks/shared/testing/telemetry_host_fixture.py": "d4516646cb4ad760f99632ceb769f9182eb374a40f14267316f763fa95bf8bb9"
-}

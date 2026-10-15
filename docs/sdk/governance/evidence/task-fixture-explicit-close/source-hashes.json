@@ -1,7 +1,0 @@
-{
-  "originalFixture": "7ae30164bf6c1ba831d33daf78c02813d37cbbbeb427476c3ee67ec14f6deabe",
-  "candidateFixture": "84cc5769cfced7c8b9f58a1365cdec6aa35d968bb3a35ab274c8f86916e4d19e",
-  "host": "193e49b8557db9b746a1cc8c6f5cf30bb6d3154a630562f7ef8551b949e878d1",
-  "TaskSubagentHostTest.java": "a77c417f0ee4f69a9cb075a870933370b14619c033f93f60920ba28890d3198e",
-  "fixtureDelta": "only response header Connection: close; protocol/body/gate/storeCAS/Task conditions unchanged"
-}

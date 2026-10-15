@@ -1,9 +1,0 @@
-   Compiling echo-sdk-host v0.1.0 (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/echo-sdk-host)
-    Finished `test` profile [unoptimized] target(s) in 1m 00s
-  Executable unittests src/lib.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_sdk_host-6fc369036805af46)
-  Executable unittests src/main.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/echo_agent_sdk_host-80add156b335cf72)
-  Executable tests/core_profile_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/core_profile_e2e-9d1ea2a508c51b1f)
-  Executable tests/extension_bridge_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/extension_bridge_e2e-05dfd39eccb0319c)
-  Executable tests/facade_feature_adapters_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/facade_feature_adapters_e2e-5e2254718b965bfd)
-  Executable tests/stdio_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/stdio_e2e-8dbe45ce7f58da39)
-  Executable tests/tool_behavior_governance_e2e.rs (/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-final-framework-pin/target/debug/deps/tool_behavior_governance_e2e-615d85ecd9ab8a7e)

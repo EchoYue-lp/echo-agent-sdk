@@ -4,29 +4,17 @@ id: evidence.sdk-rag-scalar-verification
 kind: evidence
 observed_at: 56929154c1851473e9e4837901b610cecf001b2d
 source_refs:
-- docs/sdk/governance/evidence/rag-project-rules-scalar-delta/after-receipt.json
-- docs/sdk/governance/evidence/rag-project-rules-scalar-delta/baseline-continuity.json
-- docs/sdk/governance/evidence/rag-project-rules-scalar-delta/comparison.json
-- docs/sdk/governance/evidence/rag-project-rules-scalar-delta/SHA256SUMS.json
-- docs/sdk/governance/evidence/rag-project-rules-scalar-delta/README.md
-- docs/sdk/governance/evidence/sdk-successor-model-reviews/rag-scalar-b909.json
 - echo-sdk-host/src/core_profile/facade/tools.rs#RagChunkDocumentTool
 - sdks/shared/testing/rag_project_rules_fixture.py
 - sdks/java/src/test/java/com/echoagent/sdk/RagProjectRulesHostTest.java
-- docs/sdk/governance/evidence/rag-project-rules-scalar-delta/published-framework-source/echo-tools/src/rag.rs#let
-  char_count = chunk.chars().count()
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-before.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/SHA256SUMS.json
 supports:
 - behavior.sdk-family-rag
 limitations:
 - Specific Unicodecount/preview bug only
 - Old0435bytecount receipt retained wrongfield observation, never acceptedcorrect
 - No crashdurability/finalacceptedsourcecontinuity/globalSDK closure
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # rag-scalar-verification
@@ -64,3 +52,8 @@ actual新当前源码业务复审PASS0：frameworkb909Ragd7/Hosttools77，Scalar
 Framework源为独立publishedGit b909，SDKtree不是frameworktree；引用SDK内已有framepin/冻结源码/provenance与实际代码原Gitblob：`b9099558620f5f9693c736c85c214db14f62a8cb:echo-tools/src/rag.rs` SHA`d7dacc2133e935b982237807cbb13b7b3de7d11cbdb85d4662793f357bd77f6f`。不把跨仓路径写成SDK源码引用。
 
 原支持范围、旧failure未知与limits保持；只追加这五故障的当前有界afterproof，特别ordinaryTools这里只承接Clinical，不扩大另外四族新复审。12acceptedsource迁移、5秒物理结算、依赖50warning规则仍未人批，Linux/Windows/main/fullgeneration另验；statusexamined不表示全无缺陷，41/coverage/closure/Finding状态不自动改变。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

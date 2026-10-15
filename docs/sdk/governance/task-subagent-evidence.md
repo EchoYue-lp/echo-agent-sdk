@@ -25,7 +25,7 @@ Pause场景才创建依赖A/B的D，用于证明resume后依赖结果复用。op
 原草稿三语言运行使用Host
 `6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5`，原文件、原始回调/
 commit状态、日志与三语言比较收据完整归档于
-[evidence/sdk-task-subagent-20261013/archive-manifest.json](evidence/sdk-task-subagent-20261013/archive-manifest.json)。
+[evidence/sdk-task-subagent-20261013/archive-manifest.json](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-task-subagent-20261013/archive-manifest.json)。
 正式测试路径与环境改造的运行单独归档，不重绑定草稿epoch或旧whole-source摘要。
 
 正式入口：`sdks/shared/testing/task_subagent_fixture.py`；

@@ -1,7 +1,0 @@
-{
-  "real_model_requests": 2,
-  "collector_requests": 2,
-  "shutdown_flush": true,
-  "business_file_content_consumed": true,
-  "console": false
-}

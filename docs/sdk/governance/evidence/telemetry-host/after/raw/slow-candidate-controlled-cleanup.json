@@ -1,8 +1,0 @@
-[
-  {
-    "pid": 97407,
-    "cmd": "/opt/homebrew/Cellar/node@22/22.22.0/bin/node test/telemetry-host.test.js",
-    "signal": "SIGTERM",
-    "role": "own native runner"
-  }
-]

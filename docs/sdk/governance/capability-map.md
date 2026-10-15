@@ -12,8 +12,8 @@ SDK 从30d7开始治理，当前已精确依赖已发布框架 `a6346643`，没�
 
 原 be5/290/368+18/320/759/bcb 属历史切点，不作当前待办或新源码通过证据。
 
-- [a634 完整语言原切点](evidence/sdk-language-a634-reviewed-final/README.md)
-- [a634 Rust14](evidence/sdk-a634-rust-gates/README.md)
+- [a634 完整语言原切点](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
+- [a634 Rust14](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)
 - [Task 3语言原行为](task-subagent-evidence.md)
 - [源码可恢复性](semantic-source-provenance.md)
 

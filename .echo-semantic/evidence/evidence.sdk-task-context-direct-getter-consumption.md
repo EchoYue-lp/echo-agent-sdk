@@ -4,10 +4,6 @@ id: evidence.sdk-task-context-direct-getter-consumption
 kind: evidence
 observed_at: 56929154c1851473e9e4837901b610cecf001b2d
 source_refs:
-- docs/sdk/governance/evidence/task-context-consumption/README.md
-- docs/sdk/governance/evidence/task-context-consumption/focused-source-manifest.json
-- docs/sdk/governance/evidence/task-context-consumption/focused-active-claim.log
-- docs/sdk/governance/evidence/task-context-consumption/task-context-test-only.patch
 - echo-sdk-host/src/core_profile/facade/task_runtime.rs
 supports:
 - behavior.sdk-family-task
@@ -15,6 +11,8 @@ limitations:
 - Testonlycurrentcomposition no newwire/API/seedacceptance
 - FullRustmatrix independently failed2Factory cases, not broadgatepass
 - Exactprivategetters sourcecontractmigration still userproposed
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # task-context-direct-getter-consumption
@@ -30,3 +28,8 @@ limitations:
 ## 已知缺口
 
 Testonlycurrentcomposition no newwire/API/seedacceptance；FullRustmatrix independently failed2Factory cases, not broadgatepass；Exactprivategetters sourcecontractmigration still userproposed。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

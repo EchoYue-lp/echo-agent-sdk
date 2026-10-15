@@ -11,36 +11,11 @@ source_refs:
 - echo-sdk-host/src/core_profile/facade/mod.rs
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - echo-sdk-host/tests/extension_bridge_e2e.rs
-- docs/sdk/governance/evidence/remote-stream-failure-domain/manifest.json
-- docs/sdk/governance/evidence/remote-stream-failure-domain/README.md
-- docs/sdk/governance/evidence/remote-stream-failure-domain/before-valid-descriptor-run.json
-- docs/sdk/governance/evidence/remote-stream-failure-domain/after-run.json
-- docs/sdk/governance/evidence/remote-stream-failure-domain/production-only.patch
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
-- docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/regression-review-manifest.json
 - echo-sdk-host/src/core_profile/facade/memory.rs#unsupported_store_operation_keeps_memory_cause_without_mutation
-- echo-sdk-host/src/core_profile/facade/source_operations.rs#factory_failure_retains_canonical_cause_in_real_eval_result
 - echo-sdk-host/src/core_profile/facade/workflow.rs
 - echo-sdk-host/tests/facade_feature_adapters_e2e.rs#workflow_cancel_preserves_canonical_failure_in_rpc_and_stream_terminal
 - echo-sdk-host/src/core_profile/wire.rs
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
-- echo-sdk-host/src/core_profile/extension_bridge.rs#dropped_pending_stream_releases_sink_and_session_reentry_guard
-- echo-sdk-host/tests/extension_bridge_e2e.rs#tool_manager_timeout_before_stream_ack_releases_callback_owner
-- echo-sdk-host/tests/extension_bridge_e2e.rs#cancelled_initial_stream_response_releases_session_callback_owner
 - echo-sdk-protocol/src/managed.rs
-- echo-sdk-host/tests/extension_bridge_e2e.rs#missing_managed_capability_fails_before_store_mutation
-- echo-sdk-host/tests/extension_bridge_e2e.rs#managed_persistence_deadline_and_lost_ack_preserve_commit_authority
-- echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt
-- echo-sdk-host/src/core_profile/wire.rs#managed_checkpoint_and_receipts_preserve_large_revisions_and_subseconds
-- echo-sdk-host/src/core_profile/facade/tools.rs#direct_tool_validation_precedes_custom_rules_and_execution
-- echo-sdk-host/src/core_profile/facade/tools.rs#validate_tool_input
-- docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.after.rs
-- docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.before.rs
-- docs/sdk/governance/evidence/remote-stream-failure-domain/extension_bridge.valid-counterexample.rs
 supports:
 - behavior.sdk-family-files
 - behavior.sdk-family-shell
@@ -60,14 +35,12 @@ supports:
 - behavior.sdk-family-state
 - behavior.sdk-integrations
 limitations:
-- Ten builtin families and six reverse integration roles are named finite scopes,
-  not all Rust identities or new APIs.
-- Earlier whole790 language input is before the remotecause patch;3same-test genuine
-  registered proxy results are postpatch, not a fabricated new fullnative gate.
-- Network/provider proof is a timestamped response, not future availability; volatile
-  Rag/checkpoint backends do not add crossprocessdurability.
-- Five-second physicalTask B,12sourcekind, new SessionRunA and final whole/source/main
-  remain separate.
+- Ten builtin families and six reverse integration roles are named finite scopes, not all Rust identities or new APIs.
+- Earlier whole790 language input is before the remotecause patch;3same-test genuine registered proxy results are postpatch, not a fabricated new fullnative gate.
+- Network/provider proof is a timestamped response, not future availability; volatile Rag/checkpoint backends do not add crossprocessdurability.
+- Five-second physicalTask B,12sourcekind, new SessionRunA and final whole/source/main remain separate.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # 内置工具与反向桥有限观察
@@ -177,3 +150,8 @@ FileAuthority当前three-language-final包尚未进入此Git，故具体source_r
 具体Finding局部三链引用本段及对应Audit具名故障复核，仍保Host未知退出、B三宽义务、accepted12/合同13、平台/main、全局continuity1173和4365档案必要性精简阻断。没有新runtime状态权威/validator/协议/accepted schema/公共API；examples和官网无需接口同步，代码/测试本次不改。
 
 唯一current页只维护本次两个具体局部闭合与现有余项：`docs/sdk/governance/capability-review-remaining.md` candidate SHA `1112c4dc5dbefb8e511b2b52aa51845eab388082b0b1bbd4a7994bea4bdf83be`。它是文稿维护依据，不是额外能力或物理回收全称证明。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

@@ -1,7 +1,0 @@
-{
-  "command_scope": "supplemental migration release raw bytes for node5/node6/java5/uv6/uv7 after exact candidate artifacts completed",
-  "result": "HTTP403 rate limit exceeded from official api.github.com; no silent fallback or infinite retry",
-  "exact_three_action_candidate_artifacts": "complete in official-provenance.json",
-  "prior_readonly_research": "official migration release bodies were already read successfully in tool output; no claim those prior network bodies were byte-archived",
-  "actionlint": null
-}

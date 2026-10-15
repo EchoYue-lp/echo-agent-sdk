@@ -1,8 +1,0 @@
-{
-  "sourceHEAD": "c1213de0e76589070322ad8137b68b7a84435a24",
-  "frameworkPin": "00782b8aeddefe2ea8c566922cbdee6aedc80d70",
-  "lockSHA": "88d99f3880f75315f60c8eca48035eb6151a1a055aeda7f621e689b354d411b3",
-  "sourceInputs": 61,
-  "diskAvailableAtStartBytes": 12021272576,
-  "preparationCorrection": "Initial generic suffix scan60 omitted rust-toolchain.toml; assertion failed before any Cargo. Exact original61map basis used, no source change."
-}

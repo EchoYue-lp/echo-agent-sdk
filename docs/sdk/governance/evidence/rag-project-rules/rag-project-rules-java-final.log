@@ -1,6 +1,0 @@
-SLF4J(W): No SLF4J providers were found.
-SLF4J(W): Defaulting to no-operation (NOP) logger implementation
-SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
-RAG/project-rules verified: {"calls": 29, "embedding_posts": 13, "ranked_chunks": 3, "proof": "Session-local memory; no durable restart guarantee"}
- evidence: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules/java-6306759143118474479
-RAG/project-rules retained: /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/rag-project-rules/java-6306759143118474479

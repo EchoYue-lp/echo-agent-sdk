@@ -4,11 +4,11 @@
 
 ## 前一验收切点（历史原文，2026-10-15）
 
-SDK Host 精确依赖已发布框架 `00782b8a`，八个框架包同一 Git 来源、没有 path patch；框架合并后七项 CI 已成功。SDK [14 条 Rust 门禁](evidence/sdk-00782-final-rust-gates/README.md)实际全0，workspace 主计数474，不累加重叠 feature profiles。[完整语言入口](evidence/sdk-language-00782-reviewed-final/README.md)实际退出0：TypeScript329、Python394加18子测试、Java351/75份XML及三个quickstart；793项执行输入前后相同，随后逐项保存为可恢复Git。预期负例的运行时WARN按原字节保留，编译告警为0。
+SDK Host 精确依赖已发布框架 `00782b8a`，八个框架包同一 Git 来源、没有 path patch；框架合并后七项 CI 已成功。SDK [14 条 Rust 门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md)实际全0，workspace 主计数474，不累加重叠 feature profiles。[完整语言入口](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-00782-reviewed-final/README.md)实际退出0：TypeScript329、Python394加18子测试、Java351/75份XML及三个quickstart；793项执行输入前后相同，随后逐项保存为可恢复Git。预期负例的运行时WARN按原字节保留，编译告警为0。
 
 当前按实际语义对象读取：52项Finding本地resolved、4项open。Git分支切换同名dirty覆盖与SDK worktree入口栈溢出已各自完成特定修复、消费者验证和独立复审链；本地闭合不宣SDK main或外部Issue已关闭。剩余为12项accepted source/kind迁移，以及cleanup/Sandbox/Task resume三个宽Finding共同关联的5秒物理结算B；只涉及两个待人的裁决单位，不自动退役合同或接受风险。
 
-[完整合同只读检查](evidence/sdk-contract-00782-readonly/README.md)真实退出1，保留13项连续性错误：12项提案未批准，另1项已有独立批准的Curator保存项仍按原证据归因；本轮没有update/accept/retire或seed修改，未到达的后续命令不算通过。40格审查是五个in_scope区域的有界风险映射（38 covered、2根manifest not_applicable），不是41族全部verified或完整生成通过。库存建模已闭合（inventory_closure=closed），行为模型保持open，保留上述B与12项连续性边界。SDK `eebd9f952649cca20d20eabab7f88ecdbaea5813` 已实际通过本地官方全项目strict，包含严格快照及变更依据；该切点工作树与Git源码摘要同为 `473fb206…`，308份正式语义文件的路径、模式、内容与Git一致。这个结果只属于eebd切点；后继文稿或CI修改须按新树重新绑定摘要与验证，不能继承为未来结果。现有远端工程CI没有执行该语义工具，不作为远端语义通过证据；后续固定工具版本的独立语义job仍待实现和实跑。Windows job只检查Rust库，不证明Windows原生SDK消费者；精确SDK main仍须发布后手工官方strict复核。registry发布及CLI/官网外部写入不由本表授权。
+[完整合同只读检查](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-contract-00782-readonly/README.md)真实退出1，保留13项连续性错误：12项提案未批准，另1项已有独立批准的Curator保存项仍按原证据归因；本轮没有update/accept/retire或seed修改，未到达的后续命令不算通过。40格审查是五个in_scope区域的有界风险映射（38 covered、2根manifest not_applicable），不是41族全部verified或完整生成通过。库存建模已闭合（inventory_closure=closed），行为模型保持open，保留上述B与12项连续性边界。SDK `eebd9f952649cca20d20eabab7f88ecdbaea5813` 已实际通过本地官方全项目strict，包含严格快照及变更依据；该切点工作树与Git源码摘要同为 `473fb206…`，308份正式语义文件的路径、模式、内容与Git一致。这个结果只属于eebd切点；后继文稿或CI修改须按新树重新绑定摘要与验证，不能继承为未来结果。现有远端工程CI没有执行该语义工具，不作为远端语义通过证据；后续固定工具版本的独立语义job仍待实现和实跑。Windows job只检查Rust库，不证明Windows原生SDK消费者；精确SDK main仍须发布后手工官方strict复核。registry发布及CLI/官网外部写入不由本表授权。
 
 具名审查范围见[能力处置](capability-review-dispositions.md)，三链及开放对象见[Finding账本](finding-ledger.md)。历史段中的“当前”“未运行”“open”只描述该段原观察，不作为当前待办；原日志、输入、sourcecut与限制不改写。
 
@@ -207,7 +207,7 @@ Protocol inventory/catalog 测试同样不能证明 Host 生命周期或语言�
   frontier/重试/取消第二权威。旧三项 StructField 身份仍属12项提案，待批准；本修订不自动退约。
 
 - **已证实（限具体case）**：三语言各四项正式共享DAG/control场景已执行并由最新官方完整入口承接：exact pause/cancel A、B/C继续、resume复用canonical B result/执行事实、stale CAS/duplicate execute、CRUD-only拒绝执行；TaskContext四项真实Host组合核原run_id/waiver/policy getter消费。
-  证据：[Task/Subagent正式证据](task-subagent-evidence.md)、evidence.sdk-task-subagent-candidate、evidence.sdk-task-context-direct-getter-consumption及[最新语言门禁](evidence/sdk-language-be5-reviewed-final/README.md)。
+  证据：[Task/Subagent正式证据](task-subagent-evidence.md)、evidence.sdk-task-subagent-candidate、evidence.sdk-task-context-direct-getter-consumption及[最新语言门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-be5-reviewed-final/README.md)。
 - **仍缺/不承诺的边界**：TaskContext没有完整三字段专用reverseDTO，不声称直接把整个context交给CustomAgent；5秒强中止后的物理结算B仍开放。原四场景绿色不关闭该义务，12项身份迁移仍待选择。
 
 ### family: subagent
@@ -265,7 +265,7 @@ Protocol inventory/catalog 测试同样不能证明 Host 生命周期或语言�
   和 startup cleanup 的真实行为。baseline constants 不是协议执行证据。
 
 - **已证实（限具体case）**：独立、无Echo profile的stdio suite实际通过四项：标准prompt、parked model取消、stdin EOF干净退出、非法配置不污染stdout/不泄露secret；扩展standard prompt共用Session/Run的测试另外保留。
-  证据：[be5最终Rust门禁](evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)中workspace-tests.log/ci-default-host.log的4项stdio结果；不是仅Host136/31/34/12旧收据。
+  证据：[be5最终Rust门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)中workspace-tests.log/ci-default-host.log的4项stdio结果；不是仅Host136/31/34/12旧收据。
 - **仍缺/不承诺的边界**：未列出的协议版本/启动失败处置须按实际接受的ACP版本与错误合同定位；四项通过不自动证明所有平台signal或外部ACP实现互操作。
 
 ### family: value
@@ -449,7 +449,7 @@ Protocol inventory/catalog 测试同样不能证明 Host 生命周期或语言�
   半写；三语言保留 ask suggestions 与 matcher/source/TTL，不用仅 enum 解析做权威证明。
 
 - **已证实（限具体case）**：三语言59行场景有真实HumanLoop上下文、拒写零effect与approved once。默认TTL另外以三原生客户端各26次调用、真实等待≥1801500ms验证：四条审批到期false，读取不续期/不删除，stats仍2+2，显式cleanup4→0、fresh审批true；六原PID退出。
-  证据：[真实默认30分钟TTL](evidence/sdk-real-permission-ttl/README.md)、evidence.sdk-real-permission-default-ttl、evidence.sdk-memory-permission-candidate。
+  证据：[真实默认30分钟TTL](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-real-permission-ttl/README.md)、evidence.sdk-real-permission-default-ttl、evidence.sdk-memory-permission-candidate。
 - **仍缺/不承诺的边界**：默认30分钟到期未观察的旧缺口已补；未新增短TTL setter或改clock。只证明易失Session缓存，不承诺跨进程审批持久化；其它明确matcher/revoke故障义务须单独列case，不能因当前证明自动全族verified。
 
 ### family: mcp
@@ -597,7 +597,7 @@ Protocol inventory/catalog 测试同样不能证明 Host 生命周期或语言�
   complete effect，三语言 typed effect/partial failure；格式/contract 不替代实际文件证据。
 
 - **已证实（限具体case）**：三语言普通工具后继语料覆盖14个文件工具操作的指定输入：真实create/append/update/move/delete/transactional patch、失败更新/重复创建/stale hash、多文件回滚、read/diff/list/grep/glob/repo_map/code_search；原字节、artifact连续分页/SHA/cursor拒绝及副作用对账。
-  证据：[Tool/Value证据](evidence/tool-value-effects/README.md)、其b909-natural-eof-after与最新完整语言记录。
+  证据：[Tool/Value证据](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/tool-value-effects/README.md)、其b909-natural-eof-after与最新完整语言记录。
 - **仍缺/不承诺的边界**：不把工具写入证明扩成FileAuthority取得guard后同路径replacement一定拒写；该具体合同与现路径仍调查中。未采集全文件树时不声称任意外部路径都无副作用。
 
 ### family: shell
@@ -796,7 +796,7 @@ Protocol inventory/catalog 测试同样不能证明 Host 生命周期或语言�
   close；三语言 paths/content/optional 无损，不静默覆盖用户自定义规则。
 
 - **已证实（限具体case）**：RAG/Rules三语言共享后继场景已核InstructionResolver来源优先级/path、文件动态修改、坏UTF8明确错误、目录跳过、owner/close和原文件不变；这部分由真实resolver消费，不是catalog注册成功。
-  证据：evidence.sdk-rag-project-rules、evidence.sdk-rag-scalar-verification与[evidence/rag-project-rules/README.md](evidence/rag-project-rules/README.md)。
+  证据：evidence.sdk-rag-project-rules、evidence.sdk-rag-scalar-verification与[evidence/rag-project-rules/README.md](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/rag-project-rules/README.md)。
 - **仍缺/不承诺的边界**：当前证明是resolver读值；rules是否自动进入Session prompt须先核是否属于已接受合同，不能从当前缺入口推不需要，也不能预设自动注入保证。
 
 ### family: testing

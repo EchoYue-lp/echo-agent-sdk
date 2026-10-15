@@ -1,8 +1,0 @@
-{
-  "sdks/shared/testing/secret_scan_host_fixture.py": "02487272d9fbd4eac4983aaa75917d6a2b24ca7da1358c119fbc013f1208d37b",
-  "sdks/typescript/test/secret-scan-host.test.js": "ce60db631e30dcea0cdc01b01aacf5a24672497ad2b934c0a45006f734c9fe88",
-  "sdks/python/tests/test_secret_scan_host.py": "e2d5fbfc63bcc2efeb18832805b35d0f24bca86c232a9c036d9efc29a1d45f45",
-  "sdks/java/src/test/java/com/echoagent/sdk/SecretScanHostTest.java": "e7287d5d9b292464025d25cc17a80f4e33e2be1cfcfb618dde148e6d36249050",
-  "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java": "32c4768bf5542d36a4ce08628e367efe328b96f1a2d5a7c210a4dab09f071746",
-  "echo-sdk-host/src/core_profile/facade/source_operations.rs": "91bd8f84f3a05b272b52911c7ba52d7cc54537d9f88790cfbb11578a57817a94"
-}

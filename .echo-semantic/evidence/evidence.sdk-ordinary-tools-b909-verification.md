@@ -4,23 +4,8 @@ id: evidence.sdk-ordinary-tools-b909-verification
 kind: evidence
 observed_at: 56929154c1851473e9e4837901b610cecf001b2d
 source_refs:
-- docs/sdk/governance/evidence/tool-value-effects/published-framework-b909/manifest.json
-- docs/sdk/governance/evidence/tool-value-effects/published-framework-b909/SHA256SUMS.json
-- docs/sdk/governance/evidence/tool-value-effects/published-framework-b909/tool-comparison.json
-- docs/sdk/governance/evidence/tool-value-effects/published-framework-b909/host-build-receipt.json
-- docs/sdk/governance/evidence/sdk-successor-model-reviews/ordinary-tools-b909.json
-- docs/sdk/governance/evidence/tool-value-effects/README.md
 - echo-sdk-host/src/core_profile/facade/tools.rs#ClinicalTrialsSearchTool
 - sdks/shared/testing/tool_value_effect_fixture.py
-- docs/sdk/governance/evidence/sdk-count-authority-calibration/framework-main-b909-acceptance.json
-- docs/sdk/governance/evidence/sdk-successor-model-reviews/framework-database-rag-final-gates.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-before.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/SHA256SUMS.json
-- echo-sdk-host/src/core_profile/facade/tools.rs
 supports:
 - behavior.sdk-family-files
 - behavior.sdk-family-shell
@@ -31,6 +16,8 @@ limitations:
 - Ordinaryfivefamilies exactdeclaredscene only
 - FullfilePYJava3/3 TS2/3;SandboxmissingCompleteResult specificopen, no wholeclassgreen
 - Acceptedsource12proposal no userresponse/noSeedwrite; finalcontract/SDKgate pending
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # ordinary-tools-b909-verification
@@ -78,3 +65,8 @@ Framework源为独立publishedGit b909，SDKtree不是frameworktree；引用SDK�
 - `audit.sdk-tool-artifact-context-propagation-rereview` reader`current_tool_boundary_review`：**PASS / 0C0I0M（本次有界源码业务复审）**；本次原故障检查Same liveAgent Some/None artifactpolicy/conversation/cwd originalToolContext,frameworkthreshold/persistence/retention soleauthority；Webmax_length8/actualHTTP2040089bytesSHA/readback/trunc/modelcontent proof,not outputsubstring or effects=[] noexternalmutations。after仅Newbb4f nativewebartifact exactfullbytes/page/readbackstrongoracle;changedtoolscfg only,not newloggingdefault。
 
 所有新SDKsource/proof refs按真实569byte/anchor读取，原业务与原sourcefreeze记录保持；这不是一切currentfamily/runtimepassed。ordinaryTools已有原五族收据只新增本次明确Database/Artifact检查，不暗称其余方言/provider/工具所有field均新审；原candidate supports=[]不升。任何缺原完整time/tree仍在原limits，12/B/depWarn人未答/fullgeneration/CImain待。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

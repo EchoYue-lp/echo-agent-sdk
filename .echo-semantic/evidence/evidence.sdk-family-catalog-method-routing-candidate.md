@@ -10,23 +10,16 @@ source_refs:
 - sdks/typescript/test/family-route-host.test.js
 - sdks/python/tests/test_family_route_host.py
 - sdks/java/src/test/java/com/echoagent/sdk/FamilyRouteHostTest.java
-- docs/sdk/governance/evidence/sdk-family-route-20261013/manifest.json
-- docs/sdk/governance/evidence/sdk-family-route-20261013/content-guard-public-call-route-failure.log
-- docs/sdk/governance/evidence/sdk-family-route-20261013/sdk-family-route-typescript-green.log
-- docs/sdk/governance/evidence/sdk-family-route-20261013/sdk-family-route-python-serial-green.log
-- docs/sdk/governance/evidence/sdk-family-route-20261013/sdk-family-route-java-green.log
-- docs/sdk/governance/evidence/sdk-family-route-20261013/TEST-com.echoagent.sdk.FamilyRouteHostTest.xml
 supports:
 - behavior.sdk-family-content-guard
 - behavior.sdk-language-clients
 limitations:
-- Three languages each one actual real-Host test for catalog family method spelling;
-  not every family or final full language gate.
-- Original frozen source hashes and later client changes require explicit source comparison,
-  not observed_at promotion.
-- Python concurrent state-root collision failure retained; serial corrected fixture
-  scope succeeded.
+- Three languages each one actual real-Host test for catalog family method spelling; not every family or final full language gate.
+- Original frozen source hashes and later client changes require explicit source comparison, not observed_at promotion.
+- Python concurrent state-root collision failure retained; serial corrected fixture scope succeeded.
 - Independent rereview, published pin and precise main pending; accepted scope unchanged.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # SDK family catalog method 路由候选证据
@@ -52,3 +45,8 @@ Python首次并发测试共享state root造成连接关闭的fixture失败原日
 对应当前独立catalog/component组实际新复审已PASS，仅保familycanonicalroute、typedPythonstream投影或managed三逆DTO现Rust/Host静态边界原fault义务；不以此支持其他能力范围。原beforecandidate/未运行3forwardconsumer仍历史事实，不去掉support或limits。
 
 原supports/limitations保留，观察不提升41family/8lens、Finding闭合或accepted成员。运行型证据仍原569/17cf/bb4f/b909，不借newcut冒freshSDK代码执行；仅当时原强cases及已完成新scope可用。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

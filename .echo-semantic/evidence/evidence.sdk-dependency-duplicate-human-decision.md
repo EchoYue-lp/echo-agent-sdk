@@ -6,18 +6,15 @@ observed_at: 9db7bd7f0b732ff7aa3bafa07cce02cc292e2a9d
 source_refs:
 - AGENTS.md
 - docs/sdk/governance/dependency-warning-policy-proposal.md
-- docs/sdk/governance/evidence/sdk-current-dependency-policy-after-feature-wiring/baseline-comparison.json
-- docs/sdk/governance/evidence/sdk-current-dependency-policy-after-feature-wiring/source-before.json
-- docs/sdk/governance/evidence/sdk-current-dependency-policy-after-feature-wiring/source-after.json
 supports:
 - rule.framework-runtime-authority
 limitations:
-- Human accepted bounded duplicateexception only; 12source/Bphysical/CLIwebsite choices
-  not granted
+- Human accepted bounded duplicateexception only; 12source/Bphysical/CLIwebsite choices not granted
 - No advisoryignore/lockgraph/config change or nonduplicate/compilerwarn exception
-- Latest governancecut trueGit bound; original runtime/dependencycheck remains sameb909/a42
-  proof
+- Latest governancecut trueGit bound; original runtime/dependencycheck remains sameb909/a42 proof
 - 12source/B5 physical/CLIWebsite choices not approved bythis humanreply
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # 用户接受有界duplicate提示例外
@@ -37,3 +34,8 @@ limitations:
 ## 人的裁决实施与独立终态
 
 用户2026-10-14明确接受有界50组duplicate例外；当前policydocStatusaccepted SHA1bd944b2/受审proposal4c940/原50table/locka42/rawdeny14ae不变，SDK与TopAGENT具体SDK-only归属已根同步。sdk_capability_acceptance_audit实际有限规则实施复审PASS0C0I0M：不新增ignore/不隐藏output/不放松其它warnings，futurepin/lock/features/policy必须fresh检查及版本组复审。上节waiting文字是旧实施阶段，不再待用户答/不再复审pending。observed新Git`9db7bd7f0b732ff7aa3bafa07cce02cc292e2a9d`只绑定这次治理文稿，不重跑工具。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

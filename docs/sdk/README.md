@@ -158,8 +158,8 @@ wire candidate. They are historical telemetry, not a freshly generated a634
 public inventory or proof that the twelve continuity choices were accepted.
 The current pin is `a6346643bda47679a96760f56f45e41fd73b61b0`; see
 [source continuity](../../MIGRATION-SOURCE.md), the
-[a634 Rust gate](governance/evidence/sdk-a634-rust-gates/README.md) and
-[complete language gate](governance/evidence/sdk-language-a634-reviewed-final/README.md)
+[a634 Rust gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md) and
+[complete language gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
 for exact input cuts. Subsequent repairs and final publication/idempotency
 validation remain separately bound.
 

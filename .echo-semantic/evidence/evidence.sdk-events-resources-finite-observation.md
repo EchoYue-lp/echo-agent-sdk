@@ -15,14 +15,6 @@ source_refs:
 - echo-sdk-host/src/bounded_stdio.rs
 - echo-sdk-host/src/config.rs
 - echo-sdk-protocol/src/event.rs
-- docs/sdk/governance/evidence/live-journal-replacement/README.md
-- docs/sdk/governance/evidence/live-journal-replacement/receipt.json
-- docs/sdk/governance/evidence/live-journal-replacement/manifest.json
-- docs/sdk/governance/evidence/live-journal-replacement/comparison.json
-- docs/sdk/governance/evidence/sdk-a634-rust-gates/receipt.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
 supports:
 - behavior.sdk-events-recovery
 - behavior.sdk-family-event-replay
@@ -33,6 +25,8 @@ limitations:
 - Settled cached-journal replacement with a live connection is covered; active-write/partial-write/crash injection is not inferred.
 - Five-second physical producer settlement and broad cleanup policy remain open; cancel/EOF/kill requests are not physical completion proof.
 - Source operation methods outside the accepted event/stream/resource owner scope, full generation/12 identity choice/platform/SDK main are separate.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # Events 与 resource stream 有界观察
@@ -77,3 +71,8 @@ live-journal包真实TS12/PY12/Java9全部零失败/跳过，以相同Host193e49
 仅这些测试源同原c5/ff3。原focused使用较早客户端，TS/PY生产69cb修复了另一个ACK竞态；e58完整官方脚本的实际合并树与输入闭包补足新客户端组合，不把旧source哈希不变推全部输入不变。原强消费者断言在未过滤完整脚本执行，Host0f1只属于原Mac focused，不套远端Linux Host二进制SHA。
 
 具体Finding局部三链引用本段及对应Audit具名故障复核，仍保Host未知退出、B三宽义务、accepted12/合同13、平台/main、全局continuity1173和4365档案必要性精简阻断。没有新runtime状态权威/validator/协议/accepted schema/公共API；examples和官网无需接口同步，代码/测试本次不改。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

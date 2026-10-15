@@ -1,9 +1,0 @@
-{
-  "args": [
-    "mvn",
-    "-q",
-    "-Dtest=ProtocolHostTest",
-    "test"
-  ],
-  "exitCode": 0
-}

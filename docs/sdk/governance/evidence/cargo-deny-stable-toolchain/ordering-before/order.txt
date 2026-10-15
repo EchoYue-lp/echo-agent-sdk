@@ -1,3 +1,0 @@
-rustup show
-rustup toolchain install
-cargo-deny --log-level warn --manifest-path ./Cargo.toml --workspace --all-features --locked check

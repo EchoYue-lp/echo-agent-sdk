@@ -4,7 +4,7 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: source:fdf70c9adf8169160777341ed887438217afd02529dbe1f2a3e651f9ed19b90e
+observed_at: 7f14a1b9c751b0612ceb42224f83f29d09aea46c
 boundary_refs:
 - boundary.sdk-product
 behavior_refs:
@@ -121,8 +121,6 @@ scenarios:
     status: mapped
     source_refs:
     - .github/workflows/rust-ci.yml
-    - docs/sdk/governance/evidence/sdk-semantic-ci-consumer/README.md
-    - docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/README.md
     behavior_refs:
     - behavior.sdk-repository-ownership
     rule_refs:
@@ -131,7 +129,10 @@ scenarios:
     - evidence.sdk-framework-pin
     review_scope: CIjob定义/唯一官方action provenance/真实base失败关闭及已执行4994原30d资格；mapped不是newremoteexecutionpassed。
     limitations: 新semanticjob尚未执行；SDKcontract13/B12/原task513/Windowsnative/SDKmain另留。
-
+    asset_refs:
+    - asset.sdk-historical-proof-location
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # 独立 SDK 产品边界
@@ -236,3 +237,8 @@ B及工具另已批准，上游工具c0bc已发布，SDKaction/归档continuity/
 
 本切片Finding经上述repair/verification/独审及公开22e原30d完整change gate实际0后
 本地resolved；原其余open义务及场景状态保留，后继只metadata变更再次精候选复验。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

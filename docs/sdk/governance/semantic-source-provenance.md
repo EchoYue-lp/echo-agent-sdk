@@ -24,7 +24,7 @@ Root 已创建并 atomic push 八个 annotated tag `evidence/sdk-governance/<完
 | `cd5b78467f77ac28919cf9dda6877662bed744f4` | `da8aeccb60d4fb7579170ac0e75dc515cbd4711c` | 后继回归来源 |
 | `bd8e42e732588181b7a2589d91e9ffdce02d23e1` | `1c7bc45b615dad1ae1ae07a1a077bc247a7b36b4` | 后继 A2A 消费来源 |
 
-原始 [fresh-fetch 收据](evidence/semantic-source-provenance/receipt.json)、[fetch 日志](evidence/semantic-source-provenance/fetch.log)及[逐字节校验](evidence/semantic-source-provenance/SHA256SUMS.json)已归档。未来实际被模型引用的提交也须在最终 squash 前保同名完整 SHA 标签；squash 后不能依赖开发提交仍是 main 祖先，当前工作树或文件 hash 不能替代 Git 原件。
+原始 [fresh-fetch 收据](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/semantic-source-provenance/receipt.json)、[fetch 日志](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/semantic-source-provenance/fetch.log)及[逐字节校验](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/semantic-source-provenance/SHA256SUMS.json)已归档。未来实际被模型引用的提交也须在最终 squash 前保同名完整 SHA 标签；squash 后不能依赖开发提交仍是 main 祖先，当前工作树或文件 hash 不能替代 Git 原件。
 
 ## 取回与复核
 

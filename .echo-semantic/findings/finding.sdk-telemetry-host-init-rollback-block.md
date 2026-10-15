@@ -43,7 +43,7 @@ Host 原有全局 stderr subscriber 与 framework init 再安装全局 subscribe
 
 ## 证据
 
-[正式原始收据](../../docs/sdk/governance/evidence/telemetry-host/receipt.json)、[证据说明](../../docs/sdk/governance/evidence/telemetry-host/README.md) 和 [OS 线程栈](../../docs/sdk/governance/evidence/telemetry-host/host-init.sample.txt) 保存三语言各 0 pass/1 fail/0 skip 与实际 shutdown 栈。原 Host 为 bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345；冻结 Host main 源 SHA 5ece00bd831bb954e644af13739287cbc538bbf2914b760a0f6771df17cd404d，framework be5 telemetry 源 SHA b6734aae2fcfa9cb1fdd6bafe77551213b7ed206c42cdaf5d5aefaa5dbc799aa，均可在本证据目录读取原文件。OS sample 证明回滚 shutdown 阻塞，不自行声称观测到了尚未返回的原始 try_init 错误负载。
+[正式原始收据](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/telemetry-host/receipt.json)、[证据说明](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/telemetry-host/README.md) 和 [OS 线程栈](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/telemetry-host/host-init.sample.txt) 保存三语言各 0 pass/1 fail/0 skip 与实际 shutdown 栈。原 Host 为 bcb0389ae8d8a946fab9bb123945100722711029bafa8d9d6cadf95a76c9c345；冻结 Host main 源 SHA 5ece00bd831bb954e644af13739287cbc538bbf2914b760a0f6771df17cd404d，framework be5 telemetry 源 SHA b6734aae2fcfa9cb1fdd6bafe77551213b7ed206c42cdaf5d5aefaa5dbc799aa，均可在本证据目录读取原文件。OS sample 证明回滚 shutdown 阻塞，不自行声称观测到了尚未返回的原始 try_init 错误负载。
 
 ## 处理记录
 

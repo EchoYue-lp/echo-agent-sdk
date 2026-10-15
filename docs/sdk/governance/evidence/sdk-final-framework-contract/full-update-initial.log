@@ -1,2 +1,0 @@
-echo-sdk-protocol export_schema: mode=update
-error: source disposition ADR is not approved: docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md#accept-task-result-field

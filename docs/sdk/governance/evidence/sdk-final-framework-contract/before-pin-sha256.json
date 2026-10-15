@@ -1,9 +1,0 @@
-{
-  "echo-sdk-host/Cargo.toml": "7e6482c5192d4e839326277a0c89c8042f020154e749928c763313d3d01ddf84",
-  ".cargo/config.toml": "65e87a54d615e7cc202c662b03dda190e770a1eb6474429db06c20922081ab6b",
-  "Cargo.lock": "a4f93d36245e4c6367b8050abef7d61e175f2c39e94b931a813bd06174eb01ae",
-  "scripts/check-sdk-contracts.sh": "ffded9975e48efd4cdba8bd2b3b7fd53ec557000c972dd773945b4a3a879d635",
-  "contracts/sdk/accepted-external-contract.json": "901040bc446b2981e6146bfb9b82e93a1d68ff83552c05eb5e68ecd2f119fd45",
-  "contracts/sdk/parity-manifest.json": "73cc165e1e2b7d428dcf6d0906d80a55ce62216bf44f6716907da849aa206ab0",
-  "docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md": "1bfc0385d310af0114354c491c75ba1ed0407f1408bcefd0473d7647bac407f9"
-}

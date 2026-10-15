@@ -15,7 +15,7 @@
 | 同 Session、同 Run key/input，前次完成后重复；改 input；公开 RunHandle.close 后重试 | 四个不同 turn，四次真实 `llm_chat` 回调；改 input 不冲突 |
 | 原模型回调被 barrier 保持时，同 key 并发重复 start | `invalid_request / after_delay`：已有 active Prompt Turn；未重放原响应，未产生第二次回调 |
 
-原始 `facts.json` SHA `d1658d4c77694b7f160d2c51874a72a4570cdf649e16a9c212de71d1bb2c0a8e`；[最小反例包](evidence/session-run-idempotency-counterexample/README.md)保存原请求、响应、错误、回调、结算和 Session index。首脚本误发不存在的 `run/close` 已另存，不能归为产品缺陷。发现时 checkout 为 `76601b242d7c354352f3b5c7d4bf099873746b14`；二进制与运行源码按 SHA 绑定，**不宣称该 Git commit 已包含整套测试源码**。
+原始 `facts.json` SHA `d1658d4c77694b7f160d2c51874a72a4570cdf649e16a9c212de71d1bb2c0a8e`；[最小反例包](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/session-run-idempotency-counterexample/README.md)保存原请求、响应、错误、回调、结算和 Session index。首脚本误发不存在的 `run/close` 已另存，不能归为产品缺陷。发现时 checkout 为 `76601b242d7c354352f3b5c7d4bf099873746b14`；二进制与运行源码按 SHA 绑定，**不宣称该 Git commit 已包含整套测试源码**。
 
 ## 推荐 A：保留参数并限定重放语义
 

@@ -1,7 +1,0 @@
-{
-  "path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/binaries/echo-sdk-telemetry-composition-diagnostic-host",
-  "sha256": "29b4abc119fb1bbba24a91e129079d6ea4295698168e7d4a3bf2054c969faebc",
-  "framework_source": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-worktrees/task-runtime-store-control",
-  "pin_unchanged": "be5f0a8405b593c4ef964cd6fd2df4beabf4956c",
-  "kind": "diagnostic local path patch, not published proof"
-}

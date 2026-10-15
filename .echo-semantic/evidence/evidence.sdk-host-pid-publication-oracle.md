@@ -4,16 +4,14 @@ id: evidence.sdk-host-pid-publication-oracle
 kind: evidence
 observed_at: 47579c895657c182eceacfbb63865b04ec55a4a1
 source_refs:
-- docs/sdk/governance/evidence/sdk-java-host-early-exit/pid-publication-race/source-freeze-manifest.json
-- docs/sdk/governance/evidence/sdk-java-host-early-exit/pid-publication-race/README.md
 - sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java
-- docs/sdk/governance/evidence/sdk-language-be5-reviewed-final/rust14-to-language-cut-comparison.json
-- docs/sdk/governance/evidence/sdk-language-be5-reviewed-final/final-summary.json
 supports:
 - behavior.sdk-language-clients
 limitations:
 - Testfixture-only，非所有connectionEOF/physical5s已证明
 - 原94950byteswholefailure保，不能用repeat盖原失败
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # host-pid-publication-oracle
@@ -29,3 +27,8 @@ limitations:
 ## 已知缺口
 
 Testfixture-only，非所有connectionEOF/physical5s已证明；原94950byteswholefailure保，不能用repeat盖原失败。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

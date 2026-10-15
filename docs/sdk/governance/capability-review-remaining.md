@@ -2,7 +2,7 @@
 
 ## 当前有限验收（2026-10-15）
 
-Host 固定已发布 framework `00782b8a`，八包同一Git来源、无path patch；框架main七项CI与 [SDK Rust14](evidence/sdk-00782-final-rust-gates/README.md) 有原切点通过证据。[第四次本机完整语言门禁](evidence/sdk-language-ci-repairs-final/README.md)在其800项输入下实际0：TS336、Python415加18子测试、Java355/76份fresh XML和三个quickstart，全部输入随后逐Git恢复。该运行使用Oracle JDK21，不代Linux CI Temurin17；后继源码和workflow已变，不能继承为当前整套通过。
+Host 固定已发布 framework `00782b8a`，八包同一Git来源、无path patch；框架main七项CI与 [SDK Rust14](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md) 有原切点通过证据。[第四次本机完整语言门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-ci-repairs-final/README.md)在其800项输入下实际0：TS336、Python415加18子测试、Java355/76份fresh XML和三个quickstart，全部输入随后逐Git恢复。该运行使用Oracle JDK21，不代Linux CI Temurin17；后继源码和workflow已变，不能继承为当前整套通过。
 
 当前正式模型为62项resolved、4项open；本次仅accepted-source-continuity切片在repair、完整生成/消费者验证、独立复审及原公开22e精CI候选原30dchange实际0后本地闭合。EventIdentity嵌套`subagent_lineage.parent_event_id`已在Python/Java无损投影，修复源 `185559ce`、对应pure value测试3+3与Java17编译及独立复审支持该具体局部闭合；它不新增API、改框架身份权威或自动关闭其它族。bootstrap原stable探测错误已按 `4994a8c` 真实CI在 `890abaa7` 具体三链闭合。本次0ebe及后续新增原始CI日志以Admin保全和官方job定位，不再逐轮新增main归档；既有归档尚未精简，待保义务repair审查与具体删除授权。
 
@@ -16,7 +16,7 @@ e58完整九job自然终态为7success/2failure；两个失败仍是合同/库�
 
 用户已明确四仓统一push-main-only CI；本SDK工作树候选已实施、尚未在main生效：仅把现有Rust CI触发条件收敛为push到main，任务分支与PR不自动触发，jobs/命令/目标/超时/失败规则和权限均不变，SDK AGENTS同步规则。合并前本地全部适用门禁仍必须通过，main后CI核验精确main；此策略不接受合同13/12或B残余风险。上面的e58 PRmerge运行是旧触发配置下的真实后验，不能冒新main-only配置已执行；其它三仓由Root各owner处理，本页不代其宣交付。
 
-仍阻塞main：①原[完整合同只读门禁](evidence/sdk-contract-00782-readonly/README.md)的exit1/13保留为历史。用户已于2026-10-15明确接受12项source/kind迁移/退役，ADR0034已正式绑定，唯一生成器首次28profiles update实际0；独立SDK切片已补齐getter Rust/Host-only分类，重跑同一完整合同脚本实际退出0：28profiles、117artifacts匹配、0telemetry漂移，5+39+91项测试零失败/跳过；后继Rust8门禁全0（workspace478/0/0），新实际Host匹配生成合同；官方完整三语言同一入口实际0（TS343/PY427+18subtests/Java363与76freshXML/三个quickstart），793输入和Host前后hash相同；独立复审PASS0，公开22e精CI候选ordinary及原30dchange门禁均实际0，Finding仅此切片本地resolved；安装0.5历史/8MB限制另列，不宣整个SDK/main已通过。此前Curator/TaskExecution/DiagnosticCode裁决保持。②cleanup/Sandbox/Task resume三个宽义务关联的5秒物理结算已选择B并授权独立framework实施，尚待上游实际交付；不能由合作取消或本机focused结果接受风险。工具A/B已由独立上游交付Echo Semantic main c0bc306bd36d2b1b76def2b6c7308a07dda4f54b，父任务已核PR及精确main CI成功；SDK action切换、逐义务归档迁移及真实continuity验收仍由父任务后续整合。本切片保持原22e证据和CI pin，不把上游交付称为SDK已自动通过。③e58完整语言/三quickstart和Host实际通过，本轮后继文稿/模型仍需同期sourceDigest与公开工具原30d完整变更门禁，完整CI/精确SDKmain另按真实切点验收；不继承旧结果冒新候选已过。④**合入main逐文件必要性审查仍BLOCK**：只交付必要源码、可执行测试、正式长期文档和结构义务；阶段raw/重复状态/历史包不能因日志真实就自动main必要。归档保义务及移出动作由父任务在工具上游交付后单独结算；本SDK切片未执行清理，不得删除语义义务或历史可追溯链。
+仍阻塞main：①原[完整合同只读门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-contract-00782-readonly/README.md)的exit1/13保留为历史。用户已于2026-10-15明确接受12项source/kind迁移/退役，ADR0034已正式绑定，唯一生成器首次28profiles update实际0；独立SDK切片已补齐getter Rust/Host-only分类，重跑同一完整合同脚本实际退出0：28profiles、117artifacts匹配、0telemetry漂移，5+39+91项测试零失败/跳过；后继Rust8门禁全0（workspace478/0/0），新实际Host匹配生成合同；官方完整三语言同一入口实际0（TS343/PY427+18subtests/Java363与76freshXML/三个quickstart），793输入和Host前后hash相同；独立复审PASS0，公开22e精CI候选ordinary及原30dchange门禁均实际0，Finding仅此切片本地resolved；安装0.5历史/8MB限制另列，不宣整个SDK/main已通过。此前Curator/TaskExecution/DiagnosticCode裁决保持。②cleanup/Sandbox/Task resume三个宽义务关联的5秒物理结算已选择B并授权独立framework实施，尚待上游实际交付；不能由合作取消或本机focused结果接受风险。工具A/B已由独立上游交付Echo Semantic main c0bc306bd36d2b1b76def2b6c7308a07dda4f54b，父任务已核PR及精确main CI成功；SDK action切换、逐义务归档迁移及真实continuity验收仍由父任务后续整合。本切片保持原22e证据和CI pin，不把上游交付称为SDK已自动通过。③e58完整语言/三quickstart和Host实际通过，本轮后继文稿/模型仍需同期sourceDigest与公开工具原30d完整变更门禁，完整CI/精确SDKmain另按真实切点验收；不继承旧结果冒新候选已过。④**合入main逐文件必要性审查仍BLOCK**：只交付必要源码、可执行测试、正式长期文档和结构义务；阶段raw/重复状态/历史包不能因日志真实就自动main必要。归档保义务及移出动作由父任务在工具上游交付后单独结算；本SDK切片未执行清理，不得删除语义义务或历史可追溯链。
 
 库存建模closed、行为模型open；40格仅五个in_scope区域38 covered/2根manifest not_applicable，不是41族全部verified。Discovery九入口已由4256知识迁移承接既有场景；这不解除连续性或归档删除门禁。Windows job只验证Rust库，不证明Windows原生SDK消费者。历史eebd strict/source473/308对象及后继无base验证各保原来源，不能替代当前已发布工具的真实原30d完整变更依据门禁。npm/PyPI/Maven发布独立且本轮不发布，CLI/官网无新增API或行为需要外仓改动。
 
@@ -36,7 +36,7 @@ e58完整九job自然终态为7success/2failure；两个失败仍是合同/库�
 
 SDK 已精确依赖框架 main `a6346643bda47679a96760f56f45e41fd73b61b0`，八个框架包同一 Git 来源、无本地 path patch，锁文件 SHA `a7a331cf`。框架 PR185 与合并后 main 的七项 CI 均实际成功，合并树与已审 `6d9be119` 树 `093a48f0` 完全相同，精确 main strict 已通过；验收收据为工作区 admin/framework-main-a634-acceptance.json（SHA `0d9b7097`）。SDK 新 pin 的14条门禁仍在运行，目前已取得7步成功（含 workspace 461项测试、零失败/跳过），不声明全部14条或当前完整语言通过。依赖 audit 一次实际通过、deny 的50组与已接受基线一致，独立复审尚待。此前 be5/旧 Host 的14Rust、Chart61、TTL和完整语言结果按原证据切点保留，不冒充本次 a634 执行。
 
-此前 be5 切点的完整三语言脚本已用同一官方入口执行完毕并退出0：TypeScript 290项、Python 368项加18子测试、Java 320项和67份XML全部通过，三个quickstart完成。759份执行输入前后哈希一致，实际构建Host与不可变bcb0389候选完全相同。此前两项测试夹具/oracle缺陷已修并独立复审通过；原94950字节失败日志保留为历史，不改成成功。语言94项正式归档与外部超时oracle18项正式归档均已冻结并通过独立复审；该结果属于其执行切点，不覆盖后继正在实现的缺陷修复与新测试。此前b909/旧Host结果不冒此次be5来源。正式记录见[本次完整语言门禁](evidence/sdk-language-be5-reviewed-final/README.md)及[外部超时oracle](evidence/sdk-external-timeout-oracle/README.md)。
+此前 be5 切点的完整三语言脚本已用同一官方入口执行完毕并退出0：TypeScript 290项、Python 368项加18子测试、Java 320项和67份XML全部通过，三个quickstart完成。759份执行输入前后哈希一致，实际构建Host与不可变bcb0389候选完全相同。此前两项测试夹具/oracle缺陷已修并独立复审通过；原94950字节失败日志保留为历史，不改成成功。语言94项正式归档与外部超时oracle18项正式归档均已冻结并通过独立复审；该结果属于其执行切点，不覆盖后继正在实现的缺陷修复与新测试。此前b909/旧Host结果不冒此次be5来源。正式记录见[本次完整语言门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-be5-reviewed-final/README.md)及[外部超时oracle](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-external-timeout-oracle/README.md)。
 
 仍待人的选择为12项已接受 source/kind 兼容迁移与5秒物理结算 B 提案；此外 Run.steer、Telemetry 及 stdio 关闭修复仍待当前 SDK 消费者与正式材料收口，不能概括为只等选择。完整合同生成、新源码切点的完整门禁/strict、适用 Linux/Windows CI 与精确 SDK main 验收仍未完成；CLI/官网外部交付另待授权，registry 发布独立。41项能力保持 `needs_review`，八个风险视角不因测试计数自动转为 verified/covered。
 
@@ -46,14 +46,14 @@ SDK 已精确依赖框架 main `a6346643bda47679a96760f56f45e41fd73b61b0`，八�
 - [Telemetry 初始化回滚阻塞](../../../.echo-semantic/findings/finding.sdk-telemetry-host-init-rollback-block.md)：框架 subscriber 组合与日志字段修复已随 `a634` 交付，原三语言挂起/OS栈反例保留；SDK blocking-work/公开关闭候选证据按各原源切点保存，新 pin 完整验收未完成，保持 open。
 - [TypeScript stdio 关闭](../../../.echo-semantic/findings/finding.sdk-typescript-stdio-close-ownership.md)：最终dd822源、10真实child、精确实体public-close及a634同源完整语言验证/独立复审三链已齐，具体Bug本地resolved；旧缺fixture的12项包保历史，不宣SDK main。
 - [Java stdio 先 destroy](../../../.echo-semantic/findings/finding.sdk-java-stdio-process-first-close.md)：最终86efd源19+72及本次whole原TelemetryXML2个真实case通过，具体修复/同源验证/独审三链齐备，本地resolved；b89/3aa切点保历史，完整goal/main未关闭。
-- Python 3.10 兼容局部验证已通过（六个既有测试与 Rules 的合计19项 focused，以及 Rules 的真实3.10/3.12请求结果）；[文件替换权威](evidence/file-authority-identity-replacement/three-language-final/README.md)与[Session规则实际注入](evidence/session-rules-prompt/README.md)仅证明各自具名场景。当前新源码切点的整套 suite 尚未重验，先前290/368/320完整通过仍属于原归档切点。
+- Python 3.10 兼容局部验证已通过（六个既有测试与 Rules 的合计19项 focused，以及 Rules 的真实3.10/3.12请求结果）；[文件替换权威](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/file-authority-identity-replacement/three-language-final/README.md)与[Session规则实际注入](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/session-rules-prompt/README.md)仅证明各自具名场景。当前新源码切点的整套 suite 尚未重验，先前290/368/320完整通过仍属于原归档切点。
 
 证据入口：
 
-- [Chart共享61场景](evidence/sdk-chart-published-pin/ci-regression/README.md)
-- [be5最终14条Rust门禁](evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)
-- [真实默认30分钟TTL](evidence/sdk-real-permission-ttl/README.md)
-- [新pin依赖检查重试与原失败关联](evidence/sdk-dependency-be5-current/retry-once/README.md)
+- [Chart共享61场景](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/README.md)
+- [be5最终14条Rust门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)
+- [真实默认30分钟TTL](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-real-permission-ttl/README.md)
+- [新pin依赖检查重试与原失败关联](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-dependency-be5-current/retry-once/README.md)
 - [已接受的有界依赖警告政策](dependency-warning-policy-proposal.md)
 
 ## 八个风险视角的当前有限边界

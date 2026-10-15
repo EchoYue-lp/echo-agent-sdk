@@ -1,8 +1,0 @@
-{
-  "sourceTest": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/sdks/python/tests/test_gap_ack_host.py",
-  "testBeforeSHA256": "79135f92f27f211393f1919b14b6273f3977e0c1ab208a4fad1b06a96910fe10",
-  "proxyBeforeSHA256": "66ecb3feb5099394ef52a37c84a1df9baa260699a6fa7336f3e2a052603889c5",
-  "copyTestSHA256": "16eda2830b4269fee6668d2058f376f89e4ff6a7421d40fa8a44491601f972c0",
-  "copyProxySHA256": "8cc02b56a95a78743f78a8a732bead18d89cf06ba65202d5c993d0d39abbdf8e",
-  "delta": "exact byte-preserving stdout order; hold genuine successor gap until duplicate original ACK is observed on stdin; original failing assertion unchanged"
-}

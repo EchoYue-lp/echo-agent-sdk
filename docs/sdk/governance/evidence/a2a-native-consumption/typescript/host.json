@@ -1,1 +1,0 @@
-{"schema_version": 1, "default_agent": {"model": {"provider": "fixture", "name": "unused", "base_url": "http://127.0.0.1:1/v1", "api_protocol": "chat_completions", "auth_token": "unused"}, "agent": {"name": "a2a-proof", "enable_tools": true}}, "sdk_profile": {"state_root": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/a2a-native/typescript-21a1fW/state"}}

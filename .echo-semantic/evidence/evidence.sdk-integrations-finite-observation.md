@@ -13,38 +13,13 @@ source_refs:
 - echo-sdk-host/src/core_profile/facade/mod.rs
 - echo-sdk-host/src/core_profile/facade/stream.rs
 - echo-sdk-host/src/core_profile/handles.rs
-- docs/sdk/governance/evidence/a2a-native-consumption/receipt.json
-- docs/sdk/governance/evidence/a2a-native-consumption/manifest.json
-- docs/sdk/governance/evidence/a2a-native-consumption/comparison.json
-- docs/sdk/governance/evidence/a2a-native-consumption/README.md
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log
 - echo-sdk-host/src/core_profile/handler.rs
 - echo-sdk-host/tests/facade_feature_adapters_e2e.rs#agent_cascade_preserves_same_named_other_manager_and_releases_resources
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - docs/adr/0035-channel-handler-forward-consumption.md
-- echo-sdk-host/src/core_profile/facade/state_delivery.rs#exact_claim_roundtrip_rejects_delayed_attempt_and_id_only
-- echo-sdk-host/src/core_profile/facade/mod.rs#family_handle_argument_retains_opaque_resource_address
-- echo-sdk-host/src/core_profile/facade/mod.rs#family_argument_json
-- echo-sdk-host/tests/facade_feature_adapters_e2e.rs
-- echo-sdk-host/src/core_profile/facade/source_operations.rs#register_mcp_client_resources
-- echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_config_batch_quota_failure_does_not_publish_unreturned_prefix
-- echo-sdk-host/tests/facade_feature_adapters_e2e.rs#mcp_file_batch_quota_failure_does_not_publish_unreturned_prefix
-- docs/sdk/governance/evidence/run-steer-native/initial-red-manifest.json
-- docs/sdk/governance/evidence/run-steer-native/java-original/receipt.json
-- docs/sdk/governance/evidence/run-steer-native/java-diagnostic-fixed/receipt.json
 - echo-sdk-host/src/main.rs
 - echo-sdk-host/src/core_profile/facade/telemetry.rs
 - echo-sdk-host/src/core_profile/state.rs
-- echo-sdk-host/src/core_profile/facade/observability.rs#failed_trace_open_does_not_consume_the_only_resource_slot
-- docs/sdk/governance/evidence/a2a-native-consumption/executed-source/sdks/python/src/echo_agent_sdk/client.py
-- docs/sdk/governance/evidence/telemetry-host/after/source/framework/docs/en/27-tracing.md.txt
-- docs/sdk/governance/evidence/telemetry-host/after/source/sdk/echo-sdk-host/src/core_profile/state.rs.txt
 supports:
 - behavior.sdk-integrations
 - behavior.sdk-family-mcp
@@ -65,17 +40,13 @@ supports:
 - behavior.sdk-family-telemetry
 - behavior.sdk-agent-session-run
 limitations:
-- Original independent review bound original790/a634 runtime; currentmutable handles/A
-  source is not relabelled as same epoch.
-- A2A9operation three-native proof was added after the original missingconsumer conclusion;
-  stale packet pendingreview text is historical, actual subsequent review PASS is
-  separate.
-- Testing14 is purevalue codec/controltransport; registry/skill supporting roles do
-  not create new family or allsourceoperation coverage.
-- Statecheckpoint7 and selectedTraceRun17 are distinct; volatileDelivery8ops no crossprocessdurability
-  promise; only configured redaction is evidenced.
-- Five-second physicalB,12sourceidentity, finalgeneration/platform/SDKmain and latestA/gates
-  remain separate.
+- Original independent review bound original790/a634 runtime; currentmutable handles/A source is not relabelled as same epoch.
+- A2A9operation three-native proof was added after the original missingconsumer conclusion; stale packet pendingreview text is historical, actual subsequent review PASS is separate.
+- Testing14 is purevalue codec/controltransport; registry/skill supporting roles do not create new family or allsourceoperation coverage.
+- Statecheckpoint7 and selectedTraceRun17 are distinct; volatileDelivery8ops no crossprocessdurability promise; only configured redaction is evidenced.
+- Five-second physicalB,12sourceidentity, finalgeneration/platform/SDKmain and latestA/gates remain separate.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # 集成能力与supporting角色有限观察
@@ -187,3 +158,8 @@ Telemetry根修复同framework a634的src/telemetry.rs：稳定委托layer/marke
 ## 当前Channel comparison helper的单独有限观察
 
 sdks/shared/testing/compare_channel_forward_results.py 当前字节SHA 0a687973e1e5d5db74fcf01ea2b96afa75bb5b65a69e75f0a8023ec8cbe7293f，Root已对原三语言core+12invalidcode/callback原收据重新比较实际exit0且SDKcap有限源码复审PASS0，正式whole包保存此helper原字节。原d08helper及它执行的旧epoch不被改写成当前0a687版本；Ruff只说明格式/静态检查，不单独证明comparison业务。此项不是新native运行、额外API或原forward全部组合通过。当前保存源在db34a76226732d50892be5718cd48836576aea9c，原本Evidence观察与原raw/limitations仍保持。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

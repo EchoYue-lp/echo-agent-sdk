@@ -4,20 +4,9 @@ id: evidence.sdk-computation-50
 kind: evidence
 observed_at: 56929154c1851473e9e4837901b610cecf001b2d
 source_refs:
-- docs/sdk/governance/evidence/sdk-computation-20261013/receipt.json
-- docs/sdk/governance/evidence/sdk-computation-20261013/comparison.json
-- docs/sdk/governance/evidence/sdk-computation-20261013/source-freeze-before.json
-- docs/sdk/governance/evidence/sdk-successor-model-reviews/computation-50.json
 - echo-sdk-host/src/core_profile/facade/tools.rs
 - sdks/shared/testing/computation_fixture.py
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-before.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
-- echo-sdk-host/src/core_profile/facade/tools.rs#run_bound_tool
 - echo-sdk-host/Cargo.toml
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-count-authority-calibration/framework-main-b909-acceptance.json
 supports:
 - behavior.sdk-family-statistics
 - behavior.sdk-family-structured-output
@@ -30,6 +19,8 @@ limitations:
 - Focused accepted operations only; all family statuses stay needs_review
 - Tool file effects are not complete files API evidence
 - Final published revision/accepted generation/full gates remain separate
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # computation-50
@@ -67,3 +58,8 @@ Focused accepted operations only; all family statuses stay needs_review；Tool f
 原50cases值/9oracle/19错误仍有界有效，但当前b909Chart整数范围新增I1/BLOCK未覆盖，`finding.sdk-chart-dimension-integer-loss`open；Nsourcefix23绿不是SDK569afterproof，原无损期望不能通过limit改成近似/default接受。
 
 所有新SDKsource/proof refs按真实569byte/anchor读取，原业务与原sourcefreeze记录保持；这不是一切currentfamily/runtimepassed。ordinaryTools已有原五族收据只新增本次明确Database/Artifact检查，不暗称其余方言/provider/工具所有field均新审；原candidate supports=[]不升。任何缺原完整time/tree仍在原limits，12/B/depWarn人未答/fullgeneration/CImain待。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

@@ -14,33 +14,6 @@ source_refs:
 - echo-sdk-host/src/factory.rs
 - echo-sdk-host/tests/core_profile_e2e.rs
 - echo-sdk-host/tests/extension_bridge_e2e.rs
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TaskSubagentHostTest.xml
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.WorkflowCheckpointHostTest.xml
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.LlmWorkflowStreamHostTest.xml
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
-- echo-sdk-host/src/core_profile/facade/workflow.rs#optional_workflow_fields_reject_malformed_values
-- echo-sdk-host/src/core_profile/facade/memory.rs#malformed_namespace_never_writes_and_replacement_store_is_live_authority
-- echo-sdk-host/src/core_profile/facade/memory.rs#explicit_invalid_limits_are_not_defaulted
-- echo-sdk-host/src/core_profile/facade/subagent.rs#collect_result
-- echo-sdk-host/tests/core_profile_e2e.rs#subagent_short_await_preserves_result_and_dispatch_receipt
-- echo-sdk-host/src/core_profile/facade/task_runtime.rs#request_live_interrupt
-- echo-sdk-host/tests/core_profile_e2e.rs#task_pause_is_exact_and_resume_reuses_canonical_dependency_result
-- echo-sdk-host/tests/core_profile_e2e.rs#task_cancel_is_exact_and_pending_sibling_continues
-- echo-sdk-host/tests/core_profile_e2e.rs#task_rpc_shares_the_session_task_authority
-- echo-sdk-host/tests/core_profile_e2e.rs#task_execute_and_control_settle_through_the_runtime
-- echo-sdk-host/src/core_profile/facade/workflow.rs#agent_node_uses_replaced_live_llm_after_session_services_capture
-- docs/sdk/governance/evidence/live-service-llm-proof/receipt.json
-- docs/sdk/governance/evidence/live-service-llm-proof/independent-review.json
-- docs/sdk/governance/evidence/live-service-llm-proof/manifest.json
-- docs/sdk/governance/evidence/live-service-llm-proof/focused.log
-- docs/sdk/governance/evidence/live-service-llm-proof/host-lib.log
-- docs/sdk/governance/evidence/live-service-llm-proof/historical-30d/echo-sdk-host/src/core_profile/facade/workflow.rs
-- docs/sdk/governance/evidence/live-service-llm-proof/historical-30d/echo-sdk-host/src/factory.rs
 supports:
 - behavior.sdk-task-subagent
 - behavior.sdk-family-task
@@ -48,16 +21,13 @@ supports:
 - behavior.sdk-family-memory
 - behavior.sdk-family-workflow
 limitations:
-- Original CLI author sourceaudit is distinguished from actual independent material/source
-  slices; not renamed an independent new execution.
-- Source restored in02059 is byte-identical to reviewed69b for these paths; current
-  mutable factory/core tests or intentA implementation are excluded.
-- ContextInheritance value tests do not prove three-language livehistory/memory inheritance
-  E2E; no new context family/API is required.
-- TaskContext getter consumption supports four exact Host cases and native runid only,
-  not complete threefield reverseDTO.
-- Memory/checkpoint backends are volatile in this accepted path, not crossprocessdurable;5second
-  physicalB/12sourcekind and SDK main remain separate.
+- Original CLI author sourceaudit is distinguished from actual independent material/source slices; not renamed an independent new execution.
+- Source restored in02059 is byte-identical to reviewed69b for these paths; current mutable factory/core tests or intentA implementation are excluded.
+- ContextInheritance value tests do not prove three-language livehistory/memory inheritance E2E; no new context family/API is required.
+- TaskContext getter consumption supports four exact Host cases and native runid only, not complete threefield reverseDTO.
+- Memory/checkpoint backends are volatile in this accepted path, not crossprocessdurable;5second physicalB/12sourcekind and SDK main remain separate.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # Task/Subagent、Memory与Workflow有界观察
@@ -107,3 +77,8 @@ SessionServices取liveAgenttaskrevisionservice同Arc，CRUD/runtime同framework 
 
 此处仅证明替换后新建 graph 使用当前 provider，不承诺已建 graph 中途热换，不新增 SDK setter、RPC 或跨进程持久化。Memory 与 Workflow 原具体 captured authority 缺陷三链足够本地 resolved；B 物理结算、12 身份处置、平台与 SDK main 均独立。
 原上文“Workflow LLM 替换未证”的句子为补证前的历史状态；本段只解除该具体缺证，不改变其余历史 scope。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

@@ -9,11 +9,6 @@ source_refs:
 - sdks/typescript/test/tool-behaviors.test.js
 - sdks/python/tests/test_tool_behaviors.py
 - sdks/java/src/test/java/com/echoagent/sdk/ToolBehaviorsHostTest.java
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-before.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
 supports:
 - behavior.sdk-family-data
 - behavior.sdk-family-chart
@@ -22,13 +17,12 @@ supports:
 - behavior.sdk-family-media
 - behavior.sdk-family-research
 limitations:
-- 28 tool calls plus 1 Session close; 10 typed RPC errors plus separate database ToolResult
-  failure.
+- 28 tool calls plus 1 Session close; 10 typed RPC errors plus separate database ToolResult failure.
 - Local candidate Host4d436 and local framework override, not precise published pin/main.
-- GET-only fixture does not dynamically prove absence of POST; no complete repo A
-  ref comparison.
-- Provider paging/cancel, other accepted operations and runtime effect-ledger interpretation
-  unproved.
+- GET-only fixture does not dynamically prove absence of POST; no complete repo A ref comparison.
+- Provider paging/cancel, other accepted operations and runtime effect-ledger interpretation unproved.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # SDK工具簇精确候选行为证据
@@ -54,7 +48,7 @@ ToolResult 的 json/text/structured_error kind、typed data 与 output JSON、�
 
 三语言使用不可变 Host SHA256 `4d436b60f1fe8d45c1472c3d4f7587ca0fb368bb50ab161f5d1a54f861d66b22`，schema `sha256:df48c9a261cdfd7e48ba9379ffbc5d4d7e5327dcc49a766ab67d854592788e61`，accepted source contract `sha256:ce80aa3a7793d4460e082772eb24fa228734d65f98ec997af2087be27b8e015e`。Rust 实测当时 warm target Host 同一 SHA；它使用临时 local framework path override，manifest pin不代表该组合源码。原始构建输入摘要保存在 receipt 的 `rust_provenance`。
 
-归档时工具 fixture、Rust 测试和三语言测试共五个文件 SHA 全部与运行 receipt 相同。这个逐文件一致性不证明整仓未变：Java构造/清理、framework Task 后继和文档已分别演进。current observation 与 tested SHA逐项对账保存在 [archive manifest](../../docs/sdk/governance/evidence/sdk-tool-testing-20261013/archive-manifest.json)。
+归档时工具 fixture、Rust 测试和三语言测试共五个文件 SHA 全部与运行 receipt 相同。这个逐文件一致性不证明整仓未变：Java构造/清理、framework Task 后继和文档已分别演进。current observation 与 tested SHA逐项对账保存在 [archive manifest](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-tool-testing-20261013/archive-manifest.json)。
 
 ## 实际执行与可复核材料
 
@@ -63,7 +57,7 @@ ToolResult 的 json/text/structured_error kind、typed data 与 output JSON、�
 - Java final full Maven：session 45147 exit 0，264 tests/51 suites，ToolBehaviorsHostTest **1 test，0 failure/error/skip**；此 Evidence仅归属该类与共享断言，不把264 tests全部算工具行为。XML SHA `cfa8876cc78b8d32603e85fc5f302e70883a47ffe9061e9463edaec1342f2756`。
 - Rust single target：1 passed，0 failed/ignored，`sdk-tool-behavior-rust-valid-hello.log` SHA `a30e539730934f574103a418375ed2a3a91874fc6bd80fd322832b01d4929557`；对应 target Clippy `-D warnings` exit 0，无 compiler warning。
 
-原始日志、XML与历史失败/成功 epoch 描述保留在 [tool receipt](../../docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-tool-behavior-evidence.json) 和归档目录。receipt旧字段 `native_calls=29` 是场景记录计数，以上按独立复审收窄为28 tool calls+1close；原收据不改写。
+原始日志、XML与历史失败/成功 epoch 描述保留在 [tool receipt](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-tool-testing-20261013/sdk-tool-behavior-evidence.json) 和归档目录。receipt旧字段 `native_calls=29` 是场景记录计数，以上按独立复审收窄为28 tool calls+1close；原收据不改写。
 
 ## 已知缺口
 
@@ -78,3 +72,8 @@ ToolResult 的 json/text/structured_error kind、typed data 与 output JSON、�
 原观测marker`source:3ea544c47e331b5d29a6624f978f3595619bef39fa5985230351098d38930404`、旧run-time/host/sourcehash/raw和正文保，所有source_refs从真实9dbGitblob读取且锚点存在；现在SDKbe5pin与新测试写入会改变当前文件，不能把历史b909当前源码审升级成未来be5gate。真实9db框架pin为b909，工作树be5after另Evidence处理，不将两个仓tree混写。新增门禁sourceRef只具名Scope，没有以整count判族verified；supports/limits原保、不声明旧3ea整仓可恢复、不改unknown成无缺陷。
 
 原义务和全文历史主张保留以审查，若旧unknown因素（TTL/三getter消费）已有新原证据，只在本段给来源区别，不抹原epoch。ChartI1/5sB历史BLOCK明确不因observed版本合法消失，12source/CI/main/globalacceptedproducer仍pending，41family/lens状态不提升。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

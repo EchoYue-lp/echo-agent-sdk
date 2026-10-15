@@ -7,14 +7,13 @@ source_refs:
 - AGENTS.md
 - deny.toml
 - docs/sdk/governance/dependency-warning-policy-proposal.md
-- docs/sdk/governance/evidence/sdk-current-dependency-policy-after-feature-wiring/baseline-comparison.json
-- docs/sdk/governance/evidence/sdk-current-dependency-policy-after-feature-wiring/audit-receipt.json
-- docs/sdk/governance/evidence/sdk-current-dependency-policy-after-feature-wiring/deny-receipt.json
 supports:
 - rule.framework-runtime-authority
 limitations:
 - Only accepted current50groupversion baseline
 - No全SDK/fullcontract/main completion
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # dependency-duplicate-policy-verification
@@ -30,3 +29,8 @@ limitations:
 ## 已知缺口
 
 Only accepted current50groupversion baseline；No全SDK/fullcontract/main completion。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

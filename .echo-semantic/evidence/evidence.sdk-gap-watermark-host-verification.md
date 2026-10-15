@@ -4,37 +4,19 @@ id: evidence.sdk-gap-watermark-host-verification
 kind: evidence
 observed_at: 56929154c1851473e9e4837901b610cecf001b2d
 source_refs:
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/receipt.json
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/SHA256SUMS.json
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/source-manifest.json
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/watermark-only-regression.patch
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/red-host-receipt.json
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/green-host-receipt.json
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/red-host.log
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/green-host.log
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/events-fixed.rs
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/events-regressed.rs
-- docs/sdk/governance/evidence/sdk-gap-watermark-host-red/fixture-observed.rs
 - echo-sdk-host/src/core_profile/events.rs#fn acknowledge
-- echo-sdk-host/src/core_profile/events.rs#fn publish_replay
-- echo-sdk-host/src/core_profile/events.rs#fn resume_after
 - echo-sdk-host/src/core_profile/handler.rs
 - echo-sdk-host/tests/core_profile_e2e.rs#ack_window_snapshot_ack_resumes_strictly_after_watermark
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-before.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/SHA256SUMS.json
 supports:
 - behavior.sdk-events-recovery
 - behavior.sdk-family-event-replay
 limitations:
-- Single-variable historicalmechanism reproduction, not full30dSDK or three-language
-  historicalHost result
+- Single-variable historicalmechanism reproduction, not full30dSDK or three-language historicalHost result
 - Oldsource30d snippet links exactcause; priororiginallogs missing not fabricated
 - Top-leveltaskscope paths=[]/globalnotchecked is not SDK strict/closure
 - WholelatestSDKpin/generation/threelanguagegap repeat/main separate
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # gap-watermark-host-verification
@@ -70,3 +52,8 @@ actual新当前源码业务复审PASS0：eventse4/handlerfa6/coreE2Ebe8，12stro
 真实当前SDK source_refs在上方追加，逐569Gitblob读取/currentSHA完全一致/锚点存在；新14Rust与bb4f完整三语632input/54build实际scope对应。原历史审查正文、原source marker `56929154c1851473e9e4837901b610cecf001b2d`、旧inputHash/raw/time不变，原whole3ea/9e缺失仍不造整树；这个新观察不宣称旧运行发生Git569。当前变化的调用方/feature/owner路径已在本次独立源码复审核，不由只存在锚点或count推PASS。
 
 原支持范围、旧failure未知与limits保持；只追加这五故障的当前有界afterproof，特别ordinaryTools这里只承接Clinical，不扩大另外四族新复审。12acceptedsource迁移、5秒物理结算、依赖50warning规则仍未人批，Linux/Windows/main/fullgeneration另验；statusexamined不表示全无缺陷，41/coverage/closure/Finding状态不自动改变。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

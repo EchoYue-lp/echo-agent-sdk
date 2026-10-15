@@ -1,8 +1,0 @@
---- a/.github/workflows/rust-ci.yml
-+++ b/.github/workflows/rust-ci.yml
-@@ -181,4 +181,5 @@
-         run: cargo audit --deny warnings
-       - uses: EmbarkStudios/cargo-deny-action@v2
-         with:
-+          rust-version: stable
-           arguments: --workspace --all-features --locked

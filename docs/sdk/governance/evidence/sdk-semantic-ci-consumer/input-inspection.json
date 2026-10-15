@@ -1,8 +1,0 @@
-{
-  "tool_candidate_ref": "45a50fca63133ff371c79e55c1de06e8b966574d",
-  "published_original_ref": "8ecb51f9119a96ac9fa09ffc500f1a3dea299fdb",
-  "action_bytes_same": true,
-  "sha256": "54b0260c1e63f54b7160b1326e40cd231a4148ead7b203af0942153713818eea",
-  "public_repaired_main_ref": null,
-  "source": "actual local Git show of real candidate and original published main; not claim candidate is merged"
-}

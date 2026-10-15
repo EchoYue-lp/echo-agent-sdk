@@ -16,9 +16,9 @@
 原临时公开客户端探针使用 Host `6711dd17fe3be13671ee181fce5ee79946f40963e000af293083f114301a39a5`；
 两轮证据分别保存，不把原轮结果当作新二进制验证。
 
-[原始及正式测试归档](evidence/sdk-state-trace-delivery-20261013/archive-manifest.json)
+[原始及正式测试归档](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/archive-manifest.json)
 保存执行源码、共享输入、完整返回、实际持久化文件、日志 SHA、正式 Java XML 与命令。
-[跨语言对比](evidence/sdk-state-trace-delivery-20261013/integrated-cb9/three-language-comparison.json)
+[跨语言对比](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/integrated-cb9/three-language-comparison.json)
 比较完整 State/Trace DTO 和 Delivery 当前记录，明确仅归一化每个隔离场景的 cwd、UUID
 及真实提交时间；时间格式、顺序和 claim 关联另有断言。原始值继续保留供复核。
 

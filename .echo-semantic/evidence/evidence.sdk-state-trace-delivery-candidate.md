@@ -4,22 +4,7 @@ id: evidence.sdk-state-trace-delivery-candidate
 kind: evidence
 observed_at: 9db7bd7f0b732ff7aa3bafa07cce02cc292e2a9d
 source_refs:
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/archive-manifest.json
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/integrated-cb9/three-language-comparison.json
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/current-test-source-comparison.json
 - docs/sdk/governance/state-trace-delivery-evidence.md
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/executed-test-source/sdks/shared/testing/state_trace_delivery_fixture.py
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/executed-test-source/sdks/typescript/test/state-trace-delivery-host.test.js
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/executed-test-source/sdks/python/tests/test_state_trace_delivery_host.py
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/executed-test-source/sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/formal-adoption-receipt.json
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/required-host-guard/results.json
-- docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/required-host-guard/guard-only-source.patch
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-before.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
 supports:
 - behavior.sdk-family-state
 - behavior.sdk-family-trace
@@ -27,18 +12,15 @@ supports:
 limitations:
 - Focused newcases not full-language rerun or independent review.
 - State scope clear is not claimed globally all-or-none; _scope_index only a projection.
-- Delivery before-effect claims can supersede; only latest active authority admits
-  effect. Strict claim_next aftereffect returnsnull.
-- Native u32claimattempt requires public explicit WireU64 encoding when reusing native
-  decimaltext; no permissiveHost parser or newDTO/remoteAPI.
-- Same-instance in-memory Delivery recover does not prove crossprocess/crashdurable
-  effects.
-- Full Run comparison covers chosen typedevents/options and sanitizer; not allpossibleenum/lifecycle
-  variants.
+- Delivery before-effect claims can supersede; only latest active authority admits effect. Strict claim_next aftereffect returnsnull.
+- Native u32claimattempt requires public explicit WireU64 encoding when reusing native decimaltext; no permissiveHost parser or newDTO/remoteAPI.
+- Same-instance in-memory Delivery recover does not prove crossprocess/crashdurable effects.
+- Full Run comparison covers chosen typedevents/options and sanitizer; not allpossibleenum/lifecycle variants.
 - Java existing SLF4J diagnostic notices retained.
 - Whole stable publishedframework source/CI/main and finalsemantic review pending.
-- Six actual negative requiredHost guard probes are separate from original nine positive
-  scene execution; full final gate remains pending.
+- Six actual negative requiredHost guard probes are separate from original nine positive scene execution; full final gate remains pending.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # State、Trace、Delivery 三语言候选证据
@@ -70,3 +52,8 @@ AgentCheckpoint公开7字段和fixture7正确；Trace选择Run17fields与bigint 
 原观测marker`source:3ea544c47e331b5d29a6624f978f3595619bef39fa5985230351098d38930404`、旧run-time/host/sourcehash/raw和正文保，所有source_refs从真实9dbGitblob读取且锚点存在；现在SDKbe5pin与新测试写入会改变当前文件，不能把历史b909当前源码审升级成未来be5gate。真实9db框架pin为b909，工作树be5after另Evidence处理，不将两个仓tree混写。新增门禁sourceRef只具名Scope，没有以整count判族verified；supports/limits原保、不声明旧3ea整仓可恢复、不改unknown成无缺陷。
 
 原义务和全文历史主张保留以审查，若旧unknown因素（TTL/三getter消费）已有新原证据，只在本段给来源区别，不抹原epoch。ChartI1/5sB历史BLOCK明确不因observed版本合法消失，12source/CI/main/globalacceptedproducer仍pending，41family/lens状态不提升。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

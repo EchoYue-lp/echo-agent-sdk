@@ -69,7 +69,7 @@ recall journal and real file effects. Raw values remain archived. Comparison
 normalizes only documented independent roots/timestamps, equal-score result order
 and content-equivalent dedup survivor selection after validating original data.
 
-[The archived evidence package](evidence/sdk-memory-permission-20261013/temporary-consumer/ACTUAL-RESULTS.md)
+[The archived evidence package](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-memory-permission-20261013/temporary-consumer/ACTUAL-RESULTS.md)
 contains scripts, original input hashes, complete receipts and logs, including
 unsuccessful draft attempts and their corrected fixture/input causes. The formal
 manifest records exact source hashes and focused test results separately from

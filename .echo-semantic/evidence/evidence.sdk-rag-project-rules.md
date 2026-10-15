@@ -2,13 +2,9 @@
 schema_version: 1
 id: evidence.sdk-rag-project-rules
 kind: evidence
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
 source_refs:
-- docs/sdk/governance/evidence/rag-project-rules/receipt.json
-- docs/sdk/governance/evidence/rag-project-rules/comparison.json
-- docs/sdk/governance/evidence/rag-project-rules/SHA256SUMS.json
-- docs/sdk/governance/evidence/rag-project-rules/README.md
-- docs/sdk/governance/evidence/sdk-successor-model-reviews/rag-project-rules.json
+- docs/sdk/governance/semantic-history.md
 supports:
 - behavior.sdk-family-rag
 - behavior.sdk-family-project-rules
@@ -16,6 +12,8 @@ limitations:
 - Dcharcount2field fix newnativeHost not covered by0435
 - InstructionResolver direct consumer not actualprompt projection
 - SessioninmemoryRAG no unacceptedcrashdurability claim
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # rag-project-rules
@@ -52,3 +50,9 @@ Dcharcount2field fix newnativeHost not covered by0435；InstructionResolver dire
 |sdks/shared/testing/session_rules_prompt_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|215299949ed4f427b1895cfaf7c038b803f6e1ba0956c256b7e1c23e563162d7|
 
 本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+当前observed source摘要只用于新locator存储表示检查；原observed_at为 `56929154c1851473e9e4837901b610cecf001b2d`，原业务复核仍属该不可变Git。

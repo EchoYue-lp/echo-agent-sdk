@@ -4,9 +4,6 @@ id: evidence.sdk-managed-supporting-operation-boundary
 kind: evidence
 observed_at: 9db7bd7f0b732ff7aa3bafa07cce02cc292e2a9d
 source_refs:
-- docs/sdk/governance/evidence/sdk-deferred-product-disposition/managed-three-operation-boundary.json
-- docs/sdk/governance/evidence/sdk-deferred-product-disposition/framework-managed-delete-caller.txt
-- docs/sdk/governance/evidence/sdk-deferred-product-disposition/sdk-accepted-clear-delete-dispatch.txt
 - docs/sdk/governance/managed-supporting-operation-boundary.md
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - echo-sdk-protocol/src/methods.rs
@@ -18,6 +15,8 @@ limitations:
 - Staticcontract/source boundary only; no three-new nativepositive runs claimed
 - Retain reverseDTO fidelity/Unsupported obligations; no retirement of acceptedvalue
 - Final sourcegen/pin/fullgates separate
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # managed-supporting-operation-boundary
@@ -41,3 +40,8 @@ Staticcontract/source boundary only; no three-new nativepositive runs claimed；
 对应当前独立catalog/component组实际新复审已PASS，仅保familycanonicalroute、typedPythonstream投影或managed三逆DTO现Rust/Host静态边界原fault义务；不以此支持其他能力范围。原beforecandidate/未运行3forwardconsumer仍历史事实，不去掉support或limits。
 
 原supports/limitations保留，观察不提升41family/8lens、Finding闭合或accepted成员。运行型证据仍原569/17cf/bb4f/b909，不借newcut冒freshSDK代码执行；仅当时原强cases及已完成新scope可用。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

@@ -1,302 +1,45 @@
 # Preserve archived diagnostic bytes; source and prose retain normal diff checks.
-docs/sdk/governance/evidence/task-fixture-explicit-close/**/*.log -diff
-docs/sdk/governance/evidence/task-fixture-explicit-close/fixture-explicit-close.patch -diff
 
 # Exact reviewed execution artifacts with intentionally preserved whitespace.
-docs/sdk/governance/evidence/python310-import-compat/after-tests310.log -diff
-docs/sdk/governance/evidence/python310-import-compat/final-tests310.log -diff
-docs/sdk/governance/evidence/python310-timeout-compat/raw/test_client_close_callbacks.py.patch -diff
-docs/sdk/governance/evidence/python310-timeout-compat/raw/test_factory_host.py.patch -diff
-docs/sdk/governance/evidence/python310-timeout-compat/raw/test_managed_host.py.patch -diff
-docs/sdk/governance/evidence/python310-timeout-compat/raw/test_parallel_sessions_host.py.patch -diff
-docs/sdk/governance/evidence/python310-timeout-compat/raw/test_tool_value_effect_host.py.patch -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/05-workspace-tests.log -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/07-workspace-doctests.log -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/08-ci-default-protocol.log -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/09-ci-default-host.log -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/10-ci-core-profile.log -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/12-ci-bridge-e2e.log -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/13-ci-facade-e2e.log -diff
-docs/sdk/governance/evidence/sdk-a634-rust-gates/14-ci-no-bridge-source-admission.log -diff
-docs/sdk/governance/evidence/sdk-dependency-a634-current/deny.log -diff
-docs/sdk/governance/evidence/sdk-java-host-graceful-close/before-original-child-eof.log -diff
-docs/sdk/governance/evidence/sdk-java-host-graceful-close/final-cleanup-candidate.patch -diff
-docs/sdk/governance/evidence/sdk-java-host-graceful-close/final-cleanup-tests.patch -diff
-docs/sdk/governance/evidence/sdk-java-host-graceful-close/owned-stdio-candidate.patch -diff
-docs/sdk/governance/evidence/sdk-java-host-graceful-close/writer-drain-and-deadline.log -diff
-docs/sdk/governance/evidence/sdk-java-host-graceful-close/writer-drain-deadline-and-exit.log -diff
-docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/history/failed/language-all.log -diff
-docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/controlled-close-counter/original-no-close-header.log -diff
-docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/fixture-explicit-close.patch -diff
-docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-Http1Exchange.java.txt -diff
-docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-Http1Response.java.txt -diff
-docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-HttpConnection.java.txt -diff
-docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/http-fixture-counterexample/jdk21-source-MultiExchange.java.txt -diff
-docs/sdk/governance/evidence/telemetry-host/publicclose-current-source/collector.stdout -diff
-docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/build.log -diff
-docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/close-only.patch -diff
-docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/important-counterexamples-old61f.log -diff
-docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/review-counterexamples-before.log -diff
-docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/tests.log -diff
-docs/sdk/governance/evidence/live-journal-replacement/GapAckHostTest.java.patch -diff
-docs/sdk/governance/evidence/live-journal-replacement/gap_ack_fixture.py.patch -diff
-docs/sdk/governance/evidence/live-journal-replacement/python-first-order.log -diff
-docs/sdk/governance/evidence/remote-stream-failure-domain/after.log -diff
-docs/sdk/governance/evidence/remote-stream-failure-domain/production-only.patch -diff
-docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/java-first.log -diff
-docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/python-first.log -diff
-docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/typescript-first.log -diff
-docs/sdk/governance/evidence/a2a-native-consumption/fixture-errors/typescript-second.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-implementation/current/candidate.diff -diff
-docs/sdk/governance/evidence/session-run-idempotency-implementation/current/gates/actual-rpc-cancellation.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-implementation/current/gates/keyed-core.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-implementation/current/gates/publication-tests.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-implementation/history/06/core32.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-implementation/history/06/hostlib184.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-implementation/history/bf1/candidate.diff -diff
-docs/sdk/governance/evidence/session-run-idempotency-native/final-rpc-host/java.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-native/java-config-corrected.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-native/java-final.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-native/java-first.log -diff
-docs/sdk/governance/evidence/session-run-idempotency-native/python-first.log -diff
-docs/sdk/governance/evidence/channel-handler-forward-native/java/fresh-candidate/first-run.log -diff
-docs/sdk/governance/evidence/channel-handler-forward-native/java/fresh-candidate/second-run.log -diff
-docs/sdk/governance/evidence/channel-handler-forward-native/python/fresh-candidate/first-run.log -diff
-docs/sdk/governance/evidence/channel-handler-forward-native/python/fresh-candidate/second-run.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/four-test-source-only.patch -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/shared-oracle-before.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/typescript-build.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/exact-pin-upgrade.patch -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/ci-bridge-e2e.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/ci-core-profile.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/ci-default-host.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/ci-default-protocol.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/ci-facade-e2e.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/ci-no-bridge-source-admission.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/workspace-doctests.log -diff
-docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/workspace-tests.log -diff
-docs/sdk/governance/evidence/sdk-current-dependency-policy/deny.log -diff
-docs/sdk/governance/evidence/sdk-final-framework-contract/lock-exact-delta.patch -diff
-docs/sdk/governance/evidence/sdk-final-framework-contract/source-continuity-focused.log -diff
-docs/sdk/governance/evidence/telemetry-host/after/framework-diff.patch -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-filtered/java-4201928274372297281/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-filtered/java-5168858541554596088/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-filtered/python-728eaufq/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-filtered/python-e6y6rc06/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-filtered/typescript-1N3GL7/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-filtered/typescript-YopuNB/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final-close-epoch/typescript-GaTktY/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final-close-epoch/typescript-k1SY6c/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final-close-epoch/typescript-wire-input_eof-xAitSZ/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final-close-epoch/typescript-wire-public_close-Iaeabv/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final-close-epoch/typescript-wire-rpc_cancel-s389KZ/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/java-15527596017062056178/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/java-2733782330051833493/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/python-9snmf41f/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/python-hbejxq8r/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/typescript-CL1FnZ/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/typescript-dpV9si/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/typescript-wire-input_eof-0UZxRi/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/typescript-wire-public_close-DkFKHw/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-final/typescript-wire-rpc_cancel-0c02w6/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-wire-v2/typescript-wire-input_eof-SjskSR/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-wire-v2/typescript-wire-public_close-OEEodY/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-wire-v2/typescript-wire-rpc_cancel-SBS6Lp/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-wire/typescript-wire-input_eof-77BHYx/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-wire/typescript-wire-public_close-7kzB0u/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/native/native-wire/typescript-wire-rpc_cancel-TsI60B/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/after/raw/framework-final-focused.log -diff
-docs/sdk/governance/evidence/telemetry-host/after/raw/framework-final-source-tests.log -diff
-docs/sdk/governance/evidence/telemetry-host/after/raw/framework-isolated-v2.log -diff
-docs/sdk/governance/evidence/telemetry-host/after/raw/framework-isolated-v3.log -diff
-docs/sdk/governance/evidence/telemetry-host/after/raw/marker-filter-after.log -diff
-docs/sdk/governance/evidence/telemetry-host/after/raw/sdk-owner-v2.log -diff
-docs/sdk/governance/evidence/telemetry-host/after/source/framework/README.md.txt -diff
-docs/sdk/governance/evidence/telemetry-host/com.echoagent.sdk.TelemetryHostTest.txt -diff
-docs/sdk/governance/evidence/telemetry-host/endpoint-log-repair/endpoint-log-after.log -diff
-docs/sdk/governance/evidence/telemetry-host/endpoint-log-repair/secret-final-tests.log -diff
-docs/sdk/governance/evidence/telemetry-host/java-before-bounded.log -diff
-docs/sdk/governance/evidence/telemetry-host/java-publicclose-after-initial/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/java-publicclose-counterexample/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/java-publicclose-counterexample/com.echoagent.sdk.TelemetryHostTest.txt -diff
-docs/sdk/governance/evidence/telemetry-host/java-publicclose-counterexample/java-publicclose-first.log -diff
-docs/sdk/governance/evidence/telemetry-host/java-publicclose-final/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/official-docs/dynamic-filter.html -diff
-docs/sdk/governance/evidence/telemetry-host/official-docs/otlp-shutdown.html -diff
-docs/sdk/governance/evidence/telemetry-host/official-docs/presampled.html -diff
-docs/sdk/governance/evidence/telemetry-host/official-docs/reload.html -diff
-docs/sdk/governance/evidence/telemetry-host/publicclose-approved/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/python-before-corrected.log -diff
-docs/sdk/governance/evidence/telemetry-host/python-before.log -diff
-docs/sdk/governance/evidence/telemetry-host/python-publicclose/collector.stdout -diff
-docs/sdk/governance/evidence/telemetry-host/stack-probe-sampled.log -diff
-docs/sdk/governance/evidence/telemetry-host/typescript-before-bounded.log -diff
 
 # Exact raw Rust gate captures retain their original trailing blank lines.
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/12-ci-bridge-e2e.log -diff
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/13-ci-facade-e2e.log -diff
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/continuation/14-ci-no-bridge-source-admission.log -diff
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log -diff
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/07-workspace-doctests.log -diff
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/08-ci-default-protocol.log -diff
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/09-ci-default-host.log -diff
-docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/step10-import-fix/10-ci-core-profile-after.log -diff
 
 # Original Maven failure output retains its exact whitespace.
-docs/sdk/governance/evidence/run-steer-native/java-original/focused.log -diff
 
 # Original SecretScan oracle failures are immutable raw output.
-docs/sdk/governance/evidence/secret-scan-native/python-first.log -diff
-docs/sdk/governance/evidence/secret-scan-native/typescript-first.log -diff
 
 # Exact negotiation diagnostics and patches retain original bytes.
-docs/sdk/governance/evidence/negotiation-response-validation/after/typescript-build.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/attempts/python-wrong-environment.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/attempts/typescript-omitted-digest-operation.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/before/java-four-faults.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/before/java-six-faults.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/before/python-ACP-overflow-typed-error.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/before/typescript-two-shape-faults.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/candidate.patch -diff
-docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/before-generator-fixture.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/candidate.patch -diff
-docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/initialization-owner-before.log -diff
-docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/typescript-build.log -diff
 
 # Original Git progress includes carriage returns and trailing spaces.
-docs/sdk/governance/evidence/semantic-source-provenance/successor-observed-tags/incremental/fetch.log -diff
 
 # Exact live-provider test output retains original final blank lines.
-docs/sdk/governance/evidence/live-service-llm-proof/focused-correct-state.log -diff
-docs/sdk/governance/evidence/live-service-llm-proof/host-lib.log -diff
 
 # Exact worktree stack diagnostics, disassembly and patches preserve original bytes.
-docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/disassembly-0.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/disassembly-1.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/disassembly-2.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/outer-disassembly-0.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/outer-disassembly-1.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/before-diagnosis/outer-disassembly-2.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/candidate/source-only.patch -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/aggregate333-failed/build/poll-disassembly-0.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/aggregate333-failed/build/poll-disassembly-1.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/create-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/dispatch-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/list-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/merge-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/remove-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/build/router-constructor-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/merge-diagnosis/frame-0.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/merge-diagnosis/frame-1.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/history/per-operation-dd336-failed/merge-diagnosis/frame-2.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/per-operation-candidate/per-operation.patch -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/create-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/git-router-constructor-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/list-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/merge-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/non-git-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/remove-poll-disassembly.log -diff
-docs/sdk/governance/evidence/sdk-worktree-source-stack/thin-entry-after/build/thin-entry-constructor-disassembly.log -diff
 
 # Immutable original dependency command output; keep emitted whitespace intact.
-docs/sdk/governance/evidence/sdk-published-00782-pin/raw/deny.log -diff
-docs/sdk/governance/evidence/sdk-published-00782-pin/raw/lock.after-tempfile-once.patch -diff
-docs/sdk/governance/evidence/sdk-published-00782-pin/raw/selected-deny.log -diff
 
 # Original Git consumer command output, preserved byte for byte.
-docs/sdk/governance/evidence/git-tool-native/before-a634/typescript.log -diff
 
 # Immutable final SDK Rust command output.
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/05-workspace-tests.log -diff
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/07-workspace-doctests.log -diff
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/08-ci-default-protocol.log -diff
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/09-ci-default-host.log -diff
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/10-ci-core-profile.log -diff
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/12-ci-bridge-e2e.log -diff
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/13-ci-facade-e2e.log -diff
-docs/sdk/governance/evidence/sdk-00782-final-rust-gates/14-ci-no-bridge-source-admission.log -diff
 
 # Historical command witnesses retained in their original emitted byte form.
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/callback-prefix-final-epoch/prefix-final-hostlib-all-fresh.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/callback-prefix-final-epoch/prefix-final-hostlib-all.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/combined-callback-ownership-93de/hostlib-all.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/counters/old-common-after.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/counters/slow-after.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/final-stream-settlement-epoch/combined-current-hostlib-all.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/final-stream-settlement-epoch/late-setup-after.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/fused-sandbox-final-epoch/fused-hostlib-all.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/missing-terminal-after-fresh.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/known-final-counters/prefix-after.log -diff
-docs/sdk/governance/evidence/channel-bridge-callback-settlement/raw/actual-response-six.log -diff
-docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-java-attempt1.log -diff
-docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt1.log -diff
-docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt2.log -diff
-docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt3.log -diff
-docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-python-attempt4.log -diff
-docs/sdk/governance/evidence/rag-project-rules/rag-project-rules-typescript-attempt1.log -diff
-docs/sdk/governance/evidence/sdk-channel-forward-protocol/extension-contract-tests.log -diff
-docs/sdk/governance/evidence/sdk-channel-forward-protocol/protocol-focused-retry.log -diff
-docs/sdk/governance/evidence/sdk-dependency-be5-current/retry-once/deny.log -diff
-docs/sdk/governance/evidence/sdk-external-timeout-oracle/raw/scope.patch -diff
-docs/sdk/governance/evidence/sdk-java-host-early-exit/pid-publication-race/whole-before-full-language.log -diff
-docs/sdk/governance/evidence/sdk-state-trace-delivery-20261013/required-host-guard/guard-only-source.patch -diff
-docs/sdk/governance/evidence/sdk-stream-cancellation-routing/client-routing-source-slice.patch -diff
-docs/sdk/governance/evidence/sdk-stream-cancellation-routing/java-native-before-corrected.log -diff
-docs/sdk/governance/evidence/sdk-stream-cancellation-routing/java-native-before.log -diff
-docs/sdk/governance/evidence/sdk-stream-cancellation-routing/python-native-before.log -diff
-docs/sdk/governance/evidence/session-rules-prompt/fixture-failure-history/python-green.log -diff
-docs/sdk/governance/evidence/session-rules-prompt/fixture-failure-history/typescript-config-corrected.log -diff
 
 # Exact original SDK CI and focused-test witnesses; preserve emitted bytes.
-docs/sdk/governance/evidence/ci-action-node24/actions-setup-java/README.md -diff
-docs/sdk/governance/evidence/host-binary-streaming-sha/existing-callers.patch -diff
-docs/sdk/governance/evidence/host-binary-streaming-sha/history/language-cancelled.log -diff
-docs/sdk/governance/evidence/state-trace-timezone-oracle/before-ci/language-cancelled.log -diff
-docs/sdk/governance/evidence/state-trace-timezone-oracle/native/typescript-build.log -diff
 
 # Original Telemetry failure and repair witnesses.
-docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/history/language-cancelled.log -diff
-docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/source-review-v2/implementation.patch -diff
-docs/sdk/governance/evidence/telemetry-fixture-failure-cleanup/source-review/implementation.patch -diff
 
 # Immutable Python launcher regression witnesses.
-docs/sdk/governance/evidence/host-sha-python-launcher-compat/fix.patch -diff
-docs/sdk/governance/evidence/host-sha-python-launcher-compat/history/full-language-failed.log -diff
 
 # Exact gap-oracle counterexample command output.
-docs/sdk/governance/evidence/gap-paused-consumer-oracle/terminal-barrier.log -diff
-docs/sdk/governance/evidence/gap-paused-consumer-oracle/whole-before/full-language.log -diff
 
 # Immutable Python 3.10 callback timeout counterexamples.
-docs/sdk/governance/evidence/python310-factory-timeout/history/whole-retry2-failed.log -diff
-docs/sdk/governance/evidence/python310-factory-timeout/python310-original.log -diff
 
 # Original SDK Linux/Windows CI diagnostics, without byte normalization.
-docs/sdk/governance/evidence/cargo-deny-stable-toolchain/original-722-dependency-job.log -diff
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172596950.log -diff
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597152.log -diff
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597212.log -diff
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597236.log -diff -text
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597289.log -diff
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597308.log -diff
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597328.log -diff
-docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597346.log -diff
 
 # Original Linux gap-observation failure output.
-docs/sdk/governance/evidence/gap-successor-pause-oracle/ci-before/116172597308.log -diff
 
 # Exact published semantic tool main CI output.
-docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/published-tool/main-ci.log -diff
 
 # Exact original SDK 4994 Linux/Windows CI output.
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906502.log -diff -text
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906667.log -diff
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906668.log -diff
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906745.log -diff
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906751.log -diff
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906756.log -diff
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906771.log -diff
-docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906823.log -diff
 
 # Original PID diagnostic candidate patch bytes.
-docs/sdk/governance/evidence/tool-pid-linux-diagnostics/diagnostic-candidate.patch -diff

@@ -2,12 +2,8 @@
 schema_version: 1
 id: evidence.sdk-accepted-source-continuity-gate
 kind: evidence
-observed_at: source:fdf70c9adf8169160777341ed887438217afd02529dbe1f2a3e651f9ed19b90e
+observed_at: 7f14a1b9c751b0612ceb42224f83f29d09aea46c
 source_refs:
-- docs/sdk/governance/evidence/sdk-final-framework-contract/MISSING-SOURCE-CLOSURE.md
-- docs/sdk/governance/evidence/sdk-final-framework-contract/complete-missing-source-closure.json
-- docs/sdk/governance/evidence/sdk-final-framework-contract/full-update-status-retry.log
-- docs/sdk/governance/evidence/sdk-final-framework-contract/source-continuity-focused.log
 - docs/sdk/governance/accepted-source-continuity-proposal.md
 - echo-sdk-protocol/src/bin/export_schema.rs
 - docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md
@@ -47,7 +43,8 @@ limitations:
 - Original 22e change gate does not accept installed 0.5 schemaVersion 2 preflight; record its actual result separately
 - Installed 0.5 task scope retains historical reference and bounded-file limitations; no tool or preflight bypass
 - Raw command outputs are local only; no stage archives or source copies are committed
-
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # accepted-source-continuity-gate
@@ -183,3 +180,8 @@ installed-final-*.log：大合同/manifest/public-api超过有界读取及历史
 合同限制。它们不是已通过，不删PF/改工具/删历史引用求绿；原22e在同源精CI型工作树
 门禁与此为不同真实模式，工具c0bc/action及归档continuity由父任务另交付。此处不宣
 新工具strict/continuity330、全SDK main或远端CI通过。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

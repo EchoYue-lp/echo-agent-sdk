@@ -14,7 +14,7 @@
 
 SDK 已精确依赖框架 main `a6346643bda47679a96760f56f45e41fd73b61b0`，八个框架包同一 Git 来源、无本地 path patch，锁文件 SHA `a7a331cf`。框架 PR185 与合并后 main 的七项 CI 均实际成功，合并树与已审 `6d9be119` 树 `093a48f0` 完全相同，精确 main strict 已通过；验收收据为工作区 admin/framework-main-a634-acceptance.json（SHA `0d9b7097`）。SDK 新 pin 的14条门禁仍在运行，目前已取得7步成功（含 workspace 461项测试、零失败/跳过），不声明全部14条或当前完整语言通过。依赖 audit 一次实际通过、deny 的50组与已接受基线一致，独立复审尚待。此前 be5/旧 Host 的14Rust、Chart61、TTL和完整语言结果按原证据切点保留，不冒充本次 a634 执行。
 
-此前 be5 切点的完整三语言脚本已用同一官方入口执行完毕并退出0：TypeScript 290项、Python 368项加18子测试、Java 320项和67份XML全部通过，三个quickstart完成。759份执行输入前后哈希一致，实际构建Host与不可变bcb0389候选完全相同。此前两项测试夹具/oracle缺陷已修并独立复审通过；原94950字节失败日志保留为历史，不改成成功。语言94项正式归档与外部超时oracle18项正式归档均已冻结并通过独立复审；该结果属于其执行切点，不覆盖后继正在实现的缺陷修复与新测试。此前b909/旧Host结果不冒此次be5来源。正式记录见[本次完整语言门禁](evidence/sdk-language-be5-reviewed-final/README.md)及[外部超时oracle](evidence/sdk-external-timeout-oracle/README.md)。
+此前 be5 切点的完整三语言脚本已用同一官方入口执行完毕并退出0：TypeScript 290项、Python 368项加18子测试、Java 320项和67份XML全部通过，三个quickstart完成。759份执行输入前后哈希一致，实际构建Host与不可变bcb0389候选完全相同。此前两项测试夹具/oracle缺陷已修并独立复审通过；原94950字节失败日志保留为历史，不改成成功。语言94项正式归档与外部超时oracle18项正式归档均已冻结并通过独立复审；该结果属于其执行切点，不覆盖后继正在实现的缺陷修复与新测试。此前b909/旧Host结果不冒此次be5来源。正式记录见[本次完整语言门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-be5-reviewed-final/README.md)及[外部超时oracle](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-external-timeout-oracle/README.md)。
 
 仍待人的选择为12项已接受 source/kind 兼容迁移与5秒物理结算 B 提案；此外 Run.steer、Telemetry 及 stdio 关闭修复仍待当前 SDK 消费者与正式材料收口，不能概括为只等选择。完整合同生成、新源码切点的完整门禁/strict、适用 Linux/Windows CI 与精确 SDK main 验收仍未完成；CLI/官网外部交付另待授权，registry 发布独立。41项能力保持 `needs_review`，八个风险视角不因测试计数自动转为 verified/covered。
 
@@ -24,14 +24,14 @@ SDK 已精确依赖框架 main `a6346643bda47679a96760f56f45e41fd73b61b0`，八�
 - [Telemetry 初始化回滚阻塞](../../../.echo-semantic/findings/finding.sdk-telemetry-host-init-rollback-block.md)：框架 subscriber 组合与日志字段修复已随 `a634` 交付，原三语言挂起/OS栈反例保留；SDK blocking-work/公开关闭候选证据按各原源切点保存，新 pin 完整验收未完成，保持 open。
 - [TypeScript stdio 关闭](../../../.echo-semantic/findings/finding.sdk-typescript-stdio-close-ownership.md)：最终dd822源、10真实child、精确实体public-close及a634同源完整语言验证/独立复审三链已齐，具体Bug本地resolved；旧缺fixture的12项包保历史，不宣SDK main。
 - [Java stdio 先 destroy](../../../.echo-semantic/findings/finding.sdk-java-stdio-process-first-close.md)：最终86efd源19+72及本次whole原TelemetryXML2个真实case通过，具体修复/同源验证/独审三链齐备，本地resolved；b89/3aa切点保历史，完整goal/main未关闭。
-- Python 3.10 兼容局部验证已通过（六个既有测试与 Rules 的合计19项 focused，以及 Rules 的真实3.10/3.12请求结果）；[文件替换权威](evidence/file-authority-identity-replacement/three-language-final/README.md)与[Session规则实际注入](evidence/session-rules-prompt/README.md)仅证明各自具名场景。当前新源码切点的整套 suite 尚未重验，先前290/368/320完整通过仍属于原归档切点。
+- Python 3.10 兼容局部验证已通过（六个既有测试与 Rules 的合计19项 focused，以及 Rules 的真实3.10/3.12请求结果）；[文件替换权威](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/file-authority-identity-replacement/three-language-final/README.md)与[Session规则实际注入](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/session-rules-prompt/README.md)仅证明各自具名场景。当前新源码切点的整套 suite 尚未重验，先前290/368/320完整通过仍属于原归档切点。
 
 证据入口：
 
-- [Chart共享61场景](evidence/sdk-chart-published-pin/ci-regression/README.md)
-- [be5最终14条Rust门禁](evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)
-- [真实默认30分钟TTL](evidence/sdk-real-permission-ttl/README.md)
-- [新pin依赖检查重试与原失败关联](evidence/sdk-dependency-be5-current/retry-once/README.md)
+- [Chart共享61场景](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/README.md)
+- [be5最终14条Rust门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)
+- [真实默认30分钟TTL](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-real-permission-ttl/README.md)
+- [新pin依赖检查重试与原失败关联](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-dependency-be5-current/retry-once/README.md)
 - [已接受的有界依赖警告政策](dependency-warning-policy-proposal.md)
 
 ## 账本读取方式

@@ -4,35 +4,21 @@ id: evidence.sdk-memory-permission-candidate
 kind: evidence
 observed_at: 9db7bd7f0b732ff7aa3bafa07cce02cc292e2a9d
 source_refs:
-- docs/sdk/governance/evidence/sdk-memory-permission-20261013/formal-manifest.json
-- docs/sdk/governance/evidence/sdk-memory-permission-20261013/temporary-consumer/cross-language-comparison.json
-- docs/sdk/governance/evidence/sdk-memory-permission-20261013/temporary-consumer/ACTUAL-RESULTS.md
-- docs/sdk/governance/evidence/sdk-memory-permission-20261013/temporary-consumer/scope-disposition.json
 - sdks/shared/testing/memory_permission_fixture.py
 - sdks/python/tests/test_memory_permission_host.py
 - sdks/typescript/test/memory-permission-host.test.js
 - sdks/java/src/test/java/com/echoagent/sdk/MemoryPermissionHostTest.java
-- docs/sdk/governance/evidence/sdk-memory-permission-20261013/formal/TEST-com.echoagent.sdk.MemoryPermissionHostTest.xml
-- docs/sdk/governance/evidence/sdk-memory-permission-20261013/formal/cross-language-comparison.json
-- docs/sdk/governance/evidence/sdk-memory-permission-20261013/formal/sdk-memory-permission-formal-java.log
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/final-receipt.json
-- docs/sdk/governance/evidence/task-context-consumption/rust-gates-reviewed-final/source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-before.json
-- docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
 supports:
 - behavior.sdk-family-memory
 - behavior.sdk-family-permission
 limitations:
 - actual TTL expiration not observed; accepted contract exposes no shortTTL setter
-- approval_receipt is new framework field not in current acceptedfield inventory;
-  no automatic API expansion
-- generic numeric Store callback roundtrip must preserve WireValue type; current fixture
-  does not claim arbitraryu64store-nativeprojection coverage
-- 59 evidence rows per language are not59testcases; formal TS/Python each1test retain
-  same scene assertions.
-- New SDK Tool validation and later source changes do not inherit old6711 whole-run
-  pass.
+- approval_receipt is new framework field not in current acceptedfield inventory; no automatic API expansion
+- generic numeric Store callback roundtrip must preserve WireValue type; current fixture does not claim arbitraryu64store-nativeprojection coverage
+- 59 evidence rows per language are not59testcases; formal TS/Python each1test retain same scene assertions.
+- New SDK Tool validation and later source changes do not inherit old6711 whole-run pass.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # Memory、Permission 真实消费者候选
@@ -68,3 +54,8 @@ liveStore59replacement/Activeprovenance/真实deny0effect/HumanLoopContextapprov
 原观测marker`source:3ea544c47e331b5d29a6624f978f3595619bef39fa5985230351098d38930404`、旧run-time/host/sourcehash/raw和正文保，所有source_refs从真实9dbGitblob读取且锚点存在；现在SDKbe5pin与新测试写入会改变当前文件，不能把历史b909当前源码审升级成未来be5gate。真实9db框架pin为b909，工作树be5after另Evidence处理，不将两个仓tree混写。新增门禁sourceRef只具名Scope，没有以整count判族verified；supports/limits原保、不声明旧3ea整仓可恢复、不改unknown成无缺陷。
 
 原义务和全文历史主张保留以审查，若旧unknown因素（TTL/三getter消费）已有新原证据，只在本段给来源区别，不抹原epoch。ChartI1/5sB历史BLOCK明确不因observed版本合法消失，12source/CI/main/globalacceptedproducer仍pending，41family/lens状态不提升。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

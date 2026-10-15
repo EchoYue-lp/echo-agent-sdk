@@ -2,58 +2,9 @@
 schema_version: 1
 id: evidence.sdk-real-permission-default-ttl
 kind: evidence
-observed_at: 9db7bd7f0b732ff7aa3bafa07cce02cc292e2a9d
+observed_at: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
 source_refs:
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/run_typescript.mjs
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/summary.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/snapshot-provenance.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/run_python.py
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/SHA256SUMS.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/PermissionTtl.java
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/scenario.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/source-provenance.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java.cp
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/host-source-build-manifest.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/proof-scope.md
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/read-only-client-source-hashes.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/runner-source-sha256.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/runner-launch.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/initial-live-processes.txt
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/final-process-observation.txt
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-framework-source/approval_cache.rs
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/python/host.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/python/runner.log
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/python/status.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/typescript/host.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/typescript/runner.log
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/typescript/status.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java/host.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java/runner.log
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java/runner-first-compile-error.log
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java/status.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/python/state/.runtime_state.lease
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/python/state/host/session-index.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/python/state/host/generation
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/typescript/state/.runtime_state.lease
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/typescript/state/host/session-index.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/typescript/state/host/generation
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java/state/.runtime_state.lease
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java/state/host/session-index.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/java/state/host/generation
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/shared/facade-operation-catalog.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/shared/contract-digests.json
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/python/src/echo_agent_sdk/catalog.py
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/python/src/echo_agent_sdk/client.py
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/python/src/echo_agent_sdk/wire.py
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/typescript/dist/client.js
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/typescript/dist/catalog.js
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/typescript/dist/index.js
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-client-source/sdks/typescript/dist/wire.js
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-host-source/echo-sdk-host/src/factory.rs
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-host-source/echo-sdk-host/src/core_profile/handles.rs
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/observed-host-source/echo-sdk-host/src/core_profile/facade/permission.rs
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/README.md
-- docs/sdk/governance/evidence/sdk-real-permission-ttl/archive-manifest.json
+- docs/sdk/governance/semantic-history.md
 supports:
 - behavior.sdk-family-permission
 limitations:
@@ -62,6 +13,8 @@ limitations:
 - OriginalfirstJavaprivategettercompilefailure notbehaviorred
 - No new acceptedTTLsetter/approvalreceipt contract
 - NewgovernanceGit archivesoldrun, not futurepin proof
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # real-permission-default-ttl
@@ -77,3 +30,9 @@ limitations:
 ## 已知缺口
 
 VolatileSession/cache TTL only, no crossprocessdurability；TSnumericexitnull preserved, finalPID absence not fabricatedexit0；OriginalfirstJavaprivategettercompilefailure notbehaviorred；No new acceptedTTLsetter/approvalreceipt contract；NewgovernanceGit archivesoldrun, not futurepin proof。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+当前observed source摘要只用于新locator存储表示检查；原observed_at为 `9db7bd7f0b732ff7aa3bafa07cce02cc292e2a9d`，原业务复核仍属该不可变Git。

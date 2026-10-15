@@ -1,7 +1,0 @@
-{
-  "ciRuntime": "v20.20.2",
-  "localRuntime": "v22.19.0",
-  "node20": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/admin/sdk-host-hash-streaming/node20-npm-cache/_npx/185e25162edaacfb/node_modules/node/bin/node",
-  "node20SHA256": "38de4fc456c0c439bac48c727d378f749abb4e31f4116703bb1ee9a746fccbb6",
-  "source": "actual npm node@20.20.2 reversible package installed only into Admin explicit npm cache; no project dependency change"
-}

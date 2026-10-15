@@ -1,6 +1,0 @@
-{
-  "expected_immutable_host": "bb4f3c2b7f94795394be96179217f3db4b8036af8c9c8cd81c7636d7112f5ecd",
-  "actual_script_target_host": "bb4f3c2b7f94795394be96179217f3db4b8036af8c9c8cd81c7636d7112f5ecd",
-  "rust_source_build_manifest_sha256": "5e0f153848725261abf228db5320a840d3b0afef6b72f1b8f076a02cdf6eded3",
-  "matches": true
-}

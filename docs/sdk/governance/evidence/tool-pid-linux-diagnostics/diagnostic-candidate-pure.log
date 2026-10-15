@@ -1,8 +1,0 @@
-test_diagnostic_argv_variants_are_not_accepted_as_pid_match (__main__.DiagnosticCandidates.test_diagnostic_argv_variants_are_not_accepted_as_pid_match) ... ok
-test_full_json_marker_preserves_primary_even_when_ps_diagnostics_fail (__main__.DiagnosticCandidates.test_full_json_marker_preserves_primary_even_when_ps_diagnostics_fail) ... ok
-test_optional_capture_does_not_change_success_matcher (__main__.DiagnosticCandidates.test_optional_capture_does_not_change_success_matcher) ... ok
-
-----------------------------------------------------------------------
-Ran 3 tests in 0.023s
-
-OK

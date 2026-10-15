@@ -12,16 +12,16 @@
 
 SDK Host 已精确依赖已发布框架 `be5f0a84`，八个框架包来自同一 Git revision，没有本地 path patch。Chart 整数无损修复已交付：三语言共享61次调用的边界语料及当前14条 Rust 门禁均通过独立复审。默认30分钟审批 TTL 已用三语言真实等待完成验证。用户已接受并落实精确50组 duplicate 提示例外；新 pin 的 audit/deny 经一次有依据的网络重试后通过，版本组逐项匹配且独立复审通过，其它警告与原例外没有放宽。
 
-最新完整三语言脚本已用同一官方入口执行完毕并退出0：TypeScript 290项、Python 368项加18子测试、Java 320项和67份XML全部通过，三个quickstart完成。759份执行输入前后哈希一致，实际构建Host与不可变bcb0389候选完全相同。此前两项测试夹具/oracle缺陷已修并独立复审通过；原94950字节失败日志保留为历史，不改成成功。语言94项正式归档与外部超时oracle18项正式归档均已冻结并通过独立复审；当前正在完成最后文稿快照与语义验收。此前b909/旧Host结果不冒此次be5来源。正式记录见[本次完整语言门禁](evidence/sdk-language-be5-reviewed-final/README.md)及[外部超时oracle](evidence/sdk-external-timeout-oracle/README.md)。
+最新完整三语言脚本已用同一官方入口执行完毕并退出0：TypeScript 290项、Python 368项加18子测试、Java 320项和67份XML全部通过，三个quickstart完成。759份执行输入前后哈希一致，实际构建Host与不可变bcb0389候选完全相同。此前两项测试夹具/oracle缺陷已修并独立复审通过；原94950字节失败日志保留为历史，不改成成功。语言94项正式归档与外部超时oracle18项正式归档均已冻结并通过独立复审；当前正在完成最后文稿快照与语义验收。此前b909/旧Host结果不冒此次be5来源。正式记录见[本次完整语言门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-be5-reviewed-final/README.md)及[外部超时oracle](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-external-timeout-oracle/README.md)。
 
 仍待人的选择只有12项已接受 source/kind 兼容迁移与5秒物理结算 B 提案。完整合同生成、最终源码冻结后的全项目 strict、适用 Linux/Windows CI 与精确 SDK main 验收仍未完成；CLI/官网外部交付另待授权，registry 发布独立。41项能力保持 `needs_review`，八个风险视角不因测试计数自动转为 verified/covered。
 
 证据入口：
 
-- [Chart共享61场景](evidence/sdk-chart-published-pin/ci-regression/README.md)
-- [be5最终14条Rust门禁](evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)
-- [真实默认30分钟TTL](evidence/sdk-real-permission-ttl/README.md)
-- [新pin依赖检查重试与原失败关联](evidence/sdk-dependency-be5-current/retry-once/README.md)
+- [Chart共享61场景](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/ci-regression/README.md)
+- [be5最终14条Rust门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/rust-gates-reviewed-final/README.md)
+- [真实默认30分钟TTL](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-real-permission-ttl/README.md)
+- [新pin依赖检查重试与原失败关联](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-dependency-be5-current/retry-once/README.md)
 - [已接受的有界依赖警告政策](dependency-warning-policy-proposal.md)
 
 |family|本次行为/生命周期审查单元|行为证据入口（历史审计另列）|明确剩余原因|

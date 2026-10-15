@@ -15,56 +15,27 @@ source_refs:
 - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
 - sdks/typescript/src/client.ts
 - sdks/python/src/echo_agent_sdk/client.py
-- docs/sdk/governance/evidence/negotiation-response-validation/README.md
-- docs/sdk/governance/evidence/negotiation-response-validation/manifest.json
-- docs/sdk/governance/evidence/negotiation-response-validation/independent-review.json
-- docs/sdk/governance/evidence/negotiation-response-validation/verification-summary.json
-- docs/sdk/governance/evidence/negotiation-response-validation/after/source-freeze.json
-- docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/source-freeze.json
-- docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/summary.json
-- docs/sdk/governance/evidence/negotiation-response-validation/before/java-six-faults-receipt.json
-- docs/sdk/governance/evidence/negotiation-response-validation/after/java-protocol-receipt.json
-- docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/typescript-receipts.json
-- docs/sdk/governance/evidence/negotiation-response-validation/fixture-and-init-owner/python-receipts.json
-- docs/sdk/governance/evidence/sdk-a634-rust-gates/receipt.json
-- docs/sdk/governance/evidence/sdk-a634-rust-gates/05-workspace-tests.log
 - echo-sdk-protocol/tests/core_rpc_contract.rs
 - echo-sdk-host/tests/stdio_e2e.rs
 - echo-sdk-host/tests/core_profile_e2e.rs#plain_client_and_mismatched_hello_fail_closed
 - echo-sdk-host/src/core_profile/mod.rs#negotiate_hello
 - echo-sdk-host/src/core_profile/handler.rs#require_extended
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml
 - echo-sdk-protocol/src/inventory.rs
 - echo-sdk-protocol/src/bin/export_schema.rs
 - echo-sdk-protocol/tests/facade_inventory.rs
-- echo-sdk-protocol/src/inventory.rs#new_public_invoke_is_inventory_not_an_accepted_language_promise
-- echo-sdk-protocol/src/bin/export_schema.rs#new_source_inventory_route_does_not_change_accepted_catalog_or_digest
-- echo-sdk-protocol/src/bin/export_schema.rs#acceptance_dispositions_reject_draft_wrong_action_and_identity_substrings
-- echo-sdk-protocol/src/bin/export_schema.rs#accepted_catalog_ignores_reexport_alias_inventory_growth
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/08-ci-default-protocol.log
-- docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
-- docs/sdk/governance/evidence/negotiation-response-validation/before/source/sdks/python/src/echo_agent_sdk/client.py
-- docs/sdk/governance/evidence/negotiation-response-validation/contract-basis/echo-sdk-protocol/src/capability.rs
-- docs/sdk/governance/evidence/negotiation-response-validation/contract-basis/echo-sdk-protocol/src/scalar.rs
-- docs/sdk/governance/evidence/negotiation-response-validation/source/sdks/python/src/echo_agent_sdk/client.py
 supports:
 - behavior.sdk-acp
 - behavior.sdk-family-standard
 - behavior.sdk-family-value
 - behavior.sdk-language-clients
 limitations:
-- Nine core/wire source roles distinguish original69b/02da unchanged eight from the
-  later Java/TS/Python validator repair, observed in real622d.
-- Java six before faults and TS/PY two shape faults/Python typed overflow are genuine;
-  seven additional boundaries are after-only assertions, not fake red-green tests.
-- Initialization-owner native2 tests are a subsequent distinct source increment; they
-  do not alter framework5s physicalsettlement policy or arbitrary noncooperativecleanup
-  guarantees.
-- Original782 complete language success is historical pre-negotiation source; no currentwhole/main
-  claim is inferred from focused tests.
-- NativeWindows path evidence/fullgenerator/12sourcekind/Bphysical/platform/main remain
-  separate.
+- Nine core/wire source roles distinguish original69b/02da unchanged eight from the later Java/TS/Python validator repair, observed in real622d.
+- Java six before faults and TS/PY two shape faults/Python typed overflow are genuine; seven additional boundaries are after-only assertions, not fake red-green tests.
+- Initialization-owner native2 tests are a subsequent distinct source increment; they do not alter framework5s physicalsettlement policy or arbitrary noncooperativecleanup guarantees.
+- Original782 complete language success is historical pre-negotiation source; no currentwhole/main claim is inferred from focused tests.
+- NativeWindows path evidence/fullgenerator/12sourcekind/Bphysical/platform/main remain separate.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # Protocol与协商无损有限观察
@@ -113,3 +84,8 @@ seed 未在此改动，完整28 profiles 的12 missing source 按原明确合同
 |sdks/shared/testing/secret_scan_host_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|02487272d9fbd4eac4983aaa75917d6a2b24ca7da1358c119fbc013f1208d37b|
 
 本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

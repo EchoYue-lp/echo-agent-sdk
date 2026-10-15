@@ -5,22 +5,14 @@ kind: evidence
 observed_at: 76601b242d7c354352f3b5c7d4bf099873746b14
 source_refs:
 - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/final-cleanup-candidate.patch
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/receipt.json
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/final-cleanup-source.json
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/final-cleanup-and-start-run.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/manifest.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/independent-review.json
 supports:
 - behavior.sdk-language-clients
 limitations:
 - Specific native stdio ownership repair and exact same-source verification only; not all SDK families or SDK main delivery.
 - Original failed official language command and intermediate client epochs are preserved, not relabelled as green.
 - Actual child exit is not a claim that every grandchild or generic five-second Task producer settled.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # java stdio close 局部闭合综合证据
@@ -38,3 +30,8 @@ limitations:
 ## 已知缺口
 
 独立具体源复审早已PASS0，本次8lensreview也未新增该slice高风险缺口；scopeAudit独立回收既有真正审查而非另造执行。12acceptedsource迁移、5秒Task物理政策、完整生成/平台/main仍独立，不因specificfinding本地resolved关闭全goal。observe版本现在绑定真实76601，运行仍保原790输入与原时刻，不伪提交时重新执行。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

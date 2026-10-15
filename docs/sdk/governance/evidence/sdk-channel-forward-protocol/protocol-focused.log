@@ -1,3 +1,0 @@
-    Updating `rsproxy-sparse` index
-error: cannot update the lock file /Users/ls/MyWork/code/ylp_agent_learn/lp-agent/.worktrees/echo-agent-sdk-worktrees/sdk-semantic-governance/Cargo.lock because --locked was passed to prevent this
-help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.

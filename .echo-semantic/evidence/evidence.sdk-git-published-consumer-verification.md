@@ -12,25 +12,14 @@ source_refs:
 - sdks/python/tests/test_git_tool_host.py
 - sdks/shared/testing/git_tool_host_fixture.py
 - sdks/java/src/test/java/com/echoagent/sdk/GitToolHostTest.java
-- docs/sdk/governance/evidence/git-tool-native/README.md
-- docs/sdk/governance/evidence/git-tool-native/before-final-source/counterexample.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/manifest.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/comparison.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/independent-review.md
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/typescript-run.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/python-run.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/java-run.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/TEST-com.echoagent.sdk.GitToolHostTest.xml
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/typescript-10wlfR/results.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/python-he3ckh66/results.json
-- docs/sdk/governance/evidence/git-tool-native/after-published-00782/java-7939238124942641491/results.json
 supports:
 - behavior.sdk-family-git
 limitations:
-- Finite nine tools/four source operations in original three scenario groups; not
-  arbitrary concurrent Git or every platform.
+- Finite nine tools/four source operations in original three scenario groups; not arbitrary concurrent Git or every platform.
 - Actual84 consumer calls not accepted-identity/fullgenerator completion denominator.
 - RootfullRust/language/main/newcontract have separate epochs; B/12 remain unresolved.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # 已发布pin的SDK Git具体消费者闭合
@@ -64,3 +53,8 @@ CurrentTool本会话实际源码/84记录/所有字段与Java1/0/0/0 XML独审PA
 |sdks/shared/testing/git_tool_host_fixture.py|该能力真实native测试或共同fixture，当前输入证据；不把Ruff/输入哈希单独当行为PASS|56b241f6f4ba6820cfa3aa53a855e61fd0ee6bd475fb927d6d99d8a1c94daab8|
 
 本owner表中runtime test/fixture共2项。它们是当前官方whole793的同源输入及各组具名独立证明的定位，不从输入哈希/Ruff本身推业务PASS；当前SourceGit在db34a76226732d50892be5718cd48836576aea9c可恢复。归档项只作为原before/after/contract witness，不执行、不产生第二实现/validator。Java/Python版本兼容与原门禁仍各用实际原收据，旧supports/limitations/运行时间不改，不声称所有族fresh。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

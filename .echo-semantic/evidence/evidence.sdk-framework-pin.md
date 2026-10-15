@@ -45,29 +45,6 @@ source_refs:
 - sdks/shared/README.md
 - sdks/shared/contract-digests.json
 - sdks/shared/facade-operation-catalog.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/README.md
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-acceptance.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-ci-readonly.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-commit-readonly.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-main-source-verification.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/final-pr186-readonly.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/framework-git-published-main-source-acceptance.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/framework-git-published-main-strict.log
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/archive-manifest.json
-- docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/SHA256SUMS
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/README.md
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/checksums.json
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/README.md
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/before.json
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/after.json
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/checkout-byte-verification.json
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/verify.log
-- docs/sdk/governance/evidence/sdk-published-semantic-tool-22e/qualification/run.json
-- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/README.md
-- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/installed-validation.json
-- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/published-provenance.json
-- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/published-action.yml
-- docs/sdk/governance/evidence/sdk-semantic-ci-consumer/resolve-base.sh
 supports:
 - behavior.sdk-repository-ownership
 - rule.framework-runtime-authority
@@ -83,11 +60,9 @@ command_results:
   exit_code: 0
 - command: cargo test -p echo-sdk-host --features sdk-core-profile --lib --tests --locked
   exit_code: 0
-- command: cargo test -p echo-sdk-host --features sdk-extension-bridge --locked --test
-    extension_bridge_e2e
+- command: cargo test -p echo-sdk-host --features sdk-extension-bridge --locked --test extension_bridge_e2e
   exit_code: 0
-- command: cargo test -p echo-sdk-host --features sdk-facade-all --locked --test facade_feature_adapters_e2e
-    --test core_profile_e2e
+- command: cargo test -p echo-sdk-host --features sdk-facade-all --locked --test facade_feature_adapters_e2e --test core_profile_e2e
   exit_code: 0
 - command: ./scripts/check-sdk-contracts.sh
   exit_code: 0
@@ -99,6 +74,8 @@ command_results:
   exit_code: 0
 - command: cargo deny check all
   exit_code: 0
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # SDK clean framework pin evidence
@@ -141,7 +118,7 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 
 当前SDK八个framework包精确来自已发布 `00782b8aeddefe2ea8c566922cbdee6aedc80d70`，无path patch；SDK锁SHA `88d99f3880f75315f60c8eca48035eb6151a1a055aeda7f621e689b354d411b3`。Protocol继续无framework依赖，运行权威由原framework持有，SDK仅薄转换/owner/resource地址；本观察不新增运行服务或契约。
 
-[正式框架main后验](../../docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/README.md)保留原八个Admin文件字节及清单。实际commit response签名valid、main与已审ca702树同为b77ee48、main运行38614384013七个job成功；source receipt的570项构建输入没有改变，精确main官方strict exit0，当前/Git摘要同399c6b119。完整570输入表及六工程门禁仍在published framework原包；本最小SDK归档不声称包含或重新执行它们。原main-acceptance-source及旧pin包里的CI pending是原时点文字，不被覆盖。
+[正式框架main后验](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-framework-00782-main-acceptance/README.md)保留原八个Admin文件字节及清单。实际commit response签名valid、main与已审ca702树同为b77ee48、main运行38614384013七个job成功；source receipt的570项构建输入没有改变，精确main官方strict exit0，当前/Git摘要同399c6b119。完整570输入表及六工程门禁仍在published framework原包；本最小SDK归档不声称包含或重新执行它们。原main-acceptance-source及旧pin包里的CI pending是原时点文字，不被覆盖。
 
 这些是框架signature/tree/CI/source/strict的后验，并非SDK平台、完整生成或main通过。SDK自身00782 Rust14、793输入完整语言及Git84消费者由各已审正式包单独证明；完整合同只读检查真实exit1/13及12待答、B物理结算残余、Windows原生SDK和registry范围保持。supports仍限既有仓库归属/框架唯一权威/源码产品资产，不据框架七CI提升41族verified。
 
@@ -270,3 +247,8 @@ blocking gate 失败；只影响非 external Rust identity 的变化仅出现在
 - `sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java`，Git `131bb03f1e87dc8411ebc1f81e87dd927962dc54` SHA256 `f8e4f11495d9bb11174cce45da686d1e1f3597976e6d33959531989c76075cc5`。
 
 具名原Linux四errors、3修复原因、focused1/16/两profile各4及原独审角色由既有 `evidence.sdk-official-current-language-gate` 与 `audit.sdk-language-client-lifecycle-contract-evidence` 的三新challenge承担，本Pin只索引来源，不扩业务支持。0bc CI6success/3failure与MacOracle21 focused/待新Linux边界保留；当前唯一状态页 `docs/sdk/governance/capability-review-remaining.md` 候选SHA256 `bdfb189243a4bb31526c0905e4c8bc29fe7b132fed04ecdbf43893330e67bd8e`，它以本次真实候选树绑定，不伪为131 Git原文。原Pin观察7d0/source_refs/旧命令/历史执行保；58resolved/7open及B/12/合同13/continuity与payload BLOCK保持。当前候选摘要和公开22e原30d完整门禁收据另核，本段本身不声明新gate或新CI已经通过。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

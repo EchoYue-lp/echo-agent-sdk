@@ -214,7 +214,7 @@ jobs:
           git merge-base --is-ancestor "$base" HEAD
           echo "revision=$base" >> "$GITHUB_OUTPUT"
       - name: Verify SDK with the published canonical semantic action
-        uses: EchoYue-lp/echo-semantic@22e241f723673330e9d6bec638def0f78968c74c
+        uses: EchoYue-lp/echo-semantic@c0bc306bd36d2b1b76def2b6c7308a07dda4f54b
         with:
           root: ${{ github.workspace }}
           base: ${{ steps.semantic-base.outputs.revision }}

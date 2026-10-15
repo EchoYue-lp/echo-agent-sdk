@@ -9,37 +9,19 @@ source_refs:
 - sdks/python/src/echo_agent_sdk/execution_usage_values.py
 - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
 - sdks/shared/toolchain.json
-- docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/manifest.json
-- docs/sdk/governance/evidence/typescript-stdio-close/deferred-eof-final/SHA256SUMS.json
-- docs/sdk/governance/evidence/telemetry-host/publicclose-current-source/receipt.json
-- docs/sdk/governance/evidence/telemetry-host/publicclose-current-source/SHA256SUMS.json
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/receipt.json
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/manifest.json
-- docs/sdk/governance/evidence/sdk-java-host-graceful-close/independent-review.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/receipt.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/manifest.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
 - sdks/typescript/test/factory-host.test.js
 - sdks/python/tests/test_factory_host.py
 - sdks/java/src/test/java/com/echoagent/sdk/FactoryHostTest.java
 - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryHostTest.xml
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml
 - sdks/java/src/main/java/com/echoagent/sdk/SessionHandle.java
 - sdks/java/src/main/java/com/echoagent/sdk/ExtensionRegistration.java
 - sdks/typescript/test/protocol-host.test.js
 - sdks/python/tests/test_protocol_host.py
 - sdks/python/tests/test_client_close_callbacks.py
 - sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolHostTest.xml
 - sdks/typescript/test/ack-submission.test.js
 - sdks/python/tests/test_ack_submission.py
 - sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.AckSubmissionTest.xml
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ExternalAckHostTest.xml
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ReplayTerminalHostTest.xml
 - sdks/typescript/src/errors.ts
 - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentException.java
 - sdks/typescript/src/wire.ts
@@ -52,22 +34,16 @@ source_refs:
 - sdks/typescript/test/protocol-integrity.test.js
 - sdks/python/tests/test_protocol_integrity.py
 - sdks/java/src/test/java/com/echoagent/sdk/ProtocolIntegrityTest.java
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml
-- docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/executed-source/sdks/python/src/echo_agent_sdk/client.py
 supports:
 - behavior.sdk-language-clients
 limitations:
-- Client wire error fidelity does not prove Host reverse Tool/LlmClient preserves
-  Rust cancellation/timeout variants or Session/Run idempotency-key semantics; those
-  separate adapter defects remain outside this closure.
-- Eight named client review lenses examined do not mean a successful whole-language
-  gate or full SDK completion.
-- The original a634 whole command exited1 with a Task pause reverse Store HTTP error;
-  its original71 XML and790 identical inputs are preserved.
-- Prior b89/3aa and earlier569/be5 proofs retain their epochs; no old execution is
-  relabelled as this revision.
-- Accepted12 identity migration, five-second physical settlement, full generator,
-  platform CI and SDK main remain separate.
+- Client wire error fidelity does not prove Host reverse Tool/LlmClient preserves Rust cancellation/timeout variants or Session/Run idempotency-key semantics; those separate adapter defects remain outside this closure.
+- Eight named client review lenses examined do not mean a successful whole-language gate or full SDK completion.
+- The original a634 whole command exited1 with a Task pause reverse Store HTTP error; its original71 XML and790 identical inputs are preserved.
+- Prior b89/3aa and earlier569/be5 proofs retain their epochs; no old execution is relabelled as this revision.
+- Accepted12 identity migration, five-second physical settlement, full generator, platform CI and SDK main remain separate.
+asset_refs:
+- asset.sdk-historical-proof-location
 ---
 
 # 三语言客户端具名生命周期审查
@@ -176,3 +152,8 @@ TS/PY修复69cb保actual native success-only消费、发送owner不受caller can
 |`sdks/python/tests/test_ack_submission.py`|`67fabad728818f1a2437617edfeccc8ec0d3a54f6be80d310618b321eba21efc`|
 
 本局部Finding repair/verification引用本Evidence具体段，rereview引用对应failure-concurrency具名69cb challenge；旧language-consumption-ack闭合范围与#120原framework权威不重开。PID/Gap/Host未知及其余七open/B3/12/合同13/平台/main/payload必要性和全局continuity1173阻断均保。当前唯一状态页本次只维护既有结论与新69cb范围：`docs/sdk/governance/capability-review-remaining.md`，候选SHA `130ec38df8ea338a4d006cf3dce37c89a92efc149fac8d8c68c629d8f000d7a3`；它是文稿维护输入依据，不是新runtime通过证明。未新增公共API/accepted schema，examples及官网无需外仓接口改动；JavaREADME已随2e0同步。未来69cb新Linux完整语言/CI与当前原30d语义门禁必须各有新actual，不能借旧26c或本地focused替代。
+
+
+## 历史证明存储的有界表示迁移
+
+原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。

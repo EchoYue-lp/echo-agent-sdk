@@ -1,9 +1,0 @@
-{
-  "sourcePath": "sdks/python/tests/test_tool_value_effect_host.py",
-  "sourceSHA256": "99e006edfc2a5c5a31d7f57dea6ff39e61ac027521ab5b8973fab8a56bdb0817",
-  "sourceBytes": 28783,
-  "candidateAndActualSourceIdentical": true,
-  "preflightGit": "7d0a32a0b049013e366d9a4ed78049c7364cbb98",
-  "matcherReturnsCountDeadlinesUnchanged": true,
-  "nativeExecuted": false
-}

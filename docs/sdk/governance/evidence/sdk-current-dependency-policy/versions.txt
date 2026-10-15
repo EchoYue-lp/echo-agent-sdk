@@ -1,2 +1,0 @@
-cargo-audit-audit 0.22.2
-cargo-deny 0.20.2
