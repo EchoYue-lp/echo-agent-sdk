@@ -53,7 +53,7 @@ test("registered LLM requests usage terminal error and cancellation", { skip: !h
 });
 
 test("Workflow extension streams preserve node error owner cancel and close", { skip: !host, timeout: 60000 }, async () => {
-  const { work, spec, sdk } = await setup("workflow"), facts = { calls: [], producer_completed: 0, producer_errors: [], callbacks_completed: 0 }, producers = [], started = {}, releases = {};
+  const { work, spec, sdk } = await setup("workflow"), facts = { calls: [], producer_completed: 0, producer_errors: [], callbacks_completed: 0, control_terminals: {cancel:0,close:0}, control_items: {} }, producers = [], started = {}, releases = {};
   try {
     const registration = await sdk.registerAgentComponent("proof-workflow", { kind: "agent_component", descriptor_version: 1, component: "workflow", name: "proof-workflow", capabilities: { supports_streaming: true } }, async call => {
       try {
@@ -61,9 +61,17 @@ test("Workflow extension streams preserve node error owner cancel and close", { 
       facts.calls.push({ operation: call.invocation.operation, component_operation: request.operation, input: mode, context: call.context });
       if (request.operation === "workflow_run") return { operation: "agent_component_call", value: { component: "workflow", result: { operation: "workflow_run", value: { output: spec.workflow_output } } } };
       assert.ok(call.stream); const writer = sdk.streamWriter(call.stream); started[mode].release();
-      if (releases[mode]) await releases[mode].promise;
-      else producers.push((async () => {
-        try { await sleep(); for (const value of mode === "failure" ? [spec.workflow_error_chunk] : spec.workflow_chunks) await writer.chunk(value); if (mode === "failure") await writer.failed(spec.failure); else await writer.complete(spec.workflow_complete); }
+      producers.push((async () => {
+        try {
+          await sleep();
+          if(releases[mode]){
+            await writer.chunk(spec.workflow_chunks[0]);
+            await releases[mode].promise;
+            await writer.complete(spec.workflow_complete);facts.control_terminals[mode]++;
+          }else{
+            for (const value of mode === "failure" ? [spec.workflow_error_chunk] : spec.workflow_chunks) await writer.chunk(value); if (mode === "failure") await writer.failed(spec.failure); else await writer.complete(spec.workflow_complete);
+          }
+        }
         catch (error) { facts.producer_errors.push(error.message); throw error; } finally { facts.producer_completed++; }
       })());
       return { outcome: "stream", stream: call.stream };
@@ -78,8 +86,11 @@ test("Workflow extension streams preserve node error owner cancel and close", { 
     }
     for (const mode of ["cancel", "close"]) {
       started[mode] = gate(); releases[mode] = gate(); const stream = await a.invoke("workflow.extension.run_stream", [registration.wire, mode]); await started[mode].promise;
+      // A real item proves the original source is open; its producer still
+      // owns the same writer while the explicit release gate is held.
+      facts.control_items[mode]=await a.invoke("workflow.stream.next",[stream]);
       if (mode === "cancel") { facts.cancel = await a.invoke("workflow.stream.cancel", [stream]); releases[mode].release(); facts.cancel_terminal = await a.invoke("workflow.stream.next", [stream]); }
-      else { const closing = a.invoke("workflow.stream.close", [stream]); await sleep(); releases[mode].release(); facts.close = await closing; facts.close_again = await a.invoke("workflow.stream.close", [stream]); facts.after_close = await observedError(a.invoke("workflow.stream.next", [stream])); }
+      else { const closing = a.invoke("workflow.stream.close", [stream]); await sleep(); assert.equal(facts.control_terminals[mode],0); releases[mode].release(); facts.close = await closing; facts.close_again = await a.invoke("workflow.stream.close", [stream]); facts.after_close = await observedError(a.invoke("workflow.stream.next", [stream])); }
     }
     await Promise.all(producers); await a.close(); await b.close(); await agent.close(); await registration.close();
   } finally { for (const release of Object.values(releases)) release.release(); await sdk.close(); writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2)); }

@@ -26,10 +26,11 @@ class LateFactoryHostTest {
         var result = JsonSupport.MAPPER.createObjectNode().put("operation", operation); result.set("value", value);
         return JsonSupport.MAPPER.createObjectNode().put("outcome", "result").set("result", result);
     }
-    private static List<JsonNode> frames(Path work) {
+    private static List<JsonNode> frames(Path work) { return frames(work, "frames.jsonl"); }
+    private static List<JsonNode> frames(Path work, String name) {
         try {
             var result = new ArrayList<JsonNode>();
-            Path file = work.resolve("frames.jsonl"); if (!Files.exists(file)) return result;
+            Path file = work.resolve(name); if (!Files.exists(file)) return result;
             for (var line : Files.readAllLines(file)) {
                 try { result.add(JsonSupport.MAPPER.readTree(line)); }
                 catch (java.io.IOException ignored) { /* The final trace line may still be in flight. */ }
@@ -53,7 +54,7 @@ class LateFactoryHostTest {
     @Test void timedOutConstructorKeepsExactCleanupOwnerUntilItsActualFutureSettles() throws Exception {
         verifyLateConstructor(false);
     }
-    @Test void concurrentCleanupRetriesShareTheActualPendingClose() throws Exception {
+    @Test void heldCleanupKeepsExactOwnerUntilItsActualFutureSettles() throws Exception {
         verifyLateConstructor(true);
     }
     private void verifyLateConstructor(boolean holdCleanup) throws Exception {
@@ -66,6 +67,8 @@ class LateFactoryHostTest {
         var release = new CompletableFuture<Void>();
         var cleanupRelease = new CompletableFuture<Void>();
         var cleanupCalls = new AtomicInteger();
+        var cleanupCancellation = new AtomicReference<ExtensionCancellation>();
+        var cleanupJob = new AtomicReference<CompletableFuture<JsonNode>>();
         try (var sdk = await(EchoAgentClient.spawn("python3", List.of(Path.of("../python/tests/protocol_host_proxy.py").toAbsolutePath().toString(),
                 "--host", host, "--work", work.toString(), "--mode", "normal"), Path.of("../shared/facade-operation-catalog.json"),
                 Path.of("../shared/contract-digests.json"), Map.of()))) {
@@ -93,12 +96,16 @@ class LateFactoryHostTest {
                     }
                     if (!operation.equals("agent_close")) { executed.incrementAndGet(); throw new IllegalStateException("timed-out object must never execute"); }
                     if (!extension.equals(child.get()) || !parent.get().equals(WireHandle.fromJson(call.path("factory_origin")))) throw new IllegalStateException("cleanup identity mismatch");
+                    cleanupCancellation.set(cancellation);
                     cleanupCalls.incrementAndGet();
                     if (objects.remove(extension) == null) throw new IllegalStateException("cleanup ran before actual object construction or ran twice");
-                    if (holdCleanup) return cleanupRelease.thenApply(ignored -> {
-                        closed.add(extension);
-                        return outcome("agent_close", com.fasterxml.jackson.databind.node.NullNode.instance);
-                    });
+                    if (holdCleanup) {
+                        var original = cleanupRelease.thenApply(ignored -> {
+                            closed.add(extension);
+                            return outcome("agent_close", com.fasterxml.jackson.databind.node.NullNode.instance);
+                        });
+                        cleanupJob.set(original); return original;
+                    }
                     closed.add(extension); return CompletableFuture.completedFuture(outcome("agent_close", com.fasterxml.jackson.databind.node.NullNode.instance));
                 } catch (RuntimeException error) { violations.add(error.toString()); return CompletableFuture.failedFuture(error); }
             }, Duration.ofMillis(100)));
@@ -107,21 +114,33 @@ class LateFactoryHostTest {
             var runner = WireHandle.fromJson(await(sdk.call("echo_agent::eval::runner::EvalRunner::new", agent.wire(), List.of(session.wire(), WireValues.utf8Path(work.resolve("eval").toString())))));
             var report = sdk.call("echo_agent::eval::runner::EvalRunner::run_all", agent.wire(), List.of(session.wire(), runner, List.of(evalCase()), factory.wire()));
             until(() -> userCancellation.get() != null && userCancellation.get().isCancelled());
-            until(() -> cleanupRequests(work, child.get()) >= 2);
+            assertEquals(0, cleanupRequests(work, child.get()), "a live constructor cannot be cleaned before its original response");
+            assertFalse(report.toCompletableFuture().isDone(), "unresolved construction cannot manufacture an Eval result");
             assertNotNull(job.get()); assertFalse(job.get().isDone()); assertFalse(job.get().isCancelled());
             assertTrue(objects.isEmpty()); assertTrue(constructed.isEmpty()); assertTrue(closed.isEmpty());
             assertTrue(violations.isEmpty(), "ACP cancellation must not release cleanup into an unconstructed object: " + violations);
             var unregister = assertThrows(ExecutionException.class, () -> await(factory.unregister()));
             assertEquals("extension_conflict", EchoAgentException.from(unregister, "_echo_agent/extension/unregister").code(), "pending child retains parent cleanup ownership");
-            long beforeConstruction = cleanupRequests(work, child.get());
             release.complete(null);
             if (holdCleanup) {
                 until(() -> cleanupCalls.get() > 0);
-                until(() -> cleanupRequests(work, child.get()) > beforeConstruction + 1);
-                assertEquals(1, cleanupCalls.get(), "native pending close must not execute twice on retry");
+                until(() -> {
+                    var trace = frames(work);
+                    var originalClose = trace.stream().filter(frame -> "_echo_agent/extension/invoke".equals(frame.path("method").textValue())
+                            && "agent_close".equals(frame.path("params").path("invocation").path("operation").textValue())
+                            && child.get().id().equals(frame.path("params").path("extension").path("id").textValue())).findFirst().orElse(null);
+                    return originalClose != null && trace.stream().anyMatch(frame -> "_echo_agent/extension/cancel".equals(frame.path("method").textValue())
+                            && frame.path("params").path("invocation_id").equals(originalClose.path("params").path("invocation_id"))
+                            && "timeout".equals(frame.path("params").path("reason").textValue()));
+                });
+                assertNotNull(cleanupJob.get()); assertFalse(cleanupJob.get().isDone()); assertFalse(cleanupJob.get().isCancelled());
+                assertNotNull(cleanupCancellation.get()); assertFalse(cleanupCancellation.get().isCancelled(), "individual request deadlines do not cancel the original cleanup owner");
+                assertEquals(1, cleanupCalls.get(), "the original pending cleanup executes once");
                 assertTrue(closed.isEmpty(), "cleanup outcome is still pending");
                 assertFalse(cleanupRelease.isCancelled(), "ACP timeout cannot cancel the actual cleanup owner");
                 assertTrue(violations.isEmpty(), violations.toString());
+                var pendingParent = assertThrows(ExecutionException.class, () -> await(factory.unregister()));
+                assertEquals("extension_conflict", EchoAgentException.from(pendingParent, "_echo_agent/extension/unregister").code());
                 cleanupRelease.complete(null);
             }
             until(() -> closed.size() == 1);
@@ -129,7 +148,17 @@ class LateFactoryHostTest {
             assertEquals(List.of(child.get()), constructed); assertEquals(constructed, closed); assertTrue(objects.isEmpty());
             assertEquals(0, executed.get()); assertTrue(violations.isEmpty(), violations.toString());
             var result = await(report); assertEquals(1, result.path("results").size());
+            assertTrue(result.path("results").path(0).path("success").isBoolean());
             assertFalse(result.path("results").path(0).path("success").booleanValue(), "timeout must not publish successful Agent construction");
+            var trace = frames(work);
+            var original = trace.stream().filter(frame -> "_echo_agent/extension/invoke".equals(frame.path("method").textValue())
+                    && "factory_create_agent".equals(frame.path("params").path("invocation").path("operation").textValue())
+                    && child.get().id().equals(frame.path("params").path("invocation").path("input").path("instance").path("id").textValue())).findFirst().orElse(null);
+            assertNotNull(original);
+            var replies = frames(work, "client-frames.jsonl").stream().filter(frame -> frame.path("id").equals(original.path("id")) && (frame.has("result") || frame.has("error"))).toList();
+            assertEquals(1, replies.size()); var reply = replies.get(0); assertFalse(reply.has("error"));
+            assertEquals("error", reply.path("result").path("outcome").textValue());
+            assertEquals("cancelled", reply.path("result").path("error").path("code").textValue());
             until(() -> {
                 try { return await(factory.unregister()).path("released").asBoolean(); }
                 catch (Exception error) { return false; }

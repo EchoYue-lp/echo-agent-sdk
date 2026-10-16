@@ -9,6 +9,22 @@ revision: 335193791c70a6cb077033c3f8f0cb1223e5266e
 finding_refs:
 - finding.sdk-cleanup-retry-owner
 challenges:
+  original-6563-held-source-test-oracles:
+    revision: source:83c46c4f864bffc071006f0ba8d79faedbb2e17f0c5f86155411930b9aaad4c5
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    - sdks/typescript/test/factory-host.test.js
+    - sdks/python/tests/test_factory_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/LateFactoryHostTest.java
+    - sdks/typescript/test/llm-workflow-stream-host.test.js
+    - sdks/python/tests/test_llm_workflow_stream_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java
+    - sdks/shared/testing/llm_workflow_stream_fixture.py
+    - sdks/typescript/test/protocol-host.test.js
+    - sdks/python/tests/protocol_host_proxy.py
+    evidence_refs:
+    - evidence.sdk-cancellation-observation
   full-facade-queue-cancellation-must-drain-original-source:
     source_refs:
     - echo-sdk-host/src/core_profile/facade/mod.rs
@@ -54,3 +70,10 @@ observer先unwind导致配额提前回收；错误ACK只保owner却让source终�
 ## 未检查项
 
 全部A/B实现、Java native close、任意Graph晚到回执、跨进程持久恢复、完整三语言/平台/精确main CI、宿主nativeHook/Stop成功。
+
+
+## F6563有限源码及原运行增量
+
+原header335及其challenges、七控与14a审查保持历史。新增challenge只绑定当前6563精候选的原Rust两个case及九个既有测试路径；源码/actual原件独审C0/I0/M0。Factory03唯一M1已实修复且三语fresh通过，02未变Workflow/Tool单列原cut，原失败与错误观察方向均保留。独立reader亲核四constructor每个原request/reply恰1、typed Cancelled/no top error；Java原iid timeout后父仍拒绝，再同future释放/用户cleanup1，第二transport close不冒第二用户执行。
+
+当前有界结论及原日志精确身份见Evidence后继段；新pin/生成/Host/two Rust已有独立资格，未继承为官方完整语言或整个SDK通过。不关闭五Finding，不把原Task F988/14a重标为新Host。最终必要性与精候选canonical另执行；nativeHook/Stop、完整Rust/平台/main未由该复审证明。

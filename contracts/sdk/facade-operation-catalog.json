@@ -12348,7 +12348,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 180
+      "items": 181
     },
     {
       "route": "intrinsic:process-local-agent-context-state",
@@ -26687,5 +26687,5 @@
       "items": 432
     }
   ],
-  "total_items": 26694
+  "total_items": 26695
 }

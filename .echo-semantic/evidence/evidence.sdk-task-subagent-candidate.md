@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-task-subagent-candidate
 kind: evidence
-observed_at: source:31483b056427dc3f763899b798d84992cc0301f6bfe1816ccc8acf2952bee11d
+observed_at: fa62f3b3d0df3ed5b14c6d9786dfffce5db57da6
 source_refs:
 - sdks/shared/testing/task_subagent_fixture.py
 - sdks/typescript/test/task-subagent-host.test.js
@@ -82,3 +82,8 @@ exactCAS/兄弟pausecancelTask4、canonicalBresult复用/原运行contextstring�
 最终候选不带未来foreign专用uuid import或缺省ID分支；admit_physical显式要求原非空run_id/execution_id，按原claim精确传递，不分配或替代身份。S的完整foreign版本未改，后继新pin切片再独立纳入。最终fixture SHA256 af6cad66b3f97502d2f9e19f2029690011ac67018d471b392a1e79cae3ab9e03，formatter/Ruff零差异。
 
 此输入变化后重新执行候选整个Task suite，三语各5实际passed、0fail/error/skip，TS重新build源码及examples、Python加载候选src、Java clean重编译；各次611输入fresh before/after零漂移，Host仍同14a。新完整日志TS2200B/SHA256 7b5daa33b2077c300f17d2bc8fbfa48f10cd48cfacc78d138ddc57bd7d6b1e18、Python98B/63508c5b2a39a6f7ed5ced027d886e936576ff17806525a5863c15f00efb0ed8、Java1609B/8a7ca89f01fdcabb6ab6cf5e0cb12775d99a7350658491270abd561cdeac7638；均exit0/nullsignal/notrunc。JavafreshXML5/0/0/0，SHA256 56c9655ac429a11473182cceaa1da64f6cf5f745db6bb67dd59dee0794254008。旧d326等结果保其原输入，不借旧15pass冒新strict fixture验收。上游F656精main/七项CI已由根协调接受；本有限cut仍固定988/14a，不中途切pin。
+
+
+## 来源身份的无损持久化
+
+原 header 的 source:31483b056427dc3f763899b798d84992cc0301f6bfe1816ccc8acf2952bee11d 与公开 Git fa62f3b3d0df3ed5b14c6d9786dfffce5db57da6 的 canonical source digest 精确相同；只把该 header 改为可冷取回 Git 身份。该提交的原 source_refs 逐 blob 取回核验，不改变正文、原 F988/Host14a 五例结果或审查范围；它不证明后继 F6563/ac433，也不纳入工作树四个 foreign Task 文件。必要 exact-SHA annotated evidence tag 的远端与冷仓回执仅保 ignored local。

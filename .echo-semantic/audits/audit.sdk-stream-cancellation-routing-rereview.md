@@ -5,7 +5,7 @@ kind: audit
 boundary_ref: boundary.sdk-language-clients
 lens: failure_concurrency
 freshness: examined
-revision: source:31483b056427dc3f763899b798d84992cc0301f6bfe1816ccc8acf2952bee11d
+revision: fa62f3b3d0df3ed5b14c6d9786dfffce5db57da6
 finding_refs:
 - finding.sdk-task-resume-extension-invocation-conflict
 challenges:
@@ -75,3 +75,8 @@ scope外操作、任意组合与后继Channelforward新实现。
 本次已检查：SetupACK retains originalcancel address complete streamid/gen/kind/extension;earlycancel/terminalbeforeACK mustnot resurrect route；Only officialterminalsuccessful submission orsuccessfulunregister/actualclose releasesexactowner;wronggenfailedsend/failedclose keepsit。当前函数定位：invocationControllers；extensionStreamRoutes；stream；invocation_cancel；invocationCancellations；extensionStreamRoutes。实际afterproof范围：Current3nativebeforeafter +routewindows/task4 each/ACK12/23/18;exclude generic>5secphysical。
 
 上方追加source_refs逐569Gitblob=currentfileSHA精确，现14/newbb4f632+54 sourcecut实际范围匹配。原FaultHypothesis文本保留并在本次业务代码复核，源码变化闭包按原scope检查；statusexamined不等全无缺陷，supports/limits/41coverage/closure不提升。Framework业务源属于独立publishedGitb909，对native工具用既有pin/buildmanifest定位，不将framework文件伪置SDKtree。原历史整仓3ea/9e缺失仍未知，不把原run重新标为569。full28gen/三兼容人选/LinuxWindows/main仍分开。
+
+
+## 来源身份的无损持久化
+
+原 header 的 source:31483b056427dc3f763899b798d84992cc0301f6bfe1816ccc8acf2952bee11d 与公开 Git fa62f3b3d0df3ed5b14c6d9786dfffce5db57da6 的 canonical source digest 精确相同；只把该 header 改为可冷取回 Git 身份。该提交的原 source_refs 逐 blob 取回核验，不改变正文、原 F988/Host14a 五例结果或审查范围；它不证明后继 F6563/ac433，也不纳入工作树四个 foreign Task 文件。必要 exact-SHA annotated evidence tag 的远端与冷仓回执仅保 ignored local。

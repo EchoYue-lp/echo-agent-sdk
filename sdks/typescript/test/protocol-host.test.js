@@ -81,7 +81,7 @@ test("async callback exception settles through the real Host",{skip:!host},async
 
 test("cancelled tool waits for connection-scoped interrupted callback side effect",{skip:!host},async()=>scenario("normal",async sdk=>{
  let toolStarted;const parked=new Promise(resolve=>{toolStarted=resolve;});
- let canonical;let interrupted;let effect=false;let count=0;
+ let canonical;let interrupted;let effect=false;let count=0;let toolCancellation;
  let releaseTool;const toolReleased=new Promise(resolve=>{releaseTool=resolve;});
  const callback=await sdk.registerAgentCallback("terminal-observer",{kind:"agent_callback",descriptor_version:1},async call=>{
   if(call.invocation.operation==="callback_on_tool_start")canonical=call.invocation.input.call_id;
@@ -93,7 +93,7 @@ test("cancelled tool waits for connection-scoped interrupted callback side effec
  });
  const tool=await sdk.registerExtension("tool","hung-tool",{kind:"tool",descriptor_version:1,name:"hung_fixture",description:"park",parameters:{kind:"map",value:[]},schema_revision:"1",required_input_modalities:[],required_permissions:[],risk_level:"standard",supports_streaming:false,exempt_from_batch_timeout:false,allows_parallel_batch_execution:true,manages_own_timeout:false},async(call,signal)=>{
   if(call.invocation.operation==="tool_validate_parameters")return {outcome:"result",result:{operation:"tool_validate_parameters",value:null}};
-  toolStarted();await toolReleased;
+  toolCancellation=signal;toolStarted();await toolReleased;
   return {outcome:"error",error:{code:"cancelled",message:"cancelled",retryable:"never"}};
  });
  const model=await sdk.registerLlmClient("tool-model",{kind:"llm_client",descriptor_version:1,model_name:"tool-model",supports_streaming:false},async()=>{
@@ -104,8 +104,11 @@ test("cancelled tool waits for connection-scoped interrupted callback side effec
  await session.invoke("echo_agent::agent::react::ReactAgent::set_permission_mode",["full-auto"]);
  const run=await session.startRun({text:"cancel tool"});
  await Promise.race([parked,new Promise((_resolve,reject)=>setTimeout(()=>reject(new Error("tool never entered")),5000))]);
- await run.cancel();const settled=await run.wait({timeoutMs:5000});
- releaseTool();
+ await run.cancel();
+ const cancelled=toolCancellation.aborted?Promise.resolve():new Promise(resolve=>toolCancellation.addEventListener("abort",resolve,{once:true}));
+ await Promise.race([cancelled,new Promise((_resolve,reject)=>{const timer=setTimeout(()=>reject(new Error("original tool cancellation not observed")),5000);timer.unref();})]);
+ const held=await run.wait({timeoutMs:50});assert.equal(held.settled,false);assert.equal(held.terminal,undefined);assert.equal(effect,false);
+ releaseTool();const settled=await run.wait({timeoutMs:5000});
  assert.equal(settled.terminal.status,"cancelled");assert.equal(effect,true);
  assert.ok(canonical);assert.equal(interrupted.call_id,canonical);assert.equal(interrupted.tool,"hung_fixture");
  assert.deepEqual(interrupted.input,{kind:"map",value:[{key:{kind:"string",value:"key"},value:{kind:"string",value:"中文🙂"}}]});

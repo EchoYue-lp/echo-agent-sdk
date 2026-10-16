@@ -115,6 +115,8 @@ class LlmWorkflowStreamHostTest {
         var completed = new AtomicInteger(); var callbacksCompleted = new AtomicInteger(); var producerErrors = new CopyOnWriteArrayList<String>();
         var producers = new CopyOnWriteArrayList<CompletableFuture<Void>>();
         var started = new ConcurrentHashMap<String, CompletableFuture<Void>>(); var releases = new ConcurrentHashMap<String, CompletableFuture<Void>>();
+        var controlTerminals = new ConcurrentHashMap<String, Integer>(); controlTerminals.put("cancel", 0); controlTerminals.put("close", 0);
+        var controlItems = facts.putObject("control_items");
         try (var sdk = setup.sdk()) {
             var spec = setup.spec();
             var registration = await(sdk.registerAgentComponent("proof-workflow", AgentComponentDescriptor.workflow("proof-workflow", true), (call, cancellation) -> {
@@ -124,10 +126,10 @@ class LlmWorkflowStreamHostTest {
                     try {
                         if ("workflow_run".equals(call.componentOperation())) return AgentComponentOutcome.result("workflow", new AgentComponentResult.WorkflowCompleted(spec.path("workflow_output")));
                         WireHandle stream = WireHandle.fromJson(call.raw().path("stream")); var writer = sdk.streamWriter(stream); started.get(mode).complete(null);
-                        if (releases.containsKey(mode)) releases.get(mode).join();
-                        else producers.add(CompletableFuture.runAsync(() -> {
+                        producers.add(CompletableFuture.runAsync(() -> {
                             try {
-                                if ("failure".equals(mode)) { await(writer.chunk(spec.path("workflow_error_chunk"))); await(writer.failed(spec.path("failure"))); }
+                                if (releases.containsKey(mode)) { await(writer.chunk(spec.path("workflow_chunks").path(0))); releases.get(mode).join(); await(writer.complete(spec.path("workflow_complete"))); controlTerminals.merge(mode, 1, Integer::sum); }
+                                else if ("failure".equals(mode)) { await(writer.chunk(spec.path("workflow_error_chunk"))); await(writer.failed(spec.path("failure"))); }
                                 else { for (var chunk : spec.path("workflow_chunks")) await(writer.chunk(chunk)); await(writer.complete(spec.path("workflow_complete"))); }
                             } catch (Exception error) { producerErrors.add(error.toString()); throw new CompletionException(error); }
                             finally { completed.incrementAndGet(); }
@@ -148,6 +150,7 @@ class LlmWorkflowStreamHostTest {
                 started.put(mode, new CompletableFuture<>()); releases.put(mode, new CompletableFuture<>());
                 WireHandle stream = WireHandle.fromJson(await(a.invoke("workflow.extension.run_stream", List.of(registration.wire(), mode))));
                 started.get(mode).get(5, TimeUnit.SECONDS);
+                controlItems.set(mode, await(a.invoke("workflow.stream.next", List.of(stream))));
                 if ("cancel".equals(mode)) { facts.set("cancel", await(a.invoke("workflow.stream.cancel", List.of(stream)))); releases.get(mode).complete(null); facts.set("cancel_terminal", await(a.invoke("workflow.stream.next", List.of(stream)))); }
                 else { var closing = a.invoke("workflow.stream.close", List.of(stream)); releases.get(mode).complete(null); facts.set("close", await(closing)); facts.set("close_again", await(a.invoke("workflow.stream.close", List.of(stream)))); facts.set("after_close", observedError(a.invoke("workflow.stream.next", List.of(stream)))); }
             }
@@ -155,7 +158,7 @@ class LlmWorkflowStreamHostTest {
             a.close(); b.close(); agent.close(); registration.close();
         } finally {
             releases.values().forEach(release -> release.complete(null));
-            facts.put("producer_completed", completed.get()).put("callbacks_completed", callbacksCompleted.get()); facts.set("producer_errors", JsonSupport.MAPPER.valueToTree(producerErrors)); save(setup.work(), facts);
+            facts.put("producer_completed", completed.get()).put("callbacks_completed", callbacksCompleted.get()); facts.set("control_terminals", JsonSupport.MAPPER.valueToTree(controlTerminals)); facts.set("producer_errors", JsonSupport.MAPPER.valueToTree(producerErrors)); save(setup.work(), facts);
         }
         verify(setup, "workflow", facts);
     }

@@ -1,6 +1,14 @@
 # 当前能力模型的有限剩余验收
 
-## 当前有限验收（2026-10-17）
+## 当前有限验收（2026-10-17，F6563后继）
+
+正式Host pin已升级公开framework6563d26570cc4a8d93c86b7e37443b0559476807，真实锁90d5b82ef54a56d22fc079f9065e86e817a81b2431e265bf1d47ebe3897f40d5；八framework及三vendor仅Git来源变更。新唯一28profile生成和完整合同check实际0，117生成产物一致/遥测漂移0、accepted5621 identity/kind和454routes无增删，五blocking/shared文件不变。下述988/14a结果仅保原切点。
+
+新Host ac4332105734bbedda144b5c033fedc6610de4b5b9d9a5a0c11dd4953a28a87f实际build0/零warning；原drop-waiter/quota与Sandbox cancellation两个具名Rust case各1通过并独审。官方完整语言首轮仍真实exit1（TS351pass/3旧oracle fail/0skip，PY/Java未运行）；原失败保留。只修原Factory/Workflow/Tool oracle及原proxy正确方向帧观察，02/03组合有限TS3/PY2/Java3通过、源码及原raw独审C0/I0/M0。具体输入、Host、完整日志摘要与限制见原cancellation Evidence后继段和MASTER当前检查点；不称官方full语言已通过。
+
+本有限提交排除四个foreign Task工作树新增，候选使用已公开fa62原blob；原Task F988/14a五例header只按等价canonical摘要改绑Gitfa62并保necessary exact证据tag冷fetch，未重标为6563。五Finding仍open；原完整语言入口、新Rust适用矩阵、当前整体验收/nativeHook/平台与SDK精main CI继续。旧Java A有限关闭失败、旧producer失败仍保历史，不重列为当前已修局部的阻断，也不据有限PASS扩为全SDK结算。
+
+### 前一988/14a有限检查点（原文保留）
 
 当前正式依赖为公开framework `9886502c83d6b1f6fa9212eb221db0e5874deaee`，真实锁八包同Git来源，无path patch。唯一完整28profiles update及后继完整canonical check已实际0，117产物一致、telemetry drift0；accepted 5621项无增删，仅批准B两项fallible source签名及A单cap/protect Unit变化。后继125项合同/wire/exporter输入复核零漂移、语言catalog check0、Protocol5/42/91定向全过，不机械重跑28profiles。
 

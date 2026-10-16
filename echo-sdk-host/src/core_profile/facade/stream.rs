@@ -1365,9 +1365,14 @@ pub(crate) mod cleanup_tests {
     #[tokio::test]
     async fn cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence()
     -> Result<(), Box<dyn std::error::Error>> {
-        let (handles, mut runtime, producer) = owned_fixture()?;
+        let (handles, mut runtime, producer) = owned_fixture_with_stream_limit(1)?;
         runtime.shutdown_timeout = std::time::Duration::from_secs(5);
         let handle = producer.handle.clone();
+        let resource = WireHandle {
+            id: producer.record.resource_id.clone(),
+            kind: echo_sdk_protocol::handle::HandleKind::FacadeResource,
+            generation: handle.generation.clone(),
+        };
         let sender = producer.sender.clone();
         let release = Arc::new(tokio::sync::Notify::new());
         let cleanup_started = Arc::new(tokio::sync::Notify::new());
@@ -1409,6 +1414,13 @@ pub(crate) mod cleanup_tests {
             .is_err()
         );
         cleanup_started.notified().await;
+        assert!(!handles.is_closed(&handle));
+        assert!(
+            runtime
+                .open(&handles, &resource, "session-a", "fixture.quota.probe")
+                .is_err_and(|error| error.code == ExtensionErrorCode::PayloadTooLarge),
+            "dropping the next waiter cannot release the held original stream slot"
+        );
         assert_eq!(
             handles
                 .facade_stream_state(&handle, Some("session-a"), "fixture.next")
@@ -1472,6 +1484,29 @@ pub(crate) mod cleanup_tests {
                 .await
                 .map_err(|error| std::io::Error::other(error.message))?
         );
+        let probe = runtime
+            .open(&handles, &resource, "session-a", "fixture.quota.probe")
+            .map_err(|error| std::io::Error::other(error.message))?;
+        // This probe has no background producer: its issued slot and sender
+        // stay live until explicit close, independent of task scheduling.
+        assert!(
+            runtime
+                .open(&handles, &resource, "session-a", "fixture.quota.probe")
+                .is_err_and(|error| error.code == ExtensionErrorCode::PayloadTooLarge)
+        );
+        assert!(
+            runtime
+                .close(
+                    &handles,
+                    &probe.handle,
+                    "session-a",
+                    "fixture",
+                    "fixture.stream.close"
+                )
+                .await
+                .map_err(|error| std::io::Error::other(error.message))?
+        );
+        drop(probe);
         Ok(())
     }
 

@@ -57,22 +57,33 @@ boundary remains recorded in `contracts/sdk/source-contract.json` and
 ## Current Governance Candidate Pin
 
 The current Host dependency is published framework
-`9886502c83d6b1f6fa9212eb221db0e5874deaee`, tree
-`aee79a54c03ba7d79b49cceedd3170fbb809f41b`, merged through
-[framework PR #190](https://github.com/EchoYue-lp/echo-agent/pull/190).
-The coordinator verified all seven jobs of exact-main CI run `38862267005`.
-All eight framework packages in this SDK's actual lock use that one Git
-revision; the lock SHA-256 is
-`5952bfe30d027f5a5109eda5df3ed709cbadc16106c9b34713129b3e6cee138a`.
-No path override or borrowed framework lock is used.
+`6563d26570cc4a8d93c86b7e37443b0559476807`, tree
+`2875ec0d92aed44b35e0fe9b6b00357380c1557d`, merged through
+[framework PR #191](https://github.com/EchoYue-lp/echo-agent/pull/191).
+Its sole parent is `9886502c83d6b1f6fa9212eb221db0e5874deaee`.
+The signed commit and all seven successful jobs of exact-main CI run
+`38958501642` were checked against that exact revision.
+All eight framework packages and the three upstream vendored packages
+(`calamine`, `docx-rs`, `rust_xlsxwriter`) in this SDK's actual lock use that
+one Git revision; the lock SHA-256 is
+`90d5b82ef54a56d22fc079f9065e86e817a81b2431e265bf1d47ebe3897f40d5`.
+Only those eleven source origins changed. Package versions, checksums and
+dependency edges are unchanged. No path override or borrowed framework lock
+is used.
 
-The sole full 28-profile generator and complete contract check both exited0.
-Accepted membership remains 5,621; the two approved fallible Rust signatures
-are regenerated rather than frozen to old digests. The protected-claim addition
-is limited to the separately accepted capability and reverse Unit operation.
-New Host lifecycle fixes, final profile, full native language/Rust validation
-and exact SDK-main CI remain pending; earlier pin receipts do not qualify this
-source. See [the current task ledger](docs/MASTER-PLAN.md) and
+The earlier `9886502c` pin's sole full 28-profile generator and complete
+contract check both exited0. Those receipts remain historical. The new pin's
+canonical producer completed all 28 actual profiles and wrote 117 artifacts.
+The complete contract check exited0 with zero blocking or telemetry drift;
+its Protocol suites passed 5/42/91 tests. Accepted identity/kind membership
+remains exactly 5,621 and its 454 routes are unchanged in both directions;
+the five blocking/shared contract files are byte-identical to the prior pin.
+The only new public identity, `RunEntry::wait_result`, remains Host/Rust-only
+telemetry. New Host behavior, full native language/Rust validation and exact
+SDK-main CI remain pending. The two approved fallible Rust signatures come from the canonical
+producer, and the protected-claim addition remains limited to the separately
+accepted capability and reverse Unit operation. Earlier pin receipts do not
+qualify this source. See [the current task ledger](docs/MASTER-PLAN.md) and
 [ADR0039](docs/adr/0039-sdk-cancellation-observation.md).
 
 ## Historical Governance Pin 00782

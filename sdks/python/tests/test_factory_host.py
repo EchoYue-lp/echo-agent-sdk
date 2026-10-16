@@ -212,6 +212,7 @@ async def test_late_factory_construction_remains_owned_until_reserved_child_clea
         observations = {"created": 0, "closed": 0}
         cancellation = []
         identity = []
+        executed = []
 
         async def until(predicate):
             async def wait_for_condition_1():
@@ -244,6 +245,8 @@ async def test_late_factory_construction_remains_owned_until_reserved_child_clea
                             },
                         },
                     }
+                if operation != "agent_close":
+                    executed.append(operation)
                 assert operation == "agent_close"
                 parent, child = identity[0]
                 assert call["factory_origin"] == parent and call["extension"] == child
@@ -310,15 +313,47 @@ async def test_late_factory_construction_remains_owned_until_reserved_child_clea
                         for frame in frames
                     )
 
-                await until(cleanup_sent)
+                assert not cleanup_sent()
+                assert not request.done()
                 assert observations == {"created": 0, "closed": 0}
                 with pytest.raises(EchoAgentError) as error:
                     await factory.close()
                 assert error.value.code == "extension_conflict"
                 release.set()
-                await request
+                report = await request
                 await until(lambda: observations["closed"] == 1)
                 assert observations == {"created": 1, "closed": 1}
+                assert executed == []
+                assert len(report["results"]) == 1
+                assert report["results"][0]["success"] is False
+                trace = [
+                    json.loads(line)
+                    for line in (work / "frames.jsonl").read_text().splitlines()
+                ]
+                original = next(
+                    frame
+                    for frame in trace
+                    if frame.get("method") == "_echo_agent/extension/invoke"
+                    and frame["params"]["invocation"]["operation"]
+                    == "factory_create_agent"
+                    and frame["params"]["invocation"]["input"]["instance"]
+                    == identity[0][1]
+                )
+                client_trace = [
+                    json.loads(line)
+                    for line in (work / "client-frames.jsonl").read_text().splitlines()
+                ]
+                replies = [
+                    frame
+                    for frame in client_trace
+                    if frame.get("id") == original["id"]
+                    and ("result" in frame or "error" in frame)
+                ]
+                assert len(replies) == 1
+                reply = replies[0]
+                assert "error" not in reply
+                assert reply["result"]["outcome"] == "error"
+                assert reply["result"]["error"]["code"] == "cancelled"
                 await factory.close()
                 await session.close()
                 await agent.close()
@@ -326,3 +361,12 @@ async def test_late_factory_construction_remains_owned_until_reserved_child_clea
                 release.set()
                 if not request.done():
                     request.cancel()
+                evidence = work.with_name(work.name + "-evidence")
+                evidence.mkdir(exist_ok=True)
+                (evidence / "frames.jsonl").write_bytes(
+                    (work / "frames.jsonl").read_bytes()
+                )
+                (evidence / "client-frames.jsonl").write_bytes(
+                    (work / "client-frames.jsonl").read_bytes()
+                )
+                print("Late Factory evidence: " + str(evidence))

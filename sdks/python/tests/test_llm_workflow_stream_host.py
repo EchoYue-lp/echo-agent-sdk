@@ -211,6 +211,8 @@ async def test_workflow_extension_run_stream_error_cancel_close_and_owner():
         "producer_completed": 0,
         "producer_errors": [],
         "callbacks_completed": 0,
+        "control_terminals": {"cancel": 0, "close": 0},
+        "control_items": {},
     }
     releases = {}
     started = {}
@@ -257,7 +259,10 @@ async def test_workflow_extension_run_stream_error_cancel_close_and_owner():
             async def produce():
                 try:
                     if mode in releases:
+                        await writer.chunk(spec["workflow_chunks"][0])
                         await releases[mode].wait()
+                        await writer.complete(spec["workflow_complete"])
+                        facts["control_terminals"][mode] += 1
                         return
                     chunks = (
                         [spec["workflow_error_chunk"]]
@@ -276,12 +281,7 @@ async def test_workflow_extension_run_stream_error_cancel_close_and_owner():
                 finally:
                     facts["producer_completed"] += 1
 
-            if mode in releases:
-                # No independent producer is created for parked sources. The
-                # callback itself remains owned until explicitly released.
-                await releases[mode].wait()
-            else:
-                producers.append(asyncio.create_task(produce()))
+            producers.append(asyncio.create_task(produce()))
             return {"outcome": "stream", "stream": stream.to_dict()}
 
         descriptor = AgentComponentDescriptor(
@@ -323,6 +323,10 @@ async def test_workflow_extension_run_stream_error_cancel_close_and_owner():
                 "workflow.extension.run_stream", [registration.wire, mode]
             )
             await asyncio.wait_for(started[mode].wait(), 5)
+            # Consume an actual item before cancelling the same held source.
+            facts["control_items"][mode] = await a.invoke(
+                "workflow.stream.next", [stream]
+            )
             if mode == "cancel":
                 facts["cancel"] = await a.invoke("workflow.stream.cancel", [stream])
                 releases[mode].set()

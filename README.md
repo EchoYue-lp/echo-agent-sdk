@@ -7,11 +7,20 @@ framework, connected through a source-built ACP Host and the
 ## Migration Status
 
 The SDK-owned import and extraction history includes the original clean pin
-`27c7701e1eb116db1076da7f84bb68898544a44c`. The current Host governance candidate
-resolves published framework revision
+`27c7701e1eb116db1076da7f84bb68898544a44c`. The current Host pins published
+framework `6563d26570cc4a8d93c86b7e37443b0559476807` from
+[framework PR #191](https://github.com/EchoYue-lp/echo-agent/pull/191), with its
+signed source and all seven exact-main CI jobs verified. The canonical producer
+completed all 28 actual profiles and wrote 117 artifacts; the complete contract
+check passed with zero blocking or telemetry drift. The 5,621 accepted
+identity/kind keys and 454 accepted routes are unchanged. The new
+`RunEntry::wait_result` remains Host/Rust-only telemetry. New Host behavior,
+full Rust/language gates and exact SDK-main CI still require their own results.
+
+An earlier governance candidate resolved
 `00782b8aeddefe2ea8c566922cbdee6aedc80d70` from
 [framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186).
-It includes the framework Git branch-switch repair; this SDK lock also selects
+It included the framework Git branch-switch repair; this SDK lock also selects
 rustls 0.23.46. Signed source/tree, framework post-main CI and the SDK
 [published-pin dependency/build checks](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-published-00782-pin/README.md)
 have actual reviewed receipts. [Rust14](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md)
@@ -27,8 +36,9 @@ bind their exact execution inputs; later runtime repairs require their own
 verification and do not inherit those earlier passes.
 
 The [twelve accepted-source continuity choices](docs/sdk/governance/accepted-source-continuity-proposal.md)
-are still proposed; complete contract generation and SDK main acceptance remain
-pending. Published dependency and passing bounded runtime checks do not by
+have been accepted and implemented through the canonical producer; their
+authority is recorded in [ADR0034](docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md).
+SDK main acceptance remains pending. Published dependency and passing bounded runtime checks do not by
 themselves establish final compatibility or release. This source repository
 does not publish a bundled Host or runtime.
 See [MIGRATION-SOURCE.md](MIGRATION-SOURCE.md) and

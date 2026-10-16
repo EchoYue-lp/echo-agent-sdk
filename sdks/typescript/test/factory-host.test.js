@@ -66,7 +66,7 @@ test("factory preallocated children preserve two distinct constructed objects th
 });
 
 test("late factory construction remains owned until same reserved child cleanup settles",{skip:!host},async()=>{
- const work=mkdtempSync(join(tmpdir(),"sdk-ts-factory-late-"));let sdk;let passed=false;let release;let cancellation;let child;let parent;let closed=0;let created=0;
+ const work=mkdtempSync(join(tmpdir(),"sdk-ts-factory-late-"));let sdk;let release;let cancellation;let child;let parent;let closed=0;let created=0;let executed=0;
  const gate=new Promise(resolve=>{release=resolve;});
  const until=async predicate=>{const end=Date.now()+15000;while(!predicate()){assert.ok(Date.now()<end,"late factory condition did not occur");await new Promise(resolve=>setTimeout(resolve,10));}};
  try{
@@ -78,20 +78,30 @@ test("late factory construction remains owned until same reserved child cleanup 
     await gate;created++;
     return {outcome:"result",result:{operation,value:{name:"late",model_name:"late",system_prompt:"late",tool_names:[]}}};
    }
+   if(operation!=="agent_close")executed++;
    assert.equal(operation,"agent_close");assert.deepEqual(call.extension,child);assert.deepEqual(call.factory_origin,parent);assert.equal(created,1);closed++;
    return {outcome:"result",result:{operation,value:null}};
   },{seconds:"0",nanos:100_000_000});
   const agent=await sdk.createAgent();const session=await agent.createSession();
   const runner=await sdk.call("echo_agent::eval::runner::EvalRunner::new",agent.wire,[session.wire,wireUtf8Path(join(work,"eval"))]);
   const request=sdk.call("echo_agent::eval::runner::EvalRunner::run_all",agent.wire,[session.wire,runner,[{id:"late",name:"late",description:"delayed constructor",domain:null,task:"SDK",project_fixture:null,success_criteria:{type:"output_contains",substring:"SDK"},constraints:{}}],factory.wire]);
-  request.catch(()=>undefined);
+  let requestDone=false;request.then(()=>{requestDone=true;},()=>{requestDone=true;});
   await until(()=>child&&cancellation?.aborted);
-  await until(()=>readFileSync(join(work,"frames.jsonl"),"utf8").split("\n").some(line=>{if(!line)return false;const frame=JSON.parse(line);return frame.method==="_echo_agent/extension/invoke"&&frame.params.invocation.operation==="agent_close"&&frame.params.extension.id===child.id;}));
-  assert.equal(created,0);assert.equal(closed,0);
+  assert.equal(readFileSync(join(work,"frames.jsonl"),"utf8").split("\n").some(line=>{if(!line)return false;const frame=JSON.parse(line);return frame.method==="_echo_agent/extension/invoke"&&frame.params.invocation.operation==="agent_close"&&frame.params.extension.id===child.id;}),false);
+  assert.equal(created,0);assert.equal(closed,0);assert.equal(requestDone,false);
   await assert.rejects(factory.close(),error=>error.code==="extension_conflict");
-  release();await request;await until(()=>closed===1);
-  assert.equal(created,1);assert.equal(closed,1);
-  await factory.close();await session.close();await agent.close();passed=true;
+  // The same constructor must actually finish before its reserved child can
+  // be cleaned. The cancelled client returns its final Cancelled response.
+  release();const report=await request;await until(()=>closed===1);
+  assert.equal(report.results.length,1);assert.equal(report.results[0].success,false);
+  assert.equal(created,1);assert.equal(closed,1);assert.equal(executed,0);
+  const trace=readFileSync(join(work,"frames.jsonl"),"utf8").split("\n").filter(Boolean).map(line=>JSON.parse(line));
+  const original=trace.find(frame=>frame.method==="_echo_agent/extension/invoke"&&frame.params.invocation.operation==="factory_create_agent"&&frame.params.invocation.input.instance.id===child.id);
+  const clientTrace=readFileSync(join(work,"client-frames.jsonl"),"utf8").split("\n").filter(Boolean).map(line=>JSON.parse(line));
+  assert.ok(original);const replies=clientTrace.filter(frame=>frame.id===original.id&&(Object.hasOwn(frame,"result")||Object.hasOwn(frame,"error")));
+  assert.equal(replies.length,1);const [reply]=replies;assert.equal(Object.hasOwn(reply,"error"),false);
+  assert.equal(reply.result.outcome,"error");assert.equal(reply.result.error.code,"cancelled");
+  await factory.close();await session.close();await agent.close();
  }catch(error){process.stderr.write(`late Factory failure evidence: ${work}\n`);throw error;
- }finally{release?.();await sdk?.close();if(passed)rmSync(work,{recursive:true,force:true});}
+ }finally{release?.();await sdk?.close();console.log("Late Factory evidence",work);}
 });

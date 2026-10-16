@@ -19,11 +19,15 @@ superproject 中的规则文件才能冷启动。
 
 仓库迁移从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，原 extraction pin 为
 `27c7701e1eb116db1076da7f84bb68898544a44c`；该历史归属保留在 `MIGRATION-SOURCE.md`。
-当前 Host 精确依赖已发布 framework `9886502c83d6b1f6fa9212eb221db0e5874deaee`，
-来自[framework PR #190](https://github.com/EchoYue-lp/echo-agent/pull/190)，上游精确main CI38862267005七项通过由协调者核验。
-本SDK真实Cargo.lock八包同Git revision，无path patch；唯一全28profile生成和完整合同check已实际0，
-accepted 5621项不增删，仅已批准A单cap/protect Unit与B两fallible签名由规范入口更新。
-当前Host生命周期修复、最终profile、完整Rust/三语、独审和SDK精确main CI尚待，不借历史pin通过替代。
+当前 Host 精确依赖已发布 framework `6563d26570cc4a8d93c86b7e37443b0559476807`，
+来自[framework PR #191](https://github.com/EchoYue-lp/echo-agent/pull/191)，上游精确main CI38958501642七项通过已核验。
+本SDK真实Cargo.lock八个framework包及三个上游vendored包使用同一Git revision，无path patch、依赖版本变更。
+新pin的唯一生成实际28profiles/117artifacts及完整合同check已0，阻断/遥测漂移0、Protocol5/42/91通过。
+accepted identity/kind及454routes双向差0；新RunEntry::wait_result仅Host/Rust遥测，不进三语。
+新Host构建已0/零warning，保opt1/assertions/overflow/unwind；原drop-waiter与stream quota1联合测试1通过。
+其余Host行为、完整Rust/三语、最终独审及SDK精确main CI尚待。
+原9886502的全28profile生成和完整合同check实际0仅保留为历史；accepted 5621项边界不扩，
+仅已批准A单cap/protect Unit与B两fallible签名由规范入口更新，不借历史pin通过替代当前验证。
 来源与历史分界见`MIGRATION-SOURCE.md`和`docs/MASTER-PLAN.md`。
 
 历史00782 Host治理候选精确依赖 `00782b8aeddefe2ea8c566922cbdee6aedc80d70`，

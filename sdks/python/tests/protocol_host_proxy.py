@@ -48,6 +48,9 @@ def main() -> None:
     injected = False
     cancel_seen = False
     trace = (args.work / "frames.jsonl").open("w", encoding="utf-8")
+    # Keep Host-to-SDK observations unchanged. This separate trace records
+    # actual SDK lines at the original forwarding boundary, including replies.
+    client_trace = (args.work / "client-frames.jsonl").open("w", encoding="utf-8")
 
     def write_frame(frame) -> None:
         with output_lock:
@@ -108,9 +111,12 @@ def main() -> None:
                     with lock:
                         requests[str(request_id)] = method
                 if child.stdin is not None:
+                    client_trace.write(line)
+                    client_trace.flush()
                     child.stdin.write(line)
                     child.stdin.flush()
         finally:
+            client_trace.close()
             if child.stdin is not None:
                 child.stdin.close()
 

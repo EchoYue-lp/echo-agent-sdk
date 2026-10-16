@@ -345,9 +345,16 @@ def verify_workflow(spec, facts):
     assert (
         facts["cancel"] is True and fields(facts["cancel_terminal"])[0] == "cancelled"
     )
+    assert unbox(fields(facts["cancel_terminal"])[1]["sequence"]) == "2"
+    assert facts["control_terminals"] == {"cancel": 1, "close": 1}
+    for event in facts["control_items"].values():
+        variant, item = fields(event)
+        assert variant == "item" and unbox(item["sequence"]) == "1"
+        assert fields(unbox(item["value"])) == actual[0]
+    assert set(facts["control_items"]) == {"cancel", "close"}
     assert facts["close"] is False and facts["close_again"] is False
     assert facts["after_close"]["code"] == "closed_handle"
-    assert facts["producer_completed"] == 2 and facts["producer_errors"] == []
+    assert facts["producer_completed"] == 4 and facts["producer_errors"] == []
     assert facts["callbacks_completed"] == 5
 
 

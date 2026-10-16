@@ -26,7 +26,7 @@ use echo_sdk_protocol::methods::*;
 use echo_sdk_protocol::scalar::{WireDuration, WireNonZeroU64, WirePath, WireU64, WireValue};
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::io::{AsyncReadExt as _, AsyncWriteExt as _};
@@ -253,11 +253,65 @@ fn final_script(text: &str) -> Vec<serde_json::Value> {
 
 type SharedVec<T> = Arc<Mutex<Vec<T>>>;
 
+/// Test-side observations only: an absent timestamp is not proof that a pipe
+/// remains open. EOF is recorded only after an actual nonempty read request.
+struct HostPipeObservations {
+    started: std::time::Instant,
+    stdin_dropped: AtomicU64,
+    stdout_eof: AtomicU64,
+    stderr_eof: AtomicU64,
+    stdout_read_error: AtomicU64,
+    stderr_read_error: AtomicU64,
+}
+
+impl HostPipeObservations {
+    fn new() -> Self {
+        Self {
+            started: std::time::Instant::now(),
+            stdin_dropped: AtomicU64::new(0),
+            stdout_eof: AtomicU64::new(0),
+            stderr_eof: AtomicU64::new(0),
+            stdout_read_error: AtomicU64::new(0),
+            stderr_read_error: AtomicU64::new(0),
+        }
+    }
+
+    fn mark(&self, observation: &AtomicU64) {
+        // Zero means unobserved; retain the first observation without locking.
+        let nanos = u64::try_from(self.started.elapsed().as_nanos())
+            .unwrap_or(u64::MAX)
+            .saturating_add(1);
+        let _ = observation.compare_exchange(0, nanos, Ordering::AcqRel, Ordering::Acquire);
+    }
+
+    fn snapshot(&self) -> [(&'static str, Option<u64>); 5] {
+        [
+            ("stdin_dropped", &self.stdin_dropped),
+            ("stdout_eof", &self.stdout_eof),
+            ("stderr_eof", &self.stderr_eof),
+            ("stdout_read_error", &self.stdout_read_error),
+            ("stderr_read_error", &self.stderr_read_error),
+        ]
+        .map(|(name, observation)| (name, observation.load(Ordering::Acquire).checked_sub(1)))
+    }
+}
+
+// Declared after the ChildStdin field below: Rust drops that destination before
+// this marker, so this is pipe-owner destruction, not merely transport shutdown.
+struct RecordHostStdinDrop(Arc<HostPipeObservations>);
+
+impl Drop for RecordHostStdinDrop {
+    fn drop(&mut self) {
+        self.0.mark(&self.0.stdin_dropped);
+    }
+}
+
 struct HostProcess {
     child: tokio::process::Child,
     stderr: SharedVec<u8>,
     stdout: SharedVec<u8>,
     stdin: SharedVec<u8>,
+    pipes: Arc<HostPipeObservations>,
 }
 
 async fn spawn_host(config: &Path) -> Result<HostProcess, Box<dyn std::error::Error>> {
@@ -279,12 +333,21 @@ async fn spawn_host(config: &Path) -> Result<HostProcess, Box<dyn std::error::Er
     let stderr_handle = child.stderr.take().expect("host stderr piped");
     let stderr: SharedVec<u8> = Arc::new(Mutex::new(Vec::new()));
     let sink = stderr.clone();
+    let pipes = Arc::new(HostPipeObservations::new());
+    let stderr_pipes = pipes.clone();
     tokio::spawn(async move {
         let mut stderr_handle = stderr_handle;
         let mut buffer = [0_u8; 4096];
         loop {
             match stderr_handle.read(&mut buffer).await {
-                Ok(0) | Err(_) => break,
+                Ok(0) => {
+                    stderr_pipes.mark(&stderr_pipes.stderr_eof);
+                    break;
+                }
+                Err(_) => {
+                    stderr_pipes.mark(&stderr_pipes.stderr_read_error);
+                    break;
+                }
                 Ok(read) => sink
                     .lock()
                     .expect("stderr sink")
@@ -297,6 +360,7 @@ async fn spawn_host(config: &Path) -> Result<HostProcess, Box<dyn std::error::Er
         stderr,
         stdout: Arc::new(Mutex::new(Vec::new())),
         stdin: Arc::new(Mutex::new(Vec::new())),
+        pipes,
     })
 }
 
@@ -306,6 +370,7 @@ async fn spawn_host(config: &Path) -> Result<HostProcess, Box<dyn std::error::Er
 struct RecordedHostStdout {
     source: tokio::process::ChildStdout,
     bytes: SharedVec<u8>,
+    pipes: Arc<HostPipeObservations>,
 }
 
 impl tokio::io::AsyncRead for RecordedHostStdout {
@@ -315,9 +380,16 @@ impl tokio::io::AsyncRead for RecordedHostStdout {
         buffer: &mut tokio::io::ReadBuf<'_>,
     ) -> std::task::Poll<std::io::Result<()>> {
         let previous = buffer.filled().len();
+        let requested = buffer.remaining();
         let result =
             tokio::io::AsyncRead::poll_read(std::pin::Pin::new(&mut self.source), cx, buffer);
+        if matches!(result, std::task::Poll::Ready(Err(_))) {
+            self.pipes.mark(&self.pipes.stdout_read_error);
+        }
         if matches!(result, std::task::Poll::Ready(Ok(()))) {
+            if requested > 0 && buffer.filled().len() == previous {
+                self.pipes.mark(&self.pipes.stdout_eof);
+            }
             let mut bytes = self.bytes.lock().unwrap_or_else(|error| error.into_inner());
             if bytes.len() < 2_097_152 {
                 bytes.extend_from_slice(buffer.filled().get(previous..).unwrap_or_default());
@@ -330,6 +402,8 @@ impl tokio::io::AsyncRead for RecordedHostStdout {
 struct RecordedHostStdin {
     destination: tokio::process::ChildStdin,
     bytes: SharedVec<u8>,
+    // Must remain after destination: its Drop records that owner's release.
+    _drop_record: RecordHostStdinDrop,
 }
 impl tokio::io::AsyncWrite for RecordedHostStdin {
     fn poll_write(
@@ -376,10 +450,12 @@ fn host_transport(
         tokio_util::compat::TokioAsyncWriteCompatExt::compat_write(RecordedHostStdin {
             destination: stdin,
             bytes: host.stdin.clone(),
+            _drop_record: RecordHostStdinDrop(host.pipes.clone()),
         }),
         tokio_util::compat::TokioAsyncReadCompatExt::compat(RecordedHostStdout {
             source: stdout,
             bytes: host.stdout.clone(),
+            pipes: host.pipes.clone(),
         }),
     )
 }
@@ -4294,9 +4370,13 @@ async fn sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_termina
         .store(true, Ordering::Release);
     let component_operations = dispatch.component_operations.clone();
     let sandbox_cleanups_completed = dispatch.sandbox_cleanups_completed.clone();
+    let silent = dispatch.silent.clone();
+    let cancel_notices = dispatch.cancel_notices.clone();
     let outcome = drive_sdk(&mut host, dispatch.clone(), move |connection| {
         let component_operations = component_operations.clone();
         let sandbox_cleanups_completed = sandbox_cleanups_completed.clone();
+        let silent = silent.clone();
+        let cancel_notices = cancel_notices.clone();
         Box::pin(async move {
             connection
                 .send_request(initialize_request(Some(client_hello())))
@@ -4363,9 +4443,16 @@ async fn sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_termina
                         .lock()
                         .unwrap_or_else(|error| error.into_inner())
                         .iter()
-                        .any(|operation| {
+                        .filter(|operation| {
                             operation.contains("SandboxExecutor:SandboxExecuteWithLimitsAndCancel")
                         })
+                        .count()
+                        == 1
+                        && silent
+                            .lock()
+                            .unwrap_or_else(|error| error.into_inner())
+                            .len()
+                            == 1
                     {
                         break;
                     }
@@ -4387,6 +4474,46 @@ async fn sandbox_cancel_bridge_waits_for_cleanup_and_preserves_cancelled_termina
                 })
                 .block_task()
                 .await?;
+            tokio::time::timeout(Duration::from_secs(10), async {
+                loop {
+                    let observed = cancel_notices
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .iter()
+                        .any(|notice| notice.ends_with(":cancelled"));
+                    if observed {
+                        break;
+                    }
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            })
+            .await
+            .map_err(|_| RpcError::internal_error().data("sandbox cancel notice missing"))?;
+            let held = connection
+                .send_request(RunWaitRequest {
+                    run: started.run.clone(),
+                    timeout: Some(WireDuration::from_nanos(50_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(!held.settled && held.terminal.is_none());
+            assert_eq!(sandbox_cleanups_completed.load(Ordering::Acquire), 0);
+            // Cancellation alone cannot finish this original callback. Its
+            // actual peer response permits cleanup and the original receipt.
+            let original = {
+                let mut pending = silent.lock().unwrap_or_else(|error| error.into_inner());
+                assert_eq!(pending.len(), 1);
+                pending.pop().ok_or_else(|| {
+                    RpcError::internal_error().data("original sandbox responder disappeared")
+                })?
+            };
+            original.respond(ExtensionInvokeOutcome::Error {
+                error: EchoSdkError::new(
+                    ExtensionErrorCode::Cancelled,
+                    "original sandbox callback completed cancellation",
+                    Retryability::Never,
+                ),
+            })?;
             let waited = connection
                 .send_request(RunWaitRequest {
                     run: started.run,
@@ -6320,12 +6447,14 @@ async fn managed_commit_disconnect_restart_replays_same_receipt()
                 "managed restart phase=first-host-exit failed: {error}; \
                  pid={disconnected_pid:?}; elapsed={:?}; status={observed_status:?}; \
                  stdin_taken={}; stdout_taken={}; held_responses={held_responses:?}; \
-                 projected_items={}; mutations={}; receipts={receipt_count:?}; stderr:\n{}",
+                 projected_items={}; mutations={}; receipts={receipt_count:?}; \
+                 pipe_observations_since_capture_start_ns={:?}; stderr:\n{}",
                 exit_started.elapsed(),
                 host.child.stdin.is_none(),
                 host.child.stdout.is_none(),
                 dispatch.managed.projected_items.load(Ordering::Acquire),
                 dispatch.managed.mutations.load(Ordering::Acquire),
+                host.pipes.snapshot(),
                 stderr_text(&host),
             )
         })??;
