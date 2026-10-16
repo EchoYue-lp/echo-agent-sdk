@@ -360,7 +360,20 @@ async def test_telemetry_setup_and_cleanup_faults_reap_original_processes(monkey
 import runpy, sys
 from pathlib import Path
 module = runpy.run_path(sys.argv[1])
+original_read = Path.read_text
+collector_reads = 0
+def publication_read(path, *args, **kwargs):
+    global collector_reads
+    if path == Path(sys.argv[2]) / "collector.json":
+        collector_reads += 1
+        if collector_reads == 1:
+            # The real collector publishes with create/truncate then write.
+            # Reproduce the actual empty-read window without replacing it.
+            return ""
+    return original_read(path, *args, **kwargs)
+Path.read_text = publication_read
 def fail_start(_thread):
+    assert collector_reads >= 2, "collector publication was not observed complete"
     raise RuntimeError("controlled model thread startup failure")
 module["threading"].Thread.start = fail_start
 module["serve"](Path(sys.argv[2]))

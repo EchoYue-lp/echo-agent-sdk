@@ -107,12 +107,23 @@ def _serve_owned(work: Path) -> None:
                         stderr=error,
                     )
                     deadline = time.monotonic() + 10
-                    while not (work / "collector.json").exists():
+                    while True:
                         assert collector.poll() is None, "collector exited before ready"
-                        assert time.monotonic() < deadline, "collector ready timeout"
-                        time.sleep(0.01)
+                        try:
+                            # The upstream fixture uses create/truncate then
+                            # write, so existence can precede complete metadata.
+                            collector_info = json.loads(
+                                (work / "collector.json").read_text()
+                            )
+                            break
+                        except (FileNotFoundError, json.JSONDecodeError) as publication:
+                            if time.monotonic() >= deadline:
+                                raise TimeoutError(
+                                    "collector metadata publication incomplete"
+                                ) from publication
+                            time.sleep(0.01)
                     scenario = json.loads((work / "scenario.json").read_text())
-                    scenario.update(json.loads((work / "collector.json").read_text()))
+                    scenario.update(collector_info)
                     scenario.update(collector_started=True, fixture_pid=os.getpid())
                     (work / "scenario.json").write_text(
                         json.dumps(scenario, ensure_ascii=False)
