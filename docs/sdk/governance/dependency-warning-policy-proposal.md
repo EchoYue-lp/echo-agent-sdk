@@ -8,7 +8,16 @@ Reviewed proposal SHA-256: `4c94073065a063d72cc863d658787961bad538250296c56990a5
 
 用户已选择下述有界 duplicate 提示例外；SDK AGENTS.md 与顶层 SDK 归属说明已由主线程同步落实。deny.toml、audit 配置、依赖和锁文件保持原样。接受只覆盖本表50组及其精确版本集合，不能把工具 exit0 写成输出零警告，也不自动满足其它交付门禁。下列原规则、候选句及严格零警告方案保留为裁决时的历史展示，不是当前再次提问。
 
+当前锁复验（2026-10-16）：SDK固定公开framework988，真实锁SHA256
+`5952bfe30d027f5a5109eda5df3ed709cbadc16106c9b34713129b3e6cee138a`。
+fresh audit及三vendor来源视图audit均exit0/无warning；deny exit0但保49条duplicate，
+49组精确版本集合与下表完全一致，只有zip重复组消失，无新增组/版本或其它诊断。
+原deny/audit配置及四项例外未变，独立原输出/逐字段复核pass，见
+[本次薄证据](../../../.echo-semantic/evidence/evidence.sdk-988-dependency-recheck.md)。
+这次复验适用原接受政策，不扩基线，不把deny称为零警告；下文50组及旧锁仍保原裁决时点。
+
 ## 裁决前已确认的冲突（历史）
+
 
 裁决前 SDK AGENTS.md 第72–73行的原要求为：
 
