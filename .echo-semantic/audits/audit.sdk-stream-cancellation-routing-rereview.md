@@ -5,10 +5,18 @@ kind: audit
 boundary_ref: boundary.sdk-language-clients
 lens: failure_concurrency
 freshness: examined
-revision: 56929154c1851473e9e4837901b610cecf001b2d
+revision: source:31483b056427dc3f763899b798d84992cc0301f6bfe1816ccc8acf2952bee11d
 finding_refs:
 - finding.sdk-task-resume-extension-invocation-conflict
 challenges:
+  original-matching-task-source-and-exact-cas:
+    source_refs:
+    - sdks/shared/testing/task_subagent_fixture.py
+    - sdks/typescript/test/task-subagent-host.test.js
+    - sdks/python/tests/test_task_subagent_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java
+    evidence_refs:
+    - evidence.sdk-task-subagent-candidate
   actual-source-and-consumer-boundary:
     revision: 56929154c1851473e9e4837901b610cecf001b2d
     source_refs:
@@ -34,6 +42,8 @@ challenges:
 
 ## 审查范围
 
+当前header绑定formal-only Task后继候选；原569等routing审查仍按其具名revision，不将旧source_refs或raw升级为当前执行。
+
 sdk_capability_acceptance_audit actual9source/27archiveSHAs/3nativebeforeafter andTS19PY39Java27 finitePASS0C0I0M noNewstateauthority; frameworkbeyondgrace physicalclaimexcluded.
 
 ## 已检查故障假设
@@ -55,6 +65,8 @@ sdk_capability_acceptance_audit actual9source/27archiveSHAs/3nativebeforeafter a
 ## 未检查项
 
 scope外操作、任意组合与后继Channelforward新实现。
+
+后继matching Task三语源码增量及依赖分离已由原reader审查：真实原callback/claim派生execution/stream/invocation/PID、同source真实join与唯一exactCAS、C/D原canonical依赖prompt、B execution不重写；共享verifier不生成状态或调度。正式ADR与API证明wave边界，原超约oracle不冒产品red。候选去foreign测试尾部，保原四经典例及新matching例；Model仅窄拒绝意外调用，无新driver。原S单例及独立候选整个Task suite的运行由原Evidence分别绑定，不借S子集称候选全绿；宽Task/cleanup、超grace、restart、外部平台及main仍不在本有限通过范围。
 
 ## 本次 current_source_rereview
 

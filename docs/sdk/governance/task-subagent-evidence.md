@@ -1,7 +1,7 @@
 # Task/Subagent 共享候选行为证据
 
-本组将四个已验证场景纳入正式三语言测试发现规则：TypeScript新文件由`npm test` glob
-发现，Python新文件由pytest测试目录发现，Java公开`TaskSubagentHostTest`包含四个具名
+本组原四场景与后继matching Task一例纳入正式三语言测试发现规则：TypeScript文件由`npm test` glob
+发现，Python文件由pytest测试目录发现，Java公开`TaskSubagentHostTest`包含五个具名
 JUnit `@Test`。三者共享确定性HTTP响应门和已接受的RevisionedTaskStore回调；不接受新API。
 
 共享fixture只执行原子的expected relation revision/expected execution比较、保存完整next
@@ -15,6 +15,7 @@ JUnit `@Test`。三者共享确定性HTTP响应门和已接受的RevisionedTaskS
 | Task cancel | 只取消A，B/C继续完成；执行计数A1/B1/C1/D0，取消不会变成图级取消 |
 | Subagent await/receipt | 并发相同idempotency dispatch只产生一实例；5ms短await返回未结算且无result；冲突payload明确错误；释放后完整Unicode结果被重复await原样复用，terminal后guidance不重新派发 |
 | CRUD-only Store | execution_cas_v1=false时Task execute明确FeatureUnavailable并保留TaskRun handle；Agent invocation=0、Store/execution commits无新增，Task仍pending |
+| Matching Task observation | 原callback/claim派生execution身份和同Popen保持；held A仍Running，B独立CAS完成，C/D在下一wave等待；原join/Complete后A唯一exact CAS，C/D消费原A/B结果，B execution不重写，四次执行各1 |
 
 Task场景还检查stale relation update不修改Store、duplicate execute不接管现运行、running
 claim关联canonical revision、完整TaskResult供依赖消费。
@@ -33,6 +34,10 @@ commit状态、日志与三语言比较收据完整归档于
 `sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java`。
 没有个人仓库绝对路径或草稿路径。`ECHO_AGENT_SDK_REQUIRE_HOST_E2E=1`时缺失/空Host
 必须失败，不能跳过。每个场景各有独立work/state/backend，原始证据保在场景目录。
+
+后继14a独立formal-only Git候选对三语整个Task文件/class各实际5例通过，TS重建含examples、Python加载候选src、Java clean重编译。新源码和详细日志/限制见[原Task Evidence](../../../.echo-semantic/evidence/evidence.sdk-task-subagent-candidate.md)。原ordinary foreign setup/stream场景不在本候选，仍由F ACP后继修复后另验；不把dirty工作树的formal子集冒称该工作树整套通过。
+
+Task时序按[Accepted ADR0060](https://github.com/EchoYue-lp/echo-agent/blob/9886502c83d6b1f6fa9212eb221db0e5874deaee/docs/adr/0060-task-execution-store-cas-and-local-interruption.md#L139)及[正式Task API](https://github.com/EchoYue-lp/echo-agent/blob/9886502c83d6b1f6fa9212eb221db0e5874deaee/docs/en/09-tasks.md#L129)：每claim join后立即CAS，但下一wave等本波全部receipt。仍unknown持claim的A与已物理结算Paused的A不同；原经典BC-before-resume不变，新例不要求C在unknown A结算前提前派发。fixture的`--verify-formal`只读原记录，不创建claim/status或成为调度器。
 
 本组对rich constraints只证明客户实际收到的编译prompt字符串保留指定约束，并不证明
 TaskSubagentContext完整DTO直接传给CustomAgent callback。TaskRun多revision变更、嵌套委派、

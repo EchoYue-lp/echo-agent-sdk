@@ -20,6 +20,7 @@ rule_refs:
 evidence_refs:
 - evidence.sdk-language-current-first-gate-failure
 - evidence.sdk-stream-cancellation-routing-verification
+- evidence.sdk-task-subagent-candidate
 audit_refs:
 - audit.sdk-stream-cancellation-routing-rereview
 decision_refs: []
@@ -27,6 +28,7 @@ repair_evidence_refs:
 - evidence.sdk-stream-cancellation-routing-repair
 verification_evidence_refs:
 - evidence.sdk-stream-cancellation-routing-verification
+- evidence.sdk-task-subagent-candidate
 rereview_audit_refs:
 - audit.sdk-stream-cancellation-routing-rereview
 discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
@@ -57,3 +59,9 @@ setupACK后过早删原invocation取消地址已3client真实红绿、9source/27
 ## 仍开放的Framework物理结算义务
 
 另原outerselect提前Drop与5秒强abort物理结算由frameworkDowner独立处理；真实5.10秒claimcleared/Cancelled但originalproducer未停止仍open。协议取消地址到达不证明物理工作停止，不能以nativecooperative绿或本client三链关闭这个宽TaskFinding。framework proposed design docs/supreme/specs/2026-10-14-subagent-physical-settlement/design.md（三语言不持第二scheduler）等待独立设计review/必要人兼容选择；原诊断私Git286715f9/ref diagnostics/subagent-stream-grace-held可恢复。SDK只引用该上游链，不独自风险接受或更改5秒policy。
+
+## 后继14a有限消费者验证
+
+原上段是提案/旧强abort调查epoch，不再表示仍待同一用户选择：B已接受、framework988已公开，SDK335/404仅薄适配。后继formal-only独立Git候选保原pause/cancel/await/CRUD四例并增matching Task一例，当前14a三语整个Task suite各5实际通过、0fail/error/skip；原claim、same-source physical join、唯一matching CAS、B执行不重写及C/D依赖值由原Task Evidence/Audit承载。未把ordinary foreign-source knownfail混入套件或借当前S子集通过；它仍等独立F ACP修复。
+
+本对象仍open：该finite suite不证明超grace/owner丢失恢复/全部取消与资源失败组合，不以cooperative经典例或新matching例关闭宽物理结算义务。

@@ -7,7 +7,6 @@ import urllib.request
 from pathlib import Path
 
 import pytest
-
 from echo_agent_sdk import (
     EchoAgentClient,
     EchoAgentError,
@@ -34,9 +33,13 @@ async def until(check):
         await asyncio.sleep(0.01)
 
 
-async def launch(work):
+async def launch(work, *, observation=False):
     backend = await asyncio.create_subprocess_exec(
-        sys.executable, FIXTURE, "--work", str(work)
+        sys.executable,
+        FIXTURE,
+        "--work",
+        str(work),
+        *(["--observation"] if observation else []),
     )
 
     async def ready():
@@ -100,13 +103,15 @@ async def register_store(sdk, http, execution):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("action", ["pause", "cancel"])
+@pytest.mark.parametrize("action", ["pause", "cancel", "observation"])
 async def test_exact_task_control(action):
     work = Path(tempfile.mkdtemp(prefix=f"sdk-py-task-{action}-"))
     print("Task evidence", work)
-    backend, http = await launch(work)
+    backend, http = await launch(work, observation=action == "observation")
     sdk = None
     jobs = []
+    facts = {"action": action}
+    observed = asyncio.Event()
     try:
         sdk = await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json"))
         registrations = [await register_store(sdk, http, True)]
@@ -137,6 +142,49 @@ async def test_exact_task_control(action):
                         "extension": call["extension"],
                     },
                 )
+                if action == "observation" and lane == "a":
+                    binding = await http("/physical/admit", call)
+                    assert binding["context"] == call["context"]
+                    assert binding["factory_origin"] is None
+                    error = {
+                        "code": "framework_error",
+                        "retryable": "never",
+                        "message": "same Task attempt remains physically held 中文🙂",
+                        "operation": "_echo_agent/extension/invoke",
+                        "details": {
+                            "fields": [
+                                {"key": "observation", "value": "not_settled"},
+                                {"key": "run_id", "value": binding["run_id"]},
+                                {
+                                    "key": "execution_id",
+                                    "value": binding["execution_id"],
+                                },
+                            ]
+                        },
+                    }
+                    writer = sdk.stream_writer(WireHandle.from_dict(call["stream"]))
+
+                    async def observed_producer():
+                        await writer.failed(error)
+                        facts["original"] = {
+                            "call": call,
+                            "binding": binding,
+                            "error": error,
+                        }
+                        observed.set()
+                        facts["joined"] = await http("/physical/join", {})
+                        await writer.complete(
+                            {
+                                "kind": "agent",
+                                "value": {
+                                    "event": "final_answer",
+                                    "data": {"text": "A-after-physical-close 中文🧪"},
+                                },
+                            }
+                        )
+
+                    jobs.append(asyncio.create_task(observed_producer()))
+                    return {"outcome": "stream", "stream": call["stream"]}
 
                 async def produce():
                     try:
@@ -211,12 +259,14 @@ async def test_exact_task_control(action):
                 "extension": {"subagent": "task-c"},
             },
         ]
-        if action == "pause":
+        if action in ("pause", "observation"):
             tasks.append(
                 {
                     "id": "d",
                     "title": "D",
-                    "description": "after resume A and B",
+                    "description": "after A and B"
+                    if action == "observation"
+                    else "after resume A and B",
                     "depends_on": ["a", "b"],
                     "extension": {"subagent": "task-d"},
                 }
@@ -283,6 +333,69 @@ async def test_exact_task_control(action):
             duplicate.value.code == "invalid_value"
             and "already executing" in duplicate.value.message
         )
+        if action == "observation":
+            await asyncio.wait_for(observed.wait(), 15)
+            await http("/release", {"lane": "b", "attempt": 1})
+            listed = {}
+
+            async def b_completed():
+                nonlocal listed
+                listed = await sdk.request(
+                    "_echo_agent/task/list", {"task_run": task_run}
+                )
+                return any(
+                    t["task"]["id"] == handles["b"]["id"]
+                    and t["status"]["status"] == "completed"
+                    for t in listed["tasks"]
+                )
+
+            await until(b_completed)
+            facts.update(
+                held=await http("/inspect"), held_list=listed, held_counts=counts.copy()
+            )
+            await http("/physical/release", {})
+            await asyncio.wait_for(asyncio.gather(*jobs), 10)
+
+            async def all_formal_completed():
+                nonlocal listed
+                listed = await sdk.request(
+                    "_echo_agent/task/list", {"task_run": task_run}
+                )
+                return all(
+                    t["status"]["status"] == "completed" for t in listed["tasks"]
+                )
+
+            await until(all_formal_completed)
+            facts.update(
+                after=await http("/inspect"),
+                counts=counts.copy(),
+                prompts=prompts,
+                scope=canonical_task_run_scope,
+                revision=renamed["revision"],
+                listed=listed,
+                listed_again=await sdk.request(
+                    "_echo_agent/task/list", {"task_run": task_run}
+                ),
+            )
+            (work / "observed.json").write_text(json.dumps(facts, ensure_ascii=False))
+            verifier = await asyncio.create_subprocess_exec(
+                sys.executable,
+                FIXTURE,
+                "--work",
+                str(work),
+                "--verify-formal",
+                str(work / "observed.json"),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            output, diagnostics = await verifier.communicate()
+            assert verifier.returncode == 0, diagnostics.decode()
+            print(output.decode())
+            await session.close()
+            for registration in registrations:
+                await registration.close()
+            await agent.close()
+            return
         assert (
             await sdk.request(
                 "_echo_agent/task/control",
@@ -425,11 +538,39 @@ async def test_exact_task_control(action):
         await agent.close()
         await asyncio.gather(*jobs)
         assert not callback_errors, callback_errors
+    except Exception as error:
+        if action == "observation":
+            facts["failure"] = {"name": type(error).__name__, "message": str(error)}
+        raise
     finally:
-        if sdk:
-            await sdk.close()
-        backend.terminate()
-        await backend.wait()
+        try:
+            if action == "observation":
+                await http("/release", {"lane": "b", "attempt": 1})
+                await http("/physical/release", {})
+                facts["cleanup_join"] = await http("/physical/join", {})
+                if jobs:
+                    await asyncio.wait_for(asyncio.gather(*jobs), 10)
+            if sdk:
+                await sdk.close()
+        finally:
+            try:
+                if action == "observation":
+                    await http("/shutdown", {})
+                else:
+                    backend.terminate()
+                await asyncio.wait_for(backend.wait(), 5)
+                if action == "observation":
+                    facts["backend_exit"] = backend.returncode
+                    assert backend.returncode == 0
+            finally:
+                if action == "observation":
+                    if backend.returncode is None:
+                        backend.kill()
+                        await asyncio.wait_for(backend.wait(), 5)
+                        facts["forced_backend_cleanup"] = True
+                    (work / "observed.json").write_text(
+                        json.dumps(facts, ensure_ascii=False)
+                    )
 
 
 @pytest.mark.asyncio

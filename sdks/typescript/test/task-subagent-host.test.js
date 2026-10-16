@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {spawn} from "node:child_process";
+import {spawn,spawnSync} from "node:child_process";
 import {mkdtempSync,existsSync,readFileSync,writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
@@ -12,17 +12,18 @@ const fixture=fileURLToPath(new URL("../../shared/testing/task_subagent_fixture.
 async function until(check){const deadline=Date.now()+15000;while(!(await check())){assert.ok(Date.now()<deadline,"observed framework condition did not occur");await new Promise(r=>setTimeout(r,10));}}
 async function scenario(action){
  const work=mkdtempSync(join(tmpdir(),`sdk-ts-task-${action}-`));console.log(`Task evidence ${work}`);
- const backend=spawn("python3",[fixture,"--work",work]);let sdk;
+ const backend=spawn("python3",[fixture,"--work",work,...(action==='observation'?['--observation']:[])]);let sdk,http;const formalEvidence={action};
  try{
   await until(()=>existsSync(join(work,"ready")));const{url}=JSON.parse(readFileSync(join(work,"fixture.json"),"utf8"));
-  const http=async(path,payload)=>{const response=await fetch(url+path,{method:payload===undefined?"GET":"POST",headers:{"Content-Type":"application/json"},...(payload===undefined?{}:{body:JSON.stringify(payload)})});assert.equal(response.status,200);return response.json();};
-  sdk=await EchoAgentClient.spawn({hostCommand:host,args:["--config",join(work,"host.json")]});
+  http=async(path,payload)=>{const response=await fetch(url+path,{method:payload===undefined?"GET":"POST",headers:{"Content-Type":"application/json"},...(payload===undefined?{}:{body:JSON.stringify(payload)})});assert.equal(response.status,200);return response.json();};
+  sdk=await EchoAgentClient.spawn({hostCommand:host,args:["--config",join(work,"host.json")],...(action==='observation'?{onStderr:chunk=>{formalEvidence.host_stderr=(formalEvidence.host_stderr??'')+chunk;}}:{})});
+  if(action==='observation'){formalEvidence.host_pid=sdk.process.pid;sdk.process.once('exit',(code,signal)=>{formalEvidence.host_exit={code,signal};});}
   const registrations=[];
   registrations.push(await sdk.registerAgentComponent("task-store",{kind:"agent_component",descriptor_version:1,component:"revisioned_task_store",name:"task-store",capabilities:{execution_cas_v1:true}},async call=>{
    const reply=await http("/store",call.invocation.input.call);
    return reply.kind==="error"?{outcome:"error",error:reply.error}:{operation:"agent_component_call",value:{component:"revisioned_task_store",result:reply.result}};
   }));
-  const counts={a:0,b:0,c:0,d:0};const prompts={};const completions=[];const callbackJobs=[];
+  const counts={a:0,b:0,c:0,d:0};const prompts={};const completions=[];const callbackJobs=[];const observations=[];
   let canonicalTaskRunScope;
   for(const lane of ["a","b","c","d"]){
    registrations.push(await sdk.registerExtension("custom_agent",`task-${lane}`,{kind:"custom_agent",descriptor_version:1,name:`task-${lane}`,model_name:"fixture",system_prompt:"fixture",tool_names:[]},async(call,signal)=>{
@@ -32,6 +33,16 @@ async function scenario(action){
     assert.equal(call.context?.run_id,canonicalTaskRunScope,"Task callback must retain its active canonical TaskRun scope");
     const attempt=++counts[lane];prompts[`${lane}/${attempt}`]=call.invocation.input.task;
     await http("/agent",{lane,attempt,task:call.invocation.input.task,extension:call.extension});
+    if(action==='observation'&&lane==='a'){
+     const binding=await http('/physical/admit',call);assert.deepEqual(binding.context,call.context);assert.equal(binding.factory_origin,null);
+     const error={code:'framework_error',retryable:'never',message:'same Task attempt remains physically held 中文🙂',operation:'_echo_agent/extension/invoke',details:{fields:[{key:'observation',value:'not_settled'},{key:'run_id',value:binding.run_id},{key:'execution_id',value:binding.execution_id}]}};
+     const writer=sdk.streamWriter(call.stream);
+     const job=(async()=>{
+      await writer.failed(error);observations.push({call,binding,error});formalEvidence.original=observations[0];
+      const joined=await http('/physical/join',{});assert.deepEqual(joined,{admitted:true,exit_code:0,stopped:binding});formalEvidence.joined=joined;
+      await writer.complete({kind:'agent',value:{event:'final_answer',data:{text:'A-after-physical-close 中文🧪'}}});
+     })();job.catch(()=>{});callbackJobs.push(job);return{outcome:'stream',stream:call.stream};
+    }
     const job=Promise.resolve().then(async()=>{
      const interrupted=new Promise(resolve=>{if(signal.aborted)resolve();else signal.addEventListener("abort",resolve,{once:true});});
      if((lane==="a"||lane==="b")&&attempt===1)await Promise.race([http("/gate",{lane,attempt}),interrupted]);
@@ -45,7 +56,7 @@ async function scenario(action){
   const agent=await sdk.createAgent();const session=await agent.createSession();const task_run=session.taskRun;
   canonicalTaskRunScope=session.acpSessionId;
   const tasks=[{id:"a",title:"A",description:"controlled A",extension:{subagent:"task-a"}},{id:"b",title:"B",description:"independent B",extension:{subagent:"task-b"}},{id:"c",title:"C",description:"after B",depends_on:["b"],extension:{subagent:"task-c"}}];
-  if(action==="pause")tasks.push({id:"d",title:"D",description:"after resume A and B",depends_on:["a","b"],extension:{subagent:"task-d"}});
+  if(action==="pause"||action==='observation')tasks.push({id:"d",title:"D",description:action==='observation'?'after A and B':'after resume A and B',depends_on:["a","b"],extension:{subagent:"task-d"}});
   const created=await sdk.request("_echo_agent/task/create",{task_run,spec:toWireValue({execution_mode:"parallel",tasks})});
   const handles=Object.fromEntries(tasks.map((task,index)=>[task.id,created.tasks[index]]));
   const renamed=await sdk.request("_echo_agent/task/update",{task_run,patch:toWireValue({base_revision:BigInt(created.revision),reason:"fixture rename",operations:[{op:"update",task_id:"a",patch:{title:"A canonical v2"}}]})});
@@ -54,6 +65,38 @@ async function scenario(action){
   assert.deepEqual(await http("/inspect"),beforeStale);
   await sdk.request("_echo_agent/task/execute",{task_run});await until(()=>counts.a===1&&counts.b===1);
   await assert.rejects(sdk.request("_echo_agent/task/execute",{task_run}),error=>error.code==="invalid_value"&&/already executing/.test(error.message));
+  if(action==='observation'){
+   await until(()=>observations.length===1);await http('/release',{lane:'b',attempt:1});
+   let listed;await until(async()=>{listed=await sdk.request('_echo_agent/task/list',{task_run});return listed.tasks.find(item=>item.task.id===handles.b.id).status.status==='completed';});
+   const held=await http('/inspect'),original=observations[0];formalEvidence.held=held;formalEvidence.held_list=listed;formalEvidence.held_counts={...counts};const graph=held.graphs[canonicalTaskRunScope];
+   const execution=graph.snapshot.tasks.find(task=>task.spec.id==='a').execution,claim=execution.claim;
+   const heldB=graph.snapshot.tasks.find(task=>task.spec.id==='b').execution;
+   assert.equal(fromWireValue(heldB.result).output,'B-canonical-result 中文🧪');
+   // The original executor resolves the entire ready batch before admitting C.
+   assert.equal(listed.tasks.find(item=>item.task.id===handles.c.id).status.status,'pending');
+   assert.equal(execution.status.status,'running');assert.ok(execution.result===undefined||execution.result===null);assert.equal(execution.retry_count,0);assert.ok(claim);
+   assert.equal(original.binding.run_id,canonicalTaskRunScope);assert.equal(original.binding.execution_id,`${canonicalTaskRunScope}:a:${claim.revision}:${claim.attempt}:${claim.claim_id}`);
+   assert.deepEqual(original.binding.child,original.call.extension);assert.deepEqual(original.binding.stream,original.call.stream);assert.equal(original.binding.invocation_id,original.call.invocation_id);
+   assert.equal(held.physical.alive,true);assert.equal(held.physical.stopped,false);assert.deepEqual(counts,{a:1,b:1,c:0,d:0});assert.equal(held.model_requests.length,0);
+   await http('/physical/release',{});await Promise.all(callbackJobs);
+   await until(async()=>{listed=await sdk.request('_echo_agent/task/list',{task_run});return listed.tasks.every(item=>item.status.status==='completed');});
+   const listedAgain=await sdk.request('_echo_agent/task/list',{task_run});assert.deepEqual(listedAgain,listed);
+   const after=await http('/inspect');assert.equal(after.physical.exit_code,0);assert.equal(after.physical.stopped,true);assert.deepEqual(after.physical.binding,original.binding);
+   const transitions=after.commits.filter(commit=>commit.operation==='revisioned_task_compare_and_commit_execution'&&commit.before?.snapshot.tasks.find(task=>task.spec.id==='a').execution.status.status==='running'&&commit.after.snapshot.tasks.find(task=>task.spec.id==='a').execution.status.status==='completed');
+   assert.equal(transitions.length,1);const settlement=transitions[0];assert.equal(settlement.commit.expected_revision,renamed.revision);assert.deepEqual(settlement.commit.expected_executions.a.claim,claim);
+   const settled=settlement.after.snapshot.tasks.find(task=>task.spec.id==='a').execution;assert.equal(settled.claim,null);assert.equal(fromWireValue(settled.result).output,'A-after-physical-close 中文🧪');assert.equal(settled.retry_count,0);
+   const finalTasks=after.graphs[canonicalTaskRunScope].snapshot.tasks;
+   assert.deepEqual(finalTasks.find(task=>task.spec.id==='b').execution,heldB);
+   assert.equal(fromWireValue(finalTasks.find(task=>task.spec.id==='c').execution.result).output,'C-canonical-result 中文🧪');
+   assert.ok(prompts['c/1'].includes('Completed dependency b')&&prompts['c/1'].includes('B-canonical-result'));
+   assert.equal(fromWireValue(finalTasks.find(task=>task.spec.id==='d').execution.result).output,'D-canonical-result 中文🧪');
+   assert.ok(prompts['d/1'].includes('Completed dependency a')&&prompts['d/1'].includes('A-after-physical-close')&&prompts['d/1'].includes('Completed dependency b')&&prompts['d/1'].includes('B-canonical-result'));
+   for(const commit of after.commits){const b=commit.after.snapshot.tasks.find(task=>task.spec.id==='b').execution;if(b.status.status==='completed')assert.deepEqual(b,heldB);}
+   assert.deepEqual(counts,{a:1,b:1,c:1,d:1});assert.equal(after.graphs[canonicalTaskRunScope].snapshot.revision,renamed.revision);
+   Object.assign(formalEvidence,{counts,observations,held,after,listed,settlement,prompts,scope:canonicalTaskRunScope,revision:renamed.revision,listed_again:listedAgain});writeFileSync(join(work,'observed.json'),JSON.stringify(formalEvidence));
+   const verified=spawnSync('python3',[fixture,'--work',work,'--verify-formal',join(work,'observed.json')],{encoding:'utf8'});assert.equal(verified.status,0,verified.stderr);console.log(verified.stdout);
+   await session.close();for(const registration of registrations)await registration.close();await agent.close();return;
+  }
   const controlled=await sdk.request("_echo_agent/task/control",{task_run,task:handles.a,action});assert.equal(controlled.accepted,true);
   const snapshot=()=>sdk.request("_echo_agent/task/list",{task_run});let listed;
   await until(async()=>{listed=await snapshot();return listed.tasks.some(item=>item.task.id===handles.a.id&&item.status.status===(action==="pause"?"paused":"cancelled"));});
@@ -79,9 +122,22 @@ async function scenario(action){
   assert.equal(fromWireValue(bExecution.result).output,"B-canonical-result 中文🧪");
   writeFileSync(join(work,"observed.json"),JSON.stringify({action,counts,statuses:listed.tasks.map(item=>item.status),graph,persisted}));
   await http("/release",{lane:"a",attempt:1});await session.close();for(const registration of registrations)await registration.close();await agent.close();await Promise.all(callbackJobs);
- }finally{await sdk?.close();backend.kill();await new Promise(resolve=>backend.exitCode!==null?resolve():backend.once("exit",resolve));}
+ }catch(error){if(action==='observation')formalEvidence.failure={name:error.name,code:error.code,message:error.message,stack:error.stack};throw error;}
+ finally{
+  try{if(action==='observation'&&http){await http('/physical/release',{});formalEvidence.cleanup_join=await http('/physical/join',{});}await sdk?.close();}
+  finally{
+   try{if(action==='observation'&&http)await http('/shutdown',{});else backend.kill();await new Promise(resolve=>backend.exitCode!==null?resolve():backend.once("exit",resolve));if(action==='observation'){formalEvidence.backend_exit={code:backend.exitCode,signal:backend.signalCode};assert.deepEqual(formalEvidence.backend_exit,{code:0,signal:null});}}
+   finally{
+    if(action==='observation'){
+     if(backend.exitCode===null&&backend.signalCode===null){backend.kill('SIGKILL');formalEvidence.forced_backend_cleanup=true;await new Promise(resolve=>backend.once('exit',resolve));}
+     writeFileSync(join(work,'observed.json'),JSON.stringify(formalEvidence));
+    }
+   }
+  }
+ }
 }
 for(const action of ["pause","cancel"])test(`exact Task ${action} preserves independent B/C`,{timeout:60000,skip:!host},()=>scenario(action));
+test('B matching Task observation settles only the same real physical attempt',{timeout:60000,skip:!host},()=>scenario('observation'));
 async function singleScenario(kind){
  const work=mkdtempSync(join(tmpdir(),`sdk-ts-task-${kind}-`));console.log(`Task evidence ${work}`);const backend=spawn("python3",[fixture,"--work",work]);let sdk;
  try{

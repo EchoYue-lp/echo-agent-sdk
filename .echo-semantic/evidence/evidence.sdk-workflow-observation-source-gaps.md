@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-workflow-observation-source-gaps
 kind: evidence
-observed_at: source:8bb7481ff2104383ec8f446cd4e27a19de6891ad2bb33ede37fe8ad8b321d2c4
+observed_at: 404d447f1a69fb4af2843272005b894063888ed9
 source_refs:
 - echo-sdk-host/src/core_profile/facade/mod.rs
 - echo-sdk-host/src/core_profile/facade/workflow.rs

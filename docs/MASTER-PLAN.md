@@ -50,7 +50,8 @@ EKO 产品策略和 GUI/TUI/CLI 投影不进入 SDK runtime。
 - S已按真实resume/adopt和PF继续授权范围，同原生apply_patch未被拒；native preEdit新记录与Stop尚未验。插件专项定位宿主hooks启用但trustStatus modified，待人类正常审阅信任后真实复验；不手写trust、不用resume冒Hook成功。
 - 最终config表示实际cold Host build已0/零warning，SHA14a0cb58c44bdb84990262f1324e1a2513513a8b40fc0640a9d36f91f95e27e9，EH15488572/unwind_info2979480，资源设置保留、无行为/警告flags覆盖。新f658测试binary实际drain2/unwind1/direct1，14a Host的TS/Python/Java late-payload各1，全部0fail/0skip，611语言输入不变；C2整体增量独审pass/行动项0。direct-run与late Completed现按具名三链有限resolved，当前候选65resolved/5open，不关宽生命周期/主目标/main。
 - C3已实际canonical/staged/diff及必要性独审0，74路径checkpoint提交并推送335193791c70a6cb077033c3f8f0cb1223e5266e，公开tree35b845562b5a5ec8ed2b4b814a37bb8b386b0105与批准候选精确相等；PR5仍OPEN DRAFT。原9条后继源码另保受控dirty，非该checkpoint已验内容。
-- 下一步唯一入口：保存上述A有限三语事实，继续正式Task、Sandbox/managed等五项剩余义务，等待F ACP共享机制精main后协同pin；最终完整语言/Rust、语义/nativeHook/必要性及PR5 squash/main精CI分别执行。既有实现及交付授权持续，官网/顶层指针由协调者负责，registry/plugin发布与官网部署排除。
+- A有限三语事实已随404d447公开保存，精treee5c875与已审候选相等，宽Graph Finding仍open。后继formal-only独立候选以404为父，只收原Task四经典例+matching一例，三语重建后整个Task suite各5通过、零失败/跳过；不含S中known-failing foreign测试或Linux诊断，不能借此称S全套通过。详见原Task Evidence/三链，既有examples编译及相关文档同步，无新官网入口/API。
+- 下一步唯一入口：保存独立Task有限检查点，继续Sandbox/cleanup/managed等准确剩余义务；F ACP新main6563及精CI七项成功已获根协调接受；本formal检查点仍以988/14a验收，提交后再独立切新pin/生成/Host。最终完整语言/Rust、语义/nativeHook/必要性及PR5 squash/main精CI分别执行，官网/顶层指针由协调者负责，registry/plugin发布与官网部署排除。
 
 ## 历史检查点（2026-10-13 17:20）
 

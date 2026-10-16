@@ -5,7 +5,7 @@ kind: audit
 boundary_ref: boundary.sdk-integrations
 lens: failure_concurrency
 freshness: examined
-revision: source:8bb7481ff2104383ec8f446cd4e27a19de6891ad2bb33ede37fe8ad8b321d2c4
+revision: 404d447f1a69fb4af2843272005b894063888ed9
 finding_refs:
 - finding.sdk-workflow-stream-late-completed-payload
 - finding.sdk-workflow-direct-run-observation-projection

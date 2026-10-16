@@ -6,7 +6,7 @@
 
 callback原unwind与错误ACK各有真实失败；当前源同不可变libtest七个具名对照各1pass，独立局部复审pass。保存opt1/assertions/overflow/unwind的实际Host8bf4a1d6deb647e608153c807ca07785dd31f7d3223a88cc3daf9b835b8bff5c构建零警告，EH15489244/unwind_info2979504，保存配置必要unwind定向亦过；范围与来源见ADR0040及callback Evidence。上述都不是整个SDK验收。
 
-当前候选Finding实盘65 resolved、5 open：direct-run typed观察投影与late Completed两具名缺陷有原真实红、修复、最新14a/f658共同cut after及独立整体增量审pass，按各自三链有限resolved；未把原历史prepared/warning epoch重标成当前执行。剩余宽cleanup、Sandbox、Task resume、Graph claim及managed被动退出各保持open。新配置cut实际Rust定向4pass、late-payload三语各1pass，均无失败/跳过；精确源码/产物与限制见原Evidence/Audit。#120旧45fc三语12/12/12、Task exact pause、A的TS/Python30step保持分别原件；Java A业务完成后关闭超时仍为失败，B fixture准入前置错误仍待修。完整Rust/三语、其它Finding及main CI继续独立验收；本地具名resolved不是完整SDK或外部Issue关闭。
+当前候选Finding实盘65 resolved、5 open；direct-run与late Completed按各自三链有限resolved，宽cleanup、Sandbox、Task resume、Graph claim与managed被动退出保持open。A三语30步整例及严格unknown关闭分支已随公开404d447通过/独审并固化，旧Java A关闭失败保历史；不得继续把它列为当前整例失败。后继独立formal-only Task候选排除尚待F的foreign测试，原四经典例加matching一例在三语整个Task suite各5实际通过、零失败/跳过；当前S仍保foreign源码，不能从formal子集或该候选推断其整文件全绿。B foreign fixture合法缺省context准入已修，14a stream真实ACP断连由独立F机制修复；新Fmain精CI尚未作为SDK pin接受。#120旧45fc三语12/12/12及此前Rust定向/late三语均保各自来源，不代最终新pin完整Rust/语言/平台/main验收。完整SDK与外部Issue尚未关闭。
 
 S正规resume/adopt/PF不冒native preEdit/Stop成功。原c0bc对S新ignored session-snapshot根级项不兼容保原诊断；交付树通过已有精确Git candidate方式单独验证，不移除S运行态、不切工具版本、不混scope。库存closed/行为模型open保持；2528项deferred只为非阻断telemetry，不自动加入语言合同。
 
