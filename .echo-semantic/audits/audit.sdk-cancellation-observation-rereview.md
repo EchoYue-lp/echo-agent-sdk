@@ -5,7 +5,7 @@ kind: audit
 boundary_ref: boundary.sdk-resources-streams
 lens: failure_concurrency
 freshness: examined
-revision: source:63bd9a4fce3c7177293460c887500eb369d93fc26d2e51820d7b2b88c58d5c43
+revision: 335193791c70a6cb077033c3f8f0cb1223e5266e
 finding_refs:
 - finding.sdk-cleanup-retry-owner
 challenges:

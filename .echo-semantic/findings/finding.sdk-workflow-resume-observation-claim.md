@@ -18,12 +18,16 @@ rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
 - evidence.sdk-workflow-observation-source-gaps
-audit_refs: []
+audit_refs:
+- audit.sdk-workflow-stream-late-completed-payload
 decision_refs:
 - evidence.sdk-workflow-protected-claim-human-decision
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-workflow-observation-source-gaps
+verification_evidence_refs:
+- evidence.sdk-workflow-observation-source-gaps
+rereview_audit_refs:
+- audit.sdk-workflow-stream-late-completed-payload
 discovered_at: 019e700279677a2eb77e265b5038d9d581bc22da
 ---
 
@@ -51,8 +55,14 @@ SDK _echo_agent/workflow/op 的 workflow.graph.resume、resume_exact、resume_wi
 
 用户2026-10-16明确选择“保留能力并实施保护合同（推荐）”，绑定原提案23c5a59/7288B。原Store effect前保护、单cap/reverse增量、Graph绑定Store查询及protected CRUD拒绝的确切范围见人的裁决Evidence/ADR0039。原unknown owner可能长期阻断的成本获明确接受；这里不是接受当前重复执行风险，也不把Finding改成risk_accepted/resolved。原Graph保护实现、SDK无损消费、新pin真实验证和独立复审链仍待；SDK direct-run投影独立Finding不被本裁决替代。
 
-## 后继状态：Native 与 SDK 场景分别待验收
+## 历史状态：Native 与 SDK 场景分别待验收
 
 根任务随后已取得框架 Native FunctionNode 的 Memory/File 两项真实 before，以及后继 original-owner 两项 before；这些是框架原生路径，由F writer维护原件与验证，不是本SDK registeredLlm/AgentNode或三语Host运行证据，不能由上节“当时未执行”否认，也不能借其关闭本消费者链。
 
 SDK A的Protocol/TS/Python/Java各3项具名pure after已实际0且独立复审；只有Java decoder有旧源码before，其新增cap/Unit作为after控制，详细原件仅在本仓任务local。Host薄proxy与三语Workflow optional场景现为源码准备：绑定原Store、protect正回应门、commit后Error无Node、实际LLM callback内原Popen未知及同PID释放。尚未编译新Host或运行这些Native场景，精Fmain/pin/唯一生成器与完整验证/复审仍待；既有Graph缺cap canonical投影与独立SDK direct-run生产均先保留，等待新pin真实反例。状态继续open，不按总数机械resolved。
+
+## 后继14a有限消费者验收，宽义务仍开放
+
+公开988精pin与唯一生成器后，原共享30步A场景已在不可变14a Host的TS/Python/Java各实际1例通过、0fail/error/skip，并获原reader有限pass。具体来源、各日志SHA、真实Java关闭失败及严格expected-error整例、关闭后三组backend精确不变由原Evidence的“后继14a”段承载。原protected attempt、原LLM副作用与foreign identity保持；同外部PID退出及SDK处置Host不构造framework receipt，不解除claim。Java同owner retry只结算其本机transport清理。
+
+本对象保持open：上述消费例不代framework Memory/File heartbeat、expiry、restart及其它原owner故障矩阵，也不证明provider跨进程持久性或真实ACK丢包。Framework Graph/Store仍唯一拥有保护和结算；SDK不增加恢复调度器、第二receipt或状态权威。

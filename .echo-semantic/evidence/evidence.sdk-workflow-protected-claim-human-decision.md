@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-workflow-protected-claim-human-decision
 kind: evidence
-observed_at: source:63bd9a4fce3c7177293460c887500eb369d93fc26d2e51820d7b2b88c58d5c43
+observed_at: 335193791c70a6cb077033c3f8f0cb1223e5266e
 source_refs:
 - docs/sdk/governance/workflow-protected-claim-proposal.md
 - docs/adr/0039-sdk-cancellation-observation.md

@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-cancellation-observation
 kind: evidence
-observed_at: source:63bd9a4fce3c7177293460c887500eb369d93fc26d2e51820d7b2b88c58d5c43
+observed_at: 335193791c70a6cb077033c3f8f0cb1223e5266e
 source_refs:
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - echo-sdk-host/src/core_profile/facade/stream.rs
