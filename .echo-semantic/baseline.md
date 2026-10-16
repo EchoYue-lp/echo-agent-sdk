@@ -22,10 +22,6 @@
   ],
   "regions": [
     {
-      "path": ".gitattributes",
-      "status": "supporting"
-    },
-    {
       "path": ".cargo",
       "status": "supporting"
     },
