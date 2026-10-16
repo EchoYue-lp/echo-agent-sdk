@@ -1165,11 +1165,9 @@ fn generate_rustdoc_json(
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(format!(
             "cargo rustdoc failed for {} profile {} (toolchain {}).\n\
-             Install it with: rustup toolchain install {}\n\
              stderr tail: {}",
             request.package_name,
             request.profile_name,
-            toolchain.name,
             toolchain.name,
             tail_chars(&stderr, 2000)
         ));
@@ -1225,6 +1223,19 @@ fn resolved_workspace_dependencies(
     }
     let document: serde_json::Value = serde_json::from_slice(&output.stdout)
         .map_err(|error| format!("parsing cargo metadata for {}: {error}", profile.name))?;
+    workspace_rustdoc_packages(&document)
+}
+
+fn workspace_rustdoc_packages(
+    document: &serde_json::Value,
+) -> Result<Vec<WorkspaceRustdocPackage>, String> {
+    let workspace_members: BTreeSet<&str> = document
+        .get("workspace_members")
+        .and_then(serde_json::Value::as_array)
+        .ok_or("cargo metadata workspace_members is missing")?
+        .iter()
+        .filter_map(serde_json::Value::as_str)
+        .collect();
     let packages = document
         .get("packages")
         .and_then(serde_json::Value::as_array)
@@ -1296,10 +1307,10 @@ fn resolved_workspace_dependencies(
         let Some(package_name) = package.get("name").and_then(serde_json::Value::as_str) else {
             continue;
         };
-        let registry_source = package
-            .get("source")
-            .is_some_and(|source| !source.is_null());
-        if registry_source && package_name != "tokio-util" {
+        // Excluded vendored crates also have source=null. They are third-party
+        // dependencies, not independent framework rustdoc roots (and need not
+        // own a standalone lockfile). Preserve the explicit tokio-util reexport.
+        if !workspace_members.contains(id) && package_name != "tokio-util" {
             continue;
         }
         if matches!(
@@ -1538,6 +1549,53 @@ fn tail_chars(s: &str, n: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn vendored_dependencies_do_not_become_framework_inventory_workspaces() -> Result<(), String> {
+        let package = |name: &str, source: serde_json::Value| {
+            serde_json::json!({
+                "id": name, "name": name, "source": source,
+                "manifest_path": format!("/framework/{name}/Cargo.toml"),
+                "targets": [{"name": name.replace('-', "_"), "kind": ["lib"]}]
+            })
+        };
+        // Cargo reports excluded path dependencies with source=null too. Only
+        // framework members and the deliberate public tokio-util reexport are
+        // rustdoc roots; third-party vendoring must not change that ownership.
+        let metadata = serde_json::json!({
+            "workspace_members": ["echo_agent", "echo_core"],
+            "packages": [
+                package("echo_agent", serde_json::Value::Null),
+                package("echo_core", serde_json::Value::Null),
+                package("calamine", serde_json::Value::Null),
+                package("tokio-util", serde_json::json!("registry+crates.io")),
+                package("serde", serde_json::json!("registry+crates.io"))
+            ],
+            "resolve": {"root": "echo_agent", "nodes": [
+                {"id": "echo_agent", "features": [], "deps": [
+                    {"pkg": "echo_core"}, {"pkg": "calamine"},
+                    {"pkg": "tokio-util"}, {"pkg": "serde"}
+                ]},
+                {"id": "echo_core", "features": ["permission"], "deps": []},
+                {"id": "calamine", "features": ["dates"], "deps": []},
+                {"id": "tokio-util", "features": ["rt"], "deps": []},
+                {"id": "serde", "features": [], "deps": []}
+            ]}
+        });
+        let packages = workspace_rustdoc_packages(&metadata)?;
+        assert_eq!(
+            packages
+                .iter()
+                .map(|package| package.package_name.as_str())
+                .collect::<Vec<_>>(),
+            vec!["echo_core", "tokio-util"]
+        );
+        assert_eq!(
+            packages.first().map(|package| &package.features),
+            Some(&vec!["permission".to_string()])
+        );
+        Ok(())
+    }
 
     #[test]
     fn rustdoc_target_directory_resolves_repo_relative_overrides()
