@@ -160,6 +160,69 @@ class LlmWorkflowStreamHostTest {
         verify(setup, "workflow", facts);
     }
 
+    @Test void workflowObservationRetainsRealLateCompletedPayload() throws Exception {
+        var setup = setup("observation"); var sdk = setup.sdk(); var spec = setup.spec();
+        var facts = JsonSupport.MAPPER.createObjectNode(); var calls = facts.putArray("calls");
+        var release = new CompletableFuture<Void>(); var observed = new CompletableFuture<Void>();
+        var producers = new CopyOnWriteArrayList<CompletableFuture<Void>>();
+        var physicalCompleted = new AtomicInteger(); var actualCompleteSent = new AtomicInteger();
+        try {
+            var registration = await(sdk.registerAgentComponent("observed-workflow", AgentComponentDescriptor.workflow("observed-workflow", true), (call, cancellation) -> {
+                calls.addObject().put("component_operation", call.componentOperation());
+                assertEquals("workflow_run_stream", call.componentOperation());
+                WireHandle stream = WireHandle.fromJson(call.raw().path("stream"));
+                // This producer and its identities originate in this callback,
+                // independently of the RPC request and facade handle.
+                var binding = facts.putObject("binding")
+                        .put("run_id", "workflow-original-" + UUID.randomUUID() + "-中文🙂")
+                        .put("execution_id", "workflow-attempt-" + UUID.randomUUID() + "-🧪");
+                binding.set("stream", stream.toJson()); binding.set("extension", call.raw().path("extension"));
+                var error = JsonSupport.MAPPER.createObjectNode()
+                        .put("code", "framework_error").put("retryable", "never")
+                        .put("message", "original Workflow producer remains held")
+                        .put("operation", "_echo_agent/extension/invoke");
+                var details = error.putObject("details").putArray("fields");
+                details.addObject().put("key", "observation").put("value", "not_settled");
+                details.addObject().put("key", "run_id").put("value", binding.path("run_id").textValue());
+                details.addObject().put("key", "execution_id").put("value", binding.path("execution_id").textValue());
+                var writer = sdk.streamWriter(stream);
+                producers.add(CompletableFuture.runAsync(() -> {
+                    try {
+                        await(writer.failed(error)); observed.complete(null);
+                        release.get(20, TimeUnit.SECONDS);
+                        physicalCompleted.incrementAndGet();
+                        await(writer.complete(spec.path("workflow_complete")));
+                        actualCompleteSent.incrementAndGet();
+                    } catch (Exception failure) { throw new CompletionException(failure); }
+                }));
+                return CompletableFuture.completedFuture(ExtensionOutcome.stream(stream));
+            }));
+            var agent = await(sdk.createAgent()); var session = await(agent.createSession());
+            WireHandle stream = WireHandle.fromJson(await(session.invoke("workflow.extension.run_stream", List.of(registration.wire(), "original held work"))));
+            facts.set("facade_stream", stream.toJson()); observed.get(10, TimeUnit.SECONDS);
+            var wrapped = assertThrows(ExecutionException.class, () -> await(session.invoke("workflow.stream.next", List.of(stream))));
+            var error = assertInstanceOf(EchoAgentException.class, wrapped.getCause());
+            assertEquals("framework_error", error.code()); assertEquals("never", error.retryable());
+            assertEquals("workflow.stream.next", error.operation()); assertEquals(stream, error.handle());
+            var fact = errorFact(error).put("retryable", error.retryable()); fact.set("handle", error.handle().toJson()); facts.set("observed", fact);
+            facts.putObject("held").put("physical_completed", physicalCompleted.get()).put("actual_complete_sent", actualCompleteSent.get());
+            assertEquals(0, physicalCompleted.get()); assertEquals(0, actualCompleteSent.get()); assertEquals(1, calls.size());
+            release.complete(null); for (var producer : producers) producer.get(10, TimeUnit.SECONDS);
+            var item = await(session.invoke("workflow.stream.next", List.of(stream))); facts.set("item", item);
+            assertEquals("item", item.path("value").path("variant").textValue(), "real Completed payload replaced by generic terminal");
+            facts.set("terminal", await(session.invoke("workflow.stream.next", List.of(stream))));
+            facts.set("close", await(session.invoke("workflow.stream.close", List.of(stream))));
+            session.close(); agent.close(); registration.close();
+        } finally {
+            release.complete(null);
+            try { for (var producer : producers) producer.get(10, TimeUnit.SECONDS); }
+            finally {
+                sdk.close(); facts.put("physical_completed", physicalCompleted.get()).put("actual_complete_sent", actualCompleteSent.get()); save(setup.work(), facts);
+            }
+        }
+        verify(setup, "observation", facts);
+    }
+
     @Test void pureGraphStreamRejectsForeignOwnerAndPreservesFrameworkCancelCause() throws Exception {
         var setup = setup("graph"); var facts = JsonSupport.MAPPER.createObjectNode(); var called = new AtomicInteger();
         try (var sdk = setup.sdk()) {

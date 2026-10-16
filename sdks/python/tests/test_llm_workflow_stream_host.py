@@ -7,6 +7,7 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 
@@ -399,6 +400,107 @@ async def test_workflow_pure_graph_stream_owner_cancel_without_callback_executio
         )
         print("LLM/Workflow evidence: " + str(work))
     print(await helper(work, "--verify", "graph"))
+
+
+async def test_workflow_observation_retains_real_late_completed_payload():
+    work, spec, sdk = await setup("observation")
+    release, observed = asyncio.Event(), asyncio.Event()
+    producers = []
+    facts = {"calls": [], "physical_completed": 0, "actual_complete_sent": 0}
+    try:
+
+        async def handler(call, _cancellation):
+            facts["calls"].append({"component_operation": call.component_operation})
+            assert call.component_operation == "workflow_run_stream"
+            assert call.stream is not None and call.extension is not None
+            # The producer is created here, separately from the RPC request.
+            binding = {
+                "run_id": f"workflow-original-{uuid4()}-中文🙂",
+                "execution_id": f"workflow-attempt-{uuid4()}-🧪",
+                "stream": call.stream.to_dict(),
+                "extension": call.extension.to_dict(),
+            }
+            facts["binding"] = binding
+            error = {
+                "code": "framework_error",
+                "retryable": "never",
+                "message": "original Workflow producer remains held",
+                "operation": "_echo_agent/extension/invoke",
+                "details": {
+                    "fields": [
+                        {"key": "observation", "value": "not_settled"},
+                        {"key": "run_id", "value": binding["run_id"]},
+                        {"key": "execution_id", "value": binding["execution_id"]},
+                    ]
+                },
+            }
+            writer = sdk.stream_writer(call.stream)
+
+            async def produce():
+                await writer.failed(error)
+                observed.set()
+                await release.wait()
+                facts["physical_completed"] += 1
+                await writer.complete(spec["workflow_complete"])
+                facts["actual_complete_sent"] += 1
+
+            producers.append(asyncio.create_task(produce()))
+            return {"outcome": "stream", "stream": call.stream.to_dict()}
+
+        registration = await sdk.register_agent_component(
+            "observed-workflow",
+            AgentComponentDescriptor(
+                "workflow", "observed-workflow", supports_streaming=True
+            ),
+            handler,
+        )
+        agent = await sdk.create_agent()
+        session = await agent.create_session()
+        stream = await session.invoke(
+            "workflow.extension.run_stream", [registration.wire, "original held work"]
+        )
+        facts["facade_stream"] = stream.to_dict()
+        await asyncio.wait_for(observed.wait(), 10)
+        with pytest.raises(EchoAgentError) as failure:
+            await asyncio.wait_for(session.invoke("workflow.stream.next", [stream]), 10)
+        error = failure.value
+        assert error.code == "framework_error" and error.retryable == "never"
+        assert error.operation == "workflow.stream.next" and error.handle == stream
+        facts["observed"] = {
+            **error_fact(error),
+            "retryable": error.retryable,
+            "handle": error.handle.to_dict(),
+        }
+        facts["held"] = {
+            "physical_completed": facts["physical_completed"],
+            "actual_complete_sent": facts["actual_complete_sent"],
+        }
+        assert facts["held"] == {"physical_completed": 0, "actual_complete_sent": 0}
+        assert len(facts["calls"]) == 1
+        release.set()
+        await asyncio.wait_for(asyncio.gather(*producers), 10)
+        facts["item"] = await asyncio.wait_for(
+            session.invoke("workflow.stream.next", [stream]), 10
+        )
+        assert facts["item"].get("value", facts["item"])["variant"] == "item"
+        facts["terminal"] = await asyncio.wait_for(
+            session.invoke("workflow.stream.next", [stream]), 10
+        )
+        facts["close"] = await session.invoke("workflow.stream.close", [stream])
+        await session.close()
+        await agent.close()
+        await registration.close()
+    finally:
+        release.set()
+        try:
+            await asyncio.wait_for(asyncio.gather(*producers), 10)
+        finally:
+            await sdk.close()
+            (work / "observed.json").write_text(
+                json.dumps(facts, ensure_ascii=False, indent=2)
+            )
+            print("Workflow late-payload evidence: " + str(work))
+    print(await helper(work, "--verify", "observation"))
 
 
 async def test_component_stream_projection_preserves_optional_handle_and_exact_generation():

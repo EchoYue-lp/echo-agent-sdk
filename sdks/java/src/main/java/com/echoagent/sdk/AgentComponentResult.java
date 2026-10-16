@@ -57,6 +57,7 @@ public sealed interface AgentComponentResult permits
         AgentComponentResult.WorkflowCheckpointClaimAcked,
         AgentComponentResult.WorkflowCheckpointClaimRequeued,
         AgentComponentResult.WorkflowCheckpointClaimRenewed,
+        AgentComponentResult.WorkflowCheckpointClaimProtected,
         AgentComponentResult.WorkflowCheckpointsListed,
         AgentComponentResult.WorkflowCheckpointDeleted,
         AgentComponentResult.WorkflowCheckpointsCleared,
@@ -298,6 +299,10 @@ public sealed interface AgentComponentResult permits
     }
     record WorkflowCheckpointClaimRenewed() implements AgentComponentResult {
         @Override public String operation() { return "workflow_checkpoint_renew_claim"; }
+        @Override public JsonNode value() { return null; }
+    }
+    record WorkflowCheckpointClaimProtected() implements AgentComponentResult {
+        @Override public String operation() { return "workflow_checkpoint_protect_claim"; }
         @Override public JsonNode value() { return null; }
     }
     record WorkflowCheckpointsListed(String operation, List<JsonNode> checkpoints)

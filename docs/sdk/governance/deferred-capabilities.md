@@ -2,6 +2,30 @@
 
 本页维护 D01–D14 的产品范围和接受条件。当前治理验收、开放问题及 CI 状态仅以[当前剩余验收](capability-review-remaining.md)为准；下面的前一阶段记录保留其原观察切点，不代表当前状态。
 
+## 当前集合观察（2026-10-17）
+
+本SDK固定公开framework9886502c83d6b1f6fa9212eb221db0e5874deaee，其唯一generator生成的当前候选清单中，canonical deferred为2528项，明确accepted canonical为5621项；这不是framework仓库发布的SDK产物。原D01–D14选择规则仍完整、互斥：无重复、未分组或accepted交叉；不因route投影存在就自动接受该Rust identity。当前deferred的route surface分别为intrinsic1530、bridge47、standard2、value740、invoke201、family8。
+
+|原组|当前canonical deferred项数|
+|---|---:|
+|D01|430|
+|D02|227|
+|D03|466|
+|D04|84|
+|D05|118|
+|D06|269|
+|D07|223|
+|D08|111|
+|D09|104|
+|D10|88|
+|D11|159|
+|D12|117|
+|D13|99|
+|D14|33|
+|合计|2528|
+
+原1,448项表、实例和旧处置论证保留其27c库存epoch。下方集合脚本按当前生成物重算归属及surface遥测，移除过时“所有deferred必须intrinsic”的假设；不改唯一generator、scope、accepted集合或产品边界。数量仅描述库存，不是完成率或新的语言API承诺。
+
 ## 前一阶段有限验收（历史观察，2026-10-15）
 
 SDK Host 精确依赖已发布框架 `00782b8a`，八个框架包同一 Git 来源、没有 path patch；框架合并后七项 CI 已成功。SDK [14 条 Rust 门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md)实际全0，workspace 主计数474，不累加重叠 feature profiles。[完整语言入口](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-00782-reviewed-final/README.md)实际退出0：TypeScript329、Python394加18子测试、Java351/75份XML及三个quickstart；793项执行输入前后相同，随后逐项保存为可恢复Git。预期负例的运行时WARN按原字节保留，编译告警为0。
@@ -370,6 +394,7 @@ deferred = [e for e in manifest["entries"] if e["canonical"] and e["sdk_scope"] 
 accepted_paths = {e["path"] for e in accepted["entries"]}
 seen = set()
 counts = collections.Counter()
+surfaces = collections.Counter()
 for entry in deferred:
     path = entry["path"]
     parts = path.split("::")
@@ -380,17 +405,18 @@ for entry in deferred:
         hits = ["D12"]
     if len(hits) != 1 or path in seen or path in accepted_paths:
         raise ValueError((path, hits, "missing, overlapping or conflicting disposition"))
-    if entry["route"]["surface"] != "intrinsic":
-        raise ValueError((path, "re-evaluate accepted route boundary"))
+    # A projected route does not accept this deferred identity into a language API.
+    surfaces.update([entry["route"]["surface"]])
     seen.add(path)
     counts.update(hits)
 if len(seen) != len(deferred):
     raise ValueError("incomplete canonical deferred coverage")
 print(dict(sorted(counts.items())))
+print("route surfaces", dict(sorted(surfaces.items())))
 print("covered", len(seen), "canonical deferred identities; no overlap")
 ```
 
-本次静态集合重核结果（见evidence/sdk-deferred-product-disposition/receipt.json及逐identity group-membership.json）：D01–D14 的数量与覆盖表一致，1,448 项完整且互斥，未修改合同、生成器、
+历史静态集合重核结果（见原evidence/sdk-deferred-product-disposition/receipt.json及逐identity group-membership.json）：D01–D14 的数量与旧覆盖表一致，1,448 项完整且互斥，未修改合同、生成器、
 SDK API 或源码。本次文档分类不需要 examples/website 行为同步；没有新增对外能力。
 这份集合证据只证明处置覆盖，不证明各能力的生命周期或异常路径已经验证。
 

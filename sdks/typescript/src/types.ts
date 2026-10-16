@@ -418,6 +418,7 @@ export type AgentComponentOperation = ManagedComponentCall["operation"]
   | "workflow_checkpoint_ack_claim"
   | "workflow_checkpoint_requeue_claim"
   | "workflow_checkpoint_renew_claim"
+  | "workflow_checkpoint_protect_claim"
   | "workflow_checkpoint_list"
   | "workflow_checkpoint_list_by_graph"
   | "workflow_checkpoint_list_filtered"
@@ -470,6 +471,7 @@ export interface AgentComponentDescriptor {
     readonly runtime_state?: "unsupported" | "revisioned_v1";
     readonly persistence_call?: "unsupported" | "absolute_deadline_v1";
     readonly execution_cas_v1?: boolean;
+    readonly protected_claim_v1?: boolean;
     readonly isolation_level?: "none" | "process" | "os-sandbox" | "container" | "orchestrated" | null;
     readonly supports_streaming?: boolean;
     readonly supports_notifications?: boolean;
@@ -510,7 +512,7 @@ export type AgentComponentCall = ManagedComponentCall
   | { readonly operation: "workflow_checkpoint_save"; readonly input: { readonly checkpoint: WireValue } }
   | { readonly operation: "workflow_checkpoint_save_if_generation"; readonly input: { readonly checkpoint: WireValue; readonly expected_generation: WireU64 } }
   | { readonly operation: "workflow_checkpoint_load" | "workflow_checkpoint_claim" | "workflow_checkpoint_delete"; readonly input: { readonly checkpoint_id: string } }
-  | { readonly operation: "workflow_checkpoint_ack_claim" | "workflow_checkpoint_requeue_claim" | "workflow_checkpoint_renew_claim"; readonly input: { readonly checkpoint_id: string; readonly attempt_id: string } }
+  | { readonly operation: "workflow_checkpoint_ack_claim" | "workflow_checkpoint_requeue_claim" | "workflow_checkpoint_renew_claim" | "workflow_checkpoint_protect_claim"; readonly input: { readonly checkpoint_id: string; readonly attempt_id: string } }
   | { readonly operation: "workflow_checkpoint_list" | "workflow_checkpoint_clear"; readonly input: Record<string, never> }
   | { readonly operation: "workflow_checkpoint_list_by_graph"; readonly input: { readonly graph_name: string } }
   | { readonly operation: "workflow_checkpoint_list_filtered"; readonly input: { readonly filter: WireValue } }
@@ -562,7 +564,7 @@ export type AgentComponentCallResult = ManagedComponentResult
   | { readonly operation: "guard_check"; readonly value: { readonly result: WireValue } }
   | { readonly operation: "search_provider_search"; readonly value: { readonly results: readonly WireValue[] } }
   | { readonly operation: "workflow_checkpoint_save" | "workflow_checkpoint_delete" | "workflow_checkpoint_clear" | "sandbox_cleanup" | "mcp_transport_notify" | "mcp_transport_close" }
-  | { readonly operation: "workflow_checkpoint_ack_claim" | "workflow_checkpoint_requeue_claim" | "workflow_checkpoint_renew_claim" }
+  | { readonly operation: "workflow_checkpoint_ack_claim" | "workflow_checkpoint_requeue_claim" | "workflow_checkpoint_renew_claim" | "workflow_checkpoint_protect_claim" }
   | { readonly operation: "workflow_checkpoint_save_if_generation"; readonly value: { readonly committed: boolean } }
   | { readonly operation: "workflow_checkpoint_load" | "workflow_checkpoint_claim"; readonly value: { readonly checkpoint?: WireValue | null } }
   | { readonly operation: "workflow_checkpoint_list" | "workflow_checkpoint_list_by_graph" | "workflow_checkpoint_list_filtered"; readonly value: { readonly checkpoints: readonly WireValue[] } }

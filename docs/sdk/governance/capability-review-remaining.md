@@ -1,10 +1,32 @@
 # 当前能力模型的有限剩余验收
 
-## 当前有限验收（2026-10-15）
+## 当前有限验收（2026-10-17）
+
+当前正式依赖为公开framework `9886502c83d6b1f6fa9212eb221db0e5874deaee`，真实锁八包同Git来源，无path patch。唯一完整28profiles update及后继完整canonical check已实际0，117产物一致、telemetry drift0；accepted 5621项无增删，仅批准B两项fallible source签名及A单cap/protect Unit变化。后继125项合同/wire/exporter输入复核零漂移、语言catalog check0、Protocol5/42/91定向全过，不机械重跑28profiles。
+
+callback原unwind与错误ACK各有真实失败；当前源同不可变libtest七个具名对照各1pass，独立局部复审pass。保存opt1/assertions/overflow/unwind的实际Host8bf4a1d6deb647e608153c807ca07785dd31f7d3223a88cc3daf9b835b8bff5c构建零警告，EH15489244/unwind_info2979504，保存配置必要unwind定向亦过；范围与来源见ADR0040及callback Evidence。上述都不是整个SDK验收。
+
+当前候选Finding实盘65 resolved、5 open：direct-run typed观察投影与late Completed两具名缺陷有原真实红、修复、最新14a/f658共同cut after及独立整体增量审pass，按各自三链有限resolved；未把原历史prepared/warning epoch重标成当前执行。剩余宽cleanup、Sandbox、Task resume、Graph claim及managed被动退出各保持open。新配置cut实际Rust定向4pass、late-payload三语各1pass，均无失败/跳过；精确源码/产物与限制见原Evidence/Audit。#120旧45fc三语12/12/12、Task exact pause、A的TS/Python30step保持分别原件；Java A业务完成后关闭超时仍为失败，B fixture准入前置错误仍待修。完整Rust/三语、其它Finding及main CI继续独立验收；本地具名resolved不是完整SDK或外部Issue关闭。
+
+S正规resume/adopt/PF不冒native preEdit/Stop成功。原c0bc对S新ignored session-snapshot根级项不兼容保原诊断；交付树通过已有精确Git candidate方式单独验证，不移除S运行态、不切工具版本、不混scope。库存closed/行为模型open保持；2528项deferred只为非阻断telemetry，不自动加入语言合同。
+
+正式约束已同步SDK extension-bridge文档与ADR0039/0040。原examples/quickstart无新增调用要求，A provider合同已在原component API文档说明，B复用原调用；其实际编译/执行仍纳最终门禁。官网无本切片新增产品入口，跨仓正式来源/最终同步由协调者维护，不在SDK写官网副本或部署。npm/PyPI/Maven发布排除。
+
+八类完成性盘点复用已有边界、源码anchors与七组八视角的有限Audit，没有新增可确认runtime缺陷。[历史行为矩阵](behavior-evidence-matrix.md)的“仍缺”按后继正式Evidence对账：Agent/Session/Run的steer三语与意图A具名证明见[evidence.sdk-acp-agent-run-finite-observation](../../../.echo-semantic/evidence/evidence.sdk-acp-agent-run-finite-observation.md)；A2A九操作、已批准Channel forward及LSP诊断的有限后继见[evidence.sdk-integrations-finite-observation](../../../.echo-semantic/evidence/evidence.sdk-integrations-finite-observation.md)。原Telemetry export/flush、FileAuthority replacement、Session rules实际prompt的原件/限制分别由[历史证明位置](semantic-history.md)对应包与已有Evidence承接，不再因旧矩阵段落重复执行同一未变能力。
+
+这些后继不证明每个accepted constructor/setter都经过真实consumer；不把未advertise的标准Session方法、11个DTO当11条forward、Graph晚到回执或Windows三语言平台列为已验证。历史Map内/tmp仅为当时诊断位置，当前恢复依赖正式Evidence及不可变Git/asset；未保存的本机路径不成为最终验收来源。deferred原文档集合脚本已按实际2528项分组重核，route投影不自动接受identity，详见[当前集合观察](deferred-capabilities.md#当前集合观察2026-10-17)。
+
+## 历史有限验收（2026-10-15）
+
+以下00782、预备阶段计数和“仍待”均保留原观察时点；当前状态以上节为准，不重标旧测试结果。
 
 Host 固定已发布 framework `00782b8a`，八包同一Git来源、无path patch；框架main七项CI与 [SDK Rust14](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md) 有原切点通过证据。[第四次本机完整语言门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-ci-repairs-final/README.md)在其800项输入下实际0：TS336、Python415加18子测试、Java355/76份fresh XML和三个quickstart，全部输入随后逐Git恢复。该运行使用Oracle JDK21，不代Linux CI Temurin17；后继源码和workflow已变，不能继承为当前整套通过。
 
-当前正式模型为62项resolved、4项open；本次仅accepted-source-continuity切片在repair、完整生成/消费者验证、独立复审及原公开22e精CI候选原30dchange实际0后本地闭合。EventIdentity嵌套`subagent_lineage.parent_event_id`已在Python/Java无损投影，修复源 `185559ce`、对应pure value测试3+3与Java17编译及独立复审支持该具体局部闭合；它不新增API、改框架身份权威或自动关闭其它族。bootstrap原stable探测错误已按 `4994a8c` 真实CI在 `890abaa7` 具体三链闭合。本次0ebe及后续新增原始CI日志以Admin保全和官方job定位，不再逐轮新增main归档；既有归档尚未精简，待保义务repair审查与具体删除授权。
+019e冻结切点为62项业务resolved/4项open，另1项行政历史证明存储修复resolved。本B源码准备新增两项Workflow义务，当前工作树为63项resolved/6项open，均无新关闭。此前仅accepted-source-continuity切片在repair、完整生成/消费者验证、独立复审及原公开22e精CI候选原30dchange实际0后本地闭合。EventIdentity嵌套`subagent_lineage.parent_event_id`已在Python/Java无损投影，修复源 `185559ce`、对应pure value测试3+3与Java17编译及独立复审支持该具体局部闭合；它不新增API、改框架身份权威或自动关闭其它族。bootstrap原stable探测错误已按 `4994a8c` 真实CI在 `890abaa7` 具体三链闭合。0ebe及后续原始CI日志保留原Admin/官方job定位。019e已实际安装、提交并推送历史证明表示迁移：4365个阶段raw文件移出当前交付树，净减约184MB，原公开不可变Git与必要角色/义务保留；不是删历史或重执行旧日志。
+
+2026-10-16补充：用户已明确接受[Workflow A保护合同](workflow-protected-claim-proposal.md)，不再待同一A/B裁决。单cap/reverse的Protocol与TS/Python/Java各3项focused after已实际通过并经独立复审；原Java decoder有真实before，新增cap/Unit是after控制。Host薄proxy和原checkpoint fixture的optional三语场景仍为未编译/未运行的源码准备，SDK pin/lock及正式生成物仍待公开Fmain后统一更新，不能继承旧Host或pure通过。Graph缺cap canonical投影和direct-run stringify先保原生产，等待新pin真实反例。框架Native FunctionNode Memory/File与后继owner的before归F自身证据，不能冒SDK registeredLlm/三语Host结果；managed旧Linux被动退出原因仍未知，诊断源码不是repair。当前仍63项resolved/6项open。
+
+以下0bc/26c/e58三段保留各自历史观察与当时计数，不表示本轮新B源码已经执行。
 
 此前Linux `0bc677a0` 的[原始九job运行](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/38679511245)自然终态6success/3failure：language TS336及quickstart、Python416加18子测试及quickstart通过，Java356/4errors/0skip、Javaquickstart未达；两个合同job仍原13阻断。三项test-support修复分别处理portable临时路径、pending响应前先确认frame被child读到，并隔离受控低CPU共池饥饿（两方法）；最后一项是同症状受控复现，原Linux实际pool状态未记录，不断言唯一Linux原因。修复保存8156/b9bc/131，局部class验证1、16及3CPU/default各4通过，保原断言/预算与生产实现。它们是macOS Oracle21 focused，不能借作新Linux全套通过。
 
@@ -16,9 +38,10 @@ e58完整九job自然终态为7success/2failure；两个失败仍是合同/库�
 
 用户已明确四仓统一push-main-only CI；本SDK工作树候选已实施、尚未在main生效：仅把现有Rust CI触发条件收敛为push到main，任务分支与PR不自动触发，jobs/命令/目标/超时/失败规则和权限均不变，SDK AGENTS同步规则。合并前本地全部适用门禁仍必须通过，main后CI核验精确main；此策略不接受合同13/12或B残余风险。上面的e58 PRmerge运行是旧触发配置下的真实后验，不能冒新main-only配置已执行；其它三仓由Root各owner处理，本页不代其宣交付。
 
-仍阻塞main：①原[完整合同只读门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-contract-00782-readonly/README.md)的exit1/13保留为历史。用户已于2026-10-15明确接受12项source/kind迁移/退役，ADR0034已正式绑定，唯一生成器首次28profiles update实际0；独立SDK切片已补齐getter Rust/Host-only分类，重跑同一完整合同脚本实际退出0：28profiles、117artifacts匹配、0telemetry漂移，5+39+91项测试零失败/跳过；后继Rust8门禁全0（workspace478/0/0），新实际Host匹配生成合同；官方完整三语言同一入口实际0（TS343/PY427+18subtests/Java363与76freshXML/三个quickstart），793输入和Host前后hash相同；独立复审PASS0，公开22e精CI候选ordinary及原30dchange门禁均实际0，Finding仅此切片本地resolved；安装0.5历史/8MB限制另列，不宣整个SDK/main已通过。此前Curator/TaskExecution/DiagnosticCode裁决保持。②cleanup/Sandbox/Task resume三个宽义务关联的5秒物理结算已选择B并授权独立framework实施，尚待上游实际交付；不能由合作取消或本机focused结果接受风险。工具A/B已由独立上游交付Echo Semantic main c0bc306bd36d2b1b76def2b6c7308a07dda4f54b，父任务已核PR及精确main CI成功；SDK action切换、逐义务归档迁移及真实continuity验收仍由父任务后续整合。本切片保持原22e证据和CI pin，不把上游交付称为SDK已自动通过。③e58完整语言/三quickstart和Host实际通过，本轮后继文稿/模型仍需同期sourceDigest与公开工具原30d完整变更门禁，完整CI/精确SDKmain另按真实切点验收；不继承旧结果冒新候选已过。④**合入main逐文件必要性审查仍BLOCK**：只交付必要源码、可执行测试、正式长期文档和结构义务；阶段raw/重复状态/历史包不能因日志真实就自动main必要。归档保义务及移出动作由父任务在工具上游交付后单独结算；本SDK切片未执行清理，不得删除语义义务或历史可追溯链。
+当前剩余交付条件：①已接受12项 source/kind 迁移及原13合同缺口，已在7f14切片通过唯一28profiles/117artifacts、匹配的Rust478/完整语言与精确Host及独立复审而局部闭合；全部结果仍属原225/793输入，不继承给正在准备的B源码。当前 framework build pin仍00782；F公开检查点f0a不是SDK已升级证明。②用户已批准物理结算B，F仍拥有执行/claim/Graph/journal唯一权威。SDK原cleanup/Sandbox/Task-resume及Host被动退出cause四项open不靠本次静态修补关闭；新 Workflow [Graph claim](../../../.echo-semantic/findings/finding.sdk-workflow-resume-observation-claim.md) 与[direct-run投影](../../../.echo-semantic/findings/finding.sdk-workflow-direct-run-observation-projection.md)各独立open，前者由F修，后者先新pin真实red后修，heartbeat/expiry/restart仍待具名验证。③019e的历史证明必要性清理、公开工具action c0bc306bd36d2b1b76def2b6c7308a07dda4f54b 固定和1432条旧义务表示迁移已完成。实际安装树4097f924的ordinary、原30d完整change、父7f14与fullcontinuity均实际0；工具/存储义务不再列为等待选择或未执行BLOCK，详见[历史证明位置](semantic-history.md)与ADR0038。原raw和既有失败/平台限制由公开不可变Git恢复，不恢复原阶段包到main。④B新source仍须公开上游精确pin、唯一完整生成、适用Rust/真实Host/完整三语言、source review与最终语义门禁；e58旧Linux7success/2failure以及019e存储gate均不代这些新门禁。SDK任务分支/PR按已接受main-only配置不自动调度CI，不等绿；main合并及精确main CI验收仍待。
 
-库存建模closed、行为模型open；40格仅五个in_scope区域38 covered/2根manifest not_applicable，不是41族全部verified。Discovery九入口已由4256知识迁移承接既有场景；这不解除连续性或归档删除门禁。Windows job只验证Rust库，不证明Windows原生SDK消费者。历史eebd strict/source473/308对象及后继无base验证各保原来源，不能替代当前已发布工具的真实原30d完整变更依据门禁。npm/PyPI/Maven发布独立且本轮不发布，CLI/官网无新增API或行为需要外仓改动。
+库存建模closed、行为模型open；40格原38 covered/2根manifest not_applicable仍属原有限模型，不是41族全verified。Discovery九入口的4256知识迁移和019e存储continuity已分别结算；本轮新B义务、Windows原生语言消费者与精确SDKmain仍独立待验。npm/PyPI/Maven发布继续排除；除明确接受的A单cap/单reverse外，本次没有新增公开API、examples或官网需复制的产品入口。
+
 
 本页是唯一当前验收/阻断摘要；能力结构见[能力图](capability-map.md)，Finding历史和三链见[账本](finding-ledger.md)，逐family有限范围见[处置表](capability-review-dispositions.md)。下面历史正文中的“当前/open/待回归”只属于原观察切点，保留原日志、时间、计数及限制。
 

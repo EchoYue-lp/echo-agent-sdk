@@ -20,6 +20,7 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
     private final boolean supportsStreaming;
     private final boolean supportsNotifications;
     private final boolean executionCasV1;
+    private final boolean protectedClaimV1;
     private final BigInteger claimHeartbeatIntervalMs;
     private final ManagedPersistence.ConversationProjectionCapability conversationProjection;
     private final ManagedPersistence.RuntimeStateCapability runtimeState;
@@ -48,6 +49,16 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
             ManagedPersistence.ConversationProjectionCapability conversationProjection,
             ManagedPersistence.RuntimeStateCapability runtimeState,
             ManagedPersistence.PersistenceCallCapability persistenceCall, boolean executionCasV1) {
+        this(component, name, isolationLevel, supportsStreaming, supportsNotifications, claimHeartbeatIntervalMs,
+                conversationProjection, runtimeState, persistenceCall, executionCasV1, false);
+    }
+
+    private AgentComponentDescriptor(String component, String name, String isolationLevel,
+            boolean supportsStreaming, boolean supportsNotifications, BigInteger claimHeartbeatIntervalMs,
+            ManagedPersistence.ConversationProjectionCapability conversationProjection,
+            ManagedPersistence.RuntimeStateCapability runtimeState,
+            ManagedPersistence.PersistenceCallCapability persistenceCall, boolean executionCasV1,
+            boolean protectedClaimV1) {
         if (!COMPONENTS.contains(component)) {
             throw new IllegalArgumentException("unknown Agent component kind");
         }
@@ -60,6 +71,10 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
             throw new IllegalArgumentException("execution CAS capability requires a revisioned task store");
         }
         this.executionCasV1 = executionCasV1;
+        if (protectedClaimV1 && !"workflow_checkpoint_store".equals(component)) {
+            throw new IllegalArgumentException("protected claim capability requires a workflow checkpoint store");
+        }
+        this.protectedClaimV1 = protectedClaimV1;
         this.claimHeartbeatIntervalMs = claimHeartbeatIntervalMs;
         if (conversationProjection == null || runtimeState == null || persistenceCall == null) {
             throw new IllegalArgumentException("managed capabilities must not be null");
@@ -146,13 +161,20 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
             ManagedPersistence.RuntimeStateCapability runtimeState,
             ManagedPersistence.PersistenceCallCapability persistenceCall) {
         return new AgentComponentDescriptor(component, name, isolationLevel, supportsStreaming,
-                supportsNotifications, claimHeartbeatIntervalMs, conversationProjection, runtimeState, persistenceCall, executionCasV1);
+                supportsNotifications, claimHeartbeatIntervalMs, conversationProjection, runtimeState, persistenceCall, executionCasV1, protectedClaimV1);
     }
 
     /** Opt into the existing typed execution CAS callback; framework alone owns transition semantics. */
     public AgentComponentDescriptor withExecutionCasV1(boolean supported) {
         return new AgentComponentDescriptor(component, name, isolationLevel, supportsStreaming,
-                supportsNotifications, claimHeartbeatIntervalMs, conversationProjection, runtimeState, persistenceCall, supported);
+                supportsNotifications, claimHeartbeatIntervalMs, conversationProjection, runtimeState, persistenceCall, supported, protectedClaimV1);
+    }
+
+    /** Promise that this same Store protects exact attempts before effects, not just CRUD. */
+    public AgentComponentDescriptor withProtectedClaimV1(boolean supported) {
+        return new AgentComponentDescriptor(component, name, isolationLevel, supportsStreaming,
+                supportsNotifications, claimHeartbeatIntervalMs, conversationProjection, runtimeState,
+                persistenceCall, executionCasV1, supported);
     }
 
     @Override public String kind() { return "agent_component"; }
@@ -166,6 +188,7 @@ public final class AgentComponentDescriptor implements ExtensionDescriptor {
         capabilities.put("runtime_state", runtimeState.name());
         capabilities.put("persistence_call", persistenceCall.name());
         capabilities.put("execution_cas_v1", executionCasV1);
+        capabilities.put("protected_claim_v1", protectedClaimV1);
         if (isolationLevel == null) capabilities.putNull("isolation_level");
         else capabilities.put("isolation_level", isolationLevel);
         capabilities.put("supports_streaming", supportsStreaming);

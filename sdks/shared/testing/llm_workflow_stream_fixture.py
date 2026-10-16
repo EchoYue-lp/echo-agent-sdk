@@ -374,11 +374,48 @@ def verify_graph(spec, facts):
     assert facts["callback_count"] == 0
 
 
+def verify_observation(spec, facts):
+    """All native clients must retain the original producer's terminal payload."""
+    assert len(facts["calls"]) == 1
+    assert facts["held"] == {"physical_completed": 0, "actual_complete_sent": 0}
+    assert facts["physical_completed"] == facts["actual_complete_sent"] == 1
+    binding = facts["binding"]
+    assert binding["stream"]["kind"] == "stream"
+    assert binding["extension"]["kind"] == "extension"
+    error = facts["observed"]
+    assert error["code"] == "framework_error" and error["retryable"] == "never"
+    assert error["operation"] == "workflow.stream.next"
+    assert error["handle"] == facts["facade_stream"]
+    assert error["details"] == {
+        "fields": [
+            {"key": "observation", "value": "not_settled"},
+            {"key": "run_id", "value": binding["run_id"]},
+            {"key": "execution_id", "value": binding["execution_id"]},
+        ]
+    }
+    variant, item = fields(facts["item"])
+    assert variant == "item", "real Completed payload replaced by generic terminal"
+    assert unbox(item["sequence"]) == "1"
+    assert unbox(item["stream"]) == facts["facade_stream"]
+    completed = unbox(item["value"])
+    raw = completed.get("value", completed)
+    assert raw["type_id"] == "echo_orchestration::workflow::WorkflowEvent"
+    name, payload = fields(completed)
+    assert name == "completed"
+    assert {key: unbox(value) for key, value in payload.items()} == spec[
+        "workflow_complete"
+    ]["value"]["terminal"]
+    name, terminal = fields(facts["terminal"])
+    assert name == "complete" and unbox(terminal["sequence"]) == "2"
+    assert unbox(terminal["stream"]) == facts["facade_stream"]
+    assert facts["close"] is False
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--prepare", action="store_true")
-    parser.add_argument("--verify", choices=("llm", "workflow", "graph"))
+    parser.add_argument("--verify", choices=("llm", "workflow", "graph", "observation"))
     arguments = parser.parse_args()
     if arguments.prepare:
         prepare(arguments.work)

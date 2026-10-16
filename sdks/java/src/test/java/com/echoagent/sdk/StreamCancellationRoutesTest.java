@@ -57,4 +57,80 @@ class StreamCancellationRoutesTest {
         assertThrows(ExecutionException.class,()->sdk.closeAsync().toCompletableFuture().get(2,TimeUnit.SECONDS));assertTrue(token.isCancelled());assertSame(token,cancellations(sdk).get("original"));
         sdk.closeAsync().toCompletableFuture().get(2,TimeUnit.SECONDS);assertTrue(cancellations(sdk).isEmpty());
     }
+    static JsonNode observationCases()throws Exception {
+        return JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(Path.of("../shared/testing/cancellation-observation-cases.json"))).get("cases");
+    }
+    @Test void publicWriterKeepsOnlyCompleteLegitimateObservationsOpen()throws Exception {
+        for(var item:observationCases()) {
+            var transport=new Transport();var sdk=client(transport);
+            try {
+                var writer=sdk.streamWriter(new WireHandle("original-stream","1","stream"));
+                var sent=writer.failed(item.get("error").deepCopy());send(transport).complete(null);sent.toCompletableFuture().get(2,TimeUnit.SECONDS);
+                var actual=JsonSupport.MAPPER.readTree("{\"kind\":\"agent\",\"value\":{\"event\":\"final_answer\",\"data\":{\"text\":\"actual final value\"}}}");
+                if(item.path("nonterminal").asBoolean()) {
+                    var terminal=writer.complete(actual);send(transport).complete(null);terminal.toCompletableFuture().get(2,TimeUnit.SECONDS);
+                } else assertThrows(IllegalStateException.class,()->writer.complete(actual),item.path("name").asText());
+            } finally {sdk.closeAsync().toCompletableFuture().get(2,TimeUnit.SECONDS);}
+        }
+    }
+    @Test void officialObservationSendRetainsOriginalCancelRouteUntilTerminal()throws Exception {
+        var transport=new Transport();var sdk=client(transport);
+        try {
+            handlers(sdk).put("extension",(call,cancel)->CompletableFuture.completedFuture(outcome(call)));
+            invoke(sdk,call()).block(Duration.ofSeconds(2));var original=cancellations(sdk).get("original");assertNotNull(original);
+            var params=JsonSupport.MAPPER.createObjectNode().put("event","failed").put("sequence","1");params.set("stream",new WireHandle("stream","1","stream").toJson());params.set("error",observationCases().get(0).get("error"));
+            var sent=sdk.notify("_echo_agent/extension/stream",params);send(transport).complete(null);sent.toCompletableFuture().get(2,TimeUnit.SECONDS);
+            assertSame(original,cancellations(sdk).get("original"));
+            var actual=sdk.notify("_echo_agent/extension/stream",terminal("1"));send(transport).complete(null);actual.toCompletableFuture().get(2,TimeUnit.SECONDS);assertTrue(cancellations(sdk).isEmpty());
+        } finally {sdk.closeAsync().toCompletableFuture().get(2,TimeUnit.SECONDS);}
+    }
+    @Test void explicitObservationWinsLocalCallbackCancelAndKeepsOwner()throws Exception {
+        for(var item:observationCases()) {
+            var transport=new Transport();var sdk=client(transport);var error=item.get("error");
+            try {
+                handlers(sdk).put("extension",(call,cancel)->{cancel.cancel();var outcome=JsonSupport.MAPPER.createObjectNode().put("outcome","error");outcome.set("error",error);return CompletableFuture.completedFuture(outcome);});
+                var result=invoke(sdk,call()).block(Duration.ofSeconds(2));
+                if(item.path("nonterminal").asBoolean()) {
+                    assertEquals(error,result.path("error"),item.path("name").asText());assertTrue(cancellations(sdk).containsKey("original"));
+                } else {
+                    assertEquals("cancelled",result.path("error").path("code").asText(),item.path("name").asText());assertFalse(cancellations(sdk).containsKey("original"));
+                }
+            } finally {sdk.closeAsync().toCompletableFuture().get(2,TimeUnit.SECONDS);}
+        }
+    }
+
+    @Test void lateObservationCannotReopenWriterAfterConcurrentTerminal()throws Exception {
+        var submitEntered=new CountDownLatch(1);var release=new CountDownLatch(1);
+        var firstSend=new java.util.concurrent.atomic.AtomicBoolean(true);
+        var transport=new Transport(){
+            @Override public Mono<Void> sendMessage(AcpSchema.JSONRPCMessage message){
+                return Mono.defer(()->{
+                    if(firstSend.compareAndSet(true,false)) {
+                        submitEntered.countDown();
+                        try{if(!release.await(2,TimeUnit.SECONDS))return Mono.error(new IllegalStateException("fixture first submit was not released"));}
+                        catch(InterruptedException interrupted){Thread.currentThread().interrupt();return Mono.error(interrupted);}
+                    }
+                    return super.sendMessage(message);
+                });
+            }
+        };
+        var sdk=client(transport);var executor=Executors.newSingleThreadExecutor();
+        var writer=sdk.streamWriter(new WireHandle("original-stream","1","stream"));
+        try {
+            var first=executor.submit(()->writer.failed(observationCases().get(0).get("error")));
+            assertTrue(submitEntered.await(2,TimeUnit.SECONDS));
+            // Hold failed() within its real synchronous notify submission, not
+            // merely its returned stage: Java commits closed before stage completion.
+            var terminal=writer.complete(JsonSupport.MAPPER.readTree("{\"kind\":\"agent\",\"value\":{\"event\":\"final_answer\",\"data\":{\"text\":\"original final\"}}}"));
+            send(transport).complete(null);terminal.toCompletableFuture().get(2,TimeUnit.SECONDS);
+            release.countDown();var observation=first.get(2,TimeUnit.SECONDS);
+            send(transport).complete(null);observation.toCompletableFuture().get(2,TimeUnit.SECONDS);
+            assertThrows(IllegalStateException.class,()->writer.chunk(JsonSupport.MAPPER.nullNode()));
+            assertTrue(transport.entered.isEmpty());
+        } finally {
+            release.countDown();executor.shutdownNow();assertTrue(executor.awaitTermination(3,TimeUnit.SECONDS));
+            sdk.closeAsync().toCompletableFuture().get(2,TimeUnit.SECONDS);
+        }
+    }
+
 }

@@ -547,7 +547,9 @@ export class EchoAgentClient {
           pendingFactoryConstruction.set(key,settled);
           try {result=await construction;} finally {pendingFactoryConstruction.delete(key);}
         } else result = await handler(params, controller.signal);
-        const outcome = controller.signal.aborted ? cancelledOutcome() : normalizeOutcome(result);
+        const declared = normalizeOutcome(result);
+        const observation = declared.outcome === "error" && isNotSettledObservation(declared.error);
+        const outcome = controller.signal.aborted && !observation ? cancelledOutcome() : declared;
         if (operation === "agent_close" && outcome.outcome === "result" && (outcome.result as { operation?: string }).operation === "agent_close") {
           const key = JSON.stringify([call.extension?.id, call.extension?.generation, call.extension?.kind]);
           const origin = factoryChildren.get(key);
@@ -555,7 +557,10 @@ export class EchoAgentClient {
           if(origin)closedFactoryChildren.set(key,origin);
           if(closedFactoryChildren.size>512){const oldest=closedFactoryChildren.keys().next().value;if(oldest!==undefined)closedFactoryChildren.delete(oldest);}
         }
-        const declared = normalizeOutcome(result);
+        if (observation) {
+          retainStreamRoute = route ? extensionStreamRoutes.get(streamRouteKey(route.stream)) === route
+            : invocationControllers.get(call.invocation_id ?? "") === controller;
+        }
         if (declared.outcome === "stream") {
           if (!route || !sameHandle(declared.stream, route.stream)) {
             return {outcome:"error",error:{code:"serialization_violation",message:"stream outcome differs from its original invocation stream",retryable:"never"}};
@@ -564,8 +569,11 @@ export class EchoAgentClient {
         }
         return outcome;
       } catch (error) {
-        if (controller.signal.aborted) return cancelledOutcome();
         const failure = extensionFailure(error);
+        const observation = isNotSettledObservation(failure);
+        if (controller.signal.aborted && !observation) return cancelledOutcome();
+        if (observation) retainStreamRoute = route ? extensionStreamRoutes.get(streamRouteKey(route.stream)) === route
+          : invocationControllers.get(call.invocation_id ?? "") === controller;
         return {
           outcome: "error",
           error: {
@@ -669,8 +677,10 @@ export class EchoAgentClient {
   async notify(method: string, params?: unknown): Promise<void> {
     let terminalStream: WireHandle | undefined;
     if (method === "_echo_agent/extension/stream" && typeof params === "object" && params !== null) {
-      const message = params as {event?: string; stream?: WireHandle};
-      if (["complete","failed","cancelled"].includes(message.event ?? "") && isWireHandle(message.stream)) {
+      const message = structuredClone(params) as {event?: string; stream?: WireHandle; error?: unknown};
+      params = message;
+      if (["complete","failed","cancelled"].includes(message.event ?? "")
+          && !(message.event === "failed" && isNotSettledObservation(message.error)) && isWireHandle(message.stream)) {
         terminalStream = {...message.stream};
         params = {...message,stream:terminalStream};
       }
@@ -1245,10 +1255,12 @@ export class ExtensionStreamWriter {
     await this.complete({ kind: "agent_component", value });
   }
   async failed(error: unknown): Promise<void> {
+    error = structuredClone(error);
+    const observation = isNotSettledObservation(error);
     await this.client.notify("_echo_agent/extension/stream", {
       event: "failed", stream: this.stream, sequence: this.next(), error,
     });
-    this.closed = true;
+    if (!observation) this.closed = true;
   }
   async cancelled(): Promise<void> {
     await this.client.notify("_echo_agent/extension/stream", {
@@ -1787,6 +1799,7 @@ const AGENT_COMPONENT_INPUT_FIELDS: Readonly<Record<string, readonly string[]>> 
   workflow_checkpoint_ack_claim: ["checkpoint_id", "attempt_id"],
   workflow_checkpoint_requeue_claim: ["checkpoint_id", "attempt_id"],
   workflow_checkpoint_renew_claim: ["checkpoint_id", "attempt_id"],
+  workflow_checkpoint_protect_claim: ["checkpoint_id", "attempt_id"],
   workflow_checkpoint_list: [],
   workflow_checkpoint_list_by_graph: ["graph_name"],
   workflow_checkpoint_list_filtered: ["filter"],
@@ -1837,6 +1850,8 @@ function validateAgentComponentDescriptor(descriptor: AgentComponentDescriptor):
   if (capabilities?.persistence_call && (capabilities.persistence_call !== "unsupported" && !["conversation_store", "runtime_state_store"].includes(descriptor.component) || !["unsupported", "absolute_deadline_v1"].includes(capabilities.persistence_call))) throw new EchoAgentError("invalid_value", "persistence capability is invalid for component");
   if (capabilities && "execution_cas_v1" in capabilities && typeof capabilities.execution_cas_v1 !== "boolean") throw new EchoAgentError("invalid_value", "execution CAS capability must be boolean");
   if (capabilities?.execution_cas_v1 && descriptor.component !== "revisioned_task_store") throw new EchoAgentError("invalid_value", "execution CAS capability only belongs to revisioned task store");
+  if (capabilities && "protected_claim_v1" in capabilities && typeof capabilities.protected_claim_v1 !== "boolean") throw new EchoAgentError("invalid_value", "protected claim capability must be boolean");
+  if (capabilities?.protected_claim_v1 && descriptor.component !== "workflow_checkpoint_store") throw new EchoAgentError("invalid_value", "protected claim capability only belongs to workflow checkpoint store");
   const heartbeat = capabilities?.claim_heartbeat_interval_ms;
   if (descriptor.component === "workflow_checkpoint_store") {
     if (!isCanonicalU64Text(heartbeat)) {
@@ -1916,6 +1931,7 @@ function validateAgentComponentCall(component: string, call: Record<string, unkn
         return text("checkpoint_id");
       case "workflow_checkpoint_ack_claim": case "workflow_checkpoint_requeue_claim":
       case "workflow_checkpoint_renew_claim":
+      case "workflow_checkpoint_protect_claim":
         return text("checkpoint_id") && text("attempt_id");
       case "workflow_checkpoint_list": case "workflow_checkpoint_clear":
       case "sandbox_is_available": case "sandbox_cleanup": case "mcp_transport_close":
@@ -1966,6 +1982,7 @@ function validateAgentComponentResult(component: string, expected: string, resul
     "runtime_save_checkpoint", "runtime_save_checkpoint_for_scope", "runtime_clear_conversation", "audit_log",
     "workflow_checkpoint_save", "workflow_checkpoint_delete", "workflow_checkpoint_clear",
     "workflow_checkpoint_ack_claim", "workflow_checkpoint_requeue_claim", "workflow_checkpoint_renew_claim",
+    "workflow_checkpoint_protect_claim",
     "sandbox_cleanup", "mcp_transport_notify", "mcp_transport_close",
   ]);
   if (unit.has(expected)) {
@@ -2367,4 +2384,34 @@ function validateExtensionError(value: unknown): void {
    if(facade.signature_digest!=null&&(typeof facade.signature_digest!=="string"||!/^sha256:[0-9a-f]{64}$/iu.test(facade.signature_digest)))throw new EchoAgentError("serialization_violation","extension facade signature digest is malformed");
   }
  }
+}
+
+// Classification only: malformed hints remain ordinary failed frames. Match Rust
+// Unicode scalar counts and char::is_whitespace, not JavaScript trim (BOM differs).
+function isNotSettledObservation(value: unknown): boolean {
+ const text=(v:unknown,max:number):v is string=>typeof v==="string"&&Array.from(v).length<=max&&!/[\uD800-\uDFFF]/u.test(v);
+ const nonblank=(v:unknown,max:number):v is string=>text(v,max)&&/[^\p{White_Space}]/u.test(v);
+ if(!isRecord(value)||value.code!=="framework_error"||value.retryable!=="never")return false;
+ const details=value.details;
+ if(!isRecord(details)||!Array.isArray(details.fields))return false;
+ // Reuse the existing error decoder for common scalar/entry shape checks;
+ // the Host's operation/handle whitespace rules are checked below losslessly.
+ try{validateExtensionError({...value,operation:undefined,handle:undefined,details:{fields:details.fields}});}catch{return false;}
+ if(!text(value.message,4096)||value.operation!=null&&!nonblank(value.operation,256))return false;
+ if(value.handle!=null){
+  const h=value.handle;
+  if(!isRecord(h)||!nonblank(h.id,256)||!isWireHandle({id:"validation-id",generation:h.generation,kind:h.kind}))return false;
+ }
+ if(details.facade!=null){
+  if(!isRecord(details.facade))return false;
+  for(const key of ["operation","signature_digest","receiver_kind","expected_type","required_feature","resource"])
+   if(details.facade[key]!=null&&!text(details.facade[key],Number.MAX_SAFE_INTEGER))return false;
+ }
+ const fields=new Map<string,string>();
+ for(const f of details.fields){
+  if(!isRecord(f)||!nonblank(f.key,128)||!text(f.value,2048)||fields.has(f.key))return false;
+  fields.set(f.key,f.value);
+ }
+ return fields.get("observation")==="not_settled"&&nonblank(fields.get("run_id"),2048)
+  &&(!fields.has("execution_id")||nonblank(fields.get("execution_id"),2048));
 }

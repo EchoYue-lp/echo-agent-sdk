@@ -4052,6 +4052,11 @@
             }
           ]
         },
+        "protected_claim_v1": {
+          "description": "This checkpoint store atomically protects the exact claimed attempt before node effects. CRUD registration alone does not promise this.",
+          "default": false,
+          "type": "boolean"
+        },
         "runtime_state": {
           "default": "unsupported",
           "allOf": [
@@ -4574,6 +4579,7 @@
             "capabilities": {
               "default": {
                 "execution_cas_v1": false,
+                "protected_claim_v1": false,
                 "conversation_projection": "unsupported",
                 "runtime_state": "unsupported",
                 "persistence_call": "unsupported",
@@ -6416,6 +6422,38 @@
               "type": "string",
               "enum": [
                 "workflow_checkpoint_renew_claim"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "input",
+            "operation"
+          ],
+          "properties": {
+            "input": {
+              "type": "object",
+              "required": [
+                "attempt_id",
+                "checkpoint_id"
+              ],
+              "properties": {
+                "attempt_id": {
+                  "type": "string"
+                },
+                "checkpoint_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "string",
+              "enum": [
+                "workflow_checkpoint_protect_claim"
               ]
             }
           },
@@ -11555,6 +11593,21 @@
               "type": "string",
               "enum": [
                 "workflow_checkpoint_renew_claim"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "operation": {
+              "type": "string",
+              "enum": [
+                "workflow_checkpoint_protect_claim"
               ]
             }
           },

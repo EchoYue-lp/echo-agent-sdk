@@ -1693,3 +1693,141 @@ fn channels_forward_result_shapes_preserve_the_existing_stream_envelope() -> Res
     assert!(!validator.is_valid(&serde_json::json!({"kind":"variant","value":{"type_id":"echo_sdk::FacadeStreamEvent","variant":"other","fields":fields}})));
     Ok(())
 }
+
+// Approved A: these JSON callers compile against the old closed enums as well.
+// Unsupported capability/operation is a behavioral before, never a missing type.
+#[test]
+fn workflow_checkpoint_protected_claim_capability_contract() -> Result<(), String> {
+    use echo_sdk_protocol::methods::ExtensionDescriptor;
+
+    for enabled in [false, true] {
+        let raw = serde_json::json!({"protected_claim_v1":enabled});
+        let capabilities: AgentComponentCapabilitiesWire =
+            serde_json::from_value(raw).map_err(|error| error.to_string())?;
+        let back = serde_json::to_value(capabilities).map_err(|error| error.to_string())?;
+        assert_eq!(
+            back.get("protected_claim_v1"),
+            Some(&serde_json::json!(enabled))
+        );
+    }
+    for illegal in [
+        serde_json::json!("true"),
+        serde_json::json!(1),
+        serde_json::json!(null),
+    ] {
+        assert!(
+            serde_json::from_value::<AgentComponentCapabilitiesWire>(
+                serde_json::json!({"protected_claim_v1":illegal})
+            )
+            .is_err()
+        );
+    }
+    for (component, enabled, valid) in [
+        ("workflow_checkpoint_store", true, true),
+        ("workflow_checkpoint_store", false, true),
+        ("audit_logger", true, false),
+        ("audit_logger", false, true),
+    ] {
+        let mut capabilities = serde_json::json!({"protected_claim_v1":enabled});
+        if component == "workflow_checkpoint_store" {
+            capabilities
+                .as_object_mut()
+                .ok_or("capabilities must be object")?
+                .insert(
+                    "claim_heartbeat_interval_ms".to_string(),
+                    serde_json::json!("1000"),
+                );
+        }
+        let descriptor: ExtensionDescriptor = serde_json::from_value(serde_json::json!({
+            "kind":"agent_component","descriptor_version":1,
+            "component":component,"name":"checkpoint-provider","capabilities":capabilities
+        }))
+        .map_err(|error| error.to_string())?;
+        assert_eq!(
+            descriptor.validate().is_ok(),
+            valid,
+            "component={component}, enabled={enabled}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn workflow_checkpoint_protected_claim_operation_round_trips_as_unit() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{AgentComponentCallInputWire, AgentComponentCallResultWire};
+
+    let input = serde_json::json!({"operation":"workflow_checkpoint_protect_claim",
+        "input":{"checkpoint_id":"checkpoint-中文🙂","attempt_id":"attempt-原始🙂"}});
+    let typed: AgentComponentCallInputWire =
+        serde_json::from_value(input.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        input
+    );
+    let result = serde_json::json!({"operation":"workflow_checkpoint_protect_claim"});
+    let typed: AgentComponentCallResultWire =
+        serde_json::from_value(result.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        result
+    );
+    for malformed in [
+        serde_json::json!({"operation":"workflow_checkpoint_protect_claim","input":{"checkpoint_id":"c"}}),
+        serde_json::json!({"operation":"workflow_checkpoint_protect_claim","input":{"checkpoint_id":"c","attempt_id":1}}),
+        serde_json::json!({"operation":"workflow_checkpoint_protect_claim","input":{"checkpoint_id":"c","attempt_id":"a","unexpected":true}}),
+    ] {
+        assert!(serde_json::from_value::<AgentComponentCallInputWire>(malformed).is_err());
+    }
+    assert!(
+        serde_json::from_value::<AgentComponentCallResultWire>(serde_json::json!({
+            "operation":"workflow_checkpoint_protect_claim","value":{"accepted":true}
+        }))
+        .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn workflow_checkpoint_protected_claim_legacy_controls_are_closed() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{
+        AgentComponentCallInputWire, AgentComponentCallResultWire, ExtensionDescriptor,
+    };
+
+    let absent: AgentComponentCapabilitiesWire =
+        serde_json::from_value(serde_json::json!({})).map_err(|error| error.to_string())?;
+    assert!(!absent.execution_cas_v1);
+    let legacy: ExtensionDescriptor = serde_json::from_value(serde_json::json!({
+        "kind":"agent_component","descriptor_version":1,"component":"workflow_checkpoint_store",
+        "name":"legacy","capabilities":{"claim_heartbeat_interval_ms":"1000"}
+    }))
+    .map_err(|error| error.to_string())?;
+    assert!(legacy.validate().is_ok());
+    let renew = serde_json::json!({"operation":"workflow_checkpoint_renew_claim",
+        "input":{"checkpoint_id":"checkpoint-中文🙂","attempt_id":"attempt-原始🙂"}});
+    let typed: AgentComponentCallInputWire =
+        serde_json::from_value(renew.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        renew
+    );
+    let result = serde_json::json!({"operation":"workflow_checkpoint_renew_claim"});
+    let typed: AgentComponentCallResultWire =
+        serde_json::from_value(result.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        result
+    );
+    assert!(
+        serde_json::from_value::<AgentComponentCapabilitiesWire>(serde_json::json!({
+            "protected_claim_v2":true
+        }))
+        .is_err()
+    );
+    assert!(
+        serde_json::from_value::<AgentComponentCallInputWire>(serde_json::json!({
+            "operation":"workflow_checkpoint_protect_claim_v2","input":{}
+        }))
+        .is_err()
+    );
+    Ok(())
+}

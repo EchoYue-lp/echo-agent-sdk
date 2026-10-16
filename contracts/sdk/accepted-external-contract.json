@@ -18680,7 +18680,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:27a18d166b34fd8afba029e8465b6c1b7579f28eaa0f4e95db4c3811c1fbdb39"
+          "digest": "sha256:a05bdf55883ecee84ce31c753060c7e821698f78ac74179baa03c4e7602b845a"
         }
       ],
       "classification": "operation",
@@ -18699,7 +18699,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:27a18d166b34fd8afba029e8465b6c1b7579f28eaa0f4e95db4c3811c1fbdb39"
+            "digest": "sha256:a05bdf55883ecee84ce31c753060c7e821698f78ac74179baa03c4e7602b845a"
           }
         ],
         "mapping": "standard_projection via callable-operation; Rust remains authoritative",
@@ -228704,7 +228704,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:a767f08f3ce70b59a41d287c37b4fedd956b4eea173720b5a365254a7aae87b2"
+          "digest": "sha256:98542f365b7b8dd63caad66e8d41cc5a69b1a1930e2808899f14cac6ea9f6bca"
         }
       ],
       "classification": "operation",
@@ -228723,7 +228723,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:a767f08f3ce70b59a41d287c37b4fedd956b4eea173720b5a365254a7aae87b2"
+            "digest": "sha256:98542f365b7b8dd63caad66e8d41cc5a69b1a1930e2808899f14cac6ea9f6bca"
           }
         ],
         "mapping": "echo_extension via callable-operation; Rust remains authoritative",

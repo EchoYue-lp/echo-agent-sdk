@@ -114,6 +114,45 @@ impl CoreProfileState {
         framework: echo_agent::config::FrameworkConfig,
         llm_client: std::sync::Arc<dyn echo_agent::llm::LlmClient>,
     ) -> std::result::Result<std::sync::Arc<Self>, HostError> {
+        #[cfg(feature = "sdk-facade-adapters")]
+        let facade = super::facade::SessionFacadeRuntime::new(&limits);
+        Self::install_with_facade(
+            state_root,
+            limits,
+            framework,
+            llm_client,
+            #[cfg(feature = "sdk-facade-adapters")]
+            facade,
+        )
+    }
+
+    /// Exercise the real ACP/profile admission with an independently small
+    /// original facade map; the global handle budget still uses real limits.
+    #[cfg(all(
+        test,
+        feature = "sdk-facade-adapters",
+        feature = "framework-subagent",
+        feature = "sdk-extension-bridge"
+    ))]
+    pub(crate) fn install_for_subagent_admission_test(
+        state_root: &Path,
+        limits: SdkProfileLimits,
+        framework: echo_agent::config::FrameworkConfig,
+        llm_client: Arc<dyn echo_agent::llm::LlmClient>,
+        capacity: usize,
+    ) -> std::result::Result<Arc<Self>, HostError> {
+        let facade =
+            super::facade::SessionFacadeRuntime::with_subagent_capacity_for_test(&limits, capacity);
+        Self::install_with_facade(state_root, limits, framework, llm_client, facade)
+    }
+
+    fn install_with_facade(
+        state_root: &Path,
+        limits: SdkProfileLimits,
+        framework: echo_agent::config::FrameworkConfig,
+        llm_client: Arc<dyn echo_agent::llm::LlmClient>,
+        #[cfg(feature = "sdk-facade-adapters")] facade: super::facade::SessionFacadeRuntime,
+    ) -> std::result::Result<Arc<Self>, HostError> {
         let persistence = CorePersistence::open(state_root)
             .map_err(|error| HostError::Config(error.to_string()))?;
         let state_store = persistence.state_store();
@@ -176,8 +215,6 @@ impl CoreProfileState {
             default_definition.clone(),
             limits.max_open_handles,
         );
-        #[cfg(feature = "sdk-facade-adapters")]
-        let facade = super::facade::SessionFacadeRuntime::new(&limits);
         let state = Arc::new(Self {
             services: OnceLock::new(),
             handles,

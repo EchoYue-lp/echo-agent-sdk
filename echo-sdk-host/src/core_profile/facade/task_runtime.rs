@@ -108,6 +108,19 @@ impl RuntimeDagController for FacadeTaskController {
             .map_err(|error| ReactError::Other(error.to_string()))
     }
 
+    async fn request_task_interruption(
+        &self,
+        run_id: &str,
+        task: &Task,
+        claim: &TaskClaim,
+        disposition: RuntimeInterruptionDisposition,
+    ) -> Result<bool> {
+        self.store
+            .request_runtime_task_interruption(run_id, &task.spec.id, claim, disposition)
+            .await
+            .map_err(|error| ReactError::Other(error.to_string()))
+    }
+
     async fn claim_is_current(
         &self,
         run_id: &str,
@@ -245,7 +258,7 @@ impl RuntimeDagController for FacadeTaskController {
             }
             Err(error) => {
                 let message = error.to_string();
-                match AgentFailure::from(&error).terminal_kind {
+                match AgentFailure::try_from(&error)?.terminal_kind {
                     AgentTerminalKind::Cancelled => RuntimeTaskResolutionRequest::Cancelled,
                     AgentTerminalKind::TimedOut => {
                         RuntimeTaskResolutionRequest::TimedOut { error: message }
@@ -409,6 +422,7 @@ pub(crate) async fn task_execute(
     let cancel = tokio_util::sync::CancellationToken::new();
     let completion = Arc::new(super::TaskRunCompletion {
         settled: std::sync::atomic::AtomicBool::new(false),
+        observation: std::sync::Mutex::new(None),
         notify: tokio::sync::Notify::new(),
     });
     if let Err(error) = state.facade.try_register_task_execution(
@@ -438,7 +452,26 @@ pub(crate) async fn task_execute(
     // started.
     let cancel_for_task = cancel.clone();
     let spawned = connection.spawn(async move {
-        if let Err(error) = runtime.execute(&scope_for_task, cancel_for_task).await {
+        if let Err(error) = runtime
+            .execute_to_settlement(&scope_for_task, cancel_for_task)
+            .await
+        {
+            if matches!(&error, ReactError::ExecutionNotSettled { .. }) {
+                let projected =
+                    wire::framework_error(&error, method).with_handle(task_run_for_task.clone());
+                *authorities_for_task
+                    .latest_task_execution_error
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner()) = Some(projected.clone());
+                *completion
+                    .observation
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner()) = Some(projected);
+                completion.notify.notify_waiters();
+                // The original physical owner is unknown, not joined. Keep the
+                // same runtime/control address and its admission reservation.
+                return Ok::<(), agent_client_protocol::Error>(());
+            }
             tracing::warn!("task graph execution for {scope_for_task} failed: {error}");
             *authorities_for_task
                 .latest_task_execution_error

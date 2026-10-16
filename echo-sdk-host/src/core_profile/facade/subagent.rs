@@ -34,13 +34,22 @@ use super::super::wire;
 /// resolution (settlement still follows the framework's own semantics).
 pub(crate) struct SubagentDispatchRecord {
     pub executor: Arc<SubagentExecutor>,
-    pub background: echo_agent::agent::subagent::BackgroundSubagentHandle,
+    /// Admission reserves this same record before the framework may construct
+    /// an Agent. One original setup/collector fills the cell; retries only wait.
+    pub background: tokio::sync::OnceCell<
+        Result<echo_agent::agent::subagent::BackgroundSubagentHandle, EchoSdkError>,
+    >,
+    pub execution_id: String,
+    pub cancel: tokio_util::sync::CancellationToken,
     /// Control identity of the bound attempt.
     pub attempt: u32,
     /// Memoized terminal result (a background join is single-consumption).
     pub settled: tokio::sync::Mutex<
         Option<echo_agent::error::Result<echo_agent::agent::subagent::SubagentResult>>,
     >,
+    /// A local join may report nonterminal knowledge. This remains on the
+    /// original record, consumes quota and never becomes a terminal result.
+    pub observation: tokio::sync::Mutex<Option<EchoSdkError>>,
     /// Result collection outlives any individual RPC deadline.
     pub settled_notify: tokio::sync::Notify,
     /// ACP session that owns the dispatch (records are session-scoped;
@@ -74,25 +83,107 @@ struct DispatchInput {
 }
 
 impl SubagentDispatchRecord {
-    pub async fn wait_settled(&self) {
+    async fn wait_ready(&self) -> Result<(), EchoSdkError> {
+        loop {
+            let notified = self.settled_notify.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+            if let Some(background) = self.background.get() {
+                return background.as_ref().map(|_| ()).map_err(Clone::clone);
+            }
+            notified.await;
+        }
+    }
+
+    /// This original record owns both setup and the single-consumption join.
+    /// Dropping an RPC waiter never drops a submitted construction future.
+    fn dispatch_original(
+        record: Arc<Self>,
+        state: Arc<CoreProfileState>,
+        dispatch: DispatchRequest,
+        identity: SubagentAttemptIdentity,
+    ) {
+        tokio::spawn(async move {
+            match record
+                .executor
+                .dispatch_background_attempt(dispatch, identity)
+                .await
+            {
+                Ok(background) => {
+                    if record.background.set(Ok(background)).is_err() {
+                        // No second caller can initialize this private cell.
+                        // Retain admission if that invariant is ever violated.
+                        *record.observation.lock().await = Some(wire::not_settled_error(
+                            &record.owner_session,
+                            Some(&record.execution_id),
+                            "_echo_agent/subagent/dispatch",
+                        ));
+                        record.settled_notify.notify_waiters();
+                        return;
+                    }
+                    record.settled_notify.notify_waiters();
+                    record.collect_original_result().await;
+                }
+                Err(error) => {
+                    let observer = wire::framework_error(&error, "_echo_agent/subagent/dispatch");
+                    let unknown = matches!(
+                        error,
+                        echo_agent::error::ReactError::ExecutionNotSettled { .. }
+                    );
+                    let _ = record.background.set(Err(observer.clone()));
+                    if unknown {
+                        *record.observation.lock().await = Some(observer);
+                    } else {
+                        // The framework returns Err from dispatch only before
+                        // spawning its attempt. Only that proven pre-effect
+                        // admission failure may retire the reserved SDK slot.
+                        *record.settled.lock().await = Some(Err(error));
+                        state
+                            .facade
+                            .retire_unsubmitted_subagent(&record.execution_id, &record);
+                    }
+                    record.settled_notify.notify_waiters();
+                }
+            }
+        });
+    }
+
+    async fn collect_original_result(&self) {
+        let Some(Ok(background)) = self.background.get() else {
+            return;
+        };
+        let result = background.join().await;
+        match result {
+            Err(error @ echo_agent::error::ReactError::ExecutionNotSettled { .. }) => {
+                *self.observation.lock().await =
+                    Some(wire::framework_error(&error, "_echo_agent/subagent/await"));
+            }
+            terminal => *self.settled.lock().await = Some(terminal),
+        }
+        self.settled_notify.notify_waiters();
+    }
+
+    pub async fn wait_settled(&self) -> Result<(), EchoSdkError> {
         loop {
             // Subscribe before reading so a terminal write between the read
             // and wait cannot be lost.
             let notified = self.settled_notify.notified();
             tokio::pin!(notified);
             notified.as_mut().enable();
+            if let Some(observation) = self.observation.lock().await.as_ref() {
+                return Err(observation.clone());
+            }
             if self.settled.lock().await.is_some() {
-                return;
+                return Ok(());
             }
             notified.await;
         }
     }
 
+    #[cfg(test)]
     fn collect_result(record: Arc<Self>) {
         tokio::spawn(async move {
-            let result = record.background.join().await;
-            *record.settled.lock().await = Some(result);
-            record.settled_notify.notify_waiters();
+            record.collect_original_result().await;
         });
     }
 }
@@ -205,12 +296,15 @@ pub(crate) async fn subagent_dispatch(
                     method
                 ));
             }
-            if state.facade.subagent_of(&receipt.handle.id).is_none() {
+            let Some(original) = state.facade.subagent_of(&receipt.handle.id) else {
                 fail!(subagent_error(
                     ExtensionErrorCode::ClosedHandle,
                     "idempotent subagent dispatch result has been retired",
                     method
                 ));
+            };
+            if let Err(error) = original.wait_ready().await {
+                fail!(error);
             }
             return responder.respond(SubagentDispatchResponse {
                 subagent: receipt.handle.clone(),
@@ -343,7 +437,7 @@ pub(crate) async fn subagent_dispatch(
         agent_name: input.agent_name,
         task: input.task,
         mode_override: input.mode_override,
-        cancel,
+        cancel: cancel.clone(),
         parent_agent: input.parent_agent.unwrap_or_else(|| "sdk-host".to_string()),
         parent_context: None,
         delegation_policy: input.delegation_policy.unwrap_or_default(),
@@ -354,41 +448,30 @@ pub(crate) async fn subagent_dispatch(
         constraints: input.constraints,
         background: true,
     };
-    let executor = authorities.subagent_executor.clone();
-    let dispatched = tokio::select! {
-        result = executor.dispatch_background_attempt(dispatch, identity) => result,
-        _ = session.cancel_operations.cancelled() => fail!(subagent_error(ExtensionErrorCode::ClosedHandle, "subagent owner Session is closing", method)),
-    };
-    let record = match dispatched {
-        Ok(background) => Arc::new(SubagentDispatchRecord {
-            executor,
-            background,
-            attempt: 1,
-            settled: tokio::sync::Mutex::new(None),
-            settled_notify: tokio::sync::Notify::new(),
-            owner_session: acp_session_id,
-        }),
-        Err(error) => {
-            fail!(wire::framework_error(&error, method));
-        }
-    };
     let handle = WireHandle {
-        id: record.background.execution_id.clone(),
+        id: identity.execution_id.clone(),
         generation: WireU64::from_u64(state.handles.generation()),
         kind: HandleKind::Subagent,
     };
-    // The advertised live-subagent bound is a hard limit: when the record
-    // cannot be admitted, the attempt is cancelled so no dispatch runs
-    // without a control identity (never a leaked background subagent).
+    let record = Arc::new(SubagentDispatchRecord {
+        executor: authorities.subagent_executor.clone(),
+        background: tokio::sync::OnceCell::new(),
+        execution_id: handle.id.clone(),
+        cancel,
+        attempt: 1,
+        settled: tokio::sync::Mutex::new(None),
+        observation: tokio::sync::Mutex::new(None),
+        settled_notify: tokio::sync::Notify::new(),
+        owner_session: acp_session_id,
+    });
+    // Admission and quota checking are atomic in the original SDK map.
+    // A rejected reservation has not invoked any framework constructor/Agent.
     if let Err(error) = state
         .facade
         .register_subagent(handle.id.clone(), record.clone())
     {
-        record.background.cancel();
-        SubagentDispatchRecord::collect_result(record.clone());
         fail!(error);
     }
-    SubagentDispatchRecord::collect_result(record.clone());
     if let Some(id) = request.idempotency_id {
         receipts.insert(
             id,
@@ -398,11 +481,17 @@ pub(crate) async fn subagent_dispatch(
             },
         );
     }
+    // Bind idempotency before the first await or setup side effect. A retry
+    // resolves this exact reservation, never a replacement execution.
+    SubagentDispatchRecord::dispatch_original(record.clone(), state.clone(), dispatch, identity);
     drop(receipts);
+    if let Err(error) = record.wait_ready().await {
+        fail!(error);
+    }
     let published = responder.respond(SubagentDispatchResponse { subagent: handle });
     if published.is_err() {
-        record.background.cancel();
-        record.wait_settled().await;
+        record.cancel.cancel();
+        let _ = record.wait_settled().await;
     }
     published
 }
@@ -453,14 +542,19 @@ pub(crate) async fn subagent_await(
             method
         ));
     };
-    if tokio::time::timeout_at(deadline, record.wait_settled())
-        .await
-        .is_err()
-    {
-        return responder.respond(SubagentAwaitResponse {
-            settled: false,
-            result: None,
-        });
+    match tokio::time::timeout_at(deadline, record.wait_settled()).await {
+        Err(_) => {
+            return responder.respond(SubagentAwaitResponse {
+                settled: false,
+                result: None,
+            });
+        }
+        Ok(Err(error)) => fail!(
+            error
+                .with_operation(method)
+                .with_handle(request.subagent.clone())
+        ),
+        Ok(Ok(())) => {}
     }
     let settled = record.settled.lock().await;
     match settled.as_ref() {
@@ -522,7 +616,10 @@ pub(crate) async fn subagent_control(
     if record.settled.lock().await.is_some() {
         return responder.respond(SubagentControlResponse { accepted: false });
     }
-    let execution_id = record.background.execution_id.clone();
+    if let Err(error) = record.wait_ready().await {
+        fail!(error.with_handle(request.subagent.clone()));
+    }
+    let execution_id = record.execution_id.clone();
     let attempt = record.attempt;
     // Message and guidance carry text; interrupt and cancel address the
     // attempt itself and take no payload.
@@ -563,18 +660,25 @@ pub(crate) async fn subagent_control(
             .await
             .map(|outcome| outcome.settled),
         SubagentControlAction::Cancel => {
-            record.background.cancel();
+            record.cancel.cancel();
             Ok(true)
         }
     };
     match accepted {
         Ok(accepted) => responder.respond(SubagentControlResponse { accepted }),
         Err(error) => {
-            fail!(subagent_error(
-                ExtensionErrorCode::FrameworkError,
-                wire::bounded_framework_message(&error.to_string()),
-                method,
-            ));
+            let error = match &error {
+                echo_agent::agent::subagent::SubagentControlError::ExecutionNotSettled {
+                    run_id,
+                    execution_id,
+                } => wire::not_settled_error(run_id, Some(execution_id), method),
+                _ => subagent_error(
+                    ExtensionErrorCode::FrameworkError,
+                    wire::bounded_framework_message(&error.to_string()),
+                    method,
+                ),
+            };
+            fail!(error.with_handle(request.subagent.clone()));
         }
     }
 }
@@ -582,6 +686,249 @@ pub(crate) async fn subagent_control(
 #[cfg(test)]
 mod tests {
     use super::DispatchInput;
+
+    /// This is a real in-process ACP/profile RPC test, not a public Host
+    /// configuration: global handles remain ample, original facade capacity=1.
+    #[cfg(feature = "sdk-extension-bridge")]
+    #[tokio::test]
+    async fn full_rpc_admission_precedes_factory_and_execution_and_reopens_after_settlement()
+    -> Result<(), String> {
+        use agent_client_protocol::{
+            Agent as AcpAgent, ByteStreams, Client, ConnectionTo, Responder,
+        };
+        use echo_sdk_protocol::methods::*;
+        use echo_sdk_protocol::scalar::WireValue;
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+        use tokio_util::sync::CancellationToken;
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config:crate::SdkHostConfig=serde_json::from_value(serde_json::json!({"schema_version":1,"default_agent":{
+            "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+            "agent":{"name":"fixture","enable_tools":true}}})).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = super::CoreProfileState::install_for_subagent_admission_test(
+            root.path(),
+            crate::config::SdkProfileLimits {
+                max_open_handles: 64,
+                ..Default::default()
+            },
+            prepared.framework,
+            prepared.llm_client,
+            1,
+        )
+        .map_err(|error| error.to_string())?;
+        let profile = super::super::super::SdkCoreProfile {
+            state: state.clone(),
+        };
+        let adapter = echo_agent::acp::AcpAgentAdapter::new(state.session_factory.clone())
+            .with_profile(profile);
+        let close_owner = adapter.close_owner();
+        let constructors = Arc::new(AtomicUsize::new(0));
+        let callback_constructors = constructors.clone();
+        let executions = Arc::new(AtomicUsize::new(0));
+        let callback_executions = executions.clone();
+        let entered = CancellationToken::new();
+        let callback_entered = entered.clone();
+        let release = CancellationToken::new();
+        let callback_release = release.clone();
+        let release_after = release.clone();
+        let (host_io, client_io) = tokio::io::duplex(32_768);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (client_read, client_write) = tokio::io::split(client_io);
+        let host = agent_client_protocol::ConnectTo::connect_to(
+            adapter,
+            ByteStreams::new(host_write.compat_write(), host_read.compat()),
+        );
+        let client=Client.builder().on_receive_request(async move |call:ExtensionInvokeCall,responder:Responder<ExtensionInvokeOutcome>,connection:ConnectionTo<AcpAgent>| {
+            match call.invocation {
+                ExtensionInvocation::FactoryCreateAgent(input)=>{
+                    callback_constructors.fetch_add(1,Ordering::AcqRel);
+                    responder.respond(ExtensionInvokeOutcome::Result{result:ExtensionResult::FactoryCreateAgent(CustomAgentDescriptorWire{
+                        name:input.name,model_name:"fixture".to_string(),system_prompt:"original admission".to_string(),tool_names:Vec::new()})})
+                }
+                ExtensionInvocation::AgentExecuteStream(_)=>{
+                    callback_executions.fetch_add(1,Ordering::AcqRel);
+                    let stream=call.stream.ok_or_else(|| agent_client_protocol::Error::internal_error().data("missing original stream"))?;
+                    responder.respond(ExtensionInvokeOutcome::Stream{stream:stream.clone()})?;
+                    let release=callback_release.clone();let entered=callback_entered.clone();let producer=connection.clone();
+                    connection.spawn(async move {
+                        entered.cancel();release.cancelled().await;
+                        producer.send_notification(ExtensionStreamEvent::Complete {stream,sequence:echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string()).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?,
+                            value:ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::FinalAnswer{text:"original settled".to_string()})})
+                    })
+                }
+                ExtensionInvocation::AgentClose(_)=>responder.respond(ExtensionInvokeOutcome::Result{result:ExtensionResult::AgentClose(ExtensionUnit)}),
+                _=>Err(agent_client_protocol::Error::internal_error().data("unexpected quota test callback")),
+            }
+        },agent_client_protocol::on_receive_request!()).connect_with(ByteStreams::new(client_write.compat_write(),client_read.compat()),async move |connection| {
+            let _release_on_exit=release.clone().drop_guard();
+            let mut initialize=agent_client_protocol::schema::v1::InitializeRequest::new(agent_client_protocol::schema::ProtocolVersion::V1);
+            let mut meta=agent_client_protocol::schema::v1::Meta::new();
+            meta.insert("echo_agent".to_string(),serde_json::to_value(echo_sdk_protocol::capability::EchoAgentClientHello {
+                extension_protocol_version:echo_sdk_protocol::EXTENSION_PROTOCOL_VERSION,contract_digest:state.advertisement.contract_digest.clone(),source_contract_digest:state.advertisement.source_contract_digest.clone(),required_features:Vec::new(),required_capabilities:Vec::new()
+            }).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?);
+            initialize.client_capabilities.meta=Some(meta);connection.send_request(initialize).block_task().await?;
+            let agent=connection.send_request(AgentCreateRequest {config:AgentConfigWire::HostDefault,idempotency_id:None}).block_task().await?.agent;
+            for name in ["quota-original","quota-rejected"] {
+                connection.send_request(ExtensionRegisterRequest {kind:ExtensionKind::AgentFactory,implementation_id:name.to_string(),descriptor:ExtensionDescriptor::AgentFactory{descriptor_version:1},timeout:None}).block_task().await?;
+            }
+            let session=connection.send_request(SessionCreateRequest {agent,working_dir:None,session_id:None,idempotency_id:None}).block_task().await?;
+            let original_request=SubagentDispatchRequest {session:session.session.clone(),request:WireValue::from_json(serde_json::json!({"agent_name":"quota-original","task":"held original"})).map_err(|error| agent_client_protocol::Error::invalid_params().data(error.to_string()))?,idempotency_id:Some("original-receipt".to_string())};
+            let first=connection.send_request(original_request.clone()).block_task().await?.subagent;
+            entered.cancelled().await;
+            assert_eq!(constructors.load(Ordering::Acquire),1);assert_eq!(executions.load(Ordering::Acquire),1);
+            let retry=connection.send_request(original_request).block_task().await?.subagent;
+            assert_eq!(retry,first,"same receipt started another execution");
+            let rejected=connection.send_request(SubagentDispatchRequest {session:session.session.clone(),request:WireValue::from_json(serde_json::json!({"agent_name":"quota-rejected","task":"must never construct or execute"})).map_err(|error| agent_client_protocol::Error::invalid_params().data(error.to_string()))?,idempotency_id:None}).block_task().await;
+            let error=rejected.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("full original map admitted a second attempt"))?;
+            let error=echo_sdk_protocol::error::EchoSdkError::from_jsonrpc_data(error.data.as_ref()).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            assert_eq!(error.code,echo_sdk_protocol::error::ExtensionErrorCode::PayloadTooLarge);
+            assert_eq!(error.operation.as_deref(),Some("_echo_agent/subagent/dispatch"));
+            assert_eq!(constructors.load(Ordering::Acquire),1,"rejected RPC constructed a child");assert_eq!(executions.load(Ordering::Acquire),1,"rejected RPC executed a child");
+            release.cancel();
+            assert!(connection.send_request(SubagentAwaitRequest {subagent:first,timeout:None}).block_task().await?.settled);
+            assert_eq!(constructors.load(Ordering::Acquire),1);assert_eq!(executions.load(Ordering::Acquire),1);
+            let fresh=connection.send_request(SubagentDispatchRequest {session:session.session.clone(),request:WireValue::from_json(serde_json::json!({"agent_name":"quota-rejected","task":"admitted after original physical settlement"})).map_err(|error| agent_client_protocol::Error::invalid_params().data(error.to_string()))?,idempotency_id:None}).block_task().await?.subagent;
+            assert!(connection.send_request(SubagentAwaitRequest {subagent:fresh,timeout:None}).block_task().await?.settled);
+            assert_eq!(constructors.load(Ordering::Acquire),2);assert_eq!(executions.load(Ordering::Acquire),2);
+            assert!(connection.send_request(SessionCloseRequest {session:session.session}).block_task().await?.released);
+            Ok(())
+        });
+        let outcome = tokio::time::timeout(std::time::Duration::from_secs(10), async {
+            tokio::join!(host, client)
+        })
+        .await;
+        release_after.cancel();
+        let (host, client) =
+            outcome.map_err(|_| "original admission real ACP test timed out".to_string())?;
+        host.map_err(|error| error.to_string())?;
+        client.map_err(|error| error.to_string())?;
+        drop(close_owner);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn background_unknown_retains_original_sdk_record_and_capacity() -> Result<(), String> {
+        use super::{
+            DispatchRequest, SubagentAttemptIdentity, SubagentDispatchRecord, SubagentExecutor,
+        };
+        use echo_agent::agent::subagent::{
+            FnAgentFactory, SubagentDefinition, SubagentExecutorConfig, SubagentRegistry,
+        };
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        for unknown in [true, false] {
+            let calls = Arc::new(AtomicUsize::new(0));
+            let registry = Arc::new(SubagentRegistry::new());
+            let factory_calls = calls.clone();
+            let factory = FnAgentFactory::new(move || -> futures::future::BoxFuture<'static, echo_agent::error::Result<Box<dyn echo_agent::agent::Agent>>> {
+                let calls = factory_calls.clone();
+                Box::pin(async move {
+                    calls.fetch_add(1, Ordering::AcqRel);
+                    Err(if unknown { echo_agent::error::ReactError::ExecutionNotSettled {
+                        run_id: "original-run-中文🙂".to_string(), execution_id: Some("original-execution".to_string()),
+                    } } else { echo_agent::error::ReactError::Other("genuine completed constructor error".to_string()) })
+                })
+            });
+            assert!(registry.register_factory_sync(
+                SubagentDefinition::new("original", "controlled original factory"),
+                Arc::new(factory)
+            ));
+            let executor = Arc::new(SubagentExecutor::new(
+                registry,
+                SubagentExecutorConfig::default(),
+            ));
+            let background = executor
+                .dispatch_background_attempt(
+                    DispatchRequest {
+                        agent_name: "original".to_string(),
+                        task: "original dispatch".to_string(),
+                        mode_override: None,
+                        cancel: tokio_util::sync::CancellationToken::new(),
+                        parent_agent: "sdk-collector-test".to_string(),
+                        parent_context: None,
+                        delegation_policy: Default::default(),
+                        runtime_context: None,
+                        message: None,
+                        prompt_payload: None,
+                        prompt_context: None,
+                        constraints: Vec::new(),
+                        background: true,
+                    },
+                    SubagentAttemptIdentity::new("controlled-task", "controlled-execution", 1)
+                        .map_err(|error| error.to_string())?,
+                )
+                .await
+                .map_err(|error| error.to_string())?;
+            let execution = background.execution_id.clone();
+            let ready = tokio::sync::OnceCell::new();
+            ready
+                .set(Ok(background))
+                .map_err(|_| "test initialized background twice")?;
+            let record = Arc::new(SubagentDispatchRecord {
+                executor,
+                background: ready,
+                execution_id: execution.clone(),
+                cancel: tokio_util::sync::CancellationToken::new(),
+                attempt: 1,
+                settled: tokio::sync::Mutex::new(None),
+                observation: tokio::sync::Mutex::new(None),
+                settled_notify: tokio::sync::Notify::new(),
+                owner_session: "owner-session".to_string(),
+            });
+            let facade =
+                super::super::SessionFacadeRuntime::new(&crate::config::SdkProfileLimits {
+                    max_open_handles: 1,
+                    ..Default::default()
+                });
+            facade
+                .register_subagent(execution.clone(), record.clone())
+                .map_err(|error| error.message)?;
+            SubagentDispatchRecord::collect_result(record.clone());
+            let result =
+                tokio::time::timeout(std::time::Duration::from_secs(2), record.wait_settled())
+                    .await
+                    .map_err(|error| error.to_string())?;
+            assert_eq!(calls.load(Ordering::Acquire), 1);
+            if unknown {
+                let error = result.err().ok_or("unknown became settled")?;
+                assert!(
+                    matches!(super::wire::observation_from_sdk_error(&error), Some(echo_agent::error::ReactError::ExecutionNotSettled { run_id, execution_id }) if run_id == "original-run-中文🙂" && execution_id.as_deref() == Some("original-execution"))
+                );
+                assert!(record.settled.lock().await.is_none());
+                assert!(
+                    facade
+                        .register_subagent("competing-slot".to_string(), record.clone())
+                        .is_err()
+                );
+                assert!(facade.cancel_subagents_of("owner-session").await.is_err());
+                assert!(
+                    facade
+                        .subagent_of(&execution)
+                        .is_some_and(|retained| Arc::ptr_eq(&retained, &record))
+                );
+                assert_eq!(
+                    calls.load(Ordering::Acquire),
+                    1,
+                    "retry must not construct or dispatch again"
+                );
+            } else {
+                result.map_err(|error| error.message)?;
+                assert!(record.settled.lock().await.is_some());
+                facade
+                    .cancel_subagents_of("owner-session")
+                    .await
+                    .map_err(|error| error.message)?;
+                assert!(facade.subagent_of(&execution).is_none());
+            }
+        }
+        Ok(())
+    }
 
     #[test]
     fn dispatch_fields_are_typed_and_unknown_fields_are_rejected() -> Result<(), String> {

@@ -31,7 +31,27 @@ EKO 产品策略和 GUI/TUI/CLI 投影不进入 SDK runtime。
 - [历史 Finding 账本](sdk/governance/finding-ledger.md)：保留旧 ID、Issue、状态与冻结 revision。
 - `.echo-semantic/baseline.md` 的 inventory/behavior closure 仍保持 open。
 
-## 当前有效检查点（2026-10-13 17:20）
+## 当前有效检查点（2026-10-16，SDK并行接续）
+
+本节优先于下方历史检查点。用户已明确接管原A49源码及后继8包pin/真实lock差异，原writer唯一producer自然失败后已正式释放写权；宿主根仍LP，所有命令显式在指定SDK worktree执行，不新建worktree、不动primary差异。
+
+- 公开框架固定 `9886502c83d6b1f6fa9212eb221db0e5874deaee`；上游PR190、精main CI38862267005七项成功由协调者交接。SDK Host manifest/真实Cargo.lock八个框架包同源，无临时path patch。
+- generator源修复已独审，focused checkpoint `637a308e0d1c7f13339d279eb1f91aedfb403685` 已推送并核对PR5任务分支远端SHA；仅含workspace-membership解析器/原路径回归和薄Evidence，不混入未验Host源码。
+- 原完整producer自然exit1：误将source=null的第三方vendor当framework workspace member，full calamine独立manifest的locked检查拒绝创建锁。原失败保留；同路径回归red后9单位测试全绿。最小修复只保真实workspace成员及原tokio-util特例，不补vendor锁、不移locked、不跳profile。
+- 修复后唯一完整28-profile update与后继完整canonical check均实际exit0/nullsignal/notrunc，117规范产物current、telemetry drift0；后继Protocol5/42/91全通过、无ignored，纯依赖/provenance988/catalog检查0。accepted 5621项无增删；from_error的Self变Result<Self>、drive的TurnReceipt变Result<TurnReceipt>，输入/入口及top-level与route副本一致，属于已批准B的必要fallibility。schema仅增加已批准A单cap/protect-claim reverse Unit。以上仍不能称为Host/语言完成。
+- B原 callback 顺序4例与 pending pull1例均已实际 before失败→after通过；同一原 stream record 锁合并原 callback closure 与 sole producer join，阻止旧unknown覆盖真实闭合，pending pull/close同时观察unknown。原owner、guard/lease、stream配额与原terminal权威保持；这些opt0局部行为证据仍有Darwin链接警告，不代最终门禁。
+- Workflow direct非流真实 projection before失败、ordinary对照先通过，最窄typed投影after通过。A Python原30step已实际before四缺cap错误投影失败→after通过；后继不可变45fc Host的原30step在TS/Python实际通过，Java业务30行验证完成后在client close五秒期限失败，完整Java用例仍失败。B TS setup/stream首次均因fixture错误要求实际context必须有run_id而失败于Popen前；其它语言不重复同一前置错误。普通turn的foreign执行身份不冒充HostRun回执，正式Task exact-attempt场景另循原入口。managed原Linux first-child十秒超时根因仍未知，诊断保原期限/无retry/无kill-as-pass。
+- 新发现Workflow extension observation break/drain丢弃原late Completed，已登记独立Finding；同一公开TS SDK在不可变旧/新Host实际before1→after0，完整原payload/顺序保。Python/Java复用原nativefile及共享逐字段oracle已准备，局部源码独审pass；不外推Graph late source或三语验收。
+- 新原件统一ignored `.echo-semantic/local/sdk-parallel-delivery-01a14385/`；旧原件保`.echo-semantic/local/sdk-cancellation-observation/`。各自jobs1/debug0/incremental0/strip=symbols、每target硬9GiB/free硬5GiB，CLI可独立并行，不kill其它会话。Root已确认在S内分开nightly/default与ownlocal/stable-host-target缓存；guard同时监测两target，不手补marker/rm，整体验证完成后各officialclean。
+- opt1实际Host试验exit0/零warning，历史Host SHA45fc7b267941864f4528f55d8d7373d048f5afc824b2fb389c7c8c8fbc680abc，EH15488956字节低于16MiB、unwind_info2979520保留。其后初始manifest配置实际Host build0/零warning，SHA8bf4a1d6deb647e608153c807ca07785dd31f7d3223a88cc3daf9b835b8bff5c，EH15489244/unwind_info2979504，861非语义冻结输入0漂移，无opt/assert/overflow/panic覆盖、仍保资源debug/strip等；必要unwind定向1pass。最终四键唯一移入原.cargo/config.toml [profile.dev]，原-A linker_messages彻底移除、不新增warning策略，SDKroot/member cwd边界及外部--manifest-path差异见ADR0040。最终表示的无行为/警告flags覆盖构建和新共同cut验证正在执行，资源debug0/strip/inc0/jobs1继续保，不简称无环境override。原Python定向格式失败均保留并在原scope修正check/formatcheck0，不作行为red。
+- callback新顺序反例已实跑：原observer真实unwind先于unknown时，旧实现提前close/quota重开；after修原callback绑定与collector同锁闭合。错误ACK的后继red明确lease/配额保持但消费者错误地终止；最小修复仅普通ACK/decoder/no-peer错误转原unknown，已有合法typed/raw observation身份保持。当前同不可变libtest七个完整selector各1pass、0fail、0ignore，含原unwind、有/无身份ACK、typed/raw普通finalError和context无run的typed/raw foreign观察。首次错误可见时即检查guard/lease回收，原producer join后才核配额；没有HostRun结算推论。局部独审pass不代整体A/B审查。
+- 整体候选独审后继发现Workflow转发满队列时sender.send不监听cancel，导致原source无法drain/join；真实官方ACP两chunk/队列容量与远程sequence条件证明进入点、无pull解堵，原callback物理closed/lease0后旧close仍Err且配额未开，目标red成立。正常一chunk控制先因Boolfalse错误预期失败，ephemeral cascade的合法false已单独修正，不能把该oracle错误当产品red。最窄cancel/send select后同两case2pass/0fail/0ignore及增量独审pass，原before与after输入/不可变产物均保。原efc候选三语pure21/36/16和latepayload1/1/1已实际通过，但新生产cut必须刷新相关native，不借旧候选scope。
+- S已按真实resume/adopt和PF继续授权范围，同原生apply_patch未被拒；native preEdit新记录与Stop尚未验。插件专项定位宿主hooks启用但trustStatus modified，待人类正常审阅信任后真实复验；不手写trust、不用resume冒Hook成功。
+- 最终config表示实际cold Host build已0/零warning，SHA14a0cb58c44bdb84990262f1324e1a2513513a8b40fc0640a9d36f91f95e27e9，EH15488572/unwind_info2979480，资源设置保留、无行为/警告flags覆盖。新f658测试binary实际drain2/unwind1/direct1，14a Host的TS/Python/Java late-payload各1，全部0fail/0skip，611语言输入不变；C2整体增量独审pass/行动项0。direct-run与late Completed现按具名三链有限resolved，当前候选65resolved/5open，不关宽生命周期/主目标/main。
+- 精确C2 Git树的原c0bc strict/真实30d change-evidence已0，74依赖路径和18增量必要性独审pass；后继C3只更新上述真实结果/两Finding/必要文稿与精确source绑定，再实际canonical/staged/diff检查和增量必要性后及时commit/push，不借C2通过冒新文稿已过。9条独立Task/protected native及pipe诊断源码保dirty，不混此验收。
+- 下一步唯一入口：C3精确checkpoint结算后，继续B fixture/Java close根因、Sandbox/Task/managed等五项剩余义务、最终来源完整语言入口及Rust适用矩阵、最终语义/nativeHook与必要性、PR5 squash/main精CI。既有实现及交付授权持续，官网/顶层指针由协调者负责，registry/plugin发布与官网部署排除；不等九条独立后继源码全部闭合才保存当前已验证checkpoint。
+
+## 历史检查点（2026-10-13 17:20）
 
 本节是恢复入口；下方分阶段结果保留其原始源码和运行来源，不覆盖本节。
 

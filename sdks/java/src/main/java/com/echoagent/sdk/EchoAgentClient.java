@@ -412,13 +412,19 @@ public final class EchoAgentClient implements AutoCloseable {
                         .onErrorMap(java.util.concurrent.TimeoutException.class,error->new EchoAgentException(
                                 "extension_timeout","factory child cleanup has not settled before invocation deadline",
                                 "after_delay","_echo_agent/extension/invoke",null))
-                        .map(result->cancellation.isCancelled()
-                                ? ExtensionOutcome.error("cancelled","extension invocation was cancelled","never").toJson()
-                                : result.deepCopy())
-                        .onErrorResume(error->Mono.just(cancellation.isCancelled()
-                                ? ExtensionOutcome.error("cancelled","extension invocation was cancelled","never").toJson()
-                                : extensionFailureJson(error)))
-                        .doFinally(ignored->client.invocationCancellations.remove(invocationId));
+                        .map(result->{
+                            boolean observation="error".equals(result.path("outcome").asText()) && isNotSettledObservation(result.get("error"));
+                            retained.set(observation && client.invocationCancellations.get(invocationId)==cancellation);
+                            return cancellation.isCancelled() && !observation
+                                ? ExtensionOutcome.error("cancelled","extension invocation was cancelled","never").toJson() : result.deepCopy();
+                        })
+                        .onErrorResume(error->{
+                            var failure=extensionFailureJson(error);boolean observation=isNotSettledObservation(failure.get("error"));
+                            retained.set(observation && client.invocationCancellations.get(invocationId)==cancellation);
+                            return Mono.just(cancellation.isCancelled() && !observation
+                                ? ExtensionOutcome.error("cancelled","extension invocation was cancelled","never").toJson() : failure);
+                        })
+                        .doFinally(ignored->{if(!retained.get())client.invocationCancellations.remove(invocationId,cancellation);});
             }
             return Mono.defer(()->{
                         if("factory_create_agent".equals(invocationOperation)) {
@@ -434,13 +440,21 @@ public final class EchoAgentClient implements AutoCloseable {
                                 return ExtensionOutcome.error("serialization_violation","stream outcome differs from its original invocation stream","never").toJson();
                             retained.set(extensionStreamRoutes.get(route.stream())==route);
                         }
-                        return cancellation.isCancelled()
+                        boolean observation="error".equals(declared.path("outcome").asText()) && isNotSettledObservation(declared.get("error"));
+                        if(observation)retained.set(route==null ? client.invocationCancellations.get(invocationId)==cancellation
+                                : extensionStreamRoutes.get(route.stream())==route);
+                        return cancellation.isCancelled() && !observation
                             ? ExtensionOutcome.error("cancelled", "extension invocation was cancelled", "never").toJson()
                             : declared;
                     })
-                    .onErrorResume(error -> Mono.just(cancellation.isCancelled()
-                            ? ExtensionOutcome.error("cancelled", "extension invocation was cancelled", "never").toJson()
-                            : extensionFailureJson(error)))
+                    .onErrorResume(error -> {
+                        var failure=extensionFailureJson(error);
+                        boolean observation=isNotSettledObservation(failure.get("error"));
+                        if(observation)retained.set(route==null ? client.invocationCancellations.get(invocationId)==cancellation
+                                : extensionStreamRoutes.get(route.stream())==route);
+                        return Mono.just(cancellation.isCancelled() && !observation
+                            ? ExtensionOutcome.error("cancelled", "extension invocation was cancelled", "never").toJson() : failure);
+                    })
                     .doFinally(ignored -> {
                         // Setup ACK is not the original stream's terminal receipt.
                         if(!retained.get() && !"factory_create_agent".equals(invocationOperation)) {
@@ -846,7 +860,9 @@ public final class EchoAgentClient implements AutoCloseable {
         WireHandle capturedTerminalStream=null;
         if("_echo_agent/extension/stream".equals(method) && params!=null
                 && java.util.Set.of("complete","failed","cancelled").contains(params.path("event").asText())) {
-            params=params.deepCopy();capturedTerminalStream=WireHandle.fromJson(params.path("stream"));
+            params=params.deepCopy();
+            if(!"failed".equals(params.path("event").asText()) || !isNotSettledObservation(params.get("error")))
+                capturedTerminalStream=WireHandle.fromJson(params.path("stream"));
         }
         final var terminalStream=capturedTerminalStream;
         BoundedPublisher observedPublisher = null;
@@ -1484,4 +1500,52 @@ public final class EchoAgentClient implements AutoCloseable {
                 });
         return result;
     }
+    // Classification of the existing wire error, not another lifecycle owner.
+    // Rust char::is_whitespace differs from Java strip/isBlank (NBSP/NEL/BOM).
+    private static boolean observationText(JsonNode value, int maximum, boolean nonblank) {
+        if(value==null || !value.isTextual())return false;
+        String text=value.textValue();boolean content=false;int count=0;
+        for(int offset=0;offset<text.length();) {
+            int cp=text.codePointAt(offset);offset+=Character.charCount(cp);
+            if(cp>=0xD800 && cp<=0xDFFF || ++count>maximum)return false;
+            boolean space=cp>=0x09&&cp<=0x0D || cp==0x20 || cp==0x85 || cp==0xA0 || cp==0x1680
+                    || cp>=0x2000&&cp<=0x200A || cp==0x2028 || cp==0x2029 || cp==0x202F || cp==0x205F || cp==0x3000;
+            content|=!space;
+        }
+        return !nonblank || content;
+    }
+
+    static boolean isNotSettledObservation(JsonNode error) {
+        if(error==null || !error.isObject() || !"framework_error".equals(error.path("code").asText())
+                || !"never".equals(error.path("retryable").asText()) || !observationText(error.get("message"),4096,false))return false;
+        if(error.hasNonNull("operation") && !observationText(error.get("operation"),256,true))return false;
+        if(error.hasNonNull("handle")) {
+            var h=error.get("handle");
+            if(!h.isObject() || !observationText(h.get("id"),256,true))return false;
+            try {
+                // Reuse the generation/kind wire decoder without its different
+                // Java whitespace predicate changing the original Rust id.
+                var checked=JsonSupport.MAPPER.createObjectNode().put("id","validation-id");
+                checked.set("generation",h.get("generation"));checked.set("kind",h.get("kind"));WireHandle.fromJson(checked);
+            } catch(RuntimeException malformed) {return false;}
+        }
+        var details=error.get("details");
+        if(details==null || !details.isObject())return false;
+        var fields=details.get("fields");
+        if(fields==null || !fields.isArray() || fields.size()>16)return false;
+        if(details.hasNonNull("facade")) {
+            var facade=details.get("facade");if(!facade.isObject())return false;
+            for(String key:java.util.List.of("operation","signature_digest","receiver_kind","expected_type","required_feature","resource"))
+                if(facade.hasNonNull(key) && !observationText(facade.get(key),Integer.MAX_VALUE,false))return false;
+        }
+        var values=new java.util.HashMap<String,JsonNode>();
+        for(var field:fields) {
+            if(!field.isObject() || !observationText(field.get("key"),128,true) || !observationText(field.get("value"),2048,false)
+                    || values.putIfAbsent(field.get("key").textValue(),field.get("value"))!=null)return false;
+        }
+        return "not_settled".equals(values.getOrDefault("observation",JsonSupport.MAPPER.nullNode()).asText())
+                && observationText(values.get("run_id"),2048,true)
+                && (!values.containsKey("execution_id") || observationText(values.get("execution_id"),2048,true));
+    }
+
 }

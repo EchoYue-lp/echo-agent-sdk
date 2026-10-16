@@ -55,6 +55,7 @@ public sealed interface AgentComponentRequest permits
         AgentComponentRequest.WorkflowCheckpointAckClaim,
         AgentComponentRequest.WorkflowCheckpointRequeueClaim,
         AgentComponentRequest.WorkflowCheckpointRenewClaim,
+        AgentComponentRequest.WorkflowCheckpointProtectClaim,
         AgentComponentRequest.WorkflowCheckpointList,
         AgentComponentRequest.WorkflowCheckpointListByGraph,
         AgentComponentRequest.WorkflowCheckpointListFiltered,
@@ -317,6 +318,9 @@ public sealed interface AgentComponentRequest permits
     record WorkflowCheckpointRenewClaim(String checkpointId, String attemptId) implements AgentComponentRequest {
         @Override public String operation() { return "workflow_checkpoint_renew_claim"; }
     }
+    record WorkflowCheckpointProtectClaim(String checkpointId, String attemptId) implements AgentComponentRequest {
+        @Override public String operation() { return "workflow_checkpoint_protect_claim"; }
+    }
     record WorkflowCheckpointList() implements AgentComponentRequest {
         @Override public String operation() { return "workflow_checkpoint_list"; }
     }
@@ -472,6 +476,8 @@ public sealed interface AgentComponentRequest permits
                     text(input, "checkpoint_id"), text(input, "attempt_id"));
             case "workflow_checkpoint_renew_claim" -> new WorkflowCheckpointRenewClaim(
                     text(input, "checkpoint_id"), text(input, "attempt_id"));
+            case "workflow_checkpoint_protect_claim" -> new WorkflowCheckpointProtectClaim(
+                    text(input, "checkpoint_id"), text(input, "attempt_id"));
             case "workflow_checkpoint_list" -> new WorkflowCheckpointList();
             case "workflow_checkpoint_list_by_graph" -> new WorkflowCheckpointListByGraph(text(input, "graph_name"));
             case "workflow_checkpoint_list_filtered" -> new WorkflowCheckpointListFiltered(required(input, "filter"));
@@ -550,7 +556,7 @@ public sealed interface AgentComponentRequest permits
             case "workflow_checkpoint_load", "workflow_checkpoint_claim",
                     "workflow_checkpoint_delete" -> java.util.Set.of("checkpoint_id");
             case "workflow_checkpoint_ack_claim", "workflow_checkpoint_requeue_claim",
-                    "workflow_checkpoint_renew_claim" -> java.util.Set.of("checkpoint_id", "attempt_id");
+                    "workflow_checkpoint_renew_claim", "workflow_checkpoint_protect_claim" -> java.util.Set.of("checkpoint_id", "attempt_id");
             case "workflow_checkpoint_list", "workflow_checkpoint_clear",
                     "sandbox_is_available", "sandbox_cleanup", "mcp_transport_close",
                     "mcp_transport_try_notification" -> java.util.Set.of();

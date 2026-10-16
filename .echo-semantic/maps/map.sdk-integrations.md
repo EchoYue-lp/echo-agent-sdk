@@ -43,6 +43,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-workflow-observation-source-gaps
 - evidence.sdk-channel-message-handler-consumer-audit
 - evidence.sdk-mcp-channel-owned-candidate
 - evidence.sdk-computation-50
@@ -55,6 +56,8 @@ evidence_refs:
 - evidence.sdk-rag-project-rules
 - evidence.sdk-git-published-consumer-verification
 finding_refs:
+- finding.sdk-workflow-resume-observation-claim
+- finding.sdk-workflow-direct-run-observation-projection
 - finding.sdk-adapter-invalid-input
 - finding.sdk-delivery-exact-claim
 - finding.sdk-family-handle-argument-projection
@@ -173,6 +176,9 @@ scenarios:
     - evidence.sdk-workflow-successor-candidate
     - evidence.sdk-task-memory-workflow-finite-observation
     review_scope: 原48/后继7accepted操作、checkpoint/type/claim、真实新graph LLM A→B已有限审；原pureRouter与新AgentNode分别定位，不承诺已建graph热换。物理B/12保独立。
+    finding_refs:
+    - finding.sdk-workflow-resume-observation-claim
+    - finding.sdk-workflow-direct-run-observation-projection
     audit_refs:
     - audit.sdk-task-memory-workflow-finite-state-authority
   family-delivery:
@@ -1100,3 +1106,9 @@ CurrentTool本会话实际源码/84记录/所有字段与Java1/0/0/0 XML独审PA
 正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
 
 原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
+
+## Workflow B 新增开放义务（2026-10-16，有限源码调查）
+
+沿 SDK019e 已接受 declarative AgentNode/registered Llm 接线与外部公开 F f0a6cd1 的 Graph.resume，发现原未结算观察仍走普通 claim requeue、requeue失败丢 typed 身份。owner 仅 F Graph/journal/checkpoint；resume*、heartbeat/expiry/restart 的真实 after 仍未执行，不扩大 deferred StepFn/closure。
+
+独立的 SDK direct workflow.extension.run 仍 stringify ReactError，记录 wire 投影 Finding；测试源码准备而生产未修，等待公开新 pin/真实 red。两 Finding 保 open，不改变其它旧业务观察/coverage 或用原 Workflow48绿抹这两个义务；原 mapped 表示接线已展开，不表示行为修复。首部旧 observed_at 与其原场景来源保持；本新增观察的SDK019e/Ff0a来源由 evidence.sdk-workflow-observation-source-gaps 分别固定，不重标旧执行epoch。

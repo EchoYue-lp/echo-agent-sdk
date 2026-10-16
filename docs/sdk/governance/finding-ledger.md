@@ -1,10 +1,25 @@
 # SDK Finding 承接账本
 
-当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md#当前有限验收2026-10-15)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
+当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md#当前有限验收2026-10-17)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
+
+## Workflow B 的原新增阶段（历史，2026-10-16）
+
+下段保持原63/6和准备状态，不表示最新状态。当前候选65/5：direct-run与late Completed已具名三链有限resolved，Graph claim等五项保持open；唯一当前状态与实际来源见页首链接。
+
+在 SDK019e 原62项业务resolved/4项open（另1行政存储修复resolved）之外，新登记2项独立义务，现为63项resolved/6项open；没有关闭原4项，也没有把静态调查当新运行。
+
+|义务|唯一修复 owner|真实接线与待验证|
+|---|---|---|
+|[Graph.resume观察不能普通requeue](../../../.echo-semantic/findings/finding.sdk-workflow-resume-observation-claim.md)|framework Graph及其CheckpointStore|SDK Graph.resume* → registered Llm/ReactAgent Node → 公开f0a原Graph；held claim/重领、requeue失败typed身份、heartbeat/expiry/restart反例待F验证；不增SDK StepFn或第二claim authority|
+|[Workflow direct-run观察投影](../../../.echo-semantic/findings/finding.sdk-workflow-direct-run-observation-projection.md)|SDK原wire边界|Session.invoke workflow.extension.run真实前向；原stringify仍保留，官方ACP强unit源码待新pin/租约先真实red再修；ordinary错误前缀/字段控制不改|
+
+固定来源、测试准备与未运行限制见[源码取证](../../../.echo-semantic/evidence/evidence.sdk-workflow-observation-source-gaps.md)。总体当前摘要与历史页仍分开，原 raw/执行epoch 不改写。
 
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下原文中“当前be5”“仍待回归”“保持open”等只描述该段原阶段；当前状态以前述事实与对应Finding对象为准。原失败、日志、方法菜单、sourcecut、计数和限制保留，不抹历史。
+
+2026-10-16后继状态：Workflow A已由用户选择并绑定原23c5提案，Protocol/三客户端各3项pure after独审通过；Host及三语Native optional场景仅源码准备。F Native FunctionNode Memory/File两项before及后继owner两项before与SDKAgent链分开，不覆写019e最初源码调查；精Fmain/pin/正式生成与真实Host before/after/复审仍待，两项Workflow Finding继续open。原managed Linux10s根因仍未知，追加诊断不作为修复或关闭。
 
 ## 当前验收状态（2026-10-14）
 

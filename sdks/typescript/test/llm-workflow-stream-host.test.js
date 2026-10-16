@@ -1,10 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { EchoAgentClient, wireU64 } from "../dist/index.js";
+import { EchoAgentClient, fromWireValue, wireU64 } from "../dist/index.js";
 const host = process.env.ECHO_AGENT_SDK_HOST;
 if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === "1" && !host) throw Error("required LLM/Workflow Host missing");
 const fixture = fileURLToPath(new URL("../../shared/testing/llm_workflow_stream_fixture.py", import.meta.url));
@@ -97,4 +98,68 @@ test("pure Workflow graph streams owner fence and canonical cancellation", { ski
     await a.close(); await b.close(); await agent.close(); await guard.close();
   } finally { await sdk.close(); writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2)); }
   finish(work, "graph", facts);
+});
+
+test("Workflow observation retains the real late Completed payload", { skip: !host, timeout: 30000 }, async () => {
+  const { work, spec, sdk } = await setup("observation"), release = gate(), observed = gate(), producers = [];
+  const facts = { calls: [], physical_completed: 0, actual_complete_sent: 0 };
+  const variant = value => value.value ?? value;
+  const fields = value => {
+    assert.ok(Array.isArray(variant(value).fields), "canonical variant fields missing");
+    return Object.fromEntries(variant(value).fields.map(field => [field.name, fromWireValue(field.value)]));
+  };
+  try {
+    const registration = await sdk.registerAgentComponent("observed-workflow", { kind: "agent_component", descriptor_version: 1, component: "workflow", name: "observed-workflow", capabilities: { supports_streaming: true } }, async call => {
+      facts.calls.push(call);
+      assert.equal(call.invocation.input.call.operation, "workflow_run_stream");
+      assert.ok(call.stream);
+      // These identities belong to the actual producer admitted in this
+      // callback, independently of the RPC id and the façade stream handle.
+      facts.binding = { run_id: `workflow-original-${randomUUID()}-中文🙂`, execution_id: `workflow-attempt-${randomUUID()}-🧪`, stream: call.stream, extension: call.extension };
+      facts.error = { code: "framework_error", retryable: "never", message: "original Workflow producer remains held", operation: "_echo_agent/extension/invoke", details: { fields: [{ key: "observation", value: "not_settled" }, { key: "run_id", value: facts.binding.run_id }, { key: "execution_id", value: facts.binding.execution_id }] } };
+      const writer = sdk.streamWriter(call.stream);
+      const original = (async () => {
+        await writer.failed(facts.error);
+        observed.release();
+        await release.promise;
+        facts.physical_completed++;
+        await writer.complete(spec.workflow_complete);
+        facts.actual_complete_sent++;
+      })();
+      original.catch(() => {}); producers.push(original);
+      return { outcome: "stream", stream: call.stream };
+    });
+    const agent = await sdk.createAgent(), session = await agent.createSession();
+    const stream = await session.invoke("workflow.extension.run_stream", [registration.wire, "original held work"]);
+    facts.facade_stream = stream;
+    await observed.promise;
+    await assert.rejects(session.invoke("workflow.stream.next", [stream]), error => {
+      facts.observed = { ...errorFact(error), handle: error.handle, retryable: error.retryable };
+      assert.equal(error.code, "framework_error"); assert.equal(error.retryable, "never");
+      assert.equal(error.operation, "workflow.stream.next"); assert.deepEqual(error.handle, stream);
+      assert.deepEqual(error.details?.fields, facts.error.details.fields);
+      return true;
+    });
+    assert.equal(facts.physical_completed, 0); assert.equal(facts.actual_complete_sent, 0); assert.equal(facts.calls.length, 1);
+    facts.held = { physical_completed: facts.physical_completed, actual_complete_sent: facts.actual_complete_sent };
+    release.release(); await Promise.all(producers);
+    assert.equal(facts.physical_completed, 1); assert.equal(facts.actual_complete_sent, 1);
+    const item = await session.invoke("workflow.stream.next", [stream]); facts.item = item;
+    assert.equal(variant(item).variant, "item", "real Completed payload was replaced by a generic terminal");
+    const itemFields = fields(item); assert.equal(itemFields.sequence, "1"); assert.deepEqual(itemFields.stream, stream);
+    const completed = itemFields.value;
+    assert.equal(variant(completed).type_id, "echo_orchestration::workflow::WorkflowEvent");
+    assert.equal(variant(completed).variant, "completed");
+    // The shared verifier checks every field, including the canonical
+    // duration wrapper preserved by this SDK's public wire decoder.
+    const terminal = await session.invoke("workflow.stream.next", [stream]); facts.terminal = terminal;
+    assert.equal(variant(terminal).variant, "complete"); assert.equal(fields(terminal).sequence, "2");
+    facts.close = await session.invoke("workflow.stream.close", [stream]); assert.equal(facts.close, false);
+    assert.equal(facts.calls.length, 1);
+    await session.close(); await agent.close(); await registration.close();
+  } finally {
+    release.release();
+    try { await Promise.all(producers); } finally { await sdk.close(); writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2)); console.log(`Workflow late-payload evidence: ${work}`); }
+  }
+  finish(work, "observation", facts);
 });

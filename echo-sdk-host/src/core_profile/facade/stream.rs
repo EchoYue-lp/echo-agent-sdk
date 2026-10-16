@@ -36,10 +36,23 @@ pub(crate) struct FacadeStreamRecord {
     // Received failure evidence stays owned here until its terminal is
     // actually returned. A dropped pull waiter must not discard that cause.
     pending_failure: Mutex<Option<EchoSdkError>>,
+    // This is observer knowledge, not a terminal or producer-join receipt.
+    observation: Mutex<StreamObservation>,
     settled: std::sync::atomic::AtomicBool,
     settled_notify: tokio::sync::Notify,
 }
 
+/// These are projections of the original callback and collector facts. They
+/// control transport cleanup only, never a framework execution/claim receipt.
+#[derive(Default)]
+struct StreamObservation {
+    error: Option<EchoSdkError>,
+    producer_joined: bool,
+    callback_bound: bool,
+    callback_closed: bool,
+}
+
+#[derive(Clone)]
 pub(crate) struct FacadeStreamProducer {
     pub handle: WireHandle,
     pub sender: tokio::sync::mpsc::Sender<FacadeStreamItem>,
@@ -50,6 +63,83 @@ pub(crate) struct FacadeStreamProducer {
     /// cleanup after a source failure never rewrites its terminal cause.
     pub cleanup: tokio_util::sync::CancellationToken,
     record: Arc<FacadeStreamRecord>,
+}
+
+impl FacadeStreamProducer {
+    /// The original callback registers its existence before dispatch. A local
+    /// observer can unwind before receiving any observation from that callback.
+    #[cfg(feature = "sdk-extension-bridge")]
+    pub(crate) fn bind_original_callback(&self) {
+        let mut observation = self
+            .record
+            .observation
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        observation.callback_bound = true;
+        if !observation.callback_closed {
+            self.record
+                .settled
+                .store(false, std::sync::atomic::Ordering::Release);
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn settlement_notification(&self) -> &tokio::sync::Notify {
+        &self.record.settled_notify
+    }
+
+    /// Only the original callback's validated closure may clear its observation;
+    /// generic observer EOF must not call this.
+    pub fn original_callback_physically_closed(&self) {
+        let mut observation = self
+            .record
+            .observation
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        observation.callback_closed = true;
+        observation.error.take();
+        if observation.producer_joined {
+            self.record
+                .settled
+                .store(true, std::sync::atomic::Ordering::Release);
+        }
+        drop(observation);
+        self.record.settled_notify.notify_waiters();
+    }
+
+    pub fn record_observation(&self, error: &EchoSdkError) -> bool {
+        record_observation(&self.record, error)
+    }
+}
+
+fn record_observation(record: &FacadeStreamRecord, error: &EchoSdkError) -> bool {
+    if !wire::has_observation_hint(error) {
+        return false;
+    }
+    let mut observation = record
+        .observation
+        .lock()
+        .unwrap_or_else(|error| error.into_inner());
+    // The original owner has already validated the matching response/terminal
+    // and released its guards. A delayed observer copy cannot reverse that fact.
+    if !observation.callback_closed {
+        observation.error = Some(error.clone());
+        record
+            .settled
+            .store(false, std::sync::atomic::Ordering::Release);
+    }
+    drop(observation);
+    record.settled_notify.notify_waiters();
+    true
+}
+
+fn pending_observation(record: &FacadeStreamRecord) -> Option<EchoSdkError> {
+    record
+        .observation
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .error
+        .clone()
 }
 
 #[cfg(test)]
@@ -164,6 +254,7 @@ impl FacadeStreamRuntime {
             background: Mutex::new(None),
             producer_failure: Mutex::new(None),
             pending_failure: Mutex::new(None),
+            observation: Mutex::new(StreamObservation::default()),
             settled: std::sync::atomic::AtomicBool::new(true),
             settled_notify: tokio::sync::Notify::new(),
         });
@@ -186,10 +277,18 @@ impl FacadeStreamRuntime {
         producer: &FacadeStreamProducer,
         background: tokio::task::JoinHandle<()>,
     ) {
-        producer
-            .record
-            .settled
-            .store(false, std::sync::atomic::Ordering::Release);
+        {
+            let mut observation = producer
+                .record
+                .observation
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            observation.producer_joined = false;
+            producer
+                .record
+                .settled
+                .store(false, std::sync::atomic::Ordering::Release);
+        }
         *producer
             .record
             .background
@@ -205,9 +304,21 @@ impl FacadeStreamRuntime {
                     .lock()
                     .unwrap_or_else(|error| error.into_inner()) = Some(error);
             }
-            record
-                .settled
-                .store(true, std::sync::atomic::Ordering::Release);
+            // An observer wrapper may return while its original physical owner
+            // is still unknown. Local join alone cannot release that address.
+            let mut observation = record
+                .observation
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            observation.producer_joined = true;
+            if observation.error.is_none()
+                && (!observation.callback_bound || observation.callback_closed)
+            {
+                record
+                    .settled
+                    .store(true, std::sync::atomic::Ordering::Release);
+            }
+            drop(observation);
             record.settled_notify.notify_waiters();
         });
     }
@@ -221,6 +332,9 @@ impl FacadeStreamRuntime {
         operation: &str,
     ) -> Result<WireValue, EchoSdkError> {
         let record = self.record(handles, stream, owner_session, family, operation)?;
+        if let Some(error) = pending_observation(&record) {
+            return Err(error.with_operation(operation).with_handle(stream.clone()));
+        }
         // Serialise all pulls for this stream. The registry sequence read,
         // dequeue and sequence/terminal transition stay inside this one
         // consumer critical section, so concurrent `next` calls cannot remove
@@ -235,9 +349,18 @@ impl FacadeStreamRuntime {
             .clone();
         let mut item = match pending {
             Some(error) => Some(Err(error)),
-            None => tokio::select! {
-                item = receiver.recv() => item,
-                () = record.cancel.cancelled() => None,
+            None => loop {
+                let changed = record.settled_notify.notified();
+                tokio::pin!(changed);
+                changed.as_mut().enable();
+                if let Some(error) = pending_observation(&record) {
+                    return Err(error.with_operation(operation).with_handle(stream.clone()));
+                }
+                tokio::select! {
+                    item = receiver.recv() => break item,
+                    () = record.cancel.cancelled() => break None,
+                    () = &mut changed => {},
+                }
             },
         };
         if item.is_none() {
@@ -245,13 +368,17 @@ impl FacadeStreamRuntime {
             // producer may drop its sender before failing. Cancellation also
             // wakes an initial receive even while external code holds sender.
             tokio::select! {
-                () = wait_settled(&record) => {},
+                result = wait_settled_or_observation(&record) => {
+                    result.map_err(|error| error.with_operation(operation).with_handle(stream.clone()))?;
+                },
                 () = record.cancel.cancelled() => {},
             }
             let (_, cancelled) =
                 handles.facade_stream_state(stream, Some(owner_session), operation)?;
             if !cancelled {
-                wait_settled(&record).await;
+                wait_settled_or_observation(&record)
+                    .await
+                    .map_err(|error| error.with_operation(operation).with_handle(stream.clone()))?;
                 if let Some(failure) = record
                     .producer_failure
                     .lock()
@@ -276,6 +403,13 @@ impl FacadeStreamRuntime {
             }
         }
         if let Some(Err(error)) = &item {
+            if wire::has_observation_hint(error) {
+                record_observation(&record, error);
+                return Err(error
+                    .clone()
+                    .with_operation(operation)
+                    .with_handle(stream.clone()));
+            }
             *record
                 .pending_failure
                 .lock()
@@ -584,6 +718,22 @@ fn stream_event(
     }
 }
 
+async fn wait_settled_or_observation(record: &FacadeStreamRecord) -> Result<(), EchoSdkError> {
+    loop {
+        let changed = record.settled_notify.notified();
+        tokio::pin!(changed);
+        changed.as_mut().enable();
+        if let Some(error) = pending_observation(record) {
+            return Err(error);
+        }
+        if record.settled.load(std::sync::atomic::Ordering::Acquire) {
+            return Ok(());
+        }
+        changed.await;
+    }
+}
+
+#[cfg(test)]
 async fn wait_settled(record: &FacadeStreamRecord) {
     loop {
         let changed = record.settled_notify.notified();
@@ -601,33 +751,26 @@ async fn settle_record(
     timeout: std::time::Duration,
 ) -> Result<(), EchoSdkError> {
     record.cancel.cancel();
-    if tokio::time::timeout(timeout, wait_settled(record))
-        .await
-        .is_err()
-    {
-        if !record.abort_on_close_deadline {
-            return Err(wire::sdk_error(
-                ExtensionErrorCode::FrameworkError,
-                "channel stream cleanup is still awaiting its original callback/driver",
-                Retryability::AfterDelay,
-                "channels.stream.close",
-            ));
-        }
-        if let Some(background) = record
-            .background
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .as_ref()
-        {
-            background.abort();
-        }
-        wait_settled(record).await;
+    if let Some(error) = pending_observation(record) {
+        return Err(error);
     }
-    Ok(())
+    match tokio::time::timeout(timeout, wait_settled_or_observation(record)).await {
+        Ok(result) => result,
+        Err(_) => Err(wire::sdk_error(
+            ExtensionErrorCode::FrameworkError,
+            if record.abort_on_close_deadline {
+                "facade stream cleanup is still awaiting its original producer"
+            } else {
+                "callback stream cleanup is still awaiting its original callback/driver"
+            },
+            Retryability::AfterDelay,
+            &format!("{}.stream.close", record.family),
+        )),
+    }
 }
 
 #[cfg(test)]
-mod cleanup_tests {
+pub(crate) mod cleanup_tests {
     use super::*;
     use std::future::Future as _;
     use std::sync::atomic::{AtomicBool, Ordering};
@@ -649,6 +792,7 @@ mod cleanup_tests {
             background: Mutex::new(None),
             producer_failure: Mutex::new(None),
             pending_failure: Mutex::new(None),
+            observation: Mutex::new(StreamObservation::default()),
             settled: AtomicBool::new(true),
             settled_notify: tokio::sync::Notify::new(),
         });
@@ -713,6 +857,15 @@ mod cleanup_tests {
         (HandleRegistry, FacadeStreamRuntime, FacadeStreamProducer),
         Box<dyn std::error::Error>,
     > {
+        owned_fixture_with_stream_limit(4)
+    }
+
+    pub(crate) fn owned_fixture_with_stream_limit(
+        stream_limit: usize,
+    ) -> Result<
+        (HandleRegistry, FacadeStreamRuntime, FacadeStreamProducer),
+        Box<dyn std::error::Error>,
+    > {
         let handles = HandleRegistry::new(1, 16);
         let llm_config = echo_agent::llm::LlmConfig::for_provider(
             "local",
@@ -742,11 +895,154 @@ mod cleanup_tests {
                 "fixture.open",
             )
             .map_err(|error| std::io::Error::other(error.message))?;
-        let runtime = FacadeStreamRuntime::new(4, 0);
+        let runtime = FacadeStreamRuntime::new(stream_limit, 0);
         let producer = runtime
             .open(&handles, &resource, "session-a", "fixture.open")
             .map_err(|error| std::io::Error::other(error.message))?;
         Ok((handles, runtime, producer))
+    }
+
+    #[tokio::test]
+    async fn original_callback_closure_fences_a_delayed_observation()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (handles, runtime, producer) = owned_fixture()?;
+        let release = tokio_util::sync::CancellationToken::new();
+        let background = tokio::spawn({
+            let release = release.clone();
+            async move { release.cancelled().await }
+        });
+        runtime.attach_background(&producer, background);
+        let observation =
+            wire::not_settled_error("original-run", Some("original-execution"), "fixture.op");
+        assert!(producer.record_observation(&observation));
+        producer.original_callback_physically_closed();
+        // The outer source may already own a copy of the observation. A real
+        // callback closure must fence that delayed copy, while local producer
+        // cleanup still has to join before the issued address can close.
+        assert!(producer.record_observation(&observation));
+        assert!(pending_observation(&producer.record).is_none());
+        assert!(!producer.record.settled.load(Ordering::Acquire));
+        assert!(!handles.is_closed(&producer.handle));
+        release.cancel();
+        tokio::time::timeout(
+            std::time::Duration::from_secs(1),
+            wait_settled(&producer.record),
+        )
+        .await?;
+        assert!(
+            runtime
+                .close(
+                    &handles,
+                    &producer.handle,
+                    "session-a",
+                    "fixture",
+                    "fixture.stream.close"
+                )
+                .await
+                .map_err(|error| error.message)?
+        );
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn original_callback_closure_settles_an_already_joined_observer()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (handles, runtime, producer) = owned_fixture()?;
+        let observation =
+            wire::not_settled_error("original-run", Some("original-execution"), "fixture.op");
+        assert!(producer.record_observation(&observation));
+        let joined = producer.record.settled_notify.notified();
+        tokio::pin!(joined);
+        joined.as_mut().enable();
+        runtime.attach_background(&producer, tokio::spawn(async {}));
+        tokio::time::timeout(std::time::Duration::from_secs(1), joined).await?;
+        assert!(!producer.record.settled.load(Ordering::Acquire));
+        assert!(pending_observation(&producer.record).is_some());
+        assert!(!handles.is_closed(&producer.handle));
+        // Joining this observer alone supplied no physical receipt. Only now
+        // does the original callback report its actual closure.
+        producer.original_callback_physically_closed();
+        tokio::time::timeout(
+            std::time::Duration::from_secs(1),
+            wait_settled(&producer.record),
+        )
+        .await?;
+        assert!(
+            runtime
+                .close(
+                    &handles,
+                    &producer.handle,
+                    "session-a",
+                    "fixture",
+                    "fixture.stream.close"
+                )
+                .await
+                .map_err(|error| error.message)?
+        );
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn pending_pull_reports_unknown_after_source_cancellation_wakes_receive()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (handles, runtime, producer) = owned_fixture()?;
+        let release_observation = tokio_util::sync::CancellationToken::new();
+        let expected =
+            wire::not_settled_error("original-run", Some("original-execution"), "fixture.op");
+        let background = tokio::spawn({
+            let release = release_observation.clone();
+            let original = producer.clone();
+            let expected = expected.clone();
+            async move {
+                release.cancelled().await;
+                original.record_observation(&expected);
+            }
+        });
+        runtime.attach_background(&producer, background);
+        // Parent/source cancellation wakes recv without committing a facade
+        // terminal. Poll through that actual branch before the original source
+        // reports its observation; no randomized EOF/notify selection is needed.
+        producer.cleanup.cancel();
+        let pull = runtime.next(
+            &handles,
+            &producer.handle,
+            "session-a",
+            "fixture",
+            "fixture.stream.next",
+        );
+        tokio::pin!(pull);
+        assert!(
+            futures::future::poll_fn(|cx| std::task::Poll::Ready(pull.as_mut().poll(cx)))
+                .await
+                .is_pending()
+        );
+        release_observation.cancel();
+        let error = tokio::time::timeout(std::time::Duration::from_secs(1), &mut pull)
+            .await?
+            .err()
+            .ok_or("pending pull fabricated terminal instead of unknown")?;
+        assert_eq!(
+            error,
+            expected
+                .with_operation("fixture.stream.next")
+                .with_handle(producer.handle.clone())
+        );
+        assert!(!producer.record.settled.load(Ordering::Acquire));
+        assert!(!handles.is_closed(&producer.handle));
+        assert!(
+            runtime
+                .close(
+                    &handles,
+                    &producer.handle,
+                    "session-a",
+                    "fixture",
+                    "fixture.stream.close"
+                )
+                .await
+                .is_err()
+        );
+        assert!(!handles.is_closed(&producer.handle));
+        Ok(())
     }
 
     fn assert_failed(
@@ -935,18 +1231,43 @@ mod cleanup_tests {
     }
 
     #[tokio::test]
-    async fn close_deadline_aborts_producer_and_collector_retains_abort_fact()
+    async fn close_deadline_retains_original_producer_until_explicit_release()
     -> Result<(), Box<dyn std::error::Error>> {
         let (handles, runtime, producer) = owned_fixture()?;
         let handle = producer.handle.clone();
         let record = producer.record.clone();
         let sender = producer.sender.clone();
-        let background = tokio::spawn(async move {
-            let _sender = sender;
-            std::future::pending::<()>().await;
+        let release = Arc::new(tokio::sync::Notify::new());
+        let exited = Arc::new(AtomicBool::new(false));
+        let background = tokio::spawn({
+            let release = release.clone();
+            let exited = exited.clone();
+            async move {
+                release.notified().await;
+                drop(sender);
+                exited.store(true, Ordering::Release);
+            }
         });
         runtime.attach_background(&producer, background);
         drop(producer);
+        let error = runtime
+            .close(
+                &handles,
+                &handle,
+                "session-a",
+                "fixture",
+                "fixture.stream.close",
+            )
+            .await
+            .err()
+            .ok_or("close falsely settled held source")?;
+        assert_eq!(error.retryable, Retryability::AfterDelay);
+        assert!(!record.settled.load(Ordering::Acquire));
+        assert!(!exited.load(Ordering::Acquire));
+        assert!(!handles.is_closed(&handle));
+        release.notify_one();
+        wait_settled(&record).await;
+        assert!(exited.load(Ordering::Acquire));
         assert!(
             runtime
                 .close(
@@ -957,16 +1278,7 @@ mod cleanup_tests {
                     "fixture.stream.close"
                 )
                 .await
-                .map_err(|error| std::io::Error::other(error.message))?
-        );
-        assert!(record.settled.load(Ordering::Acquire));
-        assert!(
-            record
-                .producer_failure
-                .lock()
-                .unwrap_or_else(|e| e.into_inner())
-                .as_ref()
-                .is_some_and(tokio::task::JoinError::is_cancelled)
+                .map_err(|error| error.message)?
         );
         assert!(
             !runtime
@@ -978,7 +1290,7 @@ mod cleanup_tests {
                     "fixture.stream.close"
                 )
                 .await
-                .map_err(|error| std::io::Error::other(error.message))?
+                .map_err(|error| error.message)?
         );
         Ok(())
     }

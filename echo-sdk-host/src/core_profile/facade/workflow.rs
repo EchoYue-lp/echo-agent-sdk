@@ -52,6 +52,24 @@ pub(crate) struct WorkflowGraphRecord {
     pub cancel: tokio_util::sync::CancellationToken,
 }
 
+fn require_protected_claims(
+    graph: &echo_agent::workflow::Graph,
+    resource: &WireHandle,
+) -> Result<(), EchoSdkError> {
+    // The Graph reads its original bound Store. This is only the SDK's
+    // canonical capability error; claim/protect/CRUD remain framework-owned.
+    if graph.supports_protected_claims() {
+        Ok(())
+    } else {
+        Err(wire::handle_error(
+            ExtensionErrorCode::FeatureUnavailable,
+            "workflow checkpoint store does not provide protected claims",
+            METHOD,
+            resource,
+        ))
+    }
+}
+
 /// One standalone SharedState resource (owner-checked like graphs).
 pub(crate) struct WorkflowStateRecord {
     pub state: echo_agent::workflow::SharedState,
@@ -404,29 +422,46 @@ pub(crate) async fn dispatch(
             let cancel = producer.cleanup.clone();
             let graph = record.graph.clone();
             let state = shared_state_of(values);
+            let original_owner = producer.clone();
+            let source_cancel = record.cancel.clone();
             let background = tokio::spawn(async move {
                 let source = graph.run_stream(state).await;
                 let mut source = match source {
-                    Ok(source) => source,
+                    Ok(source) => source.fuse(),
                     Err(error) => {
-                        let _ = sender.send(Err(framework(error))).await;
+                        let error = framework(error);
+                        if !original_owner.record_observation(&error) {
+                            let _ = sender.send(Err(error)).await;
+                        }
                         return;
                     }
                 };
                 loop {
                     let item = tokio::select! {
-                        () = cancel.cancelled() => break,
+                        () = cancel.cancelled() => { source_cancel.cancel(); break; },
                         item = source.next() => item,
                     };
-                    let Some(event) = item else { break };
+                    let Some(event) = item else { return };
                     let item = event.map_err(framework).and_then(workflow_event_value);
-                    tokio::select! {
-                        () = cancel.cancelled() => break,
-                        result = sender.send(item) => {
-                            if result.is_err() {
-                                break;
-                            }
+                    if let Err(error) = &item {
+                        if original_owner.record_observation(error) {
+                            break;
                         }
+                    }
+                    let sent = tokio::select! {
+                        () = cancel.cancelled() => { source_cancel.cancel(); false },
+                        result = sender.send(item) => result.is_ok(),
+                    };
+                    if !sent {
+                        source_cancel.cancel();
+                        break;
+                    }
+                }
+                // Retain and drain this one opened source. Unknown physical
+                // ownership stays recorded even if an observer wrapper ends.
+                while let Some(event) = source.next().await {
+                    if let Err(error) = event {
+                        original_owner.record_observation(&framework(error));
                     }
                 }
             });
@@ -464,6 +499,9 @@ pub(crate) async fn dispatch(
                 }
             };
             let record = graph_record(handles, graphs, &resource, owner)?;
+            if matches!(decision, echo_agent::workflow::ApprovalDecision::Approved) {
+                require_protected_claims(&record.graph, &resource)?;
+            }
             let checkpoint = record
                 .graph
                 .load_checkpoint(&checkpoint_id)
@@ -496,6 +534,9 @@ pub(crate) async fn dispatch(
                 }
             };
             let record = graph_record(handles, graphs, &resource, owner)?;
+            if matches!(decision, echo_agent::workflow::ApprovalDecision::Approved) {
+                require_protected_claims(&record.graph, &resource)?;
+            }
             let result = record
                 .graph
                 .resume(checkpoint, decision)
@@ -509,6 +550,7 @@ pub(crate) async fn dispatch(
             let checkpoint = checkpoint_at(&arguments, 1)?;
             let updates = object_at(&arguments, 2)?;
             let record = graph_record(handles, graphs, &resource, owner)?;
+            require_protected_claims(&record.graph, &resource)?;
             let result = record
                 .graph
                 .resume_with_state(checkpoint, updates)
@@ -523,6 +565,7 @@ pub(crate) async fn dispatch(
             let updates = object_at(&arguments, 2)?;
             let branch_name = optional_string_at(&arguments, 3, "branch name")?;
             let record = graph_record(handles, graphs, &resource, owner)?;
+            require_protected_claims(&record.graph, &resource)?;
             let result = record
                 .graph
                 .branch_from(&checkpoint_id, updates, branch_name.map(str::to_string))

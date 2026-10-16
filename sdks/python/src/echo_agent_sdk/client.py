@@ -103,6 +103,7 @@ AGENT_COMPONENT_OPERATIONS = frozenset(
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
         "workflow_checkpoint_list",
         "workflow_checkpoint_list_by_graph",
         "workflow_checkpoint_list_filtered",
@@ -207,6 +208,7 @@ _AGENT_COMPONENT_INPUT_FIELDS: dict[str, frozenset[str]] = {
     "workflow_checkpoint_ack_claim": frozenset({"checkpoint_id", "attempt_id"}),
     "workflow_checkpoint_requeue_claim": frozenset({"checkpoint_id", "attempt_id"}),
     "workflow_checkpoint_renew_claim": frozenset({"checkpoint_id", "attempt_id"}),
+    "workflow_checkpoint_protect_claim": frozenset({"checkpoint_id", "attempt_id"}),
     "workflow_checkpoint_list": frozenset(),
     "workflow_checkpoint_list_by_graph": frozenset({"graph_name"}),
     "workflow_checkpoint_list_filtered": frozenset({"filter"}),
@@ -486,6 +488,7 @@ class AgentComponentDescriptor:
     runtime_state: Literal["unsupported", "revisioned_v1"] = "unsupported"
     persistence_call: Literal["unsupported", "absolute_deadline_v1"] = "unsupported"
     execution_cas_v1: bool = False
+    protected_claim_v1: bool = False
 
     def __post_init__(self) -> None:
         if (
@@ -513,6 +516,14 @@ class AgentComponentDescriptor:
         ):
             raise ValueError(
                 "execution CAS capability requires a boolean and revisioned task store"
+            )
+        if (
+            type(self.protected_claim_v1) is not bool
+            or self.protected_claim_v1
+            and self.component != "workflow_checkpoint_store"
+        ):
+            raise ValueError(
+                "protected claim capability requires a boolean and workflow checkpoint store"
             )
         if self.component not in _AGENT_COMPONENTS:
             raise ValueError("unknown Agent component kind")
@@ -553,6 +564,7 @@ class AgentComponentDescriptor:
     def to_wire(self) -> dict[str, Any]:
         capabilities: dict[str, Any] = {
             "execution_cas_v1": self.execution_cas_v1,
+            "protected_claim_v1": self.protected_claim_v1,
             "conversation_projection": self.conversation_projection,
             "runtime_state": self.runtime_state,
             "persistence_call": self.persistence_call,
@@ -1007,6 +1019,7 @@ class WorkflowCheckpointClaimAttemptRequest:
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
     ] = "workflow_checkpoint_ack_claim"
 
     def __post_init__(self) -> None:
@@ -1014,6 +1027,7 @@ class WorkflowCheckpointClaimAttemptRequest:
             "workflow_checkpoint_ack_claim",
             "workflow_checkpoint_requeue_claim",
             "workflow_checkpoint_renew_claim",
+            "workflow_checkpoint_protect_claim",
         }:
             raise ValueError("invalid workflow checkpoint claim-attempt operation")
 
@@ -1352,6 +1366,7 @@ def _component_request(
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
     }:
         return WorkflowCheckpointClaimAttemptRequest(
             text("checkpoint_id"),
@@ -1361,6 +1376,7 @@ def _component_request(
                     "workflow_checkpoint_ack_claim",
                     "workflow_checkpoint_requeue_claim",
                     "workflow_checkpoint_renew_claim",
+                    "workflow_checkpoint_protect_claim",
                 ],
                 operation,
             ),
@@ -1918,6 +1934,12 @@ class WorkflowCheckpointResult:
         )
 
     @staticmethod
+    def claim_protected() -> AgentComponentResult:
+        return _TypedAgentComponentResult(
+            "workflow_checkpoint_store", "workflow_checkpoint_protect_claim"
+        )
+
+    @staticmethod
     def loaded(checkpoint: Mapping[str, Any] | None) -> AgentComponentResult:
         return _TypedAgentComponentResult(
             "workflow_checkpoint_store",
@@ -2119,6 +2141,7 @@ def _validate_component_result(operation: str, value: Mapping[str, Any] | None) 
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
         "workflow_checkpoint_delete",
         "workflow_checkpoint_clear",
         "sandbox_cleanup",
@@ -3246,11 +3269,21 @@ class _Callbacks:
                         "after_delay",
                     ) from error
             result = await handler(payload, cancellation)
+            declared = _normalize_outcome(result)
+            observation = declared.get(
+                "outcome"
+            ) == "error" and _is_not_settled_observation(declared.get("error"))
             outcome = (
                 _cancelled_outcome()
-                if cancellation.is_set()
-                else _normalize_outcome(result)
+                if cancellation.is_set() and not observation
+                else declared
             )
+            if observation:
+                retain_stream_route = (
+                    self.stream_cancel_routes.get(original_stream) is route
+                    if original_stream is not None
+                    else self.invocation_cancel.get(invocation_id) is cancellation
+                )
             if (
                 child is not None
                 and operation == "agent_close"
@@ -3265,7 +3298,6 @@ class _Callbacks:
                     self.closed_factory_children.pop(
                         next(iter(self.closed_factory_children))
                     )
-            declared = _normalize_outcome(result)
             if declared.get("outcome") == "stream":
                 try:
                     returned_stream = WireHandle.from_dict(declared.get("stream"))
@@ -3293,14 +3325,12 @@ class _Callbacks:
                 raise
             return _cancelled_outcome()
         except EchoAgentError as error:
-            if cancellation.is_set():
-                return _cancelled_outcome()
             code = (
                 error.code
                 if error.code in _EXTENSION_ERROR_CODES
                 else "extension_failed"
             )
-            return {
+            outcome = {
                 "outcome": "error",
                 "error": {
                     "code": code,
@@ -3313,6 +3343,16 @@ class _Callbacks:
                     else None,
                 },
             }
+            observation = _is_not_settled_observation(outcome["error"])
+            if cancellation.is_set() and not observation:
+                return _cancelled_outcome()
+            if observation:
+                retain_stream_route = (
+                    self.stream_cancel_routes.get(original_stream) is route
+                    if original_stream is not None
+                    else self.invocation_cancel.get(invocation_id) is cancellation
+                )
+            return outcome
         # Every user callback failure must settle the reverse request with the
         # closed extension error union; otherwise ACP serializes an invalid
         # transport error and the Host cannot finish the invocation.
@@ -3705,7 +3745,10 @@ class EchoAgentClient:
         ):
             params = deepcopy(params)
             terminal_stream = None
-            if params.get("event") in {"complete", "failed", "cancelled"}:
+            if params.get("event") in {"complete", "failed", "cancelled"} and not (
+                params.get("event") == "failed"
+                and _is_not_settled_observation(params.get("error"))
+            ):
                 terminal_stream = WireHandle.from_dict(params.get("stream"))
             try:
                 await self.connection.ext_notification(method.removeprefix("_"), params)
@@ -4533,6 +4576,8 @@ class ExtensionStreamWriter:
         await self.complete({"kind": "agent_component", "value": dict(value)})
 
     async def failed(self, error: Any) -> None:
+        error = deepcopy(error)
+        observation = _is_not_settled_observation(error)
         await self.client.notify(
             "echo_agent/extension/stream",
             {
@@ -4542,7 +4587,8 @@ class ExtensionStreamWriter:
                 "error": error,
             },
         )
-        self._closed = True
+        if not observation:
+            self._closed = True
 
     async def cancelled(self) -> None:
         await self.client.notify(
@@ -4922,4 +4968,98 @@ def _has_typed_extension_error(error: BaseException) -> bool:
         and data.get("code") in _EXTENSION_ERROR_CODES
         and isinstance(data.get("message"), str)
         and data.get("retryable") in {"never", "always", "after_delay"}
+    )
+
+
+def _is_not_settled_observation(value: Any) -> bool:
+    """Classify only a complete Host-valid observation, preserving raw error data."""
+
+    def text(v: Any, limit: int) -> bool:
+        return (
+            isinstance(v, str)
+            and len(v) <= limit
+            and not any(0xD800 <= ord(c) <= 0xDFFF for c in v)
+        )
+
+    def nonblank(v: Any, limit: int) -> bool:
+        # Python isspace also accepts U+001C..001F; Rust does not.
+        return text(v, limit) and any(
+            not (
+                0x09 <= ord(c) <= 0x0D
+                or ord(c)
+                in {0x20, 0x85, 0xA0, 0x1680, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000}
+                or 0x2000 <= ord(c) <= 0x200A
+            )
+            for c in v
+        )
+
+    if (
+        not isinstance(value, dict)
+        or value.get("code") != "framework_error"
+        or value.get("retryable") != "never"
+    ):
+        return False
+    if (
+        not text(value.get("message"), 4096)
+        or value.get("operation") is not None
+        and not nonblank(value["operation"], 256)
+    ):
+        return False
+    handle = value.get("handle")
+    if handle is not None:
+        if (
+            not isinstance(handle, dict)
+            or not nonblank(handle.get("id"), 256)
+            or not isinstance(handle.get("generation"), str)
+        ):
+            return False
+        try:
+            # Reuse the wire decoder with a checked placeholder solely for its
+            # generation/kind validation; retain the original id unchanged.
+            WireHandle.from_dict(
+                {
+                    "id": "validation-id",
+                    "generation": handle["generation"],
+                    "kind": handle.get("kind"),
+                }
+            )
+        except (TypeError, ValueError, OverflowError):
+            return False
+    details = value.get("details")
+    if (
+        not isinstance(details, dict)
+        or not isinstance(details.get("fields"), list)
+        or len(details["fields"]) > 16
+    ):
+        return False
+    facade = details.get("facade")
+    if facade is not None and (
+        not isinstance(facade, dict)
+        or any(
+            facade.get(k) is not None and not text(facade[k], 2**63)
+            for k in (
+                "operation",
+                "signature_digest",
+                "receiver_kind",
+                "expected_type",
+                "required_feature",
+                "resource",
+            )
+        )
+    ):
+        return False
+    fields: dict[str, str] = {}
+    for entry in details["fields"]:
+        if (
+            not isinstance(entry, dict)
+            or not nonblank(entry.get("key"), 128)
+            or not text(entry.get("value"), 2048)
+            or entry["key"] in fields
+        ):
+            return False
+        fields[entry["key"]] = entry["value"]
+    return (
+        fields.get("observation") == "not_settled"
+        and nonblank(fields.get("run_id"), 2048)
+        and ("execution_id" not in fields or nonblank(fields["execution_id"], 2048))
     )

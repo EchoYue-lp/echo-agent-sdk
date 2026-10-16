@@ -1,0 +1,687 @@
+{
+  "purpose": "Shared accepted B sender classification; ordinary/malformed errors remain terminal. UTF-8 JSON with explicit escaped invalid-scalar input only.",
+  "cases": [
+    {
+      "name": "without_execution",
+      "nonterminal": true,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "with_execution_unicode",
+      "nonterminal": true,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            },
+            {
+              "key": "execution_id",
+              "value": "execution-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rust_nonwhitespace_bom_run",
+      "nonterminal": true,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "\ufeff"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rust_nonwhitespace_c0_run",
+      "nonterminal": true,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "\u001c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rust_nonwhitespace_bom_operation",
+      "nonterminal": true,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "\ufeff",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rust_nonwhitespace_bom_handle",
+      "nonterminal": true,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        },
+        "handle": {
+          "id": "\ufeff",
+          "generation": "1",
+          "kind": "extension"
+        }
+      }
+    },
+    {
+      "name": "ordinary_failure",
+      "nonterminal": false,
+      "error": {
+        "code": "extension_failed",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "retry_is_not_never",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "always",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "missing_run",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "empty_run",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rust_whitespace_run",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "\t\u0085\u00a0\u2000\u202f\u3000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "empty_execution",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            },
+            {
+              "key": "execution_id",
+              "value": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rust_whitespace_execution",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            },
+            {
+              "key": "execution_id",
+              "value": "\u0085\u00a0\u202f"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "duplicate_detail",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            },
+            {
+              "key": "run_id",
+              "value": "other"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "empty_detail_key",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            },
+            {
+              "key": "\u0085\u202f",
+              "value": "metadata"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "empty_operation",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rust_whitespace_operation",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "\u0085\u00a0\u202f",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "invalid_handle",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        },
+        "handle": {
+          "id": "\u00a0",
+          "generation": "1",
+          "kind": "extension"
+        }
+      }
+    },
+    {
+      "name": "oversized_run",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "oversized_key",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            },
+            {
+              "key": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+              "value": "v"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "too_many_details",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            },
+            {
+              "key": "metadata-0",
+              "value": "x"
+            },
+            {
+              "key": "metadata-1",
+              "value": "x"
+            },
+            {
+              "key": "metadata-2",
+              "value": "x"
+            },
+            {
+              "key": "metadata-3",
+              "value": "x"
+            },
+            {
+              "key": "metadata-4",
+              "value": "x"
+            },
+            {
+              "key": "metadata-5",
+              "value": "x"
+            },
+            {
+              "key": "metadata-6",
+              "value": "x"
+            },
+            {
+              "key": "metadata-7",
+              "value": "x"
+            },
+            {
+              "key": "metadata-8",
+              "value": "x"
+            },
+            {
+              "key": "metadata-9",
+              "value": "x"
+            },
+            {
+              "key": "metadata-10",
+              "value": "x"
+            },
+            {
+              "key": "metadata-11",
+              "value": "x"
+            },
+            {
+              "key": "metadata-12",
+              "value": "x"
+            },
+            {
+              "key": "metadata-13",
+              "value": "x"
+            },
+            {
+              "key": "metadata-14",
+              "value": "x"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "nontext_message",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": 1,
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "invalid_unicode_scalar",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "\ud800"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "near_observation",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "Not_Settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "facade_wrong_type",
+      "nonterminal": false,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled"
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ],
+          "facade": []
+        }
+      }
+    },
+    {
+      "name": "additive_unknown_fields_are_preserved",
+      "nonterminal": true,
+      "error": {
+        "code": "framework_error",
+        "message": "original observation",
+        "retryable": "never",
+        "operation": "_echo_agent/extension/invoke",
+        "details": {
+          "fields": [
+            {
+              "key": "observation",
+              "value": "not_settled",
+              "future_field": true
+            },
+            {
+              "key": "run_id",
+              "value": "original-run-\u4e2d\u6587\ud83d\ude42"
+            }
+          ],
+          "future_details": 17,
+          "facade": {
+            "future_facade": false
+          }
+        },
+        "future_error_metadata": {
+          "preserve": [
+            null,
+            "\u4e2d\u6587\ud83d\ude42"
+          ]
+        },
+        "handle": {
+          "id": "issued-original",
+          "generation": "18446744073709551615",
+          "kind": "extension",
+          "future_handle": {
+            "x": 1
+          }
+        }
+      }
+    }
+  ]
+}

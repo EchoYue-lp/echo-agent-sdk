@@ -1111,14 +1111,7 @@ async fn close_session_owned(
             .facade
             .drop_session_resources_of(&state.handles, owner, &ids)
             .await
-            .map_err(|error| {
-                wire::sdk_error(
-                    ExtensionErrorCode::FrameworkError,
-                    error,
-                    Retryability::AfterDelay,
-                    method,
-                )
-            })?;
+            .map_err(|error| error.with_operation(method))?;
         state.handles.close_facade_resources_of(owner);
     }
     services

@@ -145,6 +145,26 @@ renew, acknowledge and requeue calls. Its descriptor declares a canonical
 renewal from that negotiated capability. Missing operations, owner mismatch or
 unsupported settlement fail before a continuation can be reported as settled.
 
+Accepted Workflow A adds one explicit `protected_claim_v1` capability and
+`workflow_checkpoint_protect_claim({checkpoint_id, attempt_id})` reverse call
+with a unit result. The Store must atomically protect that exact attempt
+before reporting success; a flag alone is no protection. This branch has
+focused Protocol/client evidence and the Host pins published framework
+`9886502c83d6b1f6fa9212eb221db0e5874deaee`. Full integration and final
+cross-language governance acceptance remain pending.
+
+The accepted contract keeps legacy/false-capability Store registration and
+unrelated operations usable. Graph capability belongs to its originally bound
+Store. Any claim-backed Approved/Modified node continuation, including branch
+execution, must reject missing support before claim, fork-save or effects with
+`feature_unavailable`/`never`; fresh execution, Deferred and no-node Rejected
+retain their specified paths. An unknown protected attempt cannot expire or be
+overwritten/deleted/cleared into a retry. Only its real owner can settle it by
+the original acknowledge/requeue calls. Protection inherits the provider's
+durability, so an in-memory instance is not persistent across process restart.
+Owner loss may block indefinitely; no force-unlock or receipt-query API is added.
+Old binaries must not access protected data, including through old delete/clear.
+
 Managed ConversationStore/RuntimeStateStore callbacks expose the eleven
 explicit managed persistence operations, including capability declarations,
 atomic transcript application, revision/generation CAS, projection receipts,
@@ -231,21 +251,37 @@ The SDK answers with exactly one of:
 
 Failure semantics (no built-in fallbacks, design §12.1):
 
-- **deadline** — the Host settles `extension_timeout` locally, sends the
-  `_echo_agent/extension/cancel` notice with reason `timeout`, and discards
-  the late answer;
-- **cancellation** — framework/run cancellation settles `cancelled` and
-  notifies with reason `cancelled`; the framework's terminal stays the
-  only one;
-- **disconnect** — the official transport reports the closed connection and
-  the invocation settles `extension_disconnected`. Java's actual Host process
-  exit promptly ends pending requests and event/update subscriptions with
-  `transport_error`; initialize cancellation closes that same spawned Host,
-  retaining retry ownership on failed close. Stdout EOF with a still-live child
-  is outside this guarantee. Transport failure proves neither a framework Run
-  terminal nor cleanup of an external producer;
-- **late response** — an answer after settlement is discarded with bounded
-  diagnostics; it can never overwrite settled state;
+- **deadline / cancellation of physical producers** — for Factory/CustomAgent,
+  Tool/LLM execution, Sandbox/Workflow execution or cleanup and their driven
+  streams, signal the original execution owner and retain its context/resources
+  until matching closure facts. A local timeout or cancellation token is not
+  proof that physical work stopped; ordinary first-cause errors keep their
+  final classification after actual cleanup. This does not change ordinary
+  Store/managed-call deadlines, unknown-commit rules, or best-effort Hook and
+  notification policy. Explicit observation below is still handled before any
+  resultless callback fallback; it is not converted to Unit/default/failure;
+- **explicit observation** — a complete, validated `framework_error` with
+  `retryable: never`, unique `observation: not_settled` and original non-empty
+  `run_id` (plus non-empty `execution_id` when present) is nonterminal. It is
+  not permission to retry the mutation. Three SDKs retain the original callback
+  cancellation address; public `streamWriter` / `stream_writer` `failed(error)`
+  keeps the same writer open for the original producer's real terminal. A
+  terminal already submitted by that writer cannot be reopened by a late
+  observation continuation. Ordinary or malformed failure envelopes keep their
+  ordinary terminal policy; the Host separately retains uncertain owners for
+  malformed observation hints without trusting their identities;
+- **disconnect** — the official transport can reject pending requests or end
+  local subscriptions. This proves neither a framework Run terminal nor cleanup
+  of an external producer. A callback response lost to transport is not a
+  physical receipt; unknown owners retain their original lease/context;
+- **late response** — a completed receipt cannot be overwritten. While the
+  original callback is still unknown, its real matching response and valid
+  remote terminal can release that callback's original resources, once. This
+  does not fabricate a foreign execution receipt when setup returned no
+  continuation source. If the original framework owner still drives that same
+  stream, its real result and original EOF must reach the existing driver/CAS
+  and unique canonical receipt; the earlier observation must not discard that
+  later result. Neither case starts a replacement execution or driver;
 - **re-entry** — a second exclusive invocation on the same registration, or an
   extension callback attempting an exclusive mutation of its active Session,
   fails fast with `extension_conflict` instead of waiting on the Agent lock

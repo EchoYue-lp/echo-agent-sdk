@@ -19,7 +19,14 @@ superproject 中的规则文件才能冷启动。
 
 仓库迁移从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，原 extraction pin 为
 `27c7701e1eb116db1076da7f84bb68898544a44c`；该历史归属保留在 `MIGRATION-SOURCE.md`。
-当前 Host 治理候选精确依赖已发布 framework `00782b8aeddefe2ea8c566922cbdee6aedc80d70`，
+当前 Host 精确依赖已发布 framework `9886502c83d6b1f6fa9212eb221db0e5874deaee`，
+来自[framework PR #190](https://github.com/EchoYue-lp/echo-agent/pull/190)，上游精确main CI38862267005七项通过由协调者核验。
+本SDK真实Cargo.lock八包同Git revision，无path patch；唯一全28profile生成和完整合同check已实际0，
+accepted 5621项不增删，仅已批准A单cap/protect Unit与B两fallible签名由规范入口更新。
+当前Host生命周期修复、最终profile、完整Rust/三语、独审和SDK精确main CI尚待，不借历史pin通过替代。
+来源与历史分界见`MIGRATION-SOURCE.md`和`docs/MASTER-PLAN.md`。
+
+历史00782 Host治理候选精确依赖 `00782b8aeddefe2ea8c566922cbdee6aedc80d70`，
 来自 [framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186)，承接 Git 分支切换无损修复。
 SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确源码树与合并后 CI 已核对；
 [SDK 新 pin/锁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-published-00782-pin/README.md)、

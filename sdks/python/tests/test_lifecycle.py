@@ -458,6 +458,7 @@ def test_typed_descriptors_render_the_frozen_extension_shapes() -> None:
         "name": "python-audit",
         "capabilities": {
             "execution_cas_v1": False,
+            "protected_claim_v1": False,
             "conversation_projection": "unsupported",
             "runtime_state": "unsupported",
             "persistence_call": "unsupported",
@@ -985,3 +986,115 @@ async def test_skill_policy_and_component_stream_terminals_are_typed() -> None:
                 },
             }
         )
+
+
+def test_workflow_protected_claim_preserves_exact_attempt_through_public_decoder():
+    original = {"checkpoint_id": "checkpoint-中文🙂", "attempt_id": "attempt-原始🙂"}
+    payload = {
+        "extension": {"id": "ext-1", "generation": "1", "kind": "extension"},
+        "invocation_id": "protect-invocation",
+        "deadline": {"seconds": "30", "nanos": 0},
+        "stream": None,
+        "invocation": {
+            "operation": "agent_component_call",
+            "input": {
+                "component": "workflow_checkpoint_store",
+                "call": {
+                    "operation": "workflow_checkpoint_protect_claim",
+                    "input": original,
+                },
+            },
+        },
+    }
+    call = AgentComponentCall.from_payload(payload)
+    assert call.component_operation == "workflow_checkpoint_protect_claim"
+    assert call.request.checkpoint_id == original["checkpoint_id"]
+    assert call.request.attempt_id == original["attempt_id"]
+    assert call.invocation_id == "protect-invocation"
+    for invalid, expected_error in [
+        ({"checkpoint_id": original["checkpoint_id"]}, TypeError),
+        ({**original, "attempt_id": 1}, TypeError),
+        ({**original, "extra": True}, ValueError),
+    ]:
+        with pytest.raises(expected_error):
+            AgentComponentCall.from_payload(
+                {
+                    **payload,
+                    "invocation": {
+                        "operation": "agent_component_call",
+                        "input": {
+                            "component": "workflow_checkpoint_store",
+                            "call": {
+                                "operation": "workflow_checkpoint_protect_claim",
+                                "input": invalid,
+                            },
+                        },
+                    },
+                }
+            )
+    with pytest.raises(ValueError):
+        AgentComponentCall.from_payload(
+            {
+                **payload,
+                "invocation": {
+                    "operation": "agent_component_call",
+                    "input": {
+                        **payload["invocation"]["input"],
+                        "component": "audit_logger",
+                    },
+                },
+            }
+        )
+
+
+def test_workflow_protected_claim_capability_is_boolean_and_component_scoped():
+    for enabled in [False, True]:
+        descriptor = AgentComponentDescriptor(
+            "workflow_checkpoint_store",
+            "checkpoint-provider",
+            claim_heartbeat_interval_ms=1_000,
+            protected_claim_v1=enabled,
+        )
+        assert descriptor.to_wire()["capabilities"]["protected_claim_v1"] is enabled
+    assert (
+        AgentComponentDescriptor("audit_logger", "legacy").to_wire()["capabilities"][
+            "protected_claim_v1"
+        ]
+        is False
+    )
+    with pytest.raises(ValueError):
+        AgentComponentDescriptor("audit_logger", "wrong", protected_claim_v1=True)
+    for illegal in ["true", 1, None]:
+        with pytest.raises(ValueError):
+            AgentComponentDescriptor(
+                "workflow_checkpoint_store",
+                "wrong",
+                claim_heartbeat_interval_ms=1_000,
+                protected_claim_v1=illegal,
+            )
+
+
+def test_workflow_protected_claim_outcome_requires_unit_result():
+    from types import SimpleNamespace
+
+    outcome = AgentComponentOutcome(
+        WorkflowCheckpointResult.claim_protected()
+    ).to_wire()
+    assert outcome == {
+        "outcome": "result",
+        "result": {
+            "operation": "agent_component_call",
+            "value": {
+                "component": "workflow_checkpoint_store",
+                "result": {"operation": "workflow_checkpoint_protect_claim"},
+            },
+        },
+    }
+    with pytest.raises(ValueError, match="unit result"):
+        AgentComponentOutcome(
+            SimpleNamespace(
+                component="workflow_checkpoint_store",
+                operation="workflow_checkpoint_protect_claim",
+                value={"accepted": True},
+            )
+        ).to_wire()

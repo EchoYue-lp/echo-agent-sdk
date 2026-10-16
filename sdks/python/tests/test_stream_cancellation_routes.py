@@ -1,13 +1,15 @@
 """Official ACP receive/send windows around the existing reverse-call route."""
 
 import asyncio
+import json
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 from acp.client.connection import ClientSideConnection
 
 from echo_agent_sdk import EchoAgentError, WireHandle
-from echo_agent_sdk.client import EchoAgentClient, _Callbacks
+from echo_agent_sdk.client import EchoAgentClient, ExtensionStreamWriter, _Callbacks
 
 
 class Transport:
@@ -203,3 +205,143 @@ async def test_failed_client_close_retains_the_original_cancel_route_for_retry()
     await sdk.close()
     assert not callbacks.invocation_cancel
     assert not callbacks.stream_cancel_routes
+
+
+OBSERVATION_CASES = json.loads(
+    (
+        Path(__file__).resolve().parents[2]
+        / "shared/testing/cancellation-observation-cases.json"
+    ).read_text()
+)["cases"]
+
+
+@pytest.mark.asyncio
+async def test_public_writer_keeps_only_complete_legitimate_observations_open():
+    class Recorder:
+        def __init__(self):
+            self.frames = []
+
+        async def notify(self, method, params):
+            self.frames.append((method, deepcopy(params)))
+
+    for item in OBSERVATION_CASES:
+        sdk = Recorder()
+        writer = ExtensionStreamWriter(
+            sdk, WireHandle("original-stream", "1", "stream")
+        )
+        await writer.failed(deepcopy(item["error"]))
+        terminal = {
+            "kind": "agent",
+            "value": {"event": "final_answer", "data": {"text": "actual final value"}},
+        }
+        if item["nonterminal"]:
+            await writer.complete(terminal)
+            assert [frame[1]["sequence"] for frame in sdk.frames] == ["1", "2"], item[
+                "name"
+            ]
+        else:
+            with pytest.raises(RuntimeError, match="already closed"):
+                await writer.complete(terminal)
+        assert sdk.frames[0][1]["error"] == item["error"], item["name"]
+
+
+@pytest.mark.asyncio
+async def test_official_observation_send_retains_original_cancel_route_until_terminal():
+    async def handler(call, signal):
+        return {"outcome": "stream", "stream": call["stream"]}
+
+    sdk, callbacks, stream, transport, _ = await fixture(handler)
+    try:
+        await asyncio.wait_for(transport.responses.get(), 2)
+        original = callbacks.invocation_cancel["original-invocation"]
+        await sdk.notify(
+            "echo_agent/extension/stream",
+            {
+                "event": "failed",
+                "stream": stream.to_dict(),
+                "sequence": "1",
+                "error": deepcopy(OBSERVATION_CASES[0]["error"]),
+            },
+        )
+        assert callbacks.invocation_cancel.get("original-invocation") is original
+        await sdk.notify(
+            "echo_agent/extension/stream",
+            {
+                "event": "complete",
+                "stream": stream.to_dict(),
+                "sequence": "2",
+                "value": {
+                    "kind": "agent",
+                    "value": {"event": "final_answer", "data": {"text": "actual"}},
+                },
+            },
+        )
+        assert not callbacks.invocation_cancel
+        assert not callbacks.stream_cancel_routes
+    finally:
+        await sdk.connection.close()
+
+
+@pytest.mark.asyncio
+async def test_explicit_observation_wins_local_callback_cancel_and_keeps_owner():
+    for item in OBSERVATION_CASES:
+
+        async def handler(call, signal, captured=item):
+            signal.set()
+            return {"outcome": "error", "error": deepcopy(captured["error"])}
+
+        sdk, callbacks, _, transport, _ = await fixture(handler)
+        try:
+            response = await asyncio.wait_for(transport.responses.get(), 2)
+            if item["nonterminal"]:
+                assert response["result"] == {
+                    "outcome": "error",
+                    "error": item["error"],
+                }, item["name"]
+                assert "original-invocation" in callbacks.invocation_cancel
+            else:
+                assert response["result"]["error"]["code"] == "cancelled", item["name"]
+                assert "original-invocation" not in callbacks.invocation_cancel
+        finally:
+            await sdk.connection.close()
+
+
+@pytest.mark.asyncio
+async def test_late_observation_submission_cannot_reopen_writer_after_real_terminal():
+    # Public writer scheduling contract: defer the first notify completion while
+    # the same writer's second (terminal) notify actually completes.
+    entered, release = asyncio.Event(), asyncio.Event()
+    frames = []
+
+    class Recorder:
+        async def notify(self, method, params):
+            frames.append(deepcopy(params))
+            if params["event"] == "failed":
+                entered.set()
+                await release.wait()
+
+    writer = ExtensionStreamWriter(
+        Recorder(), WireHandle("original-stream", "1", "stream")
+    )
+    first = asyncio.create_task(writer.failed(deepcopy(OBSERVATION_CASES[0]["error"])))
+    try:
+        await asyncio.wait_for(entered.wait(), 2)
+        await writer.complete(
+            {
+                "kind": "agent",
+                "value": {"event": "final_answer", "data": {"text": "original final"}},
+            }
+        )
+        release.set()
+        await first
+        with pytest.raises(RuntimeError, match="already closed"):
+            await writer.chunk(
+                {
+                    "kind": "agent",
+                    "value": {"event": "token", "text": "must not revive"},
+                }
+            )
+        assert [row["sequence"] for row in frames] == ["1", "2"]
+    finally:
+        release.set()
+        await first

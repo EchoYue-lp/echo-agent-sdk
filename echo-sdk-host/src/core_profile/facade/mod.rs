@@ -259,6 +259,16 @@ impl SessionFacadeRuntime {
         }
     }
 
+    #[cfg(all(test, feature = "framework-subagent", feature = "sdk-extension-bridge"))]
+    pub(crate) fn with_subagent_capacity_for_test(
+        limits: &crate::config::SdkProfileLimits,
+        capacity: usize,
+    ) -> Self {
+        let mut runtime = Self::new(limits);
+        runtime.max_subagents = capacity;
+        runtime
+    }
+
     /// Register one RPC-dispatched subagent record by execution id. The
     /// advertised live-subagent bound is a hard limit: settled records are
     /// retired first, and a full map rejects the dispatch with a typed
@@ -296,6 +306,26 @@ impl SessionFacadeRuntime {
         }
         subagents.insert(execution_id, record);
         Ok(())
+    }
+
+    /// Retire only the exact reservation whose framework setup proved that
+    /// no attempt was spawned. Never use this for a collector observation.
+    #[cfg(feature = "framework-subagent")]
+    pub(super) fn retire_unsubmitted_subagent(
+        &self,
+        execution_id: &str,
+        original: &Arc<subagent::SubagentDispatchRecord>,
+    ) {
+        let mut subagents = self
+            .subagents
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if subagents
+            .get(execution_id)
+            .is_some_and(|record| Arc::ptr_eq(record, original))
+        {
+            subagents.remove(execution_id);
+        }
     }
 
     /// Resolve one subagent record by execution id.
@@ -378,13 +408,22 @@ impl SessionFacadeRuntime {
     /// Cancel and remove every task execution owned by one session scope;
     /// session close must never leave a DAG running untracked.
     #[cfg(feature = "framework-subagent")]
-    pub async fn drop_task_executions_of(&self, scope: &str) {
+    pub async fn drop_task_executions_of(&self, scope: &str) -> Result<(), EchoSdkError> {
         if let Some(execution) = self.task_execution_of(scope) {
             execution.cancel.cancel();
             while !execution.completion.settled.load(Ordering::Acquire) {
                 let notified = execution.completion.notify.notified();
                 tokio::pin!(notified);
                 notified.as_mut().enable();
+                if let Some(observation) = execution
+                    .completion
+                    .observation
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .as_ref()
+                {
+                    return Err(observation.clone());
+                }
                 if execution.completion.settled.load(Ordering::Acquire) {
                     break;
                 }
@@ -392,13 +431,14 @@ impl SessionFacadeRuntime {
             }
             self.remove_task_execution(scope);
         }
+        Ok(())
     }
 
     /// Cancel every live task execution and wait for each spawned service
     /// task to settle (connection teardown; the caller's shutdown timeout
     /// bounds the whole wait).
     #[cfg(feature = "framework-subagent")]
-    pub async fn cancel_all_task_executions_and_wait(&self) {
+    pub async fn cancel_all_task_executions_and_wait(&self) -> Result<(), EchoSdkError> {
         let scopes = self
             .task_executions
             .lock()
@@ -412,13 +452,14 @@ impl SessionFacadeRuntime {
             }
         }
         for scope in scopes {
-            self.drop_task_executions_of(&scope).await;
+            self.drop_task_executions_of(&scope).await?;
         }
+        Ok(())
     }
 
     /// Cancel every RPC subagent dispatch attempt owned by one session.
     #[cfg(feature = "framework-subagent")]
-    pub async fn cancel_subagents_of(&self, owner: &str) {
+    pub async fn cancel_subagents_of(&self, owner: &str) -> Result<(), EchoSdkError> {
         let records = self
             .subagents
             .lock()
@@ -428,21 +469,22 @@ impl SessionFacadeRuntime {
             .map(|(id, record)| (id.clone(), record.clone()))
             .collect::<Vec<_>>();
         for (_, record) in &records {
-            record.background.cancel();
+            record.cancel.cancel();
         }
         for (id, record) in records {
-            record.wait_settled().await;
+            record.wait_settled().await?;
             self.subagents
                 .lock()
                 .unwrap_or_else(|e| e.into_inner())
                 .remove(&id);
         }
+        Ok(())
     }
 
     /// The collector is the sole join consumer. Teardown waits for its
     /// settlement projection without racing it for the framework receipt.
     #[cfg(feature = "framework-subagent")]
-    pub async fn cancel_all_subagents_and_wait(&self) {
+    pub async fn cancel_all_subagents_and_wait(&self) -> Result<(), EchoSdkError> {
         let owners = self
             .subagents
             .lock()
@@ -451,8 +493,9 @@ impl SessionFacadeRuntime {
             .map(|record| record.owner_session.clone())
             .collect::<Vec<_>>();
         for owner in owners {
-            self.cancel_subagents_of(&owner).await;
+            self.cancel_subagents_of(&owner).await?;
         }
+        Ok(())
     }
 
     /// Drop and cancel every facade resource whose handle the unified
@@ -465,21 +508,35 @@ impl SessionFacadeRuntime {
         handles: &HandleRegistry,
         owner: &str,
         closed: &[String],
-    ) -> Result<(), String> {
+    ) -> Result<(), EchoSdkError> {
         #[cfg(feature = "framework-subagent")]
         {
-            self.drop_task_executions_of(owner).await;
-            self.cancel_subagents_of(owner).await;
+            self.drop_task_executions_of(owner).await?;
+            self.cancel_subagents_of(owner).await?;
         }
-        self.streams
-            .close_owner(owner)
+        self.streams.close_owner(owner).await?;
+        integrations::close_session_resources(&self.integrations, closed)
             .await
-            .map_err(|error| error.message)?;
-        integrations::close_session_resources(&self.integrations, closed).await?;
+            .map_err(|error| {
+                wire::sdk_error(
+                    ExtensionErrorCode::FrameworkError,
+                    error,
+                    Retryability::AfterDelay,
+                    "_echo_agent/session/close",
+                )
+            })?;
         #[cfg(feature = "framework-mcp")]
         self.integrations
             .close_mcp_debt(handles, Some(owner))
-            .await?;
+            .await
+            .map_err(|error| {
+                wire::sdk_error(
+                    ExtensionErrorCode::FrameworkError,
+                    error,
+                    Retryability::AfterDelay,
+                    "_echo_agent/session/close",
+                )
+            })?;
         source_operations::drop_file_authorities(&self.file_authorities, closed);
         source_operations::drop_tokenizer_authorities(&self.tokenizer_authorities, closed);
         #[cfg(feature = "framework-content-guard")]
@@ -637,8 +694,12 @@ impl SessionFacadeRuntime {
     pub async fn close_all(&self, handles: &HandleRegistry) -> Result<(), String> {
         #[cfg(feature = "framework-subagent")]
         {
-            self.cancel_all_task_executions_and_wait().await;
-            self.cancel_all_subagents_and_wait().await;
+            self.cancel_all_task_executions_and_wait()
+                .await
+                .map_err(|error| error.message)?;
+            self.cancel_all_subagents_and_wait()
+                .await
+                .map_err(|error| error.message)?;
         }
         self.streams
             .close_all()
@@ -772,6 +833,7 @@ pub(crate) struct FacadeFamilyLimits {
 #[cfg(feature = "framework-subagent")]
 pub(crate) struct TaskRunCompletion {
     pub settled: AtomicBool,
+    pub observation: std::sync::Mutex<Option<EchoSdkError>>,
     pub notify: tokio::sync::Notify,
 }
 
@@ -1756,19 +1818,23 @@ async fn facade_admission(
                         };
                         let sender = producer.sender.clone();
                         let cancel = producer.cleanup.clone();
+                        let original_owner = producer.clone();
                         let background = tokio::spawn(async move {
-                            let source = proxy.run_stream(&input).await;
+                            let source = proxy
+                                .run_stream_observed(
+                                    &input,
+                                    cancel.clone(),
+                                    Some(original_owner.clone()),
+                                )
+                                .await;
                             let mut source = match source {
-                                Ok(source) => source,
+                                Ok(source) => source.fuse(),
                                 Err(error) => {
-                                    let _ = sender
-                                        .send(Err(wire::sdk_error(
-                                            ExtensionErrorCode::FrameworkError,
-                                            wire::bounded_framework_message(&error.to_string()),
-                                            Retryability::Never,
-                                            "_echo_agent/workflow/op",
-                                        )))
-                                        .await;
+                                    let error =
+                                        wire::framework_error(&error, "_echo_agent/workflow/op");
+                                    if !original_owner.record_observation(&error) {
+                                        let _ = sender.send(Err(error)).await;
+                                    }
                                     return;
                                 }
                             };
@@ -1777,19 +1843,34 @@ async fn facade_admission(
                                     () = cancel.cancelled() => break,
                                     item = source.next() => item,
                                 };
-                                let Some(item) = item else { break };
+                                let Some(item) = item else { return };
                                 let item = item
                                     .map_err(|error| {
-                                        wire::sdk_error(
-                                            ExtensionErrorCode::FrameworkError,
-                                            wire::bounded_framework_message(&error.to_string()),
-                                            Retryability::Never,
-                                            "_echo_agent/workflow/op",
-                                        )
+                                        wire::framework_error(&error, "_echo_agent/workflow/op")
                                     })
                                     .and_then(workflow::workflow_event_value);
-                                if sender.send(item).await.is_err() {
+                                if let Err(error) = &item {
+                                    if original_owner.record_observation(error) {
+                                        // Observation leaves the original producer alive;
+                                        // keep forwarding its eventual Completed payload.
+                                        continue;
+                                    }
+                                }
+                                let sent = tokio::select! {
+                                    () = cancel.cancelled() => false,
+                                    result = sender.send(item) => result.is_ok(),
+                                };
+                                if !sent {
+                                    cancel.cancel();
                                     break;
+                                }
+                            }
+                            while let Some(event) = source.next().await {
+                                if let Err(error) = event {
+                                    original_owner.record_observation(&wire::framework_error(
+                                        &error,
+                                        "_echo_agent/workflow/op",
+                                    ));
                                 }
                             }
                         });
@@ -1800,6 +1881,12 @@ async fn facade_admission(
                         return response(Ok(WireValue::Handle(producer.handle)));
                     }
                     let output = proxy.run(&input).await.map_err(|error| {
+                        if matches!(
+                            &error,
+                            echo_agent::error::ReactError::ExecutionNotSettled { .. }
+                        ) {
+                            return wire::framework_error(&error, method);
+                        }
                         wire::sdk_error(
                             ExtensionErrorCode::FrameworkError,
                             wire::bounded_framework_message(&error.to_string()),
@@ -2035,21 +2122,22 @@ async fn facade_admission(
                 };
                 let sender = producer.sender.clone();
                 let cancel = producer.cleanup.clone();
+                let original_owner = producer.clone();
                 let background = tokio::spawn(async move {
                     let source = proxy
-                        .execute_stream_with_cancel(command, cancel.clone())
+                        .execute_stream_with_cancel(
+                            command,
+                            cancel.clone(),
+                            Some(original_owner.clone()),
+                        )
                         .await;
                     let source = match source {
                         Ok(source) => source,
                         Err(error) => {
-                            let _ = sender
-                                .send(Err(wire::sdk_error(
-                                    ExtensionErrorCode::FrameworkError,
-                                    wire::bounded_framework_message(&error.to_string()),
-                                    Retryability::Never,
-                                    "_echo_agent/shell/op",
-                                )))
-                                .await;
+                            let error = wire::framework_error(&error, "_echo_agent/shell/op");
+                            if !original_owner.record_observation(&error) {
+                                let _ = sender.send(Err(error)).await;
+                            }
                             return;
                         }
                     };
@@ -2187,6 +2275,149 @@ async fn session_authorities_of(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Real official ACP/profile forward -> reverse -> forward projection.
+    /// The foreign work starts inside its callback and stays held; this tests
+    /// error identity and original admission, not normal transport shutdown.
+    #[cfg(feature = "sdk-extension-bridge")]
+    #[tokio::test]
+    async fn workflow_direct_run_preserves_observation_while_original_work_is_held()
+    -> Result<(), String> {
+        use agent_client_protocol::{
+            Agent as AcpAgent, ByteStreams, Client, ConnectionTo, Responder, UntypedMessage,
+        };
+        use echo_sdk_protocol::methods::*;
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+        use tokio_util::sync::CancellationToken;
+        struct OriginalWorkGuard(Arc<AtomicUsize>);
+        impl Drop for OriginalWorkGuard {
+            fn drop(&mut self) {
+                self.0.fetch_add(1, Ordering::AcqRel);
+            }
+        }
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({"schema_version":1,"default_agent":{
+            "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+            "agent":{"name":"fixture","enable_tools":true}}})).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )
+        .map_err(|error| error.to_string())?;
+        let profile = super::super::SdkCoreProfile {
+            state: state.clone(),
+        };
+        let adapter = echo_agent::acp::AcpAgentAdapter::new(state.session_factory.clone())
+            .with_profile(profile);
+        let close_owner = adapter.close_owner();
+        let entered = CancellationToken::new();
+        let release = CancellationToken::new();
+        let finish = CancellationToken::new();
+        let drops = Arc::new(AtomicUsize::new(0));
+        let calls = Arc::new(AtomicUsize::new(0));
+        let original = Arc::new(std::sync::Mutex::new(None::<tokio::task::JoinHandle<()>>));
+        let known_error = Arc::new(std::sync::Mutex::new(None::<EchoSdkError>));
+        let (host_io, client_io) = tokio::io::duplex(32_768);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (client_read, client_write) = tokio::io::split(client_io);
+        let host = agent_client_protocol::ConnectTo::connect_to(
+            adapter,
+            ByteStreams::new(host_write.compat_write(), host_read.compat()),
+        );
+        let (observed_tx, observed_rx) = tokio::sync::oneshot::channel::<Result<(), String>>();
+        let client = Client.builder().on_receive_request({
+            let entered=entered.clone();let release=release.clone();let drops=drops.clone();let calls=calls.clone();let original=original.clone();let known_error=known_error.clone();
+            async move |call: ExtensionInvokeCall, responder: Responder<ExtensionInvokeOutcome>, _connection: ConnectionTo<AcpAgent>| {
+                let error = match call.invocation {
+                    ExtensionInvocation::AgentComponentCall(AgentComponentCallWire {component: AgentComponentKindWire::Workflow, call: AgentComponentCallInputWire::WorkflowRun {input}}) => {
+                        calls.fetch_add(1, Ordering::AcqRel);
+                        if input == "ordinary" {
+                            wire::sdk_error(ExtensionErrorCode::ExtensionFailed, "ordinary workflow failure 中文🙂", Retryability::Never, "_echo_agent/extension/invoke")
+                        } else {
+                            // Identities belong to this actual foreign work admission,
+                            // never to the JSON-RPC request id or a guessed SDK Task.
+                            let run_id=format!("workflow-original-{}-中文🙂",uuid::Uuid::new_v4());
+                            let execution_id=format!("workflow-execution-{}-🧪",uuid::Uuid::new_v4());
+                            let error=wire::not_settled_error(&run_id,Some(&execution_id),"_echo_agent/extension/invoke");
+                            *known_error.lock().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?=Some(error.clone());
+                            let guard=OriginalWorkGuard(drops.clone());let owner_release=release.clone();let owner_entered=entered.clone();
+                            let task=tokio::spawn(async move {let _guard=guard;owner_entered.cancel();owner_release.cancelled().await;});
+                            *original.lock().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?=Some(task);
+                            entered.cancelled().await;
+                            error
+                        }
+                    }
+                    _ => return Err(agent_client_protocol::Error::internal_error().data("unexpected Workflow projection callback")),
+                };
+                responder.respond(ExtensionInvokeOutcome::Error {error})
+            }
+        }, agent_client_protocol::on_receive_request!()).connect_with(ByteStreams::new(client_write.compat_write(), client_read.compat()), {
+            let finish=finish.clone();let release=release.clone();let drops=drops.clone();let entered=entered.clone();let calls=calls.clone();let known_error=known_error.clone();
+            async move |connection| {
+                let _release_on_exit=release.clone().drop_guard();
+                let observed=async {
+                    let mut initialize=agent_client_protocol::schema::v1::InitializeRequest::new(agent_client_protocol::schema::ProtocolVersion::V1);
+                    let mut meta=agent_client_protocol::schema::v1::Meta::new();
+                    meta.insert("echo_agent".to_string(),serde_json::to_value(echo_sdk_protocol::capability::EchoAgentClientHello {
+                        extension_protocol_version:echo_sdk_protocol::EXTENSION_PROTOCOL_VERSION,contract_digest:state.advertisement.contract_digest.clone(),source_contract_digest:state.advertisement.source_contract_digest.clone(),required_features:Vec::new(),required_capabilities:Vec::new()
+                    }).map_err(|error| error.to_string())?);
+                    initialize.client_capabilities.meta=Some(meta);connection.send_request(initialize).block_task().await.map_err(|error| error.to_string())?;
+                    let agent=connection.send_request(AgentCreateRequest {config:AgentConfigWire::HostDefault,idempotency_id:None}).block_task().await.map_err(|error| error.to_string())?.agent;
+                    let session=connection.send_request(SessionCreateRequest {agent,working_dir:None,session_id:None,idempotency_id:None}).block_task().await.map_err(|error| error.to_string())?.session;
+                    for mode in ["ordinary","observation"] {
+                        let extension=connection.send_request(ExtensionRegisterRequest {kind:ExtensionKind::AgentComponent,implementation_id:format!("workflow-projection-{mode}"),descriptor:ExtensionDescriptor::AgentComponent {descriptor_version:1,component:AgentComponentKindWire::Workflow,name:format!("workflow-projection-{mode}"),capabilities:Default::default()},timeout:None}).block_task().await.map_err(|error| error.to_string())?.extension;
+                        let params=serde_json::to_value(FeatureOperationRequest {operation:"workflow.extension.run".to_string(),signature_digest:echo_sdk_protocol::facade::family_operation_signature_digest("workflow","workflow.extension.run"),handle:Some(session.clone()),arguments:vec![WireValue::Handle(extension),WireValue::String(mode.to_string())]}).map_err(|error| error.to_string())?;
+                        let result=connection.send_request(UntypedMessage::new("_echo_agent/workflow/op",params).map_err(|error| error.to_string())?).block_task().await;
+                        let rpc_error=match result {Ok(_)=>return Err("Workflow projection manufactured success".to_string()),Err(error)=>error};
+                        let observed=EchoSdkError::from_jsonrpc_data(rpc_error.data.as_ref())?;
+                        let expected=if mode=="observation" {
+                            if !entered.is_cancelled()||release.is_cancelled()||drops.load(Ordering::Acquire)!=0 {return Err("observation did not originate in still-held callback work".to_string());}
+                            let mut expected=known_error.lock().map_err(|error| error.to_string())?.clone().ok_or("original callback error missing")?;
+                            expected.operation=Some("_echo_agent/workflow/op".to_string());expected
+                        } else {
+                            wire::sdk_error(ExtensionErrorCode::FrameworkError,"extension bridge failure extension_failed: ordinary workflow failure 中文🙂",Retryability::Never,"_echo_agent/workflow/op")
+                        };
+                        if observed!=expected {return Err(format!("Workflow direct-run projection lost original typed facts for {mode}: observed={observed:?}; expected={expected:?}"));}
+                        let expected_in_flight=usize::from(mode=="observation");
+                        if state.services().map_err(|error| error.to_string())?.extensions().in_flight()!=expected_in_flight||drops.load(Ordering::Acquire)!=0 {return Err("direct run changed the ordinary settlement or original unknown admission/physical work".to_string());}
+                    }
+                    if calls.load(Ordering::Acquire)!=2 {return Err("projection counter did not execute exactly its two real callbacks".to_string());}
+                    Ok(())
+                }.await;
+                observed_tx.send(observed).map_err(|_| agent_client_protocol::Error::internal_error().data("Workflow projection result observer disappeared"))?;
+                finish.cancelled().await;
+                Ok(())
+            }
+        });
+        tokio::pin!(host, client, observed_rx);
+        let observed = tokio::select! {
+            biased;
+            result=&mut observed_rx=>result.unwrap_or_else(|error| Err(error.to_string())),
+            result=&mut host=>Err(format!("Workflow projection Host transport ended before evidence: {result:?}")),
+            result=&mut client=>Err(format!("Workflow projection SDK transport ended before evidence: {result:?}")),
+            ()=tokio::time::sleep(std::time::Duration::from_secs(8))=>Err("Workflow projection actual RPC did not finish".to_string()),
+        };
+        release.cancel();
+        let task = original.lock().map_err(|error| error.to_string())?.take();
+        if let Some(task) = task {
+            tokio::time::timeout(std::time::Duration::from_secs(2), task)
+                .await
+                .map_err(|error| error.to_string())?
+                .map_err(|error| error.to_string())?;
+            if drops.load(Ordering::Acquire) != 1 {
+                return Err("original callback work did not join exactly once".to_string());
+            }
+        }
+        finish.cancel();
+        // Dropping these test-owned transports is teardown, not a physical
+        // receipt or a claim that permanent foreign uncertainty was settled.
+        drop(close_owner);
+        observed
+    }
 
     #[test]
     fn family_handle_argument_retains_opaque_resource_address() -> Result<(), String> {

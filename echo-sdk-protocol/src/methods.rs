@@ -1948,6 +1948,7 @@ pub enum AgentComponentOperationWire {
     WorkflowCheckpointAckClaim,
     WorkflowCheckpointRequeueClaim,
     WorkflowCheckpointRenewClaim,
+    WorkflowCheckpointProtectClaim,
     WorkflowCheckpointList,
     WorkflowCheckpointListByGraph,
     WorkflowCheckpointListFiltered,
@@ -2037,6 +2038,7 @@ impl AgentComponentOperationWire {
             | Self::WorkflowCheckpointAckClaim
             | Self::WorkflowCheckpointRequeueClaim
             | Self::WorkflowCheckpointRenewClaim
+            | Self::WorkflowCheckpointProtectClaim
             | Self::WorkflowCheckpointList
             | Self::WorkflowCheckpointListByGraph
             | Self::WorkflowCheckpointListFiltered
@@ -2278,6 +2280,10 @@ pub enum AgentComponentCallInputWire {
         checkpoint_id: String,
         attempt_id: String,
     },
+    WorkflowCheckpointProtectClaim {
+        checkpoint_id: String,
+        attempt_id: String,
+    },
     WorkflowCheckpointList,
     WorkflowCheckpointListByGraph {
         graph_name: String,
@@ -2442,6 +2448,9 @@ impl AgentComponentCallInputWire {
             }
             Self::WorkflowCheckpointRenewClaim { .. } => {
                 AgentComponentOperationWire::WorkflowCheckpointRenewClaim
+            }
+            Self::WorkflowCheckpointProtectClaim { .. } => {
+                AgentComponentOperationWire::WorkflowCheckpointProtectClaim
             }
             Self::WorkflowCheckpointList => AgentComponentOperationWire::WorkflowCheckpointList,
             Self::WorkflowCheckpointListByGraph { .. } => {
@@ -2612,6 +2621,7 @@ pub enum AgentComponentCallResultWire {
     WorkflowCheckpointAckClaim,
     WorkflowCheckpointRequeueClaim,
     WorkflowCheckpointRenewClaim,
+    WorkflowCheckpointProtectClaim,
     WorkflowCheckpointList {
         checkpoints: Vec<WireValue>,
     },
@@ -2762,6 +2772,9 @@ impl AgentComponentCallResultWire {
             Self::WorkflowCheckpointRenewClaim => {
                 AgentComponentOperationWire::WorkflowCheckpointRenewClaim
             }
+            Self::WorkflowCheckpointProtectClaim => {
+                AgentComponentOperationWire::WorkflowCheckpointProtectClaim
+            }
             Self::WorkflowCheckpointList { .. } => {
                 AgentComponentOperationWire::WorkflowCheckpointList
             }
@@ -2827,6 +2840,10 @@ pub struct AgentComponentCapabilitiesWire {
     /// execution CAS. CRUD registration alone does not authorize dispatch.
     #[serde(default)]
     pub execution_cas_v1: bool,
+    /// This checkpoint store atomically protects the exact claimed attempt
+    /// before node effects. CRUD registration alone does not promise this.
+    #[serde(default)]
+    pub protected_claim_v1: bool,
     #[serde(default)]
     pub conversation_projection: ConversationProjectionCapabilityWire,
     #[serde(default)]
@@ -3128,6 +3145,11 @@ impl ExtensionDescriptor {
                 && *component != AgentComponentKindWire::RevisionedTaskStore
             {
                 return Err("execution CAS capability requires a revisioned task store");
+            }
+            if capabilities.protected_claim_v1
+                && *component != AgentComponentKindWire::WorkflowCheckpointStore
+            {
+                return Err("protected claim capability requires a workflow checkpoint store");
             }
             if capabilities.conversation_projection
                 != ConversationProjectionCapabilityWire::Unsupported

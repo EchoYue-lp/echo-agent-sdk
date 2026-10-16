@@ -56,7 +56,28 @@ boundary remains recorded in `contracts/sdk/source-contract.json` and
 
 ## Current Governance Candidate Pin
 
-The current Host dependency target is published framework revision
+The current Host dependency is published framework
+`9886502c83d6b1f6fa9212eb221db0e5874deaee`, tree
+`aee79a54c03ba7d79b49cceedd3170fbb809f41b`, merged through
+[framework PR #190](https://github.com/EchoYue-lp/echo-agent/pull/190).
+The coordinator verified all seven jobs of exact-main CI run `38862267005`.
+All eight framework packages in this SDK's actual lock use that one Git
+revision; the lock SHA-256 is
+`5952bfe30d027f5a5109eda5df3ed709cbadc16106c9b34713129b3e6cee138a`.
+No path override or borrowed framework lock is used.
+
+The sole full 28-profile generator and complete contract check both exited0.
+Accepted membership remains 5,621; the two approved fallible Rust signatures
+are regenerated rather than frozen to old digests. The protected-claim addition
+is limited to the separately accepted capability and reverse Unit operation.
+New Host lifecycle fixes, final profile, full native language/Rust validation
+and exact SDK-main CI remain pending; earlier pin receipts do not qualify this
+source. See [the current task ledger](docs/MASTER-PLAN.md) and
+[ADR0039](docs/adr/0039-sdk-cancellation-observation.md).
+
+## Historical Governance Pin 00782
+
+The earlier Host dependency target was published framework revision
 `00782b8aeddefe2ea8c566922cbdee6aedc80d70`, merged through
 [framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186).
 The signed published source tree matches the independently reviewed candidate;
@@ -82,9 +103,9 @@ This changes the current build input, not the initial import archive, filtered
 history or extraction ancestry hashes recorded above.
 
 The [twelve accepted-source continuity choices](docs/sdk/governance/accepted-source-continuity-proposal.md)
-remain proposed. Complete accepted contract generation, final SDK gates and SDK
-main acceptance are pending. Bounded runtime and language evidence on this pin
-does not replace those requirements or claim a binary/registry release.
+were explicitly accepted on 2026-10-15, as recorded in ADR0034. Their generator
+checkpoint and bounded consumer evidence do not replace final SDK gates or
+exact-main acceptance and do not claim a binary/registry release.
 
 The source continuity history above remains the ancestry authority; this file
 does not claim a published binary or registry release. The cross-repository

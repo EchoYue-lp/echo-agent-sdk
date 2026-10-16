@@ -70,7 +70,26 @@ pub(crate) fn into_jsonrpc_error(error: EchoSdkError) -> agent_client_protocol::
 /// message is truncated UTF-8 safely before emission; secrets never enter
 /// these messages because framework errors already redact credentials.
 pub(crate) fn framework_error(error: &ReactError, operation: &str) -> EchoSdkError {
-    let failure = AgentFailure::from(error);
+    let failure = match AgentFailure::try_from(error) {
+        Ok(failure) => failure,
+        Err(observation) => {
+            if let ReactError::ExecutionNotSettled {
+                run_id,
+                execution_id,
+            } = &observation
+            {
+                return not_settled_error(run_id, execution_id.as_deref(), operation);
+            }
+            // A refusal is never evidence of a terminal. Keep a future unknown
+            // refusal explicit rather than inventing AgentFailure fields.
+            return sdk_error(
+                ExtensionErrorCode::SerializationViolation,
+                "framework terminal classification refused this observation",
+                Retryability::Never,
+                operation,
+            );
+        }
+    };
     let projected = failure_wire(&failure);
     let code = if failure.terminal_kind == echo_agent::error::AgentTerminalKind::Cancelled {
         ExtensionErrorCode::Cancelled
@@ -106,6 +125,85 @@ pub(crate) fn framework_error(error: &ReactError, operation: &str) -> EchoSdkErr
         ..Default::default()
     });
     error
+}
+
+/// Project observer knowledge through the existing envelope. Identities are
+/// never bounded as display text: the protocol rejects an oversized value.
+pub(crate) fn not_settled_error(
+    run_id: &str,
+    execution_id: Option<&str>,
+    operation: &str,
+) -> EchoSdkError {
+    let mut fields = vec![
+        echo_sdk_protocol::error::DetailField {
+            key: "observation".to_string(),
+            value: "not_settled".to_string(),
+        },
+        echo_sdk_protocol::error::DetailField {
+            key: "run_id".to_string(),
+            value: run_id.to_string(),
+        },
+    ];
+    if let Some(execution_id) = execution_id {
+        fields.push(echo_sdk_protocol::error::DetailField {
+            key: "execution_id".to_string(),
+            value: execution_id.to_string(),
+        });
+    }
+    let mut error = sdk_error(
+        ExtensionErrorCode::FrameworkError,
+        "original execution has not physically settled",
+        Retryability::Never,
+        operation,
+    );
+    error.details = Some(echo_sdk_protocol::error::ErrorDetails {
+        fields: Some(fields),
+        ..Default::default()
+    });
+    error
+}
+
+/// A hint fences the original owner before validation; it is not a trusted
+/// identity and cannot authorize a terminal or resource release.
+pub(crate) fn has_observation_hint(error: &EchoSdkError) -> bool {
+    error
+        .details
+        .as_ref()
+        .and_then(|details| details.fields.as_ref())
+        .is_some_and(|fields| {
+            fields
+                .iter()
+                .any(|field| field.key == "observation" && field.value == "not_settled")
+        })
+}
+
+pub(crate) fn observation_from_sdk_error(error: &EchoSdkError) -> Option<ReactError> {
+    error.validate().ok()?;
+    if error.code != ExtensionErrorCode::FrameworkError || error.retryable != Retryability::Never {
+        return None;
+    }
+    let fields = error.details.as_ref()?.fields.as_ref()?;
+    let value = |key: &str| {
+        fields
+            .iter()
+            .find(|field| field.key == key)
+            .map(|field| field.value.as_str())
+    };
+    if value("observation")? != "not_settled" {
+        return None;
+    }
+    let run_id = value("run_id")?;
+    if run_id.trim().is_empty() {
+        return None;
+    }
+    let execution_id = value("execution_id");
+    if execution_id.is_some_and(|value| value.trim().is_empty()) {
+        return None;
+    }
+    Some(ReactError::ExecutionNotSettled {
+        run_id: run_id.to_string(),
+        execution_id: execution_id.map(str::to_string),
+    })
 }
 
 #[allow(dead_code)]
@@ -893,6 +991,45 @@ mod tests {
     use super::*;
 
     #[test]
+    fn nonterminal_observation_preserves_exact_identity_and_has_no_failure_fields()
+    -> Result<(), String> {
+        for execution_id in [None, Some("原执行🙂".repeat(120))] {
+            let run_id = "原run🙂".repeat(120);
+            let source = ReactError::ExecutionNotSettled {
+                run_id: run_id.clone(),
+                execution_id: execution_id.clone(),
+            };
+            let error = framework_error(&source, "_echo_agent/subagent/await");
+            let restored =
+                EchoSdkError::from_jsonrpc_data(error.clone().into_jsonrpc_error().data.as_ref())?;
+            assert_eq!(restored, error);
+            assert_eq!(restored.code, ExtensionErrorCode::FrameworkError);
+            assert_eq!(restored.retryable, Retryability::Never);
+            assert!(has_observation_hint(&restored));
+            assert!(
+                matches!(observation_from_sdk_error(&restored), Some(ReactError::ExecutionNotSettled { run_id: actual, execution_id: actual_execution }) if actual == run_id && actual_execution == execution_id)
+            );
+            assert!(
+                !restored
+                    .details
+                    .as_ref()
+                    .and_then(|details| details.fields.as_ref())
+                    .is_some_and(|fields| fields
+                        .iter()
+                        .any(|field| field.key.starts_with("framework_terminal")))
+            );
+        }
+        let oversized = not_settled_error(&"🙂".repeat(2049), None, "_echo_agent/subagent/await");
+        assert!(has_observation_hint(&oversized));
+        assert!(observation_from_sdk_error(&oversized).is_none());
+        assert_eq!(
+            EchoSdkError::from_jsonrpc_data(oversized.into_jsonrpc_error().data.as_ref())?.code,
+            ExtensionErrorCode::SerializationViolation
+        );
+        Ok(())
+    }
+
+    #[test]
     fn framework_error_preserves_cause_without_reclassifying_reverse_deadlines()
     -> Result<(), String> {
         use echo_agent::error::{AgentError, LlmError, MemoryError};
@@ -929,7 +1066,8 @@ mod tests {
             ),
         ];
         for (source, expected_code) in cases {
-            let expected = failure_wire(&AgentFailure::from(&source));
+            let expected =
+                failure_wire(&AgentFailure::try_from(&source).map_err(|error| error.to_string())?);
             let bound_handle = handle("subagent-owner", HandleKind::Subagent, 9);
             let wire = framework_error(&source, "_echo_agent/subagent/await")
                 .with_handle(bound_handle.clone());

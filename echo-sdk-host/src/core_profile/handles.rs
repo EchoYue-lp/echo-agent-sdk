@@ -168,6 +168,16 @@ pub(crate) struct ExtensionRecord {
     pub factory_instance: bool,
     pub factory_origin: Option<WireHandle>,
     pub reserved: bool,
+    // These are resources of this already-issued registration, not a second
+    // identity registry. The ordinary Factory edge is weak; only uncertainty
+    // retains the original strong owner until matching physical proof.
+    #[cfg(feature = "sdk-extension-bridge")]
+    pub callback_owners: Arc<Mutex<Vec<Arc<super::extension_bridge::CallbackInvocationOwner>>>>,
+    #[cfg(feature = "sdk-extension-bridge")]
+    pub factory_owner: Arc<Mutex<std::sync::Weak<super::extension_bridge::FactoryInstanceLease>>>,
+    #[cfg(feature = "sdk-extension-bridge")]
+    pub retained_factory_owner:
+        Arc<Mutex<Option<Arc<super::extension_bridge::FactoryInstanceLease>>>>,
 }
 
 struct HandleInner {
@@ -1078,6 +1088,12 @@ impl HandleRegistry {
             factory_instance: true,
             factory_origin: Some(parent.clone()),
             reserved: false,
+            #[cfg(feature = "sdk-extension-bridge")]
+            callback_owners: previous.callback_owners.clone(),
+            #[cfg(feature = "sdk-extension-bridge")]
+            factory_owner: previous.factory_owner.clone(),
+            #[cfg(feature = "sdk-extension-bridge")]
+            retained_factory_owner: previous.retained_factory_owner.clone(),
         });
         inner.extensions.insert(child.id.clone(), committed.clone());
         Ok(committed)
@@ -1222,6 +1238,12 @@ impl HandleRegistry {
             factory_instance,
             factory_origin,
             reserved,
+            #[cfg(feature = "sdk-extension-bridge")]
+            callback_owners: Arc::new(Mutex::new(Vec::new())),
+            #[cfg(feature = "sdk-extension-bridge")]
+            factory_owner: Arc::new(Mutex::new(std::sync::Weak::new())),
+            #[cfg(feature = "sdk-extension-bridge")]
+            retained_factory_owner: Arc::new(Mutex::new(None)),
         });
         inner.extensions.insert(id.clone(), record.clone());
         inner.extension_index.insert(identity, id.clone());

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "rust_public_inventory_telemetry",
-  "framework_source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=00782b8aeddefe2ea8c566922cbdee6aedc80d70#00782b8aeddefe2ea8c566922cbdee6aedc80d70",
+  "framework_source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=9886502c83d6b1f6fa9212eb221db0e5874deaee#9886502c83d6b1f6fa9212eb221db0e5874deaee",
   "extension_protocol_version": 1,
   "rustdoc_format_version": 61,
   "profiles": [
@@ -34,14 +34,14 @@
     "feature:topology",
     "feature:web"
   ],
-  "inventory_digest": "sha256:fc6d0bc93cfa93f06b29d135a27e305708380c9e0633b89b50f4fb26465dc311",
-  "canonical_items": 10939,
+  "inventory_digest": "sha256:17f98678a1eeae8d7891e05a2e1f9e8599c082aa056b348383589c492e95ce4b",
+  "canonical_items": 10962,
   "scope_counts": {
-    "deferred": 2514,
+    "deferred": 2528,
     "external_contract": 5621,
-    "host_or_rust_only": 1896,
+    "host_or_rust_only": 1903,
     "internal_helper": 91,
-    "language_intrinsic": 817
+    "language_intrinsic": 819
   },
   "blocking_scope": "external_contract",
   "runtime_negotiation_excludes": [
