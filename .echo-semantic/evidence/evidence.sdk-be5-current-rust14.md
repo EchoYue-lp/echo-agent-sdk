@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-be5-current-rust14
 kind: evidence
-observed_at: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
+observed_at: 019e700279677a2eb77e265b5038d9d581bc22da
 source_refs:
 - docs/sdk/governance/semantic-history.md
 supports:

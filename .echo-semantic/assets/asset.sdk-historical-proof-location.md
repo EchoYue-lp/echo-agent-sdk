@@ -6,7 +6,7 @@ title: SDK历史位置与真实当前消费者
 asset_type: file
 status: active
 risk: high
-observed_at: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
+observed_at: 019e700279677a2eb77e265b5038d9d581bc22da
 boundary_refs:
 - boundary.sdk-product
 code_refs:

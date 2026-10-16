@@ -5,12 +5,12 @@ kind: audit
 boundary_ref: boundary.sdk-product
 lens: contract_evidence
 freshness: examined
-revision: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
+revision: 019e700279677a2eb77e265b5038d9d581bc22da
 finding_refs:
 - finding.sdk-historical-proof-storage-migration
 challenges:
   historical_bytes_roles_and_owner_obligations:
-    revision: source:2bbd6457d7b6ea031b8999d1466d85f5a5c1d2d994218d45f008ed6d5f1fa276
+    revision: 019e700279677a2eb77e265b5038d9d581bc22da
     source_refs:
     - .github/workflows/rust-ci.yml
     - Cargo.lock
