@@ -9,6 +9,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
+
 from echo_agent_sdk import EchoAgentClient, EchoAgentError
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")

@@ -15,6 +15,7 @@ import subprocess
 import sys
 import threading
 import time
+import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -89,12 +90,56 @@ class Fixture:
                 commit.get("expected_executions") is not None
                 and actual_executions != commit["expected_executions"]
             ):
+                # Keep failed comparisons outside the authoritative graph and
+                # commit log so a real race or round-trip drift remains visible.
+                with (self.work / "task-store-conflicts.jsonl").open(
+                    "a", encoding="utf8"
+                ) as diagnostics:
+                    diagnostics.write(
+                        json.dumps(
+                            {
+                                "operation": operation,
+                                "scope_id": scope,
+                                "successful_commits": len(self.commits),
+                                "expected_revision": expected,
+                                "current_revision": actual,
+                                "expected_executions": commit.get(
+                                    "expected_executions"
+                                ),
+                                "current_executions": actual_executions,
+                                "current_graph": previous,
+                                "rejected_next": commit["next"],
+                            },
+                            ensure_ascii=False,
+                        )
+                        + "\n"
+                    )
                 return {
                     "kind": "error",
                     "error": {
                         "code": "extension_conflict",
                         "message": "fixture atomic expected graph/execution comparison failed",
                         "retryable": "never",
+                        # Preserve the existing Host's typed Conflict mapping.
+                        # The framework owns CAS reload/recompute; this provider
+                        # still rejects the same comparison without any write.
+                        "details": {
+                            "fields": [
+                                {"key": "task_store_error_class", "value": "conflict"},
+                                {
+                                    "key": "expected_revision",
+                                    "value": "absent"
+                                    if expected is None
+                                    else str(expected),
+                                },
+                                {
+                                    "key": "current_revision",
+                                    "value": "absent"
+                                    if actual is None
+                                    else str(actual),
+                                },
+                            ]
+                        },
                     },
                 }
             following = commit["next"]
@@ -132,8 +177,12 @@ class Fixture:
             original_context = context or {}
             for key in ("run_id", "execution_id"):
                 value = original_context.get(key)
-                if not isinstance(value, str) or not value.strip():
-                    raise ValueError("original matching Task identities are required")
+                if value is not None and (
+                    not isinstance(value, str) or not value.strip()
+                ):
+                    raise ValueError(
+                        "present invocation identities must be non-empty text"
+                    )
             if call.get("invocation", {}).get("operation") != "agent_execute_stream":
                 raise ValueError("physical admission must originate in execute_stream")
             for k in ("extension", "stream", "factory_origin"):
@@ -155,10 +204,12 @@ class Fixture:
                 "factory_origin": copy.deepcopy(call.get("factory_origin")),
                 "stream": copy.deepcopy(call["stream"]),
                 "context": copy.deepcopy(context),
-                # Both identities originate in this actual Task claim;
-                # the fixture never mints or substitutes another owner.
-                "run_id": original_context["run_id"],
-                "execution_id": original_context["execution_id"],
+                # IDs missing from a legitimate ordinary callback belong to
+                # this newly admitted foreign work. Never fill the Host's
+                # context or substitute a turn/RPC/checkpoint ID as its Run.
+                "run_id": original_context.get("run_id") or str(uuid.uuid4()),
+                "execution_id": original_context.get("execution_id")
+                or str(uuid.uuid4()),
                 "invocation_id": call["invocation_id"],
             }
             # This process owns the real ready/stopped facts; callback completion,
@@ -215,7 +266,53 @@ class Fixture:
     def model(self, request):
         with self.lock:
             self.model_requests.append(copy.deepcopy(request))
-        raise ValueError("formal Task fixture requires registered Agents")
+            index = len(self.model_requests)
+        if index == 1:
+            delta = {
+                "role": "assistant",
+                "tool_calls": [
+                    {
+                        "index": 0,
+                        "id": "original-dispatch",
+                        "type": "function",
+                        "function": {
+                            "name": "agent_tool",
+                            "arguments": json.dumps(
+                                {
+                                    "agent_name": "observation-factory",
+                                    "task": "hold original physical producer",
+                                }
+                            ),
+                        },
+                    }
+                ],
+            }
+            events = [
+                {"choices": [{"index": 0, "delta": delta, "finish_reason": None}]},
+                {"choices": [{"index": 0, "delta": {}, "finish_reason": "tool_calls"}]},
+            ]
+        else:
+            events = [
+                {
+                    "choices": [
+                        {
+                            "index": 0,
+                            "delta": {
+                                "role": "assistant",
+                                "content": "canonical result after original physical closure",
+                            },
+                            "finish_reason": "stop",
+                        }
+                    ]
+                }
+            ]
+        return (
+            "".join(
+                "data: " + json.dumps({"id": "chatcmpl-observation", **event}) + "\n\n"
+                for event in events
+            )
+            + "data: [DONE]\n\n"
+        )
 
     def inspect(self):
         with self.lock:
@@ -361,7 +458,13 @@ def main():
         def do_POST(self):
             value = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             if args.observation and self.path == "/v1/chat/completions":
-                state.model(value)
+                data = state.model(value).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/event-stream")
+                self.send_header("Content-Length", str(len(data)))
+                self.send_header("Connection", "close")
+                self.end_headers()
+                self.wfile.write(data)
                 return
             if args.observation and self.path.startswith("/physical/"):
                 if self.path == "/physical/admit":
@@ -426,6 +529,9 @@ def main():
     if args.observation:
         config["default_agent"]["model"]["base_url"] = (
             f"http://127.0.0.1:{server.server_port}/v1/chat/completions"
+        )
+        config["default_agent"]["agent"].update(
+            enable_subagent=True, register_agent_dispatch_tool=True
         )
     (args.work / "host.json").write_text(json.dumps(config))
     (args.work / "fixture.json").write_text(

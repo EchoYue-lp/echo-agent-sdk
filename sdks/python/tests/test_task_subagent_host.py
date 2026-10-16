@@ -1,12 +1,15 @@
 import asyncio
+import copy
 import json
 import os
+import runpy
 import sys
 import tempfile
 import urllib.request
 from pathlib import Path
 
 import pytest
+
 from echo_agent_sdk import (
     EchoAgentClient,
     EchoAgentError,
@@ -22,6 +25,94 @@ pytestmark = pytest.mark.skipif(not HOST, reason="real Host binary required")
 FIXTURE = str(
     Path(__file__).resolve().parents[2] / "shared/testing/task_subagent_fixture.py"
 )
+
+
+def test_fixture_task_conflict_preserves_classification_without_write(tmp_path):
+    state_type = runpy.run_path(FIXTURE)["Fixture"]
+    for case, expected, current, execution_drift in (
+        ("absent", 1, None, False),
+        ("revision", 1, 2, False),
+        ("expected_absent", None, 2, False),
+        ("execution", 2, 2, True),
+    ):
+        work = tmp_path / case
+        work.mkdir()
+        state = state_type(work)
+        graph = {
+            "snapshot": {
+                "revision": current,
+                "tasks": [
+                    {
+                        "spec": {"id": "a"},
+                        "execution": {"status": {"status": "pending"}},
+                    }
+                ],
+            }
+        }
+        # This provider test treats graph content as opaque. The native cases
+        # below additionally exercise actual Host-validated graph DTOs.
+        if current is not None:
+            created = state.store(
+                {
+                    "operation": "revisioned_task_compare_and_commit",
+                    "input": {
+                        "scope_id": case,
+                        "commit": {"expected_revision": None, "next": graph},
+                    },
+                }
+            )
+            assert created["kind"] == "result"
+        commit = {"expected_revision": expected, "next": copy.deepcopy(graph)}
+        if execution_drift:
+            # Both writers observed the same old execution vector. Publish
+            # the first writer, then require the second stale one to refuse.
+            observed_executions = {
+                "a": copy.deepcopy(graph["snapshot"]["tasks"][0]["execution"])
+            }
+            advanced = copy.deepcopy(graph)
+            advanced["snapshot"]["tasks"][0]["execution"]["status"]["status"] = (
+                "running"
+            )
+            first_writer = state.store(
+                {
+                    "operation": "revisioned_task_compare_and_commit_execution",
+                    "input": {
+                        "scope_id": case,
+                        "commit": {
+                            "expected_revision": expected,
+                            "expected_executions": observed_executions,
+                            "next": advanced,
+                        },
+                    },
+                }
+            )
+            assert first_writer["kind"] == "result"
+            commit["expected_executions"] = observed_executions
+        before = state.inspect()
+        persisted = work / "task-store.json"
+        before_bytes = persisted.read_bytes() if persisted.exists() else None
+        rejected = state.store(
+            {
+                "operation": "revisioned_task_compare_and_commit_execution",
+                "input": {"scope_id": case, "commit": commit},
+            }
+        )
+        assert rejected["kind"] == "error"
+        error = rejected["error"]
+        assert error["code"] == "extension_conflict"
+        assert error["details"]["fields"] == [
+            {"key": "task_store_error_class", "value": "conflict"},
+            {
+                "key": "expected_revision",
+                "value": "absent" if expected is None else str(expected),
+            },
+            {
+                "key": "current_revision",
+                "value": "absent" if current is None else str(current),
+            },
+        ]
+        assert state.inspect() == before
+        assert (persisted.read_bytes() if persisted.exists() else None) == before_bytes
 
 
 async def until(check):
@@ -787,3 +878,257 @@ async def test_subagent_receipt_and_crud_admission(kind):
             await sdk.close()
         backend.terminate()
         await backend.wait()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("carrier", ["setup", "stream"])
+async def test_observation_preserves_real_run_and_same_physical_producer(carrier):
+    """The callback admits the owned process; neither transport nor EOF stops it."""
+    root = Path(__file__).resolve().parents[3] / "target/cancellation-observation"
+    root.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix=f"python-{carrier}-", dir=root))
+    print("B observation evidence", work)
+    backend = await asyncio.create_subprocess_exec(
+        sys.executable, FIXTURE, "--work", str(work), "--observation"
+    )
+    sdk = None
+    jobs = []
+    http = None
+    facts = {
+        "carrier": carrier,
+        "source_kind": "issued_stream_with_late_terminal"
+        if carrier == "stream"
+        else "issued_stream_without_successor_terminal",
+        "actual_complete_sent": False,
+        "callbacks": [],
+        "closes": [],
+    }
+    try:
+
+        async def ready():
+            return (work / "ready").exists()
+
+        await until(ready)
+        url = json.loads((work / "fixture.json").read_text())["url"]
+
+        async def request(path, payload=None):
+            def send():
+                body = None if payload is None else json.dumps(payload).encode()
+                req = urllib.request.Request(
+                    url + path, data=body, headers={"Content-Type": "application/json"}
+                )
+                with urllib.request.urlopen(req, timeout=35) as response:
+                    return json.load(response)
+
+            return await asyncio.to_thread(send)
+
+        http = request
+        sdk = await EchoAgentClient.spawn(HOST, "--config", str(work / "host.json"))
+        observed = asyncio.Event()
+        factory = None
+
+        async def consume(call, _cancel):
+            operation = call["invocation"]["operation"]
+            facts["callbacks"].append(call)
+            await http("/agent", call)
+            if operation == "factory_create_agent":
+                return {
+                    "outcome": "result",
+                    "result": {
+                        "operation": operation,
+                        "value": {
+                            "name": "original-physical",
+                            "model_name": "fixture",
+                            "system_prompt": "",
+                            "tool_names": [],
+                        },
+                    },
+                }
+            assert call["factory_origin"] == factory.wire.to_dict()
+            if operation == "agent_close":
+                state = await http("/inspect")
+                assert call["extension"] == state["physical"]["binding"]["child"]
+                assert state["physical"]["stopped"] is True
+                assert state["physical"]["exit_code"] == 0
+                facts["closes"].append(call)
+                return {
+                    "outcome": "result",
+                    "result": {"operation": operation, "value": None},
+                }
+            assert operation == "agent_execute_stream"
+            binding = await http("/physical/admit", call)
+            facts["binding"] = binding
+            assert binding["context"] == call["context"]
+            assert call["context"].get("run_id") is None
+            assert binding["execution_id"] == call["context"]["execution_id"]
+            assert binding["invocation_id"] == call["invocation_id"]
+            error = {
+                "code": "framework_error",
+                "retryable": "never",
+                "message": "original physical cleanup remains held 中文🙂",
+                "operation": "_echo_agent/extension/invoke",
+                "details": {
+                    "fields": [
+                        {"key": "observation", "value": "not_settled"},
+                        {"key": "run_id", "value": binding["run_id"]},
+                        {"key": "execution_id", "value": binding["execution_id"]},
+                    ]
+                },
+            }
+            facts["error"] = error
+            writer = sdk.stream_writer(WireHandle.from_dict(call["stream"]))
+
+            async def produce():
+                if carrier == "stream":
+                    await writer.failed(error)
+                    observed.set()
+                joined = await http("/physical/join", {})
+                assert joined == {"admitted": True, "exit_code": 0, "stopped": binding}
+                facts["joined"] = joined
+                if carrier == "stream":
+                    await writer.complete(
+                        {
+                            "kind": "agent",
+                            "value": {
+                                "event": "final_answer",
+                                "data": {
+                                    "text": "same physical producer actually exited"
+                                },
+                            },
+                        }
+                    )
+                    facts["actual_complete_sent"] = True
+
+            job = asyncio.create_task(produce())
+            jobs.append(job)
+            if carrier == "setup":
+                observed.set()
+                return {"outcome": "error", "error": error}
+            return {"outcome": "stream", "stream": call["stream"]}
+
+        factory = await sdk.register_agent_factory(
+            "observation-factory",
+            {"kind": "agent_factory", "descriptor_version": 1},
+            consume,
+        )
+        agent = await sdk.create_agent()
+        session = await agent.create_session()
+        run = await session.start_run("delegate original physical work", execute=True)
+        await asyncio.wait_for(observed.wait(), 15)
+        waited = await run.wait(timeout=0.25)
+        state, replay, held = (
+            await run.get(),
+            await run.replay(),
+            await http("/inspect"),
+        )
+        facts.update(
+            run=run.wire.to_dict(), waited=waited, state=state, replay=replay, held=held
+        )
+        assert waited == {"settled": False}
+        assert (
+            state["status"] == "running"
+            and "terminal" not in state
+            and "receipt" not in state
+        )
+        assert all(
+            row["payload"]["event_type"] not in {"final_answer", "cancelled", "error"}
+            for row in replay["events"]
+        )
+        assert len(held["model_requests"]) == 1 and not facts["closes"]
+        assert (
+            held["physical"]["alive"] is True and held["physical"]["stopped"] is False
+        )
+        assert held["physical"]["binding"] == facts["binding"]
+        created = [
+            call
+            for call in facts["callbacks"]
+            if call["invocation"]["operation"] == "factory_create_agent"
+        ]
+        executed = [
+            call
+            for call in facts["callbacks"]
+            if call["invocation"]["operation"] == "agent_execute_stream"
+        ]
+        assert len(created) == len(executed) == 1
+        assert (
+            facts["binding"]["child"] == created[0]["invocation"]["input"]["instance"]
+        )
+        assert facts["binding"]["stream"] == executed[0]["stream"]
+        with pytest.raises(EchoAgentError) as collision:
+            await session.start_run("must not admit another execution", execute=True)
+        assert (
+            collision.value.code == "invalid_request"
+            and collision.value.retryable == "after_delay"
+        )
+        assert collision.value.operation == "_echo_agent/run/start"
+        facts["held_admission_error"] = {
+            "code": collision.value.code,
+            "message": collision.value.message,
+            "retryable": collision.value.retryable,
+            "operation": collision.value.operation,
+            "details": collision.value.details,
+            "handle": collision.value.handle,
+        }
+        await http("/physical/release", {})
+        await asyncio.wait_for(asyncio.gather(*jobs), 10)
+        facts["after"] = await http("/inspect")
+        assert facts["after"]["physical"]["exit_code"] == 0
+        if carrier == "stream":
+
+            async def child_closed():
+                return len(facts["closes"]) == 1
+
+            await until(child_closed)
+        # Foreign work cannot settle a Host Run with a different identity.
+        assert facts["binding"]["run_id"] != run.wire.id
+        one, two = await asyncio.gather(run.wait(timeout=0.25), run.wait(timeout=0.25))
+        assert one == two == {"settled": False}
+        facts["after_wait"] = one
+        facts["after_run"] = await run.get()
+        assert facts["after_run"]["status"] == "running"
+        assert (
+            "terminal" not in facts["after_run"] and "receipt" not in facts["after_run"]
+        )
+        facts["after_replay"] = await run.replay()
+        assert all(
+            row["payload"]["event_type"] not in {"final_answer", "cancelled", "error"}
+            for row in facts["after_replay"]["events"]
+        )
+        facts["after"] = await http("/inspect")
+        assert facts["actual_complete_sent"] is (carrier == "stream")
+        assert len(facts["closes"]) == (1 if carrier == "stream" else 0)
+        assert len(facts["after"]["model_requests"]) == 1
+        assert (
+            sum(
+                call["invocation"]["operation"] == "agent_execute_stream"
+                for call in facts["callbacks"]
+            )
+            == 1
+        )
+    finally:
+        try:
+            if http is not None:
+                await http("/physical/release", {})
+                facts["cleanup_join"] = await http("/physical/join", {})
+                if jobs:
+                    await asyncio.wait_for(asyncio.gather(*jobs), 10)
+        finally:
+            try:
+                if sdk is not None:
+                    await sdk.close()
+            finally:
+                try:
+                    if http is not None:
+                        await http("/shutdown", {})
+                    else:
+                        backend.terminate()
+                    await asyncio.wait_for(backend.wait(), 5)
+                    assert backend.returncode == 0
+                finally:
+                    if backend.returncode is None:
+                        backend.kill()
+                        await asyncio.wait_for(backend.wait(), 5)
+                        facts["forced_backend_cleanup"] = True
+                    (work / "observed.json").write_text(
+                        json.dumps(facts, ensure_ascii=False)
+                    )

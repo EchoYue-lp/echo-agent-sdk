@@ -182,6 +182,15 @@ Execution commits preserve the exact claim, expected executions, result
 one authoritative CAS. TaskRun control and a Session Run's cancellation scope
 remain distinct; the bridge does not add a scheduler or terminal authority.
 
+A rejected revision or execution comparison reports the existing typed conflict
+through `error.details.fields`: `task_store_error_class=conflict`,
+`expected_revision` and `current_revision`. Each revision is decimal u64 text,
+or the literal `absent` for `None`; an execution-state conflict can have equal
+revision values. The Host restores `RevisionedTaskStoreError::Conflict`, which
+lets the framework perform its bounded CAS reload/recompute. A provider keeps
+its atomic comparison and writes no graph or execution state when it rejects
+that comparison.
+
 Cancel-aware Sandbox callbacks preserve the framework error domain: extension
 cancel and timeout settle as `SandboxError::Cancelled` / `SandboxError::Timeout`,
 and Run cancellation waits for the component cleanup call before publishing

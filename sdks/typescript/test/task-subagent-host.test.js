@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {spawn,spawnSync} from "node:child_process";
-import {mkdtempSync,existsSync,readFileSync,writeFileSync} from "node:fs";
+import {mkdtempSync,mkdirSync,existsSync,readFileSync,writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {fileURLToPath} from "node:url";
@@ -178,3 +178,79 @@ async function singleScenario(kind){
  }finally{await sdk?.close();backend.kill();await new Promise(resolve=>backend.exitCode!==null?resolve():backend.once("exit",resolve));}
 }
 for(const kind of ["subagent-await","crud-only"])test(`real Task/Subagent ${kind}`,{timeout:60000,skip:!host},()=>singleScenario(kind));
+
+async function observationScenario(carrier){
+ const root=fileURLToPath(new URL('../../../target/cancellation-observation/',import.meta.url));mkdirSync(root,{recursive:true});
+ const work=mkdtempSync(join(root,`typescript-${carrier}-`));console.log('B observation evidence',work);
+ const backend=spawn('python3',[fixture,'--work',work,'--observation']);const exited=new Promise(resolve=>backend.once('exit',(code,signal)=>resolve({code,signal})));
+ let sdk,http;const jobs=[],facts={carrier,source_kind:carrier==='stream'?'issued_stream_with_late_terminal':'issued_stream_without_successor_terminal',actual_complete_sent:false,callbacks:[],closes:[]};
+ try{
+  await until(()=>existsSync(join(work,'ready')));const {url}=JSON.parse(readFileSync(join(work,'fixture.json'),'utf8'));
+  http=async(path,payload)=>{const response=await fetch(url+path,{method:payload===undefined?'GET':'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(35000),...(payload===undefined?{}:{body:JSON.stringify(payload)})});assert.equal(response.status,200);return response.json();};
+  sdk=await EchoAgentClient.spawn({hostCommand:host,args:['--config',join(work,'host.json')],onStderr:chunk=>{facts.host_stderr=(facts.host_stderr??'')+chunk;}});
+  facts.host_pid=sdk.process.pid;sdk.process.once('exit',(code,signal)=>{facts.host_exit={code,signal,phase:facts.phase};});
+  let factory,observed;const observationSent=new Promise(resolve=>{observed=resolve;});
+  factory=await sdk.registerAgentFactory('observation-factory',{kind:'agent_factory',descriptor_version:1},async call=>{
+   const operation=call.invocation.operation;facts.callbacks.push(call);await http('/agent',call);
+   if(operation==='factory_create_agent')return{outcome:'result',result:{operation,value:{name:'original-physical',model_name:'fixture',system_prompt:'',tool_names:[]}}};
+   assert.deepEqual(call.factory_origin,factory.wire);
+   if(operation==='agent_close'){
+    const state=await http('/inspect');assert.deepEqual(call.extension,state.physical.binding.child);
+    assert.equal(state.physical.stopped,true);assert.equal(state.physical.exit_code,0);facts.closes.push(call);
+    return{outcome:'result',result:{operation,value:null}};
+   }
+   assert.equal(operation,'agent_execute_stream');const binding=await http('/physical/admit',call);facts.binding=binding;
+   assert.deepEqual(binding.context,call.context);assert.equal(call.context?.run_id,undefined);
+   assert.equal(binding.execution_id,call.context.execution_id);assert.equal(binding.invocation_id,call.invocation_id);
+   const error={code:'framework_error',retryable:'never',message:'original physical cleanup remains held 中文🙂',operation:'_echo_agent/extension/invoke',details:{fields:[{key:'observation',value:'not_settled'},{key:'run_id',value:binding.run_id},{key:'execution_id',value:binding.execution_id}]}};facts.error=error;
+   const writer=sdk.streamWriter(call.stream);
+   const job=(async()=>{
+    if(carrier==='stream'){await writer.failed(error);observed();}
+    const joined=await http('/physical/join',{});assert.deepEqual(joined,{admitted:true,exit_code:0,stopped:binding});facts.joined=joined;
+    if(carrier==='stream'){await writer.complete({kind:'agent',value:{event:'final_answer',data:{text:'same physical producer actually exited'}}});facts.actual_complete_sent=true;}
+   })();job.catch(()=>{});jobs.push(job);
+   if(carrier==='setup'){observed();return{outcome:'error',error};}
+   return{outcome:'stream',stream:call.stream};
+  });
+  const agent=await sdk.createAgent(),session=await agent.createSession(),run=await session.startRun({mode:'execute',text:'delegate original physical work'});
+  await Promise.race([observationSent,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(new Error('actual child observation missing')),15000);timer.unref();})]);
+  const waited=await run.wait({timeoutMs:250}),state=await run.get(),replay=await run.replay(),held=await http('/inspect');
+  Object.assign(facts,{run:run.wire,waited,state,replay,held});assert.deepEqual(waited,{settled:false});assert.equal(state.status,'running');assert.equal('terminal'in state,false);assert.equal('receipt'in state,false);
+  assert.ok(replay.events.every(row=>!['final_answer','cancelled','error'].includes(row.envelope.payload.event_type)));
+  assert.equal(held.model_requests.length,1);assert.equal(facts.closes.length,0);assert.equal(held.physical.alive,true);assert.equal(held.physical.stopped,false);assert.deepEqual(held.physical.binding,facts.binding);
+  assert.equal(facts.callbacks.filter(call=>call.invocation.operation==='factory_create_agent').length,1);assert.equal(facts.callbacks.filter(call=>call.invocation.operation==='agent_execute_stream').length,1);
+  assert.deepEqual(facts.binding.child,facts.callbacks.find(call=>call.invocation.operation==='factory_create_agent').invocation.input.instance);assert.deepEqual(facts.binding.stream,facts.callbacks.find(call=>call.invocation.operation==='agent_execute_stream').stream);
+  await assert.rejects(session.startRun({mode:'execute',text:'must not admit another execution'}),error=>{facts.held_admission_error={code:error.code,message:error.message,retryable:error.retryable,operation:error.operation,details:error.details,handle:error.handle};return error.code==='invalid_request'&&error.retryable==='after_delay'&&error.operation==='_echo_agent/run/start';});
+  await http('/physical/release',{});await Promise.all(jobs);facts.after=await http('/inspect');assert.equal(facts.after.physical.exit_code,0);
+  if(carrier==='stream')await until(()=>facts.closes.length===1);
+  // An ordinary turn has no matching TaskRun identity. Even a real foreign
+  // stream terminal cannot manufacture a canonical Host execution receipt.
+  assert.notEqual(facts.binding.run_id,run.wire.id);
+  facts.phase='post-closure-run-wait';
+  const[one,two]=await Promise.all([run.wait({timeoutMs:250}),run.wait({timeoutMs:250})]);assert.deepEqual(one,two);assert.deepEqual(one,{settled:false});facts.after_wait=one;
+  facts.after_run=await run.get();assert.equal(facts.after_run.status,'running');assert.equal('terminal'in facts.after_run,false);assert.equal('receipt'in facts.after_run,false);
+  facts.after_replay=await run.replay();assert.ok(facts.after_replay.events.every(row=>!['final_answer','cancelled','error'].includes(row.envelope.payload.event_type)));
+  facts.after=await http('/inspect');
+  assert.equal(facts.actual_complete_sent,carrier==='stream');assert.equal(facts.closes.length,carrier==='stream'?1:0);assert.equal(facts.after.model_requests.length,1);
+  assert.equal(facts.callbacks.filter(call=>call.invocation.operation==='agent_execute_stream').length,1);
+
+ }catch(error){facts.failure={name:error.name,code:error.code,message:error.message,stack:error.stack,phase:facts.phase};throw error;}
+ finally{
+  try{if(http){await http('/physical/release',{});facts.cleanup_join=await http('/physical/join',{});await Promise.all(jobs);}}
+  finally{
+   try{facts.phase='sdk-close';await sdk?.close();}
+   catch(error){facts.sdk_close_error={name:error.name,code:error.code,message:error.message,stack:error.stack};throw error;}
+   finally{
+    try{
+     if(http)await http('/shutdown',{});else backend.kill();
+     const outcome=await Promise.race([exited,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(new Error('owned fixture backend did not exit')),5000);timer.unref();})]);
+     facts.backend_exit=outcome;assert.deepEqual(outcome,{code:0,signal:null});
+    }finally{
+     if(backend.exitCode===null&&backend.signalCode===null){backend.kill('SIGKILL');facts.forced_backend_cleanup=await exited;}
+     writeFileSync(join(work,'observed.json'),JSON.stringify(facts,null,2));
+    }
+   }
+  }
+ }
+}
+for(const carrier of ['setup','stream'])test(`B ${carrier} observation preserves real Run and the same physical producer`,{timeout:60000,skip:!host},()=>observationScenario(carrier));

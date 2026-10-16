@@ -117,4 +117,127 @@ public class TaskSubagentHostTest {
  @Test public void matchingTaskObservationSettlesOnlySameRealPhysicalAttempt()throws Exception{scenario("observation");}
  @Test public void subagentAwaitRetainsResultAndIdempotentReceipt()throws Exception{single("subagent-await");}
  @Test public void crudOnlyTaskStoreRejectsExecutionWithoutSideEffects()throws Exception{single("crud-only");}
+
+ static JsonNode observationHttp(String url,String path,Object payload)throws Exception {
+  var request=HttpRequest.newBuilder(URI.create(url+path)).timeout(java.time.Duration.ofSeconds(35));
+  if(payload==null)request.GET();else request.header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(JSON.writeValueAsString(payload)));
+  var response=HTTP.send(request.build(),HttpResponse.BodyHandlers.ofString());check(response.statusCode()==200,"physical fixture HTTP failed");return JSON.readTree(response.body());
+ }
+ static void observationScenario(String carrier)throws Exception {
+  Path root=SDK.normalize().getParent().resolve("target/cancellation-observation");Files.createDirectories(root);
+  Path work=Files.createTempDirectory(root,"java-"+carrier+"-");System.out.println("B observation evidence "+work);
+  Process backend=new ProcessBuilder("python3",SDK.resolve("shared/testing/task_subagent_fixture.py").toString(),"--work",work.toString(),"--observation").inheritIO().start();
+  var producers=Executors.newFixedThreadPool(2);EchoAgentClient sdk=null;String url=null;Process originalHost=null;Object originalTransport=null;
+  var facts=new ConcurrentHashMap<String,Object>();facts.put("carrier",carrier);facts.put("source_kind",carrier.equals("stream")?"issued_stream_with_late_terminal":"issued_stream_without_successor_terminal");facts.put("actual_complete_sent",false);
+  var callbacks=new CopyOnWriteArrayList<JsonNode>();var closes=new CopyOnWriteArrayList<JsonNode>();
+  facts.put("callbacks",callbacks);facts.put("closes",closes);
+  var jobs=new CopyOnWriteArrayList<CompletableFuture<Void>>();
+  var observed=new CompletableFuture<Void>();var factory=new AtomicReference<WireHandle>();
+  try {
+   until(()->Files.exists(work.resolve("ready")));url=JSON.readTree(work.resolve("fixture.json").toFile()).path("url").asText();final String endpoint=url;
+   sdk=EchoAgentClient.spawn(System.getenv("ECHO_AGENT_SDK_HOST"),List.of("--config",work.resolve("host.json").toString()),SDK.resolve("shared/facade-operation-catalog.json"),SDK.resolve("shared/contract-digests.json"),Map.of(),List.of(),List.of()).toCompletableFuture().get(10,TimeUnit.SECONDS);
+   var transportField=EchoAgentClient.class.getDeclaredField("transport");transportField.setAccessible(true);originalTransport=transportField.get(sdk);
+   var processField=originalTransport.getClass().getDeclaredField("process");processField.setAccessible(true);originalHost=(Process)processField.get(originalTransport);facts.put("original_host_pid",originalHost.pid());
+   final var client=sdk;
+   var registration=sdk.registerAgentFactory("observation-factory",json(Map.of("kind","agent_factory","descriptor_version",1)),(call,cancel)->{
+    try {
+     String operation=call.path("invocation").path("operation").asText();callbacks.add(call.deepCopy());observationHttp(endpoint,"/agent",call);
+     if(operation.equals("factory_create_agent"))return CompletableFuture.completedFuture(outcome(operation,Map.of("name","original-physical","model_name","fixture","system_prompt","","tool_names",List.of())));
+     check(call.get("factory_origin").equals(factory.get().toJson()),"original factory origin changed");
+     if(operation.equals("agent_close")) {
+      var physical=observationHttp(endpoint,"/inspect",null).path("physical");check(call.get("extension").equals(physical.path("binding").path("child")),"cleanup targeted another child");check(physical.path("stopped").asBoolean()&&physical.path("exit_code").isInt()&&physical.path("exit_code").intValue()==0,"child close preceded actual physical join");closes.add(call.deepCopy());return CompletableFuture.completedFuture(outcome(operation,null));
+     }
+     check(operation.equals("agent_execute_stream"),"unexpected reverse operation: "+operation);
+     var binding=observationHttp(endpoint,"/physical/admit",call);facts.put("binding",binding);
+     check(binding.path("context").equals(call.path("context"))&&!call.path("context").hasNonNull("run_id"),"ordinary turn context was rewritten");check(binding.path("execution_id").equals(call.path("context").path("execution_id"))&&binding.path("invocation_id").equals(call.path("invocation_id")),"original execution/invocation identity changed");
+     var error=json(Map.of("code","framework_error","retryable","never","message","original physical cleanup remains held 中文🙂","operation","_echo_agent/extension/invoke","details",Map.of("fields",List.of(Map.of("key","observation","value","not_settled"),Map.of("key","run_id","value",binding.path("run_id").asText()),Map.of("key","execution_id","value",binding.path("execution_id").asText())))));
+     facts.put("error",error);var writer=client.streamWriter(WireHandle.fromJson(call.get("stream")));
+     var job=CompletableFuture.runAsync(()->{
+      try {
+       if(carrier.equals("stream")){writer.failed(error).toCompletableFuture().get(5,TimeUnit.SECONDS);observed.complete(null);}
+       var joined=observationHttp(endpoint,"/physical/join",Map.of());check(joined.equals(json(Map.of("admitted",true,"exit_code",0,"stopped",binding))),"original physical join mismatch");facts.put("joined",joined);
+       if(carrier.equals("stream")){writer.complete(json(Map.of("kind","agent","value",Map.of("event","final_answer","data",Map.of("text","same physical producer actually exited"))))).toCompletableFuture().get(5,TimeUnit.SECONDS);facts.put("actual_complete_sent",true);}
+      }catch(Exception failure){observed.completeExceptionally(failure);throw new CompletionException(failure);}
+     },producers);jobs.add(job);
+     if(carrier.equals("setup")){observed.complete(null);return CompletableFuture.completedFuture(json(Map.of("outcome","error","error",error)));}
+     return CompletableFuture.completedFuture(json(Map.of("outcome","stream","stream",call.get("stream"))));
+    }catch(Exception failure){observed.completeExceptionally(failure);return CompletableFuture.failedFuture(failure);}
+   }).toCompletableFuture().get(5,TimeUnit.SECONDS);factory.set(registration.wire());
+   var agent=sdk.createAgent().toCompletableFuture().get(5,TimeUnit.SECONDS);var session=agent.createSession().toCompletableFuture().get(5,TimeUnit.SECONDS);
+   var run=session.startRun("delegate original physical work",true).toCompletableFuture().get(5,TimeUnit.SECONDS);
+   observed.get(15,TimeUnit.SECONDS);var waited=await(run.waitForSettlement(java.time.Duration.ofMillis(250)));var state=await(run.get());var replay=await(run.replay("0",512));var held=observationHttp(url,"/inspect",null);
+   facts.put("run",run.wire().toJson());facts.put("waited",waited);facts.put("state",state);facts.put("replay",replay);facts.put("held",held);
+   check(waited.equals(json(Map.of("settled",false))),"observation manufactured a settled Run");check(state.path("status").asText().equals("running")&&!state.has("terminal")&&!state.has("receipt"),"Run observation became a business terminal");
+   for(var row:replay.path("events"))check(!Set.of("final_answer","cancelled","error").contains(row.required("payload").required("event_type").asText()),"journal fabricated terminal");
+   check(held.path("model_requests").size()==1&&closes.isEmpty(),"Agent continued or closed during original physical work");check(held.path("physical").path("alive").asBoolean()&&!held.path("physical").path("stopped").asBoolean(),"callback cancellation stopped original producer");check(held.path("physical").path("binding").equals(json(facts.get("binding"))),"original binding changed");
+   check(callbacks.stream().filter(c->c.path("invocation").path("operation").asText().equals("factory_create_agent")).count()==1&&callbacks.stream().filter(c->c.path("invocation").path("operation").asText().equals("agent_execute_stream")).count()==1,"duplicate constructor/execute");
+   var originalBinding=json(facts.get("binding"));var created=callbacks.stream().filter(c->c.path("invocation").path("operation").asText().equals("factory_create_agent")).findFirst().orElseThrow();var executed=callbacks.stream().filter(c->c.path("invocation").path("operation").asText().equals("agent_execute_stream")).findFirst().orElseThrow();check(originalBinding.path("child").equals(created.path("invocation").path("input").path("instance"))&&originalBinding.path("stream").equals(executed.path("stream")),"physical work not owned by the original issued child/stream");
+   try {session.startRun("must not admit another execution",true).toCompletableFuture().get(5,TimeUnit.SECONDS);throw new AssertionError("unknown Run lost its admission lease");}
+   catch(ExecutionException rejected){check(rejected.getCause() instanceof EchoAgentException,"admission refusal not typed");var error=(EchoAgentException)rejected.getCause();check(error.code().equals("invalid_request")&&error.retryable().equals("after_delay")&&error.operation().equals("_echo_agent/run/start"),"original admission refusal changed");var refusal=JSON.createObjectNode().put("code",error.code()).put("message",error.getMessage()).put("retryable",error.retryable()).put("operation",error.operation());refusal.set("details",error.details());refusal.set("handle",error.handle()==null?JSON.nullNode():error.handle().toJson());facts.put("held_admission_error",refusal);}
+   observationHttp(url,"/physical/release",Map.of());CompletableFuture.allOf(jobs.toArray(CompletableFuture[]::new)).get(10,TimeUnit.SECONDS);facts.put("after",observationHttp(url,"/inspect",null));
+   if(carrier.equals("stream"))until(()->closes.size()==1);
+   check(!originalBinding.path("run_id").asText().equals(run.wire().id()),"foreign work borrowed Host Run identity");
+   var first=run.waitForSettlement(java.time.Duration.ofMillis(250));var second=run.waitForSettlement(java.time.Duration.ofMillis(250));var one=await(first);var two=await(second);check(one.equals(two)&&one.equals(json(Map.of("settled",false))),"foreign completion manufactured a Host receipt");facts.put("after_wait",one);
+   var afterRun=await(run.get());facts.put("after_run",afterRun);check(afterRun.path("status").asText().equals("running")&&!afterRun.has("terminal")&&!afterRun.has("receipt"),"foreign completion settled another Run");
+   var afterReplay=await(run.replay("0",512));facts.put("after_replay",afterReplay);for(var row:afterReplay.path("events"))check(!Set.of("final_answer","cancelled","error").contains(row.required("payload").required("event_type").asText()),"foreign completion fabricated journal terminal");
+   var after=observationHttp(url,"/inspect",null);facts.put("after",after);check(Boolean.valueOf(carrier.equals("stream")).equals(facts.get("actual_complete_sent"))&&closes.size()==(carrier.equals("stream")?1:0)&&after.path("model_requests").size()==1&&callbacks.stream().filter(c->c.path("invocation").path("operation").asText().equals("agent_execute_stream")).count()==1,"foreign completion duplicated work or lost original cleanup");
+
+   facts.put("body_assertions_completed",true);
+  }catch(Exception|AssertionError failure){facts.put("body_failure",Map.of("type",failure.getClass().getName(),"message",String.valueOf(failure.getMessage())));throw failure;}
+  finally {
+   try {if(url!=null){observationHttp(url,"/physical/release",Map.of());facts.put("cleanup_join",observationHttp(url,"/physical/join",Map.of()));CompletableFuture.allOf(jobs.toArray(CompletableFuture[]::new)).get(10,TimeUnit.SECONDS);}}
+   finally {
+    try {
+     if(sdk!=null){
+      check(originalHost!=null&&originalHost.isAlive(),"original unknown Run Host exited before close observation");
+      var beforeClose=observationHttp(url,"/inspect",null);facts.put("backend_before_close",beforeClose);
+      facts.put("original_host_alive_before_close",true);facts.put("close_started_nanos",System.nanoTime());
+      try {
+       sdk.closeAsync().toCompletableFuture().get(10,TimeUnit.SECONDS);facts.put("local_close_returned",true);
+       check(!originalHost.isAlive()&&originalHost.exitValue()!=0,"unknown Run cannot report a graceful Host exit");
+       var nativeFailure=originalTransport.getClass().getDeclaredField("nativeFailure");nativeFailure.setAccessible(true);
+       check(((java.util.concurrent.atomic.AtomicReference<?>)nativeFailure.get(originalTransport)).get()==null,"SDK close cannot report success after its watchdog or native failure");
+       facts.put("successful_close_without_watchdog_failure",true);
+      } catch(ExecutionException failure) {
+       Throwable cause=failure;while((cause instanceof ExecutionException||cause instanceof CompletionException)&&cause.getCause()!=null)cause=cause.getCause();
+       check(cause instanceof EchoAgentException,"unknown close failure must be typed");var typed=(EchoAgentException)cause;
+       check("timeout".equals(typed.code())&&"after_delay".equals(typed.retryable())&&"client/close".equals(typed.operation())&&"Host transport did not exit within the five-second close deadline".equals(typed.getMessage()),"unexpected unknown Run close failure");
+       facts.put("typed_close_failure",Map.of("code",typed.code(),"retryable",typed.retryable(),"operation",typed.operation(),"message",typed.getMessage()));
+       // Observe the existing SDK watchdog reaping its own original child;
+       // this wait sends no signal and grants no new graceful-close deadline.
+       check(originalHost.waitFor(5,TimeUnit.SECONDS)&&originalHost.exitValue()!=0,"original SDK close must reap its same Host without claiming graceful success");
+       sdk.closeAsync().toCompletableFuture().get(5,TimeUnit.SECONDS);facts.put("same_owner_retry_closed",true);
+      }
+      var retained=EchoAgentClient.class.getDeclaredField("transport");retained.setAccessible(true);check(retained.get(sdk)==originalTransport,"close retry replaced original transport owner");
+      var processField=originalTransport.getClass().getDeclaredField("process");processField.setAccessible(true);check(processField.get(originalTransport)==originalHost,"close retry replaced original Host process");
+      var cleaned=originalTransport.getClass().getDeclaredField("cleaned");cleaned.setAccessible(true);check(cleaned.getBoolean(originalTransport),"same exited Host local I/O cleanup remains incomplete");
+      var afterClose=observationHttp(url,"/inspect",null);facts.put("backend_after_close",afterClose);
+      check(beforeClose.size()==afterClose.size(),"transport close added or removed backend evidence");
+      var beforeFields=beforeClose.fields();while(beforeFields.hasNext()){var field=beforeFields.next();if(!field.getKey().equals("agent_calls"))check(field.getValue().equals(afterClose.required(field.getKey())),"transport close changed backend field: "+field.getKey());}
+      if(carrier.equals("stream"))check(beforeClose.equals(afterClose),"stream transport close repeated completed child work");
+      var beforeCalls=beforeClose.required("agent_calls");var afterCalls=afterClose.required("agent_calls");check(beforeCalls.isArray()&&afterCalls.isArray()&&afterCalls.size()>=beforeCalls.size(),"close rewrote original callback evidence");
+      for(int index=0;index<beforeCalls.size();index++)check(beforeCalls.get(index).equals(afterCalls.get(index)),"close rewrote a prior callback");
+      var originalBinding=json(facts.get("binding"));var constructor=callbacks.stream().filter(call->"factory_create_agent".equals(call.path("invocation").path("operation").asText())).findFirst().orElseThrow();String cleanupInvocation=constructor.required("invocation_id").asText()+"/cleanup";
+      check(afterCalls.size()==beforeCalls.size()+(carrier.equals("setup")?1:0),"close added unexpected callback work");
+      for(var call:closes)check("agent_close".equals(call.required("invocation").required("operation").asText())&&(!carrier.equals("setup")||call.required("invocation_id").asText().equals(cleanupInvocation))&&call.required("extension").equals(originalBinding.required("child"))&&call.required("factory_origin").equals(originalBinding.required("factory_origin")),"cleanup lost its original constructor/child/factory identity");
+      check(closes.size()==1&&afterCalls.size()==3,"original child user cleanup must complete exactly once");
+      for(int index=beforeCalls.size();index<afterCalls.size();index++)check(afterCalls.get(index).equals(closes.get(0)),"close appended work other than the one validated original child cleanup");
+      facts.put("close_finished_nanos",System.nanoTime());facts.put("original_host_alive_after_close",originalHost.isAlive());facts.put("original_host_exit",originalHost.exitValue());facts.put("host_graceful_shutdown",false);facts.put("framework_receipt_proved",false);facts.put("same_transport_owner",true);
+     }
+    }
+    finally {
+     try {
+      if(url!=null)observationHttp(url,"/shutdown",Map.of());else backend.destroy();
+      check(backend.waitFor(5,TimeUnit.SECONDS),"owned fixture backend did not exit");check(backend.exitValue()==0,"owned fixture backend failed");facts.put("backend_exit",backend.exitValue());
+     }finally {
+      try {if(backend.isAlive()){backend.destroyForcibly();check(backend.waitFor(5,TimeUnit.SECONDS),"owned fixture backend survived forced cleanup");facts.put("forced_backend_cleanup",true);}}
+      finally {producers.shutdownNow();check(producers.awaitTermination(5,TimeUnit.SECONDS),"owned fixture threads did not stop");Files.writeString(work.resolve("observed.json"),JSON.writeValueAsString(facts));}
+     }
+    }
+   }
+  }
+ }
+ @Test public void setupObservationPreservesRealRunAndSamePhysicalProducer()throws Exception{observationScenario("setup");}
+ @Test public void streamObservationPreservesRealRunAndSamePhysicalProducer()throws Exception{observationScenario("stream");}
+
 }
