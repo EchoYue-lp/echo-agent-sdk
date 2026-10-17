@@ -1298,14 +1298,28 @@ pub(crate) mod cleanup_tests {
     #[tokio::test]
     async fn cancellation_wakes_initial_receive_while_external_source_keeps_sender()
     -> Result<(), Box<dyn std::error::Error>> {
-        let (handles, runtime, producer) = owned_fixture()?;
+        let (handles, runtime, producer) = owned_fixture_with_stream_limit(1)?;
         let handle = producer.handle.clone();
+        let record = producer.record.clone();
+        let resource = WireHandle {
+            id: record.resource_id.clone(),
+            kind: echo_sdk_protocol::handle::HandleKind::FacadeResource,
+            generation: handle.generation.clone(),
+        };
         let sender = producer.sender.clone();
-        let background = tokio::spawn(async move {
-            let _sender = sender;
-            // Model an external run_stream/execute_stream call that has not
-            // produced its first item and does not observe our cancel token.
-            std::future::pending::<()>().await;
+        let release = tokio_util::sync::CancellationToken::new();
+        let _release_on_exit = release.clone().drop_guard();
+        let exited = Arc::new(AtomicBool::new(false));
+        let background = tokio::spawn({
+            let release = release.clone();
+            let exited = exited.clone();
+            async move {
+                // The same external source holds its actual sender after local
+                // cancellation, until its own explicit release completes.
+                release.cancelled().await;
+                drop(sender);
+                exited.store(true, Ordering::Release);
+            }
         });
         runtime.attach_background(&producer, background);
         drop(producer);
@@ -1333,9 +1347,74 @@ pub(crate) mod cleanup_tests {
                 )
                 .map_err(|error| std::io::Error::other(error.message))?
         );
-        let terminal = tokio::time::timeout(std::time::Duration::from_secs(1), pull)
+        let held = tokio::time::timeout(std::time::Duration::from_secs(1), pull)
             .await?
-            .map_err(|error| std::io::Error::other(error.message))?;
+            .err()
+            .ok_or("held external source manufactured a stream terminal")?;
+        assert_eq!(held.code, ExtensionErrorCode::FrameworkError);
+        assert_eq!(held.retryable, Retryability::AfterDelay);
+        assert_eq!(held.operation.as_deref(), Some("fixture.stream.close"));
+        assert_eq!(
+            held.message,
+            "facade stream cleanup is still awaiting its original producer"
+        );
+        assert!(!exited.load(Ordering::Acquire));
+        assert!(!record.settled.load(Ordering::Acquire));
+        assert!(!handles.is_closed(&handle));
+        assert_eq!(
+            handles
+                .facade_stream_state(&handle, Some("session-a"), "fixture.state")
+                .map_err(|error| error.message)?,
+            (0, true)
+        );
+        assert!(Arc::ptr_eq(
+            &runtime
+                .record(&handles, &handle, "session-a", "fixture", "fixture.state")
+                .map_err(|error| error.message)?,
+            &record
+        ));
+        let close_error = runtime
+            .close(
+                &handles,
+                &handle,
+                "session-a",
+                "fixture",
+                "fixture.stream.close",
+            )
+            .await
+            .err()
+            .ok_or("close falsely settled held producer")?;
+        assert_eq!(close_error.code, held.code);
+        assert_eq!(close_error.retryable, held.retryable);
+        assert_eq!(close_error.operation, held.operation);
+        assert!(
+            runtime
+                .open(&handles, &resource, "session-a", "fixture.open")
+                .is_err_and(|error| error.code == ExtensionErrorCode::PayloadTooLarge)
+        );
+        release.cancel();
+        tokio::time::timeout(std::time::Duration::from_secs(1), wait_settled(&record)).await?;
+        assert!(exited.load(Ordering::Acquire));
+        assert!(
+            record
+                .producer_failure
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .is_none(),
+            "the original collector must join successfully"
+        );
+        let terminal = tokio::time::timeout(
+            std::time::Duration::from_secs(1),
+            runtime.next(
+                &handles,
+                &handle,
+                "session-a",
+                "fixture",
+                "fixture.stream.next",
+            ),
+        )
+        .await?
+        .map_err(|error| std::io::Error::other(error.message))?;
         let WireValue::Variant {
             variant, fields, ..
         } = terminal
@@ -1358,6 +1437,33 @@ pub(crate) mod cleanup_tests {
                 )
                 .await
                 .is_err_and(|error| error.code == ExtensionErrorCode::ClosedHandle)
+        );
+        assert!(
+            !runtime
+                .close(
+                    &handles,
+                    &handle,
+                    "session-a",
+                    "fixture",
+                    "fixture.stream.close"
+                )
+                .await
+                .map_err(|error| error.message)?
+        );
+        let probe = runtime
+            .open(&handles, &resource, "session-a", "fixture.open")
+            .map_err(|error| error.message)?;
+        assert!(
+            runtime
+                .close(
+                    &handles,
+                    &probe.handle,
+                    "session-a",
+                    "fixture",
+                    "fixture.stream.close"
+                )
+                .await
+                .map_err(|error| error.message)?
         );
         Ok(())
     }

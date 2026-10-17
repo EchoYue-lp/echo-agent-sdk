@@ -9600,6 +9600,10 @@ mod tests {
         let bridge = state.extension_bridge.clone();
         let authority = echo_agent::acp::ExtensionInvocationAuthority::new(4)
             .map_err(|error| format!("{error:?}"))?;
+        let host_assertions_completed = Arc::new(AtomicBool::new(false));
+        let host_assertions_done = host_assertions_completed.clone();
+        let sdk_foreground_completed = Arc::new(AtomicBool::new(false));
+        let sdk_foreground_done = sdk_foreground_completed.clone();
         let custom_eof = mode == "custom_eof";
         let custom_late_ack = mode == "custom_late_ack" || custom_eof;
         let remote_notice = Arc::new(Notify::new());
@@ -9701,6 +9705,7 @@ mod tests {
             }, agent_client_protocol::on_receive_notification!())
             .connect_with(ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()), async move |_| {
                 sdk_finish.cancelled().await;
+                sdk_foreground_done.store(true, Ordering::Release);
                 Ok(())
             });
         let host = AcpAgent
@@ -9986,6 +9991,7 @@ mod tests {
                         assert!(!sink.remote_terminal_received.load(Ordering::Acquire));
                         // Ending the test connection below is fixture teardown,
                         // not an invented producer completion receipt.
+                        host_assertions_done.store(true, Ordering::Release);
                         finish.cancel();
                         return Ok(());
                     }
@@ -10058,6 +10064,7 @@ mod tests {
                                 .is_none()
                         );
                     }
+                    host_assertions_done.store(true, Ordering::Release);
                     finish.cancel();
                     Ok(())
                 },
@@ -10066,9 +10073,13 @@ mod tests {
             tokio::time::timeout(Duration::from_secs(10), async { tokio::join!(host, sdk) })
                 .await
                 .map_err(|_| "official ACP Channel owner test timed out".to_string())?;
-        host.map_err(|error| error.to_string())?;
-        sdk.map_err(|error| error.to_string())?;
-        Ok(())
+        finish_direct_test_connections(
+            mode == "custom_eof",
+            host_assertions_completed.load(Ordering::Acquire),
+            sdk_foreground_completed.load(Ordering::Acquire),
+            host,
+            sdk,
+        )
     }
 
     #[cfg(feature = "framework-channels")]
@@ -11701,8 +11712,9 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
         Ok(())
     }
 
-    // The peer is deliberately closed before a setup reply in these fixtures.
-    // Both original foregrounds must finish their checks before the precise
+    // These fixtures deliberately close the peer before a setup reply or after
+    // the custom setup ACK. Both original foregrounds must finish their checks
+    // before the precise
     // official transport-tail error can count as expected test teardown.
     fn finish_direct_test_connections(
         disconnect: bool,
