@@ -216,8 +216,12 @@ class HostEarlyExitTest {
             child.process().getOutputStream().close();assertTrue(child.process().isAlive());
             var written=child.transport().sendMessage(new com.agentclientprotocol.sdk.spec.AcpSchema.JSONRPCNotification("fixture/failing-output",Map.of())).toFuture();
             assertThrows(ExecutionException.class,()->written.get(2,TimeUnit.SECONDS));
-            assertThrows(ExecutionException.class,()->child.sdk().closeAsync().toCompletableFuture().get(7,TimeUnit.SECONDS));
-            assertTrue(child.process().waitFor(2,TimeUnit.SECONDS));
+            var originalPid=child.process().pid();var causeField=child.transport().getClass().getDeclaredField("nativeFailure");causeField.setAccessible(true);
+            var originalCause=((java.util.concurrent.atomic.AtomicReference<?>)causeField.get(child.transport())).get();assertNotNull(originalCause);
+            long started=System.nanoTime();var closeFailure=assertThrows(ExecutionException.class,()->child.sdk().closeAsync().toCompletableFuture().get(7,TimeUnit.SECONDS));
+            assertSame(originalCause,closeFailure.getCause(),"the deadline must preserve the first observed native write failure");
+            assertTrue(TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-started)<6500,"an observed tail failure must not disable the original native force-close deadline");
+            assertTrue(child.process().waitFor(2,TimeUnit.SECONDS));assertEquals(originalPid,child.process().pid());
             child.sdk().closeAsync().toCompletableFuture().get(2,TimeUnit.SECONDS);
             assertTrue(written.isCompletedExceptionally());assertFalse(child.process().isAlive());
         }finally{if(child.process().isAlive())child.process().destroyForcibly();child.session().close();child.transport().closeGracefully().onErrorResume(ignored->reactor.core.publisher.Mono.empty()).block();}

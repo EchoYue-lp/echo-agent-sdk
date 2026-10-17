@@ -28,6 +28,19 @@ import java.util.function.Function;
 public final class EchoAgentClient implements AutoCloseable {
     private static final TypeRef<JsonNode> JSON_NODE = new TypeRef<>() {};
 
+    /**
+     * Select the one native close outcome before its effects or publication.
+     * The future remains the shared result; no monitor is held while its
+     * dependents run, and a selected failure keeps its place during cleanup.
+     */
+    private static final class NativeCloseCompletion {
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+        private final java.util.concurrent.atomic.AtomicBoolean selected = new java.util.concurrent.atomic.AtomicBoolean();
+        void select(Runnable publication) {
+            if(selected.compareAndSet(false,true))publication.run();
+        }
+    }
+
     /** Own one Process; the official stream transport remains the sole ACP codec/writer. */
     private static final class OwnedStdioTransport implements AcpClientTransport {
         private final AgentParameters parameters;
@@ -158,17 +171,17 @@ public final class EchoAgentClient implements AutoCloseable {
             }
             final CompletableFuture<Void> tail;
             synchronized(admission){accepting=false;tail=writeTail;}
-            var result=new CompletableFuture<Void>();closeStage=result;
+            var completion=new NativeCloseCompletion();var result=completion.future;closeStage=result;
             if(process==null){cleaned=true;result.complete(null);return Mono.fromFuture(result,true);}
             var timeout=new EchoAgentException("timeout","Host transport did not exit within the five-second close deadline","after_delay","client/close",null);
             // Independent of the output monitor: a blocked write must not block the deadline/kill.
             var watchdog=Mono.delay(Duration.ofSeconds(5)).subscribe(ignored->{
-                if(!cleaned){
+                if(!cleaned)completion.select(()->{
                     nativeFailure.compareAndSet(null,timeout);expectedClose.set(true);
                     process.destroyForcibly();
                     var current=writing.getAndSet(null);if(current!=null)current.completeExceptionally(nativeFailure.get());
                     result.completeExceptionally(nativeFailure.get());
-                }
+                });
             });
             Mono.fromFuture(tail,true)
                     .then(Mono.fromRunnable(()->{
@@ -179,11 +192,14 @@ public final class EchoAgentClient implements AutoCloseable {
                     }).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
                     .then(Mono.fromFuture(exited,true))
                     .then(Mono.fromRunnable(this::disposeAfterExit).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
+                    // Record the original write/tail error without selecting
+                    // completion while its child is still alive. The deadline
+                    // must remain able to end this original-exit wait.
                     .doOnError(error->nativeFailure.compareAndSet(null,error))
                     .onErrorResume(error->Mono.fromFuture(exited,true)
                             .then(Mono.fromRunnable(this::disposeAfterExit).subscribeOn(reactor.core.scheduler.Schedulers.boundedElastic()))
                             .then(Mono.error(error)))
-                    .subscribe(ignored->{},error->{watchdog.dispose();result.completeExceptionally(nativeFailure.get()==null?error:nativeFailure.get());},()->{watchdog.dispose();result.complete(null);});
+                    .subscribe(ignored->{},error->{watchdog.dispose();completion.select(()->result.completeExceptionally(nativeFailure.get()==null?error:nativeFailure.get()));},()->{watchdog.dispose();completion.select(()->{var cause=nativeFailure.get();if(cause==null)result.complete(null);else result.completeExceptionally(cause);});});
             return Mono.fromFuture(result,true);
         }
         void closeFailed() {

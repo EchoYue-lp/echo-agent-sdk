@@ -233,7 +233,10 @@ The native transport then drains accepted frames through the official writer,
 closes the original child process's stdin, and awaits that same process's actual
 exit and local I/O cleanup. Its five-second native deadline includes writing,
 EOF and exit; expiry force-stops the original child and reports failure rather
-than successful flush. Failed cleanup retains unfinished ownership for retry;
+than successful flush. Deadline and post-exit completion select one outcome
+before publishing it; an already selected failure keeps its place while native
+cleanup finishes, and completed success prevents later deadline effects.
+Failed cleanup retains unfinished ownership for retry;
 cancelling a close waiter does not cancel that owner. This does not establish a
 Run terminal, telemetry export success or cleanup of an external producer;
 writer flush proves local frame write completion only.

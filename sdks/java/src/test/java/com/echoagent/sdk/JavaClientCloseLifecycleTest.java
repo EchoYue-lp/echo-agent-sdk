@@ -56,6 +56,33 @@ class JavaClientCloseLifecycleTest {
         var failure = assertThrows(ExecutionException.class, () -> sdk.request("test/request", JsonSupport.MAPPER.createObjectNode()).toCompletableFuture().get(1, TimeUnit.SECONDS));
         assertEquals("host_exited", EchoAgentException.from(failure, "test/request").code());
     }
+    private record NativeCloseChoice(CompletableFuture<Void> future, java.util.function.Consumer<Runnable> select) {}
+    private static NativeCloseChoice nativeCloseChoice() throws Exception {
+        var type=Class.forName("com.echoagent.sdk.EchoAgentClient$NativeCloseCompletion");
+        var constructor=type.getDeclaredConstructor();constructor.setAccessible(true);var owner=constructor.newInstance();
+        var result=type.getDeclaredField("future");result.setAccessible(true);
+        @SuppressWarnings("unchecked") var future=(CompletableFuture<Void>)result.get(owner);
+        var select=type.getDeclaredMethod("select",Runnable.class);select.setAccessible(true);
+        return new NativeCloseChoice(future, action->{try{select.invoke(owner,action);}catch(java.lang.reflect.InvocationTargetException error){throw new CompletionException(error.getCause());}catch(ReflectiveOperationException error){throw new CompletionException(error);}});
+    }
+    @Test void selectedNativeFailureCannotBeOvertakenWhileItsPublicationIsHeld() throws Exception {
+        var close=nativeCloseChoice();var selected=new CountDownLatch(1);var release=new CountDownLatch(1);var successEffects=new AtomicInteger();
+        var originalError=new EchoAgentException("timeout","Host transport did not exit within the five-second close deadline","after_delay","client/close",null);
+        var owner=CompletableFuture.runAsync(()->close.select().accept(()->{
+            selected.countDown();try{assertTrue(release.await(2,TimeUnit.SECONDS));}catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new CompletionException(interrupted);}
+            close.future().completeExceptionally(originalError);
+        }));
+        try {
+            assertTrue(selected.await(2,TimeUnit.SECONDS));close.select().accept(()->{successEffects.incrementAndGet();close.future().complete(null);});
+            assertFalse(close.future().isDone(),"a selected native failure still owns publication while its original work is held");assertEquals(0,successEffects.get());
+            release.countDown();owner.get(2,TimeUnit.SECONDS);var failure=assertThrows(ExecutionException.class,()->close.future().get(2,TimeUnit.SECONDS));assertSame(originalError,failure.getCause());
+        } finally {release.countDown();owner.get(2,TimeUnit.SECONDS);}
+    }
+    @Test void successfulNativeCloseChoicePreventsLateDeadlineEffects() throws Exception {
+        var close=nativeCloseChoice();var deadlineEffects=new AtomicInteger();
+        close.select().accept(()->close.future().complete(null));close.select().accept(()->{deadlineEffects.incrementAndGet();close.future().completeExceptionally(new IllegalStateException("late deadline"));});
+        close.future().get(2,TimeUnit.SECONDS);assertEquals(0,deadlineEffects.get(),"a completed native close cannot later force its child or replace its result");
+    }
     @Test void sharedCloseWaitsForOfficialTransportOwnerAcknowledgement() throws Exception {
         var transport = new NativeOwnerTransport(); var sdk = client(transport);
         try {
