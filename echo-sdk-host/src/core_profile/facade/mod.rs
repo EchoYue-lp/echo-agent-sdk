@@ -1849,12 +1849,12 @@ async fn facade_admission(
                                         wire::framework_error(&error, "_echo_agent/workflow/op")
                                     })
                                     .and_then(workflow::workflow_event_value);
-                                if let Err(error) = &item {
-                                    if original_owner.record_observation(error) {
-                                        // Observation leaves the original producer alive;
-                                        // keep forwarding its eventual Completed payload.
-                                        continue;
-                                    }
+                                if let Err(error) = &item
+                                    && original_owner.record_observation(error)
+                                {
+                                    // Observation leaves the original producer alive;
+                                    // keep forwarding its eventual Completed payload.
+                                    continue;
                                 }
                                 let sent = tokio::select! {
                                     () = cancel.cancelled() => false,

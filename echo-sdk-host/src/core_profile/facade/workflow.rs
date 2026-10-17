@@ -443,10 +443,10 @@ pub(crate) async fn dispatch(
                     };
                     let Some(event) = item else { return };
                     let item = event.map_err(framework).and_then(workflow_event_value);
-                    if let Err(error) = &item {
-                        if original_owner.record_observation(error) {
-                            break;
-                        }
+                    if let Err(error) = &item
+                        && original_owner.record_observation(error)
+                    {
+                        break;
                     }
                     let sent = tokio::select! {
                         () = cancel.cancelled() => { source_cancel.cancel(); false },

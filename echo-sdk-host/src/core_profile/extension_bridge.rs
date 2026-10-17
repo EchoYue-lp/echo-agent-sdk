@@ -326,16 +326,16 @@ impl ExtensionBridgeShared {
             );
             return Err("extension stream remote sequence is not contiguous".to_string());
         }
-        if let ExtensionStreamEvent::Failed { error, .. } = &event {
-            if super::wire::has_observation_hint(error) {
-                let owner = sink
-                    .owner
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .upgrade();
-                if let Some(owner) = owner {
-                    owner.retain_unknown(error.clone());
-                }
+        if let ExtensionStreamEvent::Failed { error, .. } = &event
+            && super::wire::has_observation_hint(error)
+        {
+            let owner = sink
+                .owner
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .upgrade();
+            if let Some(owner) = owner {
+                owner.retain_unknown(error.clone());
             }
         }
         if is_terminal {
@@ -546,7 +546,7 @@ impl ExtensionStreamSink {
     /// discarded (non-contiguous, post-terminal, or duplicate terminal).
     fn admit_event(&self, event: &ExtensionStreamEvent) -> bool {
         let sequence = event.sequence().to_u64().unwrap_or_default();
-        let is_terminal = physical_terminal(&event);
+        let is_terminal = physical_terminal(event);
         let Ok(mut inner) = self.inner.lock() else {
             return false;
         };
@@ -1175,32 +1175,30 @@ impl ExtensionBridge {
             }
         };
         drop_notice.disarm();
-        if let Err(error) = &result {
-            if super::wire::has_observation_hint(error) {
-                let refusal = original_owner.retain_unknown(error.clone());
-                *original_owner
-                    .retained_lease
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner()) = Some(lease);
-                original_owner.response_completed.cancel();
-                if !cannot_return_observation {
-                    if let Some(refusal) = refusal {
-                        return Err(refusal);
-                    }
+        if let Err(error) = &result
+            && super::wire::has_observation_hint(error)
+        {
+            let refusal = original_owner.retain_unknown(error.clone());
+            *original_owner
+                .retained_lease
+                .lock()
+                .unwrap_or_else(|error| error.into_inner()) = Some(lease);
+            original_owner.response_completed.cancel();
+            if !cannot_return_observation && let Some(refusal) = refusal {
+                return Err(refusal);
+            }
+            // A resultless/fixed-domain consumer cannot manufacture Unit,
+            // a policy decision or Backend from observer knowledge. Keep
+            // this original callback's real outcome/closure watch. No
+            // replacement future/task is spawned to simulate execution.
+            loop {
+                let changed = original_owner.observation_changed.notified();
+                tokio::pin!(changed);
+                changed.as_mut().enable();
+                if !original_owner.observed() {
+                    break;
                 }
-                // A resultless/fixed-domain consumer cannot manufacture Unit,
-                // a policy decision or Backend from observer knowledge. Keep
-                // this original callback's real outcome/closure watch. No
-                // replacement future/task is spawned to simulate execution.
-                loop {
-                    let changed = original_owner.observation_changed.notified();
-                    tokio::pin!(changed);
-                    changed.as_mut().enable();
-                    if !original_owner.observed() {
-                        break;
-                    }
-                    changed.await;
-                }
+                changed.await;
             }
         }
         result
@@ -1678,10 +1676,12 @@ impl ExtensionBridge {
     async fn invoke_owned_producer_stream(
         &self,
         extension: &WireHandle,
-        context: ExtensionInvocationContext,
+        contexts: (
+            ExtensionInvocationContext,
+            Option<echo_agent::agent::AgentInvocationContext>,
+        ),
         invocation: ExtensionInvocation,
         cancellation: CancellationToken,
-        agent_invocation: Option<echo_agent::agent::AgentInvocationContext>,
         facade_observer: Option<super::facade::stream::FacadeStreamProducer>,
         tool_context: Option<ToolContext>,
     ) -> std::result::Result<
@@ -1691,6 +1691,9 @@ impl ExtensionBridge {
         >,
         EchoSdkError,
     > {
+        // Keep the original wire scope and retained framework context paired;
+        // neither is rebuilt from the other or assigned a replacement owner.
+        let (context, agent_invocation) = contexts;
         let operation = invocation.operation();
         let (lease, record, _authority) =
             self.prepare(extension, operation, &invocation, cancellation.clone())?;
@@ -1773,10 +1776,10 @@ impl ExtensionBridge {
         operation: ExtensionOperation,
         expected_stream: Option<&WireHandle>,
     ) -> std::result::Result<Option<ExtensionResult>, EchoSdkError> {
-        if let ExtensionInvokeOutcome::Error { error } = &outcome {
-            if super::wire::has_observation_hint(error) {
-                return Err(error.clone());
-            }
+        if let ExtensionInvokeOutcome::Error { error } = &outcome
+            && super::wire::has_observation_hint(error)
+        {
+            return Err(error.clone());
         }
         if !lease.settle(echo_agent::acp::ExtensionSettlement::Answered) {
             return Err(settlement_error(lease.settlement()));
@@ -1994,7 +1997,9 @@ pub(crate) struct CallbackInvocationOwner {
 }
 
 enum OriginalCallbackResponse {
-    Reply(Result<Option<ExtensionResult>, EchoSdkError>),
+    // Bound the internal reply's stack size without changing the error shape,
+    // source/owner lifetime, or the value returned at its original consumers.
+    Reply(Result<Option<Box<ExtensionResult>>, EchoSdkError>),
     ClosedObservation(EchoSdkError),
 }
 
@@ -2030,7 +2035,7 @@ impl CallbackInvocationOwner {
         let diagnostic = match response {
             Ok(Ok(result)) => {
                 self.record_original_peer_response(true);
-                return OriginalCallbackResponse::Reply(Ok(result));
+                return OriginalCallbackResponse::Reply(Ok(result.map(Box::new)));
             }
             Ok(Err(error))
                 if super::wire::has_observation_hint(&error)
@@ -2088,7 +2093,9 @@ impl CallbackInvocationOwner {
             {
                 error
             }
-            OriginalCallbackResponse::Reply(result) => return result,
+            OriginalCallbackResponse::Reply(result) => {
+                return result.map(|value| value.map(|value| *value));
+            }
         };
         loop {
             // Subscribe before projecting the same owner's current knowledge;
@@ -2108,7 +2115,9 @@ impl CallbackInvocationOwner {
                 {
                     changed.await
                 }
-                OriginalCallbackResponse::Reply(result) => return result,
+                OriginalCallbackResponse::Reply(result) => {
+                    return result.map(|value| value.map(|value| *value));
+                }
             }
         }
     }
@@ -2123,13 +2132,13 @@ impl CallbackInvocationOwner {
             .context
             .lock()
             .unwrap_or_else(|error| error.into_inner()) = context;
-        if let Ok(state) = bridge.state() {
-            if let Ok(record) = state.handles.extension_for_cleanup(extension) {
-                *self
-                    .registration
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner()) = Arc::downgrade(&record);
-            }
+        if let Ok(state) = bridge.state()
+            && let Ok(record) = state.handles.extension_for_cleanup(extension)
+        {
+            *self
+                .registration
+                .lock()
+                .unwrap_or_else(|error| error.into_inner()) = Arc::downgrade(&record);
         }
     }
 
@@ -2428,11 +2437,11 @@ fn owned_callback_event_stream(
                 let changed = observation_owner.observation_changed.notified();
                 tokio::pin!(changed);
                 changed.as_mut().enable();
-                if !state.observation_delivered {
-                    if let Some(refusal) = state._owner.framework_refusal() {
-                        state.observation_delivered = true;
-                        return Some((Err(refusal), state));
-                    }
+                if !state.observation_delivered
+                    && let Some(refusal) = state._owner.framework_refusal()
+                {
+                    state.observation_delivered = true;
+                    return Some((Err(refusal), state));
                 }
                 if (state.terminal.is_some() || state.sink_ended)
                     && state.answered
@@ -2487,7 +2496,7 @@ fn owned_callback_event_stream(
                     response = &mut state.completion, if !state.answered => {
                         state.answered = true;
                         let response=match state._owner.observe_original_response(response) {
-                            OriginalCallbackResponse::Reply(response)=>response,
+                            OriginalCallbackResponse::Reply(response)=>response.map(|value| value.map(|value| *value)),
                             OriginalCallbackResponse::ClosedObservation(error)=>{
                                 state.closed_response_error=Some(error);
                                 continue;
@@ -2535,9 +2544,8 @@ fn owned_callback_event_stream(
                     event = state.receiver.recv(), if state.terminal.is_none() && !state.sink_ended => {
                         match event {
                             Some(ExtensionStreamEvent::Failed { error, .. }) if super::wire::has_observation_hint(&error) => {
-                                if let Some(refusal) = state._owner.retain_unknown(error) {
-                                    if !state.observation_delivered { state.observation_delivered = true; return Some((Err(refusal), state)); }
-                                }
+                                if let Some(refusal) = state._owner.retain_unknown(error)
+                                    && !state.observation_delivered { state.observation_delivered = true; return Some((Err(refusal), state)); }
                             }
                             Some(event) if physical_terminal(&event) => { state.terminal = Some(event); }
                             Some(event) => { return Some((Ok(event), state)); }
@@ -3565,18 +3573,20 @@ impl echo_agent::tools::Tool for ExtensionToolProxy {
                 .bridge
                 .invoke_owned_producer_stream(
                     &self.extension,
-                    ExtensionInvocationContext {
-                        session_id: context.conversation_id.clone(),
-                        run_id: context.run_id.clone(),
-                        stream_id: None,
-                        turn_id: context.turn_id.clone(),
-                        message_id: context.message_id.clone(),
-                        execution_id: context.execution_id.clone(),
-                        call_id: context.call_id.clone(),
-                    },
+                    (
+                        ExtensionInvocationContext {
+                            session_id: context.conversation_id.clone(),
+                            run_id: context.run_id.clone(),
+                            stream_id: None,
+                            turn_id: context.turn_id.clone(),
+                            message_id: context.message_id.clone(),
+                            execution_id: context.execution_id.clone(),
+                            call_id: context.call_id.clone(),
+                        },
+                        None,
+                    ),
                     ExtensionInvocation::ToolExecuteStream(input),
                     cancellation,
-                    None,
                     None,
                     Some(context),
                 )
@@ -4132,12 +4142,11 @@ impl echo_agent::llm::LlmClient for ExtensionLlmClientProxy {
                 .bridge
                 .invoke_owned_producer_stream(
                     &self.extension,
-                    session_invocation_context(&self.session_id),
+                    (session_invocation_context(&self.session_id), None),
                     ExtensionInvocation::LlmChatStream(
                         Self::request_wire(&request).map_err(ReactError::Other)?,
                     ),
                     cancellation,
-                    None,
                     None,
                     None,
                 )
@@ -6313,10 +6322,9 @@ impl ExtensionAgentComponentProxy {
                 .bridge
                 .invoke_owned_producer_stream(
                     &self.extension,
-                    session_invocation_context(&self.session_id),
+                    (session_invocation_context(&self.session_id), None),
                     invocation,
                     cancellation.clone(),
-                    None,
                     facade_observer,
                     None,
                 )
@@ -6717,7 +6725,7 @@ impl ExtensionAgentComponentProxy {
             .bridge
             .invoke_owned_producer_stream(
                 &self.extension,
-                session_invocation_context(&self.session_id),
+                (session_invocation_context(&self.session_id), None),
                 ExtensionInvocation::AgentComponentCallStream(AgentComponentCallWire {
                     component: self.component,
                     call: AgentComponentCallInputWire::WorkflowRunStream {
@@ -6725,7 +6733,6 @@ impl ExtensionAgentComponentProxy {
                     },
                 }),
                 cancellation,
-                None,
                 facade_observer,
                 None,
             )
@@ -8090,13 +8097,13 @@ impl FactoryInstanceLease {
             .observation
             .lock()
             .unwrap_or_else(|error| error.into_inner()) = Some(error);
-        if let Ok(state) = self.bridge.state() {
-            if let Ok(issued) = state.handles.extension_for_cleanup(&self.extension) {
-                *issued
-                    .retained_factory_owner
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner()) = Some(self.clone());
-            }
+        if let Ok(state) = self.bridge.state()
+            && let Ok(issued) = state.handles.extension_for_cleanup(&self.extension)
+        {
+            *issued
+                .retained_factory_owner
+                .lock()
+                .unwrap_or_else(|error| error.into_inner()) = Some(self.clone());
         }
         self.observation_changed.notify_waiters();
     }
@@ -8335,10 +8342,9 @@ impl ExtensionCustomAgentProxy {
             .bridge
             .invoke_owned_producer_stream(
                 &self.extension,
-                wire_context,
+                (wire_context, context),
                 invocation,
                 cancellation.clone(),
-                context,
                 None,
                 None,
             )
@@ -11288,12 +11294,13 @@ mod tests {
                 // Exercise the actual reverse dispatch and owner construction;
                 // no test-only callback-binding call is added after the repair.
                 let mut source = bridge.invoke_owned_producer_stream(
-                    &extension,
-                    ExtensionInvocationContext { session_id: Some("session-a".to_string()), run_id: identity.then(|| "original-unwind-run".to_string()), execution_id: identity.then(|| "original-unwind-attempt".to_string()), stream_id: None, turn_id: None, message_id: None, call_id: None },
-                    ExtensionInvocation::AgentComponentCallStream(AgentComponentCallWire { component: AgentComponentKindWire::Workflow, call: AgentComponentCallInputWire::WorkflowRunStream { input: "held original work".to_string() } }),
-                    producer.cleanup.clone(), None, Some(producer.clone()),
-                    Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGuard::new(GuardDrop(drops.clone()))], ..Default::default() }),
-                ).await.map_err(|error| error.message)?;
+&extension,
+(ExtensionInvocationContext { session_id: Some("session-a".to_string()), run_id: identity.then(|| "original-unwind-run".to_string()), execution_id: identity.then(|| "original-unwind-attempt".to_string()), stream_id: None, turn_id: None, message_id: None, call_id: None }, None),
+ExtensionInvocation::AgentComponentCallStream(AgentComponentCallWire { component: AgentComponentKindWire::Workflow, call: AgentComponentCallInputWire::WorkflowRunStream { input: "held original work".to_string() } }),
+producer.cleanup.clone(),
+Some(producer.clone()),
+Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGuard::new(GuardDrop(drops.clone()))], ..Default::default() }),
+).await.map_err(|error| error.message)?;
                 entered.cancelled().await;
                 let sink = bridge.shared.streams.lock().unwrap_or_else(|error| error.into_inner()).values().find(|sink| sink.extension_id() == extension.id).cloned().ok_or("original stream sink missing")?;
                 let owner = sink.owner.lock().unwrap_or_else(|error| error.into_inner()).upgrade().ok_or("original callback owner missing")?;
@@ -11694,6 +11701,72 @@ mod tests {
         Ok(())
     }
 
+    // The peer is deliberately closed before a setup reply in these fixtures.
+    // Both original foregrounds must finish their checks before the precise
+    // official transport-tail error can count as expected test teardown.
+    fn finish_direct_test_connections(
+        disconnect: bool,
+        host_assertions_completed: bool,
+        sdk_foreground_completed: bool,
+        host: Result<(), agent_client_protocol::Error>,
+        sdk: Result<(), agent_client_protocol::Error>,
+    ) -> Result<(), String> {
+        let expected_tail = disconnect
+            && host_assertions_completed
+            && sdk_foreground_completed
+            && sdk.is_ok()
+            && host.as_ref().err().is_some_and(|error| {
+                error.code == agent_client_protocol::ErrorCode::InternalError
+                    && error.message == "Internal error"
+                    && error.data.as_ref().is_some_and(|data| {
+                        data.as_object().is_some_and(|fields| fields.len() == 2)
+                            && data.get("data").and_then(serde_json::Value::as_str)
+                                == Some("broken pipe")
+                            && data
+                                .get("spawned_at")
+                                .and_then(serde_json::Value::as_str)
+                                .is_some_and(|location| {
+                                    location.replace('\\', "/").ends_with(
+                                        "agent-client-protocol-2.1.0/src/jsonrpc.rs:1931:39",
+                                    )
+                                })
+                    })
+            });
+        if !host_assertions_completed || (host.is_err() && !expected_tail) || sdk.is_err() {
+            return Err(format!(
+                "direct connection results: host_assertions_completed={host_assertions_completed}, sdk_foreground_completed={sdk_foreground_completed}; host={host:?}; sdk={sdk:?}"
+            ));
+        }
+        if expected_tail {
+            eprintln!(
+                "original direct-disconnect foreground assertions complete; expected Host transport tail: {host:?}"
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn direct_disconnect_teardown_keeps_early_and_unexpected_errors() {
+        let payload = serde_json::json!({"spawned_at":"/fixture/agent-client-protocol-2.1.0/src/jsonrpc.rs:1931:39","data":"broken pipe"});
+        let tail = agent_client_protocol::Error::internal_error().data(payload);
+        assert!(
+            finish_direct_test_connections(true, true, true, Err(tail.clone()), Ok(())).is_ok()
+        );
+        let sdk_failure =
+            agent_client_protocol::Error::internal_error().data("original SDK failure");
+        for (disconnect, complete, host, sdk) in [
+            (true, false, Err(tail.clone()), Ok(())),
+            (false, true, Err(tail.clone()), Ok(())),
+            (true, true, Err(tail.clone()), Err(sdk_failure)),
+            (true, true, Err(agent_client_protocol::Error::internal_error().data(serde_json::json!({"spawned_at":"/fixture/business.rs:1:1","data":"broken pipe"}))), Ok(())),
+            (true, true, Err(agent_client_protocol::Error::internal_error().data("broken pipe")), Ok(())),
+            (true, true, Err(agent_client_protocol::Error::new(-32050, "other")), Ok(())),
+        ] {
+            let expected = format!("direct connection results: host_assertions_completed={complete}, sdk_foreground_completed=true; host={host:?}; sdk={sdk:?}");
+            assert_eq!(finish_direct_test_connections(disconnect, complete, true, host, sdk), Err(expected));
+        }
+    }
+
     async fn direct_original_stream_context_case(
         custom: bool,
         disconnect: bool,
@@ -11729,6 +11802,10 @@ mod tests {
         ));
         state.bind_services(services.clone());
         let bridge = state.extension_bridge.clone();
+        let assertions_completed = Arc::new(AtomicBool::new(false));
+        let host_assertions_completed = assertions_completed.clone();
+        let sdk_foreground_completed = Arc::new(AtomicBool::new(false));
+        let sdk_foreground_done = sdk_foreground_completed.clone();
         let release = CancellationToken::new();
         let sdk_release = release.clone();
         let release_after = release.clone();
@@ -11895,6 +11972,7 @@ mod tests {
                 ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()),
                 async move |_| {
                     sdk_finish.cancelled().await;
+                    sdk_foreground_done.store(true, Ordering::Release);
                     Ok(())
                 },
             );
@@ -11918,7 +11996,7 @@ mod tests {
                     run_id:context.run_id.clone(),execution_id:context.execution_id.clone(),..Default::default()
                 }),resource_guards:context.resource_guards.clone(),..Default::default()};
                 proxy.run_stream_scoped(ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:"original held work".to_string()}),CancellationToken::new(),Some(invocation)).await
-                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?.map(|item| item.map(|_| ())).boxed()
+                    .map_err(|error| RpcError::internal_error().data(format!("direct-setup phase: {error}")))?.map(|item| item.map(|_| ())).boxed()
             } else {
                 let proxy=tool_proxy.as_ref().ok_or_else(|| RpcError::internal_error().data("missing direct Tool"))?;
                 echo_agent::tools::Tool::execute_stream_with_context(proxy,ToolParameters::new(),&context).await
@@ -11959,6 +12037,7 @@ mod tests {
                 // Transport loss has no matching late-closure interface. The
                 // fixture's shutdown is not a physical completion receipt.
                 assert_eq!(drops.load(Ordering::Acquire),0);
+                host_assertions_completed.store(true, Ordering::Release);
                 return Ok(());
             }
             release.cancel();
@@ -11974,6 +12053,7 @@ mod tests {
                 assert_eq!(services.extensions().in_flight(),1);
                 assert!(state.handles.register_extension(super::super::handles::ExtensionRegistrationLimits{max_extensions:1,max_descriptor_bytes:65_536},ExtensionKind::AgentFactory,"close-quota-probe",ExtensionDescriptor::AgentFactory{descriptor_version:1},None,false).is_err());
             }
+            host_assertions_completed.store(true, Ordering::Release);
             Ok(())
         });
         let outcome =
@@ -11998,9 +12078,13 @@ mod tests {
         if !cleanup_errors.is_empty() {
             return Err(format!("owned callback cleanup failed: {cleanup_errors:?}"));
         }
-        host.map_err(|error| error.to_string())?;
-        sdk.map_err(|error| error.to_string())?;
-        Ok(())
+        finish_direct_test_connections(
+            disconnect,
+            assertions_completed.load(Ordering::Acquire),
+            sdk_foreground_completed.load(Ordering::Acquire),
+            host,
+            sdk,
+        )
     }
 
     #[tokio::test]
@@ -12793,14 +12877,13 @@ callback_owner_init
                                     Some("actual-constructor-execution"),
                                     "_echo_agent/extension/invoke",
                                 );
-                                if malformed {
-                                    if let Some(fields) = error
+                                if malformed
+                                    && let Some(fields) = error
                                         .details
                                         .as_mut()
                                         .and_then(|details| details.fields.as_mut())
-                                    {
-                                        fields.retain(|field| field.key != "run_id");
-                                    }
+                                {
+                                    fields.retain(|field| field.key != "run_id");
                                 }
                                 responder.respond(ExtensionInvokeOutcome::Error { error })?;
                                 sdk_entered.cancel();
