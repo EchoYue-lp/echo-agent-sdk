@@ -17,9 +17,35 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
-当前仓库已从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，并固定到已推送的
-framework extraction commit `27c7701e1eb116db1076da7f84bb68898544a44c`。精确源快照、
-provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
+仓库迁移从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，原 extraction pin 为
+`27c7701e1eb116db1076da7f84bb68898544a44c`；该历史归属保留在 `MIGRATION-SOURCE.md`。
+当前 Host 精确依赖已发布 framework `6563d26570cc4a8d93c86b7e37443b0559476807`，
+来自[framework PR #191](https://github.com/EchoYue-lp/echo-agent/pull/191)，上游精确main CI38958501642七项通过已核验。
+本SDK真实Cargo.lock八个framework包及三个上游vendored包使用同一Git revision，无path patch、依赖版本变更。
+新pin的唯一生成实际28profiles/117artifacts及完整合同check已0，阻断/遥测漂移0、Protocol5/42/91通过。
+accepted identity/kind及454routes双向差0；新RunEntry::wait_result仅Host/Rust遥测，不进三语。
+新Host构建已0/零warning，保opt1/assertions/overflow/unwind；原drop-waiter与stream quota1联合测试1通过。
+其余Host行为、完整Rust/三语、最终独审及SDK精确main CI尚待。
+原9886502的全28profile生成和完整合同check实际0仅保留为历史；accepted 5621项边界不扩，
+仅已批准A单cap/protect Unit与B两fallible签名由规范入口更新，不借历史pin通过替代当前验证。
+来源与历史分界见`MIGRATION-SOURCE.md`和`docs/MASTER-PLAN.md`。
+
+历史00782 Host治理候选精确依赖 `00782b8aeddefe2ea8c566922cbdee6aedc80d70`，
+来自 [framework PR #186](https://github.com/EchoYue-lp/echo-agent/pull/186)，承接 Git 分支切换无损修复。
+SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确源码树与合并后 CI 已核对；
+[SDK 新 pin/锁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-published-00782-pin/README.md)、
+[14 条 Rust 门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-00782-final-rust-gates/README.md)及
+[第四次完整语言入口](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-ci-repairs-final/README.md)具实际本地通过证据。
+800项输入已逐Git恢复；本地Oracle21不代Linux CI Temurin17，新action警告及当前源码语义/main验收仍待实际结果。此前
+`be5f0a8405b593c4ef964cd6fd2df4beabf4956c` 的 [published-pin provenance](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-chart-published-pin/published-pin-provenance.json)
+保留为历史构建证据，不证明当前升级后的 Host 已通过最终门禁。
+[历史 a634 Rust 门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md)及
+[完整语言门禁](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
+固定各自实际源码切点；后续运行时修复与幂等验收不得借用此前通过结果。
+完整合同、新适用 CI、当前源码语义和 SDK main 最终验收仍须分别结算。
+[十二项 accepted-source 连续性方案](docs/sdk/governance/accepted-source-continuity-proposal.md)
+已于2026-10-15由用户明确接受，精确授权位于ADR0034；完整合同生成与消费者验收由该独立切片实际执行，SDK main 验收仍独立，不能由 pin 已发布推断 release。
+精确源快照、provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
 
 - protocol 是纯 wire/schema crate；framework 类型转换只能位于 Host adapter；
 - `source-contract.json` 只覆盖 accepted external contract 和 accepted catalog；完整
@@ -63,9 +89,16 @@ provenance 和历史归属记录在 `MIGRATION-SOURCE.md`：
 ## 分支、提交与交付
 
 - 新任务使用非 `main` 分支，命名 `<type>/Echoyue/<任务名>`。
+- GitHub CI 仅在 push 到 `main` 后运行；任务分支和 PR 不自动触发 CI。任务合并前完成本地适用门禁，合并后由 CI 核验精确 main。
 - 每次提交显式关闭 GPG 签名：
   `git -c commit.gpgsign=false commit -m "..."`。
 - 开发提交执行 focused 验证；合并前执行全部适用 Rust、contract、Host E2E、三语言、
-  cross-platform、dependency 和文档门禁，所有命令必须零失败、零警告、零格式差异。
+  cross-platform、dependency 和文档门禁，所有命令必须真实退出0、零失败、零格式差异。
+  编译、audit、advisory、license、source、配置及其它工具警告必须为0；唯一例外是
+  cargo-deny 原有 `multiple-versions = "warn"` 产生的 `warning[duplicate]`，仅在完整
+  原始输出保留、版本组按已接受的精确 Cargo.lock 摘要基线复核且无未经复审的增量时，
+  作为非阻断提示。锁图、framework revision、检查范围或策略变化必须重新验证与复审，
+  不得自动扩大基线或推广为其它警告豁免。已接受的50组精确版本及裁决见
+  [依赖警告政策](docs/sdk/governance/dependency-warning-policy-proposal.md)。
 - 不使用 `--no-verify`，不把预先存在或看似无关的失败作为合并豁免。
 - 推送后核对远端 SHA；superproject gitlink 只能引用已经推送的 commit。

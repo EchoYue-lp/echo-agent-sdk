@@ -1,0 +1,9 @@
+{
+  "name": "managed-deadline-context-i64-valid",
+  "kind": "valid",
+  "target": "PersistenceCallContextWire",
+  "description": "Absolute deadlines remain typed i64 decimal strings.",
+  "payload": {
+    "absolute_deadline_unix_ms": "9223372036854775807"
+  }
+}

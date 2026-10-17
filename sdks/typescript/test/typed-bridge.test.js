@@ -456,3 +456,83 @@ test("SkillLoadPolicy calls and component stream terminals stay typed", async ()
   assert.equal(notifications[1][1].event, "complete");
   assert.equal(notifications[1][1].value.value.terminal.result, "done");
 });
+
+
+test("workflow protected claim preserves exact attempt through the public decoder", () => {
+  const input = { checkpoint_id: "checkpoint-中文🙂", attempt_id: "attempt-原始🙂" };
+  const payload = {
+    extension, invocation_id: "protect-invocation", deadline,
+    invocation: { operation: "agent_component_call", input: {
+      component: "workflow_checkpoint_store",
+      call: { operation: "workflow_checkpoint_protect_claim", input },
+    } },
+    stream: null,
+  };
+  const decoded = decodeExtensionInvokeCall(payload, "agent_component");
+  assert.deepEqual(decoded.invocation.input.call, {
+    operation: "workflow_checkpoint_protect_claim", input,
+  });
+  assert.equal(decoded.invocation_id, "protect-invocation");
+  for (const invalid of [
+    { checkpoint_id: input.checkpoint_id },
+    { ...input, attempt_id: 1 },
+    { ...input, extra: true },
+  ]) {
+    assert.throws(() => decodeExtensionInvokeCall({ ...payload, invocation: {
+      ...payload.invocation, input: { ...payload.invocation.input,
+        call: { operation: "workflow_checkpoint_protect_claim", input: invalid } },
+    } }, "agent_component"));
+  }
+  assert.throws(() => decodeExtensionInvokeCall({ ...payload, invocation: {
+    ...payload.invocation, input: { ...payload.invocation.input, component: "audit_logger" },
+  } }, "agent_component"));
+});
+
+
+test("workflow protected claim capability is boolean and component-scoped before registration", async () => {
+  const admitted = [];
+  const sdk = { registerExtension: async (...args) => { admitted.push(args); return "registered"; } };
+  const register = (component, capabilities) => EchoAgentClient.prototype.registerAgentComponent.call(
+    sdk, "checkpoint-provider", {kind:"agent_component", descriptor_version:1,
+      name:"checkpoint-provider", component, capabilities}, async () => { throw new Error("not invoked"); },
+  );
+  for (const enabled of [false, true]) {
+    assert.equal(await register("workflow_checkpoint_store", {
+      claim_heartbeat_interval_ms:"1000", protected_claim_v1:enabled,
+    }), "registered");
+  }
+  assert.equal(admitted.length, 2);
+  await assert.rejects(register("audit_logger", {protected_claim_v1:true}), error => error.code === "invalid_value");
+  for (const illegal of ["true", 1, null]) {
+    await assert.rejects(register("workflow_checkpoint_store", {
+      claim_heartbeat_interval_ms:"1000", protected_claim_v1:illegal,
+    }), error => error.code === "invalid_value");
+  }
+  assert.equal(admitted.length, 2);
+  assert.equal(await register("audit_logger", {protected_claim_v1:false}), "registered");
+  assert.equal(admitted.length, 3);
+});
+
+
+test("workflow protected claim public callback returns only its unit result", async () => {
+  let callback;
+  let result = { operation:"workflow_checkpoint_protect_claim" };
+  const sdk = { registerExtension: async (_kind, _id, _descriptor, handler) => { callback=handler; return "registered"; } };
+  await EchoAgentClient.prototype.registerAgentComponent.call(sdk, "checkpoints", {
+    kind:"agent_component", descriptor_version:1, component:"workflow_checkpoint_store", name:"checkpoints",
+    capabilities:{ claim_heartbeat_interval_ms:"1000", protected_claim_v1:true },
+  }, async () => ({operation:"agent_component_call", value:{component:"workflow_checkpoint_store", result}}));
+  const payload = { extension, invocation_id:"protect-unit", deadline, invocation:{
+    operation:"agent_component_call", input:{component:"workflow_checkpoint_store", call:{
+      operation:"workflow_checkpoint_protect_claim", input:{checkpoint_id:"checkpoint-中文🙂",attempt_id:"attempt-原始🙂"},
+    }},
+  }};
+  const outcome = await callback(payload, new AbortController().signal);
+  assert.deepEqual(outcome, {outcome:"result", result:{operation:"agent_component_call", value:{
+    component:"workflow_checkpoint_store", result:{operation:"workflow_checkpoint_protect_claim"},
+  }}});
+  result = {operation:"workflow_checkpoint_protect_claim", value:{accepted:true}};
+  await assert.rejects(callback(payload, new AbortController().signal), error => error.code === "invalid_value");
+  result = {operation:"workflow_checkpoint_renew_claim"};
+  await assert.rejects(callback(payload, new AbortController().signal), error => error.code === "invalid_value");
+});

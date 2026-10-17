@@ -10,7 +10,7 @@ public final class ExtensionStreamWriter {
     private final EchoAgentClient client;
     private final WireHandle stream;
     private BigInteger sequence = BigInteger.ZERO;
-    private boolean closed;
+    private volatile boolean closed;
 
     public ExtensionStreamWriter(EchoAgentClient client, WireHandle stream) {
         this.client = client;
@@ -51,8 +51,9 @@ public final class ExtensionStreamWriter {
     }
 
     public CompletionStage<Void> failed(JsonNode error) {
+        error = error == null ? null : error.deepCopy();
         CompletionStage<Void> result = send("failed", error);
-        closed = true;
+        if (!EchoAgentClient.isNotSettledObservation(error)) closed = true;
         return result;
     }
 

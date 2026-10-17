@@ -93,31 +93,10 @@ impl PreparedAgentDefinition {
     /// installing the state store before first use so the framework can
     /// checkpoint after every tool batch and resume from it later.
     pub async fn create_agent(&self, context: &AcpSessionContext) -> Result<ReactAgent> {
-        self.build_agent(context).await.map(|(agent, _)| agent)
-    }
-
-    /// Construction with the Host-injected task store: under
-    /// `sdk-facade-adapters` the session's task tools operate on a
-    /// Host-owned concrete store so the task RPC and the DAG controller
-    /// share one graph authority with them (plan 07 todo 3).
-    #[cfg(feature = "sdk-core-profile")]
-    pub async fn create_agent_with_task_store(
-        &self,
-        context: &AcpSessionContext,
-    ) -> Result<(
-        ReactAgent,
-        Option<Arc<echo_agent::tasks::InMemoryRevisionedTaskStore>>,
-    )> {
         self.build_agent(context).await
     }
 
-    async fn build_agent(
-        &self,
-        context: &AcpSessionContext,
-    ) -> Result<(
-        ReactAgent,
-        Option<Arc<echo_agent::tasks::InMemoryRevisionedTaskStore>>,
-    )> {
+    async fn build_agent(&self, context: &AcpSessionContext) -> Result<ReactAgent> {
         let mcp_servers = translate_mcp_servers(context)?;
         let session_id = context.session_id.to_string();
         let agent_config = AgentConfig::from(self.framework.as_ref().clone())
@@ -127,18 +106,6 @@ impl PreparedAgentDefinition {
         let mut agent = ReactAgent::new(agent_config).with_llm_client(self.llm_client.clone());
         #[cfg(feature = "framework-human-loop")]
         agent.build_permission_service();
-        #[cfg(feature = "sdk-facade-adapters")]
-        let injected_store = {
-            let store = Arc::new(echo_agent::tasks::InMemoryRevisionedTaskStore::new());
-            let service = Arc::new(echo_agent::tasks::TaskRevisionService::new(
-                store.clone(),
-                Arc::new(echo_agent::tasks::DefaultTaskToolPolicy::default()),
-            ));
-            echo_agent::tasks::register_task_tools(&mut agent, service);
-            Some(store)
-        };
-        #[cfg(not(feature = "sdk-facade-adapters"))]
-        let injected_store = None;
         if let Some(store) = &self.state_store {
             agent.set_state_store(store.clone());
         }
@@ -165,7 +132,7 @@ impl PreparedAgentDefinition {
                 )));
             }
         }
-        Ok((agent, injected_store))
+        Ok(agent)
     }
 }
 
@@ -185,6 +152,39 @@ pub(crate) struct CoreProfileSessionFactory {
     session_services:
         Arc<std::sync::Mutex<std::collections::HashMap<String, Arc<SessionAuthorityServices>>>>,
     max_definitions: usize,
+    publication_admissions:
+        Arc<std::sync::Mutex<std::collections::HashMap<String, PublicationAdmission>>>,
+}
+
+#[cfg(feature = "sdk-core-profile")]
+struct PublicationAdmission {
+    token: String,
+    definition: String,
+    observer: Option<Box<dyn FnOnce() -> Result<()> + Send>>,
+}
+
+/// This guard only associates one original request with the factory admission.
+/// Framework SessionRegistry remains the only capacity/identity authority.
+#[cfg(feature = "sdk-core-profile")]
+pub(crate) struct SessionPublicationGuard {
+    admissions: Arc<std::sync::Mutex<std::collections::HashMap<String, PublicationAdmission>>>,
+    session_id: String,
+    token: String,
+}
+#[cfg(feature = "sdk-core-profile")]
+impl Drop for SessionPublicationGuard {
+    fn drop(&mut self) {
+        let mut admissions = self
+            .admissions
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if admissions
+            .get(&self.session_id)
+            .is_some_and(|entry| entry.token == self.token)
+        {
+            admissions.remove(&self.session_id);
+        }
+    }
 }
 
 #[cfg(feature = "sdk-core-profile")]
@@ -202,14 +202,6 @@ pub(crate) struct SessionAuthorityServices {
     pub agent_handle: AgentHandle,
     #[allow(dead_code)]
     pub task_revision_service: Arc<echo_agent::tasks::TaskRevisionService>,
-    /// Concrete store behind the injected service; present when this build
-    /// injected a Host-owned store (sdk-facade-adapters), enabling the DAG
-    /// execution controller over the exact same graph authority. Read by
-    /// the framework-subagent task runtime; facade-only builds keep the
-    /// capture for that combination.
-    #[cfg(feature = "sdk-facade-adapters")]
-    #[allow(dead_code)]
-    pub task_store: Option<Arc<echo_agent::tasks::InMemoryRevisionedTaskStore>>,
     #[cfg(feature = "framework-subagent")]
     // Consumed by the subagent dispatch/control handlers and the task
     // execution controller (todo 3); captured so the sidecar never needs a
@@ -219,22 +211,24 @@ pub(crate) struct SessionAuthorityServices {
     #[cfg(feature = "framework-subagent")]
     #[allow(dead_code)]
     pub subagent_registry: Arc<echo_agent::agent::subagent::SubagentRegistry>,
-    /// The Session Agent's long-term memory store (todo 4 memory family).
+    /// Session-scoped RPC publication receipts, never an execution authority.
     #[cfg(feature = "sdk-facade-adapters")]
-    pub memory_store: Option<Arc<dyn echo_agent::memory::Store>>,
+    pub subagent_dispatch_receipts: tokio::sync::Mutex<
+        std::collections::HashMap<
+            String,
+            crate::core_profile::facade::subagent::SubagentDispatchReceipt,
+        >,
+    >,
+    /// Latest drive failure for RPC diagnostics only. Task lifecycle,
+    /// terminal facts and retry eligibility remain in the framework graph.
+    #[cfg(feature = "sdk-facade-adapters")]
+    pub latest_task_execution_error:
+        std::sync::Mutex<Option<echo_sdk_protocol::error::EchoSdkError>>,
     /// The Session's working directory (todo 5 tool families): tools
     /// resolve relative paths and sandboxes through the exact cwd the
     /// session was created with.
     #[cfg(feature = "sdk-facade-adapters")]
     pub working_dir: std::path::PathBuf,
-    /// The Session Agent's LLM provider (todo 4 workflow family):
-    /// declarative workflow `agent` nodes build on the same client the
-    /// Session itself uses (config fallback kept for config-only agents),
-    /// never a second hidden provider.
-    #[cfg(feature = "sdk-facade-adapters")]
-    pub llm_client: Option<std::sync::Arc<dyn echo_agent::llm::LlmClient>>,
-    #[cfg(feature = "sdk-facade-adapters")]
-    pub llm_config: Option<echo_agent::llm::LlmConfig>,
 }
 
 #[cfg(feature = "sdk-core-profile")]
@@ -245,7 +239,6 @@ impl SessionAuthorityServices {
     pub fn of(
         agent_handle: AgentHandle,
         agent: &ReactAgent,
-        task_store: Option<&Arc<echo_agent::tasks::InMemoryRevisionedTaskStore>>,
         working_dir: std::path::PathBuf,
     ) -> Self {
         Self {
@@ -253,18 +246,14 @@ impl SessionAuthorityServices {
             #[cfg(feature = "sdk-facade-adapters")]
             working_dir,
             task_revision_service: agent.task_revision_service().clone(),
-            #[cfg(feature = "sdk-facade-adapters")]
-            task_store: task_store.cloned(),
             #[cfg(feature = "framework-subagent")]
             subagent_executor: agent.subagent_executor().clone(),
             #[cfg(feature = "framework-subagent")]
             subagent_registry: agent.subagent_registry().clone(),
             #[cfg(feature = "sdk-facade-adapters")]
-            memory_store: agent.store().cloned(),
+            subagent_dispatch_receipts: tokio::sync::Mutex::new(std::collections::HashMap::new()),
             #[cfg(feature = "sdk-facade-adapters")]
-            llm_client: agent.llm_client().cloned(),
-            #[cfg(feature = "sdk-facade-adapters")]
-            llm_config: agent.llm_config().cloned(),
+            latest_task_execution_error: std::sync::Mutex::new(None),
         }
     }
 }
@@ -279,7 +268,73 @@ impl CoreProfileSessionFactory {
             definitions: Arc::new(std::sync::Mutex::new(definitions)),
             session_services: Arc::new(std::sync::Mutex::new(std::collections::HashMap::new())),
             max_definitions,
+            publication_admissions: Arc::new(std::sync::Mutex::new(
+                std::collections::HashMap::new(),
+            )),
         }
+    }
+
+    /// All SDK insert paths, including unkeyed load, reserve this association.
+    /// Refusing an occupied address does not validate or mutate a Session.
+    pub(crate) fn associate_publication(
+        &self,
+        session_id: &str,
+        definition: &str,
+        observer: Option<Box<dyn FnOnce() -> Result<()> + Send>>,
+    ) -> std::result::Result<SessionPublicationGuard, ()> {
+        let mut admissions = self
+            .publication_admissions
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if admissions.contains_key(session_id) {
+            return Err(());
+        }
+        let token = uuid::Uuid::new_v4().to_string();
+        admissions.insert(
+            session_id.to_string(),
+            PublicationAdmission {
+                token: token.clone(),
+                definition: definition.to_string(),
+                observer,
+            },
+        );
+        Ok(SessionPublicationGuard {
+            admissions: self.publication_admissions.clone(),
+            session_id: session_id.to_string(),
+            token,
+        })
+    }
+
+    pub(crate) fn enter_publication_factory(&self, context: &AcpSessionContext) -> Result<()> {
+        let definition = context
+            .meta
+            .as_ref()
+            .and_then(|meta| meta.get(DEFINITION_META_KEY))
+            .and_then(serde_json::Value::as_str);
+        let observer = {
+            let mut admissions = self
+                .publication_admissions
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            match admissions.get_mut(&context.session_id.to_string()) {
+                Some(entry) if definition == Some(entry.definition.as_str()) => {
+                    entry.observer.take()
+                }
+                // Standard session/new has no SDK definition association. It
+                // cannot steal an observer even if an address were to collide.
+                Some(_) => {
+                    return Err(ReactError::Other(
+                        "Session factory publication owner mismatch".to_string(),
+                    ));
+                }
+                None => None,
+            }
+        };
+        // Caller cancellation/fencing locks the publication owner, never this map.
+        if let Some(observer) = observer {
+            observer()?
+        }
+        Ok(())
     }
 
     /// Authority services of one Session, if it is still open.
@@ -349,6 +404,7 @@ impl AcpSessionFactory for CoreProfileSessionFactory {
         let default = self.default.clone();
         let session_services = self.session_services.clone();
         let session_id = context.session_id.to_string();
+        let publication_factory = self.clone();
         Box::pin(async move {
             let definition = match definition_id {
                 Some(id) => definitions
@@ -361,18 +417,14 @@ impl AcpSessionFactory for CoreProfileSessionFactory {
                     })?,
                 None => default,
             };
-            let (agent, task_store) = definition.create_agent_with_task_store(&context).await?;
+            publication_factory.enter_publication_factory(&context)?;
+            let agent = definition.create_agent(&context).await?;
             let agent_handle = AgentHandle::new(agent);
             // Capture the framework authorities before the concrete agent
             // is boxed, so the RPC surface shares them with the tools.
             let authorities = agent_handle
                 .read(|agent| {
-                    SessionAuthorityServices::of(
-                        agent_handle.clone(),
-                        agent,
-                        task_store.as_ref(),
-                        context.cwd.clone(),
-                    )
+                    SessionAuthorityServices::of(agent_handle.clone(), agent, context.cwd.clone())
                 })
                 .await;
             let boxed_agent = agent_handle.to_boxed_agent().await;

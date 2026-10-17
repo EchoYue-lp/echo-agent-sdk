@@ -1,0 +1,19 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {mkdtemp,readFile,writeFile,appendFile,access} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {EchoAgentClient} from '../dist/index.js';
+const fixture=fileURLToPath(new URL('../../shared/testing/run_steer_fixture.py',import.meta.url));
+const host=process.env.ECHO_AGENT_SDK_HOST;
+if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==='1'&&!host)throw new Error('required steering Host is missing');
+async function barrier(path){const deadline=Date.now()+10000;while(true){try{await access(path);return}catch{}assert.ok(Date.now()<deadline,'original model did not reach barrier');await new Promise(r=>setTimeout(r,10));}}
+test('accepted steering reaches original model and concurrent waits share one Run receipt',{skip:!host,timeout:30000},async()=>{
+ const work=await mkdtemp(join(tmpdir(),'sdk-run-steer-ts-'));const model=spawn('python3',[fixture,'--work',work]);let sdk;const waits=[];
+ try{await barrier(join(work,'ready'));const scenario=JSON.parse(await readFile(join(work,'scenario.json')));sdk=await EchoAgentClient.spawn({hostCommand:host,args:['--config',join(work,'host.json')],onStderr:chunk=>appendFile(join(work,'host-stderr.log'),chunk),env:{...process.env,RUST_LOG:'debug',NO_PROXY:'127.0.0.1,localhost',no_proxy:'127.0.0.1,localhost'}});const agent=await sdk.createAgent(),session=await agent.createSession(work),run=await session.startRun({text:scenario.initial});const identity={run:run.wire,stream:run.stream};await barrier(join(work,'parked-1'));
+ const settled=[false,false];for(let i=0;i<2;i++){const wait=run.wait().then(value=>{settled[i]=true;return value});wait.catch(()=>{});waits.push(wait)};const accepted=await run.steer(scenario.steer);await writeFile(join(work,'accepted.json'),JSON.stringify({identity,accepted,snapshot:await run.get()}));console.log('steer acceptance evidence',work);assert.equal(accepted.accepted,true);assert.equal(typeof accepted.steer_id,'string');assert.ok(accepted.steer_id.length>0);assert.deepEqual(settled,[false,false]);await writeFile(join(work,'release-1'),'');await barrier(join(work,'parked-2'));
+ const second=JSON.parse(await readFile(join(work,'request-2.json')));const contents=second.messages.map(m=>m.content);for(const value of [scenario.initial,scenario.draft,scenario.steer])assert.ok(contents.includes(value));assert.deepEqual(settled,[false,false]);assert.equal((await run.get()).status,'running');await writeFile(join(work,'release-2'),'');const [one,two]=await Promise.all(waits);assert.deepEqual(one,two);assert.equal(one.settled,true);assert.equal(one.receipt.turn_id,run.wire.id);assert.equal(one.receipt.final_answer,scenario.answer);assert.equal(one.receipt.llm_calls,'2');assert.equal(one.terminal.status,'completed');const snapshot=await run.get();assert.deepEqual(snapshot.receipt,one.receipt);assert.deepEqual(snapshot.stream,identity.stream);const page=await run.replay('0',64);assert.equal(page.events.filter(e=>e.envelope.payload.event_type==='final_answer').length,1);const rejected=await run.steer('late steering');assert.equal(rejected.accepted,false);assert.ok(rejected.steer_id==null);await assert.rejects(run.steer(''),error=>error.code==='invalid_value'&&error.operation==='_echo_agent/run/steer');assert.deepEqual(await run.wait(),one);await writeFile(join(work,'observed.json'),JSON.stringify({identity,accepted,rejected,waits:[one,two],snapshot,page,second},null,2));console.log('Run steer native evidence',work);await session.close();await agent.close();
+ }finally{await Promise.all([1,2].map(n=>writeFile(join(work,`release-${n}`),'').catch(()=>{})));if(sdk)await sdk.close();await Promise.allSettled(waits);model.kill();await new Promise(r=>model.exitCode===null?model.once('exit',r):r());}
+});

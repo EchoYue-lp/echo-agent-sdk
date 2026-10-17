@@ -39,8 +39,50 @@ use crate::HostError;
 use handles::HandleRegistry;
 use state::CoreProfileState;
 
+/// Typed operations that await reverse callbacks must release the incoming
+/// reader immediately. The work stays on the official connection task set:
+/// there is one reader, one writer and one framework execution authority.
+/// Keep the responder until spawn admission succeeds so rejection emits an
+/// explicit HostShuttingDown response rather than abandoning the request.
+#[cfg(feature = "sdk-facade-adapters")]
+fn spawn_typed_operation<T, F>(
+    connection: &ConnectionTo<Client>,
+    responder: agent_client_protocol::Responder<T>,
+    method: &'static str,
+    work: impl FnOnce(agent_client_protocol::Responder<T>) -> F + Send + 'static,
+) -> agent_client_protocol::Result<()>
+where
+    T: agent_client_protocol::JsonRpcResponse,
+    F: std::future::Future<Output = agent_client_protocol::Result<()>> + Send + 'static,
+{
+    let responder = Arc::new(std::sync::Mutex::new(Some(responder)));
+    let in_task = responder.clone();
+    let admitted = connection.spawn(Box::pin(async move {
+        let responder = in_task
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .take()
+            .ok_or_else(|| {
+                agent_client_protocol::Error::internal_error()
+                    .data("typed operation responder was already consumed")
+            })?;
+        work(responder).await
+    }));
+    if let Err(error) = admitted
+        && let Some(responder) = responder.lock().unwrap_or_else(|e| e.into_inner()).take()
+    {
+        responder.respond_with_error(wire::into_jsonrpc_error(wire::sdk_error(
+            echo_sdk_protocol::error::ExtensionErrorCode::HostShuttingDown,
+            format!("connection cannot dispatch {method}: {error}"),
+            echo_sdk_protocol::error::Retryability::Never,
+            method,
+        )))?;
+    }
+    Ok(())
+}
+
 /// The negotiated core profile: bind with
-/// [`crate::run_stdio_with_profile`] (or construct directly for tests) and
+/// [`crate::run_stdio_with_close_owner`] (or construct directly for tests) and
 /// attach through [`echo_agent::acp::AcpAgentAdapter::with_profile`].
 pub struct SdkCoreProfile {
     state: Arc<CoreProfileState>,
@@ -115,6 +157,7 @@ impl SdkCoreProfile {
         _session_id: &str,
         entry: Arc<echo_agent::acp::RunEntry>,
     ) -> Result<(), String> {
+        let durable = self.state.reserve_durable_settlement(&entry.run_id)?;
         let Some(session_handle_id) = self
             .state
             .handles
@@ -205,6 +248,7 @@ impl SdkCoreProfile {
             self.state.remove_delivery_for_run(&entry.run_id);
             return Err(error);
         }
+        durable.admit();
         Ok(())
     }
 
@@ -223,18 +267,8 @@ impl SdkCoreProfile {
         entry: &echo_agent::acp::RunEntry,
         receipt: &echo_agent::runtime::TurnReceipt,
     ) -> Result<(), String> {
-        let terminal = wire::terminal_of(receipt)?;
-        let receipt_wire = wire::receipt_wire(receipt)?;
-        if let Err(error) = self.state.persistence.record_run_settled(
-            &entry.run_id,
-            terminal,
-            receipt_wire,
-            entry.ledger.last_sequence(),
-        ) {
-            return Err(error.to_string());
-        }
-        self.state.cleanup_settled_run(&entry.run_id);
-        Ok(())
+        self.state
+            .persist_settled_receipt(&entry.run_id, receipt, entry.ledger.last_sequence())
     }
 
     fn stream_buffer_limit(&self) -> usize {
@@ -589,13 +623,24 @@ impl AcpConnectionProfile for SdkCoreProfile {
                     async move |request: echo_sdk_protocol::methods::TaskExecuteRequest,
                                 responder,
                                 connection: ConnectionTo<Client>| {
-                        facade::task_runtime::task_execute(
-                            state.clone(),
-                            request,
-                            responder,
-                            connection,
-                        )
-                        .await
+                        {
+                            let state = state.clone();
+                            let task_connection = connection.clone();
+                            spawn_typed_operation(
+                                &connection,
+                                responder,
+                                "_echo_agent/task/execute",
+                                move |responder| async move {
+                                    facade::task_runtime::task_execute(
+                                        state,
+                                        request,
+                                        responder,
+                                        task_connection,
+                                    )
+                                    .await
+                                },
+                            )
+                        }
                     }
                 },
                 agent_client_protocol::on_receive_request!(),
@@ -606,13 +651,24 @@ impl AcpConnectionProfile for SdkCoreProfile {
                     async move |request: echo_sdk_protocol::methods::TaskControlRequest,
                                 responder,
                                 connection: ConnectionTo<Client>| {
-                        facade::task_runtime::task_control(
-                            state.clone(),
-                            request,
-                            responder,
-                            connection,
-                        )
-                        .await
+                        {
+                            let state = state.clone();
+                            let task_connection = connection.clone();
+                            spawn_typed_operation(
+                                &connection,
+                                responder,
+                                "_echo_agent/task/control",
+                                move |responder| async move {
+                                    facade::task_runtime::task_control(
+                                        state,
+                                        request,
+                                        responder,
+                                        task_connection,
+                                    )
+                                    .await
+                                },
+                            )
+                        }
                     }
                 },
                 agent_client_protocol::on_receive_request!(),
@@ -627,8 +683,24 @@ impl AcpConnectionProfile for SdkCoreProfile {
                     async move |request: echo_sdk_protocol::methods::TaskCreateRequest,
                                 responder,
                                 connection: ConnectionTo<Client>| {
-                        facade::task::task_create(state.clone(), request, responder, connection)
-                            .await
+                        {
+                            let state = state.clone();
+                            let task_connection = connection.clone();
+                            spawn_typed_operation(
+                                &connection,
+                                responder,
+                                "_echo_agent/task/create",
+                                move |responder| async move {
+                                    facade::task::task_create(
+                                        state,
+                                        request,
+                                        responder,
+                                        task_connection,
+                                    )
+                                    .await
+                                },
+                            )
+                        }
                     }
                 },
                 agent_client_protocol::on_receive_request!(),
@@ -639,8 +711,24 @@ impl AcpConnectionProfile for SdkCoreProfile {
                     async move |request: echo_sdk_protocol::methods::TaskUpdateRequest,
                                 responder,
                                 connection: ConnectionTo<Client>| {
-                        facade::task::task_update(state.clone(), request, responder, connection)
-                            .await
+                        {
+                            let state = state.clone();
+                            let task_connection = connection.clone();
+                            spawn_typed_operation(
+                                &connection,
+                                responder,
+                                "_echo_agent/task/update",
+                                move |responder| async move {
+                                    facade::task::task_update(
+                                        state,
+                                        request,
+                                        responder,
+                                        task_connection,
+                                    )
+                                    .await
+                                },
+                            )
+                        }
                     }
                 },
                 agent_client_protocol::on_receive_request!(),
@@ -651,7 +739,24 @@ impl AcpConnectionProfile for SdkCoreProfile {
                     async move |request: echo_sdk_protocol::methods::TaskListRequest,
                                 responder,
                                 connection: ConnectionTo<Client>| {
-                        facade::task::task_list(state.clone(), request, responder, connection).await
+                        {
+                            let state = state.clone();
+                            let task_connection = connection.clone();
+                            spawn_typed_operation(
+                                &connection,
+                                responder,
+                                "_echo_agent/task/list",
+                                move |responder| async move {
+                                    facade::task::task_list(
+                                        state,
+                                        request,
+                                        responder,
+                                        task_connection,
+                                    )
+                                    .await
+                                },
+                            )
+                        }
                     }
                 },
                 agent_client_protocol::on_receive_request!(),
@@ -667,13 +772,24 @@ impl AcpConnectionProfile for SdkCoreProfile {
                     async move |request: echo_sdk_protocol::methods::SubagentDispatchRequest,
                                 responder,
                                 connection: ConnectionTo<Client>| {
-                        facade::subagent::subagent_dispatch(
-                            state.clone(),
-                            request,
-                            responder,
-                            connection,
-                        )
-                        .await
+                        {
+                            let state = state.clone();
+                            let task_connection = connection.clone();
+                            spawn_typed_operation(
+                                &connection,
+                                responder,
+                                "_echo_agent/subagent/dispatch",
+                                move |responder| async move {
+                                    facade::subagent::subagent_dispatch(
+                                        state,
+                                        request,
+                                        responder,
+                                        task_connection,
+                                    )
+                                    .await
+                                },
+                            )
+                        }
                     }
                 },
                 agent_client_protocol::on_receive_request!(),
@@ -759,6 +875,7 @@ impl AcpConnectionProfile for SdkCoreProfile {
     }
 
     fn rollback_run(&self, run_id: &str, stream_id: &str) {
+        self.state.release_durable_reservation(run_id);
         self.state.handles.remove_run(run_id);
         self.state.remove_delivery(stream_id);
         self.state.remove_delivery_for_run(run_id);
@@ -773,6 +890,7 @@ impl AcpConnectionProfile for SdkCoreProfile {
     }
 
     fn release_after_agents(&self) {
+        self.state.handles.discard_publications_after_settlement();
         // Connection teardown order ends here: extension registrations are
         // connection-owned and never survive the connection (design §12.1).
         #[cfg(feature = "sdk-extension-bridge")]
@@ -788,6 +906,11 @@ impl AcpConnectionProfile for SdkCoreProfile {
     ) -> futures::future::BoxFuture<'static, std::result::Result<(), String>> {
         let state = self.state.clone();
         Box::pin(async move {
+            state.handles.fence_publications();
+            let sessions = state.handles.fence_sessions();
+            for session in sessions {
+                let _publication = session.lifecycle.write().await;
+            }
             let settled = state.wait_settlements(timeout).await;
             // Facade teardown rides the same bounded shutdown chain (design
             // §20.4): cancel task executions and subagent dispatches, await
@@ -796,7 +919,7 @@ impl AcpConnectionProfile for SdkCoreProfile {
             {
                 tokio::time::timeout(timeout, state.facade.close_all(&state.handles))
                     .await
-                    .map_err(|_| "facade teardown timed out".to_string())?;
+                    .map_err(|_| "facade teardown timed out".to_string())??;
             }
             settled
         })

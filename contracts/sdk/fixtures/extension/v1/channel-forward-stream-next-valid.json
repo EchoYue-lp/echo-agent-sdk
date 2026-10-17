@@ -1,0 +1,25 @@
+{
+  "name": "channel-forward-stream-next-valid",
+  "kind": "valid",
+  "target": "FeatureOperationRequest",
+  "description": "Original Session and complete generation-fenced manager/stream addresses consume the existing channels handler contract.",
+  "payload": {
+    "operation": "channels.stream.next",
+    "signature_digest": "sha256:5020be70e7918fa13d983a80da1f0fb91f6995d8734c5c4a0835521897265f24",
+    "handle": {
+      "id": "session-channel-forward",
+      "generation": "7",
+      "kind": "session"
+    },
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "stream-channel-forward",
+          "generation": "7",
+          "kind": "stream"
+        }
+      }
+    ]
+  }
+}

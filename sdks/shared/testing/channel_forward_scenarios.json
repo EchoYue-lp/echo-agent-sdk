@@ -1,0 +1,547 @@
+{
+  "schema_version": 1,
+  "channel_id": "forward-中文",
+  "handler_id": "forward-handler",
+  "operations": [
+    "channels.handler.handle",
+    "channels.handler.handle_stream",
+    "channels.handler.reply",
+    "channels.stream.next",
+    "channels.stream.cancel",
+    "channels.stream.close"
+  ],
+  "inbound": {
+    "channel_id": "forward-中文",
+    "sender_id": "sender-中文",
+    "chat_id": "chat-🌊",
+    "chat_type": "direct",
+    "text": "入站 中文🌊",
+    "message_id": "message-1",
+    "timestamp": "18446744073709551615",
+    "attachments": [
+      {
+        "kind": "image",
+        "data_base64": "AP8AgA==",
+        "filename": ""
+      },
+      {
+        "kind": "file",
+        "data_base64": "AP8BgA==",
+        "filename": "附件-file-🌊.bin"
+      },
+      {
+        "kind": "audio",
+        "data_base64": "AP8CgA==",
+        "filename": "附件-audio-🌊.bin"
+      },
+      {
+        "kind": "video",
+        "data_base64": "AP8DgA==",
+        "filename": "附件-video-🌊.bin"
+      }
+    ]
+  },
+  "outbound": {
+    "channel_id": "forward-中文",
+    "to": "chat-🌊",
+    "chat_type": "direct",
+    "text": "回复 中文🌊",
+    "reply_to": "",
+    "attachments": [
+      {
+        "kind": "image",
+        "data_base64": "AP8AgA==",
+        "filename": ""
+      },
+      {
+        "kind": "file",
+        "data_base64": "AP8BgA==",
+        "filename": "附件-file-🌊.bin"
+      },
+      {
+        "kind": "audio",
+        "data_base64": "AP8CgA==",
+        "filename": "附件-audio-🌊.bin"
+      },
+      {
+        "kind": "video",
+        "data_base64": "AP8DgA==",
+        "filename": "附件-video-🌊.bin"
+      }
+    ]
+  },
+  "stream_items": [
+    {
+      "channel_id": "forward-中文",
+      "to": "chat-🌊",
+      "chat_type": "direct",
+      "text": "第一条🌊",
+      "reply_to": "",
+      "attachments": [
+        {
+          "kind": "image",
+          "data_base64": "AP8AgA==",
+          "filename": ""
+        },
+        {
+          "kind": "file",
+          "data_base64": "AP8BgA==",
+          "filename": "附件-file-🌊.bin"
+        },
+        {
+          "kind": "audio",
+          "data_base64": "AP8CgA==",
+          "filename": "附件-audio-🌊.bin"
+        },
+        {
+          "kind": "video",
+          "data_base64": "AP8DgA==",
+          "filename": "附件-video-🌊.bin"
+        }
+      ]
+    },
+    {
+      "channel_id": "forward-中文",
+      "to": "chat-🌊",
+      "chat_type": "direct",
+      "text": "第二条🌊",
+      "reply_to": "",
+      "attachments": [
+        {
+          "kind": "image",
+          "data_base64": "AP8AgA==",
+          "filename": ""
+        },
+        {
+          "kind": "file",
+          "data_base64": "AP8BgA==",
+          "filename": "附件-file-🌊.bin"
+        },
+        {
+          "kind": "audio",
+          "data_base64": "AP8CgA==",
+          "filename": "附件-audio-🌊.bin"
+        },
+        {
+          "kind": "video",
+          "data_base64": "AP8DgA==",
+          "filename": "附件-video-🌊.bin"
+        }
+      ]
+    }
+  ],
+  "invalid_inbound": [
+    {
+      "id": "timestamp-number",
+      "field": "timestamp",
+      "value": 1
+    },
+    {
+      "id": "timestamp-negative",
+      "field": "timestamp",
+      "value": "-1"
+    },
+    {
+      "id": "timestamp-leading-zero",
+      "field": "timestamp",
+      "value": "01"
+    },
+    {
+      "id": "timestamp-overflow",
+      "field": "timestamp",
+      "value": "18446744073709551616"
+    },
+    {
+      "id": "timestamp-null",
+      "field": "timestamp",
+      "value": null
+    },
+    {
+      "id": "timestamp-missing",
+      "remove": "timestamp"
+    },
+    {
+      "id": "unknown-field",
+      "field": "unknown",
+      "value": true
+    },
+    {
+      "id": "attachments-null",
+      "field": "attachments",
+      "value": null
+    },
+    {
+      "id": "attachment-kind",
+      "field": "attachments",
+      "value": [
+        {
+          "kind": "unknown",
+          "data_base64": "AP9BgA=="
+        }
+      ]
+    },
+    {
+      "id": "attachment-base64",
+      "field": "attachments",
+      "value": [
+        {
+          "kind": "image",
+          "data_base64": "AB=="
+        }
+      ]
+    },
+    {
+      "id": "chat-type",
+      "field": "chat_type",
+      "value": "unknown"
+    },
+    {
+      "id": "channel-mismatch",
+      "field": "channel_id",
+      "value": "different-channel"
+    }
+  ],
+  "scenario_groups": [
+    {
+      "group": 1,
+      "name": "single-handle",
+      "native": true,
+      "internal": false
+    },
+    {
+      "group": 2,
+      "name": "stream-two-items-complete",
+      "native": true,
+      "internal": false
+    },
+    {
+      "group": 3,
+      "name": "reply-null-error",
+      "native": true,
+      "internal": false
+    },
+    {
+      "group": 4,
+      "name": "session-owner-generation",
+      "native": true,
+      "internal": true
+    },
+    {
+      "group": 5,
+      "name": "start-binding-states",
+      "native": true,
+      "internal": true
+    },
+    {
+      "group": 6,
+      "name": "typed-fidelity-invalid-callback-zero",
+      "native": true,
+      "internal": false
+    },
+    {
+      "group": 7,
+      "name": "quota-setup-publication",
+      "native": false,
+      "internal": true
+    },
+    {
+      "group": 8,
+      "name": "slow-full-unconsumed-cancel-close",
+      "native": true,
+      "internal": true
+    },
+    {
+      "group": 9,
+      "name": "caller-drop-late-settlement",
+      "native": true,
+      "internal": true
+    },
+    {
+      "group": 10,
+      "name": "stop-restart-resource-session-close",
+      "native": true,
+      "internal": true
+    },
+    {
+      "group": 11,
+      "name": "disconnect-close-failure-retry",
+      "native": true,
+      "internal": true
+    },
+    {
+      "group": 12,
+      "name": "metadata-family-digest-feature",
+      "native": true,
+      "internal": true
+    }
+  ],
+  "normalized_core_expected": {
+    "single": {
+      "channel_id": "forward-中文",
+      "to": "chat-🌊",
+      "chat_type": "direct",
+      "text": "回复 中文🌊",
+      "reply_to": "",
+      "attachments": [
+        {
+          "kind": "image",
+          "data_base64": "AP8AgA==",
+          "filename": ""
+        },
+        {
+          "kind": "file",
+          "data_base64": "AP8BgA==",
+          "filename": "附件-file-🌊.bin"
+        },
+        {
+          "kind": "audio",
+          "data_base64": "AP8CgA==",
+          "filename": "附件-audio-🌊.bin"
+        },
+        {
+          "kind": "video",
+          "data_base64": "AP8DgA==",
+          "filename": "附件-video-🌊.bin"
+        }
+      ]
+    },
+    "items": [
+      {
+        "channel_id": "forward-中文",
+        "to": "chat-🌊",
+        "chat_type": "direct",
+        "text": "第一条🌊",
+        "reply_to": "",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      },
+      {
+        "channel_id": "forward-中文",
+        "to": "chat-🌊",
+        "chat_type": "direct",
+        "text": "第二条🌊",
+        "reply_to": "",
+        "attachments": [
+          {
+            "kind": "image",
+            "data_base64": "AP8AgA==",
+            "filename": ""
+          },
+          {
+            "kind": "file",
+            "data_base64": "AP8BgA==",
+            "filename": "附件-file-🌊.bin"
+          },
+          {
+            "kind": "audio",
+            "data_base64": "AP8CgA==",
+            "filename": "附件-audio-🌊.bin"
+          },
+          {
+            "kind": "video",
+            "data_base64": "AP8DgA==",
+            "filename": "附件-video-🌊.bin"
+          }
+        ]
+      }
+    ],
+    "terminal": "complete",
+    "sequences": [
+      "1",
+      "2",
+      "3"
+    ],
+    "reply": null,
+    "callback_counts": {
+      "channel_handle": 1,
+      "channel_handle_stream": 1,
+      "channel_reply": 1
+    }
+  },
+  "callback_behaviors": {
+    "normal": {
+      "description": "one native result or chunk(first)+complete(second), callback scope remains alive until writes and finally finish"
+    },
+    "fail-handle": {
+      "operation": "channel_handle",
+      "error": {
+        "code": "extension_conflict",
+        "message": "controlled channel handle failure",
+        "retryable": "after_delay"
+      }
+    },
+    "fail-reply": {
+      "operation": "channel_reply",
+      "error": {
+        "code": "extension_conflict",
+        "message": "controlled channel reply failure",
+        "retryable": "after_delay"
+      }
+    },
+    "fail-start-once": {
+      "operation": "channel_start",
+      "error": {
+        "code": "extension_conflict",
+        "message": "controlled channel start failure",
+        "retryable": "after_delay"
+      }
+    },
+    "park-start": {
+      "description": "native channel_start parks; test forward invocation must reject before any handler callback"
+    },
+    "hold-finally": {
+      "description": "native stream callback awaits original AbortSignal, observes cancellation, then waits explicit release before returning and recording finally"
+    },
+    "full-buffer": {
+      "description": "four real channel chunks plus complete in native callback; leave facade stream unconsumed before stop/close"
+    },
+    "fail-stop-once": {
+      "operation": "channel_stop",
+      "error": {
+        "code": "extension_conflict",
+        "message": "controlled channel stop failure",
+        "retryable": "after_delay"
+      }
+    }
+  },
+  "report_shape": {
+    "language": "typescript|python|java",
+    "host_sha256": "sha256 hex of actual immutable host binary",
+    "source_hashes": "path-to-sha256 map of actual relevant test/client sources",
+    "scenarios": [
+      {
+        "scenario": "single-stream-reply",
+        "observed": {
+          "single": {
+            "channel_id": "forward-中文",
+            "to": "chat-🌊",
+            "chat_type": "direct",
+            "text": "回复 中文🌊",
+            "reply_to": "",
+            "attachments": [
+              {
+                "kind": "image",
+                "data_base64": "AP8AgA==",
+                "filename": ""
+              },
+              {
+                "kind": "file",
+                "data_base64": "AP8BgA==",
+                "filename": "附件-file-🌊.bin"
+              },
+              {
+                "kind": "audio",
+                "data_base64": "AP8CgA==",
+                "filename": "附件-audio-🌊.bin"
+              },
+              {
+                "kind": "video",
+                "data_base64": "AP8DgA==",
+                "filename": "附件-video-🌊.bin"
+              }
+            ]
+          },
+          "items": [
+            {
+              "channel_id": "forward-中文",
+              "to": "chat-🌊",
+              "chat_type": "direct",
+              "text": "第一条🌊",
+              "reply_to": "",
+              "attachments": [
+                {
+                  "kind": "image",
+                  "data_base64": "AP8AgA==",
+                  "filename": ""
+                },
+                {
+                  "kind": "file",
+                  "data_base64": "AP8BgA==",
+                  "filename": "附件-file-🌊.bin"
+                },
+                {
+                  "kind": "audio",
+                  "data_base64": "AP8CgA==",
+                  "filename": "附件-audio-🌊.bin"
+                },
+                {
+                  "kind": "video",
+                  "data_base64": "AP8DgA==",
+                  "filename": "附件-video-🌊.bin"
+                }
+              ]
+            },
+            {
+              "channel_id": "forward-中文",
+              "to": "chat-🌊",
+              "chat_type": "direct",
+              "text": "第二条🌊",
+              "reply_to": "",
+              "attachments": [
+                {
+                  "kind": "image",
+                  "data_base64": "AP8AgA==",
+                  "filename": ""
+                },
+                {
+                  "kind": "file",
+                  "data_base64": "AP8BgA==",
+                  "filename": "附件-file-🌊.bin"
+                },
+                {
+                  "kind": "audio",
+                  "data_base64": "AP8CgA==",
+                  "filename": "附件-audio-🌊.bin"
+                },
+                {
+                  "kind": "video",
+                  "data_base64": "AP8DgA==",
+                  "filename": "附件-video-🌊.bin"
+                }
+              ]
+            }
+          ],
+          "terminal": "complete",
+          "sequences": [
+            "1",
+            "2",
+            "3"
+          ],
+          "reply": null,
+          "callback_counts": {
+            "channel_handle": 1,
+            "channel_handle_stream": 1,
+            "channel_reply": 1
+          }
+        }
+      },
+      {
+        "scenario": "case-id",
+        "error_code": "actual error (do not replace with expected)",
+        "callback_delta_expected": 0,
+        "callback_delta": 0
+      }
+    ],
+    "boundary_notes": "list of Host/framework unit-only groups, never fabricated native receipts"
+  }
+}

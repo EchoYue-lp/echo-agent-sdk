@@ -5,19 +5,14 @@ canonical route catalog, the feature model, the resource/stream lifecycle
 and the error boundaries of the `_echo_agent/*` facade family surfaces
 (plans 07 and 08 of the [SDK design](../supreme/specs/2026-09-04-source-first-multilanguage-sdk-runtime/design.md)).
 
-> **Status: Rust Host facade parity complete; accepted language route contract delivered.** Source-built
-> TS/Python/Java clients consume the ACP core and generic facade
-> invoke surfaces. The Host serves every canonical source operation through a
-> concrete adapter or an evidence-backed language-local boundary, plus the task/subagent/structured-output families and
-> the stateful (memory/workflow/state/delivery/trace/eval/improve),
-> integration (MCP/A2A/LSP/topology) and tool families over the framework's
-> own authorities. Consumer traits have a typed bridge or explicit
-> process-local evidence, and all public stream routes have
-> a concrete lifecycle. Every executable catalog route is covered by the
-> language contract suites; process-local intrinsic items remain explicit
-> follow-up mappings. The program claims runnable source paths only for the
-> accepted external contract; it does not claim symbol-for-symbol parity for
-> the complete Rust inventory or publish a bundled binary.
+> **Governance candidate; final acceptance pending.** Source-built
+> TypeScript/Python/Java clients consume the accepted ACP/core/facade contract.
+> Host adapters compose framework services for task/Subagent, structured
+> output, stateful, integration and tool families. Catalog route coverage
+> does not prove lifecycle or failure behavior: that evidence is recorded in
+> the [governance matrix](governance/behavior-evidence-matrix.md).
+> Complete Rust public inventory is telemetry; it does not create a
+> symbol-for-symbol three-language obligation. No bundled binary is published.
 
 ## 1. Canonical route catalog
 
@@ -29,7 +24,7 @@ guesses execution semantics from paths. Language clients consume the filtered
 `contracts/sdk/accepted-facade-operation-catalog.json` projection, which is the
 blocking cross-language route contract.
 
-- Every root facade item resolves to **exactly one** canonical route by its
+- Every cataloged root facade item resolves to **exactly one** canonical route by its
   canonical *source identity*; re-export aliases share one route and one
   handler (`alias_of` in the parity manifest).
 - Route kinds: `standard:` (stable ACP v1 projection), `core:` (typed
@@ -67,6 +62,16 @@ model/temperature/token limits, thinking and disabled tools) use that same
 Session authority for reads and writes. Remaining builders and process-local
 trait seams stay explicit language-local helpers; they are not fabricated as
 remote handles.
+
+The four accepted Git worktree source calls pass through a thin synchronous
+entry directly to one private boxed future per operation. Other source calls
+retain their original general coroutine. Boxing that large general dispatcher
+or using an async match for all four Git operations still lets polling inherit
+unrelated temporary stack slots. The separate entry and construction boundaries
+forward the same arguments through the same Session owner and call the original
+framework create/list/merge/remove functions. They do not add a worktree
+registry, policy, state authority or thread-stack override; the original
+non-Git mutation guard and feature-off/error paths are retained.
 
 The canonical `echo_core::agent::Agent::chat` and `::execute` source operations
 are now thin adapters over `_echo_agent/run/start`: the request uses the
@@ -133,9 +138,12 @@ validated before dispatch. `ExclusiveFileLease`, `ExistingRegularFileGuard`
 and `ExistingDirectoryGuard` remain real Rust values stored behind
 Session-owned `FacadeResource` handles; foreign Sessions fail, and Session or
 connection teardown drops the value and releases its descriptor/lease.
-`facade.resource.close` releases one active resource explicitly, removes its
-business record and is idempotent; a closed guard is no longer resolvable and
-a closed lease can be acquired by another Session.
+`facade.resource.close` closes an owner-matched resource explicitly. Cleanup
+failure retains its handle/business owner for retry; only successful cleanup
+removes the record and releases quota. Successful repeated close is idempotent.
+A closed guard is no longer resolvable and a closed lease can be acquired by
+another Session. Construction/publication failure rolls back the created
+resource and never publishes a handle whose underlying object was lost.
 Pure path helpers are language-local values. `atomic_compare_and_swap` is also
 explicitly process-local because its arbitrary Rust `FnOnce(&[u8]) -> bool`
 predicate cannot cross ACP without narrowing the public contract.
@@ -175,23 +183,50 @@ Cargo features are the only capability authority (design §13):
   `shutdown`.
 - `channels` is advertised only when both `framework-channels` and
   `sdk-extension-bridge` are compiled. Its manager/resource operations use
-  Host-issued handles, and ChannelPlugin/MessageHandler implementations use
-  typed reverse bridge operations. `MessageHandler::handle_stream` uses the
-  Host-minted extension stream with contiguous sequence, cancellation and
-  bounded delivery semantics.
+  Host-issued handles. Channel start, send, health, stop and resource/Session
+  cleanup capture the framework's owned operation under a short manager guard,
+  then release that guard before awaiting the original registered plugin.
+  Callback metadata reads therefore do not wait for their own outer callback;
+  metadata is the registration-time declaration, fixed for that registration.
+  The same framework entry owns the original plugin, handler and confirmed
+  transport-stop fact; the Host adds no second registry or cleanup loop.
+  Side-effecting operations retain a shared permit from the manager resource's
+  existing lifecycle authority, then recheck the original handle after waiting.
+  Resource close takes the exclusive permit and waits for admitted operations
+  before stopping and invalidating the resource. A captured start therefore
+  cannot run after close has released its address; a queued operation sees
+  `closed_handle`. Metadata reads do not take this permit. Recursive mutation
+  or close awaited from the same resource callback is outside that metadata
+  reentry guarantee.
+  Active callbacks may await the same manager's `ids`/`list`. Resource or
+  Session closing instead returns `closed_handle`; Session admission checks
+  closing before waiting for its lifecycle guard and rechecks after admission.
+  The six canonical `channels.handler.handle/handle_stream/reply` and
+  `channels.stream.next/cancel/close` operations consume the original started
+  handler. Callbacks retain their actual response/producer owner through
+  cooperative settlement; cancellation and a local task abort are not proof
+  of callback completion. See [Channel consumption](channel-handler-consumption.md)
+  for typed fields, stream controls and executable native examples. No
+  handler-close reverse wire was added.
 - `testing` remains a root leaf feature but is not a facade family; clients
   receive the official method-not-found rather than a false negotiated
   surface.
 
 ## 3. Task, Subagent and structured output authorities
 
-- `_echo_agent/task/create|update|list` bind the Session Agent's own
-  `TaskRevisionService`; `execute` drives the graph through
-  `RuntimeTaskService` with a `FacadeTaskController` over the same
-  `InMemoryRevisionedTaskStore` + `SubagentExecutor` pair, and `control`
-  settles claims through the same store. One live execution exists per
-  TaskRun scope: a second `execute` is a typed conflict, and cancel/pause
-  reach the execution through a shared cancellation token.
+- `_echo_agent/task/create|update|list` bind the live Session Agent's
+  `TaskRevisionService` and its current RevisionedTaskStore. `execute` and
+  `control` compose the framework RuntimeTaskService/SubagentExecutor over
+  that same store; installing a backend does not leave a separate Host task
+  graph. Execution requires explicit `execution_cas_v1` support (default
+  false); a CRUD-only backend remains valid, while execute fails explicitly
+  before any work when that capability is absent.
+- One live execution exists per TaskRun scope. Duplicate execute conflicts;
+  cancel/pause target that exact execution, independent of another TaskRun
+  or the Session's ordinary Run. The framework alone owns ready frontiers,
+  retries, claim settlement and terminal state. Result plus interruption
+  disposition are committed through the same execution CAS; failed or
+  unknown backend settlement cannot be represented as successful completion.
 - `_echo_agent/subagent/dispatch|await|control` share the same
   `SubagentExecutor`/registry as the in-conversation delegation tools;
   live dispatch records are bounded by the advertised `max_open_handles`
@@ -272,23 +307,42 @@ to a capacity-one queue, so a slow SDK consumer applies backpressure instead of
 materializing the complete stream. `HandleRegistry` remains the only authority
 for generation, owner, sequence, cancellation and close; the facade runtime
 stores only the Rust receiver/background task and removes it on stream,
-Session or connection close. Teardown cancels and awaits producer settlement
-within the configured shutdown bound before aborting an uncooperative task.
-Agent streams continue to use Run/EventReplay,
-and Tool/LLM/Channel streams continue to use the typed ExtensionBridge.
+Session or connection close. Local producers may be aborted at their configured
+shutdown bound. External Channel and Sandbox callbacks instead keep the same
+stream/resource address and return a retryable cleanup error while their
+original source remains live; retry closes that same owner after settlement.
+Agent streams continue to use Run/EventReplay. Channel handler forward streams
+use these facade controls over the original typed ExtensionBridge callback.
 Registered Workflow and SandboxExecutor implementations are exercised through
-`workflow.extension.run_stream` and `shell.sandbox.extension.run_stream`;
+`workflow.extension.run_stream` and canonical `sandbox.extension.run_stream`;
 their typed chunk/terminal unions prevent inner terminal events from appearing
 as ordinary chunks. Extension Workflow events are consumed by Rust and
 republished through the same canonical `WorkflowEvent` shape used by graph
 streams and the same
-`workflow.stream.*` / `shell.sandbox.stream.*` pull lifecycle. The temporary
+`workflow.stream.*` / `sandbox.stream.*` pull lifecycle. The temporary
 facade resource that anchors this projection is closed with the stream.
+
+Delivery operations preserve the complete framework claim returned by
+`delivery.claim_next`, including `claimed_at`; an id-only claim is invalid.
+Argument counts include the ledger resource: `claim_next` takes exactly 1,
+`transition` exactly 4 (`resource`, `claim`, `kind`, `turn_id`), `defer` exactly
+4 (`resource`, `claim`, `reason`, RFC3339 `next_attempt_at`), and `settle`
+exactly 5 (`resource`, `claim`, `outcome`, optional `reason`, optional `turn_id`).
+Absent optional arguments must be explicit null at their positions. Unknown
+transition/outcome tags, extra arguments and malformed claims fail before
+calling the ledger; no claim field or argument is silently discarded.
+
+`CuratorState` is a read-only snapshot at the governed framework boundary.
+Its former private save path is not mirrored as a blind file write; use the
+public Curator prepare/record/promote operations. The exact published
+framework pin and current candidate validation are tracked in
+[MASTER-PLAN](../MASTER-PLAN.md), rather than inferred from a moving source
+checkout.
 
 ## 5. Consumer trait classification
 
-Public trait surfaces resolve to exactly one of two outcomes
-(plan 08 audited closed set):
+The historical Plan 08 classification distinguishes two implementation
+routes; acceptance is governed separately by the current external contract:
 
 1. **typed bridge kind** — the Host has a live consumption point and a
    proxy (Tool, LlmClient, Store, HumanLoopProvider, AgentCallback,
@@ -300,17 +354,18 @@ Public trait surfaces resolve to exactly one of two outcomes
 2. **explicit process-local language boundary** — the trait is a Rust generic,
    borrowed-view, `FnOnce`, marker/builder, event-bus registration or
    runtime-owned construction seam with no SDK Host call site. Each defining
-   trait path has its own evidence string in the route table and remains a
-   language interface/helper obligation; it is never relabeled as a same-topic
-   family operation.
+   trait path has its own evidence string in the route table. An accepted
+   language helper may implement its portable behavior, but classification
+   alone does not create that obligation. It is never relabeled as a
+   same-topic family operation.
 
-No public consumer trait remains under a generic `process-local-consumer`
-fallback, and no `extension` item may use a family/core/invoke surface. The
-generated manifest checks every canonical consumer trait and stream route,
-while `intrinsic_routes_are_an_explicit_frozen_snapshot` hashes the complete
-current intrinsic membership: adding a public item beneath a previously
-classified type or module fails until that membership is reviewed and the
-snapshot is deliberately updated.
+The generated inventory records consumer-trait and stream routes for review;
+it is not the compatibility scope. Full intrinsic membership and its digest
+are non-blocking telemetry. A newly discovered Rust identity does not create
+an accepted language API or mandatory language helper. The accepted facade
+catalog and external schema define the blocking cross-language boundary;
+other identities are evaluated as capabilities and explicitly accepted,
+deferred, or retained in Rust/Host with a recorded reason.
 
 Stateful, I/O and asynchronous service methods are not eligible for that
 process-local shortcut. EvalRunner/LlmGrader, ImprovementLoop/TrajectorySaver,
@@ -342,6 +397,17 @@ cancel primitives; they are not assigned fictitious Host handles.
 
 ## 6. Admission ladder and error boundaries
 
+Workflow cancellation uses the framework Graph's token and terminal authority.
+Direct run and a pull stream's failed item preserve the same canonical cause.
+Malformed inputs remain `invalid_value`. A failed `EvalResult` or `EvalReport`
+is a valid evaluation result; Factory construction failures keep their typed
+framework cause when passed into the EvalRunner turn.
+
+The stream's single collector retains actual producer join failures. Channel
+EOF waits for that producer's settlement; panic or unexpected abort produces
+an explicit failed item with bounded cause and stream handle. This transport
+failure does not create an Agent/Task terminal receipt.
+
 Every facade request passes the same ladder:
 
 1. extended-mode gate (standard connections keep the official
@@ -353,8 +419,42 @@ Every facade request passes the same ladder:
 5. feature gate with the frozen all-of/any-of semantics;
 6. family/source dispatch to the real framework service, or a typed
    `feature_unavailable`/`framework_error` that distinguishes a missing
-   compiled feature from a missing source authority — never a partial or
-   simulated result.
+   compiled feature from a missing source authority; missing implementations
+   cannot fabricate successful fallback results.
+
+Framework Agent MCP batch loading intentionally returns the successfully
+connected subset and logs individual connection failures. An empty subset does
+not prove that the configuration had no enabled servers. Compare this call's
+returned `clients[].server_name` with the enabled configuration; current server
+names alone cannot prove a replacement succeeded because a failed preparation
+can retain the old client. Use the existing single-server connection route when
+a required capability needs an explicit connection error. Configuration read,
+parse and conversion errors remain failures before connection effects. SDK
+resource publication and cleanup are separate obligations; this batch policy
+does not waive quota rollback or close failure handling.
+
+SDK aliases for that successfully connected subset are published as one batch
+under the existing HandleRegistry lock. Quota failure publishes no hidden
+prefix. Batch loading and individual Agent getters reuse an alias only for
+the exact framework client and Session. Publication failure leaves connected
+clients with the original Agent/Manager; callers can query those exact clients
+when capacity becomes available, and Session close retains their normal cleanup
+owner. This is atomic address publication, not a transaction that rolls back
+the framework's earlier connection effects.
+
+Family calls accept returned typed resource handles directly. The adapter
+projects that exact address into the existing resource parser, then checks
+kind, generation, owner and issuance in the unified registry. Other typed
+values retain their explicit conversion rules.
+
+LSP response decoding stays in the framework. Hover range and UTF-16 positions
+are preserved; absent Completion kind and Diagnostic severity remain absent.
+Diagnostic codes preserve integer versus text with the closed code value.
+A valid diagnostic notification replaces that URI's previous list; an empty
+list clears it. A malformed list for a valid URI produces an explicit diagnostic
+error until a later valid update. An unaddressable malformed notification closes
+the existing server runtime, rejects pending requests and awaits its process.
+SDK adapters preserve these values and errors without a second diagnostic cache.
 
 Errors carry the stable `ExtensionErrorCode` set and, for facade failures,
 a `FacadeFailureDetail` with the rejected operation/digest/feature identity
@@ -372,3 +472,26 @@ and never as a fake success.
   and `core_rpc_contract.rs`; drift gate `scripts/check-sdk-contracts.sh`.
 - CI runs the facade E2E under the `sdk-host` group with
   `--features sdk-facade-all`.
+
+## Direct tool input
+
+Direct tool-family calls bind arguments using the framework tool's own schema
+and then use its canonical `validate_tool_input` implementation. Invalid enum
+values or types fail before execution; extra positional arguments are invalid
+even when null. SDK does not maintain another copy of the schema or validator.
+
+## Workflow checkpoint input
+
+`workflow.graph.resume_exact` and `workflow.graph.resume_with_state` require a
+checkpoint object. Positional arrays are invalid input and must be rejected
+before the framework claims or consumes any checkpoint. The framework reloads
+the canonical checkpoint by its identity; state changes use the existing
+`resume_with_state` operation.
+
+When using generic native projections, retain explicit wire types when sending
+the checkpoint back. Integer projections use canonical decimal text, so encode
+the checkpoint's integer fields with the corresponding wire integer tag.
+Domain objects such as `continuation` have their own `kind` field; encode them
+as explicit wire maps to distinguish domain data from a wire discriminator.
+The complete original payload remains available for field comparison. This
+does not change the unknown wire value preservation contract.

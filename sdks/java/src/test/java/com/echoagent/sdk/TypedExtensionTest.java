@@ -317,4 +317,70 @@ class TypedExtensionTest {
                 () -> AgentComponentOutcome.result(
                         "run_store", new AgentComponentResult.Embedded(List.of(1.0))));
     }
+    @Test
+    void workflowProtectedClaimPreservesExactAttemptThroughPublicDecoder() {
+        var input = JsonSupport.MAPPER.createObjectNode()
+                .put("checkpoint_id", "checkpoint-中文🙂").put("attempt_id", "attempt-原始🙂");
+        var payload = JsonSupport.MAPPER.createObjectNode().put("invocation_id", "protect-invocation");
+        payload.set("extension", new WireHandle("ext-1", "1", "extension").toJson());
+        payload.set("deadline", JsonSupport.MAPPER.createObjectNode().put("seconds", "30").put("nanos", 0));
+        var nested = payload.putObject("invocation").put("operation", "agent_component_call")
+                .putObject("input").put("component", "workflow_checkpoint_store");
+        nested.putObject("call").put("operation", "workflow_checkpoint_protect_claim").set("input", input);
+        var decoded = AgentComponentCall.from(payload);
+        assertEquals("workflow_checkpoint_protect_claim", decoded.componentOperation());
+        assertEquals("workflow_checkpoint_store", decoded.request().component());
+        assertEquals(nested, decoded.input());
+        assertEquals(payload, decoded.raw());
+        for (var invalid : List.of(
+                JsonSupport.MAPPER.createObjectNode().put("checkpoint_id", "checkpoint-中文🙂"),
+                input.deepCopy().put("attempt_id", 1),
+                input.deepCopy().put("extra", true))) {
+            var bad = payload.deepCopy();
+            ((com.fasterxml.jackson.databind.node.ObjectNode) bad.path("invocation").path("input").path("call"))
+                    .set("input", invalid);
+            assertThrows(IllegalArgumentException.class, () -> AgentComponentCall.from(bad));
+        }
+        var wrong = payload.deepCopy();
+        ((com.fasterxml.jackson.databind.node.ObjectNode) wrong.path("invocation").path("input"))
+                .put("component", "audit_logger");
+        assertThrows(IllegalArgumentException.class, () -> AgentComponentCall.from(wrong));
+    }
+
+    @Test
+    void workflowProtectedClaimCapabilityKeepsImmutableCopiesAndComponentGuard() {
+        var legacy = AgentComponentDescriptor.workflowCheckpointStore("checkpoints", BigInteger.valueOf(1000));
+        assertEquals(false, legacy.toJson().path("capabilities").path("protected_claim_v1").booleanValue());
+        var protectedStore = legacy.withProtectedClaimV1(true);
+        assertEquals(true, protectedStore.toJson().path("capabilities").path("protected_claim_v1").booleanValue());
+        assertEquals(false, legacy.toJson().path("capabilities").path("protected_claim_v1").booleanValue());
+        var copied = protectedStore.withManagedCapabilities(
+                ManagedPersistence.ConversationProjectionCapability.unsupported,
+                ManagedPersistence.RuntimeStateCapability.unsupported,
+                ManagedPersistence.PersistenceCallCapability.unsupported).withExecutionCasV1(false);
+        assertEquals(protectedStore.toJson(), copied.toJson());
+        var disabled = protectedStore.withProtectedClaimV1(false);
+        assertEquals(false, disabled.toJson().path("capabilities").path("protected_claim_v1").booleanValue());
+        assertEquals(true, protectedStore.toJson().path("capabilities").path("protected_claim_v1").booleanValue());
+        assertThrows(IllegalArgumentException.class,
+                () -> AgentComponentDescriptor.of("audit_logger", "wrong").withProtectedClaimV1(true));
+        assertEquals(false, AgentComponentDescriptor.of("audit_logger", "legacy")
+                .withProtectedClaimV1(false).toJson().path("capabilities").path("protected_claim_v1").booleanValue());
+    }
+
+    @Test
+    void workflowProtectedClaimUnitOutcomeHasNoValue() {
+        var unit = new AgentComponentResult.WorkflowCheckpointClaimProtected();
+        assertEquals("workflow_checkpoint_protect_claim", unit.operation());
+        assertEquals("workflow_checkpoint_store", unit.component());
+        assertEquals(null, unit.value());
+        var outcome = AgentComponentOutcome.result("workflow_checkpoint_store", unit).toJson();
+        var expected = JsonSupport.MAPPER.createObjectNode().put("outcome", "result");
+        expected.putObject("result").put("operation", "agent_component_call")
+                .putObject("value").put("component", "workflow_checkpoint_store")
+                .putObject("result").put("operation", "workflow_checkpoint_protect_claim");
+        assertEquals(expected, outcome);
+        assertThrows(IllegalArgumentException.class, () -> AgentComponentOutcome.result("audit_logger", unit));
+    }
+
 }

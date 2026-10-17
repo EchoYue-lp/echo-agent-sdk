@@ -216,6 +216,9 @@ pub fn build_extension_schema_doc() -> serde_json::Value {
     schema_entry!(definitions, FeatureOperationRequest);
     schema_entry!(definitions, FeatureOperationResponse);
     schema_entry!(definitions, WorkingDirectory);
+    schema_entry!(definitions, DeliveryClaimWire);
+    schema_entry!(definitions, DeliveryClaimNextResultWire);
+    schema_entry!(definitions, DeliveryMutationResultWire);
     // Facade adapter catalog types (plan 07 todo 1).
     schema_entry!(definitions, FacadeFailureDetail);
 
@@ -402,11 +405,13 @@ pub fn all_fixtures() -> Vec<Fixture> {
     push_event_fixtures(&mut fixtures);
     push_ack_fixtures(&mut fixtures);
     push_bridge_fixtures(&mut fixtures);
+    push_governance_fixtures(&mut fixtures);
     push_capability_fixtures(&mut fixtures);
     push_hello_fixtures(&mut fixtures);
     push_agent_config_fixtures(&mut fixtures);
     push_run_fixtures(&mut fixtures);
     push_facade_fixtures(&mut fixtures);
+    push_channel_forward_fixtures(&mut fixtures);
     push_boundary_fixtures(&mut fixtures);
     fixtures
 }
@@ -1505,6 +1510,75 @@ fn push_run_fixtures(fixtures: &mut Vec<Fixture>) {
     ));
 }
 
+fn push_channel_forward_fixtures(fixtures: &mut Vec<Fixture>) {
+    let session = WireHandle {
+        id: "session-channel-forward".to_string(),
+        generation: WireU64::from_u64(7),
+        kind: HandleKind::Session,
+    };
+    let manager = WireHandle {
+        id: "manager-channel-forward".to_string(),
+        generation: WireU64::from_u64(7),
+        kind: HandleKind::FacadeResource,
+    };
+    let stream = WireHandle {
+        id: "stream-channel-forward".to_string(),
+        generation: WireU64::from_u64(7),
+        kind: HandleKind::Stream,
+    };
+    let inbound = serde_json::json!({
+        "channel_id":"channel-中文", "sender_id":"sender", "chat_id":"chat", "chat_type":"direct",
+        "text":"入站🌊", "message_id":"message", "timestamp":"18446744073709551615",
+        "attachments":[{"kind":"image","data_base64":"AP9BgA==","filename":""}]
+    });
+    let outbound = serde_json::json!({
+        "channel_id":"channel-中文", "to":"chat", "chat_type":"group", "text":"回复🌊", "reply_to":"",
+        "attachments":[{"kind":"file","data_base64":"AP9BgA==","filename":null}]
+    });
+    for (name, operation, message) in [
+        ("handle", "channels.handler.handle", Some(&inbound)),
+        (
+            "handle-stream",
+            "channels.handler.handle_stream",
+            Some(&inbound),
+        ),
+        ("reply", "channels.handler.reply", Some(&outbound)),
+        ("stream-next", "channels.stream.next", None),
+        ("stream-cancel", "channels.stream.cancel", None),
+        ("stream-close", "channels.stream.close", None),
+    ] {
+        let arguments = if let Some(message) = message {
+            // These literal DTO samples only use the supported closed JSON projection.
+            let Ok(message) = WireValue::from_json(message.clone()) else {
+                continue;
+            };
+            vec![
+                WireValue::Handle(manager.clone()),
+                WireValue::String("channel-中文".to_string()),
+                message,
+            ]
+        } else {
+            vec![WireValue::Handle(stream.clone())]
+        };
+        let request = FeatureOperationRequest {
+            operation: operation.to_string(),
+            signature_digest: crate::facade::family_operation_signature_digest(
+                "channels", operation,
+            ),
+            handle: Some(session.clone()),
+            arguments,
+        };
+        let Ok(payload) = serde_json::to_value(request) else {
+            continue;
+        };
+        fixtures.push(fixture(
+            &format!("channel-forward-{name}-valid"), FixtureKind::Valid, "FeatureOperationRequest",
+            "Original Session and complete generation-fenced manager/stream addresses consume the existing channels handler contract.",
+            payload, None,
+        ));
+    }
+}
+
 fn push_facade_fixtures(fixtures: &mut Vec<Fixture>) {
     fixtures.push(fixture(
         "facade-operation-request-valid",
@@ -1613,6 +1687,107 @@ fn push_boundary_fixtures(fixtures: &mut Vec<Fixture>) {
         "Methods outside _echo_agent/* are not part of the extension contract.",
         serde_json::json!({"method": "run/start"}),
         Some("invalid_request"),
+    ));
+}
+
+fn push_governance_fixtures(fixtures: &mut Vec<Fixture>) {
+    fixtures.push(fixture("task-store-execution-cas-opt-in-valid", FixtureKind::Valid,
+        "ExtensionRegisterRequest", "A revisioned task store explicitly declares execution CAS before runtime dispatch.",
+        serde_json::json!({"kind":"agent_component","implementation_id":"task-store","descriptor":{
+            "kind":"agent_component","descriptor_version":1,"component":"revisioned_task_store","name":"task-store",
+            "capabilities":{"execution_cas_v1":true}}}), None));
+    fixtures.push(fixture("task-store-execution-cas-string-invalid", FixtureKind::Invalid,
+        "ExtensionRegisterRequest", "A string cannot opt a store into execution CAS.",
+        serde_json::json!({"kind":"agent_component","implementation_id":"task-store","descriptor":{
+            "kind":"agent_component","descriptor_version":1,"component":"revisioned_task_store","name":"task-store",
+            "capabilities":{"execution_cas_v1":"true"}}}), Some("invalid_value")));
+    fixtures.push(fixture("task-execution-claim-result-null-valid", FixtureKind::Valid,
+        "TaskExecutionWire", "A supplied null result remains distinct from absent output, and the exact claim revision survives.",
+        serde_json::json!({"task_id":"任务","status":{"status":"completed"},"retry_count":0,"failure_fingerprint":null,
+            "claim":{"claim_id":"claim-1","revision":"9007199254740993","attempt":1,"spec_hash":"digest"},
+            "result":{"kind":"null"}}), None));
+    fixtures.push(fixture("task-execution-unsafe-claim-revision-invalid", FixtureKind::Invalid,
+        "TaskExecutionWire", "A JSON number cannot replace an exact execution claim revision.",
+        serde_json::json!({"task_id":"任务","status":{"status":"running"},"retry_count":0,"failure_fingerprint":null,
+            "claim":{"claim_id":"claim-1","revision":9007199254740993_u64,"attempt":1,"spec_hash":"digest"}}), Some("invalid_value")));
+    fixtures.push(fixture("factory-create-reserved-instance-valid", FixtureKind::Valid,
+        "ExtensionInvokeCall", "The reserved child handle identifies the actual constructed object before its descriptor commits.",
+        serde_json::json!({"extension":{"id":"factory","generation":"7","kind":"extension"},
+            "invocation_id":"create-1","invocation":{"operation":"factory_create_agent","input":{
+                "instance":{"id":"child","generation":"7","kind":"extension"},
+                "model":"model","name":"agent","system_prompt":"prompt","tool_count":"0"}},
+            "deadline":{"seconds":"20","nanos":0}}), None));
+    fixtures.push(fixture(
+        "factory-create-missing-instance-invalid",
+        FixtureKind::Invalid,
+        "ExtensionInvokeCall",
+        "A descriptor without construction-instance identity cannot bind the created object.",
+        serde_json::json!({"extension":{"id":"factory","generation":"7","kind":"extension"},
+            "invocation_id":"create-1","invocation":{"operation":"factory_create_agent","input":{
+                "model":"model","name":"agent","system_prompt":"prompt","tool_count":"0"}},
+            "deadline":{"seconds":"20","nanos":0}}),
+        Some("invalid_value"),
+    ));
+    fixtures.push(fixture("tool-result-authoritative-effects-valid", FixtureKind::Valid,
+        "ToolResultWire", "Tool effects preserve producer facts, Unicode and exact failure counts.",
+        serde_json::json!({"kind":{"kind":"text"},"success":true,"output":"已完成 🧪","truncated":false,
+            "effects":[{"effect":"file_read","path":"文档/计划.md"},
+                {"effect":"test_run","command":"cargo test","passed":false,"failure_count":"9007199254740993"}]}), None));
+    fixtures.push(fixture(
+        "tool-result-unknown-effect-invalid",
+        FixtureKind::Invalid,
+        "ToolResultWire",
+        "Unknown execution facts cannot silently disappear at a bridge boundary.",
+        serde_json::json!({"kind":{"kind":"text"},"success":true,"output":"done","truncated":false,
+            "effects":[{"effect":"unknown_effect","path":"x"}]}),
+        Some("invalid_value"),
+    ));
+    fixtures.push(fixture("transcript-projection-settlement-observation-valid", FixtureKind::Valid,
+        "AgentEventWire", "Transcript settlement is a typed framework observation before the invocation terminal.",
+        serde_json::json!({"event":"transcript_projection_settlement","data":{"settlement":{
+            "status":"deferred","operation_id":"projection-1","conversation_id":"会话","generation_id":"generation-1",
+            "attempt":2,"error_class":"outcome_unknown","detail":"receipt lookup required"}}}), None));
+    fixtures.push(fixture("extension-factory-instance-origin-valid", FixtureKind::Valid,
+        "ExtensionInvokeCall", "A returned Agent instance retains its own handle and exact original factory.",
+        serde_json::json!({"extension":{"id":"child","generation":"7","kind":"extension"},
+            "factory_origin":{"id":"factory","generation":"7","kind":"extension"},
+            "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":"任务"}},
+            "deadline":{"seconds":"20","nanos":0}}), None));
+    fixtures.push(fixture("extension-callback-interrupted-canonical-id-valid", FixtureKind::Valid,
+        "ExtensionInvocation", "Interruption preserves admitted input and canonical tool identity without fabricating a start.",
+        serde_json::json!({"operation":"callback_on_tool_interrupted","input":{"agent":"智能体","call_id":"call-1",
+            "tool":"edit","input":{"kind":"null"},"error":"取消"}}), None));
+    fixtures.push(fixture("managed-projection-authority-u64-valid", FixtureKind::Valid,
+        "ConversationProjectionAuthorityWire", "Managed revisions and epochs are decimal strings beyond the JavaScript safe integer range.",
+        serde_json::json!({"conversation_id":"会话","epoch":"9007199254740993","revision":"18446744073709551615",
+            "lifecycle":"live","delete_receipt_retention_floor_epoch":"0"}), None));
+    fixtures.push(fixture(
+        "managed-deadline-context-i64-valid",
+        FixtureKind::Valid,
+        "PersistenceCallContextWire",
+        "Absolute deadlines remain typed i64 decimal strings.",
+        serde_json::json!({"absolute_deadline_unix_ms":"9223372036854775807"}),
+        None,
+    ));
+    fixtures.push(fixture(
+        "managed-deadline-context-number-invalid",
+        FixtureKind::Invalid,
+        "PersistenceCallContextWire",
+        "A JSON number cannot replace an exact persistence deadline.",
+        serde_json::json!({"absolute_deadline_unix_ms":9223372036854775807_i64}),
+        Some("invalid_value"),
+    ));
+    fixtures.push(fixture("delivery-complete-claim-valid", FixtureKind::Valid,
+        "DeliveryClaimWire", "Delivery continuation carries the exact claim returned by the framework ledger.",
+        serde_json::json!({"message_id":"消息","route":"inbox","payload":{"text":"数据"},"attempt_id":"attempt-1",
+            "attempt":1,"claimed_at":"2026-10-12T00:00:00Z"}), None));
+    fixtures.push(fixture(
+        "delivery-id-only-claim-invalid",
+        FixtureKind::Invalid,
+        "DeliveryClaimWire",
+        "Message identity alone cannot authorize a later delivery attempt.",
+        serde_json::json!("消息"),
+        Some("invalid_value"),
     ));
 }
 

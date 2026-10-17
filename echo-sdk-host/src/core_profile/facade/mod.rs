@@ -63,6 +63,23 @@ use std::sync::atomic::{AtomicBool, Ordering};
 /// One family handler outcome: the typed wire result or typed failure.
 type WireResult = Result<WireValue, EchoSdkError>;
 
+/// Project accepted resource addresses for the family's existing JSON parser.
+/// The resulting DTO still passes the unified generation/owner/issuance ladder;
+/// this does not grant a JSON projection to other process-local typed values.
+fn family_argument_json(
+    value: &echo_sdk_protocol::scalar::WireValue,
+) -> Result<serde_json::Value, echo_sdk_protocol::scalar::ScalarError> {
+    match value {
+        echo_sdk_protocol::scalar::WireValue::Handle(handle) => serde_json::to_value(handle)
+            .map_err(|_| {
+                echo_sdk_protocol::scalar::ScalarError::ValueLimit(
+                    "resource handle serialization failed",
+                )
+            }),
+        _ => value.clone().into_json(),
+    }
+}
+
 /// Parse one [`WireHandle`] argument addressing an open facade resource.
 /// Family operations address their resources through Host-issued handles
 /// only (design §8): shape, kind, generation and issuance are checked by
@@ -242,6 +259,16 @@ impl SessionFacadeRuntime {
         }
     }
 
+    #[cfg(all(test, feature = "framework-subagent", feature = "sdk-extension-bridge"))]
+    pub(crate) fn with_subagent_capacity_for_test(
+        limits: &crate::config::SdkProfileLimits,
+        capacity: usize,
+    ) -> Self {
+        let mut runtime = Self::new(limits);
+        runtime.max_subagents = capacity;
+        runtime
+    }
+
     /// Register one RPC-dispatched subagent record by execution id. The
     /// advertised live-subagent bound is a hard limit: settled records are
     /// retired first, and a full map rejects the dispatch with a typed
@@ -279,6 +306,26 @@ impl SessionFacadeRuntime {
         }
         subagents.insert(execution_id, record);
         Ok(())
+    }
+
+    /// Retire only the exact reservation whose framework setup proved that
+    /// no attempt was spawned. Never use this for a collector observation.
+    #[cfg(feature = "framework-subagent")]
+    pub(super) fn retire_unsubmitted_subagent(
+        &self,
+        execution_id: &str,
+        original: &Arc<subagent::SubagentDispatchRecord>,
+    ) {
+        let mut subagents = self
+            .subagents
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if subagents
+            .get(execution_id)
+            .is_some_and(|record| Arc::ptr_eq(record, original))
+        {
+            subagents.remove(execution_id);
+        }
     }
 
     /// Resolve one subagent record by execution id.
@@ -361,74 +408,94 @@ impl SessionFacadeRuntime {
     /// Cancel and remove every task execution owned by one session scope;
     /// session close must never leave a DAG running untracked.
     #[cfg(feature = "framework-subagent")]
-    pub fn drop_task_executions_of(&self, scope: &str) {
-        let removed = self
-            .task_executions
-            .lock()
-            .unwrap_or_else(|error| error.into_inner())
-            .remove(scope);
-        if let Some(execution) = removed {
+    pub async fn drop_task_executions_of(&self, scope: &str) -> Result<(), EchoSdkError> {
+        if let Some(execution) = self.task_execution_of(scope) {
             execution.cancel.cancel();
+            while !execution.completion.settled.load(Ordering::Acquire) {
+                let notified = execution.completion.notify.notified();
+                tokio::pin!(notified);
+                notified.as_mut().enable();
+                if let Some(observation) = execution
+                    .completion
+                    .observation
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .as_ref()
+                {
+                    return Err(observation.clone());
+                }
+                if execution.completion.settled.load(Ordering::Acquire) {
+                    break;
+                }
+                notified.await;
+            }
+            self.remove_task_execution(scope);
         }
+        Ok(())
     }
 
     /// Cancel every live task execution and wait for each spawned service
     /// task to settle (connection teardown; the caller's shutdown timeout
     /// bounds the whole wait).
     #[cfg(feature = "framework-subagent")]
-    pub async fn cancel_all_task_executions_and_wait(&self) {
-        let executions = std::mem::take(
-            &mut *self
-                .task_executions
-                .lock()
-                .unwrap_or_else(|error| error.into_inner()),
-        );
-        for (_, execution) in executions {
-            execution.cancel.cancel();
-            while !execution.completion.settled.load(Ordering::Acquire) {
-                let notified = execution.completion.notify.notified();
-                if execution.completion.settled.load(Ordering::Acquire) {
-                    break;
-                }
-                notified.await;
+    pub async fn cancel_all_task_executions_and_wait(&self) -> Result<(), EchoSdkError> {
+        let scopes = self
+            .task_executions
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .keys()
+            .cloned()
+            .collect::<Vec<_>>();
+        for scope in &scopes {
+            if let Some(execution) = self.task_execution_of(scope) {
+                execution.cancel.cancel();
             }
         }
+        for scope in scopes {
+            self.drop_task_executions_of(&scope).await?;
+        }
+        Ok(())
     }
 
     /// Cancel every RPC subagent dispatch attempt owned by one session.
     #[cfg(feature = "framework-subagent")]
-    pub fn cancel_subagents_of(&self, owner: &str) {
-        let mut subagents = self
+    pub async fn cancel_subagents_of(&self, owner: &str) -> Result<(), EchoSdkError> {
+        let records = self
             .subagents
             .lock()
-            .unwrap_or_else(|error| error.into_inner());
-        let owned: Vec<String> = subagents
+            .unwrap_or_else(|e| e.into_inner())
             .iter()
             .filter(|(_, record)| record.owner_session == owner)
-            .map(|(execution_id, _)| execution_id.clone())
-            .collect();
-        for execution_id in owned {
-            if let Some(record) = subagents.remove(&execution_id) {
-                record.background.cancel();
-            }
+            .map(|(id, record)| (id.clone(), record.clone()))
+            .collect::<Vec<_>>();
+        for (_, record) in &records {
+            record.cancel.cancel();
         }
+        for (id, record) in records {
+            record.wait_settled().await?;
+            self.subagents
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .remove(&id);
+        }
+        Ok(())
     }
 
-    /// Cancel every live RPC subagent dispatch attempt and wait for each
-    /// background attempt to settle (connection teardown; the caller's
-    /// shutdown timeout bounds the whole wait).
+    /// The collector is the sole join consumer. Teardown waits for its
+    /// settlement projection without racing it for the framework receipt.
     #[cfg(feature = "framework-subagent")]
-    pub async fn cancel_all_subagents_and_wait(&self) {
-        let records = std::mem::take(
-            &mut *self
-                .subagents
-                .lock()
-                .unwrap_or_else(|error| error.into_inner()),
-        );
-        for (_, record) in records {
-            record.background.cancel();
-            let _ = record.background.join().await;
+    pub async fn cancel_all_subagents_and_wait(&self) -> Result<(), EchoSdkError> {
+        let owners = self
+            .subagents
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .values()
+            .map(|record| record.owner_session.clone())
+            .collect::<Vec<_>>();
+        for owner in owners {
+            self.cancel_subagents_of(&owner).await?;
         }
+        Ok(())
     }
 
     /// Drop and cancel every facade resource whose handle the unified
@@ -436,8 +503,40 @@ impl SessionFacadeRuntime {
     /// closes so family resources never outlive their owner. Task
     /// executions of the session's graph scope and its live subagent
     /// dispatches are cancelled too.
-    pub async fn drop_session_resources_of(&self, owner: &str, closed: &[String]) {
-        self.streams.close_owner(owner).await;
+    pub async fn drop_session_resources_of(
+        &self,
+        handles: &HandleRegistry,
+        owner: &str,
+        closed: &[String],
+    ) -> Result<(), EchoSdkError> {
+        #[cfg(feature = "framework-subagent")]
+        {
+            self.drop_task_executions_of(owner).await?;
+            self.cancel_subagents_of(owner).await?;
+        }
+        self.streams.close_owner(owner).await?;
+        integrations::close_session_resources(&self.integrations, closed)
+            .await
+            .map_err(|error| {
+                wire::sdk_error(
+                    ExtensionErrorCode::FrameworkError,
+                    error,
+                    Retryability::AfterDelay,
+                    "_echo_agent/session/close",
+                )
+            })?;
+        #[cfg(feature = "framework-mcp")]
+        self.integrations
+            .close_mcp_debt(handles, Some(owner))
+            .await
+            .map_err(|error| {
+                wire::sdk_error(
+                    ExtensionErrorCode::FrameworkError,
+                    error,
+                    Retryability::AfterDelay,
+                    "_echo_agent/session/close",
+                )
+            })?;
         source_operations::drop_file_authorities(&self.file_authorities, closed);
         source_operations::drop_tokenizer_authorities(&self.tokenizer_authorities, closed);
         #[cfg(feature = "framework-content-guard")]
@@ -484,19 +583,12 @@ impl SessionFacadeRuntime {
             .lock()
             .unwrap_or_else(|error| error.into_inner())
             .remove(owner);
-        integrations::close_session_resources(&self.integrations, closed).await;
-        #[cfg(feature = "framework-subagent")]
-        {
-            self.drop_task_executions_of(owner);
-            self.cancel_subagents_of(owner);
-        }
+        Ok(())
     }
 
     /// Close one owner-checked facade resource and release its concrete Rust
-    /// business object. The unified registry is closed first so concurrent
-    /// requests cannot resolve the handle while its lease/manager/graph is
-    /// being torn down; business cleanup then follows the same path as
-    /// Session teardown.
+    /// business object. Fence new resolution before cleanup but keep the
+    /// issued owner until successful settlement, allowing retry on failure.
     pub async fn close_resource(
         &self,
         handles: &HandleRegistry,
@@ -507,13 +599,42 @@ impl SessionFacadeRuntime {
         if handles.is_closed(resource) {
             return Ok(false);
         }
-        let _record = owned_resource(handles, resource, owner, operation)?;
+        let _record = handles.facade_resource_for_close(resource, operation)?;
+        if _record.owner_session.as_deref() != Some(owner) {
+            return Err(wire::sdk_error(
+                ExtensionErrorCode::InvalidValue,
+                "facade resource belongs to another session",
+                Retryability::Never,
+                operation,
+            ));
+        }
+        // Fence admission and cancel streams before waiting for the shared
+        // permits retained by their producers. The original collector owns
+        // settlement; a closing flag is never reopened on failed cleanup.
+        _record
+            .closing
+            .store(true, std::sync::atomic::Ordering::Release);
+        _record.cancel_operations.cancel();
+        self.streams.close_resource(&resource.id).await?;
+        let _closing = _record.lifecycle.write().await;
+        if handles.is_closed(resource) {
+            return Ok(false);
+        }
+        let ids = [resource.id.clone()];
+        integrations::close_session_resources(&self.integrations, &ids)
+            .await
+            .map_err(|error| {
+                wire::sdk_error(
+                    ExtensionErrorCode::FrameworkError,
+                    error,
+                    Retryability::AfterDelay,
+                    operation,
+                )
+            })?;
         let closed = handles.close_facade_resource(resource, operation)?;
         if !closed {
             return Ok(false);
         }
-        self.streams.close_resource(&resource.id).await;
-        let ids = [resource.id.clone()];
         source_operations::drop_file_authorities(&self.file_authorities, &ids);
         source_operations::drop_tokenizer_authorities(&self.tokenizer_authorities, &ids);
         #[cfg(feature = "framework-content-guard")]
@@ -562,7 +683,6 @@ impl SessionFacadeRuntime {
                 .unwrap_or_else(|error| error.into_inner())
                 .remove(owner);
         }
-        integrations::close_session_resources(&self.integrations, &ids).await;
         Ok(true)
     }
 
@@ -571,13 +691,21 @@ impl SessionFacadeRuntime {
     /// in the unified authority, await integration close (MCP child
     /// processes included) and release the remaining business maps. The
     /// caller runs this inside the bounded shutdown chain.
-    pub async fn close_all(&self, handles: &HandleRegistry) {
+    pub async fn close_all(&self, handles: &HandleRegistry) -> Result<(), String> {
         #[cfg(feature = "framework-subagent")]
         {
-            self.cancel_all_task_executions_and_wait().await;
-            self.cancel_all_subagents_and_wait().await;
+            self.cancel_all_task_executions_and_wait()
+                .await
+                .map_err(|error| error.message)?;
+            self.cancel_all_subagents_and_wait()
+                .await
+                .map_err(|error| error.message)?;
         }
-        self.streams.close_all().await;
+        self.streams
+            .close_all()
+            .await
+            .map_err(|error| error.message)?;
+        self.integrations.close_all(handles).await?;
         handles.close_all_facade_resources();
         std::mem::take(
             &mut *self
@@ -630,7 +758,6 @@ impl SessionFacadeRuntime {
                 .lock()
                 .unwrap_or_else(|error| error.into_inner()),
         );
-        self.integrations.close_all().await;
         std::mem::take(
             &mut *self
                 .workflow_graphs
@@ -685,6 +812,7 @@ impl SessionFacadeRuntime {
                     .unwrap_or_else(|error| error.into_inner()),
             );
         }
+        Ok(())
     }
 }
 
@@ -705,6 +833,7 @@ pub(crate) struct FacadeFamilyLimits {
 #[cfg(feature = "framework-subagent")]
 pub(crate) struct TaskRunCompletion {
     pub settled: AtomicBool,
+    pub observation: std::sync::Mutex<Option<EchoSdkError>>,
     pub notify: tokio::sync::Notify,
 }
 
@@ -712,7 +841,7 @@ pub(crate) struct TaskRunCompletion {
 #[derive(Clone)]
 pub(crate) struct TaskRunExecution {
     pub cancel: tokio_util::sync::CancellationToken,
-    pub controller: Arc<task_runtime::FacadeTaskController>,
+    pub runtime: Arc<echo_agent::tasks::RuntimeTaskService<task_runtime::FacadeTaskController>>,
     pub completion: Arc<TaskRunCompletion>,
 }
 
@@ -1024,7 +1153,7 @@ impl HandleDispatchFrom<Client> for FacadeDispatcher {
 /// The unified facade admission ladder. Returns the typed response or the
 /// typed extension error; both are answered on the claimed request.
 async fn facade_admission(
-    state: &CoreProfileState,
+    state: &Arc<CoreProfileState>,
     method: &str,
     params: &serde_json::Value,
 ) -> Result<FeatureOperationResponse, EchoSdkError> {
@@ -1477,6 +1606,50 @@ async fn facade_admission(
     // instead of simulating a result. Families that need a session resolve
     // its authorities here; resource-free families (state, eval, improve)
     // dispatch without one.
+    let owner_handle = request
+        .handle
+        .as_ref()
+        .filter(|h| h.kind == HandleKind::Session)
+        .or_else(|| match request.arguments.first() {
+            Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Session => Some(handle),
+            _ => None,
+        });
+    let session_record = owner_handle
+        .map(|handle| {
+            state
+                .handles
+                .check_shape_and_generation(handle, HandleKind::Session, method)?;
+            state.handles.session(handle)
+        })
+        .transpose()?;
+    let _operation = match &session_record {
+        Some(record) => {
+            // Close owns the write guard while awaiting resource callbacks.
+            // Reentry must fail before waiting for that guard; the check below
+            // still rejects a close that races with read-guard admission.
+            if record.closing.load(std::sync::atomic::Ordering::Acquire) {
+                return Err(wire::sdk_error(
+                    ExtensionErrorCode::ClosedHandle,
+                    "Session is closing",
+                    Retryability::Never,
+                    method,
+                ));
+            }
+            Some(record.lifecycle.read().await)
+        }
+        None => None,
+    };
+    if session_record
+        .as_ref()
+        .is_some_and(|record| record.closing.load(std::sync::atomic::Ordering::Acquire))
+    {
+        return Err(wire::sdk_error(
+            ExtensionErrorCode::ClosedHandle,
+            "Session is closing",
+            Retryability::Never,
+            method,
+        ));
+    }
     let session = session_authorities_of(state, &request).await;
     let response = move |value: WireResult| {
         value.map(|value| echo_sdk_protocol::methods::FeatureOperationResponse { value })
@@ -1497,27 +1670,16 @@ async fn facade_admission(
         max_resources: state.limits.max_facade_resources,
         page: state.limits.max_facade_page_items,
     };
-    match family.as_str() {
-        "invoke" if request.operation == "facade.resource.close" => {
-            let (_authorities, owner) = session.ok_or_else(missing_session)?;
-            if request.arguments.len() != 1 {
-                return Err(facade_error(
-                    ExtensionErrorCode::InvalidValue,
-                    "facade.resource.close accepts exactly one FacadeResource argument",
-                    Retryability::Never,
-                    method,
-                    FacadeFailureDetail {
-                        operation: Some(request.operation.clone()),
-                        ..FacadeFailureDetail::default()
-                    },
-                ));
-            }
-            let resource = match request.arguments.first() {
-                Some(WireValue::Handle(handle)) => handle,
-                _ => {
+    // Keep large family coroutines on the heap rather than nesting their
+    // debug frames in the admission coroutine on Tokio's bounded stack.
+    let dispatch = Box::pin(async {
+        match family.as_str() {
+            "invoke" if request.operation == "facade.resource.close" => {
+                let (_authorities, owner) = session.ok_or_else(missing_session)?;
+                if request.arguments.len() != 1 {
                     return Err(facade_error(
                         ExtensionErrorCode::InvalidValue,
-                        "facade.resource.close requires a FacadeResource handle",
+                        "facade.resource.close accepts exactly one FacadeResource argument",
                         Retryability::Never,
                         method,
                         FacadeFailureDetail {
@@ -1526,54 +1688,351 @@ async fn facade_admission(
                         },
                     ));
                 }
-            };
-            response(
-                state
-                    .facade
-                    .close_resource(&state.handles, &owner, resource, &request.operation)
-                    .await
-                    .map(WireValue::Bool),
-            )
-        }
-        "workflow" | "a2a" | "shell"
-            if request.operation.ends_with(".stream.next")
-                || request.operation.ends_with(".stream.cancel")
-                || request.operation.ends_with(".stream.close") =>
-        {
-            let (_authorities, owner) = session.ok_or_else(missing_session)?;
-            response(
-                stream::dispatch_control(
-                    &state.facade.streams,
-                    &state.handles,
-                    &owner,
-                    &family,
-                    &request,
+                let resource = match request.arguments.first() {
+                    Some(WireValue::Handle(handle)) => handle,
+                    _ => {
+                        return Err(facade_error(
+                            ExtensionErrorCode::InvalidValue,
+                            "facade.resource.close requires a FacadeResource handle",
+                            Retryability::Never,
+                            method,
+                            FacadeFailureDetail {
+                                operation: Some(request.operation.clone()),
+                                ..FacadeFailureDetail::default()
+                            },
+                        ));
+                    }
+                };
+                response(
+                    state
+                        .facade
+                        .close_resource(&state.handles, &owner, resource, &request.operation)
+                        .await
+                        .map(WireValue::Bool),
                 )
-                .await,
-            )
-        }
-        "memory" => {
-            let (authorities, owner) = session.ok_or_else(missing_session)?;
-            response(
-                memory::dispatch(
-                    &authorities,
-                    &state.facade.memory_store_resources,
-                    &state.handles,
-                    &owner,
-                    &request,
-                    limits.page,
+            }
+            "workflow" | "a2a" | "shell"
+                if request.operation.ends_with(".stream.next")
+                    || request.operation.ends_with(".stream.cancel")
+                    || request.operation.ends_with(".stream.close") =>
+            {
+                let (_authorities, owner) = session.ok_or_else(missing_session)?;
+                response(
+                    stream::dispatch_control(
+                        &state.facade.streams,
+                        &state.handles,
+                        &owner,
+                        &family,
+                        &request,
+                    )
+                    .await,
                 )
-                .await,
-            )
-        }
-        "workflow" => {
-            let (authorities, owner) = session.ok_or_else(missing_session)?;
+            }
+            "memory" => {
+                let (authorities, owner) = session.ok_or_else(missing_session)?;
+                response(
+                    memory::dispatch(
+                        &authorities,
+                        &state.facade.memory_store_resources,
+                        &state.handles,
+                        &owner,
+                        &request,
+                        limits.page,
+                    )
+                    .await,
+                )
+            }
+            "workflow" => {
+                let (authorities, owner) = session.ok_or_else(missing_session)?;
+                #[cfg(feature = "sdk-extension-bridge")]
+                if matches!(
+                    request.operation.as_str(),
+                    "workflow.extension.run" | "workflow.extension.run_stream"
+                ) {
+                    use echo_agent::workflow::Workflow as _;
+                    let extension = match request.arguments.first() {
+                        Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
+                            handle.clone()
+                        }
+                        _ => {
+                            return Err(facade_error(
+                                ExtensionErrorCode::InvalidValue,
+                                "workflow.extension.run requires a Workflow extension handle",
+                                Retryability::Never,
+                                method,
+                                FacadeFailureDetail::default(),
+                            ));
+                        }
+                    };
+                    let input = match request.arguments.get(1) {
+                        Some(WireValue::String(input)) => input.clone(),
+                        _ => {
+                            return Err(facade_error(
+                                ExtensionErrorCode::InvalidValue,
+                                "workflow.extension.run requires input text",
+                                Retryability::Never,
+                                method,
+                                FacadeFailureDetail::default(),
+                            ));
+                        }
+                    };
+                    let mut proxy =
+                        crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
+                            state.extension_bridge.clone(),
+                            extension,
+                            owner.clone(),
+                        )
+                        .filter(|proxy| {
+                            proxy.component()
+                                == echo_sdk_protocol::methods::AgentComponentKindWire::Workflow
+                        })
+                        .ok_or_else(|| {
+                            facade_error(
+                                ExtensionErrorCode::InvalidValue,
+                                "extension is not a Workflow component",
+                                Retryability::Never,
+                                method,
+                                FacadeFailureDetail::default(),
+                            )
+                        })?;
+                    if request.operation == "workflow.extension.run_stream" {
+                        use futures::StreamExt as _;
+                        let (anchor, _) = state.handles.register_facade_resource(
+                            state.limits.max_facade_resources,
+                            "workflow",
+                            "workflow.extension_stream",
+                            Some(&owner),
+                            method,
+                        )?;
+                        let producer = match state.facade.streams.open_ephemeral(
+                            &state.handles,
+                            &anchor,
+                            &owner,
+                            &request.operation,
+                        ) {
+                            Ok(producer) => producer,
+                            Err(error) => {
+                                let _ = state.handles.close_facade_resource(&anchor, method);
+                                return Err(error);
+                            }
+                        };
+                        let sender = producer.sender.clone();
+                        let cancel = producer.cleanup.clone();
+                        let original_owner = producer.clone();
+                        let background = tokio::spawn(async move {
+                            let source = proxy
+                                .run_stream_observed(
+                                    &input,
+                                    cancel.clone(),
+                                    Some(original_owner.clone()),
+                                )
+                                .await;
+                            let mut source = match source {
+                                Ok(source) => source.fuse(),
+                                Err(error) => {
+                                    let error =
+                                        wire::framework_error(&error, "_echo_agent/workflow/op");
+                                    if !original_owner.record_observation(&error) {
+                                        let _ = sender.send(Err(error)).await;
+                                    }
+                                    return;
+                                }
+                            };
+                            loop {
+                                let item = tokio::select! {
+                                    () = cancel.cancelled() => break,
+                                    item = source.next() => item,
+                                };
+                                let Some(item) = item else { return };
+                                let item = item
+                                    .map_err(|error| {
+                                        wire::framework_error(&error, "_echo_agent/workflow/op")
+                                    })
+                                    .and_then(workflow::workflow_event_value);
+                                if let Err(error) = &item
+                                    && original_owner.record_observation(error)
+                                {
+                                    // Observation leaves the original producer alive;
+                                    // keep forwarding its eventual Completed payload.
+                                    continue;
+                                }
+                                let sent = tokio::select! {
+                                    () = cancel.cancelled() => false,
+                                    result = sender.send(item) => result.is_ok(),
+                                };
+                                if !sent {
+                                    cancel.cancel();
+                                    break;
+                                }
+                            }
+                            while let Some(event) = source.next().await {
+                                if let Err(error) = event {
+                                    original_owner.record_observation(&wire::framework_error(
+                                        &error,
+                                        "_echo_agent/workflow/op",
+                                    ));
+                                }
+                            }
+                        });
+                        state
+                            .facade
+                            .streams
+                            .attach_background(&producer, background);
+                        return response(Ok(WireValue::Handle(producer.handle)));
+                    }
+                    let output = proxy.run(&input).await.map_err(|error| {
+                        if matches!(
+                            &error,
+                            echo_agent::error::ReactError::ExecutionNotSettled { .. }
+                        ) {
+                            return wire::framework_error(&error, method);
+                        }
+                        wire::sdk_error(
+                            ExtensionErrorCode::FrameworkError,
+                            wire::bounded_framework_message(&error.to_string()),
+                            Retryability::Never,
+                            method,
+                        )
+                    })?;
+                    let output = serde_json::to_value(output).map_err(|error| {
+                        wire::sdk_error(
+                            ExtensionErrorCode::SerializationViolation,
+                            error.to_string(),
+                            Retryability::Never,
+                            method,
+                        )
+                    })?;
+                    return response(WireValue::from_json(output).map_err(|error| {
+                        wire::sdk_error(
+                            ExtensionErrorCode::SerializationViolation,
+                            error.to_string(),
+                            Retryability::Never,
+                            method,
+                        )
+                    }));
+                }
+                #[cfg(feature = "sdk-extension-bridge")]
+                let checkpoint_store =
+                    crate::core_profile::extension_bridge::latest_agent_component_proxy(
+                        state,
+                        state.extension_bridge.clone(),
+                        &owner,
+                        echo_sdk_protocol::methods::AgentComponentKindWire::WorkflowCheckpointStore,
+                    )
+                    .map(|proxy| Arc::new(proxy) as Arc<dyn echo_agent::workflow::CheckpointStore>);
+                #[cfg(not(feature = "sdk-extension-bridge"))]
+                let checkpoint_store = None;
+                response(
+                    workflow::dispatch(
+                        &state.handles,
+                        &state.facade.workflow_graphs,
+                        &state.facade.workflow_states,
+                        &state.facade.streams,
+                        &authorities,
+                        checkpoint_store,
+                        &owner,
+                        &request,
+                        limits,
+                    )
+                    .await,
+                )
+            }
+            "state" => response(state_delivery::dispatch_state(&state.state_store, &request).await),
+            #[cfg(feature = "framework-telemetry")]
+            "telemetry" => response(telemetry::dispatch(state.clone(), &request).await),
+            "delivery" => {
+                let (_authorities, owner) = session.ok_or_else(missing_session)?;
+                response(
+                    state_delivery::dispatch_delivery(
+                        &state.handles,
+                        &state.facade.delivery_ledgers,
+                        &owner,
+                        &request,
+                        limits,
+                    )
+                    .await,
+                )
+            }
+            "trace" => {
+                let (_authorities, owner) = session.ok_or_else(missing_session)?;
+                response(
+                    observability::dispatch_trace(
+                        &state.handles,
+                        &state.facade.trace_stores,
+                        &owner,
+                        &request,
+                        limits,
+                    )
+                    .await,
+                )
+            }
+            #[cfg(feature = "framework-eval")]
+            "eval" => response(observability::dispatch_eval(&request).await),
+            #[cfg(feature = "framework-improve")]
+            "improve" => response(observability::dispatch_improve(&request).await),
+            #[cfg(feature = "framework-human-loop")]
+            "permission" => {
+                let (_authorities, _owner) = session.ok_or_else(missing_session)?;
+                response(permission::dispatch(state, &request).await)
+            }
+            #[cfg(feature = "framework-content-guard")]
+            "content_guard" => response(tools::dispatch_content_guard(&request)),
+            #[cfg(feature = "framework-project-rules")]
+            "project_rules" => {
+                let (authorities, _owner) = session.ok_or_else(missing_session)?;
+                response(tools::dispatch_project_rules(
+                    &authorities.working_dir,
+                    &request,
+                ))
+            }
+            "mcp" | "a2a" | "lsp" | "topology" => {
+                let (_authorities, owner) = session.ok_or_else(missing_session)?;
+                response(
+                    integrations::dispatch(
+                        &state.handles,
+                        &family,
+                        &state.facade.integrations,
+                        &state.facade.streams,
+                        &owner,
+                        &request,
+                        limits.max_resources,
+                    )
+                    .await,
+                )
+            }
+            #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
+            "channels" => {
+                let (_authorities, owner) = session.ok_or_else(missing_session)?;
+                response(
+                    integrations::dispatch_channels(
+                        &state.handles,
+                        &state.facade.integrations,
+                        &state.facade.streams,
+                        &state.extension_bridge,
+                        &owner,
+                        &request,
+                        limits.max_resources,
+                    )
+                    .await,
+                )
+            }
             #[cfg(feature = "sdk-extension-bridge")]
-            if matches!(
-                request.operation.as_str(),
-                "workflow.extension.run" | "workflow.extension.run_stream"
-            ) {
-                use echo_agent::workflow::Workflow as _;
+            "shell"
+                if matches!(
+                    request.operation.as_str(),
+                    "sandbox.extension.run_stream" | "shell.sandbox.extension.run_stream"
+                ) =>
+            {
+                let (_authorities, owner) = session.ok_or_else(missing_session)?;
+                if request.arguments.len() != 2 {
+                    return Err(facade_error(
+                        ExtensionErrorCode::InvalidValue,
+                        "sandbox.extension.run_stream requires [SandboxExecutor extension, command]",
+                        Retryability::Never,
+                        method,
+                        FacadeFailureDetail::default(),
+                    ));
+                }
                 let extension = match request.arguments.first() {
                     Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
                         handle.clone()
@@ -1581,26 +2040,49 @@ async fn facade_admission(
                     _ => {
                         return Err(facade_error(
                             ExtensionErrorCode::InvalidValue,
-                            "workflow.extension.run requires a Workflow extension handle",
+                            "sandbox.extension.run_stream requires an Extension handle",
                             Retryability::Never,
                             method,
                             FacadeFailureDetail::default(),
                         ));
                     }
                 };
-                let input = match request.arguments.get(1) {
-                    Some(WireValue::String(input)) => input.clone(),
-                    _ => {
-                        return Err(facade_error(
+                let command = request
+                    .arguments
+                    .get(1)
+                    .cloned()
+                    .ok_or_else(|| {
+                        facade_error(
                             ExtensionErrorCode::InvalidValue,
-                            "workflow.extension.run requires input text",
+                            "sandbox command is missing",
                             Retryability::Never,
                             method,
                             FacadeFailureDetail::default(),
-                        ));
-                    }
-                };
-                let mut proxy =
+                        )
+                    })?
+                    .into_json()
+                    .map_err(|error| {
+                        facade_error(
+                            ExtensionErrorCode::InvalidValue,
+                            error.to_string(),
+                            Retryability::Never,
+                            method,
+                            FacadeFailureDetail::default(),
+                        )
+                    })
+                    .and_then(|value| {
+                        serde_json::from_value::<echo_agent::sandbox::SandboxCommand>(value)
+                            .map_err(|error| {
+                                facade_error(
+                                    ExtensionErrorCode::InvalidValue,
+                                    format!("sandbox command is malformed: {error}"),
+                                    Retryability::Never,
+                                    method,
+                                    FacadeFailureDetail::default(),
+                                )
+                            })
+                    })?;
+                let proxy =
                     crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
                         state.extension_bridge.clone(),
                         extension,
@@ -1608,387 +2090,101 @@ async fn facade_admission(
                     )
                     .filter(|proxy| {
                         proxy.component()
-                            == echo_sdk_protocol::methods::AgentComponentKindWire::Workflow
+                            == echo_sdk_protocol::methods::AgentComponentKindWire::SandboxExecutor
                     })
                     .ok_or_else(|| {
                         facade_error(
                             ExtensionErrorCode::InvalidValue,
-                            "extension is not a Workflow component",
+                            "extension is not a SandboxExecutor component",
                             Retryability::Never,
                             method,
                             FacadeFailureDetail::default(),
                         )
                     })?;
-                if request.operation == "workflow.extension.run_stream" {
-                    use futures::StreamExt as _;
-                    let (anchor, _) = state.handles.register_facade_resource(
-                        state.limits.max_facade_resources,
-                        "workflow",
-                        "workflow.extension_stream",
-                        Some(&owner),
-                        method,
-                    )?;
-                    let producer = match state.facade.streams.open_ephemeral(
-                        &state.handles,
-                        &anchor,
-                        &owner,
-                        &request.operation,
-                    ) {
-                        Ok(producer) => producer,
-                        Err(error) => {
-                            let _ = state.handles.close_facade_resource(&anchor, method);
-                            return Err(error);
-                        }
-                    };
-                    let sender = producer.sender.clone();
-                    let cancel = producer.cancel.clone();
-                    let background = tokio::spawn(async move {
-                        let source = proxy.run_stream(&input).await;
-                        let mut source = match source {
-                            Ok(source) => source,
-                            Err(error) => {
-                                let _ = sender
-                                    .send(Err(wire::sdk_error(
-                                        ExtensionErrorCode::FrameworkError,
-                                        wire::bounded_framework_message(&error.to_string()),
-                                        Retryability::Never,
-                                        "_echo_agent/workflow/op",
-                                    )))
-                                    .await;
-                                return;
-                            }
-                        };
-                        loop {
-                            let item = tokio::select! {
-                                () = cancel.cancelled() => break,
-                                item = source.next() => item,
-                            };
-                            let Some(item) = item else { break };
-                            let item = item
-                                .map_err(|error| {
-                                    wire::sdk_error(
-                                        ExtensionErrorCode::FrameworkError,
-                                        wire::bounded_framework_message(&error.to_string()),
-                                        Retryability::Never,
-                                        "_echo_agent/workflow/op",
-                                    )
-                                })
-                                .and_then(workflow::workflow_event_value);
-                            if sender.send(item).await.is_err() {
-                                break;
-                            }
-                        }
-                    });
-                    state
-                        .facade
-                        .streams
-                        .attach_background(&producer, background);
-                    return response(Ok(WireValue::Handle(producer.handle)));
-                }
-                let output = proxy.run(&input).await.map_err(|error| {
-                    wire::sdk_error(
-                        ExtensionErrorCode::FrameworkError,
-                        wire::bounded_framework_message(&error.to_string()),
-                        Retryability::Never,
-                        method,
-                    )
-                })?;
-                let output = serde_json::to_value(output).map_err(|error| {
-                    wire::sdk_error(
-                        ExtensionErrorCode::SerializationViolation,
-                        error.to_string(),
-                        Retryability::Never,
-                        method,
-                    )
-                })?;
-                return response(WireValue::from_json(output).map_err(|error| {
-                    wire::sdk_error(
-                        ExtensionErrorCode::SerializationViolation,
-                        error.to_string(),
-                        Retryability::Never,
-                        method,
-                    )
-                }));
-            }
-            #[cfg(feature = "sdk-extension-bridge")]
-            let checkpoint_store =
-                crate::core_profile::extension_bridge::latest_agent_component_proxy(
-                    state,
-                    state.extension_bridge.clone(),
-                    &owner,
-                    echo_sdk_protocol::methods::AgentComponentKindWire::WorkflowCheckpointStore,
-                )
-                .map(|proxy| Arc::new(proxy) as Arc<dyn echo_agent::workflow::CheckpointStore>);
-            #[cfg(not(feature = "sdk-extension-bridge"))]
-            let checkpoint_store = None;
-            response(
-                workflow::dispatch(
-                    &state.handles,
-                    &state.facade.workflow_graphs,
-                    &state.facade.workflow_states,
-                    &state.facade.streams,
-                    &authorities,
-                    checkpoint_store,
-                    &owner,
-                    &request,
-                    limits,
-                )
-                .await,
-            )
-        }
-        "state" => response(state_delivery::dispatch_state(&state.state_store, &request).await),
-        #[cfg(feature = "framework-telemetry")]
-        "telemetry" => response(telemetry::dispatch(&request)),
-        "delivery" => {
-            let (_authorities, owner) = session.ok_or_else(missing_session)?;
-            response(
-                state_delivery::dispatch_delivery(
-                    &state.handles,
-                    &state.facade.delivery_ledgers,
-                    &owner,
-                    &request,
-                    limits,
-                )
-                .await,
-            )
-        }
-        "trace" => {
-            let (_authorities, owner) = session.ok_or_else(missing_session)?;
-            response(
-                observability::dispatch_trace(
-                    &state.handles,
-                    &state.facade.trace_stores,
-                    &owner,
-                    &request,
-                    limits,
-                )
-                .await,
-            )
-        }
-        #[cfg(feature = "framework-eval")]
-        "eval" => response(observability::dispatch_eval(&request).await),
-        #[cfg(feature = "framework-improve")]
-        "improve" => response(observability::dispatch_improve(&request).await),
-        #[cfg(feature = "framework-human-loop")]
-        "permission" => {
-            let (_authorities, _owner) = session.ok_or_else(missing_session)?;
-            response(permission::dispatch(state, &request).await)
-        }
-        #[cfg(feature = "framework-content-guard")]
-        "content_guard" => response(tools::dispatch_content_guard(&request)),
-        #[cfg(feature = "framework-project-rules")]
-        "project_rules" => {
-            let (authorities, _owner) = session.ok_or_else(missing_session)?;
-            response(tools::dispatch_project_rules(
-                &authorities.working_dir,
-                &request,
-            ))
-        }
-        "mcp" | "a2a" | "lsp" | "topology" => {
-            let (_authorities, owner) = session.ok_or_else(missing_session)?;
-            response(
-                integrations::dispatch(
-                    &state.handles,
-                    &family,
-                    &state.facade.integrations,
-                    &state.facade.streams,
-                    &owner,
-                    &request,
-                    limits.max_resources,
-                )
-                .await,
-            )
-        }
-        #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
-        "channels" => {
-            let (_authorities, owner) = session.ok_or_else(missing_session)?;
-            response(
-                integrations::dispatch_channels(
-                    &state.handles,
-                    &state.facade.integrations,
-                    &state.extension_bridge,
-                    &owner,
-                    &request,
-                    limits.max_resources,
-                )
-                .await,
-            )
-        }
-        #[cfg(feature = "sdk-extension-bridge")]
-        "shell" if request.operation == "shell.sandbox.extension.run_stream" => {
-            use echo_agent::sandbox::SandboxExecutor as _;
-            use futures::StreamExt as _;
-            let (_authorities, owner) = session.ok_or_else(missing_session)?;
-            if request.arguments.len() != 2 {
-                return Err(facade_error(
-                    ExtensionErrorCode::InvalidValue,
-                    "sandbox.extension.run_stream requires [SandboxExecutor extension, command]",
-                    Retryability::Never,
+                let (anchor, _) = state.handles.register_facade_resource(
+                    state.limits.max_facade_resources,
+                    "shell",
+                    "shell.sandbox_extension_stream",
+                    Some(&owner),
                     method,
-                    FacadeFailureDetail::default(),
-                ));
-            }
-            let extension = match request.arguments.first() {
-                Some(WireValue::Handle(handle)) if handle.kind == HandleKind::Extension => {
-                    handle.clone()
-                }
-                _ => {
-                    return Err(facade_error(
-                        ExtensionErrorCode::InvalidValue,
-                        "sandbox.extension.run_stream requires an Extension handle",
-                        Retryability::Never,
-                        method,
-                        FacadeFailureDetail::default(),
-                    ));
-                }
-            };
-            let command = request
-                .arguments
-                .get(1)
-                .cloned()
-                .ok_or_else(|| {
-                    facade_error(
-                        ExtensionErrorCode::InvalidValue,
-                        "sandbox command is missing",
-                        Retryability::Never,
-                        method,
-                        FacadeFailureDetail::default(),
-                    )
-                })?
-                .into_json()
-                .map_err(|error| {
-                    facade_error(
-                        ExtensionErrorCode::InvalidValue,
-                        error.to_string(),
-                        Retryability::Never,
-                        method,
-                        FacadeFailureDetail::default(),
-                    )
-                })
-                .and_then(|value| {
-                    serde_json::from_value::<echo_agent::sandbox::SandboxCommand>(value).map_err(
-                        |error| {
-                            facade_error(
-                                ExtensionErrorCode::InvalidValue,
-                                format!("sandbox command is malformed: {error}"),
-                                Retryability::Never,
-                                method,
-                                FacadeFailureDetail::default(),
-                            )
-                        },
-                    )
-                })?;
-            let proxy = crate::core_profile::extension_bridge::ExtensionAgentComponentProxy::new(
-                state.extension_bridge.clone(),
-                extension,
-                owner.clone(),
-            )
-            .filter(|proxy| {
-                proxy.component()
-                    == echo_sdk_protocol::methods::AgentComponentKindWire::SandboxExecutor
-            })
-            .ok_or_else(|| {
-                facade_error(
-                    ExtensionErrorCode::InvalidValue,
-                    "extension is not a SandboxExecutor component",
-                    Retryability::Never,
-                    method,
-                    FacadeFailureDetail::default(),
-                )
-            })?;
-            let (anchor, _) = state.handles.register_facade_resource(
-                state.limits.max_facade_resources,
-                "shell",
-                "shell.sandbox_extension_stream",
-                Some(&owner),
-                method,
-            )?;
-            let producer = match state.facade.streams.open_ephemeral(
-                &state.handles,
-                &anchor,
-                &owner,
-                &request.operation,
-            ) {
-                Ok(producer) => producer,
-                Err(error) => {
-                    let _ = state.handles.close_facade_resource(&anchor, method);
-                    return Err(error);
-                }
-            };
-            let sender = producer.sender.clone();
-            let cancel = producer.cancel.clone();
-            let background = tokio::spawn(async move {
-                let source = proxy.execute_stream(command).await;
-                let mut source = match source {
-                    Ok(source) => source,
+                )?;
+                let producer = match state.facade.streams.open_ephemeral_cooperative(
+                    &state.handles,
+                    &anchor,
+                    &owner,
+                    &request.operation,
+                ) {
+                    Ok(producer) => producer,
                     Err(error) => {
-                        let _ = sender
-                            .send(Err(wire::sdk_error(
-                                ExtensionErrorCode::FrameworkError,
-                                wire::bounded_framework_message(&error.to_string()),
-                                Retryability::Never,
-                                "_echo_agent/shell/op",
-                            )))
-                            .await;
-                        return;
+                        let _ = state.handles.close_facade_resource(&anchor, method);
+                        return Err(error);
                     }
                 };
-                loop {
-                    let item = tokio::select! {
-                        () = cancel.cancelled() => break,
-                        item = source.next() => item,
+                let sender = producer.sender.clone();
+                let cancel = producer.cleanup.clone();
+                let original_owner = producer.clone();
+                let background = tokio::spawn(async move {
+                    let source = proxy
+                        .execute_stream_with_cancel(
+                            command,
+                            cancel.clone(),
+                            Some(original_owner.clone()),
+                        )
+                        .await;
+                    let source = match source {
+                        Ok(source) => source,
+                        Err(error) => {
+                            let error = wire::framework_error(&error, "_echo_agent/shell/op");
+                            if !original_owner.record_observation(&error) {
+                                let _ = sender.send(Err(error)).await;
+                            }
+                            return;
+                        }
                     };
-                    let Some(event) = item else { break };
-                    let item = serde_json::to_value(event)
-                        .map_err(|error| {
-                            wire::sdk_error(
-                                ExtensionErrorCode::SerializationViolation,
-                                error.to_string(),
-                                Retryability::Never,
-                                "_echo_agent/shell/op",
-                            )
-                        })
-                        .and_then(|value| {
-                            WireValue::from_json(value).map_err(|error| {
-                                wire::sdk_error(
-                                    ExtensionErrorCode::SerializationViolation,
-                                    error.to_string(),
-                                    Retryability::Never,
-                                    "_echo_agent/shell/op",
-                                )
-                            })
-                        });
-                    if sender.send(item).await.is_err() {
-                        break;
-                    }
-                }
-            });
-            state
-                .facade
-                .streams
-                .attach_background(&producer, background);
-            response(Ok(WireValue::Handle(producer.handle)))
-        }
-        "source_operation" => {
-            response(source_operations::dispatch(state, &state.handles, &request).await)
-        }
-        tool_family if tools::TOOL_FAMILIES.contains(&tool_family) => {
-            let (authorities, owner) = session.ok_or_else(missing_session)?;
-            response(
-                tools::dispatch_tool(tool_family, &authorities, &owner, &state.facade, &request)
+                    drive_sandbox_facade_source(source, sender, cancel).await;
+                });
+                state
+                    .facade
+                    .streams
+                    .attach_background(&producer, background);
+                response(Ok(WireValue::Handle(producer.handle)))
+            }
+            "source_operation" => response(
+                Box::pin(source_operations::dispatch(state, &state.handles, &request)).await,
+            ),
+            tool_family if tools::TOOL_FAMILIES.contains(&tool_family) => {
+                let (authorities, owner) = session.ok_or_else(missing_session)?;
+                response(
+                    tools::dispatch_tool(
+                        tool_family,
+                        &authorities,
+                        &owner,
+                        &state.facade,
+                        &request,
+                    )
                     .await,
-            )
+                )
+            }
+            _ => Err(facade_error(
+                ExtensionErrorCode::FeatureUnavailable,
+                format!("facade family {family} is not available in this Host build"),
+                Retryability::Never,
+                method,
+                FacadeFailureDetail {
+                    required_feature,
+                    ..FacadeFailureDetail::default()
+                },
+            )),
         }
-        _ => Err(facade_error(
-            ExtensionErrorCode::FeatureUnavailable,
-            format!("facade family {family} is not available in this Host build"),
-            Retryability::Never,
-            method,
-            FacadeFailureDetail {
-                required_feature,
-                ..FacadeFailureDetail::default()
-            },
-        )),
+    });
+    if let Some(record) = session_record.as_ref() {
+        tokio::select! {
+            result = dispatch => result,
+            _ = record.cancel_operations.cancelled() => Err(wire::sdk_error(
+                ExtensionErrorCode::ClosedHandle, "Session closed during operation", Retryability::Never, method)),
+        }
+    } else {
+        dispatch.await
     }
 }
 
@@ -1997,6 +2193,59 @@ async fn facade_admission(
 /// resources are owner-checked against it). Family operations address
 /// their session through the request handle (kind `session`); without it
 /// the Host refuses to guess.
+/// Project and drain this one original Sandbox producer. The EOF regression
+/// uses the production path, with no second stream lifecycle implementation.
+#[cfg(feature = "sdk-extension-bridge")]
+async fn drive_sandbox_facade_source<S>(
+    source: S,
+    sender: tokio::sync::mpsc::Sender<stream::FacadeStreamItem>,
+    cancel: tokio_util::sync::CancellationToken,
+) where
+    S: futures::Stream<Item = echo_agent::sandbox::SandboxStreamEvent> + Unpin,
+{
+    use futures::StreamExt as _;
+    // Draining cancellation shares this same source. A
+    // natural EOF must remain EOF when cleanup polls again.
+    let mut source = source.fuse();
+    loop {
+        let item = tokio::select! {
+            () = cancel.cancelled() => break,
+            item = source.next() => item,
+        };
+        // Natural EOF closes the sender and preserves queued payloads. It
+        // does not request cancellation from the facade consumer.
+        let Some(event) = item else { return };
+        let item = serde_json::to_value(event)
+            .map_err(|error| {
+                wire::sdk_error(
+                    ExtensionErrorCode::SerializationViolation,
+                    error.to_string(),
+                    Retryability::Never,
+                    "_echo_agent/shell/op",
+                )
+            })
+            .and_then(|value| {
+                WireValue::from_json(value).map_err(|error| {
+                    wire::sdk_error(
+                        ExtensionErrorCode::SerializationViolation,
+                        error.to_string(),
+                        Retryability::Never,
+                        "_echo_agent/shell/op",
+                    )
+                })
+            });
+        let sent = tokio::select! {
+            () = cancel.cancelled() => false,
+            sent = sender.send(item) => sent.is_ok(),
+        };
+        if !sent {
+            break;
+        }
+    }
+    cancel.cancel();
+    while source.next().await.is_some() {}
+}
+
 async fn session_authorities_of(
     state: &CoreProfileState,
     request: &echo_sdk_protocol::methods::FeatureOperationRequest,
@@ -2026,6 +2275,164 @@ async fn session_authorities_of(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Real official ACP/profile forward -> reverse -> forward projection.
+    /// The foreign work starts inside its callback and stays held; this tests
+    /// error identity and original admission, not normal transport shutdown.
+    #[cfg(feature = "sdk-extension-bridge")]
+    #[tokio::test]
+    async fn workflow_direct_run_preserves_observation_while_original_work_is_held()
+    -> Result<(), String> {
+        use agent_client_protocol::{
+            Agent as AcpAgent, ByteStreams, Client, ConnectionTo, Responder, UntypedMessage,
+        };
+        use echo_sdk_protocol::methods::*;
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+        use tokio_util::sync::CancellationToken;
+        struct OriginalWorkGuard(Arc<AtomicUsize>);
+        impl Drop for OriginalWorkGuard {
+            fn drop(&mut self) {
+                self.0.fetch_add(1, Ordering::AcqRel);
+            }
+        }
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({"schema_version":1,"default_agent":{
+            "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
+            "agent":{"name":"fixture","enable_tools":true}}})).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )
+        .map_err(|error| error.to_string())?;
+        let profile = super::super::SdkCoreProfile {
+            state: state.clone(),
+        };
+        let adapter = echo_agent::acp::AcpAgentAdapter::new(state.session_factory.clone())
+            .with_profile(profile);
+        let close_owner = adapter.close_owner();
+        let entered = CancellationToken::new();
+        let release = CancellationToken::new();
+        let finish = CancellationToken::new();
+        let drops = Arc::new(AtomicUsize::new(0));
+        let calls = Arc::new(AtomicUsize::new(0));
+        let original = Arc::new(std::sync::Mutex::new(None::<tokio::task::JoinHandle<()>>));
+        let known_error = Arc::new(std::sync::Mutex::new(None::<EchoSdkError>));
+        let (host_io, client_io) = tokio::io::duplex(32_768);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (client_read, client_write) = tokio::io::split(client_io);
+        let host = agent_client_protocol::ConnectTo::connect_to(
+            adapter,
+            ByteStreams::new(host_write.compat_write(), host_read.compat()),
+        );
+        let (observed_tx, observed_rx) = tokio::sync::oneshot::channel::<Result<(), String>>();
+        let client = Client.builder().on_receive_request({
+            let entered=entered.clone();let release=release.clone();let drops=drops.clone();let calls=calls.clone();let original=original.clone();let known_error=known_error.clone();
+            async move |call: ExtensionInvokeCall, responder: Responder<ExtensionInvokeOutcome>, _connection: ConnectionTo<AcpAgent>| {
+                let error = match call.invocation {
+                    ExtensionInvocation::AgentComponentCall(AgentComponentCallWire {component: AgentComponentKindWire::Workflow, call: AgentComponentCallInputWire::WorkflowRun {input}}) => {
+                        calls.fetch_add(1, Ordering::AcqRel);
+                        if input == "ordinary" {
+                            wire::sdk_error(ExtensionErrorCode::ExtensionFailed, "ordinary workflow failure 中文🙂", Retryability::Never, "_echo_agent/extension/invoke")
+                        } else {
+                            // Identities belong to this actual foreign work admission,
+                            // never to the JSON-RPC request id or a guessed SDK Task.
+                            let run_id=format!("workflow-original-{}-中文🙂",uuid::Uuid::new_v4());
+                            let execution_id=format!("workflow-execution-{}-🧪",uuid::Uuid::new_v4());
+                            let error=wire::not_settled_error(&run_id,Some(&execution_id),"_echo_agent/extension/invoke");
+                            *known_error.lock().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?=Some(error.clone());
+                            let guard=OriginalWorkGuard(drops.clone());let owner_release=release.clone();let owner_entered=entered.clone();
+                            let task=tokio::spawn(async move {let _guard=guard;owner_entered.cancel();owner_release.cancelled().await;});
+                            *original.lock().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?=Some(task);
+                            entered.cancelled().await;
+                            error
+                        }
+                    }
+                    _ => return Err(agent_client_protocol::Error::internal_error().data("unexpected Workflow projection callback")),
+                };
+                responder.respond(ExtensionInvokeOutcome::Error {error})
+            }
+        }, agent_client_protocol::on_receive_request!()).connect_with(ByteStreams::new(client_write.compat_write(), client_read.compat()), {
+            let finish=finish.clone();let release=release.clone();let drops=drops.clone();let entered=entered.clone();let calls=calls.clone();let known_error=known_error.clone();
+            async move |connection| {
+                let _release_on_exit=release.clone().drop_guard();
+                let observed=async {
+                    let mut initialize=agent_client_protocol::schema::v1::InitializeRequest::new(agent_client_protocol::schema::ProtocolVersion::V1);
+                    let mut meta=agent_client_protocol::schema::v1::Meta::new();
+                    meta.insert("echo_agent".to_string(),serde_json::to_value(echo_sdk_protocol::capability::EchoAgentClientHello {
+                        extension_protocol_version:echo_sdk_protocol::EXTENSION_PROTOCOL_VERSION,contract_digest:state.advertisement.contract_digest.clone(),source_contract_digest:state.advertisement.source_contract_digest.clone(),required_features:Vec::new(),required_capabilities:Vec::new()
+                    }).map_err(|error| error.to_string())?);
+                    initialize.client_capabilities.meta=Some(meta);connection.send_request(initialize).block_task().await.map_err(|error| error.to_string())?;
+                    let agent=connection.send_request(AgentCreateRequest {config:AgentConfigWire::HostDefault,idempotency_id:None}).block_task().await.map_err(|error| error.to_string())?.agent;
+                    let session=connection.send_request(SessionCreateRequest {agent,working_dir:None,session_id:None,idempotency_id:None}).block_task().await.map_err(|error| error.to_string())?.session;
+                    for mode in ["ordinary","observation"] {
+                        let extension=connection.send_request(ExtensionRegisterRequest {kind:ExtensionKind::AgentComponent,implementation_id:format!("workflow-projection-{mode}"),descriptor:ExtensionDescriptor::AgentComponent {descriptor_version:1,component:AgentComponentKindWire::Workflow,name:format!("workflow-projection-{mode}"),capabilities:Default::default()},timeout:None}).block_task().await.map_err(|error| error.to_string())?.extension;
+                        let params=serde_json::to_value(FeatureOperationRequest {operation:"workflow.extension.run".to_string(),signature_digest:echo_sdk_protocol::facade::family_operation_signature_digest("workflow","workflow.extension.run"),handle:Some(session.clone()),arguments:vec![WireValue::Handle(extension),WireValue::String(mode.to_string())]}).map_err(|error| error.to_string())?;
+                        let result=connection.send_request(UntypedMessage::new("_echo_agent/workflow/op",params).map_err(|error| error.to_string())?).block_task().await;
+                        let rpc_error=match result {Ok(_)=>return Err("Workflow projection manufactured success".to_string()),Err(error)=>error};
+                        let observed=EchoSdkError::from_jsonrpc_data(rpc_error.data.as_ref())?;
+                        let expected=if mode=="observation" {
+                            if !entered.is_cancelled()||release.is_cancelled()||drops.load(Ordering::Acquire)!=0 {return Err("observation did not originate in still-held callback work".to_string());}
+                            let mut expected=known_error.lock().map_err(|error| error.to_string())?.clone().ok_or("original callback error missing")?;
+                            expected.operation=Some("_echo_agent/workflow/op".to_string());expected
+                        } else {
+                            wire::sdk_error(ExtensionErrorCode::FrameworkError,"extension bridge failure extension_failed: ordinary workflow failure 中文🙂",Retryability::Never,"_echo_agent/workflow/op")
+                        };
+                        if observed!=expected {return Err(format!("Workflow direct-run projection lost original typed facts for {mode}: observed={observed:?}; expected={expected:?}"));}
+                        let expected_in_flight=usize::from(mode=="observation");
+                        if state.services().map_err(|error| error.to_string())?.extensions().in_flight()!=expected_in_flight||drops.load(Ordering::Acquire)!=0 {return Err("direct run changed the ordinary settlement or original unknown admission/physical work".to_string());}
+                    }
+                    if calls.load(Ordering::Acquire)!=2 {return Err("projection counter did not execute exactly its two real callbacks".to_string());}
+                    Ok(())
+                }.await;
+                observed_tx.send(observed).map_err(|_| agent_client_protocol::Error::internal_error().data("Workflow projection result observer disappeared"))?;
+                finish.cancelled().await;
+                Ok(())
+            }
+        });
+        tokio::pin!(host, client, observed_rx);
+        let observed = tokio::select! {
+            biased;
+            result=&mut observed_rx=>result.unwrap_or_else(|error| Err(error.to_string())),
+            result=&mut host=>Err(format!("Workflow projection Host transport ended before evidence: {result:?}")),
+            result=&mut client=>Err(format!("Workflow projection SDK transport ended before evidence: {result:?}")),
+            ()=tokio::time::sleep(std::time::Duration::from_secs(8))=>Err("Workflow projection actual RPC did not finish".to_string()),
+        };
+        release.cancel();
+        let task = original.lock().map_err(|error| error.to_string())?.take();
+        if let Some(task) = task {
+            tokio::time::timeout(std::time::Duration::from_secs(2), task)
+                .await
+                .map_err(|error| error.to_string())?
+                .map_err(|error| error.to_string())?;
+            if drops.load(Ordering::Acquire) != 1 {
+                return Err("original callback work did not join exactly once".to_string());
+            }
+        }
+        finish.cancel();
+        // Dropping these test-owned transports is teardown, not a physical
+        // receipt or a claim that permanent foreign uncertainty was settled.
+        drop(close_owner);
+        observed
+    }
+
+    #[test]
+    fn family_handle_argument_retains_opaque_resource_address() -> Result<(), String> {
+        let handle = echo_sdk_protocol::handle::WireHandle {
+            id: "resource-中文-🧭".to_string(),
+            generation: echo_sdk_protocol::scalar::WireU64::from_u64(u64::MAX),
+            kind: echo_sdk_protocol::handle::HandleKind::FacadeResource,
+        };
+        let value = echo_sdk_protocol::scalar::WireValue::Handle(handle.clone());
+        let arguments = [family_argument_json(&value).map_err(|error| error.to_string())?];
+        let restored = resource_handle_at(&arguments, 0, "a resource", "_echo_agent/lsp/op")
+            .map_err(|error| error.message)?;
+        assert_eq!(restored, handle);
+        Ok(())
+    }
 
     #[test]
     fn only_compiled_methods_are_owned() {
@@ -2088,7 +2495,12 @@ mod tests {
                 Arc::new(tools::RagToolSet::for_test()),
             );
 
-        runtime.drop_session_resources_of("session-a", &[]).await;
+        assert!(
+            runtime
+                .drop_session_resources_of(&HandleRegistry::new(1, 8), "session-a", &[])
+                .await
+                .is_ok()
+        );
         {
             let rag_tools = runtime
                 .rag_tools
@@ -2098,7 +2510,7 @@ mod tests {
             assert!(rag_tools.contains_key("session-b"));
         }
 
-        runtime.close_all(&HandleRegistry::new(1, 8)).await;
+        assert!(runtime.close_all(&HandleRegistry::new(1, 8)).await.is_ok());
         assert!(
             runtime
                 .rag_tools
@@ -2106,5 +2518,72 @@ mod tests {
                 .unwrap_or_else(|error| error.into_inner())
                 .is_empty()
         );
+    }
+
+    #[tokio::test]
+    async fn sandbox_producer_eof_and_cleanup_drain_share_a_fused_actual_source()
+    -> Result<(), String> {
+        use futures::StreamExt as _;
+        let source = futures::stream::unfold(false, |emitted| async move {
+            if emitted {
+                None
+            } else {
+                Some(("actual-output", true))
+            }
+        });
+        let mut source = Box::pin(source.fuse());
+        let mut observed = Vec::new();
+        while let Some(value) = source.next().await {
+            observed.push(value);
+        }
+        // This is the production normal-EOF then cleanup-drain order. Plain
+        // Unfold panics on this additional poll after its completed None.
+        while source.next().await.is_some() {}
+        assert_eq!(observed, vec!["actual-output"]);
+        Ok(())
+    }
+    #[cfg(feature = "sdk-extension-bridge")]
+    #[tokio::test]
+    async fn sandbox_natural_eof_preserves_queued_complete_without_cleanup_cancellation()
+    -> Result<(), String> {
+        let result = echo_agent::sandbox::ExecutionResult {
+            exit_code: 0,
+            stdout: "completed output".to_string(),
+            stderr: String::new(),
+            duration: std::time::Duration::ZERO,
+            sandbox_type: "original".to_string(),
+            timed_out: false,
+            cancelled: false,
+            output_truncated: false,
+            stdout_bytes: 16,
+            stderr_bytes: 0,
+        };
+        let source = futures::stream::unfold(Some(result), |pending| async move {
+            pending.map(|value| {
+                (
+                    echo_agent::sandbox::SandboxStreamEvent::Complete(value),
+                    None,
+                )
+            })
+        });
+        let (sender, mut receiver) = tokio::sync::mpsc::channel(1);
+        let cleanup = tokio_util::sync::CancellationToken::new();
+        // Wait for actual natural EOF while its Complete payload remains
+        // queued. This deterministically exposes the erroneous wake signal
+        // before the facade consumer selects recv versus cleanup cancellation.
+        drive_sandbox_facade_source(Box::pin(source), sender, cleanup.clone()).await;
+        assert!(
+            !cleanup.is_cancelled(),
+            "natural EOF must not cancel cleanup while Complete is still queued"
+        );
+        let value = receiver
+            .recv()
+            .await
+            .ok_or("Complete was lost")?
+            .map_err(|error| error.message)?;
+        let json = value.into_json().map_err(|error| error.to_string())?;
+        assert_eq!(json.get("event_type"), Some(&serde_json::json!("complete")));
+        assert!(receiver.recv().await.is_none());
+        Ok(())
     }
 }

@@ -6,11 +6,13 @@ framework's Agent / Session / Run object model with typed JSON-RPC methods,
 generation-fenced handles, full `EventEnvelope` streaming, bounded live
 delivery with ACK, durable replay and restart recovery.
 
-> **Status.** The core profile is delivered as a Rust Host capability with
-> real-process E2E coverage (see `echo-sdk-host/tests/core_profile_e2e.rs`).
-> Source-built TypeScript, Python and Java clients negotiate and consume the
-> same profile; the executable route baseline is green, while intrinsic
-> facade mappings remain before **Runnable** and **Parity complete**.
+> **Governance candidate.** Rust Host and source-built TypeScript, Python
+> and Java clients implement this profile. The current lifecycle and recovery
+> changes still require final contract, real-Host language and exact-main
+> acceptance; historical passing tests do not prove the candidate complete.
+> Cross-language compatibility covers the explicitly accepted external
+> contract, not every Rust public identity. See the
+> [governance evidence matrix](governance/behavior-evidence-matrix.md).
 
 ## Enabling the profile
 
@@ -78,9 +80,10 @@ JSON-RPC `method not found` (-32601). A standard ACP Client is unaffected.
 | Runs | `runs` | `_echo_agent/run/start`, `/get`, `/wait`, `/cancel`, `/steer`, plus the `_echo_agent/event`, `_echo_agent/event/ack` notifications |
 | Event replay | `event_replay` | `_echo_agent/run/replay`, plus the `_echo_agent/gap` notification |
 
-Task graphs, subagents, extension bridge, structured output and feature
-operations are **not** part of this profile yet; they are not advertised and
-their methods answer method-not-found.
+Task graphs, Subagents, structured output and feature operations are added
+by `sdk-facade-adapters`; reverse calls are added by `sdk-extension-bridge`.
+They are advertised only when their handlers and required features are
+compiled. A core-only build does not advertise those additional surfaces.
 
 ## Object model and handles
 
@@ -102,6 +105,21 @@ their methods answer method-not-found.
   id is `closed_handle`. Handles never rebind.
 - `agent/create` with an `idempotency_id` returns the same handle for the
   same canonical config and a typed conflict for a different one.
+- `session/create` and `run/start` retain a keyed publication within the
+  current connection and handle generation, scoped to the operation and its
+  original Agent or Session owner. Identical validated payloads replay the
+  full original response, including after a Run completes; different payloads
+  return `invalid_request` before new effects. A genuinely closed owner or
+  published resource returns `closed_handle`, and that key cannot recreate it.
+  Client-side `RunHandle.close()` alone does not retire the Host Run.
+- The first keyed job retains its existing Host settlement owner when an RPC
+  observer is dropped. Cancellation before effect admission releases the key;
+  after admission the original result/cleanup settles without a second
+  execution. Duplicate observation cancellation affects only that waiter.
+  Entries are bounded and are not silently evicted. Connection teardown fences
+  admission and settles original jobs before discarding these mappings; keyed
+  replay across connections or process restarts is not promised. See
+  [ADR 0037](../adr/0037-session-run-idempotent-publication.md).
 
 ## Standard ↔ extension bridging
 
@@ -120,6 +138,10 @@ prompt turns in Extended mode.
   and as a `_echo_agent/event` notification. Exactly one terminal event ends
   a run; terminals come only from the framework.
 - The Client acknowledges consumed cursors with `_echo_agent/event/ack`.
+  Receiving a notification or enqueueing an outbound frame is not proof of
+  application consumption. Live iterators/publishers ACK at their consumption
+  boundary; gap recovery requires an explicit ACK after applying the snapshot
+  and consuming the returned replay page. Fetching replay never ACKs it.
 - While the outstanding (un-ACKed) count/bytes stay inside
   `max_outstanding_live_events` / `max_event_bytes`, delivery is live. At
   the bound the Host sends **one** `_echo_agent/gap` notification and pauses
@@ -129,7 +151,18 @@ prompt turns in Extended mode.
 - `run/replay` is bounded by `max_replay_events` / `max_replay_bytes` and
   addressed by a current-generation stream handle. Replays below the journal
   retention floor return a typed gap with a snapshot watermark. A replay
-  response is validated against the contract before it is sent.
+  response is validated against the contract before it is sent. Successful
+  publication records the returned page as announced, so its consumed cursor
+  can be ACKed; failed publication must not advance that bound.
+- Snapshot ACK advances the continuation floor monotonically. Live
+  continuation starts after the greater of that floor and the sent cursor;
+  events covered by the applied snapshot are not resent. Duplicate or older
+  ACKs cannot move the floor backward, and ACKs beyond announced live,
+  snapshot or replay facts are rejected without resuming delivery. Explicit
+  historical replay still honors its requested cursor and journal retention.
+  This is the Issue #120 boundary,
+  covered by the three language `GapAckHost` scenarios; final candidate
+  acceptance remains recorded in the governance evidence matrix.
 
 ## Persistence, recovery and shutdown
 
@@ -156,9 +189,22 @@ The state root layout:
   continue from the framework's committed checkpoint only.
 - Shutdown order (stdin EOF and clean close share it): stop run admission →
   cancel active runs → bounded wait for receipts → flush journals/index →
-  close Session Agents → release handles.
+  close Session Agents → release handles. Timeout or cleanup failure is an
+  error, not a fabricated terminal or a successful release. Failed close
+  retains the cleanup owner for retry; successful repeated close is idempotent.
+- Rust embedders can retain a `HostCloseOwner` for the owned Host entry points.
+  Its close path keeps the official connection actor polling while framework
+  drivers and callbacks settle. This is a Rust/Host ownership facility, not
+  a new language wire operation. The active-Run manual-close fix is part of
+  the current candidate and needs final validation before a completion claim.
 
 ## Errors
+
+Framework-backed feature failures retain their canonical category, terminal
+kind, cause code, retryability and optional HTTP status in bounded error
+details. Cancellation is `cancelled`; a framework timeout is `framework_error`
+with a `timed_out` cause. The operation remains non-retryable: a retryable cause
+does not authorize repeating an operation with potentially committed effects.
 
 `_echo_agent/*` failures use one fixed JSON-RPC server-error code
 (`-32050`); `error.data` carries the bounded `EchoSdkError` envelope
@@ -195,3 +241,22 @@ profile: they add the task/subagent/structured-output families and the
 feature-family operation surfaces on top of the core handles and
 events. Core profile semantics — handle ladders, ACK-gated delivery,
 replay and recovery — stay identical with or without them.
+
+
+### Accepted Security source continuity
+
+The accepted Security defining sources are `echo_core::utils::retention::{SecretMatch,
+contains_secrets, redact_secrets, scan_secrets}`. The `echo_agent::security` Rust
+reexports and the existing three `echo_agent::security::*` wire operation names
+remain supported with the same result shape and error contract. Source signature
+digests are generated for the current framework; consumers use the matching
+catalog and Host build. See [ADR 0034](../adr/0034-sdk-governance-authority-and-lossless-adaptation.md#accepted-source-continuity-decision-2026-10-15).
+
+The former public `TaskSubagentContext` fields `run_id`, `delegation_policy` and
+`waived_dependency_ids` are retired accepted identities. Their native behavior
+continues through existing read-only Rust/Host getters and the Task adapter;
+this does not expose those getters as language APIs. The obsolete snapshot owner
+fields `AgentRunSnapshot.skill_curator` and `ToolRuntime.plan_state` are retired;
+Skill mutation authority and the revisioned TaskRun graph remain the respective
+single owners. Existing Skill, Task and Plan capabilities continue through their
+current routes.

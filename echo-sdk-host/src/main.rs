@@ -36,16 +36,30 @@ async fn main() -> ExitCode {
 }
 
 fn init_tracing() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            // The official runtime can format an entire nested handler chain
-            // for every expected method-not-found during plain-client
-            // negotiation. Keep the source-built Host quiet by default; a
-            // caller can opt into diagnostics with RUST_LOG explicitly.
-            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("error")),
-        )
-        .with_writer(std::io::stderr)
-        .try_init()
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("error"));
+    #[cfg(feature = "framework-telemetry")]
+    {
+        use tracing_subscriber::{
+            Layer as _, filter::FilterExt as _, layer::SubscriberExt as _,
+            util::SubscriberInitExt as _,
+        };
+        tracing_subscriber::registry()
+            .with(echo_agent::telemetry::telemetry_layer())
+            .with(
+                tracing_subscriber::fmt::layer()
+                    .with_writer(std::io::stderr)
+                    .with_filter(filter.or(echo_agent::telemetry::telemetry_console_filter())),
+            )
+            .try_init()?;
+    }
+    #[cfg(not(feature = "framework-telemetry"))]
+    {
+        tracing_subscriber::fmt()
+            .with_env_filter(filter)
+            .with_writer(std::io::stderr)
+            .try_init()?;
+    }
+    Ok(())
 }
 
 fn fail(error: &impl std::fmt::Display) -> ExitCode {

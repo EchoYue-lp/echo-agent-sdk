@@ -1,3 +1,4 @@
+import { EchoAgentError } from "./errors.js";
 import type { JsonValue, WireHandle, WireValue } from "./types.js";
 
 const MAX_SAFE_U64 = BigInt(Number.MAX_SAFE_INTEGER);
@@ -115,10 +116,14 @@ export function toWireValue(value: unknown): WireValue {
       : { kind: "u64", value: value.toString() };
   }
   if (Array.isArray(value)) return { kind: "list", value: value.map(toWireValue) };
-  if (isWireHandle(value)) return { kind: "handle", value };
-  if (isWireValue(value)) return value;
-  if (isRecord(value) && hasWireHandleFields(value)) {
-    throw new TypeError("wire handle id, generation and kind must be valid");
+  // Native domain maps may contain id/generation fields. Only the exact
+  // three-field handle shape is interpreted implicitly; extra fields stay maps.
+  if (isRecord(value) && Object.keys(value).length === 3 && "id" in value && "generation" in value && typeof value.kind === "string" && HANDLE_KINDS.has(value.kind)) {
+    return { kind: "handle", value: parseWireHandle(value) };
+  }
+  if (isWireValue(value)) {
+    if(value.kind === "handle")parseWireHandle(value.value);
+    return value;
   }
   if (typeof value === "object") {
     const entries = Object.entries(value as Record<string, unknown>).map(([key, entry]) => ({
@@ -134,17 +139,32 @@ export function fromWireValue(value: unknown): unknown {
   if (!isRecord(value) || typeof value.kind !== "string") return value;
   switch (value.kind) {
     case "null": return null;
-    case "bool": case "string": case "f64": return value.value;
+    case "bool":
+      if (typeof value.value !== "boolean") throw projectionError("wire bool must be boolean");
+      return value.value;
+    case "string":
+      if (typeof value.value !== "string") throw projectionError("wire string must be text");
+      return value.value;
+    case "f64":
+      if (typeof value.value !== "number" || !Number.isFinite(value.value)) throw projectionError("wire f64 must be finite numeric data");
+      return value.value;
     case "i64": return decodeInteger(value, true);
     case "u64": return decodeInteger(value, false);
     case "handle": return parseWireHandle(value.value);
-    case "list": return Array.isArray(value.value) ? value.value.map(fromWireValue) : value.value;
+    case "list":
+      if (!Array.isArray(value.value)) throw projectionError("wire list requires an array value");
+      return value.value.map(decodeWireChild);
     case "map": {
-      if (!Array.isArray(value.value)) return value.value;
+      if (!Array.isArray(value.value)) throw projectionError("wire map requires an entry array");
       const object: Record<string, unknown> = {};
       for (const entry of value.value) {
-        if (!isRecord(entry) || !isRecord(entry.key) || entry.key.kind !== "string") continue;
-        object[String(entry.key.value)] = fromWireValue(entry.value);
+        if (!isRecord(entry) || !isRecord(entry.key) || entry.key.kind !== "string" || typeof entry.key.value !== "string" || !("value" in entry)) {
+          throw projectionError("native map projection requires string keys and explicit values");
+        }
+        const key = entry.key.value;
+        if (Object.hasOwn(object, key)) throw projectionError("native map projection cannot preserve duplicate keys");
+        // Define an own data property: __proto__ is legal map data, not a setter.
+        Object.defineProperty(object, key, { value: decodeWireChild(entry.value), enumerable: true, writable: true, configurable: true });
       }
       return object;
     }
@@ -156,6 +176,7 @@ export function fromWireValue(value: unknown): unknown {
 
 export function isWireHandle(value: unknown): value is WireHandle {
   return isRecord(value)
+    && Object.keys(value).every(key => ["id", "generation", "kind"].includes(key))
     && typeof value.id === "string"
     && value.id.trim().length > 0
     && Array.from(value.id).length <= 256
@@ -205,4 +226,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function asJson(value: unknown): JsonValue {
   return value as JsonValue;
+}
+
+function projectionError(message: string): EchoAgentError {
+  return new EchoAgentError("serialization_violation", message);
+}
+
+function decodeWireChild(value: unknown): unknown {
+  if(!isRecord(value)||typeof value.kind!=="string")throw projectionError("wire container child requires its discriminator");
+  return fromWireValue(value);
 }

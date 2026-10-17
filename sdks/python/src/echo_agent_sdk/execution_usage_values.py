@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import NotRequired, TypedDict
+
+from typing_extensions import NotRequired, TypedDict
 
 
 class ExecutionUsageValue(TypedDict):

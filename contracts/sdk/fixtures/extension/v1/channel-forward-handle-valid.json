@@ -1,0 +1,150 @@
+{
+  "name": "channel-forward-handle-valid",
+  "kind": "valid",
+  "target": "FeatureOperationRequest",
+  "description": "Original Session and complete generation-fenced manager/stream addresses consume the existing channels handler contract.",
+  "payload": {
+    "operation": "channels.handler.handle",
+    "signature_digest": "sha256:95d1630b2216ef76e99723d2e14664498725c71b0fdcee87c69828f385e22df7",
+    "handle": {
+      "id": "session-channel-forward",
+      "generation": "7",
+      "kind": "session"
+    },
+    "arguments": [
+      {
+        "kind": "handle",
+        "value": {
+          "id": "manager-channel-forward",
+          "generation": "7",
+          "kind": "facade_resource"
+        }
+      },
+      {
+        "kind": "string",
+        "value": "channel-中文"
+      },
+      {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "channel_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "channel-中文"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "sender_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "sender"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "chat_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "chat"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "chat_type"
+            },
+            "value": {
+              "kind": "string",
+              "value": "direct"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "text"
+            },
+            "value": {
+              "kind": "string",
+              "value": "入站🌊"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "message_id"
+            },
+            "value": {
+              "kind": "string",
+              "value": "message"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "timestamp"
+            },
+            "value": {
+              "kind": "string",
+              "value": "18446744073709551615"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "attachments"
+            },
+            "value": {
+              "kind": "list",
+              "value": [
+                {
+                  "kind": "map",
+                  "value": [
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "kind"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "image"
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "data_base64"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": "AP9BgA=="
+                      }
+                    },
+                    {
+                      "key": {
+                        "kind": "string",
+                        "value": "filename"
+                      },
+                      "value": {
+                        "kind": "string",
+                        "value": ""
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

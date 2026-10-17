@@ -48,11 +48,12 @@ class EventId:
         return self.value
 
 
+def _raw_field(value: Any, name: str) -> Any:
+    return value.get(name) if isinstance(value, Mapping) else getattr(value, name, None)
+
+
 def _field(value: Any, name: str) -> str | None:
-    if isinstance(value, Mapping):
-        result = value.get(name)
-    else:
-        result = getattr(value, name, None)
+    result = _raw_field(value, name)
     return result if result is None or isinstance(result, str) else str(result)
 
 
@@ -122,7 +123,9 @@ class EventIdentity:
         run_id = _field(runtime, "run_id")
         execution_id = _field(runtime, "execution_id")
         turn_id = _field(runtime, "turn_id") or execution_id or run_id or str(uuid4())
-        lineage = _field(runtime, "subagent_lineage")
+        # Keep the lineage container intact; stringify only its identity leaf.
+        # Retain the existing flat parent compatibility and precedence.
+        lineage = _raw_field(runtime, "subagent_lineage")
         parent_event_id = _field(runtime, "parent_event_id") or _field(
             lineage, "parent_event_id"
         )

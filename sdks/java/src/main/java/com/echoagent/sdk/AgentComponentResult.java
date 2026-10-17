@@ -8,6 +8,19 @@ import java.util.List;
 
 /** Closed result hierarchy for every Agent component callback operation. */
 public sealed interface AgentComponentResult permits
+        AgentComponentResult.ConversationProjectionEpochEnsured,
+        AgentComponentResult.ConversationProjectionAuthorityLoaded,
+        AgentComponentResult.ConversationProjectionApplied,
+        AgentComponentResult.ManagedConversationDeleted,
+        AgentComponentResult.RuntimeManagedStateLoaded,
+        AgentComponentResult.RuntimeScopeAuthorityLoaded,
+        AgentComponentResult.RuntimeCheckpointComparedAndSaved,
+        AgentComponentResult.RuntimeTranscriptProjectionAcknowledged,
+        AgentComponentResult.RuntimeGenerationRetired,
+        AgentComponentResult.RuntimeScopeRetirementBegun,
+        AgentComponentResult.RuntimeScopeRetirementContinued,
+        AgentComponentResult.RevisionedTaskExecutionCommitted,
+
         AgentComponentResult.ConversationCreated,
         AgentComponentResult.ConversationFound,
         AgentComponentResult.ConversationsListed,
@@ -44,6 +57,7 @@ public sealed interface AgentComponentResult permits
         AgentComponentResult.WorkflowCheckpointClaimAcked,
         AgentComponentResult.WorkflowCheckpointClaimRequeued,
         AgentComponentResult.WorkflowCheckpointClaimRenewed,
+        AgentComponentResult.WorkflowCheckpointClaimProtected,
         AgentComponentResult.WorkflowCheckpointsListed,
         AgentComponentResult.WorkflowCheckpointDeleted,
         AgentComponentResult.WorkflowCheckpointsCleared,
@@ -66,6 +80,65 @@ public sealed interface AgentComponentResult permits
 
     String operation();
     JsonNode value();
+
+    record ConversationProjectionEpochEnsured(ManagedPersistence.ConversationProjectionEpochReceipt receipt) implements AgentComponentResult {
+        public ConversationProjectionEpochEnsured { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "conversation_ensure_projection_epoch_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record ConversationProjectionAuthorityLoaded(ManagedPersistence.ConversationProjectionAuthority authority) implements AgentComponentResult {
+        @Override public String operation() { return "conversation_get_projection_authority_with_context"; }
+        @Override public JsonNode value() { return nullableObject("authority", authority == null ? null : authority.toJson()); }
+    }
+    record ConversationProjectionApplied(ManagedPersistence.TranscriptProjectionApplyReceipt receipt) implements AgentComponentResult {
+        public ConversationProjectionApplied { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "conversation_apply_transcript_projection_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record ManagedConversationDeleted(ManagedPersistence.ManagedConversationDeleteReceipt receipt) implements AgentComponentResult {
+        public ManagedConversationDeleted { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "conversation_delete_managed_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record RuntimeManagedStateLoaded(ManagedPersistence.ManagedRuntimeStateSnapshot snapshot) implements AgentComponentResult {
+        @Override public String operation() { return "runtime_load_managed_state_with_context"; }
+        @Override public JsonNode value() { return nullableObject("snapshot", snapshot == null ? null : snapshot.toJson()); }
+    }
+    record RuntimeScopeAuthorityLoaded(ManagedPersistence.RuntimeScopeAuthority authority) implements AgentComponentResult {
+        @Override public String operation() { return "runtime_load_scope_authority_with_context"; }
+        @Override public JsonNode value() { return nullableObject("authority", authority == null ? null : authority.toJson()); }
+    }
+    record RuntimeCheckpointComparedAndSaved(ManagedPersistence.RuntimeCheckpointCasReceipt receipt) implements AgentComponentResult {
+        public RuntimeCheckpointComparedAndSaved { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "runtime_compare_and_save_checkpoint_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record RuntimeTranscriptProjectionAcknowledged(ManagedPersistence.RuntimeCheckpointCasReceipt receipt) implements AgentComponentResult {
+        public RuntimeTranscriptProjectionAcknowledged { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "runtime_acknowledge_transcript_projection_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record RuntimeGenerationRetired(ManagedPersistence.RuntimeGenerationRetireReceipt receipt) implements AgentComponentResult {
+        public RuntimeGenerationRetired { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "runtime_retire_generation_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record RuntimeScopeRetirementBegun(ManagedPersistence.ScopeRetirementReceipt receipt) implements AgentComponentResult {
+        public RuntimeScopeRetirementBegun { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "runtime_begin_scope_retirement_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record RuntimeScopeRetirementContinued(ManagedPersistence.ScopeRetirementReceipt receipt) implements AgentComponentResult {
+        public RuntimeScopeRetirementContinued { if (receipt == null) throw new IllegalArgumentException("receipt must not be null"); }
+        @Override public String operation() { return "runtime_continue_scope_retirement_with_context"; }
+        @Override public JsonNode value() { return object("receipt", receipt.toJson()); }
+    }
+    record RevisionedTaskExecutionCommitted(TaskStore.RevisionedTaskGraph graph) implements AgentComponentResult {
+        public RevisionedTaskExecutionCommitted { if (graph == null) throw new IllegalArgumentException("graph must not be null"); }
+        @Override public String operation() { return "revisioned_task_compare_and_commit_execution"; }
+        @Override public JsonNode value() { return object("graph", graph.toJson()); }
+    }
+
 
     record ConversationCreated(JsonNode conversation) implements AgentComponentResult {
         @Override public String operation() { return "conversation_create"; }
@@ -228,6 +301,10 @@ public sealed interface AgentComponentResult permits
         @Override public String operation() { return "workflow_checkpoint_renew_claim"; }
         @Override public JsonNode value() { return null; }
     }
+    record WorkflowCheckpointClaimProtected() implements AgentComponentResult {
+        @Override public String operation() { return "workflow_checkpoint_protect_claim"; }
+        @Override public JsonNode value() { return null; }
+    }
     record WorkflowCheckpointsListed(String operation, List<JsonNode> checkpoints)
             implements AgentComponentResult {
         public WorkflowCheckpointsListed {
@@ -246,13 +323,13 @@ public sealed interface AgentComponentResult permits
         @Override public String operation() { return "workflow_checkpoint_clear"; }
         @Override public JsonNode value() { return null; }
     }
-    record RevisionedTaskLoaded(JsonNode graph) implements AgentComponentResult {
+    record RevisionedTaskLoaded(TaskStore.RevisionedTaskGraph graph) implements AgentComponentResult {
         @Override public String operation() { return "revisioned_task_load"; }
-        @Override public JsonNode value() { return nullableObject("graph", graph); }
+        @Override public JsonNode value() { return nullableObject("graph", graph == null ? null : graph.toJson()); }
     }
-    record RevisionedTaskCommitted(JsonNode graph) implements AgentComponentResult {
+    record RevisionedTaskCommitted(TaskStore.RevisionedTaskGraph graph) implements AgentComponentResult {
         @Override public String operation() { return "revisioned_task_compare_and_commit"; }
-        @Override public JsonNode value() { return object("graph", graph); }
+        @Override public JsonNode value() { return object("graph", graph.toJson()); }
     }
     record SandboxAvailability(boolean available) implements AgentComponentResult {
         @Override public String operation() { return "sandbox_is_available"; }

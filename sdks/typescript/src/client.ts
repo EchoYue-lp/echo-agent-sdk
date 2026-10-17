@@ -1,3 +1,4 @@
+import { MANAGED_OPERATIONS, validateManagedFields, validateManaged } from "./managed.js";
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { Readable, Writable } from "node:stream";
 import {
@@ -34,6 +35,8 @@ import type {
   ContextCompressorInvocation,
   ContextCompressorDescriptor,
   AgentComponentDescriptor,
+  AgentCallbackInvocation,
+  AgentCallbackResult,
   AgentComponentExtensionHandler,
   AgentComponentExtensionResult,
   AgentComponentInvocation,
@@ -82,34 +85,98 @@ export interface SpawnOptions {
 export type ExtensionHandler = (call: unknown, signal: AbortSignal) => Promise<unknown> | unknown;
 export type ExtensionInvokeOutcome = ExtensionOutcome<ExtensionResult>;
 
-type QueueItem<T> = { readonly value: T } | { readonly error: unknown } | { readonly done: true };
+type QueueItem<T> = { readonly value: T; readonly control?: boolean } | { readonly error: unknown } | { readonly done: true };
+
+interface PendingAcknowledgement {
+  readonly sequence: bigint;
+  settled: boolean;
+}
 
 class AsyncQueue<T> implements AsyncIterable<T> {
   private readonly capacity: number;
   private readonly items: QueueItem<T>[] = [];
   private readonly waiters: Array<(item: QueueItem<T>) => void> = [];
   private closed = false;
+  private admissionProgress?: {promise: Promise<void>; resolve: () => void};
+
+  get ended(): boolean { return this.closed; }
+
+  get dataCapacity(): number { return this.capacity; }
+
+  hasDataCapacity(): boolean {
+    return this.waiters.length > 0 || this.items.filter(item => "value" in item && !item.control).length < this.capacity;
+  }
+
+  canRetirePrefix(sequence: bigint): boolean {
+    return this.items.some(item => "value" in item && !item.control && isRecord(item.value)
+      && isRecord(item.value.envelope) && typeof item.value.envelope.sequence === "string"
+      && BigInt(item.value.envelope.sequence) <= sequence);
+  }
+
+  async waitForAdmission(candidates: readonly PendingAcknowledgement[]): Promise<void> {
+    while (!this.closed && !this.hasDataCapacity()) {
+      const pending = candidates.filter(candidate => !candidate.settled && this.canRetirePrefix(candidate.sequence));
+      if (pending.length === 0) return; // Preserve the original overflow policy.
+      if (!this.admissionProgress) {
+        let resolve!: () => void;
+        const promise = new Promise<void>(done => { resolve = done; });
+        this.admissionProgress = {promise, resolve};
+      }
+      await this.admissionProgress.promise;
+    }
+  }
+
+  signalAdmissionProgress(): void {
+    const progress = this.admissionProgress;
+    this.admissionProgress = undefined;
+    progress?.resolve();
+  }
 
   constructor(capacity = DEFAULT_QUEUE_CAPACITY) {
     this.capacity = Math.max(1, Math.min(MAX_QUEUE_CAPACITY, Math.trunc(capacity)));
   }
 
-  push(value: T): void {
+  push(value: T, control = false): void {
     if (this.closed) return;
-    if (this.waiters.length === 0 && this.items.length >= this.capacity) {
-      this.fail(new EchoAgentError(
-        "backpressure",
-        `SDK stream queue exceeded its bound of ${this.capacity} items`,
-        "after_delay",
-      ));
+    const controlIndex=this.items.findIndex(item=>"control" in item && item.control);
+    if(control && controlIndex>=0){
+      const existing=this.items[controlIndex];
+      const previous=existing && "value" in existing?existing.value:undefined;
+      if(isRecord(previous)&&isRecord(previous.gap)&&isRecord(value)&&isRecord(value.gap)){
+        const oldFrom=previous.gap.from_sequence;
+        const watermark=BigInt(String(value.gap.snapshot_watermark));
+        const merged={...value,gap:{...value.gap,...(oldFrom===undefined?{}:{from_sequence:oldFrom})}} as T;
+        const retained=this.items.slice(controlIndex+1).filter(item=>{
+          if(!("value" in item)||!isRecord(item.value)||!isRecord(item.value.envelope))return true;
+          const sequence=item.value.envelope.sequence;
+          return typeof sequence!=="string" || BigInt(sequence)>watermark;
+        });
+        this.items.splice(controlIndex,this.items.length-controlIndex,{value:merged,control:true},...retained);
+      }else this.items.splice(controlIndex,1,{value,control:true});
+      this.signalAdmissionProgress();
       return;
     }
-    this.shift({ value });
+    const dataCount=this.items.filter(item=>"value" in item && !item.control).length;
+    if (this.waiters.length === 0 && !control && dataCount >= this.capacity) {
+      this.fail(new EchoAgentError("backpressure", `SDK stream queue exceeded its bound of ${this.capacity} data items`, "after_delay"));
+      return;
+    }
+    this.shift({value,...(control?{control:true}:{})});
+  }
+
+  discardAcknowledgedEvents(sequence: bigint): void {
+    for(let index=this.items.length-1;index>=0;index--){
+      const item=this.items[index];
+      if(item && "value" in item && !item.control && isRecord(item.value) && isRecord(item.value.envelope)
+        && typeof item.value.envelope.sequence==="string" && BigInt(item.value.envelope.sequence)<=sequence)this.items.splice(index,1);
+    }
+    this.signalAdmissionProgress();
   }
 
   fail(error: unknown): void {
     if (this.closed) return;
     this.closed = true;
+    this.signalAdmissionProgress();
     this.shift({ error });
     while (this.waiters.length > 0) this.shift({ done: true });
   }
@@ -117,6 +184,7 @@ class AsyncQueue<T> implements AsyncIterable<T> {
   end(): void {
     if (this.closed) return;
     this.closed = true;
+    this.signalAdmissionProgress();
     while (this.waiters.length > 0) this.shift({ done: true });
   }
 
@@ -128,7 +196,7 @@ class AsyncQueue<T> implements AsyncIterable<T> {
 
   private async nextItem(): Promise<QueueItem<T>> {
     const item = this.items.shift();
-    if (item) return item;
+    if (item) { this.signalAdmissionProgress(); return item; }
     if (this.closed) return { done: true };
     return new Promise((resolve) => this.waiters.push(resolve));
   }
@@ -147,6 +215,39 @@ interface StreamFeed {
   readonly queue: AsyncQueue<FacadeStreamItem>;
   handle?: WireHandle;
   lastEventSequence: bigint;
+  replayRanges?: Array<{base: bigint; end: bigint; recoveryBase?: bigint}>;
+  acknowledgedSequence?: bigint;
+  lastLiveSequence?: bigint;
+  liveRanges?: Array<{base: bigint; end: bigint}>;
+  lastGapWatermark?: bigint;
+  replayTerminalSequence?: bigint;
+  pendingAcknowledgements?: Set<PendingAcknowledgement>;
+  deliveryTail?: Promise<void>;
+}
+
+// Order only the official handlers already dispatched for this feed. Their
+// contexts may outlive native ACK IO; this is not a second payload buffer or a
+// bound on the official transport's independently dispatched handlers.
+function deliverStreamItem(feed: StreamFeed, item: FacadeStreamItem, control = false, terminal = false): Promise<void> {
+  const sequence = BigInt("envelope" in item ? item.envelope.sequence : item.gap.snapshot_watermark);
+  const candidates = control ? [] : [...(feed.pendingAcknowledgements ?? [])].filter(candidate =>
+    !candidate.settled && candidate.sequence < sequence
+    && sequence <= candidate.sequence + BigInt(feed.queue.dataCapacity)
+    && feed.queue.canRetirePrefix(candidate.sequence));
+  const previous = feed.deliveryTail;
+  const deliver = async (): Promise<void> => {
+    if (previous) await previous;
+    if (!control && !feed.queue.hasDataCapacity()) await feed.queue.waitForAdmission(candidates);
+    // Validation already advanced receive facts. Rechecking consumption and
+    // lifecycle here must not accept the DTO a second time after a later gap.
+    if (feed.queue.ended || sequence <= (feed.acknowledgedSequence ?? 0n)) return;
+    feed.queue.push(item, control);
+    if (terminal) feed.queue.end();
+  };
+  const completion = deliver().catch(error => { feed.queue.fail(error); });
+  feed.deliveryTail = completion;
+  void completion.then(() => { if (feed.deliveryTail === completion) feed.deliveryTail = undefined; });
+  return completion;
 }
 
 function boundedQueueCapacity(capability: EchoAgentCapability): number {
@@ -160,11 +261,48 @@ function boundedQueueCapacity(capability: EchoAgentCapability): number {
       const parsed = BigInt(raw);
       if (parsed > 0n) return Number(parsed > BigInt(MAX_QUEUE_CAPACITY) ? MAX_QUEUE_CAPACITY : parsed);
     } catch {
-      // A malformed advertisement is rejected by the Host capability check;
+      // A malformed advertisement is rejected during client negotiation;
       // retain a bounded local default until that check completes.
     }
   }
   return DEFAULT_QUEUE_CAPACITY;
+}
+
+// These intervals prove only received transport facts, not journal consumption.
+function recordLiveSequence(feed: StreamFeed, sequence: bigint): void {
+  const ranges = feed.liveRanges ??= [];
+  const previous = ranges.at(-1);
+  if (previous && previous.end + 1n === sequence) previous.end = sequence;
+  else ranges.push({base: sequence, end: sequence});
+  if (ranges.length > 512) ranges.shift();
+}
+
+function replayCoversCursor(feed: StreamFeed, sequence: bigint): boolean {
+  const ranges = feed.replayRanges ?? [];
+  let frontier = feed.lastEventSequence;
+  // Resolve the reachable closure independently of response arrival order.
+  // Only returned events or an exact retention snapshot can authorize a cursor.
+  for (let pass = 0; pass <= ranges.length; pass++) {
+    const before = frontier;
+    for (const range of ranges) {
+      const connected = range.base <= frontier || (range.recoveryBase !== undefined && range.recoveryBase <= frontier);
+      if (!connected) continue;
+      if (sequence <= range.end && (sequence > range.base || (range.recoveryBase !== undefined && sequence === range.base))) return true;
+      if (range.end > frontier) frontier = range.end;
+    }
+    if (frontier === before) break;
+  }
+  return false;
+}
+
+interface ExtensionStreamRoute {
+  readonly invocationId: string;
+  readonly extension: WireHandle;
+  readonly stream: WireHandle;
+  readonly controller: AbortController;
+}
+function streamRouteKey(stream: WireHandle): string {
+  return JSON.stringify([stream.id, stream.generation, stream.kind]);
 }
 
 export class EchoAgentClient {
@@ -178,6 +316,9 @@ export class EchoAgentClient {
   private readonly updates: Map<string, AsyncQueue<unknown>>;
   private readonly queueCapacity: number;
   private closed = false;
+  private closeOperation?: Promise<void>;
+  private invocationControllers = new Map<string, AbortController>();
+  private extensionStreamRoutes = new Map<string, ExtensionStreamRoute>();
 
   private constructor(
     app: ClientApp,
@@ -235,6 +376,7 @@ export class EchoAgentClient {
     const updateQueues = new Map<string, AsyncQueue<unknown>>();
     const extensionHandlers = new Map<string, ExtensionHandler>();
     const invocationControllers = new Map<string, AbortController>();
+    const extensionStreamRoutes = new Map<string, ExtensionStreamRoute>();
     const app = createAcpClient({ name: "echo-agent-sdk-typescript" });
     const customApp = app as unknown as {
       onNotification(method: string, parser: (params: unknown) => unknown, handler: (context: { params: unknown }) => Promise<void> | void): ClientApp;
@@ -274,7 +416,7 @@ export class EchoAgentClient {
         feed.queue.fail(new EchoAgentError("handle_mismatch", "event stream handle changed generation"));
         return;
       }
-      feed.handle ??= event.stream;
+      feed.handle ??= { ...event.stream };
       const sequence = parsePositiveSequence(event.envelope.sequence);
       if (sequence === feed.lastEventSequence) {
         return;
@@ -289,12 +431,10 @@ export class EchoAgentClient {
         return;
       }
       feed.lastEventSequence = sequence;
-      feed.queue.push(event);
-      if (["final_answer", "cancelled", "error"].includes(event.envelope.payload.event_type)) {
-        // The terminal event remains available to the consumer before the
-        // iterator observes completion. Run snapshots remain authoritative.
-        feed.queue.end();
-      }
+      feed.lastLiveSequence = sequence;
+      recordLiveSequence(feed, sequence);
+      await deliverStreamItem(feed, event, false,
+        ["final_answer", "cancelled", "error"].includes(event.envelope.payload.event_type));
     });
     customApp.onNotification("_echo_agent/gap", (params) => params, async ({ params }) => {
       let gap: FacadeGap;
@@ -314,9 +454,12 @@ export class EchoAgentClient {
         feed.queue.fail(new EchoAgentError("handle_mismatch", "gap stream handle changed generation"));
         return;
       }
-      feed.handle ??= gap.stream;
+      feed.handle ??= { ...gap.stream };
       feed.lastEventSequence = parsePositiveSequence(gap.gap.snapshot_watermark);
-      feed.queue.push(gap);
+      feed.lastGapWatermark = feed.lastEventSequence;
+      // One bounded control slot is reserved for the Host's pause notice.
+      // The live-event window can already fill every data slot before attach.
+      await deliverStreamItem(feed, gap, true);
     });
     customApp.onNotification("_echo_agent/extension/cancel", (params) => params, async ({ params }) => {
       const invocationId = typeof params === "object" && params !== null && "invocation_id" in params
@@ -324,10 +467,44 @@ export class EchoAgentClient {
         : "";
       invocationControllers.get(invocationId)?.abort();
     });
+    const factoryChildren = new Map<string, WireHandle>();
+    const closedFactoryChildren = new Map<string, WireHandle>();
+    const pendingFactoryConstruction = new Map<string, Promise<void>>();
     customApp.onRequest("_echo_agent/extension/invoke", (params) => params, async ({ params, signal }) => {
-      const call = params as { extension?: WireHandle; invocation_id?: string };
+      const call = params as { extension?: WireHandle; factory_origin?: WireHandle; invocation_id?: string; invocation?: { operation?: string; input?: {instance?: WireHandle} }; stream?: WireHandle };
       const extensionId = call.extension?.id;
-      const handler = extensionId ? extensionHandlers.get(extensionId) : undefined;
+      const operation = call.invocation?.operation;
+      let handler = extensionId ? extensionHandlers.get(extensionId) : undefined;
+      if (operation === "factory_create_agent") {
+        const parent = handler as (ExtensionHandler & {registration?: {wire:WireHandle;kind:string}}) | undefined;
+        const instance = call.invocation?.input?.instance;
+        const origin = call.extension;
+        if (!parent?.registration || parent.registration.kind !== "agent_factory" || !isWireHandle(origin)
+          || !sameHandle(parent.registration.wire, origin) || !isWireHandle(instance) || instance.kind !== "extension"
+          || sameHandle(instance,origin) || instance.generation !== origin.generation) {
+          return {outcome:"error",error:{code:"serialization_violation",message:"factory construction requires its reserved instance handle",retryable:"never"}};
+        }
+        const key = JSON.stringify([instance.id,instance.generation,instance.kind]);
+        if(factoryChildren.has(key)||closedFactoryChildren.has(key)) return {outcome:"error",error:{code:"extension_conflict",message:"factory instance identity was already constructed",retryable:"never"}};
+        factoryChildren.set(key,origin);
+      }
+      if (call.factory_origin != null) {
+        const origin = call.factory_origin;
+        const child = call.extension;
+        if (!isWireHandle(origin) || !isWireHandle(child)) return { outcome: "error", error: { code: "serialization_violation", message: "factory origin and instance must be valid extension handles", retryable: "never" } };
+        const registered = extensionHandlers.get(origin.id) as (ExtensionHandler & { registration?: { wire: WireHandle; kind: string } }) | undefined;
+        const metadata = registered?.registration;
+        const childKey = JSON.stringify([child.id, child.generation, child.kind]);
+        const previous = factoryChildren.get(childKey);
+        const valid = isWireHandle(origin) && isWireHandle(child) && origin.kind === "extension" && child.kind === "extension"
+          && !sameHandle(origin, child) && origin.generation === child.generation
+          && metadata?.kind === "agent_factory" && sameHandle(metadata.wire, origin)
+          && ["agent_execute", "agent_chat", "agent_execute_stream", "agent_chat_stream", "agent_close"].includes(operation ?? "")
+          && (previous ? sameHandle(previous, origin) : operation === "agent_close" && sameHandle(closedFactoryChildren.get(childKey) ?? child, origin));
+        if (!valid) return { outcome: "error", error: { code: "invalid_value", message: "factory origin does not own this custom Agent invocation", retryable: "never" } };
+        if (!previous && operation === "agent_close") return {outcome:"result",result:{operation:"agent_close",value:null}};
+        handler = registered;
+      }
       if (!handler) {
         return {
           outcome: "error",
@@ -341,11 +518,62 @@ export class EchoAgentClient {
       const controller = new AbortController();
       signal.addEventListener("abort", () => controller.abort(), { once: true });
       if (typeof call.invocation_id === "string") invocationControllers.set(call.invocation_id, controller);
+      let route: ExtensionStreamRoute | undefined;
+      let retainStreamRoute = false;
+      if (typeof call.invocation_id === "string" && isWireHandle(call.stream) && call.stream.kind === "stream"
+          && isWireHandle(call.extension) && call.stream.generation === call.extension.generation) {
+        route = {invocationId: call.invocation_id, extension: {...call.extension}, stream: {...call.stream}, controller};
+        extensionStreamRoutes.set(streamRouteKey(route.stream), route);
+      }
       try {
-        const result = await handler(params, controller.signal);
-        return controller.signal.aborted ? cancelledOutcome() : normalizeOutcome(result);
+        if(operation === "agent_close" && call.extension) {
+          const key=JSON.stringify([call.extension.id,call.extension.generation,call.extension.kind]);
+          const pending=pendingFactoryConstruction.get(key);
+          if(pending) {
+            const deadline=(params as {deadline?: {seconds?:string;nanos?:number}}).deadline;
+            const seconds=BigInt(deadline?.seconds ?? "0");
+            const milliseconds=Number(seconds>5n?5n:seconds)*1000+Math.floor((deadline?.nanos ?? 0)/1e6);
+            let timer:ReturnType<typeof setTimeout>|undefined;
+            try {await Promise.race([pending,new Promise<never>((_resolve,reject)=>{timer=setTimeout(()=>reject(new EchoAgentError("extension_timeout","factory construction has not settled before cleanup deadline","after_delay")),Math.max(1,milliseconds));})]);}
+            finally {if(timer)clearTimeout(timer);}
+          }
+        }
+        let result: unknown;
+        if(operation === "factory_create_agent" && call.invocation?.input?.instance) {
+          const instance=call.invocation.input.instance;
+          const key=JSON.stringify([instance.id,instance.generation,instance.kind]);
+          const construction=Promise.resolve().then(()=>handler(params,controller.signal));
+          const settled=construction.then(()=>undefined,()=>undefined);
+          pendingFactoryConstruction.set(key,settled);
+          try {result=await construction;} finally {pendingFactoryConstruction.delete(key);}
+        } else result = await handler(params, controller.signal);
+        const declared = normalizeOutcome(result);
+        const observation = declared.outcome === "error" && isNotSettledObservation(declared.error);
+        const outcome = controller.signal.aborted && !observation ? cancelledOutcome() : declared;
+        if (operation === "agent_close" && outcome.outcome === "result" && (outcome.result as { operation?: string }).operation === "agent_close") {
+          const key = JSON.stringify([call.extension?.id, call.extension?.generation, call.extension?.kind]);
+          const origin = factoryChildren.get(key);
+          factoryChildren.delete(key);
+          if(origin)closedFactoryChildren.set(key,origin);
+          if(closedFactoryChildren.size>512){const oldest=closedFactoryChildren.keys().next().value;if(oldest!==undefined)closedFactoryChildren.delete(oldest);}
+        }
+        if (observation) {
+          retainStreamRoute = route ? extensionStreamRoutes.get(streamRouteKey(route.stream)) === route
+            : invocationControllers.get(call.invocation_id ?? "") === controller;
+        }
+        if (declared.outcome === "stream") {
+          if (!route || !sameHandle(declared.stream, route.stream)) {
+            return {outcome:"error",error:{code:"serialization_violation",message:"stream outcome differs from its original invocation stream",retryable:"never"}};
+          }
+          retainStreamRoute = extensionStreamRoutes.get(streamRouteKey(route.stream)) === route;
+        }
+        return outcome;
       } catch (error) {
         const failure = extensionFailure(error);
+        const observation = isNotSettledObservation(failure);
+        if (controller.signal.aborted && !observation) return cancelledOutcome();
+        if (observation) retainStreamRoute = route ? extensionStreamRoutes.get(streamRouteKey(route.stream)) === route
+          : invocationControllers.get(call.invocation_id ?? "") === controller;
         return {
           outcome: "error",
           error: {
@@ -354,10 +582,16 @@ export class EchoAgentClient {
             retryable: failure.retryable,
             operation: failure.operation,
             details: failure.details,
+            handle: failure.handle,
           },
         };
       } finally {
-        if (typeof call.invocation_id === "string") invocationControllers.delete(call.invocation_id);
+        // A setup response is not a stream terminal. Preserve only the exact
+        // original cancellation address until a successful terminal submission.
+        if (!retainStreamRoute) {
+          if (route && extensionStreamRoutes.get(streamRouteKey(route.stream)) === route) extensionStreamRoutes.delete(streamRouteKey(route.stream));
+          if (typeof call.invocation_id === "string" && invocationControllers.get(call.invocation_id) === controller) invocationControllers.delete(call.invocation_id);
+        }
       }
     });
     const stream = ndJsonStream(
@@ -381,16 +615,25 @@ export class EchoAgentClient {
           _meta: { echo_agent: hello },
         },
       });
+      if ((initialized as { protocolVersion?: number }).protocolVersion !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported ACP protocol version", "never", "initialize");
       const capability = (initialized as unknown as { agentCapabilities?: { _meta?: { echo_agent?: EchoAgentCapability } } })
         .agentCapabilities?._meta?.echo_agent;
-      if (!capability) throw new EchoAgentError("extension_capability_mismatch", "Host did not advertise echo-agent extension");
-      validateCapability(capability, options);
+      if (!capability) throw new EchoAgentError("extension_capability_mismatch", "Host did not advertise echo-agent extension", "never", "initialize");
+      validateCapability(capability, { ...options, contractDigest: hello.contract_digest, sourceContractDigest: hello.source_contract_digest });
       queueCapacity = boundedQueueCapacity(capability);
       const result = new EchoAgentClient(
         app, connection, child, catalog, capability, extensionHandlers, queueCapacity,
         eventFeeds, updateQueues,
       );
+      result.invocationControllers = invocationControllers;
+      result.extensionStreamRoutes = extensionStreamRoutes;
+      const clearCancellationRoutes = () => {
+        for (const controller of invocationControllers.values()) controller.abort();
+        invocationControllers.clear(); extensionStreamRoutes.clear();
+      };
+      connection.signal.addEventListener("abort", clearCancellationRoutes, {once:true});
       const onHostExit = () => {
+        clearCancellationRoutes();
         const error = new EchoAgentError("host_exited", "echo-agent SDK Host exited before the client closed");
         for (const feed of result.events.values()) {
           if (result.closed) feed.queue.end();
@@ -410,9 +653,15 @@ export class EchoAgentClient {
       });
       return result;
     } catch (error) {
-      connection.close(error);
-      child.kill();
-      throw EchoAgentError.fromUnknown(error);
+      const failure = EchoAgentError.fromUnknown(error, "initialize");
+      try {
+        await EchoAgentClient.closeStdioOwned(child, connection, error);
+      } catch (cleanupError) {
+        // Preserve the initialization rejection; cleanup failure remains its
+        // explicit cause rather than replacing the negotiated error contract.
+        failure.cause = cleanupError;
+      }
+      throw failure;
     }
   }
 
@@ -426,12 +675,30 @@ export class EchoAgentClient {
   }
 
   async notify(method: string, params?: unknown): Promise<void> {
+    let terminalStream: WireHandle | undefined;
+    if (method === "_echo_agent/extension/stream" && typeof params === "object" && params !== null) {
+      const message = structuredClone(params) as {event?: string; stream?: WireHandle; error?: unknown};
+      params = message;
+      if (["complete","failed","cancelled"].includes(message.event ?? "")
+          && !(message.event === "failed" && isNotSettledObservation(message.error)) && isWireHandle(message.stream)) {
+        terminalStream = {...message.stream};
+        params = {...message,stream:terminalStream};
+      }
+    }
     try {
       await (this.connection.agent as unknown as { notify(method: string, params?: unknown): Promise<void> })
         .notify(method, params);
+      if (terminalStream) this.finishExtensionStreamRoute(terminalStream);
     } catch (error) {
       throw EchoAgentError.fromUnknown(error, method);
     }
+  }
+
+  private finishExtensionStreamRoute(stream: WireHandle): void {
+    const key = streamRouteKey(stream), route = this.extensionStreamRoutes.get(key);
+    if (!route || !sameHandle(route.stream, stream)) return;
+    this.extensionStreamRoutes.delete(key);
+    if (this.invocationControllers.get(route.invocationId) === route.controller) this.invocationControllers.delete(route.invocationId);
   }
 
   async registerExtension(
@@ -447,7 +714,9 @@ export class EchoAgentClient {
       descriptor,
       timeout,
     });
-    this.extensionHandlers.set(response.extension.id, handler);
+    // Metadata is tied to this registration wrapper, never to the reusable callback.
+    const registered = Object.assign((call: unknown, signal: AbortSignal) => handler(call, signal), { registration: { wire: response.extension, kind } });
+    this.extensionHandlers.set(response.extension.id, registered);
     return new ExtensionRegistration(this, response.extension);
   }
 
@@ -574,8 +843,14 @@ export class EchoAgentClient {
     return this.registerExtensionKind("hook", implementationId, descriptor, handler);
   }
 
-  async registerAgentCallback(implementationId: string, descriptor: ExtensionDescriptor & { readonly kind: "agent_callback" }, handler: ExtensionHandler): Promise<ExtensionRegistration> {
-    return this.registerExtensionKind("agent_callback", implementationId, descriptor, handler);
+  async registerAgentCallback(implementationId: string, descriptor: ExtensionDescriptor & { readonly kind: "agent_callback" }, handler: (call: ExtensionInvokeCall<AgentCallbackInvocation>, signal: AbortSignal) => Promise<AgentCallbackResult | ExtensionOutcome<AgentCallbackResult>> | AgentCallbackResult | ExtensionOutcome<AgentCallbackResult>): Promise<ExtensionRegistration> {
+    return this.registerExtensionKind("agent_callback", implementationId, descriptor, async (raw,signal) => {
+      const call = decodeAgentCallback(raw);
+      const result = await handler(call,signal);
+      const outcome = normalizeTypedExtensionResult(call.invocation.operation,result);
+      if(outcome.outcome === "result" && outcome.result.value !== null)throw new EchoAgentError("serialization_violation","Agent callback must return null unit value");
+      return outcome;
+    });
   }
 
   async registerInterventionCallback(implementationId: string, descriptor: ExtensionDescriptor & { readonly kind: "intervention_callback" }, handler: ExtensionHandler): Promise<ExtensionRegistration> {
@@ -599,8 +874,12 @@ export class EchoAgentClient {
   }
 
   async unregisterExtension(extension: WireHandle): Promise<unknown> {
+    const result = await this.request("_echo_agent/extension/unregister", { extension });
     this.extensionHandlers.delete(extension.id);
-    return this.request("_echo_agent/extension/unregister", { extension });
+    for (const route of this.extensionStreamRoutes.values()) {
+      if (sameHandle(route.extension, extension)) {route.controller.abort(); this.finishExtensionStreamRoute(route.stream);}
+    }
+    return result;
   }
 
   streamWriter(stream: WireHandle): ExtensionStreamWriter {
@@ -614,6 +893,7 @@ export class EchoAgentClient {
       handle,
       arguments: args.map(toWireValue),
     });
+    if (!value || !("value" in value) || !isWireValue(value.value)) throw new EchoAgentError("serialization_violation", "facade response requires a value envelope");
     return fromWireValue(value.value) as T;
   }
 
@@ -638,13 +918,20 @@ export class EchoAgentClient {
   }
 
   async family<T = unknown>(family: string, operation: string, session: WireHandle | undefined, args: readonly unknown[] = []): Promise<T> {
-    const method = `_echo_agent/${family}/op`;
+    // Family names are catalog identities; their wire method can use a
+    // different spelling (for example content_guard -> content-guard).
+    const resolved = this.catalog.resolve(operation);
+    if (resolved.family !== family || resolved.method === "_echo_agent/facade/invoke") {
+      throw new EchoAgentError("invalid_value", "operation does not belong to the requested facade family");
+    }
+    const method = resolved.method;
     const value = await this.request<{ value: WireValue }>(method, {
       operation,
       signature_digest: this.catalog.familySignature(method, operation),
       handle: session,
       arguments: args.map(toWireValue),
     });
+    if (!value || !("value" in value) || !isWireValue(value.value)) throw new EchoAgentError("serialization_violation", "facade response requires a value envelope");
     return fromWireValue(value.value) as T;
   }
 
@@ -668,12 +955,12 @@ export class EchoAgentClient {
   eventsFor(streamId: string, handle?: WireHandle): AsyncIterable<FacadeStreamItem> {
     let feed = this.events.get(streamId);
     if (!feed) {
-      feed = { queue: new AsyncQueue<FacadeStreamItem>(this.queueCapacity), handle, lastEventSequence: 0n };
+      feed = { queue: new AsyncQueue<FacadeStreamItem>(this.queueCapacity), handle: handle ? { ...handle } : undefined, lastEventSequence: 0n };
       this.events.set(streamId, feed);
     } else if (handle && feed.handle && !sameHandle(feed.handle, handle)) {
       feed.queue.fail(new EchoAgentError("handle_mismatch", "event stream handle changed generation"));
     } else {
-      feed.handle ??= handle;
+      if (handle) feed.handle ??= { ...handle };
     }
     return this.iterateEvents(feed);
   }
@@ -682,7 +969,7 @@ export class EchoAgentClient {
     const event = decodeEvent({ stream, envelope });
     let feed = this.events.get(stream.id);
     if (!feed) {
-      feed = { queue: new AsyncQueue<FacadeStreamItem>(this.queueCapacity), handle: stream, lastEventSequence: 0n };
+      feed = { queue: new AsyncQueue<FacadeStreamItem>(this.queueCapacity), handle: { ...stream }, lastEventSequence: 0n };
       this.events.set(stream.id, feed);
     }
     if (feed.handle && !sameHandle(feed.handle, stream)) {
@@ -691,9 +978,11 @@ export class EchoAgentClient {
     }
     const sequence = parsePositiveSequence(event.envelope.sequence);
     if (sequence <= feed.lastEventSequence) return;
-    feed.handle = stream;
+    feed.handle = { ...stream };
     feed.lastEventSequence = sequence;
-    feed.queue.push(event);
+    feed.lastLiveSequence = sequence;
+    recordLiveSequence(feed, sequence);
+    void deliverStreamItem(feed, event);
   }
 
   endEvents(streamId: string): void {
@@ -705,24 +994,102 @@ export class EchoAgentClient {
   }
 
   async acknowledge(stream: WireHandle, sequence: string): Promise<void> {
+    // The official writer queues notification objects; capture the address
+    // before awaiting so caller mutations cannot change the submitted identity.
+    stream = { ...stream };
     const parsed = parsePositiveSequence(sequence);
-    await this.notify("_echo_agent/event/ack", {
-      ack: { stream, last_processed_sequence: parsed.toString() },
-    });
+    const feed = this.events.get(stream.id);
+    const owned = feed?.handle && sameHandle(feed.handle, stream);
+    const covered = feed && replayCoversCursor(feed, parsed);
+    const observed = owned && (covered || parsed === feed.lastGapWatermark
+      || parsed <= (feed.acknowledgedSequence ?? 0n)
+      || feed.liveRanges?.some(range => range.base <= parsed && parsed <= range.end));
+    let projection: PendingAcknowledgement | undefined;
+    if (feed && observed) {
+      projection = {sequence: parsed, settled: false};
+      (feed.pendingAcknowledgements ??= new Set()).add(projection);
+    }
+    try {
+      try {
+        await this.notify("_echo_agent/event/ack", {
+          ack: { stream, last_processed_sequence: parsed.toString() },
+        });
+      } catch(error) {
+        const failure=EchoAgentError.fromUnknown(error,"_echo_agent/event/ack");
+        throw new EchoAgentError(failure.code,failure.message,failure.retryable,failure.operation,
+          {ack_submission:"outcome_unknown",stream,sequence:parsed.toString(),cause_details:failure.details},failure.handle);
+      }
+      if(feed && observed){
+        // Each completion commits only its own submitted, observed cursor.
+        // Another in-flight ACK cannot supply successful consumption evidence.
+        if(parsed>(feed.acknowledgedSequence ?? 0n))feed.acknowledgedSequence=parsed;
+        if(parsed>feed.lastEventSequence)feed.lastEventSequence=parsed;
+        const committed=feed.acknowledgedSequence ?? 0n;
+        feed.queue.discardAcknowledgedEvents(committed);
+        if(feed.replayTerminalSequence!==undefined && committed>=feed.replayTerminalSequence)feed.queue.end();
+      }
+    } finally {
+      // A wakeup is not successful consumption. Failed native writes retain
+      // their original typed error and prefix; private signals never reject.
+      if (projection && feed) {
+        feed.pendingAcknowledgements?.delete(projection);
+        projection.settled = true;
+        feed.queue.signalAdmissionProgress();
+      }
+    }
+  }
+
+  observeReplay(stream: WireHandle, result: ReplayResult): void {
+    const feed = this.events.get(stream.id);
+    if (!feed?.handle || !sameHandle(feed.handle, stream)) return;
+    const base = BigInt(result.gap?.gap.snapshot_watermark ?? result.requested_after_sequence);
+    const end = BigInt(result.next_cursor.last_processed_sequence);
+    for(const event of result.events){
+      if(["final_answer","cancelled","error"].includes(event.envelope.payload.event_type))feed.replayTerminalSequence=BigInt(event.envelope.sequence);
+    }
+    const ranges = feed.replayRanges ??= [];
+    // Empty pages have no event coverage and must not intercept a later chain.
+    if (!result.gap && base === end) return;
+    if (result.gap) {
+      ranges.push({base,end,recoveryBase: BigInt(result.requested_after_sequence)});
+    } else {
+      // Merge all overlapping ordinary pages, preserving every gap's own bridge.
+      let mergedBase = base;
+      let mergedEnd = end;
+      let changed = true;
+      while (changed) {
+        changed = false;
+        for (let index = ranges.length - 1; index >= 0; index--) {
+          const range = ranges[index];
+          if (!range || range.recoveryBase !== undefined || range.base > mergedEnd || range.end < mergedBase) continue;
+          mergedBase = range.base < mergedBase ? range.base : mergedBase;
+          mergedEnd = range.end > mergedEnd ? range.end : mergedEnd;
+          ranges.splice(index, 1);
+          changed = true;
+        }
+      }
+      ranges.push({base:mergedBase,end:mergedEnd});
+    }
+    if (ranges.length > 512) ranges.shift();
   }
 
   private async *iterateEvents(feed: StreamFeed): AsyncIterable<FacadeStreamItem> {
     let pendingSequence: string | undefined;
     try {
-      for await (const item of feed.queue) {
+      for await (const queued of feed.queue) {
+        const acknowledged=feed.acknowledgedSequence ?? 0n;
+        let item=queued;
+        if("gap" in item){
+          if(BigInt(item.gap.snapshot_watermark)<=acknowledged)continue;
+          if(BigInt(item.gap.from_sequence)<=acknowledged)item={...item,gap:{...item.gap,from_sequence:(acknowledged+1n).toString()}};
+        }else if(BigInt(item.envelope.sequence)<=acknowledged)continue;
+        // A gap requires explicit replay/snapshot recovery and an explicit ACK.
+        pendingSequence = "gap" in item ? undefined : item.envelope.sequence;
+        yield item;
         if (pendingSequence && feed.handle) {
           await this.acknowledge(feed.handle, pendingSequence);
           pendingSequence = undefined;
         }
-        pendingSequence = "gap" in item
-          ? item.gap.snapshot_watermark
-          : item.envelope.sequence;
-        yield item;
       }
     } finally {
       if (pendingSequence && feed.handle && !this.closed) {
@@ -736,22 +1103,87 @@ export class EchoAgentClient {
   }
 
   async close(): Promise<void> {
-    if (this.closed) return;
+    if (this.closeOperation) return this.closeOperation;
     this.closed = true;
+    // Every caller observes settlement of this same original process owner.
+    let resolveClose!: () => void;
+    let rejectClose!: (error: unknown) => void;
+    const operation = new Promise<void>((resolve, reject) => { resolveClose = resolve; rejectClose = reject; });
+    this.closeOperation = operation;
+    void this.closeOwned().then(resolveClose, rejectClose);
+    try {
+      await operation;
+    } catch (error) {
+      if (this.closeOperation === operation) this.closeOperation = undefined;
+      throw error;
+    }
+  }
+
+  private async closeOwned(): Promise<void> {
+    for (const controller of this.invocationControllers.values()) controller.abort();
+    this.invocationControllers.clear(); this.extensionStreamRoutes.clear();
+    this.extensionHandlers.clear();
     for (const feed of this.events.values()) feed.queue.end();
     for (const queue of this.updates.values()) queue.end();
-    this.connection.close();
+    await EchoAgentClient.closeStdioOwned(this.process, this.connection);
+  }
+
+  // Both normal close and a rejected handshake settle the same original child.
+  // Its existing EOF callback and native exit obligations are unchanged.
+  private static async closeStdioOwned(child: ChildProcessWithoutNullStreams, connection: ClientConnection, cause?: unknown): Promise<void> {
+    const hasExited = () => child.exitCode !== null || child.signalCode !== null;
+    let onExit: () => void = () => {};
     const exited = new Promise<void>((resolve) => {
-      if (this.process.exitCode !== null) resolve();
-      else this.process.once("exit", () => resolve());
+      onExit = resolve;
+      if (hasExited()) resolve();
+      else child.once("exit", onExit);
     });
-    const settled = await Promise.race([
-      exited.then(() => true),
-      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), DEFAULT_CLOSE_WAIT_MS)),
-    ]);
-    if (!settled && !this.process.killed) {
-      this.process.kill();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let inputSettled = false;
+    let inputError: unknown;
+    let onInputError: (error: Error & { code?: string }) => void = () => {};
+    let onInputFinish: () => void = () => {};
+    try {
+      connection.close(cause);
+      const inputComplete = new Promise<void>((resolve) => {
+        onInputError = (error) => {
+          if (error.code !== "EPIPE" && error.code !== "ERR_STREAM_DESTROYED") inputError = error;
+        };
+        const settle = (error?: Error | null) => {
+          if (error) onInputError(error);
+          if (inputSettled) return;
+          inputSettled = true;
+          resolve();
+        };
+        onInputFinish = () => settle();
+        child.stdin.on("error", onInputError);
+        if (child.stdin.destroyed || child.stdin.writableFinished) {
+          settle();
+        } else if (child.stdin.writableEnded) {
+          child.stdin.once("finish", onInputFinish);
+          child.stdin.once("close", onInputFinish);
+        } else {
+          try { child.stdin.end(settle); } catch (error) { settle(error as Error); }
+        }
+      });
+      const settled = await Promise.race([
+        Promise.all([exited, inputComplete]).then(() => true),
+        new Promise<boolean>((resolve) => { timer = setTimeout(() => resolve(false), DEFAULT_CLOSE_WAIT_MS); }),
+      ]);
+      if (!settled && !hasExited() && !child.killed && !child.kill()) {
+        throw new EchoAgentError("transport_error", "Host process termination did not start", "after_delay");
+      }
       await exited;
+      if (!inputSettled) {
+        throw new EchoAgentError("transport_error", "Host stdin completion is still pending", "after_delay");
+      }
+      if (inputError) throw EchoAgentError.fromUnknown(inputError);
+    } finally {
+      if (timer) clearTimeout(timer);
+      child.off("exit", onExit);
+      child.stdin.off("error", onInputError);
+      child.stdin.off("finish", onInputFinish);
+      child.stdin.off("close", onInputFinish);
     }
   }
 
@@ -790,8 +1222,8 @@ export class ExtensionRegistration {
   constructor(readonly client: EchoAgentClient, readonly wire: WireHandle) {}
   async close(): Promise<void> {
     if (this.closed) return;
-    this.closed = true;
     await this.client.unregisterExtension(this.wire);
+    this.closed = true;
   }
 }
 
@@ -823,10 +1255,12 @@ export class ExtensionStreamWriter {
     await this.complete({ kind: "agent_component", value });
   }
   async failed(error: unknown): Promise<void> {
+    error = structuredClone(error);
+    const observation = isNotSettledObservation(error);
     await this.client.notify("_echo_agent/extension/stream", {
       event: "failed", stream: this.stream, sequence: this.next(), error,
     });
-    this.closed = true;
+    if (!observation) this.closed = true;
   }
   async cancelled(): Promise<void> {
     await this.client.notify("_echo_agent/extension/stream", {
@@ -864,7 +1298,7 @@ export class SessionHandle {
     this.ensureOpen();
     const response = await this.client.request<RunStartResult>("_echo_agent/run/start", {
       session: this.wire,
-      input: { kind: input.mode === "execute" ? "execute" : "chat", text: input.text },
+      input: input.mode === "execute" ? { kind: "execute", task: input.text } : { kind: "chat", text: input.text },
     });
     if (response.first_event) this.client.publishFirstEvent(response.stream, response.first_event);
     return new RunHandle(this.client, response.run, response.stream);
@@ -973,26 +1407,14 @@ export class RunHandle {
   }
   async replay(afterSequence = "0", limit = 512): Promise<ReplayResult> {
     this.ensureOpen();
-    const result = await this.client.request<{
-      requested_after_sequence: string;
-      events: readonly WireEventEnvelope[];
-      next_cursor: { stream_id: string; last_processed_sequence: string };
-      gap?: { stream: WireHandle; gap: EventGap };
-    }>("_echo_agent/run/replay", {
-      stream: this.stream,
-      after_sequence: afterSequence,
-      max_events: String(limit),
+    const raw = await this.client.request<unknown>("_echo_agent/run/replay", {
+      stream: this.stream, after_sequence: afterSequence, max_events: String(limit),
     });
-    if (result.next_cursor.stream_id !== this.stream.id) {
-      throw new EchoAgentError("serialization_violation", "replay cursor stream does not match Run stream");
-    }
-    return {
-      requested_after_sequence: result.requested_after_sequence,
-      events: result.events.map((envelope) => decodeEvent({ stream: this.stream, envelope })),
-      next_cursor: result.next_cursor,
-      gap: result.gap ? decodeGap(result.gap) : undefined,
-    };
+    const result = decodeReplayResponse(raw, this.stream, afterSequence);
+    this.client.observeReplay(this.stream, result);
+    return result;
   }
+
   async close(): Promise<void> {
     if (this.closed) return;
     const state = await this.get().catch((error) => { throw error; });
@@ -1212,20 +1634,70 @@ function isTerminalStatus(status: string): boolean {
   return status === "completed" || status === "cancelled" || status === "failed" || status === "interrupted" || status === "closed";
 }
 
+function advertisedU64(value: unknown, field: string): bigint {
+  if (typeof value !== "string" || !/^(0|[1-9][0-9]{0,19})$/u.test(value)) {
+    throw new EchoAgentError("extension_capability_mismatch", `malformed Host limit ${field}`, "never", "initialize");
+  }
+  const parsed = BigInt(value);
+  if (parsed > 18446744073709551615n) throw new EchoAgentError("extension_capability_mismatch", `Host limit exceeds u64 ${field}`, "never", "initialize");
+  return parsed;
+}
+
+function validateAdvertisedLimits(limits: Record<string, unknown>): void {
+  for (const name of ["max_message_bytes", "max_stream_buffer_events", "max_replay_events", "max_structured_output_bytes", "max_outstanding_live_events", "max_stream_buffer_bytes", "max_replay_bytes", "max_open_handles", "max_registered_extensions", "max_extension_descriptor_bytes", "max_extension_payload_bytes", "max_extension_stream_bytes", "max_inflight_extension_invocations", "max_facade_resources", "max_facade_streams", "max_facade_page_items", "max_facade_operation_args"]) {
+    if (advertisedU64(limits[name], name) === 0n) throw new EchoAgentError("extension_capability_mismatch", `Host limit must be positive ${name}`, "never", "initialize");
+  }
+  const concurrency = limits.max_callback_concurrency;
+  if (typeof concurrency !== "number" || !Number.isInteger(concurrency) || concurrency <= 0 || concurrency > 4294967295) {
+    throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback concurrency", "never", "initialize");
+  }
+  const timeout = limits.callback_timeout;
+  if (!timeout || typeof timeout !== "object" || Array.isArray(timeout)) throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback timeout", "never", "initialize");
+  const fields = timeout as Record<string, unknown>;
+  advertisedU64(fields.seconds, "callback_timeout.seconds");
+  if (typeof fields.nanos !== "number" || !Number.isInteger(fields.nanos) || fields.nanos < 0 || fields.nanos >= 1000000000) {
+    throw new EchoAgentError("extension_capability_mismatch", "malformed Host callback timeout nanos", "never", "initialize");
+  }
+}
+
+// Rust String order follows Unicode scalar values, unlike UTF-16 default sort.
+function compareFeatureNames(left: string, right: string): number {
+  const lhs = left[Symbol.iterator](), rhs = right[Symbol.iterator]();
+  for (;;) {
+    const l = lhs.next(), r = rhs.next();
+    if (l.done || r.done) return l.done ? (r.done ? 0 : -1) : 1;
+    const lc = l.value.codePointAt(0) ?? 0, rc = r.value.codePointAt(0) ?? 0;
+    if (lc !== rc) return lc < rc ? -1 : 1;
+  }
+}
+
 function validateCapability(capability: EchoAgentCapability, options: SpawnOptions): void {
+  if (capability.extension_protocol_version !== 1) throw new EchoAgentError("extension_capability_mismatch", "unsupported extension protocol version", "never", "initialize");
+  if (!Array.isArray(capability.features) || !capability.features.every(value => typeof value === "string")
+    || !Array.isArray(capability.capabilities) || !capability.capabilities.every(value => value && typeof value.capability === "string" && typeof value.required === "boolean")
+    || typeof capability.limits !== "object" || capability.limits === null || Array.isArray(capability.limits)) {
+    throw new EchoAgentError("extension_capability_mismatch", "malformed Host capability advertisement", "never", "initialize");
+  }
+  if (capability.features.some((value, index) => index > 0 && compareFeatureNames(capability.features[index - 1] ?? "", value) >= 0)) {
+    throw new EchoAgentError("extension_capability_mismatch", "Host features must be sorted and distinct", "never", "initialize");
+  }
+  if (capability.capabilities.length === 0 || new Set(capability.capabilities.map(value => value.capability)).size !== capability.capabilities.length) {
+    throw new EchoAgentError("extension_capability_mismatch", "Host must declare distinct capabilities", "never", "initialize");
+  }
+  validateAdvertisedLimits(capability.limits);
   for (const feature of options.requiredFeatures ?? []) {
-    if (!capability.features.includes(feature)) throw new EchoAgentError("feature_unavailable", `Host lacks feature ${feature}`);
+    if (!capability.features.includes(feature)) throw new EchoAgentError("feature_unavailable", `Host lacks feature ${feature}`, "never", "initialize");
   }
   for (const required of options.requiredCapabilities ?? []) {
     if (!capability.capabilities.some((entry) => entry.capability === required)) {
-      throw new EchoAgentError("extension_capability_mismatch", `Host lacks capability ${required}`);
+      throw new EchoAgentError("extension_capability_mismatch", `Host lacks capability ${required}`, "never", "initialize");
     }
   }
   if (options.contractDigest && capability.contract_digest !== options.contractDigest) {
-    throw new EchoAgentError("extension_capability_mismatch", "contract digest mismatch");
+    throw new EchoAgentError("extension_capability_mismatch", "contract digest mismatch", "never", "initialize");
   }
   if (options.sourceContractDigest && capability.source_contract_digest !== options.sourceContractDigest) {
-    throw new EchoAgentError("extension_capability_mismatch", "source contract digest mismatch");
+    throw new EchoAgentError("extension_capability_mismatch", "source contract digest mismatch", "never", "initialize");
   }
 }
 
@@ -1327,6 +1799,7 @@ const AGENT_COMPONENT_INPUT_FIELDS: Readonly<Record<string, readonly string[]>> 
   workflow_checkpoint_ack_claim: ["checkpoint_id", "attempt_id"],
   workflow_checkpoint_requeue_claim: ["checkpoint_id", "attempt_id"],
   workflow_checkpoint_renew_claim: ["checkpoint_id", "attempt_id"],
+  workflow_checkpoint_protect_claim: ["checkpoint_id", "attempt_id"],
   workflow_checkpoint_list: [],
   workflow_checkpoint_list_by_graph: ["graph_name"],
   workflow_checkpoint_list_filtered: ["filter"],
@@ -1334,6 +1807,7 @@ const AGENT_COMPONENT_INPUT_FIELDS: Readonly<Record<string, readonly string[]>> 
   workflow_checkpoint_clear: [],
   revisioned_task_load: ["scope_id"],
   revisioned_task_compare_and_commit: ["scope_id", "commit"],
+  revisioned_task_compare_and_commit_execution: ["scope_id", "commit"],
   sandbox_is_available: [],
   sandbox_execute: ["command"],
   sandbox_execute_stream: ["command"],
@@ -1371,6 +1845,13 @@ function optionalU64(value: unknown): boolean {
 
 function validateAgentComponentDescriptor(descriptor: AgentComponentDescriptor): void {
   const capabilities = descriptor.capabilities;
+  if (capabilities?.conversation_projection && (capabilities.conversation_projection !== "unsupported" && descriptor.component !== "conversation_store" || !["unsupported", "atomic_v1"].includes(capabilities.conversation_projection))) throw new EchoAgentError("invalid_value", "conversation projection capability is invalid for component");
+  if (capabilities?.runtime_state && (capabilities.runtime_state !== "unsupported" && descriptor.component !== "runtime_state_store" || !["unsupported", "revisioned_v1"].includes(capabilities.runtime_state))) throw new EchoAgentError("invalid_value", "runtime state capability is invalid for component");
+  if (capabilities?.persistence_call && (capabilities.persistence_call !== "unsupported" && !["conversation_store", "runtime_state_store"].includes(descriptor.component) || !["unsupported", "absolute_deadline_v1"].includes(capabilities.persistence_call))) throw new EchoAgentError("invalid_value", "persistence capability is invalid for component");
+  if (capabilities && "execution_cas_v1" in capabilities && typeof capabilities.execution_cas_v1 !== "boolean") throw new EchoAgentError("invalid_value", "execution CAS capability must be boolean");
+  if (capabilities?.execution_cas_v1 && descriptor.component !== "revisioned_task_store") throw new EchoAgentError("invalid_value", "execution CAS capability only belongs to revisioned task store");
+  if (capabilities && "protected_claim_v1" in capabilities && typeof capabilities.protected_claim_v1 !== "boolean") throw new EchoAgentError("invalid_value", "protected claim capability must be boolean");
+  if (capabilities?.protected_claim_v1 && descriptor.component !== "workflow_checkpoint_store") throw new EchoAgentError("invalid_value", "protected claim capability only belongs to workflow checkpoint store");
   const heartbeat = capabilities?.claim_heartbeat_interval_ms;
   if (descriptor.component === "workflow_checkpoint_store") {
     if (!isCanonicalU64Text(heartbeat)) {
@@ -1392,6 +1873,10 @@ function validateAgentComponentCall(component: string, call: Record<string, unkn
     : call.input;
   if (componentForOperation(operation) !== component || !isRecord(input)) {
     throw new EchoAgentError("serialization_violation", "Agent component call kind/operation is invalid");
+  }
+  if (MANAGED_OPERATIONS[operation]) {
+    try { validateManagedFields(MANAGED_OPERATIONS[operation][0], input); return; }
+    catch(error) { throw new EchoAgentError("serialization_violation", String(error)); }
   }
   const inputFields = AGENT_COMPONENT_INPUT_FIELDS[operation];
   if (inputFields === undefined || !hasNoUnknownFields(input, inputFields)) {
@@ -1446,6 +1931,7 @@ function validateAgentComponentCall(component: string, call: Record<string, unkn
         return text("checkpoint_id");
       case "workflow_checkpoint_ack_claim": case "workflow_checkpoint_requeue_claim":
       case "workflow_checkpoint_renew_claim":
+      case "workflow_checkpoint_protect_claim":
         return text("checkpoint_id") && text("attempt_id");
       case "workflow_checkpoint_list": case "workflow_checkpoint_clear":
       case "sandbox_is_available": case "sandbox_cleanup": case "mcp_transport_close":
@@ -1453,7 +1939,9 @@ function validateAgentComponentCall(component: string, call: Record<string, unkn
       case "workflow_checkpoint_list_by_graph": return text("graph_name");
       case "workflow_checkpoint_list_filtered": return wire("filter");
       case "revisioned_task_load": return text("scope_id");
-      case "revisioned_task_compare_and_commit": return text("scope_id") && wire("commit");
+      case "revisioned_task_compare_and_commit": case "revisioned_task_compare_and_commit_execution":
+        if (!text("scope_id")) return false;
+        validateManaged(operation.endsWith("_execution") ? "TaskExecutionCommit" : "TaskGraphCommit", input.commit); return true;
       case "sandbox_execute": case "sandbox_execute_stream": return wire("command");
       case "sandbox_execute_with_limits": case "sandbox_execute_with_limits_and_cancel":
         return wire("command") && wire("limits");
@@ -1483,12 +1971,18 @@ function validateAgentComponentResult(component: string, expected: string, resul
     throw new EchoAgentError("invalid_value", "Agent component result operation does not match the callback");
   }
   const value = result.value;
+  const managed = MANAGED_OPERATIONS[expected];
+  if (managed) {
+    try { validateManagedFields({[managed[1]]: managed[2]}, value); return; }
+    catch(error) { throw new EchoAgentError("serialization_violation", String(error)); }
+  }
   const unit = new Set([
     "conversation_update", "conversation_delete", "conversation_save_messages", "run_save",
     "run_append_event",
     "runtime_save_checkpoint", "runtime_save_checkpoint_for_scope", "runtime_clear_conversation", "audit_log",
     "workflow_checkpoint_save", "workflow_checkpoint_delete", "workflow_checkpoint_clear",
     "workflow_checkpoint_ack_claim", "workflow_checkpoint_requeue_claim", "workflow_checkpoint_renew_claim",
+    "workflow_checkpoint_protect_claim",
     "sandbox_cleanup", "mcp_transport_notify", "mcp_transport_close",
   ]);
   if (unit.has(expected)) {
@@ -1511,7 +2005,7 @@ function validateAgentComponentResult(component: string, expected: string, resul
     workflow_checkpoint_load: ["checkpoint"], workflow_checkpoint_claim: ["checkpoint"],
     workflow_checkpoint_list: ["checkpoints"], workflow_checkpoint_list_by_graph: ["checkpoints"],
     workflow_checkpoint_list_filtered: ["checkpoints"], revisioned_task_load: ["graph"],
-    revisioned_task_compare_and_commit: ["graph"], sandbox_is_available: ["available"],
+    revisioned_task_compare_and_commit: ["graph"], revisioned_task_compare_and_commit_execution: ["graph"], sandbox_is_available: ["available"],
     sandbox_execute: ["result"], sandbox_execute_with_limits: ["result"],
     sandbox_execute_with_limits_and_cancel: ["result"],
     mcp_transport_send: ["response"], mcp_transport_try_notification: ["notification"],
@@ -1550,8 +2044,8 @@ function validateAgentComponentResult(component: string, expected: string, resul
         return value.checkpoint === null || value.checkpoint === undefined || isWireValue(value.checkpoint);
       case "workflow_checkpoint_list": case "workflow_checkpoint_list_by_graph": case "workflow_checkpoint_list_filtered":
         return values("checkpoints");
-      case "revisioned_task_load": return value.graph === null || value.graph === undefined || isWireValue(value.graph);
-      case "revisioned_task_compare_and_commit": return isWireValue(value.graph);
+      case "revisioned_task_load": if (value.graph == null) return true; validateManaged("RevisionedTaskGraph", value.graph); return true;
+      case "revisioned_task_compare_and_commit": case "revisioned_task_compare_and_commit_execution": validateManaged("RevisionedTaskGraph", value.graph); return true;
       case "sandbox_is_available": return typeof value.available === "boolean";
       case "sandbox_execute": case "sandbox_execute_with_limits":
       case "sandbox_execute_with_limits_and_cancel": return isWireValue(value.result);
@@ -1707,6 +2201,10 @@ function typedExtensionHandler<I extends ExtensionInvocation, R extends Extensio
   return async (value, signal) => {
     const call = decodeExtensionInvokeCall(value, expectedKind) as ExtensionInvokeCall<I>;
     const result = await handler(call, signal);
+    if (isExtensionOutcome(result) && result.outcome === "error") {
+      validateExtensionError(result.error);
+      return result;
+    }
     if (expectedKind === "agent_component") {
       if (call.invocation.operation === "agent_component_call_stream") {
         if (!isExtensionOutcome(result)
@@ -1828,4 +2326,92 @@ function extensionFailure(error: unknown): EchoAgentError {
     "_echo_agent/extension/invoke",
     candidate.details,
   );
+}
+
+export function decodeReplayResponse(value: unknown, stream: WireHandle, requestedAfter?: string): ReplayResult {
+  if (!isRecord(value) || !Array.isArray(value.events) || !isRecord(value.next_cursor)
+    || !isCanonicalU64Text(value.requested_after_sequence) || !isCanonicalU64Text(value.next_cursor.last_processed_sequence)
+    || value.next_cursor.stream_id !== stream.id || (requestedAfter !== undefined && value.requested_after_sequence !== requestedAfter)) {
+    throw new EchoAgentError("serialization_violation", "replay response cursor/envelope is malformed");
+  }
+  const gap = value.gap == null ? undefined : decodeGap({stream,gap:value.gap});
+  let previous = BigInt(gap?.gap.snapshot_watermark ?? value.requested_after_sequence);
+  if (gap && BigInt(gap.gap.from_sequence) !== BigInt(value.requested_after_sequence)+1n) throw new EchoAgentError("serialization_violation", "replay gap does not follow requested cursor");
+  const events = value.events.map(envelope => {
+    const event = decodeEvent({stream,envelope});
+    const sequence = BigInt(event.envelope.sequence);
+    if(sequence !== previous + 1n)throw new EchoAgentError("serialization_violation", "replay event sequence is not contiguous");
+    previous=sequence;return event;
+  });
+  if (previous !== BigInt(value.next_cursor.last_processed_sequence)) throw new EchoAgentError("serialization_violation", "replay cursor differs from returned events/snapshot");
+  return {requested_after_sequence:value.requested_after_sequence,events,next_cursor:{stream_id:stream.id,last_processed_sequence:value.next_cursor.last_processed_sequence},gap};
+}
+
+export function decodeAgentCallback(value: unknown): ExtensionInvokeCall<AgentCallbackInvocation> {
+ if(!isRecord(value)||!isWireHandle(value.extension)||value.extension.kind!=="extension"||typeof value.invocation_id!=="string"||!isRecord(value.invocation)||!isRecord(value.invocation.input))throw new EchoAgentError("serialization_violation","callback invocation malformed");
+ const {operation,input}=value.invocation;
+ const fields:Record<string,readonly string[]>={callback_on_think_start:["agent","messages"],callback_on_think_end:["agent","steps","prompt_tokens","completion_tokens"],callback_on_tool_start:["agent","call_id","tool","args"],callback_on_tool_end:["agent","call_id","tool","result"],callback_on_tool_error:["agent","call_id","tool","error"],callback_on_tool_interrupted:["agent","call_id","tool","input","error"],callback_on_final_answer:["agent","answer"],callback_on_iteration:["agent","iteration"]};
+ const allowed=fields[String(operation)];
+ if(!allowed||!hasNoUnknownFields(input,allowed)||typeof input.agent!=="string")throw new EchoAgentError("serialization_violation","callback operation/input malformed");
+ const valid = operation === "callback_on_think_start" ? Array.isArray(input.messages)
+  : operation === "callback_on_think_end" ? Array.isArray(input.steps)&&isCanonicalU64Text(input.prompt_tokens)&&isCanonicalU64Text(input.completion_tokens)
+  : operation === "callback_on_tool_start" ? typeof input.tool==="string"&&optionalText(input.call_id)&&isWireValue(input.args)
+  : operation === "callback_on_tool_end" ? typeof input.tool==="string"&&optionalText(input.call_id)&&typeof input.result==="string"
+  : operation === "callback_on_tool_error" ? typeof input.tool==="string"&&optionalText(input.call_id)&&typeof input.error==="string"
+  : operation === "callback_on_tool_interrupted" ? typeof input.tool==="string"&&typeof input.call_id==="string"&&input.call_id.length>0&&isWireValue(input.input)&&typeof input.error==="string"
+  : operation === "callback_on_final_answer" ? typeof input.answer==="string"
+  : isCanonicalU64Text(input.iteration);
+ if(!valid)throw new EchoAgentError("serialization_violation","callback input violates typed contract");
+ return value as unknown as ExtensionInvokeCall<AgentCallbackInvocation>;
+}
+
+function validateExtensionError(value: unknown): void {
+ const boundedText=(candidate:unknown,max:number)=>typeof candidate==="string"&&Array.from(candidate).length<=max;
+ if(!isRecord(value)||!EXTENSION_ERROR_CODES.has(String(value.code))||typeof value.code!=="string"
+  ||!boundedText(value.message,4096)||!["never","always","after_delay"].includes(String(value.retryable))||typeof value.retryable!=="string"
+  ||value.operation!=null&&!boundedText(value.operation,256)||value.handle!=null&&!isWireHandle(value.handle)) {
+  throw new EchoAgentError("serialization_violation","extension error does not match its complete typed contract");
+ }
+ if(value.details!=null){
+  const details=value.details;
+  if(!isRecord(details))throw new EchoAgentError("serialization_violation","extension error details must retain an object");
+  if(details.fields!=null&&(!Array.isArray(details.fields)||details.fields.length>16||!details.fields.every(field=>isRecord(field)&&boundedText(field.key,128)&&boundedText(field.value,2048))))throw new EchoAgentError("serialization_violation","extension error detail fields are malformed");
+  if(details.facade!=null){
+   if(!isRecord(details.facade))throw new EchoAgentError("serialization_violation","extension facade failure must retain an object");
+   const facade=details.facade;
+   const limits:Record<string,number>={operation:1024,receiver_kind:64,expected_type:256,required_feature:128,resource:256};
+   for(const [key,max] of Object.entries(limits))if(facade[key]!=null&&(!boundedText(facade[key],max)||!(facade[key] as string).trim()))throw new EchoAgentError("serialization_violation","extension facade detail identity is malformed");
+   if(facade.signature_digest!=null&&(typeof facade.signature_digest!=="string"||!/^sha256:[0-9a-f]{64}$/iu.test(facade.signature_digest)))throw new EchoAgentError("serialization_violation","extension facade signature digest is malformed");
+  }
+ }
+}
+
+// Classification only: malformed hints remain ordinary failed frames. Match Rust
+// Unicode scalar counts and char::is_whitespace, not JavaScript trim (BOM differs).
+function isNotSettledObservation(value: unknown): boolean {
+ const text=(v:unknown,max:number):v is string=>typeof v==="string"&&Array.from(v).length<=max&&!/[\uD800-\uDFFF]/u.test(v);
+ const nonblank=(v:unknown,max:number):v is string=>text(v,max)&&/[^\p{White_Space}]/u.test(v);
+ if(!isRecord(value)||value.code!=="framework_error"||value.retryable!=="never")return false;
+ const details=value.details;
+ if(!isRecord(details)||!Array.isArray(details.fields))return false;
+ // Reuse the existing error decoder for common scalar/entry shape checks;
+ // the Host's operation/handle whitespace rules are checked below losslessly.
+ try{validateExtensionError({...value,operation:undefined,handle:undefined,details:{fields:details.fields}});}catch{return false;}
+ if(!text(value.message,4096)||value.operation!=null&&!nonblank(value.operation,256))return false;
+ if(value.handle!=null){
+  const h=value.handle;
+  if(!isRecord(h)||!nonblank(h.id,256)||!isWireHandle({id:"validation-id",generation:h.generation,kind:h.kind}))return false;
+ }
+ if(details.facade!=null){
+  if(!isRecord(details.facade))return false;
+  for(const key of ["operation","signature_digest","receiver_kind","expected_type","required_feature","resource"])
+   if(details.facade[key]!=null&&!text(details.facade[key],Number.MAX_SAFE_INTEGER))return false;
+ }
+ const fields=new Map<string,string>();
+ for(const f of details.fields){
+  if(!isRecord(f)||!nonblank(f.key,128)||!text(f.value,2048)||fields.has(f.key))return false;
+  fields.set(f.key,f.value);
+ }
+ return fields.get("observation")==="not_settled"&&nonblank(fields.get("run_id"),2048)
+  &&(!fields.has("execution_id")||nonblank(fields.get("execution_id"),2048));
 }
