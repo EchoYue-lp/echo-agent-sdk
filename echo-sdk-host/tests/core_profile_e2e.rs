@@ -5884,6 +5884,20 @@ async fn tool_families_execute_framework_tools_with_the_session_cwd()
 -> Result<(), Box<dyn std::error::Error>> {
     let (endpoint, _request_seen) = start_model_server("unused").await?;
     let work = tempfile::tempdir()?;
+    // The bounded harness TMPDIR can live below the SDK checkout. Give this
+    // empty workspace its own real discovery boundary instead of inheriting
+    // the harness repository's AGENTS.md through InstructionResolver.
+    let initialized = std::process::Command::new("git")
+        .args(["init", "--quiet"])
+        .current_dir(work.path())
+        .output()?;
+    if !initialized.status.success() {
+        return Err(format!(
+            "empty tool workspace git init failed: {}",
+            String::from_utf8_lossy(&initialized.stderr)
+        )
+        .into());
+    }
     let state_root = tempfile::tempdir()?;
     let project_root = work.path().join("project-rules-root");
     let project_child = project_root.join("nested");
@@ -7417,14 +7431,22 @@ where
 {
     use agent_client_protocol::Responder;
     use echo_sdk_protocol::methods::{
-        AgentStreamChunkWire, AgentStreamTerminalWire, ExtensionInvocation, ExtensionInvokeCall,
-        ExtensionInvokeOutcome, ExtensionResult, ExtensionStreamChunkValue,
+        AgentStreamChunkWire, AgentStreamTerminalWire, ExtensionCancelNotice, ExtensionInvocation,
+        ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult, ExtensionStreamChunkValue,
         ExtensionStreamCompleteValue, ExtensionStreamEvent, ExtensionUnit,
     };
     let _process_lock = acquire_e2e_process_lock();
     let transport = host_transport(&mut host.child);
     let scenario_done = Arc::new(tokio::sync::Notify::new());
     let done = scenario_done.clone();
+    // These are fixture callback signals, keyed only by the original Host
+    // invocation identity. A cancel notice must release its own cooperative
+    // callback, never the independent sibling sharing the release gate.
+    let cancellations = Arc::new(Mutex::new(std::collections::HashMap::<
+        String,
+        Arc<tokio_util::sync::CancellationToken>,
+    >::new()));
+    let callback_cancellations = cancellations.clone();
     let connect = Client
         .builder()
         .on_receive_request(
@@ -7433,26 +7455,12 @@ where
                   connection: ConnectionTo<agent_client_protocol::Agent>| {
                 let hang = hang_agent_execute.clone();
                 let gate = gate.clone();
+                let cancellations = callback_cancellations.clone();
                 async move {
-                    match call.invocation {
-                        ExtensionInvocation::AgentExecute(input) => {
-                            let parked = *hang.lock().map_err(|_| agent_client_protocol::Error::internal_error().data("hang lock poisoned"))?;
-                            tokio::spawn(async move {
-                                if let Some(gate) = gate {
-                                    gate.prompts.lock().unwrap_or_else(|error| error.into_inner()).push(input.task);
-                                    let released = gate.release.notified();
-                                    tokio::pin!(released);
-                                    released.as_mut().enable();
-                                    let invocation = gate.invocations.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-                                    if invocation < gate.block_first { released.await; }
-                                }
-                                if parked { std::future::pending::<()>().await; }
-                                let _ = responder.respond(ExtensionInvokeOutcome::Result { result: ExtensionResult::AgentExecute("SDK subagent executed".to_string()) });
-                            });
-                            Ok(())
-                        }
+                    let (task, stream) = match call.invocation {
+                        ExtensionInvocation::AgentExecute(input) => (input.task, None),
                         ExtensionInvocation::AgentExecuteStream(input) => {
-                            let Some(stream) = call.stream.clone() else {
+                            let Some(stream) = call.stream else {
                                 return responder.respond(ExtensionInvokeOutcome::Error {
                                     error: echo_sdk_protocol::error::EchoSdkError::new(
                                         echo_sdk_protocol::error::ExtensionErrorCode::ExtensionFailed,
@@ -7461,53 +7469,126 @@ where
                                     ),
                                 });
                             };
-                            responder.respond(ExtensionInvokeOutcome::Stream {
-                                stream: stream.clone(),
-                            })?;
-                            let parked = *hang.lock().map_err(|_| agent_client_protocol::Error::internal_error().data("hang lock poisoned"))?;
-                            tokio::spawn(async move {
-                                if let Some(gate) = gate {
-                                    gate.prompts.lock().unwrap_or_else(|error| error.into_inner()).push(input.task);
-                                    let released = gate.release.notified();
-                                    tokio::pin!(released);
-                                    released.as_mut().enable();
-                                    let invocation = gate.invocations.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-                                    if invocation < gate.block_first { released.await; }
-                                }
-                                if parked { std::future::pending::<()>().await; }
-                                let _ = connection.send_notification(ExtensionStreamEvent::Chunk {
+                            (input.task, Some(stream))
+                        }
+                        ExtensionInvocation::AgentClose(_) => {
+                            return responder.respond(ExtensionInvokeOutcome::Result {
+                                result: ExtensionResult::AgentClose(ExtensionUnit),
+                            });
+                        }
+                        other => {
+                            return Err(agent_client_protocol::Error::internal_error().data(
+                                format!("unexpected reverse invocation: {:?}", other.operation()),
+                            ));
+                        }
+                    };
+                    let parked = *hang.lock().map_err(|_| {
+                        agent_client_protocol::Error::internal_error().data("hang lock poisoned")
+                    })?;
+                    let invocation_id = call.invocation_id;
+                    let cancellation = Arc::new(tokio_util::sync::CancellationToken::new());
+                    {
+                        let mut routes = cancellations.lock().map_err(|_| {
+                            agent_client_protocol::Error::internal_error().data("cancel routes lock poisoned")
+                        })?;
+                        if routes.contains_key(&invocation_id) {
+                            return Err(agent_client_protocol::Error::internal_error()
+                                .data("duplicate original callback identity"));
+                        }
+                        // Register before the stream ACK or observable gate admission,
+                        // so an immediate original cancel notice cannot be lost.
+                        routes.insert(invocation_id.clone(), cancellation.clone());
+                    }
+                    tokio::spawn(async move {
+                        let result: Result<(), agent_client_protocol::Error> = async {
+                            let responder = if let Some(stream) = &stream {
+                                responder.respond(ExtensionInvokeOutcome::Stream {
                                     stream: stream.clone(),
-                                    sequence: nonzero(1),
-                                    value: ExtensionStreamChunkValue::Agent(
-                                        AgentStreamChunkWire::Token {
-                                            text: "SDK subagent executed".to_string(),
-                                        },
-                                    ),
-                                });
-                                let _ = connection.send_notification(ExtensionStreamEvent::Complete {
+                                })?;
+                                None
+                            } else {
+                                Some(responder)
+                            };
+                            if let Some(gate) = gate {
+                                gate.prompts.lock().unwrap_or_else(|error| error.into_inner()).push(task);
+                                let released = gate.release.notified();
+                                tokio::pin!(released);
+                                released.as_mut().enable();
+                                let invocation = gate.invocations.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                                if invocation < gate.block_first {
+                                    tokio::select! {
+                                        _ = released => {},
+                                        _ = cancellation.cancelled() => {},
+                                    }
+                                }
+                            }
+                            if parked {
+                                cancellation.cancelled().await;
+                            }
+                            let cancelled = cancellation.is_cancelled();
+                            if let Some(stream) = stream {
+                                if !cancelled {
+                                    connection.send_notification(ExtensionStreamEvent::Chunk {
+                                        stream: stream.clone(),
+                                        sequence: nonzero(1),
+                                        value: ExtensionStreamChunkValue::Agent(
+                                            AgentStreamChunkWire::Token {
+                                                text: "SDK subagent executed".to_string(),
+                                            },
+                                        ),
+                                    })?;
+                                }
+                                connection.send_notification(ExtensionStreamEvent::Complete {
                                     stream,
-                                    sequence: nonzero(2),
-                                    value: ExtensionStreamCompleteValue::Agent(
+                                    sequence: nonzero(if cancelled { 1 } else { 2 }),
+                                    value: ExtensionStreamCompleteValue::Agent(if cancelled {
+                                        AgentStreamTerminalWire::Cancelled
+                                    } else {
                                         AgentStreamTerminalWire::FinalAnswer {
                                             text: "SDK subagent executed".to_string(),
-                                        },
-                                    ),
-                                });
-                            });
+                                        }
+                                    }),
+                                })?;
+                            } else if let Some(responder) = responder {
+                                responder.respond(if cancelled {
+                                    ExtensionInvokeOutcome::Error {
+                                        error: echo_sdk_protocol::error::EchoSdkError::new(
+                                            ExtensionErrorCode::Cancelled,
+                                            "original fixture callback cancelled",
+                                            echo_sdk_protocol::error::Retryability::Never,
+                                        ),
+                                    }
+                                } else {
+                                    ExtensionInvokeOutcome::Result {
+                                        result: ExtensionResult::AgentExecute("SDK subagent executed".to_string()),
+                                    }
+                                })?;
+                            }
                             Ok(())
+                        }.await;
+                        let mut routes = cancellations.lock().unwrap_or_else(|error| error.into_inner());
+                        if routes.get(&invocation_id).is_some_and(|current| Arc::ptr_eq(current, &cancellation)) {
+                            routes.remove(&invocation_id);
                         }
-                        ExtensionInvocation::AgentClose(_) => responder.respond(
-                            ExtensionInvokeOutcome::Result {
-                                result: ExtensionResult::AgentClose(ExtensionUnit),
-                            },
-                        ),
-                        other => Err(agent_client_protocol::Error::internal_error().data(
-                            format!("unexpected reverse invocation: {:?}", other.operation()),
-                        )),
-                    }
+                        result
+                    });
+                    Ok(())
                 }
             },
             agent_client_protocol::on_receive_request!(),
+        )
+        .on_receive_notification(
+            async move |notice: ExtensionCancelNotice,
+                        _connection: ConnectionTo<agent_client_protocol::Agent>| {
+                let cancellation = cancellations.lock().map_err(|_| {
+                    agent_client_protocol::Error::internal_error().data("cancel routes lock poisoned")
+                })?.get(&notice.invocation_id).cloned();
+                if let Some(cancellation) = cancellation {
+                    cancellation.cancel();
+                }
+                Ok(())
+            },
+            agent_client_protocol::on_receive_notification!(),
         )
         .connect_with(transport, async move |connection| {
             let result = scenario(connection).await;
