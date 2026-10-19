@@ -1,5 +1,9 @@
 # 当前能力模型的有限剩余验收
 
+## 新增Session base prompt视图阻断（2026-10-19）
+
+新增精准SDK Finding `finding.sdk-session-base-prompt-view`：旧Host真实同Session setter成功后current=B、Traitbase getter仍A，自然exit1。它与模型配置/retained投影两个open及managed Linux未知分别处置，未关闭或替代任何旧义务。最小ownedHandle base读取、B/C/零Session定义区分的当前Host after和独审仍待；原三组有限分类、已C0消费者与各自sourcecut保留，PR5继续Draft，Plan ready。实际原件与限制在原Integration Evidence后继及Finding。
+
 ## 当前本地验收（2026-10-19，8481/Host098212）
 
 当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../../../.echo-semantic/evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。

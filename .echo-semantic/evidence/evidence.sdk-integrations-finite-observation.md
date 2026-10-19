@@ -238,3 +238,11 @@ FS比较before：1165 bytes / `ea36729fe1a3b7cee5e214397de62c3061a38c848a216828d
 具体测试锚与十二组正常消费/生命周期/不承诺/待补证并列在`docs/sdk/governance/capability-review-dispositions.md`。原四个Finding本地resolved不扩为全source通过；模型原配置/Result/livegetter与retained投影两新Finding保持open。新scalar01只旧Host下的thinking4000/tool visibility→None强例，源未入本切片；live04只是具名原A消费，RunStore实际save/load/append三类、Intent/Skill默认消费，MemoryTriggerSink managerfalse条件。新三语compressor/token-limit反例与新Fproducer after、完整新pin门禁未结算，不能把4个新压缩相关测试文件准备称已过。
 
 本次仅分类与引用已保存的Evidence，不改变expectation/status、不伪重跑、不新增secret/permission/SDK状态权威，不将缺证暗作deferred。
+
+## 2026-10-19 Session base/current prompt一项原Host真实反例
+
+原header/Source refs与前段各自sourcecut不变。使用原SDK public client入口的现有compiled产物、原MemoryPermission loopback fixture及不可变Host098212的一项accepted配置调用probe：同Session inherent set_system_prompt(B)返回Unit，current_system_prompt=B前置断言通过，而Agent::system_prompt仍构造A。firstfailedassert正是expectedB/actualA，Node进程自然1；随后已收集的TraitoverrideC使current=C，base仍A、零参数definition=A。其后baseB/currentC/definitionA强断言未执行，不报after。
+
+原999 bytes stdout/stderr日志SHA256 `124e2328a252353122a2ef7fd786199df20a2789a1b147296980ad7f2dbf07b3`；scriptSHA256 `49262336a6e7420464a3b33de2fed2573d3381a1e469aa766d621195cf00e5e3`，typed observedSHA256 `72f0f9ad3d8caff7556511f915021aa943178478e267a6f3e93a6a41dcf8181f`。ignored local session-system-prompt-probe保存精argv/Node22.22.0/80输入/原raw/进程清理；80source/runtime前后零漂移，Host098212 hash及mtime不变。Session/Agent/SDK close resolved、fixture SIGTERM回收、后继ps无该Host，且未启动Cargo/构建、未改S生产或六份未提交测试。此没有Run或框架physical receipt主张。
+
+实际执行Host仍原8481/6563，4f是discovery源码谱系。源码已界定SDKboxed缓存的独立视图bug，新增精准finding.sdk-session-base-prompt-view保持open/空三链；模型与投影两open、预算/compressor after及原managed Linux未知不由此结算。F Traitbase getter按合同读取base config，current getter读取runtime override/当前base；最小SDK改为ownedHandle的Traitbase读取，禁止改成currentgetter/刷新cache/重组prompt来抹差异。原core admission已C0的Traitoverride→current与其它getter消费继续承接。新字段/API/方法矩阵/SDK补偿FRootSystem均未引入，当前修复候选尚未采用或编译。

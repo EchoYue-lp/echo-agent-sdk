@@ -82,6 +82,10 @@ Context本地测试准确为`sdks/typescript/test/context-inheritance-values.tes
 
 本次只将既有具名证据与明确合同分类归并。新模型/预算/投影修复、新pin/唯一生成、最新消费者after、完整门禁及精确SDK main仍待；原四个本地resolved Finding不回滚，managed历史Linux原因仍未知。原Behavior/Audit状态不批量提升，PR5 Draft、Plan ready不变。无公开调用或产品行为变化，examples/官网没有本次新增演示需要；它们最终编译/集成和后续模型指南同步仍由原交付门禁及owner负责。
 
+## Session base/current视图新增精确缺陷（2026-10-19）
+
+[Session base prompt view](../../../.echo-semantic/findings/finding.sdk-session-base-prompt-view.md) 保持open。原Host一case真实before：inherent setter已将owned base变B（current=B），Session Traitbase仍boxed构造A；TraitoverrideC的current=C与零Session definition=A意义保留。getter修复须ownedHandle读取F Traitbase，不改成currentgetter，也不补偿F canonical root-system独立producer问题。原999B日志/80输入零漂移、清理与未执行after范围在Integration Evidence文末；原十二source组与已有C0消费者不因新反例重开，其它真实pending仍保，PR5 Draft/Plan ready不变。
+
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。

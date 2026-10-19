@@ -2,6 +2,10 @@
 
 当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
 
+## 2026-10-19 Session base prompt新增开放义务
+
+[finding.sdk-session-base-prompt-view](../../../.echo-semantic/findings/finding.sdk-session-base-prompt-view.md) 为独立SDK getter视图缺陷：原Host实际current=B而Session Traitbase getter=A，后Traitoverride使current=C/definition仍A。最小修复只沿ownedHandle读取Traitbase，不将其换成effective current。真实before999B/124e2328…和源/清理限制由原Integration Evidence后继记录；open/空三链、after/新Host/SDK main尚待。与下列模型配置、retained投影两条及原managed Linux未知分别处置，原Memory/Workflow resolved历史保留。
+
 ## 2026-10-19 新增两项精确开放义务
 
 | Finding | 状态与唯一修复 owner | 当前证据及后继条件 |

@@ -32,6 +32,7 @@ evidence_refs:
 finding_refs:
 - finding.sdk-live-model-source-authority
 - finding.sdk-retained-transcript-projection-identity
+- finding.sdk-session-base-prompt-view
 ---
 
 # SDK family source_operation
@@ -113,3 +114,7 @@ Behavior保持needs_review；入口具名mapped/examined不自动41verified、fu
 272操作/37receiver仅用于十二能力组的漏项核对。原处置表逐组列live配置、services、Subagent/MCP、MemoryStore、Plugin、Skill/prompt、Eval/Improve/Topology、Evolution、Security/policy、Projectrules、FS/artifact/Git与Turn/Plan/state的原直接consumer、构造/方法/close、失败和明确限制。新e31/2cae/88a定向证据与原8481完整运行分开，不以null reachability或三语载荷往返代替实际backend消费。
 
 模型与retained投影Finding仍open，预算producer消费者after仍待；新scalar/live04仅具名范围，Sink managerfalse、RunStore六种helper仅三种actual、Intent/Skill default与无非默认fence branch资格均保留。没有新API/Store/validator/SDKcursor，不降既有accepted承诺为deferred；本Behavior状态不改，最新pin/生成/门禁/main独立。
+
+## 2026-10-19 Session base prompt新增明确反例
+
+原SourceOperation分组与两Finding不变。新finding.sdk-session-base-prompt-view记录inherent base setter实际成功后Session Traitbase getter仍构造A的真实旧Host red；current getter已owned且正常，Traitbase与runtime override意义不能合并。该义务只要求同一现Handle读取base，零Session定义不动；源/typed数据/原日志和after限制在原Integration Evidence后继。原Memory/Workflow已resolved不回滚，不混F root-system位置或模型配置修复；本Behavior状态不变。

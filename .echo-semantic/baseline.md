@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "53b227d6a612e401a9e410cb2ce8dc9fb71b13936456806557c34620b9ba1ed9"
+    "content_digest": "2bf5a972a4e86fee18ed80eb57b79377f297e54dc36a99911907b61659b3cd12"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -825,3 +825,7 @@ capability inventory与八视角审查保持open，动态入口见Discovery；�
 ## 2026-10-19 accepted三组有限分类承接
 
 原处置表、两个已有Evidence及三个相关Behavior归并intrinsic/source_operation/ContextInheritance既有证据与准确承诺边界；原全套与新focused不混sourcecut，未新测试/对象/接口或批量verified。模型与retained两个open、预算/compressor after、条件Sink、managed历史Linux未知、最新pin/生成/完整门禁/native/main均继续独立。inventory_closure与behavior_model_closure标志不变。
+
+## 2026-10-19 Session base prompt视图新反例
+
+新增finding.sdk-session-base-prompt-view原Host真实before1，准确区分live Traitbase、effective current与definition快照，保持open/空三链；原模型、retained及managed未知仍独立。最小getter修复与消费者after待，未变source及既有C0证明不重审；inventory与behavior_model闭合标志、所有Behavior状态不批量改变。
