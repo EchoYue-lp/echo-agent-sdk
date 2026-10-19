@@ -495,9 +495,11 @@ struct SdkDispatch {
     component_operations: SharedVec<String>,
     cancel_notices: SharedVec<String>,
     /// Hold responders that must never answer (timeout/cancel scenarios).
-    silent: Arc<Mutex<Vec<Responder<ExtensionInvokeOutcome>>>>,
+    silent: Arc<Mutex<Vec<HeldFixtureInvocation>>>,
+    stream_producers: Arc<Mutex<Vec<HeldFixtureProducer>>>,
     /// Operations that must hang instead of answering.
     hang: Arc<Mutex<Vec<&'static str>>>,
+    hang_once: Arc<std::sync::atomic::AtomicBool>,
     malformed_stream: Arc<std::sync::atomic::AtomicBool>,
     out_of_order_stream: Arc<std::sync::atomic::AtomicBool>,
     duplicate_terminal: Arc<std::sync::atomic::AtomicBool>,
@@ -520,6 +522,298 @@ struct SdkDispatch {
     task_store: Arc<TaskStoreDispatch>,
     interrupted_callbacks: SharedVec<CallbackToolInterruptedInput>,
     raw_store: SharedRawStore,
+}
+
+/// A parked original request, never a synthesized retry or replacement call.
+struct HeldFixtureInvocation {
+    call: ExtensionInvokeCall,
+    responder: Responder<ExtensionInvokeOutcome>,
+}
+
+impl HeldFixtureInvocation {
+    fn respond(self, outcome: ExtensionInvokeOutcome) -> Result<(), RpcError> {
+        self.responder.respond(outcome)
+    }
+}
+
+fn validate_factory_instance(
+    call: &ExtensionInvokeCall,
+    instances: &Mutex<std::collections::BTreeMap<String, String>>,
+) -> Result<(), Box<EchoSdkError>> {
+    if let Some(origin) = &call.factory_origin
+        && instances
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .get(&call.extension.id)
+            != Some(&origin.id)
+    {
+        return Err(Box::new(EchoSdkError::new(
+            ExtensionErrorCode::ExtensionRejected,
+            "factory instance does not belong to this registered parent",
+            Retryability::Never,
+        )));
+    }
+    Ok(())
+}
+
+fn complete_fixture_agent_close(
+    call: &ExtensionInvokeCall,
+    instances: &Mutex<std::collections::BTreeMap<String, String>>,
+    closed: &Mutex<Vec<String>>,
+) -> Result<ExtensionInvokeOutcome, Box<EchoSdkError>> {
+    validate_factory_instance(call, instances)?;
+    if call.factory_origin.is_some() {
+        instances
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .remove(&call.extension.id);
+        closed
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .push(call.extension.id.clone());
+    }
+    Ok(ExtensionInvokeOutcome::Result {
+        result: ExtensionResult::AgentClose(ExtensionUnit),
+    })
+}
+
+async fn wait_fixture_notice(
+    dispatch: &SdkDispatch,
+    operation: ExtensionOperation,
+    reason: &str,
+) -> Result<String, RpcError> {
+    tokio::time::timeout(Duration::from_secs(10), async {
+        loop {
+            // Snapshot only fixture routing identities. Never hold a fixture
+            // lock while waiting for transport or answering the original call.
+            let mut candidates: Vec<String> = dispatch
+                .silent
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .iter()
+                .filter(|held| held.call.invocation.operation() == operation)
+                .map(|held| held.call.invocation_id.clone())
+                .collect();
+            candidates.extend(
+                dispatch
+                    .stream_producers
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .iter()
+                    .filter(|producer| producer.call.invocation.operation() == operation)
+                    .map(|producer| producer.call.invocation_id.clone()),
+            );
+            let noticed = {
+                let notices = dispatch
+                    .cancel_notices
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner());
+                candidates.into_iter().find(|id| {
+                    notices
+                        .iter()
+                        .any(|notice| notice == &format!("{id}:{reason}"))
+                })
+            };
+            if let Some(id) = noticed {
+                return Ok(id);
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .map_err(|_| RpcError::internal_error().data("original fixture cancel notice missing"))?
+}
+
+fn take_fixture_invocation(
+    dispatch: &SdkDispatch,
+    id: &str,
+    operation: ExtensionOperation,
+) -> Result<HeldFixtureInvocation, RpcError> {
+    let mut pending = dispatch
+        .silent
+        .lock()
+        .unwrap_or_else(|error| error.into_inner());
+    let index = pending
+        .iter()
+        .position(|held| {
+            held.call.invocation_id == id && held.call.invocation.operation() == operation
+        })
+        .ok_or_else(|| RpcError::internal_error().data("original parked invocation missing"))?;
+    Ok(pending.remove(index))
+}
+
+struct HeldFixtureProducer {
+    call: ExtensionInvokeCall,
+    chunks_sent: tokio_util::sync::CancellationToken,
+    release: tokio_util::sync::CancellationToken,
+    finished: tokio_util::sync::CancellationToken,
+    result: Arc<Mutex<Option<Result<(), RpcError>>>>,
+    task: tokio::task::JoinHandle<()>,
+}
+
+fn start_held_fixture_producer(
+    call: ExtensionInvokeCall,
+    responder: Responder<ExtensionInvokeOutcome>,
+    connection: ConnectionTo<agent_client_protocol::Agent>,
+    producers: &Mutex<Vec<HeldFixtureProducer>>,
+) -> Result<(), RpcError> {
+    let stream = call
+        .stream
+        .clone()
+        .ok_or_else(|| RpcError::internal_error().data("original producer stream missing"))?;
+    let llm = matches!(call.invocation, ExtensionInvocation::LlmChatStream(_));
+    let chunks_sent = tokio_util::sync::CancellationToken::new();
+    let release = tokio_util::sync::CancellationToken::new();
+    let ready = chunks_sent.clone();
+    let wait_release = release.clone();
+    let finished = tokio_util::sync::CancellationToken::new();
+    let result = Arc::new(Mutex::new(None));
+    let done = finished.clone();
+    let task_result = result.clone();
+    let task = tokio::spawn(async move {
+        let outcome = async move {
+            responder.respond(ExtensionInvokeOutcome::Stream {
+                stream: stream.clone(),
+            })?;
+            if llm {
+                for (sequence, text) in [(1, "streamed "), (2, "answer")] {
+                    connection.send_notification(ExtensionStreamEvent::Chunk {
+                        stream: stream.clone(),
+                        sequence: nonzero(sequence),
+                        value: ExtensionStreamChunkValue::Llm(chat_stream_chunk_wire(text)),
+                    })?;
+                }
+            } else {
+                connection.send_notification(ExtensionStreamEvent::Chunk {
+                    stream: stream.clone(),
+                    sequence: nonzero(1),
+                    value: ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::Token {
+                        text: "SDK custom event".to_string(),
+                    }),
+                })?;
+            }
+            // This signal follows the actual original ACK and chunk sends. The
+            // original producer remains here until explicitly released; only this
+            // task can send its final event, and the scenario joins this same task.
+            ready.cancel();
+            wait_release.cancelled().await;
+            connection.send_notification(ExtensionStreamEvent::Complete {
+                stream,
+                sequence: nonzero(if llm { 3 } else { 2 }),
+                value: if llm {
+                    ExtensionStreamCompleteValue::Llm(chat_stream_complete_wire("stop"))
+                } else {
+                    ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::Cancelled)
+                },
+            })
+        }
+        .await;
+        *task_result
+            .lock()
+            .unwrap_or_else(|error| error.into_inner()) = Some(outcome);
+        done.cancel();
+    });
+    producers
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .push(HeldFixtureProducer {
+            call,
+            chunks_sent,
+            release,
+            finished,
+            result,
+            task,
+        });
+    Ok(())
+}
+
+fn original_producer_result(result: &Mutex<Option<Result<(), RpcError>>>) -> Result<(), RpcError> {
+    result
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone()
+        .ok_or_else(|| {
+            RpcError::internal_error().data("original producer completed without its result")
+        })?
+}
+
+async fn wait_fixture_producer_ready(
+    dispatch: &SdkDispatch,
+    operation: ExtensionOperation,
+    id: Option<&str>,
+) -> Result<(), RpcError> {
+    tokio::time::timeout(Duration::from_secs(10), async {
+        loop {
+            let producer = dispatch.stream_producers.lock().unwrap_or_else(|error| error.into_inner())
+                .iter().find(|producer| producer.call.invocation.operation() == operation && id.is_none_or(|id| producer.call.invocation_id == id))
+                .map(|producer| (producer.chunks_sent.clone(), producer.finished.clone(), producer.result.clone()));
+            if let Some((ready, finished, result)) = producer {
+                tokio::select! {
+                    biased;
+                    _ = finished.cancelled() => {
+                        original_producer_result(&result)?;
+                        return Err(RpcError::internal_error().data("original producer ended before explicit release"));
+                    }
+                    _ = ready.cancelled() => return Ok(()),
+                }
+            }
+            tokio::task::yield_now().await;
+        }
+    }).await.map_err(|_| RpcError::internal_error().data("original producer ACK/chunks did not complete"))?
+}
+
+async fn finish_fixture_stream(dispatch: &SdkDispatch, id: &str) -> Result<(), RpcError> {
+    let operation = dispatch
+        .stream_producers
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .iter()
+        .find(|producer| producer.call.invocation_id == id)
+        .map(|producer| producer.call.invocation.operation())
+        .ok_or_else(|| RpcError::internal_error().data("original stream producer missing"))?;
+    // Readiness failure leaves the exact release address and original handle
+    // in the fixture owner. It never consumes/detaches a failed or live job.
+    wait_fixture_producer_ready(dispatch, operation, Some(id)).await?;
+    let mut producer = {
+        let mut pending = dispatch
+            .stream_producers
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        let index = pending
+            .iter()
+            .position(|producer| producer.call.invocation_id == id)
+            .ok_or_else(|| RpcError::internal_error().data("original stream producer missing"))?;
+        pending.remove(index)
+    };
+    if producer.task.is_finished() {
+        let result = original_producer_result(&producer.result);
+        dispatch
+            .stream_producers
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .push(producer);
+        result?;
+        return Err(
+            RpcError::internal_error().data("original producer ended before explicit release")
+        );
+    }
+    producer.release.cancel();
+    match tokio::time::timeout(Duration::from_secs(10), &mut producer.task).await {
+        Ok(joined) => {
+            joined.map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            original_producer_result(&producer.result)
+        }
+        Err(_) => {
+            // Preserve the same released-but-not-yet-joined job for cleanup
+            // or diagnosis. A timeout cannot manufacture physical closure.
+            dispatch
+                .stream_producers
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .push(producer);
+            Err(RpcError::internal_error().data("original producer join timed out"))
+        }
+    }
 }
 
 #[derive(Default)]
@@ -990,7 +1284,7 @@ impl ManagedStoreDispatch {
 #[derive(Default)]
 struct CheckpointDispatch {
     pending: Mutex<Option<WireValue>>,
-    claimed: Mutex<Option<(String, String, WireValue)>>,
+    claimed: Mutex<Option<(String, String, WireValue, bool)>>,
     renewals: AtomicUsize,
 }
 
@@ -1037,11 +1331,88 @@ impl CheckpointDispatch {
         WireValue::from_json(json).map_err(|error| Self::invalid(error.to_string()))
     }
 
-    fn save(&self, checkpoint: WireValue) {
+    fn save(&self, checkpoint: WireValue) -> CheckpointDispatchResult<()> {
+        let id = Self::checkpoint_id(&checkpoint)?;
+        let claimed = self
+            .claimed
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        Self::check_mutation(&claimed, Some(&id))?;
         *self
             .pending
             .lock()
             .unwrap_or_else(|error| error.into_inner()) = Some(checkpoint);
+        Ok(())
+    }
+
+    // The original fixture owns one checkpoint claim. Protect that exact
+    // attempt under the same lock used by mutations; advertise only this real
+    // implementation, not a neutral Unit response that permits deletion.
+    fn check_mutation(
+        claimed: &Option<(String, String, WireValue, bool)>,
+        id: Option<&str>,
+    ) -> CheckpointDispatchResult<()> {
+        if claimed
+            .as_ref()
+            .is_some_and(|(stored, _, _, protected)| *protected && id.is_none_or(|id| stored == id))
+        {
+            return Err(Self::invalid("checkpoint claim is protected"));
+        }
+        Ok(())
+    }
+
+    fn protect(&self, id: &str, attempt_id: &str) -> CheckpointDispatchResult<()> {
+        let mut claimed = self
+            .claimed
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        let Some((stored_id, stored_attempt, _, protected)) = claimed.as_mut() else {
+            return Err(Self::invalid("checkpoint claim owner mismatch"));
+        };
+        if stored_id != id || stored_attempt != attempt_id {
+            return Err(Self::invalid("checkpoint claim owner mismatch"));
+        }
+        *protected = true;
+        Ok(())
+    }
+
+    fn delete(&self, id: &str) -> CheckpointDispatchResult<()> {
+        let mut claimed = self
+            .claimed
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        Self::check_mutation(&claimed, Some(id))?;
+        let mut pending = self
+            .pending
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if pending
+            .as_ref()
+            .is_some_and(|value| Self::checkpoint_id(value).is_ok_and(|stored| stored == id))
+        {
+            pending.take();
+        }
+        if claimed
+            .as_ref()
+            .is_some_and(|(stored, _, _, _)| stored == id)
+        {
+            claimed.take();
+        }
+        Ok(())
+    }
+
+    fn clear(&self) -> CheckpointDispatchResult<()> {
+        let mut claimed = self
+            .claimed
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        Self::check_mutation(&claimed, None)?;
+        *self
+            .pending
+            .lock()
+            .unwrap_or_else(|error| error.into_inner()) = None;
+        *claimed = None;
+        Ok(())
     }
 
     fn load(&self, id: &str) -> CheckpointDispatchResult<Option<WireValue>> {
@@ -1060,11 +1431,18 @@ impl CheckpointDispatch {
             .unwrap_or_else(|error| error.into_inner());
         Ok(claimed
             .as_ref()
-            .filter(|(checkpoint_id, _, _)| checkpoint_id == id)
-            .map(|(_, _, checkpoint)| checkpoint.clone()))
+            .filter(|(checkpoint_id, _, _, _)| checkpoint_id == id)
+            .map(|(_, _, checkpoint, _)| checkpoint.clone()))
     }
 
     fn claim(&self, id: &str) -> CheckpointDispatchResult<Option<WireValue>> {
+        let mut original_claim = self
+            .claimed
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        if original_claim.is_some() {
+            return Err(Self::invalid("checkpoint is already claimed"));
+        }
         let mut pending = self
             .pending
             .lock()
@@ -1079,13 +1457,9 @@ impl CheckpointDispatch {
             .take()
             .ok_or_else(|| Self::invalid("checkpoint claim disappeared"))?;
         drop(pending);
-        let attempt_id = "sdk-resume-attempt".to_string();
+        let attempt_id = format!("sdk-resume-attempt-{}", uuid::Uuid::new_v4());
         let claimed = Self::with_attempt(&checkpoint, Some(&attempt_id))?;
-        *self
-            .claimed
-            .lock()
-            .unwrap_or_else(|error| error.into_inner()) =
-            Some((id.to_string(), attempt_id, claimed.clone()));
+        *original_claim = Some((id.to_string(), attempt_id, claimed.clone(), false));
         Ok(Some(claimed))
     }
 
@@ -1101,19 +1475,30 @@ impl CheckpointDispatch {
             .unwrap_or_else(|error| error.into_inner());
         let matches = claimed
             .as_ref()
-            .is_some_and(|(stored_id, stored_attempt, _)| {
+            .is_some_and(|(stored_id, stored_attempt, _, _)| {
                 stored_id == id && stored_attempt == attempt_id
             });
         if !matches {
             return Err(Self::invalid("checkpoint claim owner mismatch"));
         }
-        let (_, _, checkpoint) = claimed
-            .take()
+        let checkpoint = claimed
+            .as_ref()
+            .map(|(_, _, checkpoint, _)| checkpoint)
             .ok_or_else(|| Self::invalid("checkpoint claim disappeared"))?;
-        drop(claimed);
-        if requeue {
-            self.save(Self::with_attempt(&checkpoint, None)?);
+        // Validate the replacement before consuming the original protected
+        // claim. Requeue/ack belong to the matching attempt, not CRUD bypass.
+        let requeued = if requeue {
+            Some(Self::with_attempt(checkpoint, None)?)
+        } else {
+            None
+        };
+        if let Some(checkpoint) = requeued {
+            *self
+                .pending
+                .lock()
+                .unwrap_or_else(|error| error.into_inner()) = Some(checkpoint);
         }
+        claimed.take();
         Ok(())
     }
 
@@ -1124,7 +1509,7 @@ impl CheckpointDispatch {
             .unwrap_or_else(|error| error.into_inner());
         if !claimed
             .as_ref()
-            .is_some_and(|(stored_id, stored_attempt, _)| {
+            .is_some_and(|(stored_id, stored_attempt, _, _)| {
                 stored_id == id && stored_attempt == attempt_id
             })
         {
@@ -1142,6 +1527,12 @@ impl CheckpointDispatch {
         let Some(expected_generation) = expected_generation.to_u64() else {
             return Err(Self::invalid("expected_generation is out of range"));
         };
+        let id = Self::checkpoint_id(&checkpoint)?;
+        let claimed = self
+            .claimed
+            .lock()
+            .unwrap_or_else(|error| error.into_inner());
+        Self::check_mutation(&claimed, Some(&id))?;
         let mut pending = self
             .pending
             .lock()
@@ -1158,6 +1549,86 @@ impl CheckpointDispatch {
         *pending = Some(checkpoint);
         Ok(true)
     }
+}
+
+#[test]
+fn checkpoint_dispatch_rejects_stale_attempt_and_protected_mutations()
+-> Result<(), Box<dyn std::error::Error>> {
+    let dispatch = CheckpointDispatch::default();
+    let checkpoint = WireValue::from_json(serde_json::json!({"id":"checkpoint-a","generation":1}))?;
+    dispatch
+        .save(checkpoint.clone())
+        .map_err(|error| std::io::Error::other(error.message))?;
+    let attempt = |value: &WireValue| -> Result<String, Box<dyn std::error::Error>> {
+        let json = value.clone().into_json()?;
+        Ok(json
+            .get("resume_attempt_id")
+            .and_then(serde_json::Value::as_str)
+            .ok_or("missing original claim attempt")?
+            .to_string())
+    };
+    let first = dispatch
+        .claim("checkpoint-a")
+        .map_err(|error| std::io::Error::other(error.message))?
+        .ok_or("missing first claim")?;
+    let first_attempt = attempt(&first)?;
+    dispatch
+        .settle_claim("checkpoint-a", &first_attempt, true)
+        .map_err(|error| std::io::Error::other(error.message))?;
+    let second = dispatch
+        .claim("checkpoint-a")
+        .map_err(|error| std::io::Error::other(error.message))?
+        .ok_or("missing fresh claim")?;
+    let second_attempt = attempt(&second)?;
+    assert_ne!(first_attempt, second_attempt);
+    assert!(dispatch.protect("checkpoint-a", &first_attempt).is_err());
+    assert!(dispatch.renew("checkpoint-a", &first_attempt).is_err());
+    assert!(
+        dispatch
+            .settle_claim("checkpoint-a", &first_attempt, false)
+            .is_err()
+    );
+    assert!(
+        dispatch
+            .settle_claim("checkpoint-a", &first_attempt, true)
+            .is_err()
+    );
+    assert_eq!(
+        dispatch
+            .load("checkpoint-a")
+            .map_err(|error| std::io::Error::other(error.message))?,
+        Some(second.clone())
+    );
+    dispatch
+        .protect("checkpoint-a", &second_attempt)
+        .map_err(|error| std::io::Error::other(error.message))?;
+    assert!(dispatch.save(checkpoint.clone()).is_err());
+    assert!(
+        dispatch
+            .save_if_generation(checkpoint, WireU64::from_u64(1))
+            .is_err()
+    );
+    assert!(dispatch.delete("checkpoint-a").is_err());
+    assert!(dispatch.clear().is_err());
+    assert_eq!(
+        dispatch
+            .load("checkpoint-a")
+            .map_err(|error| std::io::Error::other(error.message))?,
+        Some(second)
+    );
+    dispatch
+        .renew("checkpoint-a", &second_attempt)
+        .map_err(|error| std::io::Error::other(error.message))?;
+    dispatch
+        .settle_claim("checkpoint-a", &second_attempt, false)
+        .map_err(|error| std::io::Error::other(error.message))?;
+    assert!(
+        dispatch
+            .load("checkpoint-a")
+            .map_err(|error| std::io::Error::other(error.message))?
+            .is_none()
+    );
+    Ok(())
 }
 
 fn tool_descriptor(name: &str) -> ExtensionDescriptor {
@@ -1256,7 +1727,9 @@ where
     let component_operations = dispatch.component_operations.clone();
     let cancel_notices = dispatch.cancel_notices.clone();
     let silent = dispatch.silent.clone();
+    let stream_producers = dispatch.stream_producers.clone();
     let hang = dispatch.hang.clone();
+    let hang_once = dispatch.hang_once.clone();
     let malformed_stream = dispatch.malformed_stream.clone();
     let out_of_order_stream = dispatch.out_of_order_stream.clone();
     let duplicate_terminal = dispatch.duplicate_terminal.clone();
@@ -1287,7 +1760,9 @@ where
                 let compressor_extensions = compressor_extensions.clone();
                 let component_operations = component_operations.clone();
                 let silent = silent.clone();
+                let stream_producers = stream_producers.clone();
                 let hang = hang.clone();
+                let hang_once = hang_once.clone();
                 let malformed_stream = malformed_stream.clone();
                 let out_of_order_stream = out_of_order_stream.clone();
                 let duplicate_terminal = duplicate_terminal.clone();
@@ -1316,7 +1791,9 @@ where
                     let compressor_extensions = compressor_extensions.clone();
                     let component_operations = component_operations.clone();
                     let silent = silent.clone();
+                    let stream_producers = stream_producers.clone();
                     let hang = hang.clone();
+                    let hang_once = hang_once.clone();
                     let malformed_stream = malformed_stream.clone();
                     let out_of_order_stream = out_of_order_stream.clone();
                     let duplicate_terminal = duplicate_terminal.clone();
@@ -1340,24 +1817,25 @@ where
                     let raw_store = raw_store.clone();
                     async move {
                         let operation = call.invocation.operation();
+                        let original_call = call.clone();
                         operations
                             .lock()
                             .expect("operations lock")
                             .push(operation.as_str().to_string());
-                        if hang
-                            .lock()
-                            .expect("hang lock")
-                            .iter()
-                            .any(|candidate| *candidate == operation.as_str())
-                        {
-                            silent.lock().expect("silent lock").push(responder);
+                        let hold_original = {
+                            let mut held_operations = hang.lock().unwrap_or_else(|error| error.into_inner());
+                            let found = held_operations.iter().position(|candidate| *candidate == operation.as_str());
+                            if let Some(index) = found {
+                                if hang_once.load(Ordering::Acquire) { held_operations.remove(index); }
+                                true
+                            } else { false }
+                        };
+                        if hold_original {
+                            silent.lock().expect("silent lock").push(HeldFixtureInvocation { call: original_call.clone(), responder });
                             return Ok(());
                         }
-                        if let Some(origin) = &call.factory_origin {
-                            let instances = factory_instances.lock().unwrap_or_else(|error| error.into_inner());
-                            if instances.get(&call.extension.id) != Some(&origin.id) {
-                                return responder.respond(ExtensionInvokeOutcome::Error { error: EchoSdkError::new(ExtensionErrorCode::ExtensionRejected, "factory instance does not belong to this registered parent", Retryability::Never) });
-                            }
+                        if let Err(error) = validate_factory_instance(&call, &factory_instances) {
+                            return responder.respond(ExtensionInvokeOutcome::Error { error: *error });
                         }
                         match call.invocation {
                             ExtensionInvocation::ToolExecute(_) => {
@@ -1366,6 +1844,20 @@ where
                                         "3 documents matched",
                                     )),
                                 })
+                            }
+                            ExtensionInvocation::ToolExecuteStream(_) => {
+                                let stream = call.stream.ok_or_else(|| RpcError::internal_error().data("original retry Tool stream missing"))?;
+                                responder.respond(ExtensionInvokeOutcome::Stream { stream: stream.clone() })?;
+                                // The framework retry owns a distinct actual
+                                // callback producer; it does not replace the
+                                // first callback's physical completion.
+                                tokio::spawn(async move {
+                                    connection.send_notification(ExtensionStreamEvent::Complete {
+                                        stream, sequence: nonzero(1),
+                                        value: ExtensionStreamCompleteValue::Tool(tool_result_wire("original retry completed")),
+                                    })
+                                });
+                                Ok(())
                             }
                             ExtensionInvocation::ToolValidateParameters(_) => {
                                 responder.respond(ExtensionInvokeOutcome::Result {
@@ -1499,7 +1991,7 @@ where
                                     silent
                                         .lock()
                                         .unwrap_or_else(|error| error.into_inner())
-                                        .push(responder);
+                                        .push(HeldFixtureInvocation { call: original_call.clone(), responder });
                                     return Ok(());
                                 }
                                 if operation == AgentComponentOperationWire::SandboxCleanup {
@@ -1560,7 +2052,7 @@ where
                                     let result = managed.handle(&input.call);
                                     if result.is_ok() && matches!(input.call, AgentComponentCallInputWire::ConversationApplyTranscriptProjectionWithContext { .. })
                                         && managed.lose_first_apply_response.swap(false, Ordering::AcqRel) {
-                                        silent.lock().unwrap_or_else(|error| error.into_inner()).push(responder);
+                                        silent.lock().unwrap_or_else(|error| error.into_inner()).push(HeldFixtureInvocation { call: original_call.clone(), responder });
                                         return Ok(());
                                     }
                                     return responder.respond(match result {
@@ -1636,7 +2128,9 @@ where
                                         }
                                     }
                                     AgentComponentCallInputWire::WorkflowCheckpointSave { checkpoint } => {
-                                        checkpoints.save(checkpoint);
+                                        if let Err(error) = checkpoints.save(checkpoint) {
+                                            return responder.respond(ExtensionInvokeOutcome::Error { error: *error });
+                                        }
                                         AgentComponentCallResultWire::WorkflowCheckpointSave
                                     }
                                     AgentComponentCallInputWire::WorkflowCheckpointSaveIfGeneration { checkpoint, expected_generation } => {
@@ -1660,6 +2154,12 @@ where
                                         };
                                         AgentComponentCallResultWire::WorkflowCheckpointClaim { checkpoint }
                                     }
+                                    AgentComponentCallInputWire::WorkflowCheckpointProtectClaim { checkpoint_id, attempt_id } => {
+                                        if let Err(error) = checkpoints.protect(&checkpoint_id, &attempt_id) {
+                                            return responder.respond(ExtensionInvokeOutcome::Error { error: *error });
+                                        }
+                                        AgentComponentCallResultWire::WorkflowCheckpointProtectClaim
+                                    }
                                     AgentComponentCallInputWire::WorkflowCheckpointAckClaim { checkpoint_id, attempt_id } => {
                                         if let Err(error) = checkpoints.settle_claim(&checkpoint_id, &attempt_id, false) {
                                             return responder.respond(ExtensionInvokeOutcome::Error { error: *error });
@@ -1681,8 +2181,18 @@ where
                                     AgentComponentCallInputWire::WorkflowCheckpointList => AgentComponentCallResultWire::WorkflowCheckpointList { checkpoints: Vec::new() },
                                     AgentComponentCallInputWire::WorkflowCheckpointListByGraph { .. } => AgentComponentCallResultWire::WorkflowCheckpointListByGraph { checkpoints: Vec::new() },
                                     AgentComponentCallInputWire::WorkflowCheckpointListFiltered { .. } => AgentComponentCallResultWire::WorkflowCheckpointListFiltered { checkpoints: Vec::new() },
-                                    AgentComponentCallInputWire::WorkflowCheckpointDelete { .. } => AgentComponentCallResultWire::WorkflowCheckpointDelete,
-                                    AgentComponentCallInputWire::WorkflowCheckpointClear => AgentComponentCallResultWire::WorkflowCheckpointClear,
+                                    AgentComponentCallInputWire::WorkflowCheckpointDelete { checkpoint_id } => {
+                                        if let Err(error) = checkpoints.delete(&checkpoint_id) {
+                                            return responder.respond(ExtensionInvokeOutcome::Error { error: *error });
+                                        }
+                                        AgentComponentCallResultWire::WorkflowCheckpointDelete
+                                    }
+                                    AgentComponentCallInputWire::WorkflowCheckpointClear => {
+                                        if let Err(error) = checkpoints.clear() {
+                                            return responder.respond(ExtensionInvokeOutcome::Error { error: *error });
+                                        }
+                                        AgentComponentCallResultWire::WorkflowCheckpointClear
+                                    },
                                     AgentComponentCallInputWire::RevisionedTaskLoad { .. }
                                     | AgentComponentCallInputWire::RevisionedTaskCompareAndCommit { .. }
                                     | AgentComponentCallInputWire::RevisionedTaskCompareAndCommitExecution { .. } => {
@@ -1913,8 +2423,18 @@ where
                                             },
                                         )?;
                                     }
+                                    // Both valid chunks precede the ACK and exercise
+                                    // the bounded mailbox. A real final event from
+                                    // this same producer supplies physical closure.
+                                    connection.send_notification(ExtensionStreamEvent::Complete {
+                                        stream: stream.clone(), sequence: nonzero(3),
+                                        value: ExtensionStreamCompleteValue::Llm(chat_stream_complete_wire("stop")),
+                                    })?;
                                     return responder
                                         .respond(ExtensionInvokeOutcome::Stream { stream });
+                                }
+                                if omit_stream_terminal.load(Ordering::Acquire) {
+                                    return start_held_fixture_producer(original_call, responder, connection, &stream_producers);
                                 }
                                 responder.respond(ExtensionInvokeOutcome::Stream {
                                     stream: stream.clone(),
@@ -1964,13 +2484,17 @@ where
                                     if oversized_stream.load(Ordering::Acquire) {
                                         let _ = connection.send_notification(
                                             ExtensionStreamEvent::Chunk {
-                                                stream,
+                                                stream: stream.clone(),
                                                 sequence: nonzero(1),
                                                 value: ExtensionStreamChunkValue::Llm(
                                                     chat_stream_chunk_wire(&"x".repeat(300_000)),
                                                 ),
                                             },
                                         );
+                                        let _ = connection.send_notification(ExtensionStreamEvent::Complete {
+                                            stream, sequence: nonzero(1),
+                                            value: ExtensionStreamCompleteValue::Llm(chat_stream_complete_wire("stop")),
+                                        });
                                         return;
                                     }
                                     for (sequence, text) in [(1_u64, "streamed "), (2, "answer")] {
@@ -2005,21 +2529,20 @@ where
                                     if omit_stream_terminal.load(Ordering::Acquire) {
                                         return;
                                     }
-                                    let value = if malformed_stream.load(Ordering::Acquire) {
-                                        ExtensionStreamCompleteValue::Agent(
-                                            AgentStreamTerminalWire::FinalAnswer {
-                                                text: "terminal".to_string(),
-                                            },
-                                        )
+                                    // Rejected kind/sequence input is not physical
+                                    // closure. Finish the original producer with a
+                                    // valid event at its next accepted remote index.
+                                    let final_sequence = if malformed_stream.load(Ordering::Acquire) {
+                                        1
+                                    } else if out_of_order_stream.load(Ordering::Acquire) {
+                                        2
                                     } else {
-                                        ExtensionStreamCompleteValue::Llm(
-                                            chat_stream_complete_wire("stop"),
-                                        )
+                                        3
                                     };
                                     let terminal = ExtensionStreamEvent::Complete {
                                         stream: stream.clone(),
-                                        sequence: nonzero(3),
-                                        value,
+                                        sequence: nonzero(final_sequence),
+                                        value: ExtensionStreamCompleteValue::Llm(chat_stream_complete_wire("stop")),
                                     };
                                     let _ = connection.send_notification(terminal.clone());
                                     if duplicate_terminal.load(Ordering::Acquire) {
@@ -2081,12 +2604,9 @@ where
                                 })
                             }
                             ExtensionInvocation::AgentClose(_) => {
-                                if call.factory_origin.is_some() {
-                                    factory_instances.lock().unwrap_or_else(|error| error.into_inner()).remove(&call.extension.id);
-                                    factory_closed.lock().unwrap_or_else(|error| error.into_inner()).push(call.extension.id.clone());
-                                }
-                                responder.respond(ExtensionInvokeOutcome::Result {
-                                    result: ExtensionResult::AgentClose(ExtensionUnit),
+                                responder.respond(match complete_fixture_agent_close(&original_call, &factory_instances, &factory_closed) {
+                                    Ok(outcome) => outcome,
+                                    Err(error) => ExtensionInvokeOutcome::Error { error: *error },
                                 })
                             }
                             #[cfg(feature = "framework-channels")]
@@ -2177,6 +2697,9 @@ where
                                         ),
                                     });
                                 };
+                                if omit_stream_terminal.load(Ordering::Acquire) {
+                                    return start_held_fixture_producer(original_call, responder, connection, &stream_producers);
+                                }
                                 responder.respond(ExtensionInvokeOutcome::Stream {
                                     stream: stream.clone(),
                                 })?;
@@ -2191,6 +2714,7 @@ where
                                                 },
                                             ),
                                         });
+                                    if omit_stream_terminal.load(Ordering::Acquire) { return; }
                                     let _ = connection.send_notification(
                                         ExtensionStreamEvent::Complete {
                                             stream,
@@ -3227,12 +3751,12 @@ async fn cancelled_factory_stream_closes_and_releases_instance()
     dispatch.omit_stream_terminal.store(true, Ordering::Release);
     dispatch.hang.lock().expect("hang lock").push("agent_close");
     let operations = dispatch.operations.clone();
-    let hang = dispatch.hang.clone();
+    let scenario_dispatch = dispatch.clone();
     let closed = dispatch.factory_closed.clone();
     let session_dir = directory.path().canonicalize()?;
     let outcome = drive_sdk(&mut host, dispatch.clone(), move |connection| {
         let operations = operations.clone();
-        let hang = hang.clone();
+        let dispatch = scenario_dispatch.clone();
         let closed = closed.clone();
         let session_dir = session_dir.clone();
         Box::pin(async move {
@@ -3288,6 +3812,13 @@ async fn cancelled_factory_stream_closes_and_releases_instance()
                 .block_task()
                 .await?;
             connection.send_notification(v1::CancelNotification::new(session.session_id))?;
+            let producer = wait_fixture_notice(
+                &dispatch,
+                ExtensionOperation::AgentExecuteStream,
+                "cancelled",
+            )
+            .await?;
+            finish_fixture_stream(&dispatch, &producer).await?;
             let _ = tokio::time::timeout(Duration::from_secs(5), prompt.block_task()).await;
 
             // A timeout is not proof of remote cleanup. The child retains
@@ -3317,9 +3848,37 @@ async fn cancelled_factory_stream_closes_and_releases_instance()
                 is_quota_pending(&error),
                 "expected exact held-child quota rejection: {error:?}"
             );
-            hang.lock()
-                .unwrap_or_else(|error| error.into_inner())
-                .retain(|operation| *operation != "agent_close");
+            let close_id =
+                wait_fixture_notice(&dispatch, ExtensionOperation::AgentClose, "timeout").await?;
+            let original =
+                take_fixture_invocation(&dispatch, &close_id, ExtensionOperation::AgentClose)?;
+            let close_outcome = complete_fixture_agent_close(
+                &original.call,
+                &dispatch.factory_instances,
+                &dispatch.factory_closed,
+            )
+            .map_err(|error| RpcError::internal_error().data(error.message))?;
+            let original_child = original.call.extension.id.clone();
+            original.respond(close_outcome)?;
+            assert_eq!(
+                closed
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .iter()
+                    .filter(|child| *child == &original_child)
+                    .count(),
+                1
+            );
+            assert_eq!(
+                operations
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .iter()
+                    .filter(|operation| operation.as_str() == "agent_close")
+                    .count(),
+                1,
+                "the held original close must not be replaced by another callback"
+            );
             // The SDK callback marker precedes the actual close response.
             // Observe the Host's quota state under the same original 10s budget.
             // register_extension_owned rejects this exact limit before publishing
@@ -3834,6 +4393,7 @@ async fn agent_components_are_consumed_by_new_session_agents()
                     component: AgentComponentKindWire::WorkflowCheckpointStore,
                     name: "sdk-workflow-checkpoints".to_string(),
                     capabilities: AgentComponentCapabilitiesWire {
+                        protected_claim_v1: true,
                         claim_heartbeat_interval_ms: Some(WireU64::from_u64(1)),
                         ..AgentComponentCapabilitiesWire::default()
                     },
@@ -4155,6 +4715,7 @@ async fn agent_components_are_consumed_by_new_session_agents()
         "WorkflowCheckpointStore:WorkflowCheckpointSave",
         "WorkflowCheckpointStore:WorkflowCheckpointSaveIfGeneration",
         "WorkflowCheckpointStore:WorkflowCheckpointClaim",
+        "WorkflowCheckpointStore:WorkflowCheckpointProtectClaim",
         "WorkflowCheckpointStore:WorkflowCheckpointRenewClaim",
         "WorkflowCheckpointStore:WorkflowCheckpointRequeueClaim",
         "WorkflowCheckpointStore:WorkflowCheckpointAckClaim",
@@ -5256,7 +5817,7 @@ async fn malformed_stream_kind_fails_without_waiting_for_deadline()
                 .send_request(initialize_request(Some(client_hello())))
                 .block_task()
                 .await?;
-            register_extension(
+            let extension = register_extension(
                 &connection,
                 ExtensionKind::LlmClient,
                 "sdk-llm-malformed",
@@ -5271,6 +5832,18 @@ async fn malformed_stream_kind_fails_without_waiting_for_deadline()
                 .send_request(v1::NewSessionRequest::new(session_dir))
                 .block_task()
                 .await?;
+            let session_handle: WireHandle = serde_json::from_value(
+                session
+                    .meta
+                    .as_ref()
+                    .and_then(|meta| meta.get("echo_agent"))
+                    .and_then(|meta| meta.get("session"))
+                    .cloned()
+                    .ok_or_else(|| {
+                        RpcError::internal_error().data("missing original Session bridge handle")
+                    })?,
+            )
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
             let prompt = connection
                 .send_request(v1::PromptRequest::new(
                     session.session_id,
@@ -5279,6 +5852,39 @@ async fn malformed_stream_kind_fails_without_waiting_for_deadline()
                 .block_task()
                 .await;
             assert!(prompt.is_err());
+            let error = prompt.err().ok_or_else(|| {
+                RpcError::internal_error().data("original invalid producer did not fail")
+            })?;
+            assert_eq!(error.code, agent_client_protocol::ErrorCode::InternalError);
+            let message = error
+                .data
+                .as_ref()
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| {
+                    RpcError::internal_error()
+                        .data("standard prompt failure lacks original failure text")
+                })?;
+            assert!(
+                message.contains("extension bridge failure serialization_violation:"),
+                "first error code was replaced: {error:?}"
+            );
+            assert!(
+                message.contains("extension stream payload kind does not match the invocation"),
+                "first rejection reason was replaced: {error:?}"
+            );
+            // Registration release proves this callback's inflight lease is
+            // gone. Closing its original Session checks cascade cleanup only;
+            // neither operation is a substitute for a canonical Run receipt.
+            assert!(unregister(&connection, &extension).await?);
+            assert!(
+                connection
+                    .send_request(echo_sdk_protocol::methods::SessionCloseRequest {
+                        session: session_handle,
+                    })
+                    .block_task()
+                    .await?
+                    .released
+            );
             Ok(())
         })
     })
@@ -5315,7 +5921,7 @@ async fn out_of_order_stream_fails_without_waiting_for_deadline()
                 .send_request(initialize_request(Some(client_hello())))
                 .block_task()
                 .await?;
-            register_extension(
+            let extension = register_extension(
                 &connection,
                 ExtensionKind::LlmClient,
                 "sdk-llm-out-of-order",
@@ -5330,6 +5936,18 @@ async fn out_of_order_stream_fails_without_waiting_for_deadline()
                 .send_request(v1::NewSessionRequest::new(session_dir))
                 .block_task()
                 .await?;
+            let session_handle: WireHandle = serde_json::from_value(
+                session
+                    .meta
+                    .as_ref()
+                    .and_then(|meta| meta.get("echo_agent"))
+                    .and_then(|meta| meta.get("session"))
+                    .cloned()
+                    .ok_or_else(|| {
+                        RpcError::internal_error().data("missing original Session bridge handle")
+                    })?,
+            )
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
             let prompt = connection
                 .send_request(v1::PromptRequest::new(
                     session.session_id,
@@ -5338,6 +5956,39 @@ async fn out_of_order_stream_fails_without_waiting_for_deadline()
                 .block_task()
                 .await;
             assert!(prompt.is_err());
+            let error = prompt.err().ok_or_else(|| {
+                RpcError::internal_error().data("original invalid producer did not fail")
+            })?;
+            assert_eq!(error.code, agent_client_protocol::ErrorCode::InternalError);
+            let message = error
+                .data
+                .as_ref()
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| {
+                    RpcError::internal_error()
+                        .data("standard prompt failure lacks original failure text")
+                })?;
+            assert!(
+                message.contains("extension bridge failure serialization_violation:"),
+                "first error code was replaced: {error:?}"
+            );
+            assert!(
+                message.contains("extension stream remote sequence is not contiguous"),
+                "first rejection reason was replaced: {error:?}"
+            );
+            // Registration release proves this callback's inflight lease is
+            // gone. Closing its original Session checks cascade cleanup only;
+            // neither operation is a substitute for a canonical Run receipt.
+            assert!(unregister(&connection, &extension).await?);
+            assert!(
+                connection
+                    .send_request(echo_sdk_protocol::methods::SessionCloseRequest {
+                        session: session_handle,
+                    })
+                    .block_task()
+                    .await?
+                    .released
+            );
             Ok(())
         })
     })
@@ -5374,7 +6025,7 @@ async fn oversized_stream_chunk_fails_without_waiting_for_deadline()
                 .send_request(initialize_request(Some(client_hello())))
                 .block_task()
                 .await?;
-            register_extension(
+            let extension = register_extension(
                 &connection,
                 ExtensionKind::LlmClient,
                 "sdk-llm-oversized",
@@ -5389,6 +6040,18 @@ async fn oversized_stream_chunk_fails_without_waiting_for_deadline()
                 .send_request(v1::NewSessionRequest::new(session_dir))
                 .block_task()
                 .await?;
+            let session_handle: WireHandle = serde_json::from_value(
+                session
+                    .meta
+                    .as_ref()
+                    .and_then(|meta| meta.get("echo_agent"))
+                    .and_then(|meta| meta.get("session"))
+                    .cloned()
+                    .ok_or_else(|| {
+                        RpcError::internal_error().data("missing original Session bridge handle")
+                    })?,
+            )
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
             let prompt = connection
                 .send_request(v1::PromptRequest::new(
                     session.session_id,
@@ -5397,6 +6060,39 @@ async fn oversized_stream_chunk_fails_without_waiting_for_deadline()
                 .block_task()
                 .await;
             assert!(prompt.is_err());
+            let error = prompt.err().ok_or_else(|| {
+                RpcError::internal_error().data("original invalid producer did not fail")
+            })?;
+            assert_eq!(error.code, agent_client_protocol::ErrorCode::InternalError);
+            let message = error
+                .data
+                .as_ref()
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| {
+                    RpcError::internal_error()
+                        .data("standard prompt failure lacks original failure text")
+                })?;
+            assert!(
+                message.contains("extension bridge failure serialization_violation:"),
+                "first error code was replaced: {error:?}"
+            );
+            assert!(
+                message.contains("extension stream event exceeds the configured byte bound"),
+                "first rejection reason was replaced: {error:?}"
+            );
+            // Registration release proves this callback's inflight lease is
+            // gone. Closing its original Session checks cascade cleanup only;
+            // neither operation is a substitute for a canonical Run receipt.
+            assert!(unregister(&connection, &extension).await?);
+            assert!(
+                connection
+                    .send_request(echo_sdk_protocol::methods::SessionCloseRequest {
+                        session: session_handle,
+                    })
+                    .block_task()
+                    .await?
+                    .released
+            );
             Ok(())
         })
     })
@@ -5433,7 +6129,7 @@ async fn stream_flood_hits_bounded_host_backpressure() -> Result<(), Box<dyn std
                 .send_request(initialize_request(Some(client_hello())))
                 .block_task()
                 .await?;
-            register_extension(
+            let extension = register_extension(
                 &connection,
                 ExtensionKind::LlmClient,
                 "sdk-llm-flood",
@@ -5448,6 +6144,18 @@ async fn stream_flood_hits_bounded_host_backpressure() -> Result<(), Box<dyn std
                 .send_request(v1::NewSessionRequest::new(session_dir))
                 .block_task()
                 .await?;
+            let session_handle: WireHandle = serde_json::from_value(
+                session
+                    .meta
+                    .as_ref()
+                    .and_then(|meta| meta.get("echo_agent"))
+                    .and_then(|meta| meta.get("session"))
+                    .cloned()
+                    .ok_or_else(|| {
+                        RpcError::internal_error().data("missing original Session bridge handle")
+                    })?,
+            )
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
             let prompt = connection
                 .send_request(v1::PromptRequest::new(
                     session.session_id,
@@ -5458,6 +6166,39 @@ async fn stream_flood_hits_bounded_host_backpressure() -> Result<(), Box<dyn std
             assert!(
                 prompt.is_err(),
                 "a flooded callback must fail, not buffer without bound"
+            );
+            let error = prompt.err().ok_or_else(|| {
+                RpcError::internal_error().data("original invalid producer did not fail")
+            })?;
+            assert_eq!(error.code, agent_client_protocol::ErrorCode::InternalError);
+            let message = error
+                .data
+                .as_ref()
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| {
+                    RpcError::internal_error()
+                        .data("standard prompt failure lacks original failure text")
+                })?;
+            assert!(
+                message.contains("extension bridge failure extension_failed:"),
+                "first error code was replaced: {error:?}"
+            );
+            assert!(
+                message.contains("extension stream consumer exceeded its bounded mailbox"),
+                "first rejection reason was replaced: {error:?}"
+            );
+            // Registration release proves this callback's inflight lease is
+            // gone. Closing its original Session checks cascade cleanup only;
+            // neither operation is a substitute for a canonical Run receipt.
+            assert!(unregister(&connection, &extension).await?);
+            assert!(
+                connection
+                    .send_request(echo_sdk_protocol::methods::SessionCloseRequest {
+                        session: session_handle,
+                    })
+                    .block_task()
+                    .await?
+                    .released
             );
             Ok(())
         })
@@ -5543,99 +6284,27 @@ async fn sdk_disconnect_cancels_an_unterminated_stream_and_exits_host()
     Ok(())
 }
 
-/// Scenario C: a silent callback exceeds its registration deadline; the Host
-/// settles a typed timeout and sends the cancel notice with reason
-/// `timeout`; a client cancellation settles with reason `cancelled`.
+/// Scenario C: an original held stream receives its exact timeout or cancel
+/// notice. Its original producer then closes; standard ACP reports Cancelled
+/// with the same Run receipt. This is separate from typed invocation errors.
 #[tokio::test]
 async fn deadline_and_cancellation_settle_typed_outcomes() -> Result<(), Box<dyn std::error::Error>>
 {
     let directory = tempfile::tempdir()?;
-    let state_root = directory.path().join("state");
     let model = start_scripted_model(vec![final_script("unused")]).await?;
     let config = write_config(
         directory.path(),
         &format!("http://{model}/v1/chat/completions"),
-        &state_root,
+        &directory.path().join("state"),
     );
-
-    let working_dir = Arc::new(directory.path().canonicalize()?);
-    // Timeout: the registration declares a one-second deadline.
-    {
-        let mut host = spawn_host(&config).await?;
-        let dispatch = Arc::new(SdkDispatch::default());
-        dispatch
-            .hang
-            .lock()
-            .expect("hang lock")
-            .extend(["llm_chat", "llm_chat_stream"]);
-        let scenario_dir = working_dir.clone();
-        let late_responders = dispatch.silent.clone();
-        let outcome = drive_sdk(&mut host, dispatch.clone(), move |connection| {
-            let late_responders = late_responders.clone();
-            Box::pin(async move {
-                connection
-                    .send_request(initialize_request(Some(client_hello())))
-                    .block_task()
-                    .await?;
-                register_extension(
-                    &connection,
-                    ExtensionKind::LlmClient,
-                    "sdk-llm-slow",
-                    llm_descriptor("sdk-slow-model"),
-                    Some(WireDuration {
-                        seconds: WireU64::from_u64(1),
-                        nanos: 0,
-                    }),
-                )
-                .await?;
-                let session: v1::NewSessionResponse = connection
-                    .send_request(v1::NewSessionRequest::new(scenario_dir.as_ref().clone()))
-                    .block_task()
-                    .await?;
-                let prompt = connection
-                    .send_request(v1::PromptRequest::new(
-                        session.session_id.clone(),
-                        vec![v1::ContentBlock::Text(v1::TextContent::new("slow"))],
-                    ))
-                    .block_task()
-                    .await;
-                // The framework fails the turn: no false success.
-                assert!(prompt.is_err(), "a timed-out callback must fail the turn");
-                if let Some(responder) = late_responders.lock().expect("late responders lock").pop()
-                {
-                    let _ = responder.respond(ExtensionInvokeOutcome::Error {
-                        error: EchoSdkError::new(
-                            ExtensionErrorCode::ExtensionFailed,
-                            "late fixture response",
-                            Retryability::Never,
-                        ),
-                    });
-                }
-                tokio::time::sleep(Duration::from_millis(100)).await;
-                Ok(())
-            })
-        })
-        .await;
-        assert!(outcome.is_ok(), "timeout scenario failed: {outcome:?}");
-        let notices = dispatch.cancel_notices.lock().expect("notices").clone();
-        assert!(
-            notices.iter().any(|notice| notice.ends_with(":timeout")),
-            "the deadline must send a timeout cancel notice; got {notices:?}"
-        );
-        assert!(
-            host.child.try_wait()?.is_none(),
-            "late response killed the Host"
-        );
-        host.child.kill().await?;
-    }
-
-    // Cancellation: the client cancels the prompt mid-invocation.
-    {
+    for timeout in [true, false] {
         let mut host = spawn_host(&config).await?;
         let dispatch = Arc::new(SdkDispatch::default());
         dispatch.omit_stream_terminal.store(true, Ordering::Release);
-        let scenario_dir = working_dir.clone();
+        let scenario_dispatch = dispatch.clone();
+        let working_dir = directory.path().canonicalize()?;
         let outcome = drive_sdk(&mut host, dispatch.clone(), move |connection| {
+            let dispatch = scenario_dispatch.clone();
             Box::pin(async move {
                 connection
                     .send_request(initialize_request(Some(client_hello())))
@@ -5644,49 +6313,80 @@ async fn deadline_and_cancellation_settle_typed_outcomes() -> Result<(), Box<dyn
                 register_extension(
                     &connection,
                     ExtensionKind::LlmClient,
-                    "sdk-llm-hang",
-                    llm_descriptor("sdk-hang-model"),
+                    "sdk-llm-held",
+                    llm_descriptor("sdk-held"),
                     Some(WireDuration {
-                        seconds: WireU64::from_u64(60),
+                        seconds: WireU64::from_u64(if timeout { 1 } else { 60 }),
                         nanos: 0,
                     }),
                 )
                 .await?;
                 let session: v1::NewSessionResponse = connection
-                    .send_request(v1::NewSessionRequest::new(scenario_dir.as_ref().clone()))
+                    .send_request(v1::NewSessionRequest::new(working_dir))
                     .block_task()
                     .await?;
-                // Fire the prompt without awaiting it yet: the callback
-                // acknowledges a stream and emits chunks but no terminal.
-                // Cancelling the run must drop that active consumer and send
-                // the extension-level cancel notice.
                 let prompt = connection.send_request(v1::PromptRequest::new(
                     session.session_id.clone(),
-                    vec![v1::ContentBlock::Text(v1::TextContent::new("hang"))],
+                    vec![v1::ContentBlock::Text(v1::TextContent::new(
+                        "held original stream",
+                    ))],
                 ));
-                // Give the Host time to start the (silent) callback, then
-                // cancel through the standard path and await the response.
-                tokio::time::sleep(Duration::from_millis(500)).await;
-                connection
-                    .send_notification(v1::CancelNotification::new(session.session_id.clone()))?;
-                let settled = tokio::time::timeout(Duration::from_secs(20), prompt.block_task())
-                    .await
-                    .ok()
-                    .and_then(|result| result.ok());
-                // Either the cancelled stop reason or a typed failure is
-                // acceptable; a false success is not.
-                if let Some(response) = settled {
-                    assert_ne!(response.stop_reason, v1::StopReason::EndTurn);
+                if !timeout {
+                    wait_fixture_producer_ready(&dispatch, ExtensionOperation::LlmChatStream, None)
+                        .await?;
+                    connection
+                        .send_notification(v1::CancelNotification::new(session.session_id))?;
                 }
+                let id = wait_fixture_notice(
+                    &dispatch,
+                    ExtensionOperation::LlmChatStream,
+                    if timeout { "timeout" } else { "cancelled" },
+                )
+                .await?;
+                finish_fixture_stream(&dispatch, &id).await?;
+                let response = tokio::time::timeout(Duration::from_secs(20), prompt.block_task())
+                    .await
+                    .map_err(|_| {
+                        RpcError::internal_error().data("original cancelled prompt did not respond")
+                    })??;
+                assert_eq!(response.stop_reason, v1::StopReason::Cancelled);
+                let run: WireHandle = serde_json::from_value(
+                    response
+                        .meta
+                        .as_ref()
+                        .and_then(|meta| meta.get("echo_agent"))
+                        .and_then(|meta| meta.get("run"))
+                        .cloned()
+                        .ok_or_else(|| {
+                            RpcError::internal_error().data("missing original Run bridge")
+                        })?,
+                )
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                let settled = connection
+                    .send_request(RunWaitRequest {
+                        run,
+                        timeout: Some(WireDuration::from_nanos(10_000_000_000)),
+                    })
+                    .block_task()
+                    .await?;
+                assert!(settled.settled);
+                assert!(matches!(settled.terminal, Some(RunTerminal::Cancelled)));
+                assert!(
+                    settled
+                        .receipt
+                        .is_some_and(|receipt| receipt.outcome == "cancelled")
+                );
                 Ok(())
             })
         })
         .await;
-        assert!(outcome.is_ok(), "cancel scenario failed: {outcome:?}");
-        let notices = dispatch.cancel_notices.lock().expect("notices").clone();
         assert!(
-            notices.iter().any(|notice| notice.ends_with(":cancelled")),
-            "the framework cancel must reach the SDK; got {notices:?}"
+            outcome.is_ok(),
+            "original deadline/cancel scenario failed: {outcome:?}"
+        );
+        assert!(
+            host.child.try_wait()?.is_none(),
+            "late original callback response killed the Host"
         );
         host.child.kill().await?;
     }
@@ -5716,7 +6416,9 @@ async fn cancelled_tool_waits_for_canonical_interrupted_callback()
         .push("tool_execute");
     let pending = dispatch.silent.clone();
     let interrupted = dispatch.interrupted_callbacks.clone();
+    let scenario_dispatch = dispatch.clone();
     let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let dispatch = scenario_dispatch.clone();
         let pending = pending.clone();
         let interrupted = interrupted.clone();
         Box::pin(async move {
@@ -5800,6 +6502,40 @@ async fn cancelled_tool_waits_for_canonical_interrupted_callback()
                 })
                 .block_task()
                 .await?;
+            let original_id =
+                wait_fixture_notice(&dispatch, ExtensionOperation::ToolExecute, "cancelled")
+                    .await?;
+            let held = connection
+                .send_request(RunWaitRequest {
+                    run: started.run.clone(),
+                    timeout: Some(WireDuration::from_nanos(50_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(
+                !held.settled && held.terminal.is_none() && held.receipt.is_none(),
+                "notice alone cannot settle the original Tool callback"
+            );
+            assert!(
+                interrupted
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .is_empty(),
+                "canonical interrupted callback must follow original Tool closure"
+            );
+            let original =
+                take_fixture_invocation(&dispatch, &original_id, ExtensionOperation::ToolExecute)?;
+            assert_eq!(
+                original.call.invocation.operation(),
+                ExtensionOperation::ToolExecute
+            );
+            original.respond(ExtensionInvokeOutcome::Error {
+                error: EchoSdkError::new(
+                    ExtensionErrorCode::Cancelled,
+                    "original fixture callback completed cancellation",
+                    Retryability::Never,
+                ),
+            })?;
             let terminal = connection
                 .send_request(RunWaitRequest {
                     run: started.run,
@@ -6630,8 +7366,11 @@ async fn tool_manager_timeout_before_stream_ack_releases_callback_owner()
         .lock()
         .unwrap_or_else(|error| error.into_inner())
         .push("tool_execute_stream");
+    dispatch.hang_once.store(true, Ordering::Release);
     let pending = dispatch.silent.clone();
+    let scenario_dispatch = dispatch.clone();
     let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let dispatch = scenario_dispatch.clone();
         let pending = pending.clone();
         Box::pin(async move {
             connection
@@ -6680,6 +7419,50 @@ async fn tool_manager_timeout_before_stream_ack_releases_callback_owner()
                 })
                 .block_task()
                 .await?;
+            tokio::time::timeout(Duration::from_secs(10), async {
+                while pending
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .is_empty()
+                {
+                    tokio::task::yield_now().await;
+                }
+            })
+            .await
+            .map_err(|_| RpcError::internal_error().data("original Tool callback did not start"))?;
+            let original_id = wait_fixture_notice(
+                &dispatch,
+                ExtensionOperation::ToolExecuteStream,
+                "cancelled",
+            )
+            .await?;
+            let held = connection
+                .send_request(RunWaitRequest {
+                    run: started.run.clone(),
+                    timeout: Some(WireDuration::from_nanos(50_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(
+                !held.settled && held.terminal.is_none() && held.receipt.is_none(),
+                "notice alone cannot settle the original Tool callback"
+            );
+            let original = take_fixture_invocation(
+                &dispatch,
+                &original_id,
+                ExtensionOperation::ToolExecuteStream,
+            )?;
+            assert_eq!(
+                original.call.invocation.operation(),
+                ExtensionOperation::ToolExecuteStream
+            );
+            original.respond(ExtensionInvokeOutcome::Error {
+                error: EchoSdkError::new(
+                    ExtensionErrorCode::Cancelled,
+                    "original fixture callback completed cancellation",
+                    Retryability::Never,
+                ),
+            })?;
             let terminal = connection
                 .send_request(RunWaitRequest {
                     run: started.run,
@@ -6688,12 +7471,23 @@ async fn tool_manager_timeout_before_stream_ack_releases_callback_owner()
                 .block_task()
                 .await?;
             assert!(terminal.terminal.is_some());
+            assert_eq!(
+                dispatch
+                    .operations
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .iter()
+                    .filter(|operation| operation.as_str() == "tool_execute_stream")
+                    .count(),
+                2,
+                "the framework retry must reach a distinct real second callback"
+            );
             assert!(
-                !pending
+                pending
                     .lock()
                     .unwrap_or_else(|error| error.into_inner())
                     .is_empty(),
-                "fixture must withhold every attempted initial stream acknowledgement"
+                "the same original callback must have physically answered"
             );
             invoke_source_operation(
                 &connection,
@@ -6743,7 +7537,9 @@ async fn cancelled_initial_stream_response_releases_session_callback_owner()
         .unwrap_or_else(|error| error.into_inner())
         .push("llm_chat_stream");
     let pending = dispatch.silent.clone();
+    let scenario_dispatch = dispatch.clone();
     let outcome = drive_sdk(&mut host, dispatch, move |connection| {
+        let dispatch = scenario_dispatch.clone();
         let pending = pending.clone();
         Box::pin(async move {
             connection
@@ -6805,6 +7601,60 @@ async fn cancelled_initial_stream_response_releases_session_callback_owner()
                 })
                 .block_task()
                 .await?;
+            let original_id =
+                wait_fixture_notice(&dispatch, ExtensionOperation::LlmChatStream, "cancelled")
+                    .await?;
+            // The driver can publish its original cancellation receipt while
+            // the independently retained callback still blocks mutation.
+            let held_run = connection
+                .send_request(RunWaitRequest {
+                    run: started.run.clone(),
+                    timeout: Some(WireDuration::from_nanos(10_000_000_000)),
+                })
+                .block_task()
+                .await?;
+            assert!(held_run.settled && matches!(held_run.terminal, Some(RunTerminal::Cancelled)));
+            assert!(
+                held_run
+                    .receipt
+                    .as_ref()
+                    .is_some_and(|receipt| receipt.outcome == "cancelled")
+            );
+            let mutation = "echo_agent::agent::react::ReactAgent::set_plan_mode";
+            let rejected = invoke_source_operation(
+                &connection,
+                agent.clone(),
+                mutation,
+                vec![
+                    WireValue::Handle(session.session.clone()),
+                    WireValue::Bool(true),
+                ],
+            )
+            .await
+            .err()
+            .ok_or_else(|| {
+                RpcError::internal_error().data("held original callback allowed mutation")
+            })?;
+            let typed = EchoSdkError::from_jsonrpc_data(rejected.data.as_ref())
+                .map_err(|error| RpcError::internal_error().data(error))?;
+            assert_eq!(typed.code, ExtensionErrorCode::ExtensionConflict);
+            assert_eq!(typed.operation.as_deref(), Some(mutation));
+            let original = take_fixture_invocation(
+                &dispatch,
+                &original_id,
+                ExtensionOperation::LlmChatStream,
+            )?;
+            assert_eq!(
+                original.call.invocation.operation(),
+                ExtensionOperation::LlmChatStream
+            );
+            original.respond(ExtensionInvokeOutcome::Error {
+                error: EchoSdkError::new(
+                    ExtensionErrorCode::Cancelled,
+                    "original fixture callback completed cancellation",
+                    Retryability::Never,
+                ),
+            })?;
             let terminal = connection
                 .send_request(RunWaitRequest {
                     run: started.run,

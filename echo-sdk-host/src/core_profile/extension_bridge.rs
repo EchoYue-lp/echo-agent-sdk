@@ -1221,6 +1221,21 @@ impl ExtensionBridge {
         EchoSdkError,
     > {
         owner.bind_invocation(self, &call);
+        if call.invocation.operation() == ExtensionOperation::AgentClose
+            && let Some(factory) = owner
+                .factory_context
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .clone()
+        {
+            *factory
+                .acknowledged_close
+                .lock()
+                .unwrap_or_else(|error| error.into_inner()) = Some(OriginalFactoryCloseReply {
+                source: Arc::downgrade(&owner),
+                reply: None,
+            });
+        }
         let connection = self.shared.connection()?;
         let operation = call.invocation.operation();
         let expected_stream = call.stream.clone();
@@ -1401,6 +1416,20 @@ impl ExtensionBridge {
                 let actual_setup_ack = response_policy == CallbackStreamPolicy::CustomAgent
                     && matches!(&answer, Ok(ExtensionInvokeOutcome::Stream { stream })
                         if expected_stream.as_ref() == Some(stream) && stream.validate().is_ok());
+                let acknowledged_factory_close = match &answer {
+                    Ok(
+                        outcome @ ExtensionInvokeOutcome::Result {
+                            result: result @ ExtensionResult::AgentClose(_),
+                        },
+                    ) if operation == ExtensionOperation::AgentClose
+                        && !response_owner.observed()
+                        && outcome.validate().is_ok()
+                        && bridge.ensure_payload_bound(result, false).is_ok() =>
+                    {
+                        Some(result.clone())
+                    }
+                    _ => None,
+                };
                 let interruption = response_interrupted
                     .lock()
                     .unwrap_or_else(|error| error.into_inner())
@@ -1519,7 +1548,8 @@ impl ExtensionBridge {
                 {
                     // Return the same owner's guards and lease before either
                     // the facade or consumer can observe this final response.
-                    response_owner.finish_original_physical_closure();
+                    response_owner
+                        .finish_original_physical_closure_with_reply(acknowledged_factory_close);
                 } else if let Some(sink) = response_sink.as_ref() {
                     response_owner.finish_if_original_physical_facts(sink);
                 }
@@ -2282,6 +2312,10 @@ impl CallbackInvocationOwner {
     // Call only after the real response plus validated remote terminal, or an
     // explicit final peer response before any physical-unknown observation.
     fn finish_original_physical_closure(&self) {
+        self.finish_original_physical_closure_with_reply(None);
+    }
+
+    fn finish_original_physical_closure_with_reply(&self, original_reply: Option<ExtensionResult>) {
         let (lease, tool_context, agent_invocation, factory_context, record) = {
             let _state = self
                 .state_gate
@@ -2331,8 +2365,24 @@ impl CallbackInvocationOwner {
         }
         drop(tool_context);
         drop(agent_invocation);
-        drop(factory_context);
         drop(lease);
+        if let Some(factory) = factory_context.as_ref()
+            && let Some(reply @ ExtensionResult::AgentClose(_)) = original_reply
+        {
+            // Only the validated reply of this bound original close supplies
+            // this fact. Publish it after real guard/lease drops and before
+            // waking the waiter, including when its initializer was cancelled.
+            let mut acknowledged = factory
+                .acknowledged_close
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            if let Some(original) = acknowledged.as_mut()
+                && original.source.as_ptr() == std::ptr::from_ref(self)
+            {
+                original.reply = Some(reply);
+            }
+        }
+        drop(factory_context);
         let removed = record.as_ref().map(|record| {
             let mut owners = record
                 .callback_owners
@@ -8012,6 +8062,7 @@ impl echo_agent::agent::subagent::AgentFactory for SubagentFactoryAdapter {
                 extension: custom_extension.clone(),
                 session_id: session_id.clone(),
                 close_result: tokio::sync::OnceCell::new(),
+                acknowledged_close: Mutex::new(None),
                 construction_submitted: AtomicBool::new(false),
                 observation: Mutex::new(None),
                 observation_changed: Notify::new(),
@@ -8081,11 +8132,21 @@ impl echo_agent::agent::subagent::AgentFactory for SubagentFactoryAdapter {
     }
 }
 
+// A fact carrier for one actual submitted callback, not a second cleanup
+// state machine. Its weak original source supplies the existing completion
+// signal even when the caller's OnceCell initializer is cancelled.
+struct OriginalFactoryCloseReply {
+    source: Weak<CallbackInvocationOwner>,
+    reply: Option<ExtensionResult>,
+}
+
 pub(crate) struct FactoryInstanceLease {
     bridge: Arc<ExtensionBridge>,
     extension: WireHandle,
     session_id: String,
     close_result: tokio::sync::OnceCell<()>,
+    // Original validated peer reply, not an inferred registration tombstone.
+    acknowledged_close: Mutex<Option<OriginalFactoryCloseReply>>,
     construction_submitted: AtomicBool,
     observation: Mutex<Option<EchoSdkError>>,
     observation_changed: Notify,
@@ -8181,22 +8242,74 @@ impl FactoryInstanceLease {
                 None => break,
             }
         }
-        self.close_result
+        let mut original_deadline_error = None;
+        let cached = self
+            .close_result
             .get_or_try_init(|| async {
+                // A cancelled original waiter cannot discard its eventual
+                // successful peer reply or trigger another mutating close.
+                loop {
+                    let (reply, completion) = {
+                        let mut acknowledged = self
+                            .acknowledged_close
+                            .lock()
+                            .unwrap_or_else(|error| error.into_inner());
+                        let completion = acknowledged
+                            .as_ref()
+                            .and_then(|fact| fact.source.upgrade())
+                            .filter(|source| !source.finished.is_cancelled())
+                            .map(|source| source.finished.clone());
+                        if completion.is_some() {
+                            (None, completion)
+                        } else {
+                            (acknowledged.take().and_then(|fact| fact.reply), None)
+                        }
+                    };
+                    if let Some(completion) = completion {
+                        completion.cancelled().await;
+                        continue;
+                    }
+                    if matches!(reply, Some(ExtensionResult::AgentClose(_))) {
+                        self.bridge.release_extension(&self.extension);
+                        return Ok(());
+                    }
+                    break;
+                }
                 if !self.construction_submitted.load(Ordering::Acquire) {
                     self.bridge.release_extension(&self.extension);
                     return Ok(());
                 }
 
-                close_factory_instance(
+                let original = close_factory_instance(
                     self.bridge.clone(),
                     self.extension.clone(),
                     self.session_id.clone(),
                 )
-                .await
+                .await;
+                let acknowledged = self
+                    .acknowledged_close
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .take()
+                    .and_then(|fact| fact.reply);
+                if matches!(acknowledged, Some(ExtensionResult::AgentClose(_))) {
+                    self.bridge.release_extension(&self.extension);
+                    if let Err(error) = original {
+                        original_deadline_error = Some(error);
+                    }
+                    // This same initializer, rather than a racing setter or a
+                    // second close invocation, caches actual cleanup success.
+                    Ok(())
+                } else {
+                    original
+                }
             })
             .await
-            .copied()
+            .copied();
+        match original_deadline_error {
+            Some(error) => Err(error),
+            None => cached,
+        }
     }
 }
 
@@ -8212,6 +8325,19 @@ impl Drop for FactoryInstanceLease {
             return;
         }
         if self.close_result.get().is_some() {
+            return;
+        }
+        let original_reply = self
+            .acknowledged_close
+            .get_mut()
+            .unwrap_or_else(|error| error.into_inner())
+            .take()
+            .and_then(|fact| fact.reply);
+        if matches!(original_reply, Some(ExtensionResult::AgentClose(_))) {
+            // The last original callback can outlive every external waiter.
+            // Its validated Unit was published only after guard/lease drops;
+            // consume that fact instead of starting another mutating close.
+            self.bridge.release_extension(&self.extension);
             return;
         }
         if !self.construction_submitted.load(Ordering::Acquire) {
@@ -12526,6 +12652,9 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
     async fn factory_child_retry_case(
         observation: bool,
         release_window: bool,
+        late_success: Option<bool>,
+        drop_waiter: bool,
+        abandon_owner: bool,
     ) -> Result<(), String> {
         use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
         use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
@@ -12580,7 +12709,8 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                 },
                 &factory,
                 "retry-child",
-                None,
+                late_success
+                    .map(|_| echo_sdk_protocol::scalar::WireDuration::from_nanos(20_000_000)),
             )
             .map_err(|error| error.message)?;
         let owner = Arc::new(FactoryInstanceLease {
@@ -12588,6 +12718,7 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
             extension: child.clone(),
             session_id: "original-session".to_string(),
             close_result: tokio::sync::OnceCell::new(),
+            acknowledged_close: Mutex::new(None),
             construction_submitted: AtomicBool::new(true),
             observation: Mutex::new(None),
             observation_changed: Notify::new(),
@@ -12604,6 +12735,10 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
         let release_ack = CancellationToken::new();
         let sdk_close_waiting = close_waiting.clone();
         let sdk_release_ack = release_ack.clone();
+        let deadline_seen = CancellationToken::new();
+        let sdk_deadline_seen = deadline_seen.clone();
+        let original_id = Arc::new(Mutex::new(None::<String>));
+        let sdk_original_id = original_id.clone();
         let finish = CancellationToken::new();
         let sdk_finish = finish.clone();
         let (host_io, sdk_io) = tokio::io::duplex(16_384);
@@ -12618,7 +12753,7 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                     let factory = factory.clone();
                     async move |call: ExtensionInvokeCall,
                                 responder: Responder<ExtensionInvokeOutcome>,
-                                _connection: ConnectionTo<AcpAgent>| {
+                                connection: ConnectionTo<AcpAgent>| {
                         assert_eq!(call.extension, child);
                         assert_eq!(call.factory_origin, Some(factory.clone()));
                         assert!(matches!(
@@ -12626,6 +12761,36 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                             ExtensionInvocation::AgentClose(_)
                         ));
                         let attempt = calls.fetch_add(1, Ordering::AcqRel);
+                        if let Some(success) = late_success {
+                            assert_eq!(
+                                attempt, 0,
+                                "a late original cleanup reply must not cause another invocation"
+                            );
+                            *sdk_original_id
+                                .lock()
+                                .unwrap_or_else(|error| error.into_inner()) =
+                                Some(call.invocation_id.clone());
+                            let release = sdk_release_ack.clone();
+                            connection.spawn(async move {
+                                release.cancelled().await;
+                                responder.respond(if success {
+                                    ExtensionInvokeOutcome::Result {
+                                        result: ExtensionResult::AgentClose(ExtensionUnit),
+                                    }
+                                } else {
+                                    ExtensionInvokeOutcome::Error {
+                                        error: sdk_error(
+                                            ExtensionErrorCode::ExtensionFailed,
+                                            "actual late close failure",
+                                            Retryability::Never,
+                                            "_echo_agent/extension/invoke",
+                                        ),
+                                    }
+                                })
+                            })?;
+                            return Ok(());
+                        }
+
                         if attempt > 0 {
                             sdk_close_waiting.cancel();
                             sdk_release_ack.cancelled().await;
@@ -12656,6 +12821,31 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                 },
                 agent_client_protocol::on_receive_request!(),
             )
+            .on_receive_notification(
+                async move |notice: echo_sdk_protocol::methods::ExtensionCancelNotice,
+                            _connection: ConnectionTo<AcpAgent>| {
+                    if late_success.is_some() {
+                        assert_eq!(
+                            Some(notice.invocation_id),
+                            original_id
+                                .lock()
+                                .unwrap_or_else(|error| error.into_inner())
+                                .clone()
+                        );
+                        if notice.reason == "timeout" {
+                            sdk_deadline_seen.cancel();
+                        } else {
+                            assert!(
+                                drop_waiter && sdk_deadline_seen.is_cancelled(),
+                                "only the dropped original waiter may cancel after its real timeout"
+                            );
+                            assert_eq!(notice.reason, "cancelled");
+                        }
+                    }
+                    Ok(())
+                },
+                agent_client_protocol::on_receive_notification!(),
+            )
             .connect_with(
                 ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()),
                 async move |_| {
@@ -12666,6 +12856,76 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
         let host = AcpAgent.builder().connect_with(
             ByteStreams::new(host_write.compat_write(), host_read.compat()), async move |connection| {
                 bridge.shared.bind_connection(connection);
+                if let Some(success) = late_success {
+                    if drop_waiter {
+                        let mut original = Box::pin(owner.close());
+                        assert!(futures::poll!(original.as_mut()).is_pending());
+                        deadline_seen.cancelled().await;
+                        assert_eq!(calls.load(Ordering::Acquire), 1);
+                        assert!(owner.close_result.get().is_none());
+                        assert!(!state.handles.is_closed(&child));
+                        drop(original);
+                        if abandon_owner {
+                            drop(owner);
+                            release_ack.cancel();
+                            tokio::time::timeout(Duration::from_secs(1), async {
+                                while !state.handles.is_closed(&child) { tokio::task::yield_now().await; }
+                            }).await.map_err(|_| RpcError::internal_error().data("last owner ignored original successful close reply"))?;
+                            assert_eq!(calls.load(Ordering::Acquire), 1);
+                            let services = state.services().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                            assert_eq!(services.extensions().in_flight(), 0);
+                            finish.cancel();
+                            return Ok(());
+                        }
+                        let mut reentered = Box::pin(owner.close());
+                        assert!(futures::poll!(reentered.as_mut()).is_pending(),
+                            "reentry must await the same original callback, not issue another close");
+                        assert_eq!(calls.load(Ordering::Acquire), 1);
+                        release_ack.cancel();
+                        assert!(reentered.await.is_ok());
+                        assert!(owner.close_result.get().is_some());
+                        assert!(state.handles.is_closed(&child));
+                        assert_eq!(calls.load(Ordering::Acquire), 1);
+                        finish.cancel();
+                        return Ok(());
+                    }
+                    let original_release = async {
+                        deadline_seen.cancelled().await;
+                        assert_eq!(calls.load(Ordering::Acquire), 1);
+                        assert!(owner.close_result.get().is_none());
+                        assert!(!state.handles.is_closed(&child));
+                        let services = state.services().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                        assert_eq!(services.extensions().in_flight(), 1);
+                        assert!(state.handles.register_extension(limits, ExtensionKind::AgentFactory, "held-late-close-quota",
+                            ExtensionDescriptor::AgentFactory { descriptor_version: 1 }, None, false).is_err());
+                        release_ack.cancel();
+                        Ok::<(), RpcError>(())
+                    };
+                    let (first, held) = tokio::join!(owner.close(), original_release);
+                    held?;
+                    assert!(matches!(&first, Err(ReactError::Agent(error)) if matches!(error.as_ref(), echo_agent::error::AgentError::Timeout(_))),
+                        "the first caller must retain the original deadline result: {first:?}");
+                    assert_eq!(calls.load(Ordering::Acquire), 1);
+                    let services = state.services().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                    assert_eq!(services.extensions().in_flight(), 0);
+                    if success {
+                        assert!(owner.close_result.get().is_some());
+                        assert!(state.handles.is_closed(&child));
+                        assert!(owner.close().await.is_ok());
+                        assert_eq!(calls.load(Ordering::Acquire), 1);
+                        let (probe, _) = state.handles.register_extension(limits, ExtensionKind::AgentFactory, "late-close-released-quota",
+                            ExtensionDescriptor::AgentFactory { descriptor_version: 1 }, None, false).map_err(|error| RpcError::internal_error().data(error.message))?;
+                        assert!(state.handles.close_extension(&probe).map_err(|error| RpcError::internal_error().data(error.message))?);
+                    } else {
+                        assert!(owner.close_result.get().is_none());
+                        assert!(!state.handles.is_closed(&child));
+                        assert!(state.handles.close_extension(&factory).is_err());
+                        assert!(state.handles.register_extension(limits, ExtensionKind::AgentFactory, "failed-late-close-quota",
+                            ExtensionDescriptor::AgentFactory { descriptor_version: 1 }, None, false).is_err());
+                    }
+                    finish.cancel();
+                    return Ok(());
+                }
                 if release_window {
                     struct HeldGuard {
                         gate:Arc<(Mutex<bool>,std::sync::Condvar)>, entered:Arc<AtomicBool>, drops:Arc<std::sync::atomic::AtomicUsize>,
@@ -12802,18 +13062,37 @@ callback_owner_init
     #[tokio::test]
     async fn factory_child_failed_cleanup_keeps_same_retry_owner_and_coalesces_success()
     -> Result<(), String> {
-        factory_child_retry_case(false, false).await
+        factory_child_retry_case(false, false, None, false, false).await
     }
     #[tokio::test]
     async fn factory_close_observation_keeps_typed_identity_retry_owner_and_quota()
     -> Result<(), String> {
-        factory_child_retry_case(true, false).await
+        factory_child_retry_case(true, false, None, false, false).await
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn physical_closed_decision_waits_for_real_guard_drop_before_factory_terminal_close()
     -> Result<(), String> {
-        factory_child_retry_case(false, true).await
+        factory_child_retry_case(false, true, None, false, false).await
+    }
+
+    #[tokio::test]
+    async fn factory_late_successful_original_close_keeps_deadline_and_releases_once()
+    -> Result<(), String> {
+        factory_child_retry_case(false, false, Some(true), false, false).await
+    }
+
+    #[tokio::test]
+    async fn factory_late_failed_original_close_keeps_retry_owner_and_quota() -> Result<(), String>
+    {
+        factory_child_retry_case(false, false, Some(false), false, false).await
+    }
+
+    #[tokio::test]
+    async fn factory_original_close_reply_survives_cancelled_waiter_without_reinvocation()
+    -> Result<(), String> {
+        factory_child_retry_case(false, false, Some(true), true, false).await?;
+        factory_child_retry_case(false, false, Some(true), true, true).await
     }
 
     async fn factory_constructor_observation_retains_child_before_waiter_drop(

@@ -30,3 +30,16 @@ On 2026-10-16 the user chose A, “保留能力并实施保护合同（推荐）
 Legacy/false-capability Stores can still register and perform unrelated operations. Any possibly-node-executing claim-backed Approved/Modified resume, including a branch's new execution, requires capability before claim, fork save or effects; missing support returns existing `feature_unavailable/Never`. Deferred, Rejected without node execution, fresh run and ordinary physically finished error policies retain their specified paths. Only the original Store implements exact-attempt protection and destructive CRUD refusal; Host must not duplicate this algorithm or infer capability from the latest registration.
 
 The accepted tradeoff is that a protected unknown owner can block indefinitely, even after a crash before effects started. Memory protection lasts within that Store instance; File and declared durable providers preserve it across restart. No force unlock, receipt query or automatic re-execution is added. Protected data must not be exposed to old binaries: old read/expiry paths may fail closed, but old delete/clear can still remove it. User approval establishes the contract, not runtime correctness; before/after and current-source validation are pending.
+
+
+## Original factory close reply after a deadline
+
+The child registration must remain held while the original `AgentClose` is
+unanswered. Once its validated successful Unit actually arrives and the same
+callback's guards and lease have dropped, its original cleanup owner records
+that reply through its existing close initializer and success cache. The
+first caller still receives its original timeout. A cancelled initializer
+must wait for the original submitted callback on reentry; it cannot issue a
+replacement mutating close. This is a private original-reply handoff, not a
+new execution, receipt, registry or business state machine. Error replies,
+transport loss and registration tombstones do not constitute cleanup success.

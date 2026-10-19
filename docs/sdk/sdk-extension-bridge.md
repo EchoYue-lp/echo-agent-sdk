@@ -237,6 +237,17 @@ close can be retried through that same owner. Concurrent close callers share
 successful cleanup, and later closes do not repeat it. A failed acknowledgement
 does not become a permanent cached close result or release the child address.
 
+
+A valid successful `AgentClose(Unit)` reply from that original child can arrive
+after its deadline notice. The first waiter keeps its original timeout result;
+once that same callback's guards and lease have physically dropped, the same
+cleanup owner caches the actual successful reply and releases the registration.
+Concurrent or later closes share that success instead of sending another
+mutating close. Cancelling the first waiter preserves the original submitted
+callback and its eventual reply, including when its last external cleanup owner
+is dropped. An error, malformed or mismatched result,
+transport end, or registration tombstone cannot supply this success fact.
+
 For streaming children, the original RPC answer and a validated remote stream
 terminal must both arrive before the invocation is released. That release
 precedes delivery of its terminal to a consumer that may immediately close the
