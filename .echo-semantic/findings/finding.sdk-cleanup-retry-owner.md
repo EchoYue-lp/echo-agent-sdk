@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-cleanup-retry-owner
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: failure_concurrency
 focus:
@@ -65,3 +65,7 @@ discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
 ## callback观察与原物理回收子scope
 
 当前原invoke/ACP反例分别证明observer先unwind会提前回收、错误ACK会保资源却错误结束source；两处最小修复后，同不可变testbinary七个完整selector实际全通过。普通typed/raw final Error在首次错误可见时已释放guard/lease，合法foreign观察精确保身份；独立局部复审pass。修复、验证与复审三链见新增Evidence/Audit；它们不关闭宽Finding其余义务，不证明HostRun已结算或SDK最终交付。
+
+## 2026-10-19：当前具名缺陷本地闭合
+
+原remove/tombstone提前丢cleanup owner的具名resource/Factory/callback/stream/Python/native MCP/connection/Java close路径，现均沿既有repair、verification和rereview链完成当前本机结算，包含3e29原late Factory Unit后重复close的真实生产反例及修复。源码路径补`echo-sdk-host/src/core_profile/extension_bridge.rs`、原facade/stream/handles。当前实际14Rust/新Host/完整三语与独立有界复审见既有cancellation Evidence/Audit8481段。resolved只关闭本Finding列明缺陷，不把未知physical结果当成功，不证明managed历史Linux自然退出或平台/main发布。旧open阶段文字保历史。

@@ -24,8 +24,10 @@ superproject 中的规则文件才能冷启动。
 本SDK真实Cargo.lock八个framework包及三个上游vendored包使用同一Git revision，无path patch、依赖版本变更。
 新pin的唯一生成实际28profiles/117artifacts及完整合同check已0，阻断/遥测漂移0、Protocol5/42/91通过。
 accepted identity/kind及454routes双向差0；新RunEntry::wait_result仅Host/Rust遥测，不进三语。
-新Host构建已0/零warning，保opt1/assertions/overflow/unwind；原drop-waiter与stream quota1联合测试1通过。
-其余Host行为、完整Rust/三语、最终独审及SDK精确main CI尚待。
+当前8481本地原14Rust门禁全部actual0/零编译warning，1212输入零漂移；Host098212精产物保opt1/assertions/overflow/unwind。
+同新Host原官方完整入口TS354/PY440加18subtests/Java377(76freshXML)/3quickstarts全部0，独立有界复审通过。
+四个具名Finding本地resolved；accepted intrinsic/source-operation/ContextInheritance三组行为证据对账仍待，PR5保持draft暂不merge。
+managed历史Linux退出超时根因未知，精main Linux/平台CI、最终formal strict/nativeHook/Stop与交付仍待。
 原9886502的全28profile生成和完整合同check实际0仅保留为历史；accepted 5621项边界不扩，
 仅已批准A单cap/protect Unit与B两fallible签名由规范入口更新，不借历史pin通过替代当前验证。
 来源与历史分界见`MIGRATION-SOURCE.md`和`docs/MASTER-PLAN.md`。

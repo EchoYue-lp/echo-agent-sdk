@@ -1,6 +1,6 @@
 # SDK Finding 承接账本
 
-当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md#当前有限验收2026-10-17)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
+当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
 
 ## Workflow B 的原新增阶段（历史，2026-10-16）
 
@@ -290,3 +290,11 @@ bridge8e7/E2EonlyactualJSON7e231/doc36c730：Factory5old3/2→new5/0；actualtwo
 ## 最新Factorycut语言与依赖执行证据
 
 正式84files cbf90de语言包采用newbb4f/build5e0/b909真实Gitnopatch/partial3cd835，同官方entry90884bytes未截exit0、632inputsAllSame、Node290/PY35718/Java32067XML/3qs/Ruff175/SLF4J0；旧81/83包仅各历史epoch。19files bc9bde依赖新cut7inputsame/fresh6aed两DBclean/1310/658/audit0deny0，50duplicate每crate/version数组匹配proposal，仍AGENTS规则BLOCK。最新twoPacket独立reader已actualfinalPASS0C0I0M，当前Rust/语言与工具结果都已核；依赖规则BLOCK/全合同/SDKmain不因此闭合。14Rust新cut已独立PASS；LinuxWindowsCI/full28acceptedgen/globalstrict/main及12source/B5s/dep50三个compatibility选择未答，CLI/W外部另授权。
+
+## 当前具名本地闭合（2026-10-19，8481/Host098212）
+
+cleanup-retry-owner、Sandbox cleanup-order、Task pause/resume/physical owner和Workflow protected-claim四条具名缺陷已沿原Finding三链本地resolved；不按全套总数关闭缺陷。真实late Factory Unit后的重复mutating close修复由公开3e29和当前8481原callback/source承载，首Timeout保持、同owner成功缓存与取消waiter/最后Drop不重发；旧8e7 Factory子scope和原六control101不改历史。见[cleanup Finding](../../../.echo-semantic/findings/finding.sdk-cleanup-retry-owner.md)、[原Evidence](../../../.echo-semantic/evidence/evidence.sdk-cancellation-observation.md)、[当前Audit](../../../.echo-semantic/audits/audit.sdk-cancellation-observation-rereview.md)。
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../../../.echo-semantic/evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+#120本次同一入口三语言各12原case通过，Java精GapAck9+ExternalAck snapshot late-attachment两个参数+ReplayTerminal1，不能把整个ExternalAck11当同一集合；Python-q不打印单例nodeid，完整440+0skip及冻结六函数参数4/2/2/1/2/1支撑，不伪verbose。managed历史Linux退出超时仍open，精main CI、当前canonical strict/native Hook/Stop分别继续；Map/Behavior保持原有界状态，不批量verified。

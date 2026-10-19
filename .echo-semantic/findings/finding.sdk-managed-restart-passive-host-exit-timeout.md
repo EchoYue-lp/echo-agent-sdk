@@ -40,3 +40,7 @@ discovered_at: 0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9
 ## 处理记录
 
 现只新增具体open义务。诊断候选只为原timeout附上下文、复用stderr/counters，不增deadline、kill/retry或改receipt断言；尚未提交时after sourceRef为null。已有本机exact1case通过不足关闭原Linux超时，必须保原失败/核新诊断运行。无新增公共API/权限或productdecision；三链空保留待真实因果与后验，原开放B/12不由此变更。
+
+## 2026-10-19：当前本地验证与精确main Linux待验
+
+状态仍open，原Linux运行38674982406/job116226422816的10秒第一次Host被动退出根因仍未知。当前8481ba5823aa190cf76859d6af0570898c432bbd原完整Rust矩阵里的相同managed restart case已在本机实际通过，诊断保原10秒/同Host/passive wait，无kill/retry-as-pass；这是当前revision的本地回归证据，不能称已复现或修复历史Linux根因。没有填写虚构repair/verification/rereview三链。唯一剩余验收入口是最终合入后的精确SDK main Linux原套件及其原日志/CI Artifact；若失败按原phase诊断继续，不能以本地PASS或已经合并为豁免。平台验收成功后仍分别保“当前回归通过”和“历史根因未知”，不得杜撰生产修复。

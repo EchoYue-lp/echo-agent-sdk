@@ -79,8 +79,17 @@ its Protocol suites passed 5/42/91 tests. Accepted identity/kind membership
 remains exactly 5,621 and its 454 routes are unchanged in both directions;
 the five blocking/shared contract files are byte-identical to the prior pin.
 The only new public identity, `RunEntry::wait_result`, remains Host/Rust-only
-telemetry. New Host behavior, full native language/Rust validation and exact
-SDK-main CI remain pending. The two approved fallible Rust signatures come from the canonical
+telemetry. Current SDK source `8481ba5823aa190cf76859d6af0570898c432bbd`
+passed all fourteen original local Rust gates with zero compiler warnings and
+zero drift across 1,212 inputs. Its immutable Host SHA-256 is
+`0982121cb1e99284b4a7d7e07af35037f9f22bd653528d9716d425f5609407a0`.
+The original complete language entry passed TypeScript354, Python440 plus18
+subtests, Java377 across76 fresh XML reports, and all three quickstarts on
+that same Host. Exact SDK-main Linux/Windows CI, canonical/native host final
+verification and the historical managed passive-exit investigation remain
+separate. Accepted intrinsic helper, source-operation consumer/lifecycle, and ContextInheritance promise groups still require bounded evidence reconciliation before this draft PR can merge. These are original accepted obligations, not a new Rust-inventory parity requirement.
+The necessary full-SHA annotated evidence tag preserves this actual
+runtime source across a later squash; it is not release or main acceptance. The two approved fallible Rust signatures come from the canonical
 producer, and the protected-claim addition remains limited to the separately
 accepted capability and reverse Unit operation. Earlier pin receipts do not
 qualify this source. See [the current task ledger](docs/MASTER-PLAN.md) and

@@ -36,6 +36,19 @@ challenges:
     evidence_refs:
     - evidence.sdk-stream-cancellation-routing-repair
     - evidence.sdk-stream-cancellation-routing-verification
+  current-seven-task-consumers-and-exact-provider-refusal:
+    revision: 8481ba5823aa190cf76859d6af0570898c432bbd
+    source_refs:
+    - sdks/shared/testing/task_subagent_fixture.py
+    - sdks/typescript/test/task-subagent-host.test.js
+    - sdks/python/tests/test_task_subagent_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    - echo-sdk-host/tests/facade_feature_adapters_e2e.rs
+    evidence_refs:
+    - evidence.sdk-task-subagent-candidate
 ---
 
 # stream-cancellation-routing-rereview
@@ -80,3 +93,9 @@ scope外操作、任意组合与后继Channelforward新实现。
 ## 来源身份的无损持久化
 
 原 header 的 source:31483b056427dc3f763899b798d84992cc0301f6bfe1816ccc8acf2952bee11d 与公开 Git fa62f3b3d0df3ed5b14c6d9786dfffce5db57da6 的 canonical source digest 精确相同；只把该 header 改为可冷取回 Git 身份。该提交的原 source_refs 逐 blob 取回核验，不改变正文、原 F988/Host14a 五例结果或审查范围；它不证明后继 F6563/ac433，也不纳入工作树四个 foreign Task 文件。必要 exact-SHA annotated evidence tag 的远端与冷仓回执仅保 ignored local。
+
+## 8481当前具名闭合与完整执行资格
+
+原fa62 header和569 routing组保历史。本次对8481已有七场景的精身份、原PID真实join、唯一matching CAS、兄弟结果不重写、foreign setup/stream不构造canonical receipt，以及provider错误字段无损和拒写合同独立复审C0/I0/M0；三语各7实际通过由同一官方入口承载。原framework物理结算与typed cancellation生命周期修复取已发布6563原链，不把cooperative测试误当超grace反证。SDK adapter保持薄，未新建Store/调度器/claimauthority。原Task新fixture只使真实原callback在cancel notice后闭合，typed duplicate强拒绝与原期限不动。
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。

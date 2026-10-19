@@ -87,3 +87,15 @@ exactCAS/兄弟pausecancelTask4、canonicalBresult复用/原运行contextstring�
 ## 来源身份的无损持久化
 
 原 header 的 source:31483b056427dc3f763899b798d84992cc0301f6bfe1816ccc8acf2952bee11d 与公开 Git fa62f3b3d0df3ed5b14c6d9786dfffce5db57da6 的 canonical source digest 精确相同；只把该 header 改为可冷取回 Git 身份。该提交的原 source_refs 逐 blob 取回核验，不改变正文、原 F988/Host14a 五例结果或审查范围；它不证明后继 F6563/ac433，也不纳入工作树四个 foreign Task 文件。必要 exact-SHA annotated evidence tag 的远端与冷仓回执仅保 ignored local。
+
+## 8481：当前七场景、原exact CAS与完整消费者
+
+本Evidence顶层fa62继续只绑定原formal-only历史源码；下列当前行为来自公开 [sdks/shared/testing/task_subagent_fixture.py](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/shared/testing/task_subagent_fixture.py)、[sdks/typescript/test/task-subagent-host.test.js](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/typescript/test/task-subagent-host.test.js)、[sdks/python/tests/test_task_subagent_host.py](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/python/tests/test_task_subagent_host.py)、[sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java)，当前机器分组放既有Audit的显式8481 challenge，不在旧Evidence内嵌revision冒新source_refs。
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+公开98ead9c3706e476ab4f29691575731466c35f137已纳入原foreign setup/stream场景：三语原Task suites各7当前真实Host通过。matching场景精核原run/execution/claim/invocation/PID，原producer release和实际join0之后仅一次相同attempt terminal CAS；A/B/C/D各执行1，B canonical execution不重写，C/D复用原结果，不以第二execute/driver模拟结算。foreign setup仅backend物理退出不造HostRun receipt；foreign stream原source Complete后仍保持canonical Run Running、两次wait false/noReceipt，结果不能借foreign终态伪造成Host收据。显式TaskContext fullDTO/任意crash矩阵仍不承诺，回调依旧原task string及已接受getter组合。
+
+共享fixture原refused CAS确已比较expected revision/execution vector；旧拒绝缺Host已有task_store_error_class/expected_revision/current_revision字段使framework误判Backend，修复只补既有错误metadata，原Store比较/保存/唯一调度权威不改。provider旧源码真实回归失败与四项拒绝/两个持相同old vector writer、第二CAS拒写原canonical文件逐字不变控制单列。最终native批次没有冲突记录，不声称已重现最初未知具体比较。上游通用物理结算修复由已发布framework6563链及其原Evidence承载，SDK不重复DAG、claim、重试或terminal。
+
+原core/extra facade fixture仍held callback却要求Cancelled的失败通过真实同iid取消通道与原producer终态/join修正；原duplicate execute typedInvalidValue/alreadyexecuting仍拒，原100x100ms最终TaskList Cancelled保持。该用例未显式断言TaskRunning，中间状态不被本Evidence虚构。当前完整Rust core33/facade12及全三语真实通过来自本次whole，不能把旧失败重标绿。

@@ -1,6 +1,11 @@
 # 41项SDK能力的有限审查处置
 
-当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md#当前有限验收2026-10-17)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
+当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
+
+
+## 当前accepted义务对账入口（2026-10-19，有限里程碑）
+
+本轮Rust14、新Host098212和原完整三语入口均已有实际通过及有界独审，四个具名Finding本地resolved不回滚；但41族建模和examined不等accepted全部审结。PR5继续draft，暂不merge，先在原处置表内对账三组明确余项：intrinsic helper按当前accepted合同能力归组；source_operation setter到真实consumer、constructor到method/close；ContextInheritance纯值与live history/memory继承、compressor实际消费承诺。每组只记录“已有具名Evidence满足／合同明确不承诺／仍待具体行为与证据”，不按每Rust identity造测试、自动新增API或把未查明项默认为deferred。具体归组和已有原件调查继续，不能写只剩managed/main。
 
 ## 前一阶段文字与证据（历史，原正文保留）
 

@@ -4,7 +4,7 @@
 
 ## 当前集合观察（2026-10-17）
 
-本SDK固定公开framework9886502c83d6b1f6fa9212eb221db0e5874deaee，其唯一generator生成的当前候选清单中，canonical deferred为2528项，明确accepted canonical为5621项；这不是framework仓库发布的SDK产物。原D01–D14选择规则仍完整、互斥：无重复、未分组或accepted交叉；不因route投影存在就自动接受该Rust identity。当前deferred的route surface分别为intrinsic1530、bridge47、standard2、value740、invoke201、family8。
+本SDK固定公开framework6563d26570cc4a8d93c86b7e37443b0559476807，其唯一generator生成的当前候选清单中，canonical deferred为2528项，明确accepted canonical为5621项；这不是framework仓库发布的SDK产物。原D01–D14选择规则仍完整、互斥：无重复、未分组或accepted交叉；不因route投影存在就自动接受该Rust identity。当前deferred的route surface分别为intrinsic1530、bridge47、standard2、value740、invoke201、family8。
 
 |原组|当前canonical deferred项数|
 |---|---:|

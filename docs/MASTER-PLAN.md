@@ -29,9 +29,21 @@ EKO 产品策略和 GUI/TUI/CLI 投影不进入 SDK runtime。
 
 - [能力图](sdk/governance/capability-map.md)：八组行为审计入口；accepted catalog 的所有 family 必须有唯一归属。
 - [历史 Finding 账本](sdk/governance/finding-ledger.md)：保留旧 ID、Issue、状态与冻结 revision。
-- `.echo-semantic/baseline.md` 的 inventory/behavior closure 仍保持 open。
+- `.echo-semantic/baseline.md` 的 inventory_closure为closed、behavior_model_closure仍open；具名缺陷与全局模型闭合分开。
 
-## 当前有效检查点（2026-10-16，SDK并行接续）
+## 当前有效检查点（2026-10-19，最终本地资格）
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../.echo-semantic/evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+- 当前accepted范围、精pin/原真实lock/唯一28profile与117产物、三依赖扫描输入和有限重复版本政策保持，未以Host/Rust遥测扩三语API。
+- 五条最新Finding按原对象收口：cleanup/Sandbox/Task/Graph四个具名缺陷本地resolved，managed历史Linux退出超时根因未知，精main Linux原suite待验。所有生产改动、strong before/after与独立审查由原Evidence/Audit绑定，当前机器组显式8481；旧Evidence历史header不混source。
+- 本次真实Factory晚成功close被Deadline覆盖后重复mutating close已修：原validatedUnit在guard/lease Drop后由同owner既有OnceCell承接，首Timeout不改；取消waiter重入和最后Drop都不重发。原6control101+5pass与修后单1pass分开，当前全223lib cases是新的wholeepoch。
+- Rust旧R14失败前沿依次保：Clippy私有大小/格式；两cfgtest旧oracle；coreE2E4fixture；bridge10fixture/真实lateFactory后续生产反例；facade duplicate回调缺取消closure；06所有Cargo0却core/noBridge编译警告不合格。最终07完整14真实0/zeroWarn，不重写失败。原3attr+testgettercfg收紧不改body/公共API。
+- final docs/examples/website同步检查：产品/架构语义在本SDKguide/ADR，原examples由官方3quickstarts/语言构建实际验证；私有fixture/cfg无新增API例子或官网功能，Root承接跨仓站点/顶层指针。
+- 原整目标的accepted行为还有三组明确待对账：intrinsic helper能力分组、source-operation setter→consumer/constructor→method→close、ContextInheritance纯值vs live history/memory及compressor消费合同。现41模型/56examined Audit与全套绿色结果不代替该对账；复用已有Evidence，真accepted缺证才定向补证，不自动新增DTO或把未知声明deferred。PR5保持draft，未完成前暂不merge。
+- 其余交付继续：当前正式metadata/source快照canonical strict、最终源码/必要性复审、nativeHook/Stop权限边界、PR5 squash、精main CI全部0与only-remote-main+necessarytags冷仓strict。尚未用本地green宣称main/release/registry完成。
+
+## 历史检查点（2026-10-16，SDK并行接续）
 
 本节优先于下方历史检查点。用户已明确接管原A49源码及后继8包pin/真实lock差异，原writer唯一producer自然失败后已正式释放写权；宿主根仍LP，所有命令显式在指定SDK worktree执行，不新建worktree、不动primary差异。
 

@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-workflow-resume-observation-claim
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: failure_concurrency
 focus:
@@ -66,3 +66,7 @@ SDK A的Protocol/TS/Python/Java各3项具名pure after已实际0且独立复审�
 公开988精pin与唯一生成器后，原共享30步A场景已在不可变14a Host的TS/Python/Java各实际1例通过、0fail/error/skip，并获原reader有限pass。具体来源、各日志SHA、真实Java关闭失败及严格expected-error整例、关闭后三组backend精确不变由原Evidence的“后继14a”段承载。原protected attempt、原LLM副作用与foreign identity保持；同外部PID退出及SDK处置Host不构造framework receipt，不解除claim。Java同owner retry只结算其本机transport清理。
 
 本对象保持open：上述消费例不代framework Memory/File heartbeat、expiry、restart及其它原owner故障矩阵，也不证明provider跨进程持久性或真实ACK丢包。Framework Graph/Store仍唯一拥有保护和结算；SDK不增加恢复调度器、第二receipt或状态权威。
+
+## 2026-10-19：当前具名缺陷本地闭合
+
+用户已批准A的原Graph/CheckpointStore exact-attempt保护及B观察不requeue的框架修复，结合当前SDK8481registered Llm/AgentNode三语原30步和完整当前Rust/Host/语言独立复审，形成此Finding既有修复/验证/复审三链。框架保原claim/heartbeat/expiry/recovery权威，SDK不复制；外部f3fa两Memory否定控制只作生产等价限定的后继，原Memory/File发布证据单列。当前有限resolved不承诺provider跨进程持久性、真实保护正回应网络丢包、任意StepFn或全部操作组合；unknown继续可能长期blocked，不造receipt或解保护。

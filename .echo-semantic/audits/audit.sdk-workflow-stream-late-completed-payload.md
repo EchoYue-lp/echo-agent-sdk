@@ -35,6 +35,22 @@ challenges:
     - sdks/shared/testing/llm_workflow_stream_fixture.py
     evidence_refs:
     - evidence.sdk-workflow-stream-late-completed-payload
+  current-protected-claim-consumers-and-original-physical-source:
+    revision: 8481ba5823aa190cf76859d6af0570898c432bbd
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - sdks/shared/testing/workflow_checkpoint_fixture.py
+    - sdks/typescript/test/workflow-checkpoint-host.test.js
+    - sdks/python/tests/test_workflow_checkpoint_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/WorkflowCheckpointHostTest.java
+    - sdks/typescript/test/llm-workflow-stream-host.test.js
+    - sdks/python/tests/test_llm_workflow_stream_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java
+    evidence_refs:
+    - evidence.sdk-workflow-observation-source-gaps
+    - evidence.sdk-workflow-stream-late-completed-payload
 ---
 
 # Workflow 晚到 Completed 与有限A消费者独审
@@ -74,3 +90,9 @@ header仅绑定精确候选源码引用；原独审和TypeScript执行结果仍�
 ## 未检查项
 
 任意Graph晚到结果、持久恢复、独立Task场景、完整工程门禁与精确main CI。后继独立protected场景仅上述30步和本机transport处置已核；不证明File/TTL/restart或framework物理执行/claim结算。具名late-payload的最终共同cut三语言各1已实际核对；不把它扩为整个语言套件。
+
+## 8481当前具名闭合与完整执行资格
+
+原404 header及335原source/terminal组不变。当前8481registered Llm/AgentNode三语原30步、原Store/protect正回应与错误门、原Popen身份和实际join、unknown后不重领、不requeue、不重复副作用及关闭后backend不变由原reader逐原件复审C0/I0/M0。上游Graph/Store同attempt生命周期在独立框架原Evidence链中结算；f3fa仅Memory-instance两否定控制且生产prefix/Node/Store等当前pin，不借此给SDK加API或File/restart保证。原extension lateCompleted和direct-run observer typed投影仍按各具名before/after保存；本次whole不反向重写这些历史red。
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。

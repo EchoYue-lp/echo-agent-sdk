@@ -1,6 +1,16 @@
 # 当前能力模型的有限剩余验收
 
-## 当前有限验收（2026-10-17，F6563后继）
+## 当前本地验收（2026-10-19，8481/Host098212）
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../../../.echo-semantic/evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+新6563 pin的唯一28profiles/117产物和完整合同入口已实际0，accepted5621 identity/kind与454routes双向无增删，五blocking/shared文件逐字不变；仅批准A单cap/protect Unit和B两fallible签名，新的RunEntry::wait_result仍Host/Rust-only。真实Cargo.lock不变，三依赖扫描原0与49组duplicate精基线独审保原输入cut，不重跑无变化锁；只接受既有cargo-deny类别例外，不允许其它warning。
+
+四个foreign Task源码已由公开98ead9c纳入，不再称排除；当前三语各7包含matching和foreignsetup/stream，provider四拒绝比较和typed错误metadata单列。新3e29Factory lateUnit真实生产反例修复、Java5b08 close发布顺序修复与原B callback/source/claim收口见原Evidence/Audit的新8481组。四条具名Finding已本地resolved；managed原Linux10秒passive exit仍open、根因未知，等待精main Linux原套件。Baseline behavior_model_closure继续open，41family与八lens不批量verified。
+
+当前整目标还须完成三类明确accepted义务的有限对账：intrinsic已接受helper按能力归组，source operation的setter→真实consumer与constructor→method→close，以及ContextInheritance纯值与live history/memory继承、compressor消费的合同分类。已有具名Evidence足够则直接引用；只有实际accepted缺证才定向补证，不把完整Rust inventory或未承诺组合扩大为分母，也不默认deferred。PR5保持draft，完成该对账及必要补证前暂不merge。其后继续当前正式metadata/source引用/必要性独审、固定c0bc canonical strict与nativeHook/Stop差异按既有授权处理、PR5 squash后精main CI与仅remote main+必要evidence tags冷验证。无registry/plugin发布或官网部署；官网与顶层gitlink由协调者负责。下述所有历史结果保原cut，不把oldac433/14a通过冒新Host。
+
+### 历史有限验收（2026-10-17，F6563后继）
 
 正式Host pin已升级公开framework6563d26570cc4a8d93c86b7e37443b0559476807，真实锁90d5b82ef54a56d22fc079f9065e86e817a81b2431e265bf1d47ebe3897f40d5；八framework及三vendor仅Git来源变更。新唯一28profile生成和完整合同check实际0，117生成产物一致/遥测漂移0、accepted5621 identity/kind和454routes无增删，五blocking/shared文件不变。下述988/14a结果仅保原切点。
 

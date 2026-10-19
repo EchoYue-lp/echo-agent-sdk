@@ -8,9 +8,10 @@ freshness: examined
 revision: 335193791c70a6cb077033c3f8f0cb1223e5266e
 finding_refs:
 - finding.sdk-cleanup-retry-owner
+- finding.sdk-sandbox-cleanup-order
 challenges:
   original-6563-held-source-test-oracles:
-    revision: source:83c46c4f864bffc071006f0ba8d79faedbb2e17f0c5f86155411930b9aaad4c5
+    revision: 410e0f1d857bbf8bcfd805376638794697524de9
     source_refs:
     - echo-sdk-host/src/core_profile/facade/stream.rs
     - echo-sdk-host/tests/extension_bridge_e2e.rs
@@ -35,6 +36,24 @@ challenges:
     source_refs:
     - echo-sdk-host/src/core_profile/extension_bridge.rs
     - echo-sdk-host/src/core_profile/facade/stream.rs
+    evidence_refs:
+    - evidence.sdk-cancellation-observation
+  current-original-cleanup-and-late-factory-unit:
+    revision: 8481ba5823aa190cf76859d6af0570898c432bbd
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    - echo-sdk-host/tests/facade_feature_adapters_e2e.rs
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/test/java/com/echoagent/sdk/JavaClientCloseLifecycleTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java
+    - docs/sdk/sdk-extension-bridge.md
+    - docs/adr/0039-sdk-cancellation-observation.md
+    - echo-sdk-host/src/core_profile/wire.rs
     evidence_refs:
     - evidence.sdk-cancellation-observation
 ---
@@ -77,3 +96,9 @@ observer先unwind导致配额提前回收；错误ACK只保owner却让source终�
 原header335及其challenges、七控与14a审查保持历史。新增challenge只绑定当前6563精候选的原Rust两个case及九个既有测试路径；源码/actual原件独审C0/I0/M0。Factory03唯一M1已实修复且三语fresh通过，02未变Workflow/Tool单列原cut，原失败与错误观察方向均保留。独立reader亲核四constructor每个原request/reply恰1、typed Cancelled/no top error；Java原iid timeout后父仍拒绝，再同future释放/用户cleanup1，第二transport close不冒第二用户执行。
 
 当前有界结论及原日志精确身份见Evidence后继段；新pin/生成/Host/two Rust已有独立资格，未继承为官方完整语言或整个SDK通过。不关闭五Finding，不把原Task F988/14a重标为新Host。最终必要性与精候选canonical另执行；nativeHook/Stop、完整Rust/平台/main未由该复审证明。
+
+## 8481当前具名闭合与完整执行资格
+
+本challenge只把当前机器源码组绑定8481；旧header335和历史七控/14a等审查不重标。原reader对原factory成功Unit之后重复close的真实phase、最小Host修复、晚Unit/Error/取消waiter重入及最后owner Drop、普通failed/unknown/guard否定控制以及当前三语原生close/cleanup逐原件有界复审C0/I0/M0。原late reply必须在guard与lease实际释放后经同initializer填既有OnceCell，不能拿tombstone、Weak或本地通知推成功；首Timeout保持。当前Java close只在native选择权已确定后发布，write错误和同Process真实退出/同owner retry保原5秒策略。Sandbox先等原physical response才有canonical terminal。原six-control101与修后单control0分开记录；当前全223 lib cases及完整语言是另一个实际新epoch。此处不扩大为任意平台或未知Linux退出根因。
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。

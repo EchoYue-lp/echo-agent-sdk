@@ -73,3 +73,15 @@ TS原Host实际SIGTERM、Python实际returncode=-15；各自只记录本地trans
 以下保留当时的阶段记录；其中observed_at指原019e，未执行描述不代表后继14a状态。
 
 上面的observed_at/固定f0a源码和“尚未执行”描述原019e调查epoch。根任务此后已取得F Native FunctionNode Memory/File与后继原owner的分别before；原件与F源验证由F持有，不是SDK真实Host结果。SDK A单cap/op的Protocol与三客户端各3项pure after有实际独审通过，保护算法仍只归原Graph/Store，不借pure decoder测试证明Node生命周期。当前已准备原checkpoint fixture的独立optional真实Host路径，原router-only语料/业务oracle保：legacy绑定后新注册不换cap、protect提交后hold正回应Node0、明确Error响应不执行Node、实际registeredLlm入站才准入同Popen/foreign身份。没有运行新Host/Native三语，不宣称File/跨provider重启或真实保护ACK丢包；direct-run投影仍等新pin实际red后修复。上述状态说明不把原observed_at重标成新业务验证或三链闭合。
+
+## 8481：原Graph/Store权威与当前registered Llm消费者
+
+本Evidence header404和上方14a结果保原epoch。当前消费者源码见 [sdks/shared/testing/workflow_checkpoint_fixture.py](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/shared/testing/workflow_checkpoint_fixture.py) 与三个原 [TS](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/typescript/test/workflow-checkpoint-host.test.js)、[Python](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/python/tests/test_workflow_checkpoint_host.py)、[Java](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/sdks/java/src/test/java/com/echoagent/sdk/WorkflowCheckpointHostTest.java)；当前机器源码组放原Audit显式8481 challenge。
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+当前同一完整入口三语各原30步A场景真实通过：绑定原Store能力而非最新注册、四legacy入口在claim/forksave/effect前拒缺cap、protect原Unit正回应门前Node0、commit后显式Error无Node/ack/requeue、同registered Llm原PID未知时同attempt保护保持。原producer release及实际join0之后LLM calls保持3→3、不新增ack/requeue或execute，不把外部进程退出与close事实拼成framework Run receipt。TS SIGTERM和Python -15只证明本地transport cleanup；Java同owner retry/真实Host退出后本地I/O收尾不解除claim。
+
+框架Memory/File原保护、renew/requeue/expiry/旧reader范围使用既有外部published Evidence链。后继公开测试提交 [f3fa0705f62fe813a5a86bc41cd673f82f915a61](https://github.com/EchoYue-lp/echo-agent/commit/f3fa0705f62fe813a5a86bc41cd673f82f915a61) 的两项Memory-instance foreign receipt/lateUnknown否定控制及matching原terminal控制由Root核验，graph生产prefix75538B/SHA`28c44ac5290cdba23be8378ff07724efe233a2d32fa3e1308e94474523c2e3c5`、Node与Store逐字等6563 pin；这些是外部框架测试证据，不称在6563 SDK执行的新测试，不升级pin、不进SDKsource_refs、不扩File持久恢复或跨进程保证。原框架Memory/File证据与本SDK registered Llm/AgentNode证据各自保持权威。
+
+任意StepFn/闭包API仍deferred，ordinary error/requeue政策保持。当前有限Finding闭合不承诺provider跨进程持久性、真正protect正回应网络丢包、掉电恢复或所有24项Workflow操作组合；这些是范围外能力，不捏造matching receipt、force unlock或第二恢复调度器。

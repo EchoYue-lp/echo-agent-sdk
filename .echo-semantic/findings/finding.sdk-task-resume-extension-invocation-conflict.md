@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-task-resume-extension-invocation-conflict
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: failure_concurrency
 focus:
@@ -26,6 +26,7 @@ audit_refs:
 decision_refs: []
 repair_evidence_refs:
 - evidence.sdk-stream-cancellation-routing-repair
+- evidence.sdk-task-subagent-candidate
 verification_evidence_refs:
 - evidence.sdk-stream-cancellation-routing-verification
 - evidence.sdk-task-subagent-candidate
@@ -65,3 +66,7 @@ setupACK后过早删原invocation取消地址已3client真实红绿、9source/27
 原上段是提案/旧强abort调查epoch，不再表示仍待同一用户选择：B已接受、framework988已公开，SDK335/404仅薄适配。后继formal-only独立Git候选保原pause/cancel/await/CRUD四例并增matching Task一例，当前14a三语整个Task suite各5实际通过、0fail/error/skip；原claim、same-source physical join、唯一matching CAS、B执行不重写及C/D依赖值由原Task Evidence/Audit承载。未把ordinary foreign-source knownfail混入套件或借当前S子集通过；它仍等独立F ACP修复。
 
 本对象仍open：该finite suite不证明超grace/owner丢失恢复/全部取消与资源失败组合，不以cooperative经典例或新matching例关闭宽物理结算义务。
+
+## 2026-10-19：当前具名缺陷本地闭合
+
+原客户端setup ACK取消地址、原SDK retained callback owner与上游通用Task/Subagent物理结算分别沿既有发布修复链闭合；当前8481三语各7真实Host任务消费、同原producer实际join后的唯一matching CAS、B canonical结果保持/C-D依赖复用，以及foreign source不伪Run receipt，具名证据与复审见Task Evidence和routing Audit当前challenge。provider拒写比较不弱化；错误metadata修复不是第二调度器。当前完整Rust及三语整体通过，resolved关闭原pause/resume准入冲突和本Finding的原物理结算缺陷，不扩任意crash/receipt丢失后的eventual恢复或新TaskContext DTO。旧proposed/open描述保历史。

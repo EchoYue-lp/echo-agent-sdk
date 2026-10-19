@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "83c46c4f864bffc071006f0ba8d79faedbb2e17f0c5f86155411930b9aaad4c5"
+    "content_digest": "18fcf04dc517995064948a1c83bd8846c992d87191e3e940e1f8b3fbaa136f61"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -160,7 +160,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-host",
@@ -180,7 +180,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-host",
@@ -200,7 +200,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-host",
@@ -220,7 +220,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-host",
@@ -240,7 +240,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-host",
@@ -260,7 +260,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-host",
@@ -280,7 +280,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-host",
@@ -300,7 +300,7 @@
         "map.sdk-extension-bridge"
       ],
       "review_scope": "Host具名主路径：Agent/Session/Run、Task/Subagent、events/resources、builtins/reverse和integrations各有限故障假设已实际审；这里只投影已审范围。",
-      "limitations": "B>5秒物理工作未停止的明确缺陷仍open；不以合作取消、局部cleanup、最新whole计数反证B；12/平台/main单独。"
+      "limitations": "历史格的原B诊断不由covered自动消除；当前具名B缺陷沿其repair/verification/rereview有界闭合，managed/Linux与全局模型/main单独，详见当前剩余验收。"
     },
     {
       "region": "echo-sdk-protocol",
@@ -813,3 +813,7 @@ capability inventory与八视角审查保持open，动态入口见Discovery；�
 ## 最终有限风险覆盖候选（尚未安装）
 
 本40格覆盖四个生产目录及第五个in_scope根Cargo.toml。原32格材料已有限审查；新增根manifest八格只陈述其两个成员/default-members/resolver3的构建元数据，引用真实build/dependency/feature收据；没有运行actor与并发状态的两个视角明确not_applicable，非屏蔽Host风险。各格仅映射已审的有界义务，新Git分支切换I1、B与12问题仍明确open。covered 是有范围的风险审查事实，不表示没有 Finding；B 与12合同处置、平台/远端交付明确保留。原“全Host未审”的未知属于建模早期历史，不再用全部未知掩盖已完成源码审。库存/模型闭合标志与实际源码摘要须在本候选独审并最终冻结后分别判定，不按41数量或测试总数自动变更。
+
+## 2026-10-19当前有限收口
+
+当前运行来源SDK8481/Host098212，完整本地14Rust、原完整三语言及3quickstarts真实通过；四条具名Finding按既有三链resolved，managed原Linux被动退出超时仍open。inventory_closure保持closed，behavior_model_closure保持open；41family及原风险lens状态不批量提升，历史格的covered只保持其具名范围。当前状态统一见`docs/sdk/governance/capability-review-remaining.md`，原阶段“仍待”的正文与失败均保历史。当前机器source引用只在显式8481 Audit challenges，Evidence旧header与旧运行切点分别保留；source83无损改绑公开410已冷取回，current8481必要tag也已空冷仓仅remote main+tag验证。当前accepted intrinsic/helper、source_operation实际consumer/生命周期、ContextInheritance承诺分类三组证据对账仍待，PR5维持draft不merge；41族mapped与56examined及全套计数不能代替accepted义务审结。最终精main CI、only-remote-main+必要tag strict、nativeHook/Stop分别验收，不以本地通过冒发布。

@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-cancellation-observation
 kind: evidence
-observed_at: source:83c46c4f864bffc071006f0ba8d79faedbb2e17f0c5f86155411930b9aaad4c5
+observed_at: 410e0f1d857bbf8bcfd805376638794697524de9
 source_refs:
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - echo-sdk-host/src/core_profile/facade/stream.rs
@@ -22,10 +22,12 @@ source_refs:
 supports:
 - finding.sdk-cleanup-retry-owner
 - rule.framework-runtime-authority
+- finding.sdk-sandbox-cleanup-order
 limitations:
 - Seven focused Rust cases cover callback binding, response projection and physical cleanup only.
 - No Host Run settlement, foreign execution receipt, restart or entire A/B SDK acceptance is established.
-- The saved-profile Host build is independently verified; complete Host/language/platform qualification remains separate from the test binary.
+- The saved-profile Host build is independently verified; historical test binary did not qualify whole Host/languages;
+  current local successor and remote/platform limits are separated below.
 ---
 
 # 原 callback 观察与物理回收的有限验证
@@ -80,3 +82,19 @@ SDK root 保存配置真实 build0/零warning，独立Host ac4332105734bbedda144
 02 TS3/PY2/Java3实际通过，日志1920B/fdc9d7518917d95d3994cb535b3fd4d4ab92ad199c231b415882000dd95348f3、98B/03e983c5cda2ebfdb045236a197c294256eaf09974a6e96a2669e21cfd7bcc97、1317B/89a90b95c4e69738c850dad7bfd05ba07d9f48f7dd1654133bbd44d1a9004e8e，freshXML3/0/0/0。其后仅三Factory增加完整同id response唯一性：03 TS1/PY1/Java2全0，1182B/e7bb5601b0222d3d478c9af4e460b8ab4991e943df3488ddf842cee3845480d3、98B/ec3c61992e3bb1a5aac88c5f3c5619a6eccaa445b8e776896e3c8c676f9f6278、892B/c2283af6efe58c55a9cd457cd66441915e8e1ac10c2c3964435fe007faeb5e63；freshXML2/0/0/0 SHA734fef9746eea12bb135c8e732ce577ad7afc5114f11413efd1e72402b52b90a。03 patch3bd9c741a06e56bdb9a59cdfffcfc415229d3d6ea40ab175327bbf39ae96bf17、1212输入0漂移、23raw/58617B/0mismatch、Hostac433不变，独立源码与真实帧复审C0/I0/M0。02其余六文件逐字不变，Workflow3/TS Tool资格保其原02切点，不冒重新执行。
 
 上述成功命令原终态exit0/nullsignal/notrunc；上述哈希不代原件。runner、完整日志、freshXML、帧原件及source输入/精候选依赖对照只保本机ignored .echo-semantic/local/sdk-parallel-delivery-01a14385/ 下 framework-6563-*.json、oracle9-focused-02-results.json、oracle9-focused-03-results.json 与其具名raw目录。当前提交候选排除四个未完成完整PY/Java验证的foreign Task dirty，保fa62 blob；它们不在本段selected测试/Host编译/生成的真实消费闭包。未称整个dirty树或官方full语言通过；原full入口、完整Rust/平台/main及五Finding余项仍须继续。示例无新增API调用，完整quickstart仍由官方入口验证；官网/顶层由Root负责。
+
+## 8481：原cleanup回执、当前完整验证与历史身份
+
+原 header 的 source83 与公开 Git `410e0f1d857bbf8bcfd805376638794697524de9` 的 canonical 摘要精确相同，已用必要完整SHA annotated evidence tag从空冷仓仅remote main+tag取回核对；这里只无损改绑历史机器身份，上方七控/14a/ac433等正文和运行结果不改。当前源码的机器引用由Audit显式8481 challenge承载，本Evidence旧header不冒当前整树。
+
+本次真实运行源码为公开 SDK `8481ba5823aa190cf76859d6af0570898c432bbd`（tree `a5aca0df1997b4395caeee4fef179ba990d7a99f`，canonical source `e4e48fb9d42d569bd7e51a9245504b2352dc2b2a51a282a72c3d5e6e0d5f2635`），精确 framework pin `6563d26570cc4a8d93c86b7e37443b0559476807`，原锁摘要 `90d5b82ef54a56d22fc079f9065e86e817a81b2431e265bf1d47ebe3897f40d5` 不变。保存配置的实际 Host 构建退出0、零编译警告；不可变 Host `0982121cb1e99284b4a7d7e07af35037f9f22bd653528d9716d425f5609407a0`，159661040B、EH15492980/unwind2978992，保 opt1/assertions/overflow/unwind。Cargo 明确 Fresh 复用当前原14矩阵产物，不伪称冷编逐 rustc flags 观测。
+
+原适用14条 Rust 命令全部真实退出0、零编译警告，1212项输入零漂移；workspace命令的13个harness共519pass/0fail/0ignore，重复feature组合不再累计为独立覆盖，main harness0与doctest0案例分别保留。原完整 `scripts/check-language-sdks.sh` 一次实际退出0：TS354、Python440加18subtests、Java377/76freshXML，全部零失败/跳过；三个quickstart均完成。语言日志123419B/SHA`e6a8246c64be070de762d2d6fe309cb3e51af3216ce2a8870f2c7769523f861b`；1212输入与同Host SHA/mtime前后不变。原raw、runner、资源收据、freshXML、帧和不可变二进制仅保本机ignored任务local：`framework-6563-rust-full-07-proof.json`、`framework-6563-final-qualified-host/provenance.json`、`framework-6563-official-language-final-01-proof.json`；哈希不替代原件。上述执行与源码/必要性均经原独立reader有界复审C0/I0/M0。
+
+这只证明本机当前源码和具名场景；远端精确main的Linux/Windows CI、managed历史Linux退出超时、native Hook/Stop以及registry发布分别结算。原历史失败及不同Host/cut不重标为本次执行，不从测试数量把41个family或八个风险视角批量升为verified。
+
+真实factory反例来自原同close：第一次成功Unit已从原iid返回、child本地cleanup1，Host却再次发送新的mutating AgentClose并保注册配额。原两casephase实际101/0pass2fail，3801B/SHA`54475ed05c5f6cd84cdb7e8da25ae397fb8762e9692ed09822997178c6e6a0f8`。公开修复 `3e29ff7b50b92a87faa77e880df868f67c3bb10e` 只在原child绑定的validated AgentClose(Unit)、真实guard/lease Drop之后传递原reply；既有OnceCell initializer缓存物理cleanup成功，同时首caller仍得原Timeout。取消waiter重入等待同原callback，最后外部owner Drop也不再reinvoke。错误、unknown、transport EOF、错result和注册tombstone均不构成cleanup成功。真实路径见 [echo-sdk-host/src/core_profile/extension_bridge.rs](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/echo-sdk-host/src/core_profile/extension_bridge.rs)，文档见 [docs/sdk/sdk-extension-bridge.md](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/docs/sdk/sdk-extension-bridge.md)、[docs/adr/0039-sdk-cancellation-observation.md](https://github.com/EchoYue-lp/echo-agent-sdk/blob/8481ba5823aa190cf76859d6af0570898c432bbd/docs/adr/0039-sdk-cancellation-observation.md)。
+
+最小after3E2E实际3pass/0fail，707B/`1ca6ca2431c15689efadb35d7bb1e40f7b210122d11a3f1682b76cfe421523c0`；原六control命令实际5pass1fail/101，1789B/`cf5d8de21407d17c03340bacc211e88ab9d826fc3a84cc6c79cfac674172b399`，新增fixture错误地要求drop后追加的同iid取消通知也必须timeout。仅修该oracle后原单control实际1pass/0fail，607B/`3f0ffe405c3851539b3ada8390b5be9b1d83bbe6a64413269023b55e8ce6eeb6`。三新control复用原helper，分别覆盖晚Unit、晚Error、取消waiter后释放前重入与最后owner Drop；首Timeout不改、held配额/原lease/同iid/每child关闭一次及ordinary failed/observation/guard控制全部保留。旧六命令仍是101，后继完整Rust矩阵当前223 lib cases全通过另列其真实epoch。测试helper仅Box错误表示卫生修正，不改原错误字段；所有原失败、参数准备错误与编译warning单独保留。最终有限proof为ignored `rust-full04-final-related-proof.json`。
+
+宽cleanup的原Factory、callback/Tool/LLM、facade stream、Python/native MCP与resource/connection owner以及Java native-close路径已按既有场景三链结算；当前Java377包含publication选择5项、EarlyExit16项及原child write失败后同owner retry。ordinary latch旧发布规则的受控unit失败不是原OS竞态生产red，JDI/debugger helper从未执行。原Sandbox用例先held无terminal/cleanup0、再同原Responder真实Cancelled，保持250ms cleanup及10s final wait；当前原bridge35和官方三语Tool/Sandbox消费亦实际通过。无新store、执行器、receipt或调度权威。
