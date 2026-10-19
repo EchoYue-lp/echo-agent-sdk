@@ -86,6 +86,10 @@ Context本地测试准确为`sdks/typescript/test/context-inheritance-values.tes
 
 [Session base prompt view](../../../.echo-semantic/findings/finding.sdk-session-base-prompt-view.md) 保持open。原Host一case真实before：inherent setter已将owned base变B（current=B），Session Traitbase仍boxed构造A；TraitoverrideC的current=C与零Session definition=A意义保留。getter修复须ownedHandle读取F Traitbase，不改成currentgetter，也不补偿F canonical root-system独立producer问题。原999B日志/80输入零漂移、清理与未执行after范围在Integration Evidence文末；原十二source组与已有C0消费者不因新反例重开，其它真实pending仍保，PR5 Draft/Plan ready不变。
 
+## 2026-10-19 忙时Session读取新增开放义务
+
+[finding.sdk-busy-session-read-authority](../../../.echo-semantic/findings/finding.sdk-busy-session-read-authority.md) 跟踪原MCP initialize持writer期间cwd getter伪null的真实native red。原前后cwd未变、屏障与完整load/清理证明见Integration Evidence后继；原1249B日志保留。本条open/空三链，ordinary值读取与callback Agent/Context父子锁等待的精确策略/after尚待，不能以typederror候选宣布全部重入闭合。它与base prompt、模型配置、retained投影及managed Linux未知分别结算；原C0消费者/sourcecut与现状态不变。
+
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。

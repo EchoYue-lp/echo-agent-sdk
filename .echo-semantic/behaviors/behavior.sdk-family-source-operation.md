@@ -33,6 +33,7 @@ finding_refs:
 - finding.sdk-live-model-source-authority
 - finding.sdk-retained-transcript-projection-identity
 - finding.sdk-session-base-prompt-view
+- finding.sdk-busy-session-read-authority
 ---
 
 # SDK family source_operation
@@ -118,3 +119,7 @@ Behavior保持needs_review；入口具名mapped/examined不自动41verified、fu
 ## 2026-10-19 Session base prompt新增明确反例
 
 原SourceOperation分组与两Finding不变。新finding.sdk-session-base-prompt-view记录inherent base setter实际成功后Session Traitbase getter仍构造A的真实旧Host red；current getter已owned且正常，Traitbase与runtime override意义不能合并。该义务只要求同一现Handle读取base，零Session定义不动；源/typed数据/原日志和after限制在原Integration Evidence后继。原Memory/Workflow已resolved不回滚，不混F root-system位置或模型配置修复；本Behavior状态不变。
+
+## 2026-10-19 忙时读取不等实际空状态
+
+新增finding.sdk-busy-session-read-authority记录原MCP initialize屏障真实native：已配置cwd的普通Session并发getter在原writer持锁时返回null，释放并完整load后cwd仍同路径。原wrapper同步try_read默认不可作为RPC状态；修复候选必须读取原authority且处理Agent与Context回调父子等待，不伪缓存/新协议/改F同步Trait。Context层和snapshot实际mutation仅源码调查，不冒native已闭合；本条open/空三链，原base/model/projection/managed各自独立。

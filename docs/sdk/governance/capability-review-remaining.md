@@ -1,5 +1,9 @@
 # 当前能力模型的有限剩余验收
 
+## 2026-10-19 忙时Session读取新增开放义务
+
+[finding.sdk-busy-session-read-authority](../../../.echo-semantic/findings/finding.sdk-busy-session-read-authority.md) 跟踪原MCP initialize持writer期间cwd getter伪null的真实native red。原前后cwd未变、屏障与完整load/清理证明见Integration Evidence后继；原1249B日志保留。本条open/空三链，ordinary值读取与callback Agent/Context父子锁等待的精确策略/after尚待，不能以typederror候选宣布全部重入闭合。它与base prompt、模型配置、retained投影及managed Linux未知分别结算；原C0消费者/sourcecut与现状态不变。
+
 ## 新增Session base prompt视图阻断（2026-10-19）
 
 新增精准SDK Finding `finding.sdk-session-base-prompt-view`：旧Host真实同Session setter成功后current=B、Traitbase getter仍A，自然exit1。它与模型配置/retained投影两个open及managed Linux未知分别处置，未关闭或替代任何旧义务。最小ownedHandle base读取、B/C/零Session定义区分的当前Host after和独审仍待；原三组有限分类、已C0消费者与各自sourcecut保留，PR5继续Draft，Plan ready。实际原件与限制在原Integration Evidence后继及Finding。

@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "2bf5a972a4e86fee18ed80eb57b79377f297e54dc36a99911907b61659b3cd12"
+    "content_digest": "073755d7ee6eb5c581b042de98c816690bd938ae4e75921eddd0cd02f75865f8"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -829,3 +829,7 @@ capability inventory与八视角审查保持open，动态入口见Discovery；�
 ## 2026-10-19 Session base prompt视图新反例
 
 新增finding.sdk-session-base-prompt-view原Host真实before1，准确区分live Traitbase、effective current与definition快照，保持open/空三链；原模型、retained及managed未知仍独立。最小getter修复与消费者after待，未变source及既有C0证明不重审；inventory与behavior_model闭合标志、所有Behavior状态不批量改变。
+
+## 2026-10-19 忙时读权威新增明确反例
+
+新增finding.sdk-busy-session-read-authority由原Host1249B屏障native失败确认：busy不可取不等不存在。可失败authority读及Agent/Context回调重入候选设计未通过最后独审/未after；不伪缓存/改F同步Trait。原prompt/model/retained与managed独立，不批量提升任何Behavior/Audit，inventory/behavior_model闭合标志不变。
