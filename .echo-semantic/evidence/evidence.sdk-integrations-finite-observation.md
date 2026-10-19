@@ -230,3 +230,11 @@ FS比较before：1165 bytes / `ea36729fe1a3b7cee5e214397de62c3061a38c848a216828d
 04实际1pass/0fail，日志563 bytes / `d3b1aa202079f1b8c8ecf3421654e5f8d03135a1e0e8837dd9fbb9181499b06d`；原注册后新Session对照actual1pass / 401 bytes / `8aa84ae43b33f375f4b63d3443141e89c2620c056f47259b79110f36fb0fee8b`；相关单testtarget Clippy-Dwarnings actual0 / 215 bytes / `bc95f4633c6103f23be0c8dffcde9560ca328bbd17d2de32af450aa2d9a72a29`，fmt check0。新2cae→88a元数据切片采用只改变已验证3formal，04 runtime源码精承接，不伪整新dirty树已执行。
 
 04完整实际测试源码SHA256为 `a7ca4c8291112f8cca2e711ab92136dc7b441166c84de118cff7632926ac208d`；原testexec/完整typed数据/元数据guard均target外ignored保留。必须等F真实managed后端producer修复/精mainCI、SDK必要pin与原generator、模型适配与retained identity更强oracle、当前Host消费者after及独审，才可关闭两条；当前无全语言、平台或SDK main完成主张。
+
+## 2026-10-19 accepted intrinsic与source_operation分类承接
+
+原header/source_refs与原运行事实保留。本后继将明确accepted intrinsic551 canonical/12routes/59contract_test桶按八组、source_operation272操作/37receiver按十二组对齐原处置表；该菜单核对只界定承诺，不按计数或catalog done证明行为。ToolCallParams/ToolResult、UTF-8/JSON/usage、policy/budget/retry、局部值/trait、config构造、clock、TurnMode、ACP/Sandbox值分别复用原具名本地测试及8481/Host098212完整语言运行，未新建测试或远程intrinsic接口。该旧whole不覆盖未提交的新运行测试；新Evolution e31、Store/Plugin2cae、FS/GitPlan88a按各自定向source/raw/独审切点读取，不把计数相加成覆盖率。
+
+具体测试锚与十二组正常消费/生命周期/不承诺/待补证并列在`docs/sdk/governance/capability-review-dispositions.md`。原四个Finding本地resolved不扩为全source通过；模型原配置/Result/livegetter与retained投影两新Finding保持open。新scalar01只旧Host下的thinking4000/tool visibility→None强例，源未入本切片；live04只是具名原A消费，RunStore实际save/load/append三类、Intent/Skill默认消费，MemoryTriggerSink managerfalse条件。新三语compressor/token-limit反例与新Fproducer after、完整新pin门禁未结算，不能把4个新压缩相关测试文件准备称已过。
+
+本次仅分类与引用已保存的Evidence，不改变expectation/status、不伪重跑、不新增secret/permission/SDK状态权威，不将缺证暗作deferred。

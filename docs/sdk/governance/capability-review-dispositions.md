@@ -27,6 +27,61 @@
 
 [SDK模型适配](../../../.echo-semantic/findings/finding.sdk-live-model-source-authority.md) 与 [retained transcript identity](../../../.echo-semantic/findings/finding.sdk-retained-transcript-projection-identity.md) 保持 open：前者原配置载荷/Result/live query尚待SDK修复；后者是原F producer重分配已保留消息ordinal，SDK不建立第二算法。新 live04 的回调/后继模型/RunStore部分通过不代表 transcript无重复；原压缩后显式 checkpoint 的合法组合与其01/02/03失败记录保留。Root公布新F精main/CI之前不改SDK pin或生成物，之后仍需当前消费者和完整门禁，PR5继续Draft、Plan ready。
 
+## accepted三组义务的有限分类（2026-10-19）
+
+## intrinsic八组
+
+| 能力归组 | 直接证据与合同界限 | 当前处置 |
+| --- | --- | --- |
+| ToolCallParams/ToolResult本地构造、getter、不可变modifier | 三语言原intrinsic-tool-values及helpers测试，合法/错误值/Unicode与结构复制；with_effect另沿现有明确negative/deferred边界 | 已有具名Evidence满足本地helper承诺；不构造远程intrinsic调用 |
+| JSON/UTF-8、usage、精确数值与时间值转换 | 原local helpers、wire/value测试；u64与JSON/optional字段不静默默认 | 已有具名Evidence满足；不是实际计费或全外部网络算法 |
+| token budget、memory/retry/permission纯policy及算法 | 原各本地values/policy测试核精确输入输出与边界 | 只承诺纯值运算；不自动安装Host压缩/重试/权限服务 |
+| enum/结构值、构造器、局部方法及trait值投影 | 原各values测试及无损编解码；其中ContextInheritance7另列下表 | 本地值语义；不是注册Host runtime或执行Hook/JWT服务 |
+| Agent/config定义构造与builder值投影 | 原schema/value与明确字段getter测试 | 定义表达不等live Agent setter消费；live义务列source_operation |
+| 本地clock helper | 原时区/序列化和值范围断言；generated clock不跨语言硬比同一瞬间 | 已有具名Evidence满足本地时间值，不承诺跨进程时钟同步 |
+| TurnMode局部枚举 | 原turn-mode values | 值表达满足，不代替Run/Task执行 |
+| ACP值与Sandbox resource policy | 原ACP/lease/config limits及sandbox值测试 | 不承诺OS实际隔离或新权限门控；物理Sandbox证据沿既有source/native单元 |
+
+没有以catalog done或握手对齐证明helper行为。已审544项/58bucket与ContextInheritance7项/1bucket的分类必须从原accepted菜单与原reader结论承接；这不是给每identity追加三语测试。具名原测试与实际运行切点见下方证据索引，保全部既有状态。
+
+## source_operation十二组
+
+| 能力组 | 已有直接消费依据 | 明确剩余与界限 |
+| --- | --- | --- |
+| live Agent配置和查询 | 原core admission的prompt/max_iterations/permission/skills；新scalar01同Session两completed Run实际LLM thinking4000和工具隐藏→None复原 | 模型HTTP A/A反例、原配置载荷/Result/livegetter仍open；scalar01只独立源副本与旧Host定向PASS，尚未此formal候选源码交付 |
+| live services及compressor | 原Memory切换A→B实际读写/search/delete/error；新live04原A/decoyB的audit/projector/RunStore/RuntimeCAS/Sandbox/Promoter消费 | retained identity producer Finding open；真实token-limit回退由F修，三语compressor after待新pin。RunStore helper六方法≠actual六方法；sink仅合法绑定且managerfalse；Intent/Skill只default消费 |
+| Subagent/MCP等运行服务 | 原Task/Subagent和MCP/LSP具名native消费者、owner/关闭/失败路径 | 不扩大完整Rust inventory、所有动态网络组合或未接受context DTO |
+| Memory持久Store与原Embedder | 2cae两个真实Rust消费者：File/Sqlite各构造→读写→close→同路径reopen；with_embedder原callback语义查询与空向量拒写 | 三语合法Path/Variant/owner合同组合，不称每backend各自三语原生；普通embedder Error可降级写，plainnew与with_embedder reopen不同用例 |
+| PluginRegistry本地资源 | 2cae显式临时路径、双插件依赖、安装/配置/启停/扫描/组件/保留数据/close | keep_data=false只有remove/count，不称marker删除已测；不声称任意插件实际代码运行 |
+| SkillRegistry、prompt与策略加载 | 原source_files_and_skill_registry测试实际tag/activate/prepare/code/reset；原prompt消费者 | 不新增任意skill执行承诺；04默认Intent/Skill callback不是非默认config/fence分支证明，F原test候选另待actual |
+| Eval/Improve/Topology | 原native fixtures真实factory与逐结果oracle、cleanup/deadline/workspace/nodeedge | 只现accepted方法，不把schema round-trip当执行 |
+| Evolution | e31原三native computation76行含15新增合法/负控，8项source操作 | Curator仅load/坏JSON/保护文件不改；不承诺save/promote自动持久化 |
+| Security/Content/Risk/Sandbox policy | 原Security Unicode与重定位源函数；原core-stateful真实classify/evaluate、ContentGuard check及原sandbox消费者 | 本地纯delegate已有证据复用；不以policy值承诺任意OS隔离 |
+| Project rules | 原RAG fixture坏UTF8/update/ownerclose及同Session真实三次LLM request的rules投影 | 来源resolver沿框架，不新建第二优先级authority |
+| FS/artifact与Git | 88a三nativeFS各101行/99RPC/19sourceops，原compare真实red后同三结果0；Git各35行，per-filecheckpoint回滚/错目标不改/keep1/0；原worktree4真实副作用 | 原payload和旧断言保；per-filecheckpoint不是Gitref checkpoint；外部文件rename为fixture动作不算RPC |
+| Turn/Plan/state | 原Rust receipt live/recovered/negative；三语usage/managed retirement；88a Vec<Task>合法、task_id与retry_count负控 | Plan snapshot不替TaskSpec validator，不增加Task executor；持久化retained identity仍归独立openFinding |
+
+已满足和pending必须共列，PR5继续draft。新focused不借旧whole runtime数覆盖最新dirty源码，不把old01/02/03错误fixture修正称生产修复。模型与retained两新Finding不由分组表自动resolved，managed历史Linux未知根因/新整套门禁/SDK main独立。
+
+## ContextInheritance与live context承诺分类
+
+| 入口 | 合同实际承诺 | 对账 |
+| --- | --- | --- |
+| ContextInheritance7 presets/local methods、4 fields | accepted纯值及本地mode选择 | 原context-inheritance-values测试：TS三preset四字段deepEqual，Python/Java各fresh history/fork memory/team tools代表断言；其余preset为同一纯delegate源码，不虚称额外负控/非默认metadata往返，不等自动Host继承 |
+| SubagentContext.from_parent及TaskSubagentContext新DTO | 不在当前明确accepted跨语言合同 | 不新增RPC/DTO，不将未接受Rust API当SDK缺口 |
+| DispatchRequest.parent_context | 值字段存在，Host明确拒绝nonnull process-local引用 | 保原typed拒绝与普通dispatch，不宣live父context跨进程继承 |
+| 普通同Session history与Memory切换 | 原Session真实两Run request含assistant/current Unicode；原live Store A→B读写消费 | 有限已有消费者证据，不改名为Subagent parent继承 |
+| accepted compressor callback及后继模型输入 | 原A实际callback/tokenizer/owner/closed、evict与retained输入，后继request消费 | 预算F反例与retained producer Finding尚待新公开pin消费者after；不降为deferred，不造安装MemoryManager API |
+
+
+### 原证据与源码索引
+
+本表复用原完整8481/Host098212语言运行与已C0的具名focused，不把旧whole覆盖新dirty树。原whole来源见`evidence.sdk-cancellation-observation`；intrinsic工具值是三语`intrinsic-tool-values` / `test_intrinsic_tool_values` / `IntrinsicToolValueTest`的合法构造/getter/modifier断言，声明mapping检查不作行为依据。UTF-8/JSON由`helpers.test.js`、`test_local_helpers.py`及原Java `Utf8SupportTest`承接；budget/retry/memory-policy/turn/time各原values测试；其余值分组由原A2AValueTest与对应三语values测试承接。各自原whole执行来源不因本次文稿重标。
+
+Context本地测试准确为`sdks/typescript/test/context-inheritance-values.test.js`、`sdks/python/tests/test_context_inheritance_values.py`、`sdks/java/src/test/java/com/echoagent/sdk/A2AValueTest.java#contextInheritancePreservesDefaults`；源是三语context_inheritance_values/ContextInheritance。live Memory/Session另沿`evidence.sdk-memory-permission-candidate`、`evidence.sdk-task-memory-workflow-finite-observation`具名真实请求，不混为parent继承。Evolution沿`evidence.sdk-computation-50`；File/SQLite/Plugin、FS/artifact、Git/Plan与live04限制均沿`evidence.sdk-integrations-finite-observation`的2026-10-19后继。Eval/Improve/Topology沿`evidence.sdk-eval-improve-topology`，rules沿`evidence.sdk-rag-project-rules`及原真实Session rules请求；不是凭文件存在重称执行通过。
+
+本次只将既有具名证据与明确合同分类归并。新模型/预算/投影修复、新pin/唯一生成、最新消费者after、完整门禁及精确SDK main仍待；原四个本地resolved Finding不回滚，managed历史Linux原因仍未知。原Behavior/Audit状态不批量提升，PR5 Draft、Plan ready不变。无公开调用或产品行为变化，examples/官网没有本次新增演示需要；它们最终编译/集成和后续模型指南同步仍由原交付门禁及owner负责。
+
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。

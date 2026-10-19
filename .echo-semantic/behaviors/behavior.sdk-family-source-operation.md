@@ -107,3 +107,9 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 具体本family和registry/skill支持角色按sharedEvidence表/8Audit定位行为/唯一authority/lifecycle/失败：MCP/LSP owner/PID/全字段/derived不复活；Channel六forward原2facts/RWclose/peer隔离；EvalImprove cleanup/deadline/workspace；topologynodeedge；Permissionlive/TTL另scope；Statecheckpoint7、TraceRun17/nanotime/bigDuration/JSONLcold；Deliverymemory8ops同实例exactclaim；Testing14纯值controltransport非Mock业务。源码/API/模型不成为第二权威。
 
 Behavior保持needs_review；入口具名mapped/examined不自动41verified、fullaccepted生成/main。Delivery无额外crossprocessdurability，configuredredaction不承诺未知所有secret；registry/skill归既有source_operation/intrinsic，无新family或任意skill执行。newAfinal、5秒physicalB/12identity及平台/main另验，支持范围未审的sourceoperationmethod保具体菜单理由，不以无限所有组合扩大义务。
+
+## 2026-10-19 accepted source分组承接
+
+272操作/37receiver仅用于十二能力组的漏项核对。原处置表逐组列live配置、services、Subagent/MCP、MemoryStore、Plugin、Skill/prompt、Eval/Improve/Topology、Evolution、Security/policy、Projectrules、FS/artifact/Git与Turn/Plan/state的原直接consumer、构造/方法/close、失败和明确限制。新e31/2cae/88a定向证据与原8481完整运行分开，不以null reachability或三语载荷往返代替实际backend消费。
+
+模型与retained投影Finding仍open，预算producer消费者after仍待；新scalar/live04仅具名范围，Sink managerfalse、RunStore六种helper仅三种actual、Intent/Skill default与无非默认fence branch资格均保留。没有新API/Store/validator/SDKcursor，不降既有accepted承诺为deferred；本Behavior状态不改，最新pin/生成/门禁/main独立。

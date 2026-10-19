@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "94b4aff74566f17b933fde40fdab053c1c8f9a8ebbe604836046b1d9dbfaa343"
+    "content_digest": "53b227d6a612e401a9e410cb2ce8dc9fb71b13936456806557c34620b9ba1ed9"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -821,3 +821,7 @@ capability inventory与八视角审查保持open，动态入口见Discovery；�
 ## 2026-10-19 模型与retained投影仍开放
 
 新增两项具名Finding均open：SDK仅拥有原模型配置载荷/Result/Session query适配，retained transcript重复identity由framework唯一修复。旧pin live04具名wiring断言通过不证明无重投影；原模型HTTP反例与01/02/03 fixture失败分开保留。Behavior不批量升verified，inventory_closure保持closed、behavior_model_closure保持open；新F精main/CI、SDK新pin/生成、消费者after、完整门禁和SDK main仍待。此次仅登记义务，不改变accepted合同、生产源码、示例或官网行为；后继模型公开说明由对应owner同步。
+
+## 2026-10-19 accepted三组有限分类承接
+
+原处置表、两个已有Evidence及三个相关Behavior归并intrinsic/source_operation/ContextInheritance既有证据与准确承诺边界；原全套与新focused不混sourcecut，未新测试/对象/接口或批量verified。模型与retained两个open、预算/compressor after、条件Sink、managed历史Linux未知、最新pin/生成/完整门禁/native/main均继续独立。inventory_closure与behavior_model_closure标志不变。

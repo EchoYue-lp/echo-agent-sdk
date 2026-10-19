@@ -103,3 +103,9 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 具体本family和registry/skill支持角色按sharedEvidence表/8Audit定位行为/唯一authority/lifecycle/失败：MCP/LSP owner/PID/全字段/derived不复活；Channel六forward原2facts/RWclose/peer隔离；EvalImprove cleanup/deadline/workspace；topologynodeedge；Permissionlive/TTL另scope；Statecheckpoint7、TraceRun17/nanotime/bigDuration/JSONLcold；Deliverymemory8ops同实例exactclaim；Testing14纯值controltransport非Mock业务。源码/API/模型不成为第二权威。
 
 Behavior保持needs_review；入口具名mapped/examined不自动41verified、fullaccepted生成/main。Delivery无额外crossprocessdurability，configuredredaction不承诺未知所有secret；registry/skill归既有source_operation/intrinsic，无新family或任意skill执行。newAfinal、5秒physicalB/12identity及平台/main另验，支持范围未审的sourceoperationmethod保具体菜单理由，不以无限所有组合扩大义务。
+
+## 2026-10-19 accepted helper有限分类
+
+原accepted合同551 canonical intrinsic/12routes/59桶均无remote method/operation。原处置表将其分八类，以具名本地构造、getter、不可变modifier、UTF-8/JSON、精确usage/value、policy/算法、clock、TurnMode、ACP/Sandbox值测试及同源完整语言运行承接；catalog done不作消费完成证据。544项/58桶与ContextInheritance7项/1桶的分类不按每Rustidentity造测试，也不自动承诺Host执行JWT/Hook/重试/压缩/OS隔离。
+
+Context纯值源与代表断言、未接受from_parent/新DTO、Host process-local parent_context边界已在原Task/Subagent Evidence及处置表分清；不是live父会话继承E2E。本次只归并已C0证据与合同边界，不改本Behavior needs_review/human_confirmed，不把原whole套计数赋给新dirty源码或最终main。

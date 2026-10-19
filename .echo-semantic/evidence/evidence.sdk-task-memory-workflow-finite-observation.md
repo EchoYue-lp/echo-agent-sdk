@@ -82,3 +82,11 @@ SessionServices取liveAgenttaskrevisionservice同Arc，CRUD/runtime同framework 
 ## 历史证明存储的有界表示迁移
 
 原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+
+## 2026-10-19 ContextInheritance纯值与live消费合同分类
+
+本后继明确原“live继承待验”不是新增API授权。当前accepted为7项preset/本地method/type加4个subagent值字段；`SubagentContext::from_parent`与新的TaskSubagentContext DTO不在接受范围，DispatchRequest.parent_context虽有值字段，Host对nonnull process-local引用明确typed拒绝，不称跨进程父context继承。
+
+三语原测试源可定位：TS context-inheritance-values三preset对全部4字段deepEqual；Python test_context_inheritance_values及Java A2AValueTest.contextInheritancePreservesDefaults各为fresh.history、fork.memory、team.tools三代表断言。catalog11仅声明；其余sync/teammate/fresh为同一纯delegate源码，不伪称非默认injectMetadata/全部mode负控已执行。原8481/Host098212完整语言入口提供这些未变测试的实际运行来源；本次没有新增三语矩阵。
+
+同Session普通两Run历史的真实assistant/current Unicode请求及live Memory Store A→B读写/search/delete/error由原具名Evidence独立承接，不改名为Subagent父继承。accepted compressor的callback/tokenizer/evict/后继LLM消费仍需新预算producer与新retained投影修复的精pin after；原source/live04、四个压缩测试文件与新模型HTTP before保持各自真实源cut，未由本分类关闭。MemoryTriggerSink只有合法绑定及managerfalse条件，不制造安装manager API。完整组表和原证据锚在原dispositions；原Context支持性缺口按上述承诺分类，不批量verified或增加family。
