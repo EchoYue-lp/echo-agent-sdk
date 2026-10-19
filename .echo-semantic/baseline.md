@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "073755d7ee6eb5c581b042de98c816690bd938ae4e75921eddd0cd02f75865f8"
+    "content_digest": "0c83e07dd4486e25f1aba51f495c7d322619e7f07e6cab81db13fd3b252cabba"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -833,3 +833,7 @@ capability inventory与八视角审查保持open，动态入口见Discovery；�
 ## 2026-10-19 忙时读权威新增明确反例
 
 新增finding.sdk-busy-session-read-authority由原Host1249B屏障native失败确认：busy不可取不等不存在。可失败authority读及Agent/Context回调重入候选设计未通过最后独审/未after；不伪缓存/改F同步Trait。原prompt/model/retained与managed独立，不批量提升任何Behavior/Audit，inventory/behavior_model闭合标志不变。
+
+## 2026-10-19 新增Finding发现源的必要引用保存
+
+e31/88a/4f三actualdiscovery revision已由Root显式annotated refs正常推送及空冷仓仅remote main+三exact tags取回核字节。正式provenance追加三行原commit/tag/tree与有限资格；不修改observed_at/发现时间或把其当当前SDK main/Host/nativeHook/strict行为通过。当前所有open、Behavior/Audit状态及闭合标志保留，最终新main全必要ref冷strict独立。

@@ -63,3 +63,15 @@ git show "$snapshot_commit:.echo-semantic/baseline.md"
 Git 官方说明 annotated tag 保存标签元数据；默认 fetch 只自动取与正在抓取历史相关的 tags，显式 `--tags` 可取全部远端标签。GC 保留 branches/tags 及其它 refs 所引用的对象，所以真实证据 tag 保留 commit/tree，而非复制一套镜像树。[git-tag](https://github.com/git/git/blob/master/Documentation/git-tag.adoc)、[git-fetch](https://github.com/git/git/blob/master/Documentation/git-fetch.adoc)、[git-gc](https://github.com/git/git/blob/master/Documentation/git-gc.adoc)于2026-10-14从官方 Git 源仓 raw 文本实际读取，均 HTTP 200。
 
 基础 Capability/Behavior 模型和客户端审计的材料闭包须分别审查后提交；inventory/behavior closure 保持 open。具体已解决缺陷保其有限三链，不因基础材料可恢复而升级所有能力；12项 source/kind 和5秒物理结算选择、完整生成及 SDK main 验收继续独立。
+
+## 2026-10-19 新增Finding发现版本的必要exact引用
+
+原source/reader判定这三个实际discovered_at为必要历史引用，沿每个真实版本同名完整SHA约定保存；不为所有开发检查点或私有candidate打tag。Root独占refs操作，显式atomic push仅这三个annotated标签且nofollowTags、actual0，无force/覆盖。
+
+| peeled commit（标签后缀） | annotated tag object | tree |
+| --- | --- | --- |
+| `e31e39a5ab29c4b3dc24b2fc349515a2787c6a23` | `f89cccdf7d88aab7f2d5a2e8830f2ea495313e99` | `758c6561464107295d7c99e9d20f3ff0096f2418` |
+| `88a573b7dbe2cd4878427ea35eb43322dbf11089` | `584323808743a7ef0f5b02742aace6ea8eaaa051` | `6a2e131d1117c44acfbc495dbdbf0fd876b48902` |
+| `4f8382fda176415749a625063a946b21cae15f5d` | `df1b02b2403b471e84f7c82cee14799bfcc2f361` | `d57ee3276f2903a480f25bad0532f90d931c71c1` |
+
+Root的新空bare仅从远端exact fetch main30d7与三个必要tags，actual0；无alternates/taskbranch/PR refs或本地对象导入。tag/commit/tree与12个具名source/provenance blobs（每版本的SourceOps、factory、CoreState及本provenance）逐字一致。完整push/冷取回原件保在协调ignored任务local的sdk-three-discovery-evidence-refs-proof.json（10691B / d19bd5000d863754cdf5a52ce4759bc52d5952f336fddda24657dc76a2efd441）及sdk-discovery-refs-cold-proof.json（13341B / 9078a656f29c0a4b13728866e9d6479f2591299268fc1df88c10f89ce9e86dc6）。这是历史发现源可恢复性；不是新main、当前Host、原生Hook或最终strict行为验收。busy读取Finding实际discovery也是4f，不额外给e924或私有9a/8f打tag。最终精main加全部必要refs冷strict仍独立。
