@@ -733,6 +733,46 @@ for identifier, operation, arguments, expected_error in [
         row["native_wire_indices"] = [0]
     ROWS_TEMPLATE.append(row)
 
+PLAN_SNAPSHOT_OPERATION = (
+    "echo_orchestration::planning::validator::PlanValidator::validate_task_snapshot"
+)
+PLAN_SNAPSHOT = [
+    {
+        "spec": {
+            "id": "validate",
+            "title": "Validate facade",
+            "description": "Exercise the Rust PlanValidator authority",
+            "depends_on": [],
+            "max_retries": 1,
+            "extension": {},
+        },
+        "execution": {
+            "task_id": "validate",
+            "status": "pending",
+            "retry_count": 1,
+            "failure_fingerprint": None,
+            "claim": None,
+        },
+    }
+]
+for identifier, task_id, retry_count in [
+    ("valid", "validate", 1),
+    ("execution-id-mismatch", "different", 1),
+    ("retry-overflow", "validate", 2),
+]:
+    # Reuse the canonical Task spec/execution value; this does not dispatch work.
+    tasks = json.loads(json.dumps(PLAN_SNAPSHOT))
+    tasks[0]["execution"]["task_id"] = task_id
+    tasks[0]["execution"]["retry_count"] = retry_count
+    ROWS_TEMPLATE.append(
+        {
+            "id": "plan-snapshot-" + identifier,
+            "operation": PLAN_SNAPSHOT_OPERATION,
+            "arguments": [8, 4, 2, tasks],
+            "expected_error": None,
+        }
+    )
+
 FILES = {
     "stats.csv": "value,label\n1,一\n2,二\n3,三\n4,四\n",
     "input.csv": "id,group,quarter,value\n1,a,q1,1\n2,a,q2,2\n3,b,q1,3\n4,b,q2,4\n",
@@ -809,6 +849,27 @@ def data(identifier):
 
 
 class ExactGreenObservations(unittest.TestCase):
+    def test_accepted_plan_snapshot_execution_consistency(self):
+        self.assertEqual(
+            ROWS["plan-snapshot-valid"]["result"], {"valid": True, "errors": []}
+        )
+        self.assertEqual(
+            ROWS["plan-snapshot-execution-id-mismatch"]["result"],
+            {
+                "valid": False,
+                "errors": [
+                    "task spec id 'validate' does not match execution id 'different'"
+                ],
+            },
+        )
+        self.assertEqual(
+            ROWS["plan-snapshot-retry-overflow"]["result"],
+            {
+                "valid": False,
+                "errors": ["task 'validate' retry_count 2 exceeds max_retries 1"],
+            },
+        )
+
     def test_accepted_evolution_helpers_and_read_only_curator(self):
         def source(identifier):
             return ROWS[identifier]["result"]

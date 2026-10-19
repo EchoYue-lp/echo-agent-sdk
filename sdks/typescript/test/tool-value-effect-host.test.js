@@ -2,7 +2,7 @@ import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn,execFileSync} from 'node:child_process';
-import {mkdtempSync,mkdirSync,existsSync,readFileSync,writeFileSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,existsSync,readFileSync,writeFileSync,renameSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
@@ -26,6 +26,12 @@ test('accepted tool exact values, errors and actual effects', {skip:!host,timeou
   sdk=await EchoAgentClient.spawn({hostCommand:host,args:['--config',join(work,'host.json')],env:{...process.env,TMPDIR:join(work,'artifact-temp')}});const agent=await sdk.createAgent(),session=await agent.createSession(work);const identity={agent:agent.wire,session:session.wire,capability:sdk.capability};
   for(const step of JSON.parse(readFileSync(join(work,'scenario.json'),'utf8')).rows){const row={...step,protected_before:snapshot(work),files_before:files(work)};
    if(step.action==='mutate_artifact')writeFileSync(artifactPath(results[step.ref].result),'mutated 中文🙂\n');
+   else if(step.action==='rename_fixture_directory'){
+    assert.equal(step.source,'fs-owner');assert.equal(step.target,'fs-owner-backup');
+    const source=join(work,step.source),target=join(work,step.target);
+    row.stimulus_before={source:existsSync(source),target:existsSync(target)};
+    renameSync(source,target);row.stimulus_after={source:existsSync(source),target:existsSync(target)};
+   }
    else{const arguments_=resolve(step.arguments,results);row.arguments=arguments_;try{
     if(step.watch_process){let settled=false;const call=session.invoke(step.operation,arguments_).finally(()=>{settled=true;});let pids=[];for(let n=0;n<50;n++){pids=processes(work);if(pids.length||settled)break;await new Promise(r=>setTimeout(r,10));}row.process_before=pids;if(step.terminate_observed){assert.equal(pids.length,1);assert.deepEqual(processes(work),pids,'own tail identity changed before signal');process.kill(pids[0].pid,'SIGTERM');}row.result=await call;row.process_after=processes(work);}
     else row.result=await session.invoke(step.operation,arguments_);

@@ -47,6 +47,313 @@ def record(type_id, **values):
     }
 
 
+def add_fs_artifact_chain(work, add):
+    """One retained guard, byte/line boundaries, and isolated artifact cleanup."""
+    fs = "echo_core::utils::fs::"
+    artifact = "echo_core::tools::artifact::"
+    text = "首🙂\nβtail\nlast"
+    data = text.encode()
+    first = len("首🙂\n".encode())
+    complete = len("首🙂\nβtail\n".encode())
+
+    def path(name):
+        return {"kind": "path", "value": {"encoding": "utf8", "path": str(work / name)}}
+
+    def binary(value):
+        return {
+            "kind": "bytes",
+            "value": {"base64": base64.b64encode(value).decode().rstrip("=")},
+        }
+
+    def handle(name):
+        return {"kind": "handle", "value": {"$ref": name}}
+
+    file = path("fs-owner/中文🙂.txt")
+    directory = path("fs-owner")
+    guard = handle("fs-open")
+
+    def call(name, operation, args, error=False):
+        add(name, fs + operation, args, "rpc_error" if error else "value")
+
+    call("fs-create-dir", "create_dir_all_durable", [directory])
+    call("fs-write", "atomic_write", [file, binary(data)])
+    call("fs-open", "open_existing_regular_guard", [file])
+    call("fs-read", "read_existing_matching", [file, guard])
+    call("fs-suffix", "read_existing_from_matching", [file, guard, first])
+    call(
+        "fs-lines",
+        "read_existing_lines_from_matching",
+        [file, guard, len(data), first, 1],
+    )
+    call(
+        "fs-exact-lines", "read_existing_lines_from_exact_len", [file, len(data), 0, 2]
+    )
+    call(
+        "fs-lines-stale-length",
+        "read_existing_lines_from_matching",
+        [file, guard, len(data) + 1, 0, 1],
+        True,
+    )
+    call(
+        "fs-exact-stale-length",
+        "read_existing_lines_from_exact_len",
+        [file, len(data) + 1, 0, 1],
+        True,
+    )
+    call(
+        "fs-offset-past-end",
+        "read_existing_from_matching",
+        [file, guard, len(data) + 1],
+        True,
+    )
+    call(
+        "fs-incomplete-line",
+        "read_existing_lines_from_matching",
+        [file, guard, len(data), complete, 1],
+        True,
+    )
+    call("fs-read-after-errors", "read_existing_matching", [file, guard])
+    call("fs-eof", "read_existing_from_matching", [file, guard, len(data)])
+    call(
+        "fs-truncate-stale-length",
+        "truncate_existing_matching",
+        [file, guard, len(data) + 1, 0, "sync_data"],
+        True,
+    )
+    call("fs-read-after-rejected-truncate", "read_existing_matching", [file, guard])
+    call(
+        "fs-truncate",
+        "truncate_existing_matching",
+        [file, guard, len(data), complete, "sync_data"],
+    )
+    call("fs-read-truncated", "read_existing_matching", [file, guard])
+    call("fs-append", "append_existing", [file, binary("尾🙂\n".encode()), "sync_data"])
+    call("fs-read-appended", "read_existing", [file])
+    call("fs-plain-suffix", "read_existing_from", [file, first])
+    call("fs-plain-lines", "read_existing_lines_from", [file, first, 2])
+    call("fs-plain-truncate", "truncate_existing", [file, first, "flush"])
+    call("fs-read-plain-truncated", "read_existing", [file])
+    call("fs-directory-open", "open_existing_directory_guard", [directory])
+    call(
+        "fs-directory-verify",
+        "verify_existing_directory",
+        [directory, handle("fs-directory-open")],
+    )
+    call(
+        "fs-directory-sync",
+        "sync_existing_directory_matching",
+        [directory, handle("fs-directory-open")],
+    )
+    # Rename only these deterministic fixture directories as an external
+    # stimulus; guard capture, durable recreation and verification stay in Host.
+    add(
+        "fs-directory-replace",
+        None,
+        [],
+        action="rename_fixture_directory",
+        source="fs-owner",
+        target="fs-owner-backup",
+    )
+    call("fs-directory-recreate", "create_dir_all_durable", [directory])
+    call("fs-replacement-write", "atomic_write", [file, binary(b"replacement-kept")])
+    call(
+        "fs-stale-directory-verify",
+        "verify_existing_directory",
+        [directory, handle("fs-directory-open")],
+        True,
+    )
+    call(
+        "fs-stale-directory-sync",
+        "sync_existing_directory_matching",
+        [directory, handle("fs-directory-open")],
+        True,
+    )
+    call("fs-directory-reopen", "open_existing_directory_guard", [directory])
+    call(
+        "fs-directory-resync",
+        "sync_existing_directory_matching",
+        [directory, handle("fs-directory-reopen")],
+    )
+    call("fs-replacement-read", "read_existing", [file])
+    call(
+        "fs-original-read",
+        "read_existing_matching",
+        [path("fs-owner-backup/中文🙂.txt"), guard],
+    )
+    call("fs-remove", "remove_file_durable", [path("fs-owner-backup/中文🙂.txt")])
+    call("fs-remove-again", "remove_file_durable", [path("fs-owner-backup/中文🙂.txt")])
+    call("fs-replacement-after-remove", "read_existing", [file])
+
+    config = record(
+        artifact + "ToolOutputArtifactConfig",
+        root_dir=path("artifact-cleanup"),
+        retention="temporary_1h",
+        threshold_bytes=1,
+        max_age_secs=None,
+    )
+    bad_config = record(
+        artifact + "ToolOutputArtifactConfig",
+        root_dir=path("sentinel.txt"),
+        retention="temporary_1h",
+        threshold_bytes=1,
+        max_age_secs=None,
+    )
+    for name, conversation, run in [
+        ("a", "owner-a", "run-a"),
+        ("b", "owner-a", "run-b"),
+        ("other", "owner-b", "run-a"),
+    ]:
+        identity = record(
+            artifact + "ToolOutputArtifactIdentity",
+            conversation_id=conversation,
+            run_id=run,
+            call_id=name,
+            tool_name="cleanup-proof",
+        )
+        add(
+            "scope-persist-" + name,
+            artifact + "persist_tool_output",
+            [config, identity, "scope-" + name + " 中文🙂\n"],
+            "value",
+        )
+    add(
+        "scope-cleanup-invalid-root",
+        artifact + "cleanup_tool_output_scope",
+        [bad_config, "owner-a", "run-a"],
+        "rpc_error",
+    )
+    for name in ["a", "b", "other"]:
+        # Read through the original artifact reference after the rejected cleanup.
+        add(
+            "scope-after-error-" + name,
+            fs + "read_existing",
+            [{"kind": "path", "value": {"$ref": "scope-persist-" + name + ".path"}}],
+            "value",
+        )
+    add(
+        "scope-cleanup-run",
+        artifact + "cleanup_tool_output_scope",
+        [config, "owner-a", "run-a"],
+        "value",
+    )
+    add(
+        "scope-cleanup-run-missing",
+        fs + "read_existing",
+        [{"kind": "path", "value": {"$ref": "scope-persist-a.path"}}],
+        "rpc_error",
+    )
+    for name in ["b", "other"]:
+        add(
+            "scope-after-run-" + name,
+            fs + "read_existing",
+            [{"kind": "path", "value": {"$ref": "scope-persist-" + name + ".path"}}],
+            "value",
+        )
+    add(
+        "scope-cleanup-conversation",
+        artifact + "cleanup_tool_output_scope",
+        [config, "owner-a", None],
+        "value",
+    )
+    add(
+        "scope-cleanup-conversation-missing",
+        fs + "read_existing",
+        [{"kind": "path", "value": {"$ref": "scope-persist-b.path"}}],
+        "rpc_error",
+    )
+    add(
+        "scope-other-still-readable",
+        fs + "read_existing",
+        [{"kind": "path", "value": {"$ref": "scope-persist-other.path"}}],
+        "value",
+    )
+
+
+def verify_fs_artifact_chain(work, byid):
+    def value(name):
+        row = byid[name]
+        assert "error" not in row, row
+        return row["result"]
+
+    def binary(name):
+        v = value(name)
+        assert v["kind"] == "bytes", (name, v)
+        encoded = v["value"]["base64"]
+        return base64.b64decode(encoded + "=" * (-len(encoded) % 4), validate=True)
+
+    original = "首🙂\nβtail\nlast".encode()
+    first = "首🙂\n".encode()
+    complete = "首🙂\nβtail\n".encode()
+    stimulus = byid["fs-directory-replace"]
+    assert stimulus["action"] == "rename_fixture_directory"
+    assert stimulus["stimulus_before"] == {"source": True, "target": False}
+    assert stimulus["stimulus_after"] == {"source": False, "target": True}
+    for name in ["fs-read", "fs-read-after-errors", "fs-read-after-rejected-truncate"]:
+        assert binary(name) == original, name
+    assert binary("fs-suffix") == "βtail\nlast".encode()
+    assert binary("fs-lines") == "βtail\n".encode()
+    assert binary("fs-exact-lines") == complete
+    assert binary("fs-eof") == b""
+    assert binary("fs-read-truncated") == complete
+    assert binary("fs-read-appended") == complete + "尾🙂\n".encode()
+    for name in ["fs-plain-suffix", "fs-plain-lines"]:
+        assert binary(name) == "βtail\n尾🙂\n".encode()
+    assert binary("fs-read-plain-truncated") == first
+    assert binary("fs-original-read") == first
+    for name in ["fs-replacement-read", "fs-replacement-after-remove"]:
+        assert binary(name) == b"replacement-kept"
+    for name, message in [
+        ("fs-lines-stale-length", "length changed"),
+        ("fs-exact-stale-length", "length changed"),
+        ("fs-offset-past-end", "exceeds file length"),
+        ("fs-incomplete-line", "incomplete newline-terminated record"),
+        ("fs-truncate-stale-length", "length changed"),
+        ("fs-stale-directory-verify", "existing directory identity changed"),
+        ("fs-stale-directory-sync", "existing directory identity changed"),
+    ]:
+        assert message in byid[name]["error"]["message"], byid[name]
+    for name in ["fs-open", "fs-directory-open", "fs-directory-reopen"]:
+        h = value(name)
+        assert (
+            set(h) == {"id", "generation", "kind"} and h["kind"] == "facade_resource"
+        ), h
+    for name in [
+        "fs-create-dir",
+        "fs-write",
+        "fs-truncate",
+        "fs-append",
+        "fs-plain-truncate",
+        "fs-directory-verify",
+        "fs-directory-sync",
+        "fs-directory-recreate",
+        "fs-replacement-write",
+        "fs-directory-resync",
+        "scope-cleanup-run",
+        "scope-cleanup-conversation",
+    ]:
+        assert value(name) is None, name
+    assert value("fs-remove") is True and value("fs-remove-again") is False
+    assert not (work / "fs-owner-backup/中文🙂.txt").exists()
+    assert (work / "fs-owner/中文🙂.txt").read_bytes() == b"replacement-kept"
+    # An RPC Null alone cannot satisfy cleanup: inspect each original persisted
+    # path and the original bytes, both after an early error and across scopes.
+    for name in ["a", "b", "other"]:
+        payload = ("scope-" + name + " 中文🙂\n").encode()
+        artifact = unrecord(value("scope-persist-" + name))
+        assert int(artifact["payload_bytes"]) == len(payload)
+        assert artifact["sha256"] == digest(payload)
+        assert binary("scope-after-error-" + name) == payload
+        path = decode_path(artifact["path"])
+        assert path.resolve().is_relative_to((work / "artifact-cleanup").resolve())
+        if name == "other":
+            assert path.read_bytes() == payload
+            assert binary("scope-after-run-other") == payload
+            assert binary("scope-other-still-readable") == payload
+        else:
+            assert not path.exists(), (name, path)
+    assert binary("scope-after-run-b") == "scope-b 中文🙂\n".encode()
+
+
 def prepare(work, url):
     work.mkdir(parents=True, exist_ok=True)
     (work / "src").mkdir()
@@ -70,7 +377,9 @@ def prepare(work, url):
         rows.append(
             {
                 "id": id,
-                "operation": op.split(".", 1)[1]
+                "operation": None
+                if op is None
+                else op.split(".", 1)[1]
                 if op.split(".", 1)[0]
                 in {"files", "web", "shell", "database", "research"}
                 else op,
@@ -190,6 +499,7 @@ def prepare(work, url):
         ],
         "rpc_error",
     )
+    add_fs_artifact_chain(work, add)
     add("shell-unicode", "shell.shell", ["printf '中文🙂\\n'"])
     add("shell-stderr", "shell.shell", ["ls missing-shell-proof"], "tool_failure")
     add(
@@ -522,6 +832,7 @@ def verify(work, data):
         and pages[3]["next_cursor"] is None
     )
     assert int(pages[-1]["end_byte"]) == len(PAYLOAD.encode())
+    verify_fs_artifact_chain(work, byid)
     shell = byid["shell-unicode"]["result"]
     assert shell["kind"] == {
         "kind": "command_output",
@@ -681,7 +992,9 @@ def verify(work, data):
     return {
         "families": ["files", "shell", "web", "database", "research"],
         "rows": len(rows),
-        "native_calls": sum("operation" in r for r in rows),
+        "native_calls": sum(
+            r.get("operation") is not None and not r.get("action") for r in rows
+        ),
         "protected_file_count": len(PROTECTED),
         "external_observations": {
             r["id"]: (
@@ -811,9 +1124,27 @@ def compare_result_sets(paths):
     datasets = [json.loads(path.read_text()) for path in paths]
     assert len(datasets) == 3
     reports = []
+    scope_paths = {}
+    for data in datasets:
+        byid = {row["id"]: row for row in data["rows"]}
+        if "fs-create-dir" in byid:
+            # Reuse the independently checked per-run byte/state oracle before
+            # comparing representation across languages. Opaque addresses alone
+            # cannot establish that the original Host guard was consumed.
+            verify_fs_artifact_chain(Path(data["work"]), byid)
+            scope_paths[data["work"]] = {
+                str(
+                    decode_path(
+                        unrecord(byid["scope-persist-" + name]["result"])["path"]
+                    )
+                ): "$SCOPE_ARTIFACT_" + name
+                for name in ["a", "b", "other"]
+            }
 
     def normalized(value, work):
         if isinstance(value, str):
+            for actual_path, role in scope_paths.get(work, {}).items():
+                value = value.replace(actual_path, role)
             value = value.replace(work, "$WORK")
             value = re.sub(r"http://127\.0\.0\.1:[0-9]+", "http://loopback", value)
             return value
@@ -839,11 +1170,17 @@ def compare_result_sets(paths):
         rows = [m[name] for m in maps]
         if rows[0].get("action"):
             assert all(r["files_before"] == r["files_after"] for r in rows)
+            if rows[0]["action"] == "rename_fixture_directory":
+                assert all(
+                    r["stimulus_before"] == {"source": True, "target": False}
+                    and r["stimulus_after"] == {"source": False, "target": True}
+                    for r in rows
+                )
             reports.append(
                 {
                     "id": name,
                     "comparison": "matched",
-                    "fields": ["artifact mutation action", "protected files"],
+                    "fields": ["native fixture action", "protected files"],
                 }
             )
             continue
@@ -888,7 +1225,7 @@ def compare_result_sets(paths):
             fields.append("complete error payload")
         elif rows[0]["expected"] == "value":
             values = [r["result"] for r in rows]
-            if name == "artifact-persist":
+            if name == "artifact-persist" or name.startswith("scope-persist-"):
                 refs = [unrecord(v) for v in values]
                 assert all(
                     {
@@ -914,6 +1251,28 @@ def compare_result_sets(paths):
                 fields.append(
                     "artifact bytes/hash/retention and separately verified typed path"
                 )
+            elif name.startswith(("fs-", "scope-")):
+                if name in {"fs-open", "fs-directory-open", "fs-directory-reopen"}:
+                    assert all(
+                        set(value) == {"id", "generation", "kind"}
+                        and value["kind"] == "facade_resource"
+                        and value["id"]
+                        and str(int(value["generation"])) == value["generation"]
+                        for value in values
+                    )
+                    fields.append(
+                        "opaque guard shape; original per-run identity consumption checked"
+                    )
+                else:
+                    assert all(
+                        value is None
+                        or isinstance(value, (bool, str, int))
+                        or isinstance(value, dict)
+                        and value.get("kind") == "bytes"
+                        for value in values
+                    ), (name, values)
+                    assert values[1:] == values[:-1], (name, values)
+                    fields.append("complete source Unit/bool/integer/bytes value")
             else:
                 assert all(
                     {

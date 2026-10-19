@@ -86,6 +86,7 @@ async def test_git_tools_and_worktree_source_exact_local_effects():
                             "work": str(work),
                             "host": HOST,
                             "host_sha256": file_sha256(HOST),
+                            "issued_session": session.wire.to_dict(),
                             "rows": rows,
                         },
                         ensure_ascii=False,
@@ -99,5 +100,7 @@ async def test_git_tools_and_worktree_source_exact_local_effects():
         assert len(proof["tool_operations"]) == 9
         assert len(proof["source_operations"]) == 4
         assert len(proof["groups"]) == 3
+        assert len(proof["checkpoint_operations"]) == 3
+        assert proof["checkpoint_calls"] == 7
     finally:
         print(f"Git evidence retained {work}")

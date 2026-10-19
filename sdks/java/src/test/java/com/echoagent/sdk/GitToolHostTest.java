@@ -72,11 +72,11 @@ class GitToolHostTest {
                     value.set("handle", error.handle() == null ? NullNode.instance : error.handle().toJson()); value.set("details", error.details() == null ? NullNode.instance : error.details());
                 }
                 row.set("after", JsonSupport.MAPPER.readTree(oracle(work, "--snapshot"))); rows.add(row);
-                var data = JsonSupport.MAPPER.createObjectNode().put("work", work.toString()).put("host", HOST).put("host_sha256", hostHash); data.set("rows", rows);
+                var data = JsonSupport.MAPPER.createObjectNode().put("work", work.toString()).put("host", HOST).put("host_sha256", hostHash); data.set("rows", rows); data.set("issued_session", session.wire().toJson());
                 JsonSupport.MAPPER.writerWithDefaultPrettyPrinter().writeValue(work.resolve("results.json").toFile(), data);
             }
             await(session.closeAsync()); await(agent.closeAsync());
-            var proof = JsonSupport.MAPPER.readTree(oracle(work, "--verify")); assertEquals(9, proof.path("tool_operations").size()); assertEquals(4, proof.path("source_operations").size()); assertEquals(3, proof.path("groups").size());
+            var proof = JsonSupport.MAPPER.readTree(oracle(work, "--verify")); assertEquals(9, proof.path("tool_operations").size()); assertEquals(4, proof.path("source_operations").size()); assertEquals(3, proof.path("groups").size()); assertEquals(3, proof.path("checkpoint_operations").size()); assertEquals(7, proof.path("checkpoint_calls").intValue());
         } finally { System.out.println("Git evidence retained " + work); }
     }
 }

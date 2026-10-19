@@ -19,6 +19,10 @@
 
 本阶段各测试补证未改变 SDK 公共调用或产品行为，已有示例与官网无需新增调用演示；正式文档在原 Evidence 与处置表同步，最终示例编译/quickstart 和官网集成由各自交付门禁另验。
 
+### source-operation 已满足的 FS/artifact、GitCheckpoint 与 Plan snapshot 子组
+
+[evidence.sdk-integrations-finite-observation](../../../.echo-semantic/evidence/evidence.sdk-integrations-finite-observation.md) 的文末后继段结算三项明确缺证：FS/artifact原三native各101行（49+52步骤、99RPC/19sourceops）和真实文件/guard/cleanup；Git原三native各35行（28+7），per-file checkpoint回滚/错误目标不改/keep1和0；Computation各79行（76+3），Vec<Task>合法及两个execution字段负控。两原跨语言compare均0，FS原compare真实失败后同三结果修后0、原page断言保。source/native/必要性独审C0/I0/M0；不是按payload数量宣布全部source完成，也不借这些focused通过给整dirty树/新pin/main发资格。其余live服务、两个producer违约与SDK模型适配继续各自处置，PR5仍Draft。
+
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。

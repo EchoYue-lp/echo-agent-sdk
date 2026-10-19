@@ -128,6 +128,20 @@ async def test_tool_value_effect_native_host():
                 fixture.decode_path(artifact["path"]).write_text(
                     "mutated 中文🙂\n", encoding="utf8"
                 )
+            elif step.get("action") == "rename_fixture_directory":
+                assert (
+                    step["source"] == "fs-owner" and step["target"] == "fs-owner-backup"
+                )
+                source, target = work / step["source"], work / step["target"]
+                row["stimulus_before"] = {
+                    "source": source.exists(),
+                    "target": target.exists(),
+                }
+                source.rename(target)
+                row["stimulus_after"] = {
+                    "source": source.exists(),
+                    "target": target.exists(),
+                }
             else:
                 arguments = fixture.resolve(step["arguments"], byid)
                 row["arguments"] = arguments
@@ -269,6 +283,10 @@ async def test_tool_value_effect_native_host():
                         "handle": error.handle.to_dict() if error.handle else None,
                         "details": error.details,
                     }
+            # This existing scenario now returns retained FS resource handles.
+            # Preserve their exact Host identity in the shared trace and $ref.
+            if hasattr(row.get("result"), "to_dict"):
+                row["result"] = row["result"].to_dict()
             row["protected_after"] = fixture.snapshot(work)
             row["files_after"] = files(work)
             rows.append(row)

@@ -185,3 +185,31 @@ sdks/shared/testing/compare_channel_forward_results.py 当前字节SHA 0a687973e
 当前两个原测试文件的精确执行源码 SHA256 分别是 core `03a775b04b96b1773cf1425c5b6d10a8dbf37f3e89d010a9d6b21464bd9ff277`、bridge `3569e65c86e7d21b9215c84311e2e4f603f42aa374a4cf2bace7dfdeaea38273`。原日志、guard、执行源码副本与两个测试程序只留 ignored local，未进入 Git；正式测试源码在原测试文件维护。
 
 普通 embedder Error 在原 framework 中可降级为无 vector 的写入；本组的空向量拒写不替换该政策。语义查询重开使用 with_embedder，plain SqliteStore.new 重开另由 core 证明。keep_data=false 仅执行 base 插件移除/count0，没有带原 data marker 删除的证明。child.kill 仅作测试 teardown，不是自然 Host 退出、framework receipt 或历史 managed Linux 超时已修证据。RemoteGit 安装、任意插件执行、跨进程 crash durability 与其它 accepted 子组不因本段通过扩展。PR5/Plan 保持各自 Draft/ready，后继 runtime 两个真反例、剩余能力对账、最终新源整套门禁和精确 main 独立待完成。
+
+
+## 2026-10-19 后继：剩余三组 source 消费证据
+
+本段独立承接 FS/artifact、per-file GitCheckpoint 与 Plan task snapshot 三组原 accepted 缺证；不改变原 header/source_refs 或前段历史范围，也不将早期未运行状态抹为成功。
+
+| 能力与原消费者 | 当前直接证据 |
+| --- | --- |
+| FS 与 artifact scope；原三语言 ToolValueEffect 入口 | 每入口原49行加52个有状态步骤=101行，其中99次RPC行（原48+新51），两个本地action不计RPC；19个distinct accepted source操作。真实guard、完整/不完整行、精确长度/offset、truncate、durable目录/文件与sync/remove、目录替换后的stale guard错误及replacement保留均由Host执行。三个实际conversation/run scope的persist、失败cleanup不误删、按run和conversation清理及peer原字节保留均核实际文件，Unit回复不独立当作完成。外部替换由Node/Python/Java标准文件API只在自有workroot执行，保before/after exists。 |
+| GitCheckpoint；原三语言 GitToolHost 入口 | 原28行保持，新7行进入35行；三既有source方法create_checkpoint/rollback_to_checkpoint/cleanup_old_checkpoints走合法per-file链。原checkpoint bytes、tracked/index和untracked输入、HEAD/refs/peer均有实际快照，wrong-target拒绝不改目标，keep1/0真实清理。checkpoint不是Gitref，不外推事务/崩溃持久性。 |
+| PlanValidator；原三语言 Computation 入口 | 原76行（含前序Evolution15）逐值保留，加3行到79；合法Vec<Task> snapshot及execution.task_id不匹配、retry_count超过max_retries两个精负控，valid及errors实际消费。不是旧TaskSpec/DAG检查替代，不执行任务或建立第二validator。 |
+
+三个语言的两个相关原入口各自实际通过；GitPlan每语言两项、Java两份fresh XML各1/0/0/0，FS每语言一项和对应fresh XML均通过。实际Host仍为`0982121cb1e99284b4a7d7e07af35037f9f22bd653528d9716d425f5609407a0`，old6563 pin/lock未改，运行闭包804输入前后SHA一致。此处的35/79/101只描述各自payload行，不累计为能力完成分母或新的whole语言门禁。
+
+原直接比较消费者也执行：Git --compare与Computation --compare使用同三原结果实际退出0；FS --compare首个真实before因新Unit被按旧page读取而退出1，原比较器修后同argv/原结果实际0，101行中97matched、4external observation。新分派先复用原每run链oracle，只有实际scope artifact路径作角色归一，原page内容/hash/offset/total/complete和opaque cursor断言保持；同三原结果--verify各退出0并报告99RPC。当前shared fixture除比较器及verify返回计数外，其余runtime函数AST与原native02相同、三个native entry字节相同，因此精确承接native02，不宣称改比较器后重跑Host。
+
+原FS候选错误resource kind已在native前按真实facade_resource修正；原三native01因Python -c外部刺激被ShellTool正确拒绝而失败，原件保留，后继改stdlib action未改Host权限/解析。GitPlan v1 double-Session候选未采用、未运行；v2沿原Session.invoke只添加一次，mandatory Ruff格式AST不变，Git比较器绑定每个dataset自己的checkpoint_ids后Ruff通过。均为测试工具修正，不冒生产修复。两组最终独立source/native/必要性复审C0/I0/M0，原始资料只留ignored local。
+
+- FS typescript: 1232 bytes，SHA256 `7154fc7bccf97ce6bb47d2090a49ea77c796f15e57e07b674c3a30e6654c36ef`。
+- FS python: 99 bytes，SHA256 `a8fef0d7fe7d043a137b6932a83ad83fc1fa533644843f3b7d858521d4f458c8`。
+- FS java: 936 bytes，SHA256 `4cd609ebfb8e1f8c8fb763af3f9e13a565f23cdab4a4935e1871c696f7494734`。
+- GitPlan typescript: 1655 bytes，SHA256 `5e7f7fbb7747243e0eab1f93021e35ccea03de298ac00645cc48655611a082ca`。
+- GitPlan python: 99 bytes，SHA256 `38d35e473bdad2a80ecfae77babe2b89db25634cadde3550db62e11c419cff72`。
+- GitPlan java: 699 bytes，SHA256 `8c9d0322ad1c28f3da96b7e8490555c36134a0fcd5d1751a5b0548b4bd326f81`。
+
+FS比较before：1165 bytes / `ea36729fe1a3b7cee5e214397de62c3061a38c848a216828d255781c2586f417`；after：27332 bytes / `8ffe4d662aa025433d2d8a0ca65dc8a10c9cf0b7e5c5c8c47de5acc70b3a8a82`。Git比较197 bytes / `598a74dc5ea68628828e57e9a7a79ae17d8f11113afdd1ce652e86a726f4c61c`，Computation比较871 bytes / `20aadf23f1268d42fb6df9fc67581719f861a8c7b0ffbad3c30d46a7072af1c8`。
+
+前段这三组“仍待”是其切片编写时状态，由本后继段的具名实际证据承接。live service分组探针、模型/预算两个原producer与SDK model适配义务、intrinsic/ContextInheritance最后处置、最终新源整套门禁、平台和精确SDK main仍独立待完成；PR5保持Draft，Plan保持ready，不批量提升Behavior。
