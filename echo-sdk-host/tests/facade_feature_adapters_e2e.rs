@@ -442,8 +442,8 @@ fn decoded_facade_response(
 }
 
 /// Connect a Client that answers reverse extension invocations. While
-/// `hang` is set, `agent/execute` responders are parked so the attempt
-/// stays live; `agent_execute_seen` flips on every such invocation.
+/// `hang` is set, the original callback stays live until its exact cancel
+/// notice; its own producer then returns the real cancellation result.
 #[cfg(feature = "sdk-extension-bridge")]
 async fn drive_answering<T, F>(
     host: &mut HostProcess,
@@ -461,62 +461,92 @@ where
 {
     use agent_client_protocol::Responder;
     use echo_sdk_protocol::methods::{
-        ExtensionInvocation, ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult,
-        ExtensionUnit,
+        AgentStreamChunkWire, AgentStreamTerminalWire, ExtensionCancelNotice, ExtensionInvocation,
+        ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult, ExtensionStreamChunkValue,
+        ExtensionStreamCompleteValue, ExtensionStreamEvent, ExtensionUnit,
     };
     let _process_lock = acquire_e2e_process_lock();
     let transport = host_transport(&mut host.child);
+    // Fixture-only signal routing for the actual original callback. Task
+    // status and receipts continue to belong to the real framework runtime.
+    let cancellations = Arc::new(Mutex::new(std::collections::HashMap::<
+        String,
+        Arc<tokio_util::sync::CancellationToken>,
+    >::new()));
+    let callback_cancellations = cancellations.clone();
+    let producer_jobs = Arc::new(Mutex::new(Vec::<
+        tokio::task::JoinHandle<Result<(), agent_client_protocol::Error>>,
+    >::new()));
+    let callback_jobs = producer_jobs.clone();
     let connect = Client
         .builder()
         .on_receive_request(
             move |call: ExtensionInvokeCall,
                   responder: Responder<ExtensionInvokeOutcome>,
-                  _connection: ConnectionTo<agent_client_protocol::Agent>| {
+                  connection: ConnectionTo<agent_client_protocol::Agent>| {
                 let hang = hang.clone();
                 let seen = agent_execute_seen.clone();
+                let cancellations = callback_cancellations.clone();
+                let producer_jobs = callback_jobs.clone();
                 async move {
-                    match call.invocation {
-                        ExtensionInvocation::AgentExecute(_) => {
-                            seen.store(true, std::sync::atomic::Ordering::SeqCst);
-                            if *hang.lock().expect("hang flag") {
-                                // Park the responder: the attempt stays live.
-                                std::mem::forget(responder);
-                                return Ok(());
-                            }
-                            responder.respond(ExtensionInvokeOutcome::Result {
-                                result: ExtensionResult::AgentExecute(
-                                    "SDK subagent executed".to_string(),
-                                ),
-                            })
-                        }
+                    let stream = match call.invocation {
+                        ExtensionInvocation::AgentExecute(_) => None,
                         ExtensionInvocation::AgentExecuteStream(_) => {
-                            seen.store(true, std::sync::atomic::Ordering::SeqCst);
-                            let Some(stream) = call.stream.clone() else {
-                                return responder.respond(ExtensionInvokeOutcome::Error {
-                                    error: echo_sdk_protocol::error::EchoSdkError::new(
-                                        ExtensionErrorCode::ExtensionFailed,
-                                        "missing stream handle",
-                                        echo_sdk_protocol::error::Retryability::Never,
-                                    ),
-                                });
+                            Some(call.stream.ok_or_else(|| {
+                                agent_client_protocol::Error::internal_error()
+                                    .data("missing original stream handle")
+                            })?)
+                        }
+                        ExtensionInvocation::AgentClose(_) => {
+                            return responder.respond(ExtensionInvokeOutcome::Result {
+                                result: ExtensionResult::AgentClose(ExtensionUnit),
+                            });
+                        }
+                        other => {
+                            return Err(agent_client_protocol::Error::internal_error().data(
+                                format!("unexpected reverse invocation: {:?}", other.operation()),
+                            ));
+                        }
+                    };
+                    let held = *hang.lock().map_err(|_| {
+                        agent_client_protocol::Error::internal_error().data("hang lock poisoned")
+                    })?;
+                    let id = call.invocation_id;
+                    let cancellation = Arc::new(tokio_util::sync::CancellationToken::new());
+                    {
+                        let mut routes = cancellations.lock().map_err(|_| {
+                            agent_client_protocol::Error::internal_error()
+                                .data("callback routes lock poisoned")
+                        })?;
+                        if routes.contains_key(&id) {
+                            return Err(agent_client_protocol::Error::internal_error()
+                                .data("duplicate original callback identity"));
+                        }
+                        // Install the real identity before ACK/admission becomes
+                        // visible, so an immediate cancel cannot miss its owner.
+                        routes.insert(id.clone(), cancellation.clone());
+                    }
+                    let mut jobs = producer_jobs
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner());
+                    jobs.push(tokio::spawn(async move {
+                        let result: Result<(), agent_client_protocol::Error> = async {
+                            let responder = if let Some(stream) = &stream {
+                                responder.respond(ExtensionInvokeOutcome::Stream {
+                                    stream: stream.clone(),
+                                })?;
+                                None
+                            } else {
+                                Some(responder)
                             };
-                            responder.respond(ExtensionInvokeOutcome::Stream {
-                                stream: stream.clone(),
-                            })?;
-                            // While hanging, the stream stays open without a
-                            // terminal: the attempt stays live.
-                            if *hang.lock().expect("hang flag") {
-                                return Ok(());
+                            seen.store(true, std::sync::atomic::Ordering::SeqCst);
+                            if held {
+                                cancellation.cancelled().await;
                             }
-                            let connection_for_stream = _connection.clone();
-                            tokio::spawn(async move {
-                                use echo_sdk_protocol::methods::{
-                                    AgentStreamChunkWire, AgentStreamTerminalWire,
-                                    ExtensionStreamChunkValue, ExtensionStreamCompleteValue,
-                                    ExtensionStreamEvent,
-                                };
-                                let _ = connection_for_stream.send_notification(
-                                    ExtensionStreamEvent::Chunk {
+                            let cancelled = cancellation.is_cancelled();
+                            if let Some(stream) = stream {
+                                if !cancelled {
+                                    connection.send_notification(ExtensionStreamEvent::Chunk {
                                         stream: stream.clone(),
                                         sequence: nonzero(1),
                                         value: ExtensionStreamChunkValue::Agent(
@@ -524,38 +554,95 @@ where
                                                 text: "SDK subagent executed".to_string(),
                                             },
                                         ),
-                                    },
-                                );
-                                let _ = connection_for_stream.send_notification(
-                                    ExtensionStreamEvent::Complete {
-                                        stream,
-                                        sequence: nonzero(2),
-                                        value: ExtensionStreamCompleteValue::Agent(
-                                            AgentStreamTerminalWire::FinalAnswer {
-                                                text: "SDK subagent executed".to_string(),
-                                            },
+                                    })?;
+                                }
+                                connection.send_notification(ExtensionStreamEvent::Complete {
+                                    stream,
+                                    sequence: nonzero(if cancelled { 1 } else { 2 }),
+                                    value: ExtensionStreamCompleteValue::Agent(if cancelled {
+                                        AgentStreamTerminalWire::Cancelled
+                                    } else {
+                                        AgentStreamTerminalWire::FinalAnswer {
+                                            text: "SDK subagent executed".to_string(),
+                                        }
+                                    }),
+                                })?;
+                            } else if let Some(responder) = responder {
+                                responder.respond(if cancelled {
+                                    ExtensionInvokeOutcome::Error {
+                                        error: echo_sdk_protocol::error::EchoSdkError::new(
+                                            ExtensionErrorCode::Cancelled,
+                                            "original duplicate-execute fixture callback cancelled",
+                                            echo_sdk_protocol::error::Retryability::Never,
                                         ),
-                                    },
-                                );
-                            });
+                                    }
+                                } else {
+                                    ExtensionInvokeOutcome::Result {
+                                        result: ExtensionResult::AgentExecute(
+                                            "SDK subagent executed".to_string(),
+                                        ),
+                                    }
+                                })?;
+                            }
                             Ok(())
                         }
-                        ExtensionInvocation::AgentClose(_) => {
-                            responder.respond(ExtensionInvokeOutcome::Result {
-                                result: ExtensionResult::AgentClose(ExtensionUnit),
-                            })
+                        .await;
+                        let mut routes = cancellations
+                            .lock()
+                            .unwrap_or_else(|error| error.into_inner());
+                        if routes
+                            .get(&id)
+                            .is_some_and(|original| Arc::ptr_eq(original, &cancellation))
+                        {
+                            routes.remove(&id);
                         }
-                        other => Err(agent_client_protocol::Error::internal_error().data(format!(
-                            "unexpected reverse invocation: {:?}",
-                            other.operation()
-                        ))),
-                    }
+                        result
+                    }));
+                    Ok(())
                 }
             },
             agent_client_protocol::on_receive_request!(),
         )
+        .on_receive_notification(
+            async move |notice: ExtensionCancelNotice,
+                        _connection: ConnectionTo<agent_client_protocol::Agent>| {
+                let original = cancellations
+                    .lock()
+                    .map_err(|_| {
+                        agent_client_protocol::Error::internal_error()
+                            .data("callback routes lock poisoned")
+                    })?
+                    .get(&notice.invocation_id)
+                    .cloned();
+                if let Some(original) = original {
+                    original.cancel();
+                }
+                Ok(())
+            },
+            agent_client_protocol::on_receive_notification!(),
+        )
         .connect_with(transport, async move |connection| {
-            scenario(connection).await
+            let outcome = scenario(connection).await;
+            if outcome.is_ok() {
+                let jobs = {
+                    let mut owned = producer_jobs
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner());
+                    std::mem::take(&mut *owned)
+                };
+                for original in jobs {
+                    tokio::time::timeout(Duration::from_secs(10), original)
+                        .await
+                        .map_err(|_| {
+                            agent_client_protocol::Error::internal_error()
+                                .data("original callback producer did not join")
+                        })?
+                        .map_err(|error| {
+                            agent_client_protocol::Error::internal_error().data(error.to_string())
+                        })??;
+                }
+            }
+            outcome
         });
     let outcome = tokio::time::timeout(Duration::from_secs(60), connect)
         .await
@@ -1719,7 +1806,10 @@ async fn duplicate_task_execute_is_a_typed_conflict() -> Result<(), Box<dyn std:
                     })
                     .block_task()
                     .await?;
-                let plan_task = created.tasks[0].clone();
+                let plan_task = created.tasks.first().cloned().ok_or_else(|| {
+                    agent_client_protocol::Error::internal_error()
+                        .data("missing original PlanTask handle")
+                })?;
 
                 // First execute: accepted, and the live claim reaches the
                 // parked reverse agent invocation.
