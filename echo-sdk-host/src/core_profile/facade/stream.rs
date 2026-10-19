@@ -83,13 +83,14 @@ impl FacadeStreamProducer {
         }
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, feature = "sdk-extension-bridge"))]
     pub(crate) fn settlement_notification(&self) -> &tokio::sync::Notify {
         &self.record.settled_notify
     }
 
     /// Only the original callback's validated closure may clear its observation;
     /// generic observer EOF must not call this.
+    #[cfg(any(feature = "sdk-extension-bridge", test))]
     pub fn original_callback_physically_closed(&self) {
         let mut observation = self
             .record

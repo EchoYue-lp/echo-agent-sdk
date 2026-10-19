@@ -165,6 +165,7 @@ pub(crate) fn not_settled_error(
 
 /// A hint fences the original owner before validation; it is not a trusted
 /// identity and cannot authorize a terminal or resource release.
+#[cfg(any(feature = "sdk-facade-adapters", test))]
 pub(crate) fn has_observation_hint(error: &EchoSdkError) -> bool {
     error
         .details
@@ -177,6 +178,7 @@ pub(crate) fn has_observation_hint(error: &EchoSdkError) -> bool {
         })
 }
 
+#[cfg(any(feature = "sdk-extension-bridge", test))]
 pub(crate) fn observation_from_sdk_error(error: &EchoSdkError) -> Option<ReactError> {
     error.validate().ok()?;
     if error.code != ExtensionErrorCode::FrameworkError || error.retryable != Retryability::Never {
