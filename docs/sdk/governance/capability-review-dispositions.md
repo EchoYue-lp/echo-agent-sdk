@@ -23,6 +23,10 @@
 
 [evidence.sdk-integrations-finite-observation](../../../.echo-semantic/evidence/evidence.sdk-integrations-finite-observation.md) 的文末后继段结算三项明确缺证：FS/artifact原三native各101行（49+52步骤、99RPC/19sourceops）和真实文件/guard/cleanup；Git原三native各35行（28+7），per-file checkpoint回滚/错误目标不改/keep1和0；Computation各79行（76+3），Vec<Task>合法及两个execution字段负控。两原跨语言compare均0，FS原compare真实失败后同三结果修后0、原page断言保。source/native/必要性独审C0/I0/M0；不是按payload数量宣布全部source完成，也不借这些focused通过给整dirty树/新pin/main发资格。其余live服务、两个producer违约与SDK模型适配继续各自处置，PR5仍Draft。
 
+### 当前两项不能由有限 green 结算的义务
+
+[SDK模型适配](../../../.echo-semantic/findings/finding.sdk-live-model-source-authority.md) 与 [retained transcript identity](../../../.echo-semantic/findings/finding.sdk-retained-transcript-projection-identity.md) 保持 open：前者原配置载荷/Result/live query尚待SDK修复；后者是原F producer重分配已保留消息ordinal，SDK不建立第二算法。新 live04 的回调/后继模型/RunStore部分通过不代表 transcript无重复；原压缩后显式 checkpoint 的合法组合与其01/02/03失败记录保留。Root公布新F精main/CI之前不改SDK pin或生成物，之后仍需当前消费者和完整门禁，PR5继续Draft、Plan ready。
+
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。

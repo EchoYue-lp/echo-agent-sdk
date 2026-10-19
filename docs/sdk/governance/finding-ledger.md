@@ -2,6 +2,15 @@
 
 当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
 
+## 2026-10-19 新增两项精确开放义务
+
+| Finding | 状态与唯一修复 owner | 当前证据及后继条件 |
+| --- | --- | --- |
+| [SDK live model source authority](../../../.echo-semantic/findings/finding.sdk-live-model-source-authority.md) | open；SDK 仅构造/Result/query 适配，上游模型 producer 由 F 自身承接 | 同 Session 两 completed Run 的实际 HTTP `[A,A]` 与 boxed getter旧A；私有原 validated LlmConfig保留、Result真实传播、Session live getter/零Session definition与凭据边界尚待新精确 F main后的消费者验证。旧 Memory/Workflow resolved不覆盖此条。 |
+| [retained transcript projection identity](../../../.echo-semantic/findings/finding.sdk-retained-transcript-projection-identity.md) | open；framework producer，SDK 跟踪 accepted消费阻断 | 04 合法持久 commit 后实际6批9项，三 retained 内容被重新分配ordinal4/5/6；原wiring selector PASS不证明无重投影。禁止SDK过滤/新cursor/换Store，须F真实后端 before/repair及公开精main后SDK增强身份断言。 |
+
+既有 Evidence 文末分别保原源版本、原失败与有限 PASS边界。预算 adapter正确转发，不重复新建SDK Finding；原 managed Linux未知根因等旧义务不被新条目覆盖。当前两条不填 resolved 三链，不修改已接受合同为 deferred。F正式 en/zh 模型指南及官网同步由Root对应owner承接，此处元数据登记不擅动网站。
+
 ## Workflow B 的原新增阶段（历史，2026-10-16）
 
 下段保持原63/6和准备状态，不表示最新状态。当前候选65/5：direct-run与late Completed已具名三链有限resolved，Graph claim等五项保持open；唯一当前状态与实际来源见页首链接。

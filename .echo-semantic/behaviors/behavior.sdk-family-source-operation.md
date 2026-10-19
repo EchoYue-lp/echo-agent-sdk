@@ -29,7 +29,9 @@ evidence_refs:
 - evidence.sdk-candidate-behavior-verification
 - evidence.sdk-parent-driver-candidate-verification
 - evidence.sdk-integrations-finite-observation
-finding_refs: []
+finding_refs:
+- finding.sdk-live-model-source-authority
+- finding.sdk-retained-transcript-projection-identity
 ---
 
 # SDK family source_operation

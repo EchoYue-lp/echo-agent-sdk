@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "8221057ef4346454217ff68067ce5792cd9905745e8c03ec4beb61e68e4372d9"
+    "content_digest": "94b4aff74566f17b933fde40fdab053c1c8f9a8ebbe604836046b1d9dbfaa343"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -817,3 +817,7 @@ capability inventory与八视角审查保持open，动态入口见Discovery；�
 ## 2026-10-19当前有限收口
 
 当前运行来源SDK8481/Host098212，完整本地14Rust、原完整三语言及3quickstarts真实通过；四条具名Finding按既有三链resolved，managed原Linux被动退出超时仍open。inventory_closure保持closed，behavior_model_closure保持open；41family及原风险lens状态不批量提升，历史格的covered只保持其具名范围。当前状态统一见`docs/sdk/governance/capability-review-remaining.md`，原阶段“仍待”的正文与失败均保历史。当前机器source引用只在显式8481 Audit challenges，Evidence旧header与旧运行切点分别保留；source83无损改绑公开410已冷取回，current8481必要tag也已空冷仓仅remote main+tag验证。当前accepted intrinsic/helper、source_operation实际consumer/生命周期、ContextInheritance承诺分类三组证据对账仍待，PR5维持draft不merge；41族mapped与56examined及全套计数不能代替accepted义务审结。最终精main CI、only-remote-main+必要tag strict、nativeHook/Stop分别验收，不以本地通过冒发布。
+
+## 2026-10-19 模型与retained投影仍开放
+
+新增两项具名Finding均open：SDK仅拥有原模型配置载荷/Result/Session query适配，retained transcript重复identity由framework唯一修复。旧pin live04具名wiring断言通过不证明无重投影；原模型HTTP反例与01/02/03 fixture失败分开保留。Behavior不批量升verified，inventory_closure保持closed、behavior_model_closure保持open；新F精main/CI、SDK新pin/生成、消费者after、完整门禁和SDK main仍待。此次仅登记义务，不改变accepted合同、生产源码、示例或官网行为；后继模型公开说明由对应owner同步。
