@@ -63,3 +63,19 @@ Focused accepted operations only; all family statuses stay needs_review；Tool f
 ## 历史证明存储的有界表示迁移
 
 原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+
+## 2026-10-19 后继：accepted evolution 源操作的合法消费
+
+原 header、source_refs 和历史 computation 50/61 的支持范围保持原切点。本段只结算 source_operation 的一个 evolution 子组：CuratorState.try_load，PromptInjectionDetector.detect，SecretScanner.contains_secrets/scan，SkillSimilarityDetector.compute_similarity/overall_score，StalenessScorer.score，TriggerDetector.detect。均来自现 accepted 合同，不新增 API、Curator 写入或自动 promotion/persistence 承诺。
+
+实际入口为 `computation-host.test.js#computation exact values, errors and protected effects`、`test_computation_host.py::test_computation_host_exact_values_errors_and_effects`、`ComputationHostTest#computationExactValuesErrorsAndEffects`。共享 `computation_fixture.py` 只提供数据和独立 oracle；Python 入口原样复用，TS 增加两份受保护 Curator 文件，Java 同步保护文件并保留显式 Path JsonNode。每个入口 76 次调用 = 原 61 次加本组 15 次，不能作为 76 个新增场景或逐符号完成分母。
+
+本组核对 Unicode injection/普通文本、secret bool 与精确 redaction/type；Curator 缺失文件返回 default、有效文件精确 snapshot、坏 JSON 的完整 framework parse error，两份现存文件逐调用 SHA 不变且缺失文件未创建；相同 skill 四维 similarity、独立加权值 0.45；固定 RFC3339/原 metadata 与 StoreItem 的 staleness=0.1 且 draft 不被激活；explicit trigger 的原用户 quote/trust/source/confidence、空 context 与非法 entry/trigger typed 拒绝。检测结果不被当作真实保存或技能执行。
+
+三个定向入口均实际退出 0、零失败、零跳过，原有界 reviewer 已复核源码、日志、原结果/XML 和 Host 不变，C0/I0/M0。Host SHA 为 `0982121cb1e99284b4a7d7e07af35037f9f22bd653528d9716d425f5609407a0`。原 01 失败是新 oracle 把 source Bool 当 ToolResult 解码，以及 source invalid helper 的 method 地址差异，均原样保留，不算生产反例；02 成功不改写这些失败。
+
+- TypeScript 日志 975 bytes，SHA256 `1d69efc6682cb12fa30ded19d2089e49b73acbd37051953831ff0bd140513d66`。
+- Python 日志 98 bytes，SHA256 `57be52af4623aba7a288aead2dd5009536a86c289e7cfad4320fe4586d4c738b`。
+- Java 日志 466 bytes，SHA256 `20836f884a5ae46acd66bbe040a54d9763ce6881d11822a64d6780ba744b17f4`。
+
+其它 source-operation 子组、intrinsic/ContextInheritance 整体对账、compressor 的真实 framework token-limit 回退反例、File/SQLite/Plugin 尚未执行的新链、最终新源完整门禁和精确 SDK main 均独立待完成。PR5 继续 Draft，不批量改变 Behavior 状态。原始日志/结果只保存在 ignored local。

@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 const fixture=fileURLToPath(new URL('../../shared/testing/computation_fixture.py',import.meta.url));
 const host=process.env.ECHO_AGENT_SDK_HOST?.trim();
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==='1'&&!host)throw new Error('required computation Host binary is missing');
-const snapshot=async(work)=>Object.fromEntries(await Promise.all(['stats.csv','input.csv','lookup.csv','quality.csv','input.txt','sentinel.txt','null-index.csv','collision.csv'].map(async(name)=>[name,createHash('sha256').update(await readFile(join(work,name))).digest('hex')])));
+const snapshot=async(work)=>Object.fromEntries(await Promise.all(['stats.csv','input.csv','lookup.csv','quality.csv','input.txt','sentinel.txt','null-index.csv','collision.csv','curator-valid.json','curator-malformed.json'].map(async(name)=>[name,createHash('sha256').update(await readFile(join(work,name))).digest('hex')])));
 test('computation exact values, errors and protected effects', {skip:!host,timeout:120000},async()=>{
 const work=await mkdtemp(join(tmpdir(),'sdk-computation-native-typescript-'));
 execFileSync('python3',[fixture,'--work',work]);

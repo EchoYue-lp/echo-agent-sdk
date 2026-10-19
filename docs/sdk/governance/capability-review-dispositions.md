@@ -7,6 +7,10 @@
 
 本轮Rust14、新Host098212和原完整三语入口均已有实际通过及有界独审，四个具名Finding本地resolved不回滚；但41族建模和examined不等accepted全部审结。PR5继续draft，暂不merge，先在原处置表内对账三组明确余项：intrinsic helper按当前accepted合同能力归组；source_operation setter到真实consumer、constructor到method/close；ContextInheritance纯值与live history/memory继承、compressor实际消费承诺。每组只记录“已有具名Evidence满足／合同明确不承诺／仍待具体行为与证据”，不按每Rust identity造测试、自动新增API或把未查明项默认为deferred。具体归组和已有原件调查继续，不能写只剩managed/main。
 
+### source-operation 已满足的 evolution 子组
+
+[evidence.sdk-computation-50](../../../.echo-semantic/evidence/evidence.sdk-computation-50.md) 的 2026-10-19 后继段记录八项现 accepted evolution 源操作：复用三语言 computation 原生入口，每入口原 61 次调用加本组 15 次合法/负控实际通过，原 reviewer C0/I0/M0。覆盖 Curator 只读 snapshot/坏 JSON/文件字节、Unicode detector/redaction、similarity/scorer 和 trigger 原 evidence，不承诺 Curator 写服务或自动 promote/persist。其它 source-operation 子组仍逐项对账，compressor 的真实 framework token-limit 回退反例及 File/SQLite/Plugin 新链不能借本组通过结算，PR5 保持 Draft。
+
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。
