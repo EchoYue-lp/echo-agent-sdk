@@ -3866,6 +3866,42 @@ async fn stateful_source_resources_preserve_owner_state_and_close()
     let work = tempfile::tempdir()?;
     let state_root = tempfile::tempdir()?;
     let plugin_root = work.path().join("plugins-state");
+    // All plugin scopes derive from these explicit temporary paths. No HOME
+    // mutation or actual plugin execution is part of this resource proof.
+    for name in ["base.tools", "consumer.tools"] {
+        let root = plugin_root.with_extension("sources").join(name);
+        std::fs::create_dir_all(root.join("skills/example"))?;
+        std::fs::create_dir_all(root.join("agents"))?;
+        std::fs::create_dir_all(root.join("hooks"))?;
+        std::fs::write(
+            root.join("skills/example/SKILL.md"),
+            "---\nname: example\ndescription: Native source proof\n---\n中文🙂\n",
+        )?;
+        std::fs::write(
+            root.join("agents/reviewer.md"),
+            "---\nname: reviewer\ndescription: Native source proof\n---\nReview.\n",
+        )?;
+        std::fs::write(root.join("hooks/hooks.yaml"), "{}\n")?;
+        std::fs::write(root.join("lsp.yaml"), "languages: {}\n")?;
+        std::fs::write(
+            root.join("mcp.json"),
+            r#"{"$schema":"https://agent-plugins.org/schemas/1.0.0/mcp.schema.json","mcpServers":{}}"#,
+        )?;
+        std::fs::write(
+            root.join("plugin.json"),
+            serde_json::to_vec(&serde_json::json!({
+                "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+                "name": name, "version": "1.0.0", "description": "Native 中文🙂",
+                "config": {"endpoint": {"type": "string", "title": "Endpoint", "default": "https://example.invalid"}},
+                "dependencies": if name == "consumer.tools" { serde_json::json!([{"name": "base.tools", "version": ">=1.0.0"}]) } else { serde_json::json!([]) }
+            }))?,
+        )?;
+    }
+    std::fs::create_dir_all(plugin_root.with_extension("bad-source"))?;
+    std::fs::write(
+        plugin_root.with_extension("bad-source").join("plugin.json"),
+        "not JSON 中文🙂",
+    )?;
     let config = write_config(work.path(), &endpoint, state_root.path(), None)?;
     let mut host = spawn_host(&config).await?;
     let (events, updates, gaps) = empty_collectors::<EventNotification>();
@@ -3971,6 +4007,115 @@ async fn stateful_source_resources_preserve_owner_state_and_close()
                 ExtensionErrorCode::InvalidValue
             );
 
+            // Persistent source constructors must reach their own Store
+            // resource, rather than borrowing the Agent's default memory.
+            let persistent_stores = [
+                ("echo_state::memory::store::FileStore::new", plugin_root.with_extension("jsonl")),
+                #[cfg(feature = "framework-sqlite")]
+                ("echo_state::memory::sqlite_store::SqliteStore::new", plugin_root.with_extension("sqlite")),
+            ];
+            for (constructor, path) in persistent_stores {
+                let invalid_path = plugin_root.parent().ok_or_else(|| agent_client_protocol::Error::internal_error().data("fixture plugin root lost temporary parent"))?;
+                let rejected = invoke_facade_wire(
+                    &connection, constructor, &agent,
+                    vec![WireValue::Handle(first.session.clone()), test_wire_path(invalid_path).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?],
+                ).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("persistent constructor accepted a directory as its database file"))?;
+                assert_eq!(typed_facade_error(&rejected).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::FrameworkError);
+                let path = test_wire_path(&path).map_err(|error| {
+                    agent_client_protocol::Error::internal_error().data(error.to_string())
+                })?;
+                let created = invoke_facade_wire(
+                    &connection, constructor, &agent,
+                    vec![WireValue::Handle(first.session.clone()), path.clone()],
+                ).await?;
+                let WireValue::Handle(resource) = created else {
+                    return Err(agent_client_protocol::Error::internal_error()
+                        .data("persistent constructor did not publish a resource"));
+                };
+                let entries = serde_json::json!([
+                    {"namespace": ["sdk", "甲🙂"], "key": "answer", "value": {
+                        "content": "持久值🌊", "nested": [null, true, 0.375, {"id": "9007199254740993"}]
+                    }},
+                    {"namespace": ["sdk", "乙🧪"], "key": "answer", "value": {"content": "separate namespace"}}
+                ]);
+                if constructor.contains("FileStore") {
+                    invoke_facade_wire(
+                        &connection, "echo_state::memory::store::FileStore::put_batch", &agent,
+                        vec![WireValue::Handle(first.session.clone()), WireValue::Handle(resource.clone()),
+                            WireValue::from_json(entries.clone()).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?],
+                    ).await?;
+                    invoke_facade_wire(
+                        &connection, "echo_state::memory::store::FileStore::flush_public", &agent,
+                        vec![WireValue::Handle(first.session.clone()), WireValue::Handle(resource.clone())],
+                    ).await?;
+                } else {
+                    for entry in entries.as_array().ok_or_else(agent_client_protocol::Error::internal_error)? {
+                        let namespace = entry.get("namespace").cloned().ok_or_else(agent_client_protocol::Error::internal_error)?;
+                        let value = entry.get("value").cloned().ok_or_else(agent_client_protocol::Error::internal_error)?;
+                        invoke_family_wire(
+                            &connection, "_echo_agent/memory/op", "memory", "memory.resource.put", &first.session,
+                            vec![WireValue::Handle(resource.clone()),
+                                WireValue::from_json(namespace).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?,
+                                WireValue::String("answer".to_string()),
+                                WireValue::from_json(value).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?],
+                        ).await?;
+                    }
+                    let wrong_kind = invoke_facade_wire(
+                        &connection, "echo_state::memory::store::FileStore::put_batch", &agent,
+                        vec![WireValue::Handle(first.session.clone()), WireValue::Handle(resource.clone()), WireValue::List(Vec::new())],
+                    ).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("Sqlite resource accepted FileStore mutation"))?;
+                    assert_eq!(typed_facade_error(&wrong_kind).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::InvalidValue);
+                }
+                let namespace = WireValue::from_json(serde_json::json!(["sdk", "甲🙂"]))
+                    .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                let invalid_namespace = invoke_family_wire(
+                    &connection, "_echo_agent/memory/op", "memory", "memory.resource.put", &first.session,
+                    vec![WireValue::Handle(resource.clone()), WireValue::List(Vec::new()), WireValue::String("bad".to_string()), WireValue::Null],
+                ).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("empty namespace unexpectedly wrote"))?;
+                assert_eq!(typed_facade_error(&invalid_namespace).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::InvalidValue);
+                let foreign = invoke_family_wire(
+                    &connection, "_echo_agent/memory/op", "memory", "memory.resource.get", &second.session,
+                    vec![WireValue::Handle(resource.clone()), namespace.clone(), WireValue::String("answer".to_string())],
+                ).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("foreign Session read persistent resource"))?;
+                assert_eq!(typed_facade_error(&foreign).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::InvalidValue);
+                assert_eq!(invoke_family_wire(
+                    &connection, "_echo_agent/facade/invoke", "invoke", "facade.resource.close", &first.session,
+                    vec![WireValue::Handle(resource.clone())],
+                ).await?, WireValue::Bool(true));
+                let closed = invoke_family_wire(
+                    &connection, "_echo_agent/memory/op", "memory", "memory.resource.get", &first.session,
+                    vec![WireValue::Handle(resource), namespace, WireValue::String("answer".to_string())],
+                ).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("closed persistent resource remained usable"))?;
+                assert_eq!(typed_facade_error(&closed).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::ClosedHandle);
+                let reopened = invoke_facade_wire(
+                    &connection, constructor, &agent,
+                    vec![WireValue::Handle(first.session.clone()), path],
+                ).await?;
+                let WireValue::Handle(reopened) = reopened else {
+                    return Err(agent_client_protocol::Error::internal_error().data("persistent reopen did not publish a resource"));
+                };
+                for entry in entries.as_array().ok_or_else(agent_client_protocol::Error::internal_error)? {
+                    let namespace = WireValue::from_json(entry.get("namespace").cloned().ok_or_else(agent_client_protocol::Error::internal_error)?)
+                        .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                    let found = invoke_family_wire(
+                        &connection, "_echo_agent/memory/op", "memory", "memory.resource.get", &first.session,
+                        vec![WireValue::Handle(reopened.clone()), namespace.clone(), WireValue::String("answer".to_string())],
+                    ).await?.into_json().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                    assert_eq!(found.get("namespace"), entry.get("namespace"));
+                    assert_eq!(found.get("key"), Some(&serde_json::json!("answer")));
+                    assert_eq!(found.get("value"), entry.get("value"));
+                    let listed = invoke_family_wire(
+                        &connection, "_echo_agent/memory/op", "memory", "memory.resource.list", &first.session,
+                        vec![WireValue::Handle(reopened.clone()), namespace],
+                    ).await?.into_json().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                    assert_eq!(listed.get("items").and_then(serde_json::Value::as_array).map(Vec::len), Some(1));
+                }
+                invoke_family_wire(
+                    &connection, "_echo_agent/facade/invoke", "invoke", "facade.resource.close", &first.session,
+                    vec![WireValue::Handle(reopened)],
+                ).await?;
+            }
+
             let registry = invoke_facade_wire(
                 &connection,
                 "echo_core::plugin::registry::PluginRegistry::new",
@@ -3999,6 +4144,107 @@ async fn stateful_source_resources_preserve_owner_state_and_close()
             )
             .await?;
             assert_eq!(count, WireValue::U64(WireU64::from_u64(0)));
+
+            let path_value = |path: &Path| test_wire_path(path).map_err(|error| {
+                agent_client_protocol::Error::internal_error().data(error.to_string())
+            });
+            let project_root = plugin_root.with_extension("project");
+            let scoped_registry = invoke_facade_wire(
+                &connection, "echo_core::plugin::registry::PluginRegistry::with_paths", &agent,
+                vec![WireValue::Handle(first.session.clone()),
+                    path_value(&plugin_root.with_extension("user-plugins").join("state.json"))?,
+                    path_value(&plugin_root.with_extension("data"))?, path_value(&project_root)?],
+            ).await?;
+            let WireValue::Handle(scoped_registry) = scoped_registry else {
+                return Err(agent_client_protocol::Error::internal_error().data("with_paths did not publish a registry resource"));
+            };
+            // This is only a thin test sender. Every state transition and
+            // dependency decision still runs in the addressed Host registry.
+            let registry_call = |method: &'static str, extra: Vec<WireValue>| {
+                let connection = connection.clone(); let agent = agent.clone();
+                let mut arguments = vec![WireValue::Handle(first.session.clone()), WireValue::Handle(scoped_registry.clone())];
+                arguments.extend(extra);
+                async move { invoke_facade_wire(&connection, &format!("echo_core::plugin::registry::PluginRegistry::{method}"), &agent, arguments).await }
+            };
+            for (name, scope) in [("base.tools", "user"), ("consumer.tools", "project")] {
+                let source_root = plugin_root.with_extension("sources").join(name);
+                let validated = invoke_facade_wire(
+                    &connection, "echo_core::plugin::registry::PluginRegistry::validate_plugin_dir", &agent,
+                    vec![WireValue::Handle(first.session.clone()), path_value(&source_root)?],
+                ).await?;
+                assert!(matches!(validated, WireValue::List(ref values) if values.len() == 2));
+                let source = WireValue::Variant {
+                    type_id: "echo_core::plugin::scope::InstallSource".to_string(), variant: "local".to_string(),
+                    fields: vec![WireField {name: "path".to_string(), value: path_value(&source_root)?}],
+                };
+                assert_eq!(registry_call("install", vec![source, WireValue::String(scope.to_string())]).await?, WireValue::String(name.to_string()));
+            }
+            assert_eq!(registry_call("count", Vec::new()).await?, WireValue::U64(WireU64::from_u64(2)));
+            for method in ["list", "list_enabled", "search"] {
+                let arguments = if method == "search" { vec![WireValue::String("Native".to_string())] } else { Vec::new() };
+                let values = registry_call(method, arguments).await?.into_json().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                assert_eq!(values.as_array().map(Vec::len), Some(2));
+            }
+            let consumer = WireValue::String("consumer.tools".to_string());
+            registry_call("configure", vec![consumer.clone(), WireValue::from_json(serde_json::json!({"endpoint": "https://native.invalid/中文🙂"})).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?]).await?;
+            let variables = registry_call("variables_for", vec![consumer.clone()]).await?.into_json().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            assert_eq!(variables.get("user_config").and_then(|value| value.get("endpoint")).and_then(serde_json::Value::as_str), Some("https://native.invalid/中文🙂"));
+            let revision = registry_call("revision", Vec::new()).await?;
+            let bad_config = registry_call("configure", vec![consumer.clone(), WireValue::from_json(serde_json::json!({"endpoint": false})).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?]).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("wrong configuration type was accepted"))?;
+            assert_eq!(typed_facade_error(&bad_config).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::FrameworkError);
+            assert_eq!(registry_call("revision", Vec::new()).await?, revision);
+            assert_eq!(registry_call("variables_for", vec![consumer.clone()]).await?.into_json().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?, variables);
+            registry_call("disable", vec![consumer.clone()]).await?;
+            let base = WireValue::String("base.tools".to_string());
+            registry_call("disable", vec![base.clone()]).await?;
+            let revision = registry_call("revision", Vec::new()).await?;
+            let missing_enabled_dependency = registry_call("enable", vec![consumer.clone()]).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("consumer enabled with disabled dependency"))?;
+            assert_eq!(typed_facade_error(&missing_enabled_dependency).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::FrameworkError);
+            assert_eq!(registry_call("revision", Vec::new()).await?, revision);
+            assert_eq!(registry_call("list_enabled", Vec::new()).await?, WireValue::List(Vec::new()));
+            registry_call("enable", vec![base.clone()]).await?;
+            registry_call("enable", vec![consumer.clone()]).await?;
+            for method in ["resolve_dependencies", "resolve_enabled_dependencies"] {
+                assert_eq!(registry_call(method, Vec::new()).await?, WireValue::List(vec![base.clone(), consumer.clone()]));
+            }
+            let resolved = registry_call("resolve_components", vec![consumer.clone()]).await?;
+            assert_eq!(registry_call("resolve_components_async", vec![consumer.clone()]).await?, resolved);
+            let WireValue::Record { fields, .. } = resolved else {
+                return Err(agent_client_protocol::Error::internal_error().data("resolved plugin components lost record type"));
+            };
+            for name in ["skill_dirs", "agent_files"] {
+                assert!(matches!(fields.iter().find(|field| field.name == name).map(|field| &field.value), Some(WireValue::List(values)) if values.len() == 1));
+            }
+            assert_eq!(registry_call("scan_scopes", vec![WireValue::from_json(serde_json::json!(["user", "project", "local"])).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?]).await?, WireValue::U64(WireU64::from_u64(2)));
+            assert_eq!(registry_call("scan_all", Vec::new()).await?, WireValue::U64(WireU64::from_u64(2)));
+            assert_eq!(registry_call("scan_diagnostics", Vec::new()).await?, WireValue::List(Vec::new()));
+            let entry = registry_call("get", vec![consumer.clone()]).await?.into_json().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            assert_eq!(entry.get("enabled").and_then(serde_json::Value::as_bool), Some(true));
+            let revision = registry_call("revision", Vec::new()).await?;
+            let bad_source = WireValue::Variant {
+                type_id: "echo_core::plugin::scope::InstallSource".to_string(), variant: "local".to_string(),
+                fields: vec![WireField {name: "path".to_string(), value: path_value(&plugin_root.with_extension("bad-source"))?}],
+            };
+            let invalid_manifest = registry_call("install", vec![bad_source, WireValue::String("local".to_string())]).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("malformed manifest installed"))?;
+            assert_eq!(typed_facade_error(&invalid_manifest).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::FrameworkError);
+            assert_eq!(registry_call("revision", Vec::new()).await?, revision);
+            assert_eq!(registry_call("count", Vec::new()).await?, WireValue::U64(WireU64::from_u64(2)));
+            let data_path = registry_call("data_dir_for", vec![consumer.clone()]).await?;
+            let WireValue::Path(WirePath::Utf8 { path: data_path }) = data_path else {
+                return Err(agent_client_protocol::Error::internal_error().data("plugin data directory lost Path type"));
+            };
+            let data_path = PathBuf::from(data_path);
+            assert!(data_path.starts_with(plugin_root.with_extension("data")));
+            std::fs::create_dir_all(&data_path).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            std::fs::write(data_path.join("keep.txt"), "retained plugin data 中文🙂").map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            registry_call("uninstall", vec![consumer.clone(), WireValue::Bool(true)]).await?;
+            assert_eq!(std::fs::read_to_string(data_path.join("keep.txt")).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?, "retained plugin data 中文🙂");
+            assert_eq!(registry_call("get", vec![consumer]).await?, WireValue::Null);
+            registry_call("uninstall", vec![base, WireValue::Bool(false)]).await?;
+            assert_eq!(registry_call("count", Vec::new()).await?, WireValue::U64(WireU64::from_u64(0)));
+            invoke_family_wire(&connection, "_echo_agent/facade/invoke", "invoke", "facade.resource.close", &first.session, vec![WireValue::Handle(scoped_registry.clone())]).await?;
+            let closed_registry = registry_call("count", Vec::new()).await.err().ok_or_else(|| agent_client_protocol::Error::internal_error().data("closed plugin registry remained addressable"))?;
+            assert_eq!(typed_facade_error(&closed_registry).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?.code, ExtensionErrorCode::ClosedHandle);
 
             let no_secret = invoke_facade_wire(
                 &connection,

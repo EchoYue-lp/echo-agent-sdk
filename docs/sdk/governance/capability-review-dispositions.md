@@ -11,6 +11,14 @@
 
 [evidence.sdk-computation-50](../../../.echo-semantic/evidence/evidence.sdk-computation-50.md) 的 2026-10-19 后继段记录八项现 accepted evolution 源操作：复用三语言 computation 原生入口，每入口原 61 次调用加本组 15 次合法/负控实际通过，原 reviewer C0/I0/M0。覆盖 Curator 只读 snapshot/坏 JSON/文件字节、Unicode detector/redaction、similarity/scorer 和 trigger 原 evidence，不承诺 Curator 写服务或自动 promote/persist。其它 source-operation 子组仍逐项对账，compressor 的真实 framework token-limit 回退反例及 File/SQLite/Plugin 新链不能借本组通过结算，PR5 保持 Draft。
 
+### source-operation 已满足的持久 Store 与本地 Plugin 子组
+
+[evidence.sdk-integrations-finite-observation](../../../.echo-semantic/evidence/evidence.sdk-integrations-finite-observation.md) 的后继段记录真实 ACP Host 两个分组：File/SQLite source constructor 的有效数据、同 owner、typed 拒绝、关闭旧地址和同路径重开，以及原 Embedder 的语义查询消费；PluginRegistry 的显式临时路径、两插件依赖、合法安装/配置/启停/扫描/组件解析/保留数据和关闭。最终定向测试、Clippy、格式与源码冻结均通过，原 reader C0/I0/M0。
+
+它们与三语言既有合法 source invoke 的 Path、资源句柄/owner、Memory 实际读写和 Variant 字段合同组合，不能改称每个 backend 都单独执行了三语言原生测试，也不以 Null admission 或纯 round-trip 代替后端消费。原普通 embedder Error 可降级写入；本组只证空向量在写前拒绝。`with_embedder` 的重开语义查询与 plain `SqliteStore::new` 的重开由不同用例分别证明。其它 source-operation/live service、FS/artifact/GitCheckpoint/Plan 分组与两个真实 framework 运行时反例保持各自待办，PR5 继续 Draft。
+
+本阶段各测试补证未改变 SDK 公共调用或产品行为，已有示例与官网无需新增调用演示；正式文档在原 Evidence 与处置表同步，最终示例编译/quickstart 和官网集成由各自交付门禁另验。
+
 ## 前一阶段文字与证据（历史，原正文保留）
 
 以下“当前/待回归/open”均是原阶段文字；现在以前述状态和Finding对象为准，原日志/sourcecut/限制不改写。

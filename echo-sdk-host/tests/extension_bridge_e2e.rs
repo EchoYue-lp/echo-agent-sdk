@@ -493,6 +493,7 @@ struct SdkDispatch {
     operations: SharedVec<String>,
     compressor_extensions: SharedVec<String>,
     component_operations: SharedVec<String>,
+    source_store_embeddings: SharedVec<(ExtensionInvokeCall, Vec<f32>)>,
     cancel_notices: SharedVec<String>,
     /// Hold responders that must never answer (timeout/cancel scenarios).
     silent: Arc<Mutex<Vec<HeldFixtureInvocation>>>,
@@ -1725,6 +1726,7 @@ where
     let operations = dispatch.operations.clone();
     let compressor_extensions = dispatch.compressor_extensions.clone();
     let component_operations = dispatch.component_operations.clone();
+    let source_store_embeddings = dispatch.source_store_embeddings.clone();
     let cancel_notices = dispatch.cancel_notices.clone();
     let silent = dispatch.silent.clone();
     let stream_producers = dispatch.stream_producers.clone();
@@ -1759,6 +1761,7 @@ where
                 let operations = operations.clone();
                 let compressor_extensions = compressor_extensions.clone();
                 let component_operations = component_operations.clone();
+                let source_store_embeddings = source_store_embeddings.clone();
                 let silent = silent.clone();
                 let stream_producers = stream_producers.clone();
                 let hang = hang.clone();
@@ -1790,6 +1793,7 @@ where
                     let operations = operations.clone();
                     let compressor_extensions = compressor_extensions.clone();
                     let component_operations = component_operations.clone();
+                    let source_store_embeddings = source_store_embeddings.clone();
                     let silent = silent.clone();
                     let stream_producers = stream_producers.clone();
                     let hang = hang.clone();
@@ -2280,7 +2284,15 @@ where
                                     AgentComponentCallInputWire::McpTransportNotify { .. } => AgentComponentCallResultWire::McpTransportNotify,
                                     AgentComponentCallInputWire::McpTransportClose => AgentComponentCallResultWire::McpTransportClose,
                                     AgentComponentCallInputWire::McpTransportTryNotification => AgentComponentCallResultWire::McpTransportTryNotification { notification: None },
-                                    AgentComponentCallInputWire::EmbedderEmbed { .. } => AgentComponentCallResultWire::EmbedderEmbed { vector: vec![0.0, 1.0] },
+                                    AgentComponentCallInputWire::EmbedderEmbed { text } => {
+                                        let vector = if text.contains("source-store-left") || text == "source-store-query" {
+                                            vec![1.0, 0.0]
+                                        } else if text == "source-store-invalid" {
+                                            Vec::new()
+                                        } else { vec![0.0, 1.0] };
+                                        source_store_embeddings.lock().unwrap_or_else(|error| error.into_inner()).push((original_call.clone(), vector.clone()));
+                                        AgentComponentCallResultWire::EmbedderEmbed { vector }
+                                    },
                                     AgentComponentCallInputWire::MemoryPromoterPromote { evicted } => AgentComponentCallResultWire::MemoryPromoterPromote {
                                         submitted: WireU64::from_u64(u64::try_from(evicted.len()).unwrap_or(u64::MAX)),
                                         promoted: WireU64::from_u64(0),
@@ -2972,6 +2984,333 @@ async fn invoke_source_operation(
         .await?;
     serde_json::from_value(value)
         .map_err(|error| RpcError::internal_error().data(error.to_string()))
+}
+
+#[cfg(all(feature = "framework-sqlite", feature = "sdk-facade-adapters"))]
+async fn invoke_source_store_family(
+    connection: &ConnectionTo<agent_client_protocol::Agent>,
+    session: &WireHandle,
+    operation: &str,
+    arguments: Vec<WireValue>,
+) -> Result<WireValue, RpcError> {
+    let (method, family) = if operation == "facade.resource.close" {
+        ("_echo_agent/facade/invoke", "invoke")
+    } else {
+        ("_echo_agent/memory/op", "memory")
+    };
+    let request = FeatureOperationRequest {
+        operation: operation.to_string(),
+        signature_digest: echo_sdk_protocol::facade::family_operation_signature_digest(
+            family, operation,
+        ),
+        handle: Some(session.clone()),
+        arguments,
+    };
+    let response = connection
+        .send_request(UntypedMessage::new(
+            method,
+            serde_json::to_value(request)
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+        )?)
+        .block_task()
+        .await?;
+    serde_json::from_value::<FeatureOperationResponse>(response)
+        .map(|response| response.value)
+        .map_err(|error| RpcError::internal_error().data(error.to_string()))
+}
+
+#[cfg(all(feature = "framework-sqlite", feature = "sdk-facade-adapters"))]
+#[tokio::test]
+async fn source_sqlite_embedder_consumes_original_callbacks_and_reopens()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let config = write_config(
+        directory.path(),
+        "http://127.0.0.1:1/v1/chat/completions",
+        &directory.path().join("state"),
+    );
+    let database = directory.path().join("embedded.sqlite");
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    let (extension, session_id) = drive_sdk(&mut host, dispatch.clone(), move |connection| {
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let extension = register_extension(
+                &connection,
+                ExtensionKind::AgentComponent,
+                "source-store-embedder",
+                ExtensionDescriptor::AgentComponent {
+                    descriptor_version: 1,
+                    component: AgentComponentKindWire::Embedder,
+                    name: "source-store-embedder".to_string(),
+                    capabilities: AgentComponentCapabilitiesWire::default(),
+                },
+                None,
+            )
+            .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent: agent.clone(),
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let foreign = connection
+                .send_request(SessionCreateRequest {
+                    agent: agent.clone(),
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let path = WireValue::Path(WirePath::Utf8 {
+                path: database.display().to_string(),
+            });
+            let constructor = "echo_state::memory::sqlite_store::SqliteStore::with_embedder";
+            let created = invoke_source_operation(
+                &connection,
+                agent.clone(),
+                constructor,
+                vec![
+                    WireValue::Handle(session.session.clone()),
+                    path.clone(),
+                    WireValue::Handle(extension.clone()),
+                ],
+            )
+            .await?;
+            let WireValue::Handle(resource) = created.value else {
+                return Err(RpcError::internal_error()
+                    .data("with_embedder did not publish a Store resource"));
+            };
+            let namespace = WireValue::List(vec![
+                WireValue::String("source".to_string()),
+                WireValue::String("中文🙂".to_string()),
+            ]);
+            for (key, text) in [
+                ("left", "source-store-left 中文🙂"),
+                ("right", "source-store-right 🌊"),
+            ] {
+                invoke_source_store_family(
+                    &connection,
+                    &session.session,
+                    "memory.resource.put",
+                    vec![
+                        WireValue::Handle(resource.clone()),
+                        namespace.clone(),
+                        WireValue::String(key.to_string()),
+                        WireValue::String(text.to_string()),
+                    ],
+                )
+                .await?;
+            }
+            let query = WireValue::from_json(
+                serde_json::json!({"text":"source-store-query","limit":2,"mode":"Semantic"}),
+            )
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            let found = invoke_source_store_family(
+                &connection,
+                &session.session,
+                "memory.resource.search_with",
+                vec![
+                    WireValue::Handle(resource.clone()),
+                    namespace.clone(),
+                    query.clone(),
+                ],
+            )
+            .await?
+            .into_json()
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            let keys = found
+                .get("items")
+                .and_then(serde_json::Value::as_array)
+                .ok_or_else(RpcError::internal_error)?
+                .iter()
+                .map(|item| item.get("key").and_then(serde_json::Value::as_str))
+                .collect::<Vec<_>>();
+            assert_eq!(keys, vec![Some("left"), Some("right")]);
+            let invalid_vector = invoke_source_store_family(
+                &connection,
+                &session.session,
+                "memory.resource.put",
+                vec![
+                    WireValue::Handle(resource.clone()),
+                    namespace.clone(),
+                    WireValue::String("invalid".to_string()),
+                    WireValue::String("source-store-invalid".to_string()),
+                ],
+            )
+            .await
+            .err()
+            .ok_or_else(|| {
+                RpcError::internal_error().data("empty embedding unexpectedly committed")
+            })?;
+            let error = EchoSdkError::from_jsonrpc_data(invalid_vector.data.as_ref())
+                .map_err(|error| RpcError::internal_error().data(error))?;
+            assert_eq!(error.code, ExtensionErrorCode::FrameworkError);
+            assert_eq!(
+                invoke_source_store_family(
+                    &connection,
+                    &session.session,
+                    "memory.resource.get",
+                    vec![
+                        WireValue::Handle(resource.clone()),
+                        namespace.clone(),
+                        WireValue::String("invalid".to_string())
+                    ],
+                )
+                .await?,
+                WireValue::Null
+            );
+            let denied = invoke_source_store_family(
+                &connection,
+                &foreign.session,
+                "memory.resource.get",
+                vec![
+                    WireValue::Handle(resource.clone()),
+                    namespace.clone(),
+                    WireValue::String("left".to_string()),
+                ],
+            )
+            .await
+            .err()
+            .ok_or_else(|| {
+                RpcError::internal_error().data("foreign Session read embedded Store")
+            })?;
+            assert_eq!(
+                EchoSdkError::from_jsonrpc_data(denied.data.as_ref())
+                    .map_err(|error| RpcError::internal_error().data(error))?
+                    .code,
+                ExtensionErrorCode::InvalidValue
+            );
+            assert_eq!(
+                invoke_source_store_family(
+                    &connection,
+                    &session.session,
+                    "facade.resource.close",
+                    vec![WireValue::Handle(resource.clone())]
+                )
+                .await?,
+                WireValue::Bool(true)
+            );
+            let closed = invoke_source_store_family(
+                &connection,
+                &session.session,
+                "memory.resource.get",
+                vec![
+                    WireValue::Handle(resource),
+                    namespace.clone(),
+                    WireValue::String("left".to_string()),
+                ],
+            )
+            .await
+            .err()
+            .ok_or_else(|| {
+                RpcError::internal_error().data("closed embedded Store remained addressable")
+            })?;
+            assert_eq!(
+                EchoSdkError::from_jsonrpc_data(closed.data.as_ref())
+                    .map_err(|error| RpcError::internal_error().data(error))?
+                    .code,
+                ExtensionErrorCode::ClosedHandle
+            );
+            let reopened = invoke_source_operation(
+                &connection,
+                agent,
+                constructor,
+                vec![
+                    WireValue::Handle(session.session.clone()),
+                    path,
+                    WireValue::Handle(extension.clone()),
+                ],
+            )
+            .await?;
+            let WireValue::Handle(reopened) = reopened.value else {
+                return Err(RpcError::internal_error().data("embedded Store reopen lost resource"));
+            };
+            assert_eq!(
+                invoke_source_store_family(
+                    &connection,
+                    &session.session,
+                    "memory.resource.search_with",
+                    vec![WireValue::Handle(reopened.clone()), namespace, query],
+                )
+                .await?
+                .into_json()
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                found
+            );
+            invoke_source_store_family(
+                &connection,
+                &session.session,
+                "facade.resource.close",
+                vec![WireValue::Handle(reopened)],
+            )
+            .await?;
+            assert!(unregister(&connection, &extension).await?);
+            Ok((extension, session.acp_session_id))
+        })
+    })
+    .await?;
+    let calls = dispatch
+        .source_store_embeddings
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    assert_eq!(calls.len(), 5);
+    let mut identities = std::collections::HashSet::new();
+    let mut texts = Vec::new();
+    for (call, vector) in calls {
+        assert_eq!(call.extension, extension);
+        assert_eq!(
+            call.context
+                .as_ref()
+                .and_then(|context| context.session_id.as_deref()),
+            Some(session_id.as_str())
+        );
+        assert!(!call.invocation_id.is_empty());
+        assert!(identities.insert(call.invocation_id));
+        let ExtensionInvocation::AgentComponentCall(input) = call.invocation else {
+            return Err("embedding call lost typed operation".into());
+        };
+        let AgentComponentCallInputWire::EmbedderEmbed { text } = input.call else {
+            return Err("embedding call used wrong component operation".into());
+        };
+        let expected = if text.contains("source-store-left") || text == "source-store-query" {
+            vec![1.0, 0.0]
+        } else if text == "source-store-invalid" {
+            Vec::new()
+        } else {
+            vec![0.0, 1.0]
+        };
+        assert_eq!(vector, expected);
+        texts.push(text);
+    }
+    assert_eq!(
+        texts,
+        vec![
+            "source-store-left 中文🙂",
+            "source-store-right 🌊",
+            "source-store-query",
+            "source-store-invalid",
+            "source-store-query"
+        ]
+    );
+    host.child.kill().await?;
+    Ok(())
 }
 
 /// Scenario A: negotiation advertises the bridge; a tool round trip drives

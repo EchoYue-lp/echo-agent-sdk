@@ -76,7 +76,7 @@ asset_refs:
 
 | supporting role | 有限范围 |
 | --- | --- |
-| registry/plugin | Session原constructor/query/count/loadmetadata同owner，不新增family；source_operation/intrinsic支持边界 |
+| registry/plugin | Session原constructor/query/count/loadmetadata同owner，不新增family；source_operation/intrinsic支持边界；2026-10-19后继合法状态链见文末，不借原count0扩大旧运行范围。 |
 | skill | 原Agentregister/unregister/activate/query共享service、skill_info/load具名，不宣任意skill全执行/新Skill操作API |
 
 
@@ -163,3 +163,25 @@ sdks/shared/testing/compare_channel_forward_results.py 当前字节SHA 0a687973e
 ## 历史证明存储的有界表示迁移
 
 原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+
+## 2026-10-19 后继：source Store 与 Plugin 合法消费
+
+原 header、source_refs 和历史运行范围保持原切点。本段只补原 accepted source_operation 的两个后端能力组；framework 仍拥有 Store/Plugin 状态，Host 只拥有 wire/owner/资源地址。没有新增 SDK API、DTO、持久化服务、依赖、framework pin 或 CLI SQLite。
+
+| 实际原 ACP Host 用例 | 已证实消费与边界 |
+| --- | --- |
+| `core_profile_e2e.rs::stateful_source_resources_preserve_owner_state_and_close` | FileStore.new→两 namespace/Unicode/nested JSON put_batch/flush_public→资源关闭/旧地址 ClosedHandle→同路径重开 get/list；plain SqliteStore.new 的独立写入/关闭/重开由同组另一实例证明。bad-directory 构造 typed FrameworkError、空 namespace、wrong-kind 和 foreign Session 拒绝均实际执行。 |
+| 同一 core 用例的 PluginRegistry 状态链 | with_paths 的 state/user/data/project 均来自显式 TempDir；两个有依赖的本地 plugin.json 实际 validate/install/get/list/search/count/revision、配置与 variables、disable/enable 和缺已启用依赖拒绝、scan_scopes/scan_all/diagnostics、同步/异步组件解析与依赖顺序、data_dir_for、uninstall keep_data=true 保留原 marker、最后 close/旧地址拒绝。错误配置/坏 manifest 的具体拒绝与 revision/count 不误成功，不外推任意错误都具事务保证。 |
+| `extension_bridge_e2e.rs::source_sqlite_embedder_consumes_original_callbacks_and_reopens` | 原 typed Embedder 注册→同 owner 的 SqliteStore.with_embedder→真实两 put、Semantic 查询的 left/right 顺序、空向量失败未写、foreign/closed 拒绝、同 with_embedder constructor 重开后再次查询。五次 callback 的原 extension/session、唯一 invocation_id、精确 Unicode text 和返回 vector 全部核对。 |
+
+最低充分语言组合使用本轮原官方完整入口中的具名消费者：TS `file-authority-identity-host.test.js`、Python `test_same_length_replacement_rejects_stale_guard_without_writing`、Java `FileAuthorityIdentityHostTest#sameLengthReplacementRejectsOldGuardBeforeWriting` 证明合法 source invoke 的 Path/bytes/资源地址和文件效果；三语言 MemoryPermission 的原同 Agent Store A→B 读写/search/delete、foreign resource 拒绝与原 callback 证明真实 memory/owner 消费。Variant 字段合同由 TS `wire.test.js` 的 typed/unknown discriminator、Python `test_typed_and_unknown_variants_retain_discriminator`、Java `JsonSupportTest#typedAndUnknownVariantsRetainDiscriminator` 保留。Variant codec 仅是组合中的字段证据，本次本地 install 的真实后端消费由上述 Rust ACP Host 链证明；不是 Null admission 或只 round-trip，也不改称各 backend 单独跑过三语言。原完整入口资格统一见 [cancellation Evidence](evidence.sdk-cancellation-observation.md) 的具名完整摘要，不把新增用例借成旧完整入口已执行。
+
+最终 core02 一项通过，bridge01 一项通过；core01/02 是同一用例两个真实时间/源码切点，不重复累计。bridge01 与最终切点仅 core 测试增加 bad-directory 负控不同，其源码/Host 生产/原 lock/profile 逐字相同，因此精确承接原运行，不宣称重跑。两 test target 的 Clippy `-D warnings`、rustfmt check、最终 1212 源码哈希核对均通过；原 reader 对最终源、收据、必要性复审 C0/I0/M0。实际被测试 Host SHA 仍为 `0982121cb1e99284b4a7d7e07af35037f9f22bd653528d9716d425f5609407a0`。
+
+- core02 原日志 556 bytes，SHA256 `ce60c9a702e4b296597748f11a3b742e02313987e001512ca2fe812f17b92df3`。
+- bridge01 原日志 570 bytes，SHA256 `27f412527c7949688eab88f2eed1533655155f4d4ac18d0649422a03e903b83b`。
+- 两 target Clippy 原日志 381 bytes，SHA256 `ba6c803c35260f9b50f0aaffcfd8a05bc2665ad427f18ef6390706f18d418a0f`。
+
+当前两个原测试文件的精确执行源码 SHA256 分别是 core `03a775b04b96b1773cf1425c5b6d10a8dbf37f3e89d010a9d6b21464bd9ff277`、bridge `3569e65c86e7d21b9215c84311e2e4f603f42aa374a4cf2bace7dfdeaea38273`。原日志、guard、执行源码副本与两个测试程序只留 ignored local，未进入 Git；正式测试源码在原测试文件维护。
+
+普通 embedder Error 在原 framework 中可降级为无 vector 的写入；本组的空向量拒写不替换该政策。语义查询重开使用 with_embedder，plain SqliteStore.new 重开另由 core 证明。keep_data=false 仅执行 base 插件移除/count0，没有带原 data marker 删除的证明。child.kill 仅作测试 teardown，不是自然 Host 退出、framework receipt 或历史 managed Linux 超时已修证据。RemoteGit 安装、任意插件执行、跨进程 crash durability 与其它 accepted 子组不因本段通过扩展。PR5/Plan 保持各自 Draft/ready，后继 runtime 两个真反例、剩余能力对账、最终新源整套门禁和精确 main 独立待完成。
