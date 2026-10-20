@@ -2,6 +2,10 @@
 
 当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
 
+## 2026-10-20 四个source缺陷的本地三链闭合
+
+当前74个Finding中73 resolved、1 open。model/base/busy/retained四条只按[原修复](../../../.echo-semantic/evidence/evidence.sdk-model-read-retained-repair.md)、[直接验证与同源工程后验](../../../.echo-semantic/evidence/evidence.sdk-model-read-retained-verification.md)及state-authority/data-durability两具名rereview闭合；新2Audit只服务这四条，不批量晋级原56风险单元或50Behavior。managed历史Linux passive-exit仍open/根因未知，等待SDK精main Linux原套件；#120本地三语各12已含本次whole，外部Issue待精main后由Root结算。以下各“新增open/after待”保发现时点原文，不恢复为当前已闭合四条的阻塞。
+
 ## 2026-10-19 忙时Session读取新增开放义务
 
 [finding.sdk-busy-session-read-authority](../../../.echo-semantic/findings/finding.sdk-busy-session-read-authority.md) 跟踪原MCP initialize持writer期间cwd getter伪null的真实native red。原前后cwd未变、屏障与完整load/清理证明见Integration Evidence后继；原1249B日志保留。本条open/空三链，ordinary值读取与callback Agent/Context父子锁等待的精确策略/after尚待，不能以typederror候选宣布全部重入闭合。它与base prompt、模型配置、retained投影及managed Linux未知分别结算；原C0消费者/sourcecut与现状态不变。

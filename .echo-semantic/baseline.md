@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "ef417474a460c287533f3b5024f275df2edb65c79d2cca62b63ac146b8bf794d"
+    "content_digest": "06c71be744895e845f75477f3dc2d721fa20835642d4628dde8cac62213d3b28"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -841,3 +841,8 @@ e31/88a/4f三actualdiscovery revision已由Root显式annotated refs正常推送�
 ## 2026-10-20 精main356源码与finite consumer检查点
 
 当前候选消费已接受Fmain356、真实lock11Git源only、原完整28producer/117及fullcontract实际0；新Host0bbc的具名模型/scalar/三语compressor/base/busy/core/live03 finite after与各自原source/typed/raw/独审对应，原before/fixturecompile01及Clientselfwait02失败保留。只声明这些具体范围，不以绿色计数或原邻例源码carry代替执行。三lead时态与deferred2534真实边界已同步；新named Rust身份未接受、opaqueString不建第二cursor。原14Rust/唯一完整语言3qs/依赖/currentsemantic/preciseSDKmain等仍待，五open Finding按其各自三链后再结算；所有Behavior/Audit状态和闭合标志不批量提升，PR5 Draft/Plan ready不变。
+
+
+## 2026-10-20：同源完整工程与四source三链
+
+公开208a同源原14Rust、唯一完整语言3qs与fresh锁依赖实际完成；四sourceFinding由两精确Evidence/两rereview按原义务本地resolved，当前73resolved/1open。source refs保208a实际源码，原03filtered与后whole05执行分cut；原fetch失败、deny49例外及Java21范围不抹。原50Behavior/95Audit历史不批量改状态，新2Audit只审四条；managed历史Linux根因未知、最终具名结算/平台/main/nativeHook与冷历史仍独立。inventory_closure closed、behavior_model_closure open、Plan ready及PR5 Draft保持，未接受接口/示例/官网行为无变化；三个原quickstart已实际验，跨仓官网由Root所有者统一，不在本SDK复制。

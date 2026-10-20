@@ -1,0 +1,72 @@
+---
+schema_version: 1
+id: evidence.sdk-model-read-retained-verification
+kind: evidence
+observed_at: 208a027f587446badaaa2058e6af3240457431d2
+source_refs:
+- echo-sdk-host/tests/core_profile_e2e.rs#negotiated_facade_admission_fails_closed
+- echo-sdk-host/tests/extension_bridge_e2e.rs#live_session_component_setters_drive_original_consumers
+- echo-sdk-host/tests/extension_bridge_e2e.rs#live_probe_authority_reads
+- echo-sdk-host/src/factory.rs#sessions_have_distinct_agents_contexts_and_working_directories
+- echo-sdk-host/src/config.rs#environment_credential_is_resolved_without_entering_framework_config
+- sdks/typescript/test/memory-permission-host.test.js
+- sdks/typescript/test/llm-workflow-stream-host.test.js
+- sdks/python/tests/test_llm_workflow_stream_host.py
+- sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java
+- sdks/shared/testing/llm_workflow_stream_fixture.py
+- sdks/shared/testing/memory_permission_fixture.py
+supports:
+- behavior.sdk-family-source-operation
+limitations:
+- Named current Host 0bbc consumers and original public SDK probes, not an added methods-by-languages
+  matrix.
+- Per-getter reply frames were not separately retained; callback proof is exact compiled
+  source and executed strong assertions.
+- The neighboring new-Session component test was filtered in this live run, not executed.
+- Current Java is 21.0.5, not a claim of Temurin17 or full cross-platform language
+  acceptance.
+- Full SDK Rust/language/dependency/semantic/main acceptance is separate from these
+  finite results.
+---
+
+# 四个source Finding的直接before/after
+
+## 支持的结论
+
+当前新Host0bbc72ba1cb08e7264704647566e490afc4918de57cc22fcee8a414fe9e518a8保opt1/assertions/overflow/unwind，build0/零warning/1216tracked零漂移。下列各具名反例与after分别保其精源码/runtime epoch，不把生成器、catalog或总数当消费证明。
+
+| 义务 | before | 当前直接after |
+| --- | --- | --- |
+| model原配置/Session查询 | 原同Session两completedRun HTTP A/A，1621B/6f34ab2207e7dbb2115114aaefe229257ae41c334f5e2b7addff61131b75d72d | TS原selector1pass，默认+explicit各两Run A/B，准确各2request/总4、authSHA同原header/endpoint，liveB/definitionA/peergetterA、实际outward随机sentinel不外泄；558B/011258510ee485bdae5f1a4b095eb9f9a1642b6a52466d416fbe057be9f14dea。原scalar独立selector另证opaque不同modelFrameworkError/Never/live不变及原registeredLLM后继，不能并到本模型case虚构执行。 |
+| Session base/current/definition | 原base setter已B/currentB但boxed baseA，999B/124e2328a252353122a2ef7fd786199df20a2789a1b147296980ad7f2dbf07b3 | 原publicSDK脚本只expectedHostSHA改动，actual0；inherent后base/currentB，Traitoverride后baseB/currentC/definitionA所有强assert执行；239B/df999d6893d3cd90d031f8f0c540a977fdb168c2bcc0d9ed99861389a9768bb9。 |
+| busy authority读取 | 原MCP initialize barrier持writer时cwdgetternull，前后真实Some不变，1249B/4cf1853e3a8cc0dcafd228625c39648effd2e55e39c6e6cf59dd5aefbc826379 | 同原probe0，getter held pending→release/load→同Some；223B/3d7f5d0fbbb324cad0b48a88a080760fe12998bb7adbfc4b1e53949d665696f5；300ms仅release fallback非成功时间断言。live03同callback另证Agent与Context两层、不是仅普通外部并发。 |
+| retained fact identity | 原旧pin live04实际6batch9item，同epoch/gen旧0/1/2被重分4/5/6；绿色旧case没无重复断言，不能当before成功 | 03同原live强例actual1pass/36filtered，5batch6item，唯一原user/toolcall/toolresult各只一次epoch1/generation source-live-conversation/ordinal0/1/2；17处真实schema3 checkpointString/sidecar观察。563B/6d4e1f304bbb2e24c2080a7537d707834dcb3fb08fdf5225f766d4a0ba61c4b6。 |
+
+原core admission当前实际1pass/32filtered（540B/dc3f58150d10f627f2938b8b7006d1d847e4fb761fdcebcf1bcd5ee368066491），base/current/definition及旧owner/错误/close断言保。原factory unit两独立Session/Context/cwd仍Arc::ptr_eq且各有原cfg.model；env unit只私有cfg保密钥/公开FrameworkConfig无token，分别实际1pass。两Host配置路径和原public install/custom注入语义由源/运行结合证明，不虚构standardACP permission桥。
+
+## 来源与范围
+
+精源为SDK208a。原initial build/TS+PY+Java+两个脚本+core使用各自1216冻结源，live01测试E0382未native、live02 Client orderedhandler selfwait导致discovery空列表1fail、单clone及原callback任务调度修后03源码3aa实际1pass。生产Host始终0bbc；fixture两个语义增量各有C0，未重复跑未变core/其它原native。原01/02完整raw、源码、target外exe保ignored本任务，不改成产品red。03 typed数据2558030B/e64eaf923cf0eab110d94f8728f8123b318b23421674ccf38fef0c9fe733a677、testexe33996528B/70ce6aad91159969a7275eabfdf9100be236c43fdce72b68cf8721fa29a88f0c；getterreply/rawreadfacts未另存，不能声称已逐原frame观察。
+
+同03callback内Promoter先model/base两直接成功，后get_messages/ctxstats必须ExtensionConflict/Never/精sourceop，capture走原mutation冲突；Policy持Agentwriter的cwd冲突，skill_names/snapshot额外Null为原InvalidValue/Never/METHOD/精arity message。原回调response在所有nested assert后发送、父allowed/promoted/2RunStore/nextLLM/原CAS及后继强断言全部执行；case末逐fact/两phase计数拒绝silent fallback。邻例agent_components_are_consumed_by_new_session_agents在36filtered，仅源码carry不称本次执行。
+
+原TS scalar/compressor两selector、PY/Java compressor各一原method均actual0，并各自独审C0；三语各3callback/decoy0/3tokenizer原owner+postclose、3LLMcompleted、100000→80000保护量、evict2与nextLLM消费。那是预算与supporting消费的有限组合，不新增本链所无的全部hook重入承诺。原full28 update/117合同/Protocol5/42/91及lock11Git源only/C0由原Integration Evidence后继承接，完整SDK14/官方整语言/main另验。
+
+全部精argv/环境、每cut sourcehash/zero-drift、HostSHAmtime、typed观察、cleanup/原raw统一ignored sdk-parallel-delivery-01a14385，本机可用；本页不把本地副本作为Git source_refs，公开源由observed_at恢复。独立source/runtime/necessary/engineering读者已核这些具名结果C0/I0/M0；当前两脚本cleanup全await/MCPPID不存也不是框架Run physical receipt。
+
+## 已知缺口
+
+不授全callback、自然Host exit/retirement、非默认Intent/fence、无manager的Sink无条件消费、所有秘密类别、跨平台/完整语言或SDKmain。managed历史Linux未知独立；完整SDK工程及当前snapshot/nativeHook/冷main仍由原交付链收口。四Finding是否resolved只沿本页精场景与repair/rereview三链，不提升Behavior或剩余inventory。
+
+
+## 2026-10-20：同208a源码的完整工程后验
+
+上述focused原例及其filtered数字保持原cut。随后在公开SDK208a（tree c77ba743599c488146e31f955d5548d9112c6e67）冻结1216个tracked输入，原14条Rust命令全部自然退出0、零编译warning、零资源越界和零输入漂移，原Java门禁读者复审C0/I0/M0。workspace all-targets/all-features这一配置的13个harness为521pass/0fail/0ignore/0filtered；不同feature后继结果不相加当unique。第7项两个crate各0doctest、第11项仅no-run编译。原whole05中live同Session例和邻例agent_components_are_consumed_by_new_session_agents均实际PASS；这不能倒填focused03的36filtered。Rust完整proof123298B/SHA2563600cebf6751d1f7a933090de2cf5aa86f02a6f8b6831e5ffabb3ab8d9ac920d，05原raw59326B/cefaf68a3365a23d964599f03c9a78b21219a863fa97041c5b3356bb9183daf4。
+
+14项后原explicit -v fullfacade Host build实际0/Fresh，不虚构本次rustc；immutable产物159709568B仍SHA2560bbc72ba1cb08e7264704647566e490afc4918de57cc22fcee8a414fe9e518a8，与已审实际rustc产物逐字相同，EH15491112/unwind2979912，profile不变。最终Hostproof2665B/005f9d6e094a5cd20760cfbcd3e1840c8a09a1b86378e114d824ba194c681f4b；原产物连续性独审C0/I0/M0。
+
+随后唯一原scripts/check-language-sdks.sh在同208a/Host上04:29:13Z至04:38:58Z完整自然退出0，原Host/collector构建、npm ci、全部TS/PY/Java及三个quickstart均执行，无suite过滤。TS357/0fail/0skip；Python441加18子测试；Java378/0failure/error/skip、76fresh XML及逐字副本；Java实际Oracle21.0.5，不代CI Temurin17。1216tracked零漂移、HostSHA及mtime恒定、零编译warning/资源越界。完整proof62306B/80dbca18a11a68d4887fde9e516418114ed4e5d80047a0e3991f7e65b0189521，原raw124906B/8bf639178fb1209daa335d7667abf07c3d1c0553ade5bde97015cd66d83bfe8e；独立原Java读者C0/I0/M0，并核本次#120三语各12个具名场景，不再重跑。147原证据目录/2067文件2195793352B保全，逐源副本零不符，manifest1394638B/8ad4445ce3ff063c2616bd20f39753bc00225db0e206e8e046829fbda159d34b；该归档不是每个字节都经独立人工审读的声明。
+
+当前真实lock58599a9f及原deny策略不变，三项fresh官方audit/deny/registry-origin补充audit均实际0。两份数据库更新至同官方HEAD999ec89d5d3f10f20be14750ec8c2d8b44e0ac9b，加载1338advisories。deny实际49条duplicate，精确组/版本与原已审49一致，原50基线仅zip组消失，无新组/版本或其它类别；不称deny零warning。audit原raw253B/e94f8522d9a8b104b78db8a2fa733a6711cc197074c6216faa27ae69a6c867a2，deny700410B/51995772d05fcbc4aa34cef1b4b1c93d97c6c223abf941bf78ec03e0755bda3e，补充audit323B/615c05e8d77f94b31d5e0faaf6223f30e1c67ad1d734e63f9afd4417b35bfd33；当前依赖proof17862B/76a8167c8c19d433db3b1d99c2064a4fe2273ca702c3d14bcafeac71b93c5bff。deny输出恰与旧run逐字相同，实际runner和数据库为本次，未借用旧收据。原HTTPS抓取失败1的346B/7e5a0b98702328bb8582fcf960b183549d774b220b30deecf9b7001acf2f3d85与416B/357d7d681801326331c1e18eff470052e79fb30421b1c36465daad913939aa1c完整保留；只读同官方SSH HEAD核验后按audit带.git、deny不带.git的实际URL作对应进程内传输恢复，无配置/政策/ignore/离线绕过或真实锁改写。补充来源视图只投影三个声明vendor包的source/checksum，656包其它字段与边均不变。
+
+上述原件均保ignored sdk-parallel-delivery-01a14385；公开208a是源码事实源，原件摘要用于区分真实运行。新完整工程结果为四个具体source缺陷的闭合后验，不把其外推为50Behavior、全callback、平台CI、managed历史Linux根因、nativeHook/Stop或SDKmain已验。

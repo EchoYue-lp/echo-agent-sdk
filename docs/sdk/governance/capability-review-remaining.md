@@ -1,10 +1,9 @@
 # 当前能力模型的有限剩余验收
-## 2026-10-20 精pin356的有限补证与剩余整套验收
+## 2026-10-20 精pin356的本地工程与四缺陷闭合
 
-原28profile/117产物update、fullcontract/Protocol5/42/91与精锁11Git源only已实际通过；新Host0bbc下具名模型/scalar/三语compressor/base/busy/core/live有限after通过。live01编译错误和02Client自等待是两项测试夹具失败，均原样保，不当Host生产反例；03原case已执行强callback/retained断言。源码/运行独审按具体后继原件结算，不借此宣布原14Rust完整、唯一官方整语言/3quickstarts、依赖/currentsemantic/SDKmain或managedLinux完成。
+当前公开SDK208a、Host0bbc的原14Rust、唯一完整语言入口及三个quickstart均实际0并独审C0；TS357、PY441加18子测试、Java378及76fresh XML，Java实际21.0.5。1216tracked零漂移、Host哈希mtime不变；各配置计数不合并unique，第7项0doctest与第11项compile-only不当runtime。#120各12具名场景已含本次whole，不重复跑。新真实锁三项fresh审计actual0，仅原政策49个精确duplicate组，无新组/版本/其它类别；原HTTPS抓取失败和官方同repo精URL的进程传输恢复保原件。工程原件与限制由[四缺陷验证后继](../../../.echo-semantic/evidence/evidence.sdk-model-read-retained-verification.md)统一定位。
 
-当前deferred按[356集合观察](deferred-capabilities.md#当前集合观察2026-10-20framework3560812)为2534；旧6563/2528段是历史，新增6named identity未自动接受，4新Context方法仍Host/Rust-only。当前5个open Finding仍按各自三链结算，Behavior不批量升verified，PR5继续Draft。原文下方“新增open/after待”属于其真实发现或准备切点，后继以本段有限证据承接，原before/raw及限制不抹。
-
+model/base/busy/retained四Finding按各自repair/verification/rereview三链本地resolved；当前73resolved/1open。managed历史Linux passive-exit根因未知继续open；最终SDK精main Linux/Windows CI、50Behavior/原56风险Audit具名结算、必要证据tag冷strict与nativeHook/Stop独立。50Behavior仍needs_review、baseline行为模型open、Plan ready与PR5 Draft保持，不能由四Bug或全套工程计数批量晋级。原28profile117/accepted5621与454routes及[deferred2534](deferred-capabilities.md#当前集合观察2026-10-20framework3560812)边界不变，未接受named身份不扩合同；原01编译/02Client自等待/03有限after各cut保原件。下文新open/after待均保其历史时点，不倒填历史成功，也不恢复为四个已闭合缺陷的新阻塞。
 
 ## 2026-10-19 忙时Session读取新增开放义务
 

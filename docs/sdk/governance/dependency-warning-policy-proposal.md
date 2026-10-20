@@ -8,7 +8,15 @@ Reviewed proposal SHA-256: `4c94073065a063d72cc863d658787961bad538250296c56990a5
 
 用户已选择下述有界 duplicate 提示例外；SDK AGENTS.md 与顶层 SDK 归属说明已由主线程同步落实。deny.toml、audit 配置、依赖和锁文件保持原样。接受只覆盖本表50组及其精确版本集合，不能把工具 exit0 写成输出零警告，也不自动满足其它交付门禁。下列原规则、候选句及严格零警告方案保留为裁决时的历史展示，不是当前再次提问。
 
-当前锁复验（2026-10-16）：SDK固定公开framework988，真实锁SHA256
+当前锁复验（2026-10-20，SDK208a）：真实锁SHA256
+`58599a9f95c7b524fe63c97a560d2bac235539570b2ed9ed6165586c793444a3`，
+framework精main356。原三项fresh官方扫描actual0，数据库精HEAD999ec89d/1338advisories；
+deny实际49组与原接受50组精确版本表相比仅zip消失，无新增组/版本/其它类别。
+原锁、deny策略及例外不改，原抓取失败与进程内同官方repo传输恢复保留；独立复审C0。
+本次实际来源、原件摘要和边界见[当前三链验证后继](../../../.echo-semantic/evidence/evidence.sdk-model-read-retained-verification.md#2026-10-20同208a源码的完整工程后验)。
+这是同一原政策的复验，不把49条duplicate称零warning，也不向CLI或其它警告类别扩例外。
+
+历史锁复验（2026-10-16）：SDK固定公开framework988，真实锁SHA256
 `5952bfe30d027f5a5109eda5df3ed709cbadc16106c9b34713129b3e6cee138a`。
 fresh audit及三vendor来源视图audit均exit0/无warning；deny exit0但保49条duplicate，
 49组精确版本集合与下表完全一致，只有zip重复组消失，无新增组/版本或其它诊断。

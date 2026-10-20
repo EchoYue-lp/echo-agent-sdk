@@ -26,6 +26,8 @@ code_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-model-read-retained-repair
+- evidence.sdk-model-read-retained-verification
 - evidence.sdk-candidate-behavior-verification
 - evidence.sdk-parent-driver-candidate-verification
 - evidence.sdk-integrations-finite-observation
@@ -129,3 +131,8 @@ Behavior保持needs_review；入口具名mapped/examined不自动41verified、fu
 原Integration Evidence后继记录精F356/锁11Git源only、唯一生成/完整合同和当前Host0bbc的具名consumer。SDK构造只私有保存原validated config+sameArc并在extensions前用F新constructor；opaque custom replacement继续清cfg，set_model Result透原error/成功Unit。Session model/base/current/definition区分、同Agent/Context guard及时typed不可用和snapshot真实mutation分类由原ADR0034/产品文档约束，不建立第二model/cursor或权限闸。
 
 模型双构造HTTP/独立scalar opaque、三语compressor、两个原publicSDKbase/busyprobe、core和live03 finite after已有actual0及对应独审；01编译与02 Client自等待夹具失败保原件，03仅调整同callback原responder的调度，不换原父/子RPC与强assert。retained旧fact0/1/2各一次，真实schema3仍opaqueString；四open source Finding需各自三链后另结算。原policy默认/条件Sink/RunStore支持菜单与actual消费区别保，未执行36filtered邻例不伪PASS。完整Rust/语言/依赖/semantic/main独立，本Behavior继续needs_review。
+
+
+## 2026-10-20：四个具名source缺陷三链后继
+
+model/base/busy/retained四Finding按新增两Evidence及两精确风险视角rereview在本地resolved。修复源208a及F356、同原反例finite after与后续同208a原14Rust/唯一完整语言3qs/fresh依赖分cut承接，原source分组菜单与支持范围不变。whole05实际执行邻例不倒填03的36filtered；model HTTP与opaque scalar仍两原case，17处schema3保持opaqueString。原owner/receiver、callback错误/arity优先与同Agent/Context guard语义不增加权限闸或第二状态。此Behavior继续needs_review；最终逐项能力与原Audit结算、managed历史Linux、平台/main和nativeHook/Stop独立，不能由四Bug闭合批量verified。

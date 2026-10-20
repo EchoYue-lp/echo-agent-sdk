@@ -78,8 +78,16 @@ It preserves the saved development profile, has zero build warnings and zero
 tracked-source drift, and passes named finite model, compressor, base/current,
 busy-read, core and live consumer after cases. These are distinct source/runtime
 cuts; two test-fixture failures remain preserved rather than relabelled as product
-repairs. The complete applicable Rust/language/dependency/semantic gates and exact
-SDK main acceptance remain pending. Prior results below retain their historical
+repairs. On public SDK208a the original fourteen Rust commands, one full language
+entry (TS357, Python441 plus18 subtests, Java378 with76 fresh XML reports), all three
+quickstarts and fresh actual-lock dependency scans have now exited zero. Source
+inputs and Host bytes/mtime remained unchanged; Java was Oracle21.0.5. The sole
+warning exception is the originally accepted49 exact duplicate groups, with no
+new group/version/category; original HTTPS failures and process-only official
+SSH transport recovery remain preserved. Four source Findings are locally
+resolved only through their concrete three-link chains. Named semantic
+settlement, historical Linux unknown, nativeHook/Stop and exact SDK main
+acceptance remain separate. Prior results below retain their historical
 provenance; upstream acceptance and focused consumers do not imply SDK release.
 
 ### Previous 6563 source and runtime evidence

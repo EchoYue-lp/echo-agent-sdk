@@ -7,7 +7,8 @@
 - 唯一原28profile/117产物update及原fullcontract实际0，Protocol5/42/91、catalog/exact356/noFdependency检查0。accepted5621/454routes不增退，仅set_model签名20f→d89；原cursor/Restored聚合digest实际未变。新增10canonical=deferred6+HostRust4，不自动接受新Ctor/context_only named API；语言shared导出后仅该signature/source合同digest后继，保schema。
 - 新Host0bbc72ba build0/零warning/1216tracked0漂移，保存opt1/assertions/overflow/unwind及EH/unwind；原SDK构造/Result/Agent+Context读策略源C0不等运行。当前模型default/explicit同Session实际HTTP A/B、独立scalar opaque拒绝/工具thinking、三语compressor、base/current与ordinary busy两个原probe及core/live原case有限after通过，彼此sourcecut/原件独立。
 - live01为fixture E0382未运行；单clone修后live02为Client有序handler内block_task自等待，allowed强assert真实失败；仅live fixture移同连接task，仍等ALL子RPC断言后答原callback，Error/panic显式交原responder。原03caseactual1pass，Policy/Promoter两层代表、父完成/2Run与保留事实ord0/1/2各一次强assert执行，5batch6item不再旧6batch9item；不是全callback/Host自然退出/SDKmain资格。
-- 目前收口focused unit/lint/必要性currentlead与原Evidence，准备及时源码checkpoint；原14Rust完整、同新Host唯一官方全语言/3qs、fresh依赖扫描、当前semantic/独审/冷main及mainCI仍待。五具名open仍依其三链结算，managed历史Linux根因未知单独；所有Behavior needs_review不批量提升。
+- 源码checkpoint208a后原14Rust整套actual0/零编译warning，workspace这一配置13harness521pass；原唯一完整语言TS357/PY441加18subtests/Java378及76freshXML/3quickstarts均0，1216tracked和HostSHAmtime不变，Java实际21.0.5。完整Rust/Host/语言独审C0，#120各12已含本次whole，不追加重跑。新真实锁三项fresh依赖扫描actual0、原49精确duplicate无增量/其它类别，抓取失败及精URL同repo进程恢复原件保。
+- 四sourceFinding只沿新2Evidence/2rereview三链本地resolved，当前73resolved/1open；managed历史Linux根因未知单独。最终50Behavior及原56风险Audit具名结算、canonical/冷main/mainCI仍待，所有Behavior needs_review与baseline behavior_model_closure open不批量提升。
 - 原资源target9GiB/free5GiB/jobs1/inc0不变，Root已释放F专用缓存并交SDKsole队列；不动default未标记8GB/F/其它缓存。PR5继续OPEN DRAFT，Issue120待SDKmain精验收，不registry发布。
 
 ## 执行来源与边界

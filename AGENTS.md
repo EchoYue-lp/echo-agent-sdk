@@ -26,7 +26,9 @@ accepted5621/454routes无增退，仅set_model原签名20f→d89承接Result<()>
 当前Host0bbc72ba实际build0/零warning/1216tracked零漂移，保存opt1/assertions/overflow/unwind；
 模型双构造HTTP、三语compressor、base/current及busy两个原probe、core和live原例各有限after已执行通过。
 live曾有fixture E0382编译失败及Client有序handler自等待运行失败，原件保、仅夹具修后03通过，不冒生产retained red。
-原14Rust整套、同Host唯一完整语言入口/3quickstarts、依赖和最终semantic/main仍待。
+原14Rust整套actual0/零编译warning、同Host唯一完整语言TS357/PY441加18subtests/Java378及3quickstarts已通过，1216tracked零漂移；Java实际21.0.5。
+新锁三项fresh依赖扫描actual0，仅原政策49条精确duplicate提示、零其它类别；原抓取失败与官方同repo进程传输恢复保原件。
+四sourceFinding按精repair/verification/rereview链本地resolved；managed历史Linux未知仍open，最终逐项semantic/冷main/精CI与nativeHook/Stop独立。
 下列6563/8481/098212结果仅其原sourcecut，不能继承为356后继通过。
 accepted identity/kind范围保持；原set_model与已接受聚合类型的实际签名后继由原生成器列精delta，
 新Rust构造入口/内部sidecar的named身份不自动成为三语言API。具名Finding仍按各自三链结算，不由finite green自动关闭；PR5 Draft及SDKmain验收保持。

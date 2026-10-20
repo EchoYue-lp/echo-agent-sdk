@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-retained-transcript-projection-identity
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: data_durability
 focus:
@@ -18,9 +18,12 @@ evidence_refs:
 - evidence.sdk-integrations-finite-observation
 audit_refs: []
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-model-read-retained-repair
+verification_evidence_refs:
+- evidence.sdk-model-read-retained-verification
+rereview_audit_refs:
+- audit.sdk-retained-identity-rereview
 discovered_at: 88a573b7dbe2cd4878427ea35eb43322dbf11089
 ---
 
@@ -42,6 +45,15 @@ F `src/agent/snapshot.rs` 原前序 suffix 对当前 prefix 的匹配使 `[U,T,R
 
 ## 处理记录
 
+### 2026-10-19 原记录（历史）
+
 修复与 before/after 由 F 原治理分支用真实 managed FileConversationStore/RuntimeStateStore 完成。SDK 必须继续无损转发，禁止过滤批次、换掉正常 evict 集、关闭 managed、改 None、增加 Store/DTO 或并行 cursor；新公开精确 main 后才升级 SDK 原 pin/唯一生成/当前 Host，增强原 retained identity oracle并实际验证。当前状态 open，三链空，不将修复设计、旧 selector通过或 producer-only green 当成消费者已解决。
 
 01 descriptor 参数错误、02/03 缺压缩后持久 checkpoint 的 fixture 前提错误，均保留其真实失败/源码与诊断；内存 CompressionCheckpoint 不等 AgentCheckpoint，04 的正确显式 commit 仍保留。它们与这里的 retained identity producer 缺陷分开，不用生产改动“修”原错误 oracle。
+
+
+## 2026-10-20：本地具体闭合
+
+当前状态resolved仅指本Finding的原accepted义务。公开SDK208a消费已接受framework精main356及原唯一生成，私有原cfg/Result/live权威读取和retained producer分别由repair Evidence定位；同原反例的当前Host after、完整Rust14/唯一完整三语入口与3quickstarts、fresh真实锁依赖及精确独审由verification和rereview三链承接。历史before/夹具失败、source/runtime cut及上文当时open记录保留，不降accepted承诺为deferred。
+
+本地闭合不证明SDK精main、适用Linux/Windows CI、nativeHook/Stop或所有未列组合；managed历史Linux退出超时根因未知由其独立Finding保持open。Behavior及全库闭合标志不因本条改变。

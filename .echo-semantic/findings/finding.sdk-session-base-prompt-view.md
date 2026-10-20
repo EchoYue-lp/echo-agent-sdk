@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-session-base-prompt-view
 kind: finding
 type: authority_conflict
-status: open
+status: resolved
 severity: high
 primary_focus: state_authority
 focus:
@@ -18,9 +18,12 @@ evidence_refs:
 - evidence.sdk-integrations-finite-observation
 audit_refs: []
 decision_refs: []
-repair_evidence_refs: []
-verification_evidence_refs: []
-rereview_audit_refs: []
+repair_evidence_refs:
+- evidence.sdk-model-read-retained-repair
+verification_evidence_refs:
+- evidence.sdk-model-read-retained-verification
+rereview_audit_refs:
+- audit.sdk-model-read-state-rereview
 discovered_at: 4f8382fda176415749a625063a946b21cae15f5d
 ---
 
@@ -44,6 +47,15 @@ Session限定的accepted `Agent::system_prompt`查询读ACP boxed wrapper的构�
 
 ## 处理记录
 
+### 2026-10-19 原记录（历史）
+
 保持open，修复/验证/复审三链为空。最小修复只将Session分支改为现Authority AgentHandle读取`Agent::system_prompt`并复制owned String；零Session definition及current getter原义保留，不刷ACP缓存、不捏字段、不重建prompt或增加SDK模型状态。原tools/skills/MCP/workingdir/usage等是live委托，max_iterations/permission/thinking等已ownedHandle，沿其既有具名证据承接，不展开猜测性contention或全方法矩阵。
 
 ignored独立source分支与原core admission用例增量准备中，尚未采用或编译。后继必须用当前新Host在同一B/C/definition控制实际after，既有setter/别名/错误准入保持，独立审查与适用门禁后方可关本条；模型newF构造与F root-system producer另行结算。SDK main仍独立。
+
+
+## 2026-10-20：本地具体闭合
+
+当前状态resolved仅指本Finding的原accepted义务。公开SDK208a消费已接受framework精main356及原唯一生成，私有原cfg/Result/live权威读取和retained producer分别由repair Evidence定位；同原反例的当前Host after、完整Rust14/唯一完整三语入口与3quickstarts、fresh真实锁依赖及精确独审由verification和rereview三链承接。历史before/夹具失败、source/runtime cut及上文当时open记录保留，不降accepted承诺为deferred。
+
+本地闭合不证明SDK精main、适用Linux/Windows CI、nativeHook/Stop或所有未列组合；managed历史Linux退出超时根因未知由其独立Finding保持open。Behavior及全库闭合标志不因本条改变。
