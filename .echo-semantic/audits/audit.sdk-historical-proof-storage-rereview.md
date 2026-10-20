@@ -180,6 +180,15 @@ challenges:
     - sdks/typescript/test/workflow-checkpoint-host.test.js
     evidence_refs:
     - evidence.sdk-historical-proof-storage-equivalence
+  exact-main-1e1-delivery-qualification:
+    revision: 1e1c4f03f670561d6ca804a56d35967eeea191ce
+    source_refs:
+    - docs/sdk/governance/semantic-history.md
+    - docs/adr/0038-sdk-historical-proof-storage.md
+    - MIGRATION-SOURCE.md
+    - .github/workflows/rust-ci.yml
+    evidence_refs:
+    - evidence.sdk-historical-proof-storage-equivalence
 ---
 # 历史证明存储独立有界复审
 
@@ -200,3 +209,10 @@ challenges:
 
 ## 未检查项
 新remoteSDK CI、main merge、所有SDK能力新执行；工具action精pin有公开工具mainCI依据但SDK job尚未新运行。
+
+
+## 2026-10-20 精确main交付后继
+
+主header revision/freshness和全部原challenge保持原观察，本具名后继只绑定精SDKmain 1e1c4f03f670561d6ca804a56d35967eeea191ce。PR5已MERGED，GitHub签名verified/valid；原push CI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918)确实执行该head，9个job均自然SUCCESS。
+
+新的空仓sdk-exact-main-cold-1e1c4f03仅使用GitHuborigin：main与预检逐来源解析后必要35个公开annotatedtags；无alternates、shallow、task/PR refs、本地object导入或replace refs。恢复精main/tree/parent后，固定可信c0bc306bd36d2b1b76def2b6c7308a07dda4f54b校验器以--strict-snapshot --base30d7e219cc7d3aef0f75a19217c82898c363f50d --require-change-evidence实际退出0。必要标签也恢复其祖先来源，不要求每个祖先另立同名tag；未新增私有或无必要milestone标签。ignored原始cold日志230B/SHA2566b40ca6ffad467dc89bb6b8a7b35b0e0f52fe57d19d19e51dd8c5e53eef30c65，cold证明4217B/SHA256e9af152c88cc4f16840472226083cf6f475631046bd1a06d7dde6e889636e29e。这结算当前来源/恢复资格，不把旧raw当当前运行，也不替原生安装缓存或Hook/Stop验收。

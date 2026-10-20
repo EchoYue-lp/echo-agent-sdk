@@ -1,6 +1,14 @@
 # SDK 全能力语义治理进度
 
-## 2026-10-20 媒体三链与匹配新源全套本地资格（当前）
+## 2026-10-20 精确SDK main与来源恢复
+
+SDK PR5已squash到精main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce)，soleparent30d7e219，tree98c4与已审7361一致，GitHub签名valid；原pushCI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918) 九job全部SUCCESS。实际范围含Linux原套件、三语言原完整入口及Windows编译检查；不冒Windows原生运行全覆盖。仅remote main+35必要公开tags的新空仓固定c0bc strict/base30d/changeEvidence实际0。Host仍pinframework356，accepted5621/454不扩；CLI后继Builder不触发SDK改pin/生成。
+
+CI原source-language完整日志直接报告TS358/0fail/0skip、Python442加18subtests，并运行Temurin17及三个quickstart。Java原mvn-q整体成功；CI没有上传逐caseJUnit XML，不把本地Java379/76XML复标为CI逐case计数。#120原真实Host案例纳入同一无selector入口，TS具名日志可核，PY/Java匹配源码纳入和quiet整体成功与本地各12原详细证据分开。
+
+历史managed passive-exit根因仍未知/OPEN，当前main回归不能充作因果repair；74resolved/1open、46有限Behavior verified/4整体needs_review及baseline behavior_model open保持。nativeHook/Stop与最后人类残余裁决仍独立，Plan整体READY不转完成；registry发布和网站部署不在scope。
+
+## 2026-10-20 媒体三链与匹配新源全套本地资格（main验收前本地切点）
 
 公开04eb修复码与实际9ef工程源码的production/tests/dependencies/contracts/CI逐字同；9ef/1222冻结原14Rust完整0，最终fullfacade Host实a17，唯一原whole入口TS358/PY442加18subtests/Java379/76freshXML及三quickstart全0。各精scope原读者C0，#120各12在本次whole实际涵盖，不重跑。媒体原实际反例/after/三语小故事及最后全套匹配，repair/verification/rereview绑定联合Evidence与原Audit精challenge后具体resolved；当前74resolved/1managedunknownopen、46有限Behavior verified/4整体hold。
 

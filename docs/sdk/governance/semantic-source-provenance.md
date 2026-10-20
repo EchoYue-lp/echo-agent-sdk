@@ -89,3 +89,10 @@ Root的新空bare仅从远端exact fetch main30d7与三个必要tags，actual0�
 9ef正式采用的联合媒体Evidence/45个Behavior观察/原Audit named challenges精指公开04eb，故Root sole writer创建并非force推送annotated `refs/tags/evidence/sdk-governance/04eb6ad50982656b5a8b8ea649619b6a383065ff`；tag object `df15128b7391cc0ceb57cf9c9f1776ab4be0ac40`，peeled `04eb6ad50982656b5a8b8ea649619b6a383065ff`，tree `83361ab93848976532df57dc5c1cea67655cd0ef`。远端peeled已精核，原proof sdk-04eb-necessary-evidence-ref-proof.json4419B/caba6256a9fc50c7ba39af3257eb6714721e1cb6736bf8b6c97364503beacd18仅保协调ignored任务。
 
 只记实际ref耐久保存，不把它冒成最终新main/全必要refs空冷strict。17be相关blob虽作历史说明并未新增必要machine ref，不额外打tag；私有候选不tag。当前最终冷检仍须仅精新main+全部必要refs、无本地导入/alternates/task/PR源。
+
+
+## 2026-10-20 精SDK main的必要来源冷恢复
+
+SDK PR5已squash到精main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce)，soleparent30d7e219，tree98c4与已审7361一致，GitHub签名valid；原pushCI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918) 九job全部SUCCESS。实际范围含Linux原套件、三语言原完整入口及Windows编译检查；不冒Windows原生运行全覆盖。仅remote main+35必要公开tags的新空仓固定c0bc strict/base30d/changeEvidence实际0。Host仍pinframework356，accepted5621/454不扩；CLI后继Builder不触发SDK改pin/生成。
+
+全新empty仓由GitHub仅fetch main和35个必要annotated证据tag；无alternates/shallow/task/PR ref或本地对象导入。tag可保其祖先引用，不为每个祖先另造同名标签。固定校验器c0bc306在精main1e1/tree98c4以strict-snapshot/base30d/require-change-evidence实际0。原raw230B/SHA2566b40ca6ffad467dc89bb6b8a7b35b0e0f52fe57d19d19e51dd8c5e53eef30c65；旧各tag/观察来源和历史runtime资格不改。这证明当前来源可恢复，不代表nativeHook/Stop或历史managed未知根因已解决；不新增私有tag、release或registry发布。

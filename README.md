@@ -18,7 +18,7 @@ identity/kind keys and 454 accepted routes are unchanged. Only the accepted
 constructors and context-only fields are not automatically language APIs.
 Current source, Host and gate qualifications remain tied to their actual cuts;
 see [current acceptance](docs/sdk/governance/capability-review-remaining.md).
-Exact SDK-main/platform CI and native Hook/Stop acceptance remain separate.
+SDK main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce) passed all nine original exact-head CI jobs and a remote-only cold semantic check. The four composite behavior holds, historical managed-exit cause, and native Hook/Stop acceptance remain separate.
 
 The previous `6563d26570cc4a8d93c86b7e37443b0559476807` checkpoint came from
 [framework PR #191](https://github.com/EchoYue-lp/echo-agent/pull/191). Its
