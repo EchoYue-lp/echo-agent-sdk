@@ -35,6 +35,44 @@ use crate::factory::PreparedAgentDefinition;
 const SOURCE_CONTRACT_JSON: &str = include_str!("../../../contracts/sdk/source-contract.json");
 const MAX_CACHED_JOURNALS: usize = 1024;
 
+async fn drain_settlement_count(
+    pending: &AtomicUsize,
+    changed: &Notify,
+    #[cfg(test)] mut before_wait: Option<Box<dyn FnOnce() + Send + '_>>,
+) {
+    loop {
+        let settled = changed.notified();
+        tokio::pin!(settled);
+        settled.as_mut().enable();
+        if pending.load(Ordering::Acquire) == 0 {
+            return;
+        }
+        #[cfg(test)]
+        if let Some(before_wait) = before_wait.take() {
+            before_wait();
+        }
+        settled.await;
+    }
+}
+
+pub(crate) struct DurableSettlementReservation<'a> {
+    state: &'a CoreProfileState,
+    run_id: String,
+    admitted: bool,
+}
+impl DurableSettlementReservation<'_> {
+    pub fn admit(mut self) {
+        self.admitted = true;
+    }
+}
+impl Drop for DurableSettlementReservation<'_> {
+    fn drop(&mut self) {
+        if !self.admitted {
+            self.state.release_durable_reservation(&self.run_id);
+        }
+    }
+}
+
 pub(crate) struct CoreProfileState {
     services: OnceLock<Arc<AcpConnectionServices>>,
     pub handles: HandleRegistry,
@@ -59,6 +97,10 @@ pub(crate) struct CoreProfileState {
     pending_settlements: AtomicUsize,
     settlement_notify: Notify,
     settlement_error: Mutex<Option<String>>,
+    /// Exact framework receipts awaiting a successful durable projection.
+    /// These are bounded by issued Run handles, not a second terminal store.
+    durable_settlement_debt:
+        Mutex<HashMap<String, Option<(echo_agent::runtime::TurnReceipt, u64)>>>,
 }
 
 impl CoreProfileState {
@@ -72,6 +114,57 @@ impl CoreProfileState {
         framework: echo_agent::config::FrameworkConfig,
         llm_client: std::sync::Arc<dyn echo_agent::llm::LlmClient>,
     ) -> std::result::Result<std::sync::Arc<Self>, HostError> {
+        Self::install_with_llm_config(state_root, limits, framework, llm_client, None)
+    }
+
+    pub(crate) fn install_with_llm_config(
+        state_root: &Path,
+        limits: SdkProfileLimits,
+        framework: echo_agent::config::FrameworkConfig,
+        llm_client: Arc<dyn echo_agent::llm::LlmClient>,
+        llm_config: Option<echo_agent::llm::LlmConfig>,
+    ) -> std::result::Result<Arc<Self>, HostError> {
+        #[cfg(feature = "sdk-facade-adapters")]
+        let facade = super::facade::SessionFacadeRuntime::new(&limits);
+        Self::install_with_facade(
+            state_root,
+            limits,
+            framework,
+            llm_client,
+            llm_config,
+            #[cfg(feature = "sdk-facade-adapters")]
+            facade,
+        )
+    }
+
+    /// Exercise the real ACP/profile admission with an independently small
+    /// original facade map; the global handle budget still uses real limits.
+    #[cfg(all(
+        test,
+        feature = "sdk-facade-adapters",
+        feature = "framework-subagent",
+        feature = "sdk-extension-bridge"
+    ))]
+    pub(crate) fn install_for_subagent_admission_test(
+        state_root: &Path,
+        limits: SdkProfileLimits,
+        framework: echo_agent::config::FrameworkConfig,
+        llm_client: Arc<dyn echo_agent::llm::LlmClient>,
+        capacity: usize,
+    ) -> std::result::Result<Arc<Self>, HostError> {
+        let facade =
+            super::facade::SessionFacadeRuntime::with_subagent_capacity_for_test(&limits, capacity);
+        Self::install_with_facade(state_root, limits, framework, llm_client, None, facade)
+    }
+
+    fn install_with_facade(
+        state_root: &Path,
+        limits: SdkProfileLimits,
+        framework: echo_agent::config::FrameworkConfig,
+        llm_client: Arc<dyn echo_agent::llm::LlmClient>,
+        llm_config: Option<echo_agent::llm::LlmConfig>,
+        #[cfg(feature = "sdk-facade-adapters")] facade: super::facade::SessionFacadeRuntime,
+    ) -> std::result::Result<Arc<Self>, HostError> {
         let persistence = CorePersistence::open(state_root)
             .map_err(|error| HostError::Config(error.to_string()))?;
         let state_store = persistence.state_store();
@@ -79,13 +172,13 @@ impl CoreProfileState {
         let extension_shared = Arc::new(super::extension_bridge::ExtensionBridgeShared::new());
         #[cfg(feature = "sdk-extension-bridge")]
         let extension_bridge: Option<Arc<super::extension_bridge::ExtensionBridge>>;
+        let mut definition =
+            PreparedAgentDefinition::new(framework, llm_client, Some(state_store.clone()), true);
+        if let Some(config) = llm_config {
+            definition = definition.with_llm_config(config);
+        }
         #[allow(unused_mut)]
-        let mut default_definition = Arc::new(PreparedAgentDefinition::new(
-            framework,
-            llm_client,
-            Some(state_store.clone()),
-            true,
-        ));
+        let mut default_definition = Arc::new(definition);
         // The bridge is created unbound (the state does not exist yet) and
         // captured by the default definition so every Session Agent built
         // from it resolves registered extensions; the state binds itself
@@ -134,8 +227,6 @@ impl CoreProfileState {
             default_definition.clone(),
             limits.max_open_handles,
         );
-        #[cfg(feature = "sdk-facade-adapters")]
-        let facade = super::facade::SessionFacadeRuntime::new(&limits);
         let state = Arc::new(Self {
             services: OnceLock::new(),
             handles,
@@ -160,6 +251,7 @@ impl CoreProfileState {
             pending_settlements: AtomicUsize::new(0),
             settlement_notify: Notify::new(),
             settlement_error: Mutex::new(None),
+            durable_settlement_debt: Mutex::new(HashMap::new()),
         });
         #[cfg(feature = "sdk-extension-bridge")]
         if let Some(bridge) = extension_bridge {
@@ -226,6 +318,138 @@ impl CoreProfileState {
         self.remove_delivery_for_run(run_id);
     }
 
+    pub fn reserve_durable_settlement(
+        &self,
+        run_id: &str,
+    ) -> std::result::Result<DurableSettlementReservation<'_>, String> {
+        let mut debts = self
+            .durable_settlement_debt
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        if debts.contains_key(run_id) {
+            return Err("Run already owns a durable settlement reservation".to_string());
+        }
+        if debts.len() >= self.limits.max_open_handles {
+            return Err("durable settlement reservation quota is full".to_string());
+        }
+        debts.insert(run_id.to_string(), None);
+        Ok(DurableSettlementReservation {
+            state: self,
+            run_id: run_id.to_string(),
+            admitted: false,
+        })
+    }
+
+    pub fn release_durable_reservation(&self, run_id: &str) {
+        let mut debts = self
+            .durable_settlement_debt
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        if debts.get(run_id).is_some_and(Option::is_none) {
+            debts.remove(run_id);
+        }
+    }
+
+    pub fn persist_settled_receipt(
+        &self,
+        run_id: &str,
+        receipt: &echo_agent::runtime::TurnReceipt,
+        last_sequence: u64,
+    ) -> std::result::Result<(), String> {
+        // Insert before fallible conversion/write. A failed observer leaves
+        // the exact framework receipt reachable for close retry.
+        let mut debts = self
+            .durable_settlement_debt
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        if !debts.contains_key(run_id) {
+            // Collector, RunWait and Session close may all observe the same
+            // completed receipt. After the slot releases, prove idempotence
+            // from the durable projection instead of reserving another owner.
+            let expected = super::wire::receipt_wire(receipt)?;
+            let terminal = super::wire::terminal_of(receipt)?;
+            let durable = self
+                .persistence
+                .load_recovered_runs()
+                .map_err(|e| e.to_string())?
+                .into_iter()
+                .find(|run| run.record.run_id == run_id);
+            return match durable {
+                Some(run)
+                    if run.record.receipt.as_ref() == Some(&expected)
+                        && run.record.terminal.as_ref() == Some(&terminal)
+                        && run.record.last_sequence == last_sequence =>
+                {
+                    Ok(())
+                }
+                _ => Err("Run has no reserved durable settlement owner".to_string()),
+            };
+        }
+        debts.insert(run_id.to_string(), Some((receipt.clone(), last_sequence)));
+        let terminal = super::wire::terminal_of(receipt)?;
+        let receipt_wire = super::wire::receipt_wire(receipt)?;
+        self.persistence
+            .record_run_settled(run_id, terminal, receipt_wire, last_sequence)
+            .map_err(|e| e.to_string())?;
+        debts.remove(run_id);
+        drop(debts);
+        self.cleanup_settled_run(run_id);
+        Ok(())
+    }
+
+    fn retry_durable_settlements(&self) -> std::result::Result<(), String> {
+        let pending = self
+            .durable_settlement_debt
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .iter()
+            .filter_map(|(id, receipt)| {
+                receipt
+                    .as_ref()
+                    .map(|(receipt, sequence)| (id.clone(), receipt.clone(), *sequence))
+            })
+            .collect::<Vec<_>>();
+        let mut failures = Vec::new();
+        for (run_id, receipt, sequence) in pending {
+            // Retry the exact receipt and last_sequence captured from the
+            // authoritative RunEntry. Never synthesize a new terminal.
+            if let Err(error) = self.persist_settled_receipt(&run_id, &receipt, sequence) {
+                failures.push(error);
+            }
+        }
+        if failures.is_empty() {
+            Ok(())
+        } else {
+            Err(failures.join("; "))
+        }
+    }
+
+    /// Reserve actual asynchronous completion work in the existing Host close
+    /// drain. Used by Run projection collectors and blocking facade lifecycle
+    /// collectors; a dropped RPC waiter does not finish this reservation.
+    /// The original publication job survives an RPC waiter being dropped.
+    /// Existing close/drain owns its lifetime through the settlement count.
+    pub(crate) fn spawn_publication(
+        self: &Arc<Self>,
+        record: Arc<super::handles::PublicationRecord>,
+        work: futures::future::BoxFuture<
+            'static,
+            std::result::Result<super::handles::PublicationValue, agent_client_protocol::Error>,
+        >,
+    ) {
+        self.begin_settlement();
+        let state = self.clone();
+        tokio::spawn(async move {
+            let result = tokio::select! {
+                biased;
+                () = record.cancelled_before_effects() => Err(record.cancellation_error()),
+                result = work => result,
+            };
+            state.handles.finish_publication(&record, result);
+            state.finish_settlement(Ok(()));
+        });
+    }
+
     pub fn begin_settlement(&self) {
         self.pending_settlements.fetch_add(1, Ordering::AcqRel);
     }
@@ -258,14 +482,19 @@ impl CoreProfileState {
         &self,
         timeout: std::time::Duration,
     ) -> std::result::Result<(), String> {
-        let drained = tokio::time::timeout(timeout, async {
-            while self.pending_settlements.load(Ordering::Acquire) != 0 {
-                self.settlement_notify.notified().await;
-            }
-        })
+        let drained = tokio::time::timeout(
+            timeout,
+            drain_settlement_count(
+                &self.pending_settlements,
+                &self.settlement_notify,
+                #[cfg(test)]
+                None,
+            ),
+        )
         .await
-        .map_err(|_| "timed out waiting for durable run settlements".to_string());
+        .map_err(|_| "timed out waiting for Host operation settlements".to_string());
         drained?;
+        self.retry_durable_settlements()?;
         self.settlement_error
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
@@ -482,4 +711,230 @@ pub(crate) fn advertisement_meta(
         ECHO_AGENT_META_KEY.to_string(),
         serde_json::to_value(advertisement).ok()?,
     ))
+}
+
+#[cfg(test)]
+mod settlement_tests {
+    use super::*;
+    use futures::Future as _;
+
+    #[cfg(feature = "sdk-extension-bridge")]
+    #[tokio::test]
+    async fn retained_bridge_and_definition_do_not_keep_profile_owner_alive()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let directory = tempfile::tempdir()?;
+        let config: crate::SdkHostConfig = serde_json::from_value(
+            serde_json::json!({"schema_version":1,
+            "default_agent":{"model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},"agent":{"name":"fixture","enable_tools":true}}}),
+        )?;
+        let prepared = config.prepare()?;
+        let state = CoreProfileState::install(
+            directory.path(),
+            SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )?;
+        let weak = Arc::downgrade(&state);
+        let bridge = state.extension_bridge.clone();
+        let definition = state.default_definition.clone();
+        drop(state);
+        assert!(weak.upgrade().is_none());
+        let missing = echo_sdk_protocol::handle::WireHandle {
+            id: "ext-retained".to_string(),
+            kind: echo_sdk_protocol::handle::HandleKind::Extension,
+            generation: WireU64::from_u64(1),
+        };
+        let outcome = bridge
+            .invoke_once(
+                &missing,
+                None,
+                echo_sdk_protocol::methods::ExtensionInvocation::AgentClose(
+                    echo_sdk_protocol::methods::ExtensionUnit,
+                ),
+                tokio_util::sync::CancellationToken::new(),
+            )
+            .await;
+        assert!(
+            outcome.is_err_and(|error| error.code
+                == echo_sdk_protocol::error::ExtensionErrorCode::HostShuttingDown)
+        );
+        drop(definition);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn failed_durable_receipt_remains_pending_until_exact_retry_succeeds()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let directory = tempfile::tempdir()?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
+            "schema_version":1,"default_agent":{"model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},"agent":{"name":"fixture","enable_tools":true}}
+        }))?;
+        let prepared = config.prepare()?;
+        let state = CoreProfileState::install(
+            directory.path(),
+            SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )?;
+        state.persistence.record_run_started(
+            "durable-retry",
+            "stream-retry",
+            "session-retry",
+            "agent-retry",
+            "fixture",
+            None,
+            "chat",
+        )?;
+        let receipt = echo_agent::runtime::TurnReceipt::cancelled("durable-retry")?;
+        state.reserve_durable_settlement("durable-retry")?.admit();
+        let index = directory.path().join("host/run-index.json");
+        let saved = std::fs::read(&index)?;
+        std::fs::remove_file(&index)?;
+        std::fs::create_dir(&index)?;
+        assert!(
+            state
+                .persist_settled_receipt("durable-retry", &receipt, 0)
+                .is_err()
+        );
+        assert_eq!(
+            state
+                .durable_settlement_debt
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .len(),
+            1
+        );
+        assert!(
+            state
+                .wait_settlements(std::time::Duration::from_secs(1))
+                .await
+                .is_err()
+        );
+        assert!(
+            state
+                .wait_settlements(std::time::Duration::from_secs(1))
+                .await
+                .is_err()
+        );
+        std::fs::remove_dir(&index)?;
+        std::fs::write(&index, saved)?;
+        state
+            .wait_settlements(std::time::Duration::from_secs(1))
+            .await?;
+        assert!(
+            state
+                .durable_settlement_debt
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .is_empty()
+        );
+        let record = state
+            .persistence
+            .load_recovered_runs()?
+            .into_iter()
+            .find(|run| run.record.run_id == "durable-retry")
+            .ok_or("missing retry record")?;
+        assert_eq!(record.record.status, "settled");
+        assert_eq!(record.record.last_sequence, 0);
+        assert_eq!(
+            record.record.receipt,
+            Some(super::super::wire::receipt_wire(&receipt)?)
+        );
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn durable_quota_is_reserved_before_runs_and_releases_only_after_projection()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let directory = tempfile::tempdir()?;
+        let config: crate::SdkHostConfig = serde_json::from_value(
+            serde_json::json!({"schema_version":1,
+            "default_agent":{"model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},"agent":{"name":"fixture","enable_tools":true}}}),
+        )?;
+        let prepared = config.prepare()?;
+        let state = CoreProfileState::install(
+            directory.path(),
+            SdkProfileLimits {
+                max_open_handles: 1,
+                ..SdkProfileLimits::default()
+            },
+            prepared.framework,
+            prepared.llm_client,
+        )?;
+        state.reserve_durable_settlement("first")?.admit();
+        assert!(state.reserve_durable_settlement("second").is_err());
+        state.persistence.record_run_started(
+            "first",
+            "stream-first",
+            "session",
+            "agent",
+            "fixture",
+            None,
+            "chat",
+        )?;
+        let receipt = echo_agent::runtime::TurnReceipt::cancelled("first")?;
+        let index = directory.path().join("host/run-index.json");
+        let original = std::fs::read(&index)?;
+        std::fs::remove_file(&index)?;
+        std::fs::create_dir(&index)?;
+        assert!(state.persist_settled_receipt("first", &receipt, 0).is_err());
+        assert!(state.reserve_durable_settlement("second").is_err());
+        std::fs::remove_dir(&index)?;
+        std::fs::write(&index, original)?;
+        state
+            .wait_settlements(std::time::Duration::from_secs(1))
+            .await?;
+        state.persist_settled_receipt("first", &receipt, 0)?;
+        let second = state.reserve_durable_settlement("second")?;
+        drop(second);
+        assert!(state.reserve_durable_settlement("third").is_ok());
+        Ok(())
+    }
+
+    #[test]
+    fn registered_settlement_wait_retains_completion_before_next_poll()
+    -> std::result::Result<(), String> {
+        // Poll the real drain once, finish the last settlement synchronously
+        // before its next poll, then prove no notification can be lost.
+        let pending = AtomicUsize::new(1);
+        let changed = Notify::new();
+        let mut draining = Box::pin(drain_settlement_count(&pending, &changed, None));
+        let waker = futures::task::noop_waker();
+        let mut context = std::task::Context::from_waker(&waker);
+        assert!(draining.as_mut().poll(&mut context).is_pending());
+        pending.store(0, Ordering::Release);
+        changed.notify_waiters();
+        if draining.as_mut().poll(&mut context).is_pending() {
+            return Err("settlement completion notification was lost".to_string());
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn completion_between_predicate_and_await_is_not_lost() {
+        let pending = AtomicUsize::new(1);
+        let changed = Notify::new();
+        let mut draining = Box::pin(drain_settlement_count(
+            &pending,
+            &changed,
+            Some(Box::new(|| {
+                pending.store(0, Ordering::Release);
+                changed.notify_waiters();
+            })),
+        ));
+        let waker = futures::task::noop_waker();
+        let mut context = std::task::Context::from_waker(&waker);
+        assert!(draining.as_mut().poll(&mut context).is_ready());
+    }
+
+    #[test]
+    fn completion_before_first_poll_drains_without_waiting() {
+        let pending = AtomicUsize::new(0);
+        let changed = Notify::new();
+        changed.notify_waiters();
+        let mut draining = Box::pin(drain_settlement_count(&pending, &changed, None));
+        let waker = futures::task::noop_waker();
+        let mut context = std::task::Context::from_waker(&waker);
+        assert!(draining.as_mut().poll(&mut context).is_ready());
+    }
 }

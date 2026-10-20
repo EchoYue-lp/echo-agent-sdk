@@ -61,7 +61,7 @@ fn source_contract_digest() -> String {
         .to_string()
 }
 
-#[cfg(feature = "framework-a2a")]
+#[cfg(any(feature = "framework-a2a", feature = "framework-mcp"))]
 fn catalog_invoke_digest(operation: &str) -> Result<String, Box<dyn std::error::Error>> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../contracts/sdk/facade-operation-catalog.json");
@@ -442,8 +442,8 @@ fn decoded_facade_response(
 }
 
 /// Connect a Client that answers reverse extension invocations. While
-/// `hang` is set, `agent/execute` responders are parked so the attempt
-/// stays live; `agent_execute_seen` flips on every such invocation.
+/// `hang` is set, the original callback stays live until its exact cancel
+/// notice; its own producer then returns the real cancellation result.
 #[cfg(feature = "sdk-extension-bridge")]
 async fn drive_answering<T, F>(
     host: &mut HostProcess,
@@ -461,62 +461,92 @@ where
 {
     use agent_client_protocol::Responder;
     use echo_sdk_protocol::methods::{
-        ExtensionInvocation, ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult,
-        ExtensionUnit,
+        AgentStreamChunkWire, AgentStreamTerminalWire, ExtensionCancelNotice, ExtensionInvocation,
+        ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult, ExtensionStreamChunkValue,
+        ExtensionStreamCompleteValue, ExtensionStreamEvent, ExtensionUnit,
     };
     let _process_lock = acquire_e2e_process_lock();
     let transport = host_transport(&mut host.child);
+    // Fixture-only signal routing for the actual original callback. Task
+    // status and receipts continue to belong to the real framework runtime.
+    let cancellations = Arc::new(Mutex::new(std::collections::HashMap::<
+        String,
+        Arc<tokio_util::sync::CancellationToken>,
+    >::new()));
+    let callback_cancellations = cancellations.clone();
+    let producer_jobs = Arc::new(Mutex::new(Vec::<
+        tokio::task::JoinHandle<Result<(), agent_client_protocol::Error>>,
+    >::new()));
+    let callback_jobs = producer_jobs.clone();
     let connect = Client
         .builder()
         .on_receive_request(
             move |call: ExtensionInvokeCall,
                   responder: Responder<ExtensionInvokeOutcome>,
-                  _connection: ConnectionTo<agent_client_protocol::Agent>| {
+                  connection: ConnectionTo<agent_client_protocol::Agent>| {
                 let hang = hang.clone();
                 let seen = agent_execute_seen.clone();
+                let cancellations = callback_cancellations.clone();
+                let producer_jobs = callback_jobs.clone();
                 async move {
-                    match call.invocation {
-                        ExtensionInvocation::AgentExecute(_) => {
-                            seen.store(true, std::sync::atomic::Ordering::SeqCst);
-                            if *hang.lock().expect("hang flag") {
-                                // Park the responder: the attempt stays live.
-                                std::mem::forget(responder);
-                                return Ok(());
-                            }
-                            responder.respond(ExtensionInvokeOutcome::Result {
-                                result: ExtensionResult::AgentExecute(
-                                    "SDK subagent executed".to_string(),
-                                ),
-                            })
-                        }
+                    let stream = match call.invocation {
+                        ExtensionInvocation::AgentExecute(_) => None,
                         ExtensionInvocation::AgentExecuteStream(_) => {
-                            seen.store(true, std::sync::atomic::Ordering::SeqCst);
-                            let Some(stream) = call.stream.clone() else {
-                                return responder.respond(ExtensionInvokeOutcome::Error {
-                                    error: echo_sdk_protocol::error::EchoSdkError::new(
-                                        ExtensionErrorCode::ExtensionFailed,
-                                        "missing stream handle",
-                                        echo_sdk_protocol::error::Retryability::Never,
-                                    ),
-                                });
+                            Some(call.stream.ok_or_else(|| {
+                                agent_client_protocol::Error::internal_error()
+                                    .data("missing original stream handle")
+                            })?)
+                        }
+                        ExtensionInvocation::AgentClose(_) => {
+                            return responder.respond(ExtensionInvokeOutcome::Result {
+                                result: ExtensionResult::AgentClose(ExtensionUnit),
+                            });
+                        }
+                        other => {
+                            return Err(agent_client_protocol::Error::internal_error().data(
+                                format!("unexpected reverse invocation: {:?}", other.operation()),
+                            ));
+                        }
+                    };
+                    let held = *hang.lock().map_err(|_| {
+                        agent_client_protocol::Error::internal_error().data("hang lock poisoned")
+                    })?;
+                    let id = call.invocation_id;
+                    let cancellation = Arc::new(tokio_util::sync::CancellationToken::new());
+                    {
+                        let mut routes = cancellations.lock().map_err(|_| {
+                            agent_client_protocol::Error::internal_error()
+                                .data("callback routes lock poisoned")
+                        })?;
+                        if routes.contains_key(&id) {
+                            return Err(agent_client_protocol::Error::internal_error()
+                                .data("duplicate original callback identity"));
+                        }
+                        // Install the real identity before ACK/admission becomes
+                        // visible, so an immediate cancel cannot miss its owner.
+                        routes.insert(id.clone(), cancellation.clone());
+                    }
+                    let mut jobs = producer_jobs
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner());
+                    jobs.push(tokio::spawn(async move {
+                        let result: Result<(), agent_client_protocol::Error> = async {
+                            let responder = if let Some(stream) = &stream {
+                                responder.respond(ExtensionInvokeOutcome::Stream {
+                                    stream: stream.clone(),
+                                })?;
+                                None
+                            } else {
+                                Some(responder)
                             };
-                            responder.respond(ExtensionInvokeOutcome::Stream {
-                                stream: stream.clone(),
-                            })?;
-                            // While hanging, the stream stays open without a
-                            // terminal: the attempt stays live.
-                            if *hang.lock().expect("hang flag") {
-                                return Ok(());
+                            seen.store(true, std::sync::atomic::Ordering::SeqCst);
+                            if held {
+                                cancellation.cancelled().await;
                             }
-                            let connection_for_stream = _connection.clone();
-                            tokio::spawn(async move {
-                                use echo_sdk_protocol::methods::{
-                                    AgentStreamChunkWire, AgentStreamTerminalWire,
-                                    ExtensionStreamChunkValue, ExtensionStreamCompleteValue,
-                                    ExtensionStreamEvent,
-                                };
-                                let _ = connection_for_stream.send_notification(
-                                    ExtensionStreamEvent::Chunk {
+                            let cancelled = cancellation.is_cancelled();
+                            if let Some(stream) = stream {
+                                if !cancelled {
+                                    connection.send_notification(ExtensionStreamEvent::Chunk {
                                         stream: stream.clone(),
                                         sequence: nonzero(1),
                                         value: ExtensionStreamChunkValue::Agent(
@@ -524,38 +554,95 @@ where
                                                 text: "SDK subagent executed".to_string(),
                                             },
                                         ),
-                                    },
-                                );
-                                let _ = connection_for_stream.send_notification(
-                                    ExtensionStreamEvent::Complete {
-                                        stream,
-                                        sequence: nonzero(2),
-                                        value: ExtensionStreamCompleteValue::Agent(
-                                            AgentStreamTerminalWire::FinalAnswer {
-                                                text: "SDK subagent executed".to_string(),
-                                            },
+                                    })?;
+                                }
+                                connection.send_notification(ExtensionStreamEvent::Complete {
+                                    stream,
+                                    sequence: nonzero(if cancelled { 1 } else { 2 }),
+                                    value: ExtensionStreamCompleteValue::Agent(if cancelled {
+                                        AgentStreamTerminalWire::Cancelled
+                                    } else {
+                                        AgentStreamTerminalWire::FinalAnswer {
+                                            text: "SDK subagent executed".to_string(),
+                                        }
+                                    }),
+                                })?;
+                            } else if let Some(responder) = responder {
+                                responder.respond(if cancelled {
+                                    ExtensionInvokeOutcome::Error {
+                                        error: echo_sdk_protocol::error::EchoSdkError::new(
+                                            ExtensionErrorCode::Cancelled,
+                                            "original duplicate-execute fixture callback cancelled",
+                                            echo_sdk_protocol::error::Retryability::Never,
                                         ),
-                                    },
-                                );
-                            });
+                                    }
+                                } else {
+                                    ExtensionInvokeOutcome::Result {
+                                        result: ExtensionResult::AgentExecute(
+                                            "SDK subagent executed".to_string(),
+                                        ),
+                                    }
+                                })?;
+                            }
                             Ok(())
                         }
-                        ExtensionInvocation::AgentClose(_) => {
-                            responder.respond(ExtensionInvokeOutcome::Result {
-                                result: ExtensionResult::AgentClose(ExtensionUnit),
-                            })
+                        .await;
+                        let mut routes = cancellations
+                            .lock()
+                            .unwrap_or_else(|error| error.into_inner());
+                        if routes
+                            .get(&id)
+                            .is_some_and(|original| Arc::ptr_eq(original, &cancellation))
+                        {
+                            routes.remove(&id);
                         }
-                        other => Err(agent_client_protocol::Error::internal_error().data(format!(
-                            "unexpected reverse invocation: {:?}",
-                            other.operation()
-                        ))),
-                    }
+                        result
+                    }));
+                    Ok(())
                 }
             },
             agent_client_protocol::on_receive_request!(),
         )
+        .on_receive_notification(
+            async move |notice: ExtensionCancelNotice,
+                        _connection: ConnectionTo<agent_client_protocol::Agent>| {
+                let original = cancellations
+                    .lock()
+                    .map_err(|_| {
+                        agent_client_protocol::Error::internal_error()
+                            .data("callback routes lock poisoned")
+                    })?
+                    .get(&notice.invocation_id)
+                    .cloned();
+                if let Some(original) = original {
+                    original.cancel();
+                }
+                Ok(())
+            },
+            agent_client_protocol::on_receive_notification!(),
+        )
         .connect_with(transport, async move |connection| {
-            scenario(connection).await
+            let outcome = scenario(connection).await;
+            if outcome.is_ok() {
+                let jobs = {
+                    let mut owned = producer_jobs
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner());
+                    std::mem::take(&mut *owned)
+                };
+                for original in jobs {
+                    tokio::time::timeout(Duration::from_secs(10), original)
+                        .await
+                        .map_err(|_| {
+                            agent_client_protocol::Error::internal_error()
+                                .data("original callback producer did not join")
+                        })?
+                        .map_err(|error| {
+                            agent_client_protocol::Error::internal_error().data(error.to_string())
+                        })??;
+                }
+            }
+            outcome
         });
     let outcome = tokio::time::timeout(Duration::from_secs(60), connect)
         .await
@@ -1719,7 +1806,10 @@ async fn duplicate_task_execute_is_a_typed_conflict() -> Result<(), Box<dyn std:
                     })
                     .block_task()
                     .await?;
-                let plan_task = created.tasks[0].clone();
+                let plan_task = created.tasks.first().cloned().ok_or_else(|| {
+                    agent_client_protocol::Error::internal_error()
+                        .data("missing original PlanTask handle")
+                })?;
 
                 // First execute: accepted, and the live claim reaches the
                 // parked reverse agent invocation.
@@ -1796,4 +1886,692 @@ async fn duplicate_task_execute_is_a_typed_conflict() -> Result<(), Box<dyn std:
     .await?;
     let _ = host.child.kill().await;
     Ok(())
+}
+
+/// A definition close must settle all Session-owned facade resources using
+/// the explicit Session path, rather than leaking its integration children.
+#[cfg(feature = "framework-mcp")]
+#[tokio::test]
+async fn agent_cascade_preserves_same_named_other_manager_and_releases_resources()
+-> Result<(), Box<dyn std::error::Error>> {
+    use agent_client_protocol::UntypedMessage;
+    let directory = tempfile::tempdir()?;
+    let state_root = directory.path().join("state");
+    let config = write_config(
+        directory.path(),
+        "http://127.0.0.1:1/v1",
+        &state_root,
+        Some(serde_json::json!({"shutdown_timeout_secs": 2, "max_facade_resources":5})),
+    )?;
+    let fixture = directory.path().join("mcp.py");
+    std::fs::write(
+        &fixture,
+        r#"import json, sys
+for line in sys.stdin:
+    req = json.loads(line)
+    if 'id' not in req: continue
+    method = req.get('method')
+    result = {'protocolVersion':'2024-11-05','capabilities':{},'serverInfo':{'name':'same-name','version':'1'}} if method == 'initialize' else {'tools':[]} if method == 'tools/list' else {'resources':[]} if method == 'resources/list' else {'prompts':[]} if method == 'prompts/list' else {}
+    print(json.dumps({'jsonrpc':'2.0','id':req['id'],'result':result}), flush=True)
+"#,
+    )?;
+    let fixture = fixture.display().to_string();
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    let scenario = drive(&mut host, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent: agent.clone(),
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let mut clients = Vec::new();
+            let mut managers = Vec::new();
+            for _ in 0..2 {
+                let opened = connection
+                    .send_request(UntypedMessage::new(
+                        "_echo_agent/mcp/op",
+                        family_request("mcp", "mcp.manager.open", session.session.clone(), vec![])?,
+                    )?)
+                    .block_task()
+                    .await?;
+                let opened = decoded_facade_response(opened).map_err(|e| {
+                    agent_client_protocol::Error::internal_error().data(e.to_string())
+                })?;
+                let manager: echo_sdk_protocol::handle::WireHandle =
+                    serde_json::from_value(opened.get("resource").cloned().ok_or_else(|| {
+                        agent_client_protocol::Error::internal_error().data("no manager")
+                    })?)
+                    .map_err(|e| {
+                        agent_client_protocol::Error::internal_error().data(e.to_string())
+                    })?;
+                let connected = connection
+                    .send_request(UntypedMessage::new(
+                        "_echo_agent/mcp/op",
+                        family_request(
+                            "mcp",
+                            "mcp.server.connect",
+                            session.session.clone(),
+                            vec![
+                                serde_json::json!(manager),
+                                serde_json::json!("same-name"),
+                                serde_json::json!("stdio"),
+                                serde_json::json!("python3"),
+                                serde_json::json!([fixture]),
+                            ],
+                        )?,
+                    )?)
+                    .block_task()
+                    .await?;
+                let connected = decoded_facade_response(connected).map_err(|e| {
+                    agent_client_protocol::Error::internal_error().data(e.to_string())
+                })?;
+                let client: echo_sdk_protocol::handle::WireHandle =
+                    serde_json::from_value(connected.get("client").cloned().ok_or_else(|| {
+                        agent_client_protocol::Error::internal_error().data("no client")
+                    })?)
+                    .map_err(|e| {
+                        agent_client_protocol::Error::internal_error().data(e.to_string())
+                    })?;
+                managers.push(manager);
+                clients.push(client);
+            }
+            // A third same-name client belongs to the Session Agent's own
+            // manager. Source publication/lookup/disconnect may only affect
+            // this exact object, never either facade manager's child.
+            let source_request = |operation: &str,
+                                  arguments: Vec<WireValue>|
+             -> agent_client_protocol::Result<UntypedMessage> {
+                UntypedMessage::new(
+                    "_echo_agent/facade/invoke",
+                    serde_json::to_value(echo_sdk_protocol::methods::FeatureOperationRequest {
+                        operation: operation.to_string(),
+                        signature_digest: catalog_invoke_digest(operation).map_err(|e| {
+                            agent_client_protocol::Error::internal_error().data(e.to_string())
+                        })?,
+                        handle: Some(agent.clone()),
+                        arguments,
+                    })
+                    .map_err(|e| {
+                        agent_client_protocol::Error::internal_error().data(e.to_string())
+                    })?,
+                )
+            };
+            let live_config = serde_json::json!({"command":"python3","args":[fixture]}).to_string();
+            let live = connection
+                .send_request(source_request(
+                    "echo_agent::agent::react::ReactAgent::connect_mcp_from_json",
+                    vec![
+                        WireValue::Handle(session.session.clone()),
+                        WireValue::String("same-name".to_string()),
+                        WireValue::String(live_config),
+                    ],
+                )?)
+                .block_task()
+                .await?;
+            let live = decoded_facade_response(live)
+                .map_err(|e| agent_client_protocol::Error::internal_error().data(e.to_string()))?;
+            let live_handle: echo_sdk_protocol::handle::WireHandle =
+                serde_json::from_value(live.get("resource").cloned().ok_or_else(|| {
+                    agent_client_protocol::Error::internal_error()
+                        .data("connect response omitted client resource")
+                })?)
+                .map_err(|e| agent_client_protocol::Error::internal_error().data(e.to_string()))?;
+            for _ in 0..2 {
+                let alias = connection
+                    .send_request(source_request(
+                        "echo_agent::agent::react::ReactAgent::mcp_client",
+                        vec![
+                            WireValue::Handle(session.session.clone()),
+                            WireValue::String("same-name".to_string()),
+                        ],
+                    )?)
+                    .block_task()
+                    .await?;
+                let alias = decoded_facade_response(alias).map_err(|e| {
+                    agent_client_protocol::Error::internal_error().data(e.to_string())
+                })?;
+                let alias: echo_sdk_protocol::handle::WireHandle = serde_json::from_value(alias)
+                    .map_err(|e| {
+                        agent_client_protocol::Error::internal_error().data(e.to_string())
+                    })?;
+                assert_eq!(alias, live_handle);
+            }
+            for client in &clients {
+                connection
+                    .send_request(UntypedMessage::new(
+                        "_echo_agent/mcp/op",
+                        family_request(
+                            "mcp",
+                            "echo_agent::mcp::McpClient::tools",
+                            session.session.clone(),
+                            vec![serde_json::json!(client)],
+                        )?,
+                    )?)
+                    .block_task()
+                    .await?;
+            }
+            connection
+                .send_request(source_request(
+                    "echo_agent::agent::react::ReactAgent::disconnect_mcp",
+                    vec![
+                        WireValue::Handle(session.session.clone()),
+                        WireValue::String("same-name".to_string()),
+                    ],
+                )?)
+                .block_task()
+                .await?;
+            for client in &clients {
+                connection
+                    .send_request(UntypedMessage::new(
+                        "_echo_agent/mcp/op",
+                        family_request(
+                            "mcp",
+                            "echo_agent::mcp::McpClient::tools",
+                            session.session.clone(),
+                            vec![serde_json::json!(client)],
+                        )?,
+                    )?)
+                    .block_task()
+                    .await?;
+            }
+            let first = managers.first().ok_or_else(|| {
+                agent_client_protocol::Error::internal_error().data("no first manager")
+            })?;
+            connection
+                .send_request(UntypedMessage::new(
+                    "_echo_agent/mcp/op",
+                    family_request(
+                        "mcp",
+                        "mcp.server.disconnect",
+                        session.session.clone(),
+                        vec![serde_json::json!(first), serde_json::json!("same-name")],
+                    )?,
+                )?)
+                .block_task()
+                .await?;
+            // The other client has the same server name and Session owner.
+            // Only pointer identity associates it with the disconnected manager.
+            let second = clients.get(1).ok_or_else(|| {
+                agent_client_protocol::Error::internal_error().data("no second client")
+            })?;
+            connection
+                .send_request(UntypedMessage::new(
+                    "_echo_agent/mcp/op",
+                    family_request(
+                        "mcp",
+                        "echo_agent::mcp::McpClient::tools",
+                        session.session.clone(),
+                        vec![serde_json::json!(second)],
+                    )?,
+                )?)
+                .block_task()
+                .await?;
+            let closed = connection
+                .send_request(echo_sdk_protocol::methods::AgentCloseRequest {
+                    agent: agent.clone(),
+                })
+                .block_task()
+                .await?;
+            assert!(closed.released);
+            let again = connection
+                .send_request(echo_sdk_protocol::methods::AgentCloseRequest { agent })
+                .block_task()
+                .await?;
+            assert!(!again.released);
+            let session_closed = connection
+                .send_request(SessionCloseRequest {
+                    session: session.session,
+                })
+                .block_task()
+                .await?;
+            assert!(!session_closed.released);
+            // Refill the entire advertised resource budget under another
+            // Session. A partial Agent cascade leaves the old three owners
+            // behind and cannot complete these four publications.
+            let replacement_agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let replacement = connection
+                .send_request(SessionCreateRequest {
+                    agent: replacement_agent,
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            for _ in 0..5 {
+                connection
+                    .send_request(UntypedMessage::new(
+                        "_echo_agent/mcp/op",
+                        family_request(
+                            "mcp",
+                            "mcp.manager.open",
+                            replacement.session.clone(),
+                            vec![],
+                        )?,
+                    )?)
+                    .block_task()
+                    .await?;
+            }
+            assert!(
+                connection
+                    .send_request(SessionCloseRequest {
+                        session: replacement.session
+                    })
+                    .block_task()
+                    .await?
+                    .released
+            );
+            Ok(())
+        })
+    })
+    .await;
+    if let Err(error) = scenario {
+        let stderr =
+            String::from_utf8_lossy(&host.stderr.lock().unwrap_or_else(|e| e.into_inner()))
+                .to_string();
+        let status = host.child.try_wait()?;
+        return Err(format!(
+            "three-owner scenario failed: {error}; Host status={status:?}; stderr={stderr}"
+        )
+        .into());
+    }
+
+    let status = tokio::time::timeout(Duration::from_secs(10), host.child.wait()).await??;
+    assert!(status.success());
+    Ok(())
+}
+
+#[cfg(feature = "framework-mcp")]
+#[tokio::test]
+async fn stale_session_after_restart_returns_error_without_blocking_valid_next_request()
+-> Result<(), Box<dyn std::error::Error>> {
+    use agent_client_protocol::UntypedMessage;
+    let directory = tempfile::tempdir()?;
+    let config = write_config(
+        directory.path(),
+        "http://127.0.0.1:1/v1",
+        &directory.path().join("state"),
+        None,
+    )?;
+    let mut first = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    let stale = drive(&mut first, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent,
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .session;
+            Ok(session)
+        })
+    })
+    .await?;
+    assert!(
+        tokio::time::timeout(Duration::from_secs(10), first.child.wait())
+            .await??
+            .success()
+    );
+    let mut restarted = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    drive(&mut restarted,events,updates,gaps,move |connection| {Box::pin(async move {
+        connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+        let failed=tokio::time::timeout(Duration::from_secs(2),connection.send_request(UntypedMessage::new("_echo_agent/mcp/op",
+            family_request("mcp","mcp.manager.open",stale,vec![])?)?).block_task()).await
+            .map_err(|_|agent_client_protocol::Error::internal_error().data("stale lookup blocked registry"))?;
+        let error=failed.err().ok_or_else(||agent_client_protocol::Error::internal_error().data("stale lookup succeeded"))?;
+        assert_eq!(typed_facade_error(&error).map_err(|e|agent_client_protocol::Error::internal_error().data(e.to_string()))?.code,ExtensionErrorCode::StaleHandle);
+        let agent=connection.send_request(AgentCreateRequest {config:AgentConfigWire::HostDefault,idempotency_id:None}).block_task().await?.agent;
+        let session=connection.send_request(SessionCreateRequest {agent,working_dir:None,session_id:None,idempotency_id:None}).block_task().await?.session;
+        tokio::time::timeout(Duration::from_secs(2),connection.send_request(UntypedMessage::new("_echo_agent/mcp/op",
+            family_request("mcp","mcp.manager.open",session,vec![])?)?).block_task()).await
+            .map_err(|_|agent_client_protocol::Error::internal_error().data("valid request after stale lookup blocked"))??;
+        Ok(())
+    })}).await?;
+    assert!(
+        tokio::time::timeout(Duration::from_secs(10), restarted.child.wait())
+            .await??
+            .success()
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn workflow_cancel_preserves_canonical_failure_in_rpc_and_stream_terminal()
+-> Result<(), Box<dyn std::error::Error>> {
+    use agent_client_protocol::UntypedMessage;
+    use echo_sdk_protocol::error::{EchoSdkError, Retryability};
+    use echo_sdk_protocol::handle::WireHandle;
+    let (endpoint, _request_seen) = start_model_server("unused").await?;
+    let work = tempfile::tempdir()?;
+    let state_root = tempfile::tempdir()?;
+    let config = write_config(work.path(), &endpoint, state_root.path(), None)?;
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    let outcome = drive(&mut host, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            let rpc_error = |error: Box<dyn std::error::Error>| {
+                agent_client_protocol::Error::internal_error().data(error.to_string())
+            };
+            let check_cause = |error: EchoSdkError| -> agent_client_protocol::Result<()> {
+                assert_eq!(error.code, ExtensionErrorCode::Cancelled);
+                assert_eq!(error.retryable, Retryability::Never);
+                assert_eq!(error.operation.as_deref(), Some("_echo_agent/workflow/op"));
+                let fields = error.details.and_then(|details| details.fields)
+                    .ok_or_else(|| agent_client_protocol::Error::internal_error().data("workflow lost canonical cause"))?;
+                for (key, expected) in [
+                    ("framework_failure_category", "agent"),
+                    ("framework_terminal_kind", "cancelled"),
+                    ("framework_failure_code", "agent_cancelled"),
+                    ("framework_retryable", "false"),
+                ] {
+                    assert_eq!(fields.iter().find(|field| field.key == key).map(|field| field.value.as_str()), Some(expected));
+                }
+                Ok(())
+            };
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest { agent, working_dir: None, session_id: None, idempotency_id: None }).block_task().await?.session;
+            let definition = serde_json::json!({ "name": "取消图🙂", "nodes": [{"name":"end", "type":"router"}], "edges": [], "entry":"end", "finish":["end"] }).to_string();
+            let built = connection.send_request(UntypedMessage::new("_echo_agent/workflow/op", family_request("workflow", "workflow.graph.build", session.clone(), vec![serde_json::json!(definition)])?)?).block_task().await?;
+            let built = decoded_facade_response(built).map_err(rpc_error)?;
+            let graph: WireHandle = serde_json::from_value(built.get("resource").cloned().ok_or_else(|| agent_client_protocol::Error::internal_error().data("missing graph"))?).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            connection.send_request(UntypedMessage::new("_echo_agent/workflow/op", family_request("workflow", "workflow.graph.cancel", session.clone(), vec![serde_json::json!(graph)])?)?).block_task().await?;
+            let run_error = match connection.send_request(UntypedMessage::new("_echo_agent/workflow/op", family_request("workflow", "workflow.graph.run", session.clone(), vec![serde_json::json!(graph), serde_json::json!({})])?)?).block_task().await {
+                Ok(value) => return Err(agent_client_protocol::Error::internal_error().data(format!("cancelled workflow unexpectedly returned {value:?}"))),
+                Err(error) => error,
+            };
+            check_cause(typed_facade_error(&run_error).map_err(rpc_error)?)?;
+            let opened = connection.send_request(UntypedMessage::new("_echo_agent/workflow/op", family_request("workflow", "workflow.graph.run_stream", session.clone(), vec![serde_json::json!(graph), serde_json::json!({})])?)?).block_task().await?;
+            let WireValue::Handle(stream) = decoded_facade_wire(opened).map_err(rpc_error)? else {
+                return Err(agent_client_protocol::Error::internal_error().data("missing stream"));
+            };
+            let terminal = connection.send_request(UntypedMessage::new("_echo_agent/workflow/op", family_wire_request("workflow", "workflow.stream.next", session.clone(), vec![WireValue::Handle(stream)])?)?).block_task().await?;
+            let WireValue::Variant { variant, fields, .. } = decoded_facade_wire(terminal).map_err(rpc_error)? else {
+                return Err(agent_client_protocol::Error::internal_error().data("missing terminal variant"));
+            };
+            assert_eq!(variant, "failed", "a cancelled producer must never report complete");
+            let cause = fields.into_iter().find(|field| field.name == "value").ok_or_else(|| agent_client_protocol::Error::internal_error().data("failed stream lost its cause"))?.value.into_json().map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            check_cause(serde_json::from_value(cause).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?)?;
+            connection.send_request(SessionCloseRequest { session }).block_task().await?;
+            Ok(())
+        })
+    }).await;
+    let _ = host.child.kill().await;
+    outcome?;
+    Ok(())
+}
+
+#[cfg(feature = "framework-mcp")]
+fn mcp_batch_source_request(
+    agent: &echo_sdk_protocol::handle::WireHandle,
+    operation: &str,
+    arguments: Vec<WireValue>,
+) -> agent_client_protocol::Result<agent_client_protocol::UntypedMessage> {
+    agent_client_protocol::UntypedMessage::new(
+        "_echo_agent/facade/invoke",
+        serde_json::to_value(echo_sdk_protocol::methods::FeatureOperationRequest {
+            operation: operation.to_string(),
+            signature_digest: catalog_invoke_digest(operation).map_err(|error| {
+                agent_client_protocol::Error::internal_error().data(error.to_string())
+            })?,
+            handle: Some(agent.clone()),
+            arguments,
+        })
+        .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?,
+    )
+}
+
+#[cfg(feature = "framework-mcp")]
+async fn mcp_batch_invoke(
+    connection: &ConnectionTo<agent_client_protocol::Agent>,
+    agent: &echo_sdk_protocol::handle::WireHandle,
+    operation: &str,
+    arguments: Vec<WireValue>,
+) -> agent_client_protocol::Result<serde_json::Value> {
+    let response = connection
+        .send_request(mcp_batch_source_request(agent, operation, arguments)?)
+        .block_task()
+        .await?;
+    decoded_facade_response(response)
+        .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))
+}
+
+#[cfg(feature = "framework-mcp")]
+async fn prove_mcp_batch_publication(
+    file_input: bool,
+    quota_failure: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
+    use echo_sdk_protocol::handle::WireHandle;
+    let directory = tempfile::tempdir()?;
+    let config = write_config(
+        directory.path(),
+        "http://127.0.0.1:1/v1",
+        &directory.path().join("state"),
+        Some(serde_json::json!({"shutdown_timeout_secs":2,"max_facade_resources":1})),
+    )?;
+    let fixture = directory.path().join("batch-mcp.py");
+    let marker = directory.path().join("batch-effects.jsonl");
+    std::fs::write(
+        &fixture,
+        r#"import json, os, sys
+marker, label = sys.argv[1:3]
+for line in sys.stdin:
+    req = json.loads(line)
+    if 'id' not in req: continue
+    method = req.get('method')
+    if method == 'initialize':
+        with open(marker, 'a') as output: output.write(json.dumps({'label':label,'pid':os.getpid()})+'\n')
+        result = {'protocolVersion':'2024-11-05','capabilities':{},'serverInfo':{'name':label,'version':'1'}}
+    elif method == 'tools/list': result = {'tools':[{'name':label,'description':'fixture','inputSchema':{'type':'object'}}]}
+    elif method == 'resources/list': result = {'resources':[]}
+    elif method == 'prompts/list': result = {'prompts':[]}
+    else: result = {}
+    print(json.dumps({'jsonrpc':'2.0','id':req['id'],'result':result}), flush=True)
+"#,
+    )?;
+    let fixture = fixture.display().to_string();
+    let marker_for_connection = marker.clone();
+    let batch_path = directory.path().join("mcp.json");
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    let scenario = drive(&mut host, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let agent = connection.send_request(AgentCreateRequest {
+                config:AgentConfigWire::HostDefault,idempotency_id:None,
+            }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest {
+                agent:agent.clone(),working_dir:None,session_id:None,idempotency_id:None,
+            }).block_task().await?.session;
+            let source = "echo_agent::agent::react::ReactAgent::";
+            let live = |name: &str| serde_json::json!({"command":"python3","args":[fixture,marker_for_connection,name]});
+            let failed = serde_json::json!({"command":"eko-mcp-fixture-command-that-does-not-exist"});
+            let config_argument = |document: serde_json::Value| -> agent_client_protocol::Result<(String, WireValue)> {
+                if file_input {
+                    std::fs::write(&batch_path, serde_json::to_vec(&document)
+                        .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?)
+                        .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                    Ok((format!("{source}load_mcp_from_file"), WireValue::Path(
+                        echo_sdk_protocol::scalar::WirePath::Utf8 { path: batch_path.to_str().ok_or_else(||agent_client_protocol::Error::internal_error().data("test config path is not UTF-8"))?.to_string() }
+                    )))
+                } else {
+                    Ok((format!("{source}load_mcp_config"), WireValue::from_json(document)
+                        .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?))
+                }
+            };
+            if quota_failure {
+                let (operation, input) = config_argument(serde_json::json!({"mcpServers":{"alpha":live("alpha"),"beta":live("beta")}}))?;
+                let error = mcp_batch_invoke(&connection, &agent, &operation,
+                    vec![WireValue::Handle(session.clone()), input]).await.err()
+                    .ok_or_else(||agent_client_protocol::Error::internal_error().data("quota1 accepted two clients"))?;
+                let typed = typed_facade_error(&error).map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                assert_eq!(typed.code, ExtensionErrorCode::PayloadTooLarge);
+                let effects = std::fs::read_to_string(&marker_for_connection)
+                    .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                assert_eq!(effects.lines().count(),2,"both framework connections must already have completed");
+                let last_effect:serde_json::Value=serde_json::from_str(effects.lines().last().ok_or_else(||agent_client_protocol::Error::internal_error().data("no completed connection"))?)
+                    .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                let unpublished=last_effect.get("label").and_then(serde_json::Value::as_str)
+                    .ok_or_else(||agent_client_protocol::Error::internal_error().data("no completed server label"))?.to_string();
+                let other=if unpublished=="alpha" {"beta"} else {"alpha"}.to_string();
+                // The failed publication must leave no hidden prefix consuming
+                // the single quota slot. Framework clients remain Agent-owned.
+                let alpha = mcp_batch_invoke(&connection,&agent,&format!("{source}mcp_client"),
+                    vec![WireValue::Handle(session.clone()),WireValue::String(unpublished.clone())]).await?;
+                let alpha: WireHandle = serde_json::from_value(alpha)
+                    .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                let duplicate = mcp_batch_invoke(&connection,&agent,&format!("{source}mcp_client"),
+                    vec![WireValue::Handle(session.clone()),WireValue::String(unpublished.clone())]).await?;
+                assert_eq!(serde_json::to_value(&alpha).map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?,duplicate);
+                let beta_error = mcp_batch_invoke(&connection,&agent,&format!("{source}mcp_client"),
+                    vec![WireValue::Handle(session.clone()),WireValue::String(other.clone())]).await.err()
+                    .ok_or_else(||agent_client_protocol::Error::internal_error().data("quota slot duplicated"))?;
+                assert_eq!(typed_facade_error(&beta_error).map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?.code,ExtensionErrorCode::PayloadTooLarge);
+                assert_eq!(mcp_batch_invoke(&connection,&agent,&format!("{source}disconnect_mcp"),
+                    vec![WireValue::Handle(session.clone()),WireValue::String(unpublished.clone())]).await?,serde_json::Value::Bool(true));
+                let beta = mcp_batch_invoke(&connection,&agent,&format!("{source}mcp_client"),
+                    vec![WireValue::Handle(session.clone()),WireValue::String(other.clone())]).await?;
+                assert!(beta.get("id").is_some());
+            } else {
+                // Framework best effort: every failed connect is skipped;
+                // disabled entries are not started, and syntax preflight has
+                // no side effects even when a valid entry is also present.
+                for document in [
+                    serde_json::json!({"mcpServers":{"failure":failed}}),
+                    serde_json::json!({"mcpServers":{"disabled":{"command":"python3","args":[fixture,marker_for_connection,"disabled"],"disabled":true}}}),
+                ] {
+                    let (operation,input)=config_argument(document)?;
+                    let value=mcp_batch_invoke(&connection,&agent,&operation,vec![WireValue::Handle(session.clone()),input]).await?;
+                    assert_eq!(value,serde_json::json!({"clients":[]}));
+                    assert!(!marker_for_connection.exists());
+                }
+                let (operation,input)=config_argument(serde_json::json!({"mcpServers":{"valid":live("preflight-must-not-start"),"invalid":{"command":""}}}))?;
+                assert!(mcp_batch_invoke(&connection,&agent,&operation,vec![WireValue::Handle(session.clone()),input]).await.is_err());
+                assert!(!marker_for_connection.exists());
+                let (operation,input)=config_argument(serde_json::json!({"mcpServers":{"retained":live("retained"),"failure":failed}}))?;
+                let value=mcp_batch_invoke(&connection,&agent,&operation,vec![WireValue::Handle(session.clone()),input]).await?;
+                let clients=value.get("clients").and_then(serde_json::Value::as_array)
+                    .ok_or_else(||agent_client_protocol::Error::internal_error().data("missing clients"))?;
+                assert_eq!(clients.len(),1);
+                let original=clients.first().and_then(|client|client.get("resource")).cloned()
+                    .ok_or_else(||agent_client_protocol::Error::internal_error().data("missing client alias"))?;
+                let (operation,input)=config_argument(serde_json::json!({"mcpServers":{"retained":live("retained")}}))?;
+                let reused=mcp_batch_invoke(&connection,&agent,&operation,vec![WireValue::Handle(session.clone()),input]).await?;
+                assert_eq!(reused,value,"unchanged exact client must reuse its alias at a full quota");
+                let (operation,input)=config_argument(serde_json::json!({"mcpServers":{"retained":failed}}))?;
+                let replacement=mcp_batch_invoke(&connection,&agent,&operation,vec![WireValue::Handle(session.clone()),input]).await?;
+                assert_eq!(replacement,serde_json::json!({"clients":[]}));
+                let current=mcp_batch_invoke(&connection,&agent,&format!("{source}mcp_client"),
+                    vec![WireValue::Handle(session.clone()),WireValue::String("retained".into())]).await?;
+                assert_eq!(current,original,"failed replacement must preserve exact old client alias");
+                let handle:WireHandle=serde_json::from_value(current)
+                    .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                connection.send_request(agent_client_protocol::UntypedMessage::new("_echo_agent/mcp/op",
+                    family_request("mcp","echo_agent::mcp::McpClient::tools",session.clone(),vec![serde_json::json!(handle)])?)?).block_task().await?;
+                let effects=std::fs::read_to_string(&marker_for_connection)
+                    .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                assert_eq!(effects.lines().count(),1,"failed replacement must not start another live client");
+            }
+            let effects=std::fs::read_to_string(&marker_for_connection)
+                .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+            assert!(connection.send_request(SessionCloseRequest {session:session.clone()}).block_task().await?.released);
+            // Confirm owned framework process cleanup, not only SDK booleans.
+            for line in effects.lines() {
+                let record:serde_json::Value=serde_json::from_str(line)
+                    .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                let pid=record.get("pid").and_then(serde_json::Value::as_u64)
+                    .ok_or_else(||agent_client_protocol::Error::internal_error().data("fixture omitted pid"))?;
+                let status=std::process::Command::new("python3").args(["-c","import os,sys; os.kill(int(sys.argv[1]),0)",&pid.to_string()]).stderr(Stdio::null()).status()
+                    .map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?;
+                assert!(!status.success(),"closed Session retained MCP process {pid}");
+            }
+            let replacement=connection.send_request(SessionCreateRequest {
+                agent,working_dir:None,session_id:None,idempotency_id:None,
+            }).block_task().await?.session;
+            connection.send_request(agent_client_protocol::UntypedMessage::new("_echo_agent/mcp/op",
+                family_request("mcp","mcp.manager.open",replacement.clone(),vec![])?)?).block_task().await?;
+            assert!(connection.send_request(SessionCloseRequest {session:replacement}).block_task().await?.released);
+            Ok(())
+        })
+    }).await;
+    if let Err(error) = scenario {
+        let stderr = String::from_utf8_lossy(
+            &host
+                .stderr
+                .lock()
+                .unwrap_or_else(|error| error.into_inner()),
+        )
+        .to_string();
+        let _ = host.child.kill().await;
+        return Err(format!("MCP batch scenario failed: {error}; stderr={stderr}").into());
+    }
+    let status = tokio::time::timeout(Duration::from_secs(10), host.child.wait()).await??;
+    assert!(status.success());
+    Ok(())
+}
+
+#[cfg(feature = "framework-mcp")]
+#[tokio::test]
+async fn mcp_config_batch_quota_failure_does_not_publish_unreturned_prefix()
+-> Result<(), Box<dyn std::error::Error>> {
+    prove_mcp_batch_publication(false, true).await
+}
+#[cfg(feature = "framework-mcp")]
+#[tokio::test]
+async fn mcp_file_batch_quota_failure_does_not_publish_unreturned_prefix()
+-> Result<(), Box<dyn std::error::Error>> {
+    prove_mcp_batch_publication(true, true).await
+}
+#[cfg(feature = "framework-mcp")]
+#[tokio::test]
+async fn mcp_config_batch_preserves_best_effort_and_existing_alias()
+-> Result<(), Box<dyn std::error::Error>> {
+    prove_mcp_batch_publication(false, false).await
+}
+#[cfg(feature = "framework-mcp")]
+#[tokio::test]
+async fn mcp_file_batch_preserves_best_effort_and_existing_alias()
+-> Result<(), Box<dyn std::error::Error>> {
+    prove_mcp_batch_publication(true, false).await
 }

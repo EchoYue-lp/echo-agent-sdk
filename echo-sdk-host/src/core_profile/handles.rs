@@ -21,12 +21,19 @@ use crate::core_profile::wire::{handle, handle_error, sdk_error};
 use crate::factory::PreparedAgentDefinition;
 
 pub(crate) struct AgentRecord {
+    /// Serialize Session publication with Agent close; framework retains
+    /// all execution authority while this gate covers Host ownership only.
+    pub lifecycle: tokio::sync::Mutex<()>,
+    pub closing: std::sync::atomic::AtomicBool,
     pub definition: Arc<PreparedAgentDefinition>,
     /// Canonical config JSON used for idempotent create comparison.
     pub config_fingerprint: String,
 }
 
 pub(crate) struct SessionRecord {
+    pub lifecycle: tokio::sync::RwLock<()>,
+    pub cancel_operations: tokio_util::sync::CancellationToken,
+    pub closing: std::sync::atomic::AtomicBool,
     /// ACP Session identity shared with the standard profile.
     pub acp_session_id: String,
     pub agent_handle_id: String,
@@ -85,7 +92,24 @@ pub(crate) struct StreamRecord {
     pub owner_session: Option<String>,
     pub resource_id: Option<String>,
     pub facade: bool,
+    /// The facade producer and registry observe this same cancellation fact.
+    /// Other ACP/extension stream kinds keep their existing authority.
+    pub facade_cancellation: Option<tokio_util::sync::CancellationToken>,
     state: Mutex<StreamState>,
+}
+
+impl StreamRecord {
+    fn observe_facade_cancellation(&self, state: &mut StreamState) {
+        // Once a terminal commits, later cancellation cannot rewrite it.
+        if !state.terminal
+            && self
+                .facade_cancellation
+                .as_ref()
+                .is_some_and(|token| token.is_cancelled())
+        {
+            state.cancelled = true;
+        }
+    }
 }
 
 #[derive(Debug, Default)]
@@ -101,12 +125,28 @@ struct StreamState {
 /// the business object stays with the owning Rust service (plan 07 todo 2).
 #[allow(dead_code)]
 pub(crate) struct FacadeResourceRecord {
+    pub lifecycle: Arc<tokio::sync::RwLock<()>>,
+    pub closing: std::sync::atomic::AtomicBool,
+    pub cancel_operations: tokio_util::sync::CancellationToken,
     /// Family the resource was opened through.
     pub family: String,
     /// Family-defined canonical resource type (e.g. `memory.namespace`).
     pub resource_type: String,
     /// Owning session handle id, when the resource is session-scoped.
     pub owner_session: Option<String>,
+    /// Registration declarations only; the original framework entry owns
+    /// handler invocation and cleanup. Full extension identities prevent
+    /// same-name or stale-generation replacement during batch start.
+    #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
+    pub channel_bindings: Mutex<Vec<ChannelExtensionBinding>>,
+}
+
+#[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
+#[derive(Clone)]
+pub(crate) struct ChannelExtensionBinding {
+    pub channel_id: String,
+    pub plugin: WireHandle,
+    pub handler: WireHandle,
 }
 
 /// One registered extension implementation. The record is connection-owned:
@@ -126,6 +166,18 @@ pub(crate) struct ExtensionRecord {
     /// Factory-created CustomAgent instances are invocation-scoped and do not
     /// participate in the direct-registration logical-name namespace.
     pub factory_instance: bool,
+    pub factory_origin: Option<WireHandle>,
+    pub reserved: bool,
+    // These are resources of this already-issued registration, not a second
+    // identity registry. The ordinary Factory edge is weak; only uncertainty
+    // retains the original strong owner until matching physical proof.
+    #[cfg(feature = "sdk-extension-bridge")]
+    pub callback_owners: Arc<Mutex<Vec<Arc<super::extension_bridge::CallbackInvocationOwner>>>>,
+    #[cfg(feature = "sdk-extension-bridge")]
+    pub factory_owner: Arc<Mutex<std::sync::Weak<super::extension_bridge::FactoryInstanceLease>>>,
+    #[cfg(feature = "sdk-extension-bridge")]
+    pub retained_factory_owner:
+        Arc<Mutex<Option<Arc<super::extension_bridge::FactoryInstanceLease>>>>,
 }
 
 struct HandleInner {
@@ -146,6 +198,8 @@ struct HandleInner {
     extension_index: HashMap<String, String>,
     tombstones: VecDeque<(HandleKind, String)>,
     idempotency: HashMap<String, Arc<AgentCreateOutcome>>,
+    publications: HashMap<PublicationKey, Arc<PublicationRecord>>,
+    publications_fenced: bool,
     next_agent_id: u64,
     next_extension_order: u64,
 }
@@ -153,6 +207,76 @@ struct HandleInner {
 /// Result of an idempotent `agent/create` invocation.
 pub(crate) struct AgentCreateOutcome {
     pub agent: WireHandle,
+}
+
+/// Immutable request publication, not a second Session/Turn execution state.
+#[derive(Clone)]
+pub(crate) enum PublicationValue {
+    Session(echo_sdk_protocol::methods::SessionCreateResponse),
+    Run(Arc<echo_sdk_protocol::methods::RunStartResponse>),
+}
+
+#[derive(Clone, Hash, PartialEq, Eq)]
+pub(crate) struct PublicationKey {
+    pub generation: u64,
+    pub operation: &'static str,
+    pub owner: String,
+    pub key: String,
+}
+
+struct PublicationObservation {
+    effects_started: bool,
+    caller_cancelled: bool,
+    result: Option<Result<PublicationValue, agent_client_protocol::Error>>,
+}
+
+pub(crate) struct PublicationRecord {
+    key: PublicationKey,
+    fingerprint: serde_json::Value,
+    observation: Mutex<PublicationObservation>,
+    changed: tokio::sync::Notify,
+    before_effect_cancel: tokio_util::sync::CancellationToken,
+}
+
+impl PublicationRecord {
+    pub(crate) fn cancel_waiter_before_effects(&self) {
+        let mut observation = self.observation.lock().unwrap_or_else(|e| e.into_inner());
+        if !observation.effects_started {
+            observation.caller_cancelled = true;
+            self.before_effect_cancel.cancel();
+        }
+    }
+
+    pub(crate) async fn cancelled_before_effects(&self) {
+        self.before_effect_cancel.cancelled().await;
+    }
+
+    pub(crate) fn cancellation_error(&self) -> agent_client_protocol::Error {
+        crate::core_profile::wire::into_jsonrpc_error(sdk_error(
+            ExtensionErrorCode::Cancelled,
+            "original request cancelled before effect admission",
+            Retryability::Never,
+            self.key.operation,
+        ))
+    }
+
+    pub(crate) async fn wait(&self) -> Result<PublicationValue, agent_client_protocol::Error> {
+        loop {
+            let notified = self.changed.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+            let result = self
+                .observation
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .result
+                .clone();
+            if let Some(result) = result {
+                return result;
+            }
+            notified.await;
+        }
+    }
 }
 
 /// Errors of handle resolution, mapped to typed extension errors by
@@ -232,10 +356,170 @@ impl HandleRegistry {
                 extension_index: HashMap::new(),
                 tombstones: VecDeque::new(),
                 idempotency: HashMap::new(),
+                publications: HashMap::new(),
+                publications_fenced: false,
                 next_agent_id: 0,
                 next_extension_order: 0,
             }),
         }
+    }
+
+    /// Reserve a connection-scoped request before any framework mutation.
+    /// Entries are never evicted: a lost replay/tombstone must not recreate work.
+    pub(crate) fn reserve_publication(
+        &self,
+        owner: &WireHandle,
+        operation: &'static str,
+        key: &str,
+        fingerprint: serde_json::Value,
+    ) -> Result<(Arc<PublicationRecord>, bool), EchoSdkError> {
+        let mut inner = self.lock();
+        if inner.publications_fenced {
+            return Err(sdk_error(
+                ExtensionErrorCode::HostShuttingDown,
+                "request publication admission is closed",
+                Retryability::Never,
+                operation,
+            ));
+        }
+        let key = PublicationKey {
+            generation: inner.generation,
+            operation,
+            owner: owner.id.clone(),
+            key: key.to_string(),
+        };
+        if let Some(record) = inner.publications.get(&key) {
+            let observation = record
+                .observation
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            if let Some(Ok(value)) = &observation.result {
+                let retired = match value {
+                    PublicationValue::Session(response) => inner
+                        .sessions
+                        .get(&response.session.id)
+                        .is_none_or(|session| {
+                            session.closing.load(std::sync::atomic::Ordering::Acquire)
+                        }),
+                    PublicationValue::Run(response) => {
+                        !inner.runs.contains_key(&response.run.id)
+                            || !inner.streams.contains_key(&response.stream.id)
+                    }
+                };
+                if retired {
+                    return Err(handle_error(
+                        ExtensionErrorCode::ClosedHandle,
+                        "idempotent publication refers to a closed resource",
+                        operation,
+                        owner,
+                    ));
+                }
+            }
+            drop(observation);
+            if record.fingerprint != fingerprint {
+                return Err(handle_error(
+                    ExtensionErrorCode::InvalidRequest,
+                    "idempotency id was already used with a different payload",
+                    operation,
+                    owner,
+                ));
+            }
+            return Ok((record.clone(), false));
+        }
+        if inner.publications.len() >= inner.max_handles {
+            return Err(sdk_error(
+                ExtensionErrorCode::PayloadTooLarge,
+                "request publication receipt quota is full",
+                Retryability::AfterDelay,
+                operation,
+            ));
+        }
+        let record = Arc::new(PublicationRecord {
+            key: key.clone(),
+            fingerprint,
+            observation: Mutex::new(PublicationObservation {
+                effects_started: false,
+                caller_cancelled: false,
+                result: None,
+            }),
+            changed: tokio::sync::Notify::new(),
+            before_effect_cancel: tokio_util::sync::CancellationToken::new(),
+        });
+        inner.publications.insert(key, record.clone());
+        Ok((record, true))
+    }
+
+    /// This marker is immediately before the original effect admission.
+    /// It only governs reservation release; framework owns the effect itself.
+    pub(crate) fn begin_publication_effects(
+        &self,
+        record: &PublicationRecord,
+    ) -> Result<(), agent_client_protocol::Error> {
+        self.admit_publication_effects(record, || Ok(()))
+    }
+
+    /// Cancellation/fencing and the original synchronous admission share this
+    /// lock. Only successful admission marks effects; busy/validation errors
+    /// still release the reservation and wake its original waiters.
+    pub(crate) fn admit_publication_effects<T>(
+        &self,
+        record: &PublicationRecord,
+        admit: impl FnOnce() -> Result<T, agent_client_protocol::Error>,
+    ) -> Result<T, agent_client_protocol::Error> {
+        let inner = self.lock();
+        let mut observation = record.observation.lock().unwrap_or_else(|e| e.into_inner());
+        if inner.publications_fenced {
+            return Err(crate::core_profile::wire::into_jsonrpc_error(sdk_error(
+                ExtensionErrorCode::HostShuttingDown,
+                "request publication admission is closed",
+                Retryability::Never,
+                record.key.operation,
+            )));
+        }
+        if observation.caller_cancelled {
+            return Err(record.cancellation_error());
+        }
+        let result = admit()?;
+        observation.effects_started = true;
+        Ok(result)
+    }
+
+    pub(crate) fn finish_publication(
+        &self,
+        record: &Arc<PublicationRecord>,
+        result: Result<PublicationValue, agent_client_protocol::Error>,
+    ) {
+        let mut inner = self.lock();
+        let mut observation = record.observation.lock().unwrap_or_else(|e| e.into_inner());
+        observation.result = Some(result);
+        if !observation.effects_started {
+            // Existing waiters keep this exact record; a later retry may reserve anew.
+            if inner
+                .publications
+                .get(&record.key)
+                .is_some_and(|current| Arc::ptr_eq(current, record))
+            {
+                inner.publications.remove(&record.key);
+            }
+        }
+        drop(observation);
+        drop(inner);
+        record.changed.notify_waiters();
+    }
+
+    pub(crate) fn fence_publications(&self) {
+        let mut inner = self.lock();
+        inner.publications_fenced = true;
+        for record in inner.publications.values() {
+            // Closing can withdraw only work that has not entered the original
+            // effect admission. Started effects keep their settlement owner.
+            record.cancel_waiter_before_effects();
+        }
+    }
+
+    /// Called only after the existing close owner has settled original jobs.
+    pub(crate) fn discard_publications_after_settlement(&self) {
+        self.lock().publications.clear();
     }
 
     pub fn generation(&self) -> u64 {
@@ -308,6 +592,8 @@ impl HandleRegistry {
         self.enforce_budget(&mut inner, 1)?;
         let id = Self::mint_id(&mut inner, HandleKind::Agent)?;
         let record = Arc::new(AgentRecord {
+            lifecycle: tokio::sync::Mutex::new(()),
+            closing: std::sync::atomic::AtomicBool::new(false),
             definition,
             config_fingerprint,
         });
@@ -397,7 +683,11 @@ impl HandleRegistry {
         cwd: Option<std::path::PathBuf>,
     ) -> Result<(WireHandle, WireHandle, Arc<SessionRecord>), EchoSdkError> {
         let mut inner = self.lock();
-        if !inner.agents.contains_key(&agent_handle_id) {
+        if !inner
+            .agents
+            .get(&agent_handle_id)
+            .is_some_and(|agent| !agent.closing.load(std::sync::atomic::Ordering::Acquire))
+        {
             let agent = handle(agent_handle_id.clone(), HandleKind::Agent, inner.generation);
             drop(inner);
             return Err(self.resolve_error(
@@ -410,6 +700,9 @@ impl HandleRegistry {
         let id = Self::mint_id(&mut inner, HandleKind::Session)?;
         let task_run_id = Self::mint_id(&mut inner, HandleKind::TaskRun)?;
         let record = Arc::new(SessionRecord {
+            lifecycle: tokio::sync::RwLock::new(()),
+            cancel_operations: tokio_util::sync::CancellationToken::new(),
+            closing: std::sync::atomic::AtomicBool::new(false),
             acp_session_id: acp_session_id.clone(),
             agent_handle_id,
             cwd,
@@ -597,6 +890,7 @@ impl HandleRegistry {
                 owner_session: None,
                 resource_id: None,
                 facade: false,
+                facade_cancellation: None,
                 state: Mutex::new(StreamState {
                     last_sequence,
                     cancelled: false,
@@ -632,6 +926,7 @@ impl HandleRegistry {
                 owner_session: None,
                 resource_id: None,
                 facade: false,
+                facade_cancellation: None,
                 state: Mutex::new(StreamState::default()),
             }),
         );
@@ -655,6 +950,167 @@ impl HandleRegistry {
         timeout: Option<WireDuration>,
         factory_instance: bool,
     ) -> Result<(WireHandle, Arc<ExtensionRecord>), EchoSdkError> {
+        self.register_extension_owned(
+            limits,
+            kind,
+            implementation_id,
+            descriptor,
+            timeout,
+            factory_instance,
+            None,
+            false,
+        )
+    }
+
+    /// Reserve the child address before dispatching the remote factory.
+    /// It consumes the same handle/extension quota and retains parent cleanup
+    /// ownership; only bridge close may resolve an uncommitted reservation.
+    #[cfg(any(feature = "sdk-extension-bridge", test))]
+    pub(crate) fn reserve_factory_instance(
+        &self,
+        limits: ExtensionRegistrationLimits,
+        parent: &WireHandle,
+        implementation_id: &str,
+        timeout: Option<WireDuration>,
+    ) -> Result<WireHandle, EchoSdkError> {
+        self.check_shape_and_generation(
+            parent,
+            HandleKind::Extension,
+            "_echo_agent/extension/register",
+        )?;
+        self.register_extension_owned(
+            limits,
+            ExtensionKind::CustomAgent,
+            implementation_id,
+            ExtensionDescriptor::CustomAgent {
+                descriptor_version: 1,
+                name: "reserved-factory-child".to_string(),
+                model_name: "pending".to_string(),
+                system_prompt: String::new(),
+                tool_names: Vec::new(),
+            },
+            timeout,
+            true,
+            Some(parent.clone()),
+            true,
+        )
+        .map(|(handle, _)| handle)
+    }
+
+    /// Commit exactly the reserved identity; failure leaves the reservation
+    /// issued so remote close can still address its partially created child.
+    #[cfg(any(feature = "sdk-extension-bridge", test))]
+    pub(crate) fn complete_factory_instance_reserved(
+        &self,
+        limits: ExtensionRegistrationLimits,
+        child: &WireHandle,
+        parent: &WireHandle,
+        descriptor: ExtensionDescriptor,
+    ) -> Result<Arc<ExtensionRecord>, EchoSdkError> {
+        const OPERATION: &str = "_echo_agent/extension/register";
+        self.check_shape_and_generation(child, HandleKind::Extension, OPERATION)?;
+        self.check_shape_and_generation(parent, HandleKind::Extension, OPERATION)?;
+        if descriptor.kind() != ExtensionKind::CustomAgent {
+            return Err(sdk_error(
+                ExtensionErrorCode::InvalidValue,
+                "factory child descriptor must be CustomAgent",
+                Retryability::Never,
+                OPERATION,
+            ));
+        }
+        let bytes = serde_json::to_vec(&descriptor).map_err(|error| {
+            sdk_error(
+                ExtensionErrorCode::SerializationViolation,
+                error.to_string(),
+                Retryability::Never,
+                OPERATION,
+            )
+        })?;
+        if bytes.len() > limits.max_descriptor_bytes || bytes.len() > MAX_EXTENSION_DESCRIPTOR_BYTES
+        {
+            return Err(sdk_error(
+                ExtensionErrorCode::PayloadTooLarge,
+                "factory child descriptor exceeds serialized bound",
+                Retryability::Never,
+                OPERATION,
+            ));
+        }
+        let mut inner = self.lock();
+        let previous = inner.extensions.get(&child.id).cloned().ok_or_else(|| {
+            handle_error(
+                ExtensionErrorCode::ClosedHandle,
+                "factory child reservation is closed",
+                OPERATION,
+                child,
+            )
+        })?;
+        if previous.factory_origin.as_ref() != Some(parent) {
+            return Err(handle_error(
+                ExtensionErrorCode::ExtensionConflict,
+                "factory child belongs to another origin",
+                OPERATION,
+                child,
+            ));
+        }
+        if !inner
+            .extensions
+            .get(&parent.id)
+            .is_some_and(|record| record.kind == ExtensionKind::AgentFactory)
+        {
+            return Err(handle_error(
+                ExtensionErrorCode::ClosedHandle,
+                "factory origin is closed",
+                OPERATION,
+                parent,
+            ));
+        }
+        if !previous.reserved {
+            return if previous.descriptor == descriptor {
+                Ok(previous)
+            } else {
+                Err(handle_error(
+                    ExtensionErrorCode::ExtensionConflict,
+                    "factory child descriptor is already committed",
+                    OPERATION,
+                    child,
+                ))
+            };
+        }
+        let fingerprint = serde_json::to_string(&serde_json::json!({"descriptor": &descriptor, "timeout": &previous.timeout, "factory_origin":parent}))
+            .map_err(|error| sdk_error(ExtensionErrorCode::SerializationViolation, error.to_string(), Retryability::Never, OPERATION))?;
+        let committed = Arc::new(ExtensionRecord {
+            kind: previous.kind,
+            implementation_id: previous.implementation_id.clone(),
+            descriptor,
+            descriptor_fingerprint: fingerprint,
+            timeout: previous.timeout.clone(),
+            registration_order: previous.registration_order,
+            factory_instance: true,
+            factory_origin: Some(parent.clone()),
+            reserved: false,
+            #[cfg(feature = "sdk-extension-bridge")]
+            callback_owners: previous.callback_owners.clone(),
+            #[cfg(feature = "sdk-extension-bridge")]
+            factory_owner: previous.factory_owner.clone(),
+            #[cfg(feature = "sdk-extension-bridge")]
+            retained_factory_owner: previous.retained_factory_owner.clone(),
+        });
+        inner.extensions.insert(child.id.clone(), committed.clone());
+        Ok(committed)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn register_extension_owned(
+        &self,
+        limits: ExtensionRegistrationLimits,
+        kind: ExtensionKind,
+        implementation_id: &str,
+        descriptor: ExtensionDescriptor,
+        timeout: Option<WireDuration>,
+        factory_instance: bool,
+        factory_origin: Option<WireHandle>,
+        reserved: bool,
+    ) -> Result<(WireHandle, Arc<ExtensionRecord>), EchoSdkError> {
         const OPERATION: &str = "_echo_agent/extension/register";
         if descriptor.kind() != kind {
             return Err(sdk_error(
@@ -667,11 +1123,26 @@ impl HandleRegistry {
         let fingerprint = serde_json::to_string(&serde_json::json!({
             "descriptor": &descriptor,
             "timeout": &timeout,
+            "factory_origin": &factory_origin,
         }))
-        .unwrap_or_else(|_| "<unencodable>".to_string());
+        .map_err(|error| {
+            sdk_error(
+                ExtensionErrorCode::SerializationViolation,
+                error.to_string(),
+                Retryability::Never,
+                OPERATION,
+            )
+        })?;
         let encoded_len = serde_json::to_vec(&descriptor)
-            .map(|bytes| bytes.len())
-            .unwrap_or(usize::MAX);
+            .map_err(|error| {
+                sdk_error(
+                    ExtensionErrorCode::SerializationViolation,
+                    error.to_string(),
+                    Retryability::Never,
+                    OPERATION,
+                )
+            })?
+            .len();
         if encoded_len > limits.max_descriptor_bytes || encoded_len > MAX_EXTENSION_DESCRIPTOR_BYTES
         {
             return Err(sdk_error(
@@ -683,6 +1154,19 @@ impl HandleRegistry {
         }
         let identity = format!("{}/{}", kind.as_str(), implementation_id);
         let mut inner = self.lock();
+        if let Some(parent) = factory_origin.as_ref()
+            && !inner
+                .extensions
+                .get(&parent.id)
+                .is_some_and(|record| record.kind == ExtensionKind::AgentFactory)
+        {
+            return Err(handle_error(
+                ExtensionErrorCode::ClosedHandle,
+                "factory origin is not an open AgentFactory",
+                OPERATION,
+                parent,
+            ));
+        }
         if let Some(existing_id) = inner.extension_index.get(&identity).cloned()
             && let Some(existing) = inner.extensions.get(&existing_id).cloned()
         {
@@ -752,6 +1236,14 @@ impl HandleRegistry {
             timeout,
             registration_order,
             factory_instance,
+            factory_origin,
+            reserved,
+            #[cfg(feature = "sdk-extension-bridge")]
+            callback_owners: Arc::new(Mutex::new(Vec::new())),
+            #[cfg(feature = "sdk-extension-bridge")]
+            factory_owner: Arc::new(Mutex::new(std::sync::Weak::new())),
+            #[cfg(feature = "sdk-extension-bridge")]
+            retained_factory_owner: Arc::new(Mutex::new(None)),
         });
         inner.extensions.insert(id.clone(), record.clone());
         inner.extension_index.insert(identity, id.clone());
@@ -762,6 +1254,25 @@ impl HandleRegistry {
     /// Resolve one extension registration through the fixed ladder.
     #[allow(dead_code)]
     pub fn extension(&self, handle: &WireHandle) -> Result<Arc<ExtensionRecord>, EchoSdkError> {
+        let record = self.extension_for_cleanup(handle)?;
+        if record.reserved {
+            return Err(handle_error(
+                ExtensionErrorCode::ExtensionConflict,
+                "factory child reservation is not committed",
+                "_echo_agent/extension",
+                handle,
+            ));
+        }
+        Ok(record)
+    }
+
+    /// Pending children are addressable exclusively by bridge cleanup. The
+    /// bridge must only use this lookup for the child AgentClose operation.
+    pub(crate) fn extension_for_cleanup(
+        &self,
+        handle: &WireHandle,
+    ) -> Result<Arc<ExtensionRecord>, EchoSdkError> {
+        self.check_shape_and_generation(handle, HandleKind::Extension, "_echo_agent/extension")?;
         let found = self.lock().extensions.get(&handle.id).cloned();
         found.ok_or_else(|| {
             self.resolve_error(handle, HandleKind::Extension, "_echo_agent/extension")
@@ -775,6 +1286,19 @@ impl HandleRegistry {
         const OPERATION: &str = "_echo_agent/extension/unregister";
         let removed = {
             let mut inner = self.lock();
+            if inner.extensions.values().any(|record| {
+                record
+                    .factory_origin
+                    .as_ref()
+                    .is_some_and(|origin| origin.id == handle.id)
+            }) {
+                return Err(handle_error(
+                    ExtensionErrorCode::ExtensionConflict,
+                    "factory still owns live CustomAgent instances",
+                    OPERATION,
+                    handle,
+                ));
+            }
             let record = inner.extensions.remove(&handle.id);
             if let Some(record) = &record {
                 let identity = format!("{}/{}", record.kind.as_str(), record.implementation_id);
@@ -911,6 +1435,7 @@ impl HandleRegistry {
                 owner_session: None,
                 resource_id: None,
                 facade: false,
+                facade_cancellation: None,
                 state: Mutex::new(StreamState::default()),
             }),
         );
@@ -949,8 +1474,40 @@ impl HandleRegistry {
         owner_session: Option<&str>,
         operation: &str,
     ) -> Result<(WireHandle, Arc<FacadeResourceRecord>), EchoSdkError> {
+        self.register_facade_resource_batch(
+            max_facade_resources,
+            family,
+            resource_type,
+            owner_session,
+            operation,
+            1,
+        )?
+        .into_iter()
+        .next()
+        .ok_or_else(|| {
+            sdk_error(
+                ExtensionErrorCode::FrameworkError,
+                "facade resource publication omitted its reserved address",
+                Retryability::Never,
+                operation,
+            )
+        })
+    }
+
+    /// Publish an entire alias set under the same global handle/resource
+    /// authority. Preflight and mint every address before inserting any entry;
+    /// an error leaves no unreturned prefix consuming quota.
+    pub(crate) fn register_facade_resource_batch(
+        &self,
+        max_facade_resources: usize,
+        family: &str,
+        resource_type: &str,
+        owner_session: Option<&str>,
+        operation: &str,
+        count: usize,
+    ) -> Result<Vec<(WireHandle, Arc<FacadeResourceRecord>)>, EchoSdkError> {
         let mut inner = self.lock();
-        if inner.facade_resources.len() >= max_facade_resources {
+        if inner.facade_resources.len().saturating_add(count) > max_facade_resources {
             return Err(sdk_error(
                 ExtensionErrorCode::PayloadTooLarge,
                 format!("open facade resource limit {max_facade_resources} reached"),
@@ -959,29 +1516,40 @@ impl HandleRegistry {
             ));
         }
         if let Some(owner) = owner_session
-            // The owner is an ACP session id; session handle ids are minted
-            // independently, so match against the session records.
-            && !inner
-                .sessions
-                .values()
-                .any(|record| record.acp_session_id == owner)
+            && !inner.sessions.values().any(|record| {
+                record.acp_session_id == owner
+                    && !record.closing.load(std::sync::atomic::Ordering::Acquire)
+            })
         {
             let session = handle(owner.to_string(), HandleKind::Session, inner.generation);
             drop(inner);
             return Err(self.resolve_error(&session, HandleKind::Session, operation));
         }
-        self.enforce_budget(&mut inner, 1)?;
-        let id = Self::mint_id(&mut inner, HandleKind::FacadeResource)?;
-        let record = Arc::new(FacadeResourceRecord {
-            family: family.to_string(),
-            resource_type: resource_type.to_string(),
-            owner_session: owner_session.map(str::to_string),
-        });
-        inner.facade_resources.insert(id.clone(), record.clone());
-        Ok((
-            handle(id, HandleKind::FacadeResource, inner.generation),
-            record,
-        ))
+        self.enforce_budget(&mut inner, count)?;
+        let mut published = Vec::with_capacity(count);
+        for _ in 0..count {
+            let id = Self::mint_id(&mut inner, HandleKind::FacadeResource)?;
+            let record = Arc::new(FacadeResourceRecord {
+                lifecycle: Arc::new(tokio::sync::RwLock::new(())),
+                closing: std::sync::atomic::AtomicBool::new(false),
+                cancel_operations: tokio_util::sync::CancellationToken::new(),
+                #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
+                channel_bindings: Mutex::new(Vec::new()),
+                family: family.to_string(),
+                resource_type: resource_type.to_string(),
+                owner_session: owner_session.map(str::to_string),
+            });
+            published.push((
+                handle(id, HandleKind::FacadeResource, inner.generation),
+                record,
+            ));
+        }
+        for (handle, record) in &published {
+            inner
+                .facade_resources
+                .insert(handle.id.clone(), record.clone());
+        }
+        Ok(published)
     }
 
     /// Resolve one facade resource through the fixed ladder
@@ -991,9 +1559,80 @@ impl HandleRegistry {
         handle: &WireHandle,
         operation: &str,
     ) -> Result<Arc<FacadeResourceRecord>, EchoSdkError> {
+        let record = self.facade_resource_for_close(handle, operation)?;
+        if record.closing.load(std::sync::atomic::Ordering::Acquire) {
+            return Err(handle_error(
+                ExtensionErrorCode::ClosedHandle,
+                "resource is closing",
+                operation,
+                handle,
+            ));
+        }
+        Ok(record)
+    }
+
+    pub fn facade_resource_for_close(
+        &self,
+        handle: &WireHandle,
+        operation: &str,
+    ) -> Result<Arc<FacadeResourceRecord>, EchoSdkError> {
         self.check_shape_and_generation(handle, HandleKind::FacadeResource, operation)?;
         let found = self.lock().facade_resources.get(&handle.id).cloned();
         found.ok_or_else(|| self.resolve_error(handle, HandleKind::FacadeResource, operation))
+    }
+
+    #[cfg(all(feature = "sdk-facade-adapters", feature = "framework-mcp"))]
+    pub(crate) fn commit_mcp_preparation(&self, handle: &WireHandle) -> Result<(), EchoSdkError> {
+        const OPERATION: &str = "_echo_agent/mcp/op";
+        self.check_shape_and_generation(handle, HandleKind::FacadeResource, OPERATION)?;
+        let mut inner = self.lock();
+        let previous = inner
+            .facade_resources
+            .get(&handle.id)
+            .cloned()
+            .ok_or_else(|| {
+                handle_error(
+                    ExtensionErrorCode::ClosedHandle,
+                    "MCP publication reservation is closed",
+                    OPERATION,
+                    handle,
+                )
+            })?;
+        if previous.resource_type != "mcp.pending_client" {
+            return Err(handle_error(
+                ExtensionErrorCode::InvalidValue,
+                "resource is not an MCP preparation",
+                OPERATION,
+                handle,
+            ));
+        }
+        if previous.owner_session.as_ref().is_some_and(|owner| {
+            !inner.sessions.values().any(|session| {
+                &session.acp_session_id == owner
+                    && !session.closing.load(std::sync::atomic::Ordering::Acquire)
+            })
+        }) {
+            return Err(handle_error(
+                ExtensionErrorCode::ClosedHandle,
+                "MCP preparation owner is closing",
+                OPERATION,
+                handle,
+            ));
+        }
+        inner.facade_resources.insert(
+            handle.id.clone(),
+            Arc::new(FacadeResourceRecord {
+                lifecycle: Arc::new(tokio::sync::RwLock::new(())),
+                closing: std::sync::atomic::AtomicBool::new(false),
+                cancel_operations: tokio_util::sync::CancellationToken::new(),
+                #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
+                channel_bindings: Mutex::new(Vec::new()),
+                family: previous.family.clone(),
+                resource_type: "mcp.client".to_string(),
+                owner_session: previous.owner_session.clone(),
+            }),
+        );
+        Ok(())
     }
 
     /// Close one Host-issued facade resource through the same generation and
@@ -1087,6 +1726,7 @@ impl HandleRegistry {
                 owner_session: owner_session.map(str::to_string),
                 resource_id: Some(resource.id.clone()),
                 facade: true,
+                facade_cancellation: Some(tokio_util::sync::CancellationToken::new()),
                 state: Mutex::new(StreamState::default()),
             }),
         );
@@ -1136,10 +1776,11 @@ impl HandleRegistry {
         operation: &str,
     ) -> Result<(u64, bool), EchoSdkError> {
         let record = self.facade_stream(handle, owner_session, operation)?;
-        let state = record
+        let mut state = record
             .state
             .lock()
             .unwrap_or_else(|error| error.into_inner());
+        record.observe_facade_cancellation(&mut state);
         Ok((state.last_sequence, state.cancelled))
     }
 
@@ -1158,6 +1799,7 @@ impl HandleRegistry {
             .state
             .lock()
             .unwrap_or_else(|error| error.into_inner());
+        record.observe_facade_cancellation(&mut state);
         if state.cancelled {
             return Err(handle_error(
                 ExtensionErrorCode::Cancelled,
@@ -1192,7 +1834,10 @@ impl HandleRegistry {
     /// Atomically allocate the final sequence and mark the facade stream
     /// terminal. This is the only terminal transition; the caller can then
     /// return the terminal event and tombstone the handle without another
-    /// consumer racing a duplicate terminal.
+    /// consumer racing a duplicate terminal. Return the committed cancellation
+    /// fact under this same lock: concurrent local SDK clients may cancel
+    /// between a caller's earlier read and this commit, and that accepted
+    /// cancellation must not be lost from the terminal event projection.
     #[allow(dead_code)]
     pub fn settle_facade_stream(
         &self,
@@ -1200,12 +1845,13 @@ impl HandleRegistry {
         owner_session: Option<&str>,
         cancelled: bool,
         operation: &str,
-    ) -> Result<u64, EchoSdkError> {
+    ) -> Result<(u64, bool), EchoSdkError> {
         let record = self.facade_stream(handle, owner_session, operation)?;
         let mut state = record
             .state
             .lock()
             .unwrap_or_else(|error| error.into_inner());
+        record.observe_facade_cancellation(&mut state);
         if state.terminal {
             return Err(handle_error(
                 ExtensionErrorCode::ClosedHandle,
@@ -1225,12 +1871,13 @@ impl HandleRegistry {
         state.last_sequence = sequence;
         state.cancelled |= cancelled;
         state.terminal = true;
-        Ok(sequence)
+        Ok((sequence, state.cancelled))
     }
 
     /// Cooperatively cancel a facade stream. Repeated cancellation is an
-    /// idempotent `false`; invalid, stale and foreign handles still fail the
-    /// common ladder.
+    /// idempotent `false`; cancellation after a committed terminal is also
+    /// `false` and cannot rewrite that terminal. Invalid, stale and foreign
+    /// handles still fail the common ladder.
     #[allow(dead_code)]
     pub fn cancel_facade_stream(
         &self,
@@ -1243,10 +1890,14 @@ impl HandleRegistry {
             .state
             .lock()
             .unwrap_or_else(|error| error.into_inner());
-        if state.cancelled {
+        record.observe_facade_cancellation(&mut state);
+        if state.cancelled || state.terminal {
             Ok(false)
         } else {
             state.cancelled = true;
+            if let Some(token) = &record.facade_cancellation {
+                token.cancel();
+            }
             Ok(true)
         }
     }
@@ -1341,6 +1992,16 @@ impl HandleRegistry {
     /// cascade). Returns the closed handle ids so the facade runtime can
     /// cascade its stream bookkeeping.
     #[allow(dead_code)]
+    pub fn facade_resource_ids_of(&self, owner: &str) -> Vec<String> {
+        self.lock()
+            .facade_resources
+            .iter()
+            .filter(|(_, record)| record.owner_session.as_deref() == Some(owner))
+            .map(|(id, _)| id.clone())
+            .collect()
+    }
+
+    #[cfg(feature = "sdk-facade-adapters")]
     pub fn close_facade_resources_of(&self, owner: &str) -> Vec<String> {
         let mut inner = self.lock();
         let owned: Vec<String> = inner
@@ -1447,6 +2108,26 @@ impl HandleRegistry {
             .streams
             .contains_key(stream_id)
             .then(|| handle(stream_id.to_string(), HandleKind::Stream, inner.generation))
+    }
+
+    /// Fence Host-owned RPC admission before connection cleanup snapshots.
+    /// Existing operation permits observe cancellation and release their
+    /// read gate; no new publication can enter a closing Session.
+    pub(crate) fn fence_sessions(&self) -> Vec<Arc<SessionRecord>> {
+        let inner = self.lock();
+        for agent in inner.agents.values() {
+            agent
+                .closing
+                .store(true, std::sync::atomic::Ordering::Release);
+        }
+        let sessions = inner.sessions.values().cloned().collect::<Vec<_>>();
+        for session in &sessions {
+            session
+                .closing
+                .store(true, std::sync::atomic::Ordering::Release);
+            session.cancel_operations.cancel();
+        }
+        sessions
     }
 
     pub fn sessions_for_agent(&self, agent_handle_id: &str) -> Vec<(WireHandle, String)> {
@@ -1600,7 +2281,11 @@ impl HandleRegistry {
         expected: HandleKind,
         operation: &str,
     ) -> EchoSdkError {
-        match Self::classify(&self.lock(), handle, expected) {
+        let (classification, generation) = {
+            let inner = self.lock();
+            (Self::classify(&inner, handle, expected), inner.generation)
+        };
+        match classification {
             ResolveError::InvalidShape(reason) => sdk_error(
                 ExtensionErrorCode::InvalidValue,
                 reason.to_string(),
@@ -1612,7 +2297,7 @@ impl HandleRegistry {
                 format!(
                     "handle generation {} predates Host generation {}",
                     handle.generation.to_u64().unwrap_or_default(),
-                    self.lock().generation
+                    generation
                 ),
                 operation,
                 handle,
@@ -1775,6 +2460,118 @@ mod tests {
             allows_parallel_batch_execution: true,
             manages_own_timeout: false,
         }
+    }
+
+    #[test]
+    fn factory_reservation_is_quota_bound_and_commits_same_owned_identity() -> Result<(), String> {
+        let registry = registry();
+        let limits = ExtensionRegistrationLimits {
+            max_extensions: 2,
+            max_descriptor_bytes: MAX_EXTENSION_DESCRIPTOR_BYTES,
+        };
+        let (parent, _) = registry
+            .register_extension(
+                limits,
+                ExtensionKind::AgentFactory,
+                "factory",
+                ExtensionDescriptor::AgentFactory {
+                    descriptor_version: 1,
+                },
+                None,
+                false,
+            )
+            .map_err(|e| e.message)?;
+        let child = registry
+            .reserve_factory_instance(limits, &parent, "factory-child", None)
+            .map_err(|e| e.message)?;
+        assert!(registry.extension(&child).is_err());
+        assert!(
+            registry
+                .extension_for_cleanup(&child)
+                .is_ok_and(|r| r.reserved)
+        );
+        assert!(
+            registry
+                .reserve_factory_instance(limits, &parent, "another-child", None)
+                .is_err()
+        );
+        assert!(registry.close_extension(&parent).is_err());
+        let committed = registry
+            .complete_factory_instance_reserved(
+                limits,
+                &child,
+                &parent,
+                ExtensionDescriptor::CustomAgent {
+                    descriptor_version: 1,
+                    name: "真实子智能体".to_string(),
+                    model_name: "fixture".to_string(),
+                    system_prompt: String::new(),
+                    tool_names: Vec::new(),
+                },
+            )
+            .map_err(|e| e.message)?;
+        assert!(!committed.reserved);
+        assert_eq!(committed.factory_origin.as_ref(), Some(&parent));
+        assert!(registry.extension(&child).is_ok());
+        assert!(registry.close_extension(&parent).is_err());
+        assert!(registry.close_extension(&child).map_err(|e| e.message)?);
+        assert!(registry.close_extension(&parent).map_err(|e| e.message)?);
+        Ok(())
+    }
+
+    #[test]
+    fn failed_factory_commit_preserves_pending_close_address() -> Result<(), String> {
+        let registry = registry();
+        let limits = ExtensionRegistrationLimits {
+            max_extensions: 4,
+            max_descriptor_bytes: MAX_EXTENSION_DESCRIPTOR_BYTES,
+        };
+        let (parent, _) = registry
+            .register_extension(
+                limits,
+                ExtensionKind::AgentFactory,
+                "factory",
+                ExtensionDescriptor::AgentFactory {
+                    descriptor_version: 1,
+                },
+                None,
+                false,
+            )
+            .map_err(|e| e.message)?;
+        let child = registry
+            .reserve_factory_instance(limits, &parent, "pending", None)
+            .map_err(|e| e.message)?;
+        let (other, _) = registry
+            .register_extension(
+                limits,
+                ExtensionKind::AgentFactory,
+                "other",
+                ExtensionDescriptor::AgentFactory {
+                    descriptor_version: 1,
+                },
+                None,
+                false,
+            )
+            .map_err(|e| e.message)?;
+        let descriptor = ExtensionDescriptor::CustomAgent {
+            descriptor_version: 1,
+            name: "pending".to_string(),
+            model_name: "fixture".to_string(),
+            system_prompt: String::new(),
+            tool_names: Vec::new(),
+        };
+        assert!(
+            registry
+                .complete_factory_instance_reserved(limits, &child, &other, descriptor)
+                .is_err()
+        );
+        let pending = registry
+            .extension_for_cleanup(&child)
+            .map_err(|e| e.message)?;
+        assert!(pending.reserved);
+        assert_eq!(pending.factory_origin.as_ref(), Some(&parent));
+        assert!(registry.close_extension(&child).map_err(|e| e.message)?);
+        Ok(())
     }
 
     #[test]
@@ -2152,5 +2949,51 @@ mod tests {
                 .close_facade_stream(&stale, None, "test")
                 .is_err_and(|error| error.code == ExtensionErrorCode::StaleHandle)
         );
+    }
+    #[test]
+    fn atomic_facade_batch_rejects_resource_quota_without_prefix() -> Result<(), String> {
+        let registry = HandleRegistry::new(7, 8);
+        let (existing, _) = registry
+            .register_facade_resource(2, "test", "existing", None, "test")
+            .map_err(|error| error.message)?;
+        let error = registry
+            .register_facade_resource_batch(2, "mcp", "mcp.client", None, "test", 2)
+            .err()
+            .ok_or("batch unexpectedly exceeded resource quota")?;
+        assert_eq!(error.code, ExtensionErrorCode::PayloadTooLarge);
+        assert!(registry.facade_resource(&existing, "test").is_ok());
+        let (remaining, _) = registry
+            .register_facade_resource(2, "test", "remaining", None, "test")
+            .map_err(|error| error.message)?;
+        assert_ne!(existing, remaining);
+        assert!(
+            registry
+                .register_facade_resource(2, "test", "overflow", None, "test")
+                .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn atomic_facade_batch_rejects_global_handle_quota_without_prefix() -> Result<(), String> {
+        let registry = HandleRegistry::new(7, 2);
+        let (existing, _) = registry
+            .register_facade_resource(8, "test", "existing", None, "test")
+            .map_err(|error| error.message)?;
+        let error = registry
+            .register_facade_resource_batch(8, "mcp", "mcp.client", None, "test", 2)
+            .err()
+            .ok_or("batch unexpectedly exceeded global handle quota")?;
+        assert_eq!(error.code, ExtensionErrorCode::PayloadTooLarge);
+        assert!(registry.facade_resource(&existing, "test").is_ok());
+        registry
+            .register_facade_resource(8, "test", "remaining", None, "test")
+            .map_err(|error| error.message)?;
+        assert!(
+            registry
+                .register_facade_resource(8, "test", "overflow", None, "test")
+                .is_err()
+        );
+        Ok(())
     }
 }

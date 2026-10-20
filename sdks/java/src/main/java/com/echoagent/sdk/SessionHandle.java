@@ -17,6 +17,7 @@ public final class SessionHandle implements AutoCloseable {
     private final String acpSessionId;
     private final WireHandle taskRun;
     private final AtomicBoolean closed = new AtomicBoolean();
+    private CompletionStage<Void> closeStage;
 
     SessionHandle(EchoAgentClient client, WireHandle agent, WireHandle wire, String acpSessionId, WireHandle taskRun) {
         this.client = client;
@@ -79,15 +80,23 @@ public final class SessionHandle implements AutoCloseable {
         return client.request("session/cancel", params).thenApply(ignored -> null);
     }
 
-    public CompletionStage<Void> closeAsync() {
-        if (!closed.compareAndSet(false, true)) return CompletableFuture.completedFuture(null);
-        return client.request("_echo_agent/session/close",
-                        JsonSupport.MAPPER.createObjectNode().set("session", wire.toJson()))
-                .handle((ignored, error) -> {
+    public synchronized CompletionStage<Void> closeAsync() {
+        if (closed.get()) return CompletableFuture.completedFuture(null);
+        if (closeStage != null) return closeStage;
+        var result = new CompletableFuture<Void>();
+        closeStage = result;
+        client.request("_echo_agent/session/close", JsonSupport.MAPPER.createObjectNode().set("session", wire.toJson())).thenApply(ignored -> null).whenComplete((ignored, error) -> {
+            synchronized (this) {
+                if (error == null) {
+                    closed.set(true);
                     client.closeUpdates(acpSessionId);
-                    if (error != null) throw new CompletionException(error);
-                    return null;
-                });
+                }
+                closeStage = null;
+            }
+            if (error == null) result.complete(null);
+            else result.completeExceptionally(error);
+        });
+        return result;
     }
 
     @Override public void close() {

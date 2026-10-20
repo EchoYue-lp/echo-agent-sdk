@@ -7,6 +7,7 @@ import math
 import os
 from collections import deque
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import timedelta
 from pathlib import Path
@@ -16,6 +17,7 @@ from typing import Any, Literal, Protocol, TypedDict, cast
 from acp.connection import StreamDirection, StreamEvent
 from acp.schema import ClientCapabilities, Implementation
 from acp.stdio import spawn_agent_process
+from pydantic import ValidationError
 from typing_extensions import Self
 
 from .catalog import FacadeCatalog
@@ -59,6 +61,10 @@ AgentComponentKind = Literal[
     "skill_load_policy",
 ]
 
+from .managed import MANAGED_OPERATIONS, RevisionedTaskGraph, TaskGraphCommit
+from .managed import parse_request as parse_managed_request
+from .managed import validate_result as validate_managed_result
+
 AGENT_COMPONENT_OPERATIONS = frozenset(
     {
         "conversation_create",
@@ -97,6 +103,7 @@ AGENT_COMPONENT_OPERATIONS = frozenset(
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
         "workflow_checkpoint_list",
         "workflow_checkpoint_list_by_graph",
         "workflow_checkpoint_list_filtered",
@@ -121,6 +128,12 @@ AGENT_COMPONENT_OPERATIONS = frozenset(
         "intent_classify",
         "skill_load_allows",
     }
+)
+
+AGENT_COMPONENT_OPERATIONS = (
+    AGENT_COMPONENT_OPERATIONS
+    | frozenset(MANAGED_OPERATIONS)
+    | {"revisioned_task_compare_and_commit_execution"}
 )
 
 _AGENT_COMPONENTS = frozenset(
@@ -195,6 +208,7 @@ _AGENT_COMPONENT_INPUT_FIELDS: dict[str, frozenset[str]] = {
     "workflow_checkpoint_ack_claim": frozenset({"checkpoint_id", "attempt_id"}),
     "workflow_checkpoint_requeue_claim": frozenset({"checkpoint_id", "attempt_id"}),
     "workflow_checkpoint_renew_claim": frozenset({"checkpoint_id", "attempt_id"}),
+    "workflow_checkpoint_protect_claim": frozenset({"checkpoint_id", "attempt_id"}),
     "workflow_checkpoint_list": frozenset(),
     "workflow_checkpoint_list_by_graph": frozenset({"graph_name"}),
     "workflow_checkpoint_list_filtered": frozenset({"filter"}),
@@ -202,6 +216,7 @@ _AGENT_COMPONENT_INPUT_FIELDS: dict[str, frozenset[str]] = {
     "workflow_checkpoint_clear": frozenset(),
     "revisioned_task_load": frozenset({"scope_id"}),
     "revisioned_task_compare_and_commit": frozenset({"scope_id", "commit"}),
+    "revisioned_task_compare_and_commit_execution": frozenset({"scope_id", "commit"}),
     "sandbox_is_available": frozenset(),
     "sandbox_execute": frozenset({"command"}),
     "sandbox_execute_stream": frozenset({"command"}),
@@ -469,8 +484,47 @@ class AgentComponentDescriptor:
     supports_streaming: bool = False
     supports_notifications: bool = False
     claim_heartbeat_interval_ms: int | None = None
+    conversation_projection: Literal["unsupported", "atomic_v1"] = "unsupported"
+    runtime_state: Literal["unsupported", "revisioned_v1"] = "unsupported"
+    persistence_call: Literal["unsupported", "absolute_deadline_v1"] = "unsupported"
+    execution_cas_v1: bool = False
+    protected_claim_v1: bool = False
 
     def __post_init__(self) -> None:
+        if (
+            self.conversation_projection not in {"unsupported", "atomic_v1"}
+            or self.conversation_projection != "unsupported"
+            and self.component != "conversation_store"
+        ):
+            raise ValueError("conversation projection capability invalid for component")
+        if (
+            self.runtime_state not in {"unsupported", "revisioned_v1"}
+            or self.runtime_state != "unsupported"
+            and self.component != "runtime_state_store"
+        ):
+            raise ValueError("runtime state capability invalid for component")
+        if (
+            self.persistence_call not in {"unsupported", "absolute_deadline_v1"}
+            or self.persistence_call != "unsupported"
+            and self.component not in {"conversation_store", "runtime_state_store"}
+        ):
+            raise ValueError("persistence capability invalid for component")
+        if (
+            type(self.execution_cas_v1) is not bool
+            or self.execution_cas_v1
+            and self.component != "revisioned_task_store"
+        ):
+            raise ValueError(
+                "execution CAS capability requires a boolean and revisioned task store"
+            )
+        if (
+            type(self.protected_claim_v1) is not bool
+            or self.protected_claim_v1
+            and self.component != "workflow_checkpoint_store"
+        ):
+            raise ValueError(
+                "protected claim capability requires a boolean and workflow checkpoint store"
+            )
         if self.component not in _AGENT_COMPONENTS:
             raise ValueError("unknown Agent component kind")
         if not self.name or len(self.name) > 256:
@@ -509,6 +563,11 @@ class AgentComponentDescriptor:
 
     def to_wire(self) -> dict[str, Any]:
         capabilities: dict[str, Any] = {
+            "execution_cas_v1": self.execution_cas_v1,
+            "protected_claim_v1": self.protected_claim_v1,
+            "conversation_projection": self.conversation_projection,
+            "runtime_state": self.runtime_state,
+            "persistence_call": self.persistence_call,
             "isolation_level": self.isolation_level,
             "supports_streaming": self.supports_streaming,
             "supports_notifications": self.supports_notifications,
@@ -960,6 +1019,7 @@ class WorkflowCheckpointClaimAttemptRequest:
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
     ] = "workflow_checkpoint_ack_claim"
 
     def __post_init__(self) -> None:
@@ -967,6 +1027,7 @@ class WorkflowCheckpointClaimAttemptRequest:
             "workflow_checkpoint_ack_claim",
             "workflow_checkpoint_requeue_claim",
             "workflow_checkpoint_renew_claim",
+            "workflow_checkpoint_protect_claim",
         }:
             raise ValueError("invalid workflow checkpoint claim-attempt operation")
 
@@ -1024,7 +1085,7 @@ class RevisionedTaskLoadRequest:
 @dataclass(frozen=True, slots=True)
 class RevisionedTaskCompareAndCommitRequest:
     scope_id: str
-    commit: Mapping[str, Any]
+    commit: TaskGraphCommit
     operation: Literal["revisioned_task_compare_and_commit"] = (
         "revisioned_task_compare_and_commit"
     )
@@ -1151,6 +1212,8 @@ def _component_wire(arguments: Mapping[str, Any], field: str) -> Mapping[str, An
 def _component_request(
     operation: str, arguments: Mapping[str, Any]
 ) -> AgentComponentRequest:
+    if operation in MANAGED_OPERATIONS:
+        return parse_managed_request(operation, arguments)
     allowed = _AGENT_COMPONENT_INPUT_FIELDS.get(operation)
     if allowed is None:
         raise ValueError(f"unsupported Agent component operation: {operation}")
@@ -1303,6 +1366,7 @@ def _component_request(
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
     }:
         return WorkflowCheckpointClaimAttemptRequest(
             text("checkpoint_id"),
@@ -1312,6 +1376,7 @@ def _component_request(
                     "workflow_checkpoint_ack_claim",
                     "workflow_checkpoint_requeue_claim",
                     "workflow_checkpoint_renew_claim",
+                    "workflow_checkpoint_protect_claim",
                 ],
                 operation,
             ),
@@ -1330,8 +1395,21 @@ def _component_request(
         return WorkflowCheckpointClearRequest()
     if operation == "revisioned_task_load":
         return RevisionedTaskLoadRequest(text("scope_id"))
-    if operation == "revisioned_task_compare_and_commit":
-        return RevisionedTaskCompareAndCommitRequest(text("scope_id"), wire("commit"))
+    if operation in {
+        "revisioned_task_compare_and_commit",
+        "revisioned_task_compare_and_commit_execution",
+    }:
+        from .managed import RevisionedTaskExecutionCommitRequest, decode
+
+        typed_commit = decode(
+            "TaskExecutionCommitWire"
+            if operation.endswith("_execution")
+            else "TaskGraphCommitWire",
+            arguments.get("commit"),
+        )
+        if operation.endswith("_execution"):
+            return RevisionedTaskExecutionCommitRequest(text("scope_id"), typed_commit)
+        return RevisionedTaskCompareAndCommitRequest(text("scope_id"), typed_commit)
     if operation in {"sandbox_is_available", "sandbox_cleanup"}:
         if arguments:
             raise ValueError(f"{operation} input must be empty")
@@ -1493,7 +1571,7 @@ class CompressionCall:
 
 @dataclass(frozen=True, slots=True)
 class AgentComponentCall:
-    """Decoded operation-discriminated Agent component invocation."""
+    """Decoded invocation retaining its optional Host-issued producer stream."""
 
     component: str
     request: AgentComponentRequest
@@ -1503,6 +1581,7 @@ class AgentComponentCall:
     extension: WireHandle | None = None
     invocation_id: str | None = None
     deadline: Mapping[str, Any] | None = None
+    stream: WireHandle | None = None
 
     @classmethod
     def from_payload(cls, payload: Mapping[str, Any]) -> AgentComponentCall:
@@ -1546,6 +1625,7 @@ class AgentComponentCall:
             extension=_payload_handle(payload, "extension"),
             invocation_id=_optional_text(payload.get("invocation_id")),
             deadline=cast(Mapping[str, Any] | None, payload.get("deadline")),
+            stream=_payload_handle(payload, "stream"),
         )
 
     @property
@@ -1854,6 +1934,12 @@ class WorkflowCheckpointResult:
         )
 
     @staticmethod
+    def claim_protected() -> AgentComponentResult:
+        return _TypedAgentComponentResult(
+            "workflow_checkpoint_store", "workflow_checkpoint_protect_claim"
+        )
+
+    @staticmethod
     def loaded(checkpoint: Mapping[str, Any] | None) -> AgentComponentResult:
         return _TypedAgentComponentResult(
             "workflow_checkpoint_store",
@@ -1905,17 +1991,27 @@ class WorkflowCheckpointResult:
 
 class RevisionedTaskStoreResult:
     @staticmethod
-    def loaded(graph: Mapping[str, Any] | None) -> AgentComponentResult:
+    def loaded(graph: RevisionedTaskGraph | None) -> AgentComponentResult:
         return _TypedAgentComponentResult(
-            "revisioned_task_store", "revisioned_task_load", {"graph": graph}
+            "revisioned_task_store",
+            "revisioned_task_load",
+            {"graph": graph.to_wire() if graph is not None else None},
         )
 
     @staticmethod
-    def committed(graph: Mapping[str, Any]) -> AgentComponentResult:
+    def committed(graph: RevisionedTaskGraph) -> AgentComponentResult:
         return _TypedAgentComponentResult(
             "revisioned_task_store",
             "revisioned_task_compare_and_commit",
-            {"graph": graph},
+            {"graph": graph.to_wire()},
+        )
+
+    @staticmethod
+    def execution_committed(graph: RevisionedTaskGraph) -> AgentComponentResult:
+        return _TypedAgentComponentResult(
+            "revisioned_task_store",
+            "revisioned_task_compare_and_commit_execution",
+            {"graph": graph.to_wire()},
         )
 
 
@@ -2028,6 +2124,9 @@ class SkillLoadPolicyResult:
 
 
 def _validate_component_result(operation: str, value: Mapping[str, Any] | None) -> None:
+    if operation in MANAGED_OPERATIONS:
+        validate_managed_result(operation, value)
+        return
     unit = {
         "conversation_update",
         "conversation_delete",
@@ -2042,6 +2141,7 @@ def _validate_component_result(operation: str, value: Mapping[str, Any] | None) 
         "workflow_checkpoint_ack_claim",
         "workflow_checkpoint_requeue_claim",
         "workflow_checkpoint_renew_claim",
+        "workflow_checkpoint_protect_claim",
         "workflow_checkpoint_delete",
         "workflow_checkpoint_clear",
         "sandbox_cleanup",
@@ -2084,6 +2184,7 @@ def _validate_component_result(operation: str, value: Mapping[str, Any] | None) 
         "workflow_checkpoint_list_filtered": {"checkpoints"},
         "revisioned_task_load": {"graph"},
         "revisioned_task_compare_and_commit": {"graph"},
+        "revisioned_task_compare_and_commit_execution": {"graph"},
         "sandbox_is_available": {"available"},
         "sandbox_execute": {"result"},
         "sandbox_execute_with_limits": {"result"},
@@ -2100,6 +2201,18 @@ def _validate_component_result(operation: str, value: Mapping[str, Any] | None) 
     if expected_fields is None or set(value) != expected_fields:
         raise ValueError(f"{operation} result fields do not match its typed contract")
 
+    if operation in {
+        "revisioned_task_load",
+        "revisioned_task_compare_and_commit",
+        "revisioned_task_compare_and_commit_execution",
+    }:
+        from .managed import decode
+
+        if value["graph"] is not None:
+            decode("RevisionedTaskGraphWire", value["graph"])
+        elif operation != "revisioned_task_load":
+            raise ValueError("committed graph is required")
+        return
     if operation == "workflow_checkpoint_save_if_generation":
         if not isinstance(value.get("committed"), bool):
             raise TypeError("committed must be a bool")
@@ -2498,20 +2611,104 @@ class _AsyncQueue:
         self._on_consume = on_consume
         self._closed = False
         self._failure: BaseException | None = None
+        self._control_pending: Any = None
+        self._admission_progress: asyncio.Future[None] | None = None
+        # Projection of successful discard only, not received or pending ACKs.
+        self._retired_event_floor = 0
+
+    def _signal_admission_progress(self) -> None:
+        progress, self._admission_progress = self._admission_progress, None
+        if progress is not None and not progress.done():
+            progress.set_result(None)
+
+    def _has_data_capacity(self) -> bool:
+        return any(not waiter.done() for waiter in self._waiters) or (
+            len(self._items) - (1 if self._control_pending is not None else 0)
+            < self._maxsize
+        )
+
+    def _can_retire_prefix(self, sequence: int) -> bool:
+        return any(
+            isinstance(item, dict)
+            and isinstance(item.get("envelope"), dict)
+            and isinstance(item["envelope"].get("sequence"), str)
+            and int(item["envelope"]["sequence"]) <= sequence
+            for item in self._items
+        )
+
+    async def _wait_for_admission(
+        self, candidates: tuple[_PendingAcknowledgement, ...]
+    ) -> None:
+        while not self._closed and not self._has_data_capacity():
+            pending = [
+                candidate.completion
+                for candidate in candidates
+                if not candidate.completion.done()
+                and self._can_retire_prefix(candidate.sequence)
+            ]
+            if not pending:
+                return  # Keep the existing queue-full failure policy.
+            if self._admission_progress is None:
+                self._admission_progress = asyncio.get_running_loop().create_future()
+            # asyncio.wait does not cancel shared IO/progress owners when this
+            # independently dispatched observer is cancelled.
+            await asyncio.wait(
+                [self._admission_progress, *pending],
+                return_when=asyncio.FIRST_COMPLETED,
+            )
 
     def set_on_consume(self, callback: Callable[[Any], Awaitable[None]] | None) -> None:
         self._on_consume = callback
 
-    def push(self, value: Any) -> None:
+    def push(self, value: Any, *, control: bool = False) -> None:
         if self._closed:
             return
+        if control and self._control_pending is not None:
+            for index, pending in enumerate(self._items):
+                if pending is self._control_pending:
+                    if (
+                        isinstance(pending, dict)
+                        and isinstance(pending.get("gap"), dict)
+                        and isinstance(value, dict)
+                        and isinstance(value.get("gap"), dict)
+                    ):
+                        old_from = pending["gap"].get("from_sequence")
+                        merged = {
+                            **value,
+                            "gap": {
+                                **value["gap"],
+                                **(
+                                    {"from_sequence": old_from}
+                                    if old_from is not None
+                                    else {}
+                                ),
+                            },
+                        }
+                        watermark = int(value["gap"]["snapshot_watermark"])
+                        prefix = list(self._items)[:index]
+                        tail = [
+                            item
+                            for item in list(self._items)[index + 1 :]
+                            if not isinstance(item, dict)
+                            or not isinstance(item.get("envelope"), dict)
+                            or not isinstance(item["envelope"].get("sequence"), str)
+                            or int(item["envelope"]["sequence"]) > watermark
+                        ]
+                        self._items = deque([*prefix, merged, *tail])
+                        self._control_pending = merged
+                    else:
+                        self._items[index] = value
+                        self._control_pending = value
+                    self._signal_admission_progress()
+                    return
         while self._waiters:
             waiter = self._waiters.popleft()
             if waiter.done():
                 continue
             waiter.set_result(value)
             return
-        if len(self._items) >= self._maxsize:
+        data_count = len(self._items) - (1 if self._control_pending is not None else 0)
+        if not control and data_count >= self._maxsize:
             self.fail(
                 EchoAgentError(
                     "event_gap",
@@ -2520,7 +2717,21 @@ class _AsyncQueue:
                 )
             )
             return
+        if control:
+            self._control_pending = value
         self._items.append(value)
+
+    def discard_acknowledged_events(self, sequence: int) -> None:
+        self._retired_event_floor = max(self._retired_event_floor, sequence)
+        self._items = deque(
+            item
+            for item in self._items
+            if not isinstance(item, dict)
+            or not isinstance(item.get("envelope"), dict)
+            or not isinstance(item["envelope"].get("sequence"), str)
+            or int(item["envelope"]["sequence"]) > sequence
+        )
+        self._signal_admission_progress()
 
     def fail(self, error: BaseException, *, discard_pending: bool = False) -> None:
         if discard_pending:
@@ -2528,6 +2739,7 @@ class _AsyncQueue:
         if self._closed:
             return
         self._closed = True
+        self._signal_admission_progress()
         self._failure = error
         while self._waiters:
             waiter = self._waiters.popleft()
@@ -2538,6 +2750,7 @@ class _AsyncQueue:
         if self._closed:
             return
         self._closed = True
+        self._signal_admission_progress()
         while self._waiters:
             waiter = self._waiters.popleft()
             if not waiter.done():
@@ -2546,6 +2759,9 @@ class _AsyncQueue:
     async def get(self) -> Any:
         if self._items:
             value = self._items.popleft()
+            if value is self._control_pending:
+                self._control_pending = None
+            self._signal_admission_progress()
             if self._on_consume is not None:
                 await self._on_consume(value)
             return value
@@ -2576,12 +2792,27 @@ class _AsyncQueue:
 
 
 @dataclass(slots=True)
+class _PendingAcknowledgement:
+    sequence: int
+    completion: asyncio.Future[None]
+
+
+@dataclass(slots=True)
 class _EventFeed:
     """One generation-fenced event feed owned by a stream id."""
 
     queue: _AsyncQueue
     handle: WireHandle | None = None
     last_sequence: int = 0
+    last_live_sequence: int = 0
+    last_gap_watermark: int = 0
+    replay_terminal_sequence: int | None = None
+    pending_ack_sequences: dict[object, int] = field(default_factory=dict)
+    pending_acknowledgements: dict[object, _PendingAcknowledgement] = field(
+        default_factory=dict
+    )
+    delivery_tail: asyncio.Future[None] | None = None
+    live_ranges: list[tuple[int, int]] = field(default_factory=list)
 
     def bind(self, handle: WireHandle) -> None:
         if handle.kind != "stream":
@@ -2610,11 +2841,28 @@ class _EventFeed:
         sequence = _parse_positive_sequence(envelope.get("sequence"), "event sequence")
         if sequence == self.last_sequence:
             return False
-        if self.last_sequence > 0 and sequence != self.last_sequence + 1:
+        if (
+            self.last_sequence > 0
+            and sequence != self.last_sequence + 1
+            and (
+                sequence <= self.last_sequence
+                or not any(
+                    sequence == predecessor + 1
+                    for predecessor in self.pending_ack_sequences.values()
+                )
+            )
+        ):
             raise EchoAgentError(
                 "event_gap", "event sequence is not contiguous; replay is required"
             )
         self.last_sequence = sequence
+        self.last_live_sequence = sequence
+        if self.live_ranges and self.live_ranges[-1][1] + 1 == sequence:
+            self.live_ranges[-1] = (self.live_ranges[-1][0], sequence)
+        else:
+            self.live_ranges.append((sequence, sequence))
+        if len(self.live_ranges) > 512:
+            self.live_ranges.pop(0)
         return True
 
     def accept_gap(self, value: Mapping[str, Any]) -> bool:
@@ -2645,6 +2893,13 @@ class _EventFeed:
                 watermark > self.last_sequence
                 and self.last_sequence > 0
                 and from_sequence != self.last_sequence + 1
+                # A peer may resume before the official ACK writer completes.
+                # This permits only its next fact; it never commits consumption.
+                and not any(
+                    from_sequence > self.last_sequence
+                    and from_sequence == predecessor + 1
+                    for predecessor in self.pending_ack_sequences.values()
+                )
             )
         ):
             raise EchoAgentError(
@@ -2653,7 +2908,29 @@ class _EventFeed:
         if watermark == self.last_sequence:
             return False
         self.last_sequence = watermark
+        self.last_gap_watermark = watermark
         return True
+
+
+def _replay_covers_cursor(
+    ranges: list[tuple[int, int] | tuple[int, int, int]], observed: int, sequence: int
+) -> bool:
+    """Reachable transport facts, independent of replay response arrival order."""
+    frontier = observed
+    for _ in range(len(ranges) + 1):
+        before = frontier
+        for entry in ranges:
+            base, end = entry[:2]
+            if base > frontier and (len(entry) != 3 or entry[2] > frontier):
+                continue
+            if sequence <= end and (
+                sequence > base or (len(entry) == 3 and sequence == base)
+            ):
+                return True
+            frontier = max(frontier, end)
+        if frontier == before:
+            break
+    return False
 
 
 def _parse_positive_sequence(value: Any, name: str) -> int:
@@ -2685,12 +2962,149 @@ def _parse_event_stream(value: Mapping[str, Any]) -> WireHandle:
     return stream
 
 
+async def _deliver_stream_item(
+    feed: _EventFeed, value: Any, *, control: bool = False, terminal: bool = False
+) -> None:
+    """Order existing official observer contexts, without another payload queue.
+
+    The official transport dispatches observers independently. Their contexts
+    can remain alive during ACK IO; a completion tail is not a total memory cap.
+    """
+    sequence = int(
+        value["gap"]["snapshot_watermark"] if control else value["envelope"]["sequence"]
+    )
+    queue = feed.queue
+    candidates = (
+        ()
+        if control
+        else tuple(
+            candidate
+            for candidate in feed.pending_acknowledgements.values()
+            if not candidate.completion.done()
+            and candidate.sequence < sequence <= candidate.sequence + queue._maxsize
+            and queue._can_retire_prefix(candidate.sequence)
+        )
+    )
+    previous = feed.delivery_tail
+    completion = asyncio.get_running_loop().create_future()
+    feed.delivery_tail = completion
+
+    def settled(_previous: asyncio.Future[None] | None = None) -> None:
+        if not completion.done():
+            completion.set_result(None)
+        if feed.delivery_tail is completion:
+            feed.delivery_tail = None
+
+    try:
+        if previous is not None:
+            await asyncio.shield(previous)
+        if not control and not queue._has_data_capacity():
+            await queue._wait_for_admission(candidates)
+        # Validation already updated receive facts. Never re-accept a held DTO
+        # after a later gap, or reinsert data covered by a real successful ACK.
+        if queue._closed or sequence <= queue._retired_event_floor:
+            return
+        queue.push(value, control=control)
+        if terminal:
+            queue.close()
+    finally:
+        # A cancelled middle observer must not let its successor overtake the
+        # still-pending predecessor. Link completion without another Task.
+        if previous is not None and not previous.done() and not queue._closed:
+            previous.add_done_callback(settled)
+        else:
+            settled()
+
+
+def _event_observers(
+    events: dict[str, _EventFeed], max_buffered_events: int
+) -> list[Callable[[StreamEvent], Awaitable[None]]]:
+    """Share the production receive/validation path with transport fixtures."""
+
+    async def observe(event: StreamEvent) -> None:
+        if event.direction is not StreamDirection.INCOMING:
+            return
+        message = event.message
+        if message.get("method") != "_echo_agent/event":
+            return
+        params = message.get("params")
+        if not isinstance(params, dict):
+            error = EchoAgentError(
+                "serialization_violation", "event notification must be an object"
+            )
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        try:
+            stream = _parse_event_stream(params)
+        except EchoAgentError as error:
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        feed = events.setdefault(
+            stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
+        )
+        try:
+            if feed.accept_event(params):
+                envelope = params["envelope"]
+                payload = envelope.get("payload")
+                terminal = isinstance(payload, Mapping) and payload.get(
+                    "event_type"
+                ) in {
+                    "final_answer",
+                    "cancelled",
+                    "error",
+                }
+                await _deliver_stream_item(feed, params, terminal=terminal)
+        except EchoAgentError as error:
+            feed.queue.fail(error)
+
+    async def observe_gap(event: StreamEvent) -> None:
+        if event.direction is not StreamDirection.INCOMING:
+            return
+        message = event.message
+        if message.get("method") != "_echo_agent/gap":
+            return
+        params = message.get("params")
+        if not isinstance(params, dict):
+            error = EchoAgentError(
+                "serialization_violation", "gap notification must be an object"
+            )
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        try:
+            stream = _parse_event_stream(params)
+        except EchoAgentError as error:
+            for feed in events.values():
+                feed.queue.fail(error)
+            return
+        feed = events.setdefault(
+            stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
+        )
+        try:
+            if feed.accept_gap(params):
+                await _deliver_stream_item(feed, params, control=True)
+        except EchoAgentError as error:
+            feed.queue.fail(error)
+
+    return [observe, observe_gap]
+
+
 class _Callbacks:
     def __init__(self, updates: dict[str, _AsyncQueue], queue_size: int) -> None:
         self._updates = updates
         self._queue_size = queue_size
         self.extensions: dict[str, Any] = {}
+        self.extension_registrations: dict[str, tuple[WireHandle, str]] = {}
+        self.factory_children: dict[WireHandle, WireHandle] = {}
+        self.closed_factory_children: dict[WireHandle, WireHandle] = {}
+        self.pending_factory_construction: dict[WireHandle, asyncio.Future[None]] = {}
         self.invocation_cancel: dict[str, asyncio.Event] = {}
+        self.stream_cancel_routes: dict[
+            WireHandle, tuple[str, asyncio.Event, WireHandle]
+        ] = {}
+        self._closing = False
 
     async def session_update(self, session_id: str, update: Any, **kwargs: Any) -> None:
         value = (
@@ -2713,6 +3127,10 @@ class _Callbacks:
         return None
 
     async def ext_method(self, name: str, payload: dict[str, Any]) -> Any:
+        if self._closing:
+            from acp.exceptions import RequestError
+
+            raise RequestError.method_not_found("extension connection is closing")
         if name != "echo_agent/extension/invoke":
             from acp.exceptions import RequestError
 
@@ -2720,6 +3138,89 @@ class _Callbacks:
         extension = payload.get("extension")
         extension_id = extension.get("id") if isinstance(extension, dict) else None
         handler = self.extensions.get(extension_id)
+        operation = (
+            payload.get("invocation", {}).get("operation")
+            if isinstance(payload.get("invocation"), dict)
+            else None
+        )
+        child = None
+        if operation == "factory_create_agent":
+            try:
+                origin = WireHandle.from_dict(extension)
+                instance = WireHandle.from_dict(
+                    payload["invocation"]["input"]["instance"]
+                )
+                valid = (
+                    self.extension_registrations.get(origin.id)
+                    == (origin, "agent_factory")
+                    and instance.kind == "extension"
+                    and instance != origin
+                    and instance.generation == origin.generation
+                )
+                if (
+                    not valid
+                    or instance in self.factory_children
+                    or instance in self.closed_factory_children
+                ):
+                    raise ValueError(
+                        "factory instance is invalid or already constructed"
+                    )
+                self.factory_children[instance] = origin
+                self.pending_factory_construction[instance] = (
+                    asyncio.get_running_loop().create_future()
+                )
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                return {
+                    "outcome": "error",
+                    "error": {
+                        "code": "serialization_violation",
+                        "message": str(error),
+                        "retryable": "never",
+                    },
+                }
+        if payload.get("factory_origin") is not None:
+            try:
+                origin = WireHandle.from_dict(payload["factory_origin"])
+                child = WireHandle.from_dict(extension)
+                metadata = self.extension_registrations.get(origin.id)
+                previous = self.factory_children.get(child)
+                valid = (
+                    origin.kind == "extension"
+                    and child.kind == "extension"
+                    and origin != child
+                    and origin.generation == child.generation
+                    and metadata == (origin, "agent_factory")
+                    and operation
+                    in {
+                        "agent_execute",
+                        "agent_chat",
+                        "agent_execute_stream",
+                        "agent_chat_stream",
+                        "agent_close",
+                    }
+                    and (
+                        previous == origin
+                        or operation == "agent_close"
+                        and self.closed_factory_children.get(child) == origin
+                    )
+                )
+            except (TypeError, ValueError, OverflowError):
+                valid = False
+            if not valid:
+                return {
+                    "outcome": "error",
+                    "error": {
+                        "code": "invalid_value",
+                        "message": "factory origin does not own this custom Agent invocation",
+                        "retryable": "never",
+                    },
+                }
+            if previous is None and operation == "agent_close":
+                return {
+                    "outcome": "result",
+                    "result": {"operation": "agent_close", "value": None},
+                }
+            handler = self.extensions.get(origin.id)
         if handler is None:
             return {
                 "outcome": "error",
@@ -2732,20 +3233,104 @@ class _Callbacks:
         invocation_id = str(payload.get("invocation_id", ""))
         cancellation = asyncio.Event()
         self.invocation_cancel[invocation_id] = cancellation
+        original_stream = None
+        retain_stream_route = False
+        route = None
+        if payload.get("stream") is not None:
+            try:
+                stream = WireHandle.from_dict(payload["stream"])
+                owner = WireHandle.from_dict(extension)
+                if stream.kind == "stream" and stream.generation == owner.generation:
+                    original_stream = stream
+                    route = (invocation_id, cancellation, owner)
+                    self.stream_cancel_routes[stream] = route
+            except (TypeError, ValueError, OverflowError):
+                pass
         try:
+            if (
+                child is not None
+                and operation == "agent_close"
+                and child in self.pending_factory_construction
+            ):
+                deadline = payload.get("deadline", {})
+                seconds = (
+                    min(5, int(deadline.get("seconds", "0")))
+                    + deadline.get("nanos", 0) / 1_000_000_000
+                )
+                try:
+                    await asyncio.wait_for(
+                        asyncio.shield(self.pending_factory_construction[child]),
+                        timeout=max(0.001, seconds),
+                    )
+                except asyncio.TimeoutError as error:
+                    raise EchoAgentError(
+                        "extension_timeout",
+                        "factory construction has not settled before cleanup deadline",
+                        "after_delay",
+                    ) from error
             result = await handler(payload, cancellation)
-            return (
+            declared = _normalize_outcome(result)
+            observation = declared.get(
+                "outcome"
+            ) == "error" and _is_not_settled_observation(declared.get("error"))
+            outcome = (
                 _cancelled_outcome()
-                if cancellation.is_set()
-                else _normalize_outcome(result)
+                if cancellation.is_set() and not observation
+                else declared
             )
+            if observation:
+                retain_stream_route = (
+                    self.stream_cancel_routes.get(original_stream) is route
+                    if original_stream is not None
+                    else self.invocation_cancel.get(invocation_id) is cancellation
+                )
+            if (
+                child is not None
+                and operation == "agent_close"
+                and outcome.get("outcome") == "result"
+                and isinstance(outcome.get("result"), dict)
+                and outcome["result"].get("operation") == "agent_close"
+            ):
+                origin = self.factory_children.pop(child, None)
+                if origin is not None:
+                    self.closed_factory_children[child] = origin
+                if len(self.closed_factory_children) > 512:
+                    self.closed_factory_children.pop(
+                        next(iter(self.closed_factory_children))
+                    )
+            if declared.get("outcome") == "stream":
+                try:
+                    returned_stream = WireHandle.from_dict(declared.get("stream"))
+                except (TypeError, ValueError, OverflowError):
+                    returned_stream = None
+                if original_stream is None or returned_stream != original_stream:
+                    return {
+                        "outcome": "error",
+                        "error": {
+                            "code": "serialization_violation",
+                            "message": "stream outcome differs from its original invocation stream",
+                            "retryable": "never",
+                        },
+                    }
+                retain_stream_route = (
+                    self.stream_cancel_routes.get(original_stream) is route
+                )
+            return outcome
+        except asyncio.CancelledError:
+            # Official ACP closes its sender before cancelling request tasks.
+            # Shutdown cancellation must propagate so no response is queued to
+            # that stopped sender; normal per-invocation cancellation remains
+            # a typed outcome on the live connection.
+            if self._closing:
+                raise
+            return _cancelled_outcome()
         except EchoAgentError as error:
             code = (
                 error.code
                 if error.code in _EXTENSION_ERROR_CODES
                 else "extension_failed"
             )
-            return {
+            outcome = {
                 "outcome": "error",
                 "error": {
                     "code": code,
@@ -2753,8 +3338,21 @@ class _Callbacks:
                     "retryable": error.retryable,
                     "operation": error.operation,
                     "details": error.details,
+                    "handle": error.handle.to_dict()
+                    if error.handle is not None
+                    else None,
                 },
             }
+            observation = _is_not_settled_observation(outcome["error"])
+            if cancellation.is_set() and not observation:
+                return _cancelled_outcome()
+            if observation:
+                retain_stream_route = (
+                    self.stream_cancel_routes.get(original_stream) is route
+                    if original_stream is not None
+                    else self.invocation_cancel.get(invocation_id) is cancellation
+                )
+            return outcome
         # Every user callback failure must settle the reverse request with the
         # closed extension error union; otherwise ACP serializes an invalid
         # transport error and the Host cannot finish the invocation.
@@ -2768,7 +3366,31 @@ class _Callbacks:
                 },
             }
         finally:
-            self.invocation_cancel.pop(invocation_id, None)
+            if operation == "factory_create_agent":
+                pending = self.pending_factory_construction.pop(instance, None)
+                if pending is not None and not pending.done():
+                    pending.set_result(None)
+            # A successful setup response does not consume the stream terminal.
+            # Terminal submission/rollback/connection close own this same route.
+            if not retain_stream_route:
+                if (
+                    original_stream is not None
+                    and self.stream_cancel_routes.get(original_stream) is route
+                ):
+                    self.stream_cancel_routes.pop(original_stream, None)
+                if self.invocation_cancel.get(invocation_id) is cancellation:
+                    self.invocation_cancel.pop(invocation_id, None)
+
+    def finish_stream_route(self, stream: WireHandle) -> None:
+        route = self.stream_cancel_routes.pop(stream, None)
+        if route is not None and self.invocation_cancel.get(route[0]) is route[1]:
+            self.invocation_cancel.pop(route[0], None)
+
+    def remove_extension_routes(self, extension: WireHandle) -> None:
+        for stream, route in tuple(self.stream_cancel_routes.items()):
+            if route[2] == extension:
+                route[1].set()
+                self.finish_stream_route(stream)
 
     async def ext_notification(self, name: str, payload: dict[str, Any]) -> None:
         if name != "echo_agent/extension/cancel":
@@ -2781,6 +3403,10 @@ class _Callbacks:
     def cancel_all(self) -> None:
         for event in self.invocation_cancel.values():
             event.set()
+
+    def clear_cancel_routes(self) -> None:
+        self.invocation_cancel.clear()
+        self.stream_cancel_routes.clear()
 
 
 class EchoAgentClient:
@@ -2811,6 +3437,10 @@ class EchoAgentClient:
         self._process_watch = process_watch
         self._close_lock = asyncio.Lock()
         self._event_cursors: dict[WireHandle, int] = {}
+        self._replay_ranges: dict[
+            WireHandle, list[tuple[int, int] | tuple[int, int, int]]
+        ] = {}
+        self._ack_submissions: set[asyncio.Task[None]] = set()
         self._closed = False
 
     @classmethod
@@ -2828,67 +3458,13 @@ class EchoAgentClient:
     ) -> EchoAgentClient:
         _validate_queue_size(max_buffered_events, "max_buffered_events")
         _validate_queue_size(max_buffered_updates, "max_buffered_updates")
+        # A one-shot iterable must describe the same immutable hello sent and
+        # later validated; consuming it twice would erase required features.
+        required_features = tuple(sorted(set(required_features)))
+        required_capabilities = tuple(sorted(set(required_capabilities)))
         catalog = FacadeCatalog(catalog_path)
         updates: dict[str, _AsyncQueue] = {}
         events: dict[str, _EventFeed] = {}
-
-        async def observe(event: StreamEvent) -> None:
-            if event.direction is not StreamDirection.INCOMING:
-                return
-            message = event.message
-            if message.get("method") != "_echo_agent/event":
-                return
-            params = message.get("params")
-            if not isinstance(params, dict):
-                error = EchoAgentError(
-                    "serialization_violation", "event notification must be an object"
-                )
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            try:
-                stream = _parse_event_stream(params)
-            except EchoAgentError as error:
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            feed = events.setdefault(
-                stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
-            )
-            try:
-                if feed.accept_event(params):
-                    feed.queue.push(params)
-            except EchoAgentError as error:
-                feed.queue.fail(error)
-
-        async def observe_gap(event: StreamEvent) -> None:
-            if event.direction is not StreamDirection.INCOMING:
-                return
-            message = event.message
-            if message.get("method") != "_echo_agent/gap":
-                return
-            params = message.get("params")
-            if not isinstance(params, dict):
-                error = EchoAgentError(
-                    "serialization_violation", "gap notification must be an object"
-                )
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            try:
-                stream = _parse_event_stream(params)
-            except EchoAgentError as error:
-                for feed in events.values():
-                    feed.queue.fail(error)
-                return
-            feed = events.setdefault(
-                stream.id, _EventFeed(_AsyncQueue(max_buffered_events))
-            )
-            try:
-                if feed.accept_gap(params):
-                    feed.queue.push(params)
-            except EchoAgentError as error:
-                feed.queue.fail(error)
 
         callback_client = _Callbacks(updates, max_buffered_updates)
         merged_env = dict(os.environ)
@@ -2900,7 +3476,7 @@ class EchoAgentClient:
             *args,
             cwd=cwd,
             env=merged_env,
-            observers=[observe, observe_gap],
+            observers=_event_observers(events, max_buffered_events),
         )
         try:
             connection, process = await context_manager.__aenter__()
@@ -2911,15 +3487,28 @@ class EchoAgentClient:
                 "required_features": sorted(set(required_features)),
                 "required_capabilities": sorted(set(required_capabilities)),
             }
-            initialized = await connection.initialize(
-                1,
-                client_capabilities=ClientCapabilities.model_validate(
-                    {"_meta": {"echo_agent": hello}}
-                ),
-                client_info=Implementation(
-                    name="echo-agent-sdk-python", version="0.1.0"
-                ),
-            )
+            try:
+                initialized = await connection.initialize(
+                    1,
+                    client_capabilities=ClientCapabilities.model_validate(
+                        {"_meta": {"echo_agent": hello}}
+                    ),
+                    client_info=Implementation(
+                        name="echo-agent-sdk-python", version="0.1.0"
+                    ),
+                )
+            except ValidationError as error:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    "malformed ACP initialization response",
+                    operation="initialize",
+                ) from error
+            if initialized.protocol_version != 1:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    "unsupported ACP protocol version",
+                    operation="initialize",
+                )
             raw_capability = (
                 initialized.agent_capabilities.field_meta.get("echo_agent")
                 if initialized.agent_capabilities
@@ -2929,6 +3518,7 @@ class EchoAgentClient:
                 raise EchoAgentError(
                     "extension_capability_mismatch",
                     "Host did not advertise echo-agent extension",
+                    operation="initialize",
                 )
             cls._validate_capability(
                 raw_capability, required_features, required_capabilities, catalog
@@ -2953,8 +3543,10 @@ class EchoAgentClient:
         except asyncio.CancelledError:
             await context_manager.__aexit__(None, None, None)
             raise
-        except Exception:
+        except Exception as error:
             await context_manager.__aexit__(None, None, None)
+            if _has_typed_extension_error(error):
+                raise EchoAgentError.from_exception(error, "initialize") from error
             raise
 
     @staticmethod
@@ -2964,13 +3556,123 @@ class EchoAgentClient:
         required_capabilities: Iterable[str],
         catalog: FacadeCatalog,
     ) -> None:
+        if (
+            type(capability.get("extension_protocol_version")) is not int
+            or capability.get("extension_protocol_version") != 1
+        ):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "unsupported extension protocol version",
+                operation="initialize",
+            )
         if capability.get("contract_digest") != catalog.contract_digest:
             raise EchoAgentError(
-                "extension_capability_mismatch", "contract digest mismatch"
+                "extension_capability_mismatch",
+                "contract digest mismatch",
+                operation="initialize",
             )
         if capability.get("source_contract_digest") != catalog.source_contract_digest:
             raise EchoAgentError(
-                "extension_capability_mismatch", "source contract digest mismatch"
+                "extension_capability_mismatch",
+                "source contract digest mismatch",
+                operation="initialize",
+            )
+        if (
+            not isinstance(capability.get("features"), list)
+            or not all(isinstance(value, str) for value in capability["features"])
+            or not isinstance(capability.get("capabilities"), list)
+            or not all(
+                isinstance(value, dict)
+                and isinstance(value.get("capability"), str)
+                and type(value.get("required")) is bool
+                for value in capability["capabilities"]
+            )
+            or not isinstance(capability.get("limits"), dict)
+        ):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "malformed Host capability advertisement",
+                operation="initialize",
+            )
+        if capability["features"] != sorted(set(capability["features"])):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "Host features must be sorted and distinct",
+                operation="initialize",
+            )
+        declarations = capability["capabilities"]
+        if not declarations or len(
+            {value["capability"] for value in declarations}
+        ) != len(declarations):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "Host must declare distinct capabilities",
+                operation="initialize",
+            )
+        limits = capability["limits"]
+
+        def advertised_u64(value: Any, field: str) -> int:
+            if not isinstance(value, str) or len(value) > 20:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    f"malformed Host limit {field}",
+                    operation="initialize",
+                )
+            try:
+                return int(_canonical_u64_text(value, field))
+            except (TypeError, ValueError) as error:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    f"malformed Host limit {field}",
+                    operation="initialize",
+                ) from error
+
+        for name in (
+            "max_message_bytes",
+            "max_stream_buffer_events",
+            "max_replay_events",
+            "max_structured_output_bytes",
+            "max_outstanding_live_events",
+            "max_stream_buffer_bytes",
+            "max_replay_bytes",
+            "max_open_handles",
+            "max_registered_extensions",
+            "max_extension_descriptor_bytes",
+            "max_extension_payload_bytes",
+            "max_extension_stream_bytes",
+            "max_inflight_extension_invocations",
+            "max_facade_resources",
+            "max_facade_streams",
+            "max_facade_page_items",
+            "max_facade_operation_args",
+        ):
+            if advertised_u64(limits.get(name), name) == 0:
+                raise EchoAgentError(
+                    "extension_capability_mismatch",
+                    f"Host limit must be positive {name}",
+                    operation="initialize",
+                )
+        concurrency = limits.get("max_callback_concurrency")
+        if type(concurrency) is not int or not 0 < concurrency <= 4294967295:
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "malformed Host callback concurrency",
+                operation="initialize",
+            )
+        timeout = limits.get("callback_timeout")
+        if not isinstance(timeout, dict):
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "malformed Host callback timeout",
+                operation="initialize",
+            )
+        advertised_u64(timeout.get("seconds"), "callback_timeout.seconds")
+        nanos = timeout.get("nanos")
+        if type(nanos) is not int or not 0 <= nanos < 1000000000:
+            raise EchoAgentError(
+                "extension_capability_mismatch",
+                "malformed Host callback timeout nanos",
+                operation="initialize",
             )
         features = capability.get("features", [])
         declared = (
@@ -2979,7 +3681,9 @@ class EchoAgentClient:
         for feature in required_features:
             if feature not in declared:
                 raise EchoAgentError(
-                    "feature_unavailable", f"Host lacks feature {feature}"
+                    "feature_unavailable",
+                    f"Host lacks feature {feature}",
+                    operation="initialize",
                 )
         capabilities = capability.get("capabilities", [])
         names = {
@@ -2990,10 +3694,16 @@ class EchoAgentClient:
         for name in required_capabilities:
             if name not in names:
                 raise EchoAgentError(
-                    "extension_capability_mismatch", f"Host lacks capability {name}"
+                    "extension_capability_mismatch",
+                    f"Host lacks capability {name}",
+                    operation="initialize",
                 )
 
     async def request(self, method: str, params: Any = None) -> Any:
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
+            )
         try:
             return await self.connection.ext_method(
                 method.removeprefix("_"), params or {}
@@ -3019,20 +3729,147 @@ class EchoAgentClient:
                 details={"returncode": self.process.returncode},
             )
         self._callbacks.cancel_all()
+        self._callbacks.clear_cancel_routes()
         for feed in self._events.values():
             feed.queue.fail(failure)
         for queue in self._updates.values():
             queue.fail(failure)
 
     async def notify(self, method: str, params: Any = None) -> None:
-        try:
-            await self.connection.ext_notification(
-                method.removeprefix("_"), params or {}
+        if self._closed or getattr(self, "_closing", False):
+            raise EchoAgentError(
+                "host_exited", "ACP connection is closing", operation=method
             )
+        if method.removeprefix("_") == "echo_agent/extension/stream" and isinstance(
+            params, dict
+        ):
+            params = deepcopy(params)
+            terminal_stream = None
+            if params.get("event") in {"complete", "failed", "cancelled"} and not (
+                params.get("event") == "failed"
+                and _is_not_settled_observation(params.get("error"))
+            ):
+                terminal_stream = WireHandle.from_dict(params.get("stream"))
+            try:
+                await self.connection.ext_notification(method.removeprefix("_"), params)
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:
+                raise EchoAgentError.from_exception(error, method) from error
+            if terminal_stream is not None:
+                self._callbacks.finish_stream_route(terminal_stream)
+            return
+        feed = None
+        observed = False
+        submission = object()
+        if method.removeprefix("_") == "echo_agent/event/ack" and isinstance(
+            params, dict
+        ):
+            # The owned submission may outlive this caller. Validate and send
+            # the same snapshot even if the caller reuses its mutable request.
+            params = deepcopy(params)
+            ack = params.get("ack", {})
+            stream = WireHandle.from_dict(ack.get("stream"))
+            sequence = int(
+                _canonical_u64_text(ack.get("last_processed_sequence"), "ACK cursor")
+            )
+            feed = self._events.get(stream.id)
+            if feed is not None and feed.handle == stream:
+                covered = _replay_covers_cursor(
+                    self._replay_ranges.get(stream, []), feed.last_sequence, sequence
+                )
+                observed = (
+                    covered
+                    or sequence == feed.last_gap_watermark
+                    or sequence <= self._event_cursors.get(stream, 0)
+                    or any(base <= sequence <= end for base, end in feed.live_ranges)
+                )
+                if covered and sequence > feed.last_sequence:
+                    # The peer can resume immediately after the write. A pending
+                    # cursor only permits that contiguous notification; it never
+                    # retires buffered facts or proves successful consumption.
+                    feed.pending_ack_sequences[submission] = sequence
+        if feed is None or not observed:
+            try:
+                await self.connection.ext_notification(
+                    method.removeprefix("_"), params or {}
+                )
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:
+                raise EchoAgentError.from_exception(error, method) from error
+            return
+
+        projection = _PendingAcknowledgement(
+            sequence, asyncio.get_running_loop().create_future()
+        )
+        feed.pending_acknowledgements[submission] = projection
+
+        def settle_projection() -> None:
+            feed.pending_ack_sequences.pop(submission, None)
+            feed.pending_acknowledgements.pop(submission, None)
+            if not projection.completion.done():
+                projection.completion.set_result(None)
+
+        async def submit() -> None:
+            try:
+                await self.connection.ext_notification(
+                    method.removeprefix("_"), params or {}
+                )
+                # Successful submissions commit monotonically, independent of
+                # caller cancellation and other submissions' completion order.
+                committed = max(self._event_cursors.get(stream, 0), sequence)
+                self._event_cursors[stream] = committed
+                feed.last_sequence = max(feed.last_sequence, committed)
+                feed.queue.discard_acknowledged_events(committed)
+                if (
+                    feed.replay_terminal_sequence is not None
+                    and committed >= feed.replay_terminal_sequence
+                ):
+                    feed.queue.close()
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:
+                failure = EchoAgentError.from_exception(error, method)
+                failure.details = {
+                    "ack_submission": "outcome_unknown",
+                    "stream": stream.to_dict(),
+                    "sequence": str(sequence),
+                    "cause_details": failure.details,
+                }
+                raise failure from error
+            finally:
+                settle_projection()
+
+        task = asyncio.create_task(submit(), name="echo-agent-sdk ACK submission")
+        jobs = getattr(self, "_ack_submissions", None)
+        if jobs is None:
+            jobs = self._ack_submissions = set()
+        jobs.add(task)
+        caller_cancelled = False
+
+        def settled(completed: asyncio.Task[None]) -> None:
+            # Cancellation before the Task's first step never enters its
+            # coroutine finally. The same idempotent projection still settles.
+            settle_projection()
+            jobs.discard(completed)
+            if not completed.cancelled():
+                failure = completed.exception()
+                if failure is not None and caller_cancelled:
+                    asyncio.get_running_loop().call_exception_handler(
+                        {
+                            "message": "ACK submission failed after its caller cancelled",
+                            "exception": failure,
+                            "task": completed,
+                        }
+                    )
+
+        task.add_done_callback(settled)
+        try:
+            await asyncio.shield(task)
         except asyncio.CancelledError:
+            caller_cancelled = True
             raise
-        except Exception as error:
-            raise EchoAgentError.from_exception(error, method) from error
 
     async def invoke(
         self, operation: str, handle: WireHandle | None, arguments: Iterable[Any] = ()
@@ -3046,9 +3883,15 @@ class EchoAgentClient:
                 "arguments": [to_wire(value) for value in arguments],
             },
         )
-        return from_wire(
-            response.get("value") if isinstance(response, dict) else response
-        )
+        if (
+            not isinstance(response, dict)
+            or not isinstance(response.get("value"), dict)
+            or not isinstance(response["value"].get("kind"), str)
+        ):
+            raise EchoAgentError(
+                "serialization_violation", "facade response requires a value envelope"
+            )
+        return from_wire(response["value"])
 
     async def count_tokens(self, tokenizer: TokenizerReference, text: str) -> int:
         """Count with the exact Host-owned tokenizer of a compression call."""
@@ -3085,21 +3928,33 @@ class EchoAgentClient:
         session: WireHandle | None,
         arguments: Iterable[Any] = (),
     ) -> Any:
-        method = f"echo_agent/{family}/op"
+        # Family identity and method spelling are independently specified by
+        # the catalog (content_guard uses the content-guard wire method).
+        resolved = self.catalog.resolve(operation)
+        if resolved.family != family or resolved.method == "_echo_agent/facade/invoke":
+            raise EchoAgentError(
+                "invalid_value",
+                "operation does not belong to the requested facade family",
+            )
+        method = resolved.method
         response = await self.request(
             method,
             {
                 "operation": operation,
-                "signature_digest": self.catalog.family_signature(
-                    f"_{method}", operation
-                ),
+                "signature_digest": self.catalog.family_signature(method, operation),
                 "handle": session.to_dict() if session else None,
                 "arguments": [to_wire(value) for value in arguments],
             },
         )
-        return from_wire(
-            response.get("value") if isinstance(response, dict) else response
-        )
+        if (
+            not isinstance(response, dict)
+            or not isinstance(response.get("value"), dict)
+            or not isinstance(response["value"].get("kind"), str)
+        ):
+            raise EchoAgentError(
+                "serialization_violation", "facade response requires a value envelope"
+            )
+        return from_wire(response["value"])
 
     def updates_for(self, session_id: str) -> AsyncIterator[Any]:
         return self._updates.setdefault(
@@ -3129,11 +3984,34 @@ class EchoAgentClient:
     ) -> AsyncIterator[Any]:
         pending: Any = None
         try:
-            async for value in queue:
+            async for queued in queue:
+                value = queued
+                acknowledged = (
+                    self._event_cursors.get(stream, 0) if stream is not None else 0
+                )
+                if isinstance(value, dict) and isinstance(value.get("gap"), dict):
+                    if int(value["gap"]["snapshot_watermark"]) <= acknowledged:
+                        continue
+                    if int(value["gap"]["from_sequence"]) <= acknowledged:
+                        value = {
+                            **value,
+                            "gap": {
+                                **value["gap"],
+                                "from_sequence": str(acknowledged + 1),
+                            },
+                        }
+                elif (
+                    isinstance(value, dict)
+                    and isinstance(value.get("envelope"), dict)
+                    and int(value["envelope"]["sequence"]) <= acknowledged
+                ):
+                    continue
+                # Gaps need explicit replay/snapshot recovery and an explicit ACK.
+                pending = None if isinstance(value, dict) and "gap" in value else value
+                yield value
                 if pending is not None and stream is not None:
                     await self._ack_event(stream, pending)
-                pending = value
-                yield value
+                    pending = None
         finally:
             if pending is not None and stream is not None and not self._closed:
                 with contextlib.suppress(Exception):
@@ -3177,7 +4055,6 @@ class EchoAgentClient:
                 }
             },
         )
-        self._event_cursors[stream] = parsed
 
     def stream_writer(self, stream: WireHandle) -> ExtensionStreamWriter:
         return ExtensionStreamWriter(self, stream)
@@ -3215,6 +4092,10 @@ class EchoAgentClient:
             self, WireHandle.from_dict(response["extension"])
         )
         self._callbacks.extensions[registration.wire.id] = handler
+        self._callbacks.extension_registrations[registration.wire.id] = (
+            registration.wire,
+            kind,
+        )
         return registration
 
     async def register_typed_extension(
@@ -3336,8 +4217,28 @@ class EchoAgentClient:
     async def register_agent_callback(
         self, implementation_id: str, descriptor: ExtensionDescriptor, handler: Any
     ) -> ExtensionRegistration:
+        from .callbacks import AgentCallbackCall
+
+        async def typed_handler(payload, cancel):
+            call = AgentCallbackCall.from_payload(payload)
+            outcome = await handler(call, cancel)
+            if hasattr(outcome, "to_wire"):
+                outcome = outcome.to_wire()
+            if isinstance(outcome, dict) and outcome.get("outcome") == "result":
+                result = outcome.get("result")
+                if (
+                    not isinstance(result, dict)
+                    or result.get("operation") != call.operation
+                    or result.get("value", "missing") is not None
+                ):
+                    raise EchoAgentError(
+                        "serialization_violation",
+                        "callback result requires matching operation and null unit",
+                    )
+            return outcome
+
         return await self._register_kind(
-            "agent_callback", implementation_id, descriptor, handler
+            "agent_callback", implementation_id, descriptor, typed_handler
         )
 
     async def register_intervention_callback(
@@ -3399,28 +4300,99 @@ class EchoAgentClient:
         )
 
     async def unregister_extension(self, extension: WireHandle) -> Any:
-        self._callbacks.extensions.pop(extension.id, None)
-        return await self.request(
+        result = await self.request(
             "echo_agent/extension/unregister", {"extension": extension.to_dict()}
         )
+        self._callbacks.extensions.pop(extension.id, None)
+        self._callbacks.extension_registrations.pop(extension.id, None)
+        self._callbacks.remove_extension_routes(extension)
+        return result
 
     async def close(self) -> None:
         async with self._close_lock:
             if self._closed:
                 return
-            self._closed = True
-            self._callbacks.cancel_all()
-            for feed in self._events.values():
-                feed.queue.close()
-            for queue in self._updates.values():
-                queue.close()
-            process_watch = self._process_watch
-            self._process_watch = None
-            if process_watch is not None:
-                process_watch.cancel()
-                with contextlib.suppress(asyncio.CancelledError):
-                    await process_watch
-        await self._context_manager.__aexit__(None, None, None)
+            self._closing = True
+            self._callbacks._closing = True
+            task = getattr(self, "_close_task", None)
+            if task is None or task.done():
+                task = asyncio.create_task(
+                    self._close_owned(), name="echo-agent-sdk close"
+                )
+                self._close_task = task
+
+                def observe_failure(completed: asyncio.Task[None]) -> None:
+                    if not completed.cancelled():
+                        completed.exception()
+
+                task.add_done_callback(observe_failure)
+        # The cleanup task owns the official context until it completes. A
+        # dropped caller only loses its wait, leaving retry on this same owner.
+        await asyncio.shield(task)
+
+    async def _close_owned(self) -> None:
+        self._callbacks.cancel_all()
+        submissions = tuple(getattr(self, "_ack_submissions", ()))
+        for submission in submissions:
+            submission.cancel()
+        if submissions:
+            await asyncio.gather(*submissions, return_exceptions=True)
+        for feed in self._events.values():
+            feed.queue.close()
+        for queue in self._updates.values():
+            queue.close()
+        process_watch = self._process_watch
+        self._process_watch = None
+        if process_watch is not None:
+            process_watch.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await process_watch
+        if not getattr(self, "_context_exit_started", False):
+            # An async context's generator is exhausted even if its finally
+            # block failed. Re-entering __aexit__ cannot retry native cleanup.
+            self._context_exit_started = True
+            await self._context_manager.__aexit__(None, None, None)
+        else:
+            await self.connection.close()
+        process = self.process
+        if process is not None:
+            # Retain the original raw process owner after a context failure.
+            # Its exit, rather than an empty second __aexit__, settles close.
+            await self._settle_process_close(process)
+        # Retain routing until the official transport and callback tasks have
+        # actually closed; failures leave this client as the retry address.
+        self._callbacks.extensions.clear()
+        self._callbacks.extension_registrations.clear()
+        self._callbacks.factory_children.clear()
+        self._callbacks.closed_factory_children.clear()
+        self._callbacks.clear_cancel_routes()
+        self._closed = True
+
+    async def _settle_process_close(self, process: asyncio.subprocess.Process) -> None:
+        if process.returncode is None and process.stdin is not None:
+            process.stdin.close()
+            try:
+                await asyncio.wait_for(process.stdin.wait_closed(), timeout=2.0)
+            except (BrokenPipeError, ConnectionResetError):
+                # A child that already closed its read end needs no further
+                # stdin shutdown. We still require its actual exit below.
+                pass
+        try:
+            await asyncio.wait_for(process.wait(), timeout=2.0)
+        except asyncio.TimeoutError:
+            try:
+                process.terminate()
+            except ProcessLookupError:
+                # Exit may race the signal; wait remains the settlement proof.
+                pass
+            try:
+                await asyncio.wait_for(process.wait(), timeout=2.0)
+            except asyncio.TimeoutError:
+                try:
+                    process.kill()
+                except ProcessLookupError:
+                    pass
+                await asyncio.wait_for(process.wait(), timeout=2.0)
 
     async def __aenter__(self) -> Self:
         return self
@@ -3485,8 +4457,8 @@ class ExtensionRegistration:
     async def close(self) -> None:
         if self._closed:
             return
-        self._closed = True
         await self.client.unregister_extension(self.wire)
+        self._closed = True
 
 
 def _validate_agent_component_stream_chunk(value: Mapping[str, Any]) -> None:
@@ -3604,6 +4576,8 @@ class ExtensionStreamWriter:
         await self.complete({"kind": "agent_component", "value": dict(value)})
 
     async def failed(self, error: Any) -> None:
+        error = deepcopy(error)
+        observation = _is_not_settled_observation(error)
         await self.client.notify(
             "echo_agent/extension/stream",
             {
@@ -3613,7 +4587,8 @@ class ExtensionStreamWriter:
                 "error": error,
             },
         )
-        self._closed = True
+        if not observation:
+            self._closed = True
 
     async def cancelled(self) -> None:
         await self.client.notify(
@@ -3646,12 +4621,16 @@ class SessionHandle:
 
     async def prompt(self, text: str) -> Any:
         self._ensure_open("session/prompt")
-        return await self.client.connection.prompt(
-            self.acp_session_id,
-            [
-                {"type": "text", "text": text},
-            ],
-        )
+        try:
+            return await self.client.connection.prompt(
+                self.acp_session_id, [{"type": "text", "text": text}]
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+            if _has_typed_extension_error(error):
+                raise EchoAgentError.from_exception(error, "session/prompt") from error
+            raise
 
     def updates(self) -> AsyncIterator[Any]:
         self._ensure_open("session/update")
@@ -3695,7 +4674,14 @@ class SessionHandle:
 
     async def cancel(self) -> None:
         self._ensure_open("session/cancel")
-        await self.client.connection.cancel(self.acp_session_id)
+        try:
+            await self.client.connection.cancel(self.acp_session_id)
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+            if _has_typed_extension_error(error):
+                raise EchoAgentError.from_exception(error, "session/cancel") from error
+            raise
 
     async def close(self) -> None:
         if self._closed:
@@ -3794,7 +4780,7 @@ class RunHandle:
 
     async def replay(self, after_sequence: str = "0", max_events: int = 512) -> Any:
         self._ensure_open("echo_agent/run/replay")
-        return await self.client.request(
+        response = await self.client.request(
             "echo_agent/run/replay",
             {
                 "stream": self.stream.to_dict(),
@@ -3802,6 +4788,47 @@ class RunHandle:
                 "max_events": str(max_events),
             },
         )
+        validate_replay_response(response, self.stream, after_sequence)
+        base = int(response.get("gap", {}).get("snapshot_watermark", after_sequence))
+        end = int(response["next_cursor"]["last_processed_sequence"])
+        feed = self.client._events.get(self.stream.id)
+        if feed is not None and feed.handle == self.stream:
+            for event in response["events"]:
+                if event["payload"]["event_type"] in {
+                    "final_answer",
+                    "cancelled",
+                    "error",
+                }:
+                    feed.replay_terminal_sequence = int(event["sequence"])
+        ranges = self.client._replay_ranges.setdefault(self.stream, [])
+        # No-gap empty pages contain no coverage, not even their requested cursor.
+        if not response.get("gap") and base == end:
+            return response
+        if response.get("gap"):
+            # Preserve each snapshot's exact bridge; do not fill its absent interior.
+            ranges.append((base, end, int(after_sequence)))
+        else:
+            merged_base, merged_end = base, end
+            changed = True
+            while changed:
+                changed = False
+                retained = []
+                for entry in ranges:
+                    if (
+                        len(entry) == 2
+                        and entry[0] <= merged_end
+                        and entry[1] >= merged_base
+                    ):
+                        merged_base = min(merged_base, entry[0])
+                        merged_end = max(merged_end, entry[1])
+                        changed = True
+                    else:
+                        retained.append(entry)
+                ranges[:] = retained
+            ranges.append((merged_base, merged_end))
+        if len(ranges) > 512:
+            ranges.pop(0)
+        return response
 
     async def close(self) -> None:
         """Cancel the run and release this SDK-side event subscription.
@@ -3833,8 +4860,7 @@ class RunHandle:
                 "host_shutting_down",
             }:
                 raise
-        finally:
-            self._mark_closed()
+        self._mark_closed()
 
     def _mark_closed(self) -> None:
         if self._closed:
@@ -3878,3 +4904,162 @@ def _timeout_wire(timeout: float | timedelta) -> dict[str, Any]:
         whole += 1
         nanos = 0
     return {"seconds": str(whole), "nanos": nanos}
+
+
+def validate_replay_response(
+    value: Any, stream: WireHandle, requested_after: str | None = None
+) -> Any:
+    if (
+        not isinstance(value, dict)
+        or not isinstance(value.get("events"), list)
+        or not isinstance(value.get("next_cursor"), dict)
+    ):
+        raise EchoAgentError(
+            "serialization_violation", "replay response must retain cursor and events"
+        )
+    cursor = value["next_cursor"]
+    try:
+        requested = _canonical_u64_text(
+            value.get("requested_after_sequence"), "replay requested cursor"
+        )
+        sequence = _canonical_u64_text(
+            cursor.get("last_processed_sequence"), "replay next cursor"
+        )
+    except (TypeError, ValueError, OverflowError) as error:
+        raise EchoAgentError("serialization_violation", str(error)) from error
+    if (
+        cursor.get("stream_id") != stream.id
+        or requested_after is not None
+        and requested != requested_after
+    ):
+        raise EchoAgentError(
+            "serialization_violation", "replay cursor identity differs from request"
+        )
+    gap = value.get("gap")
+    previous = int(requested)
+    if gap is not None:
+        checker = _EventFeed(_AsyncQueue(1), stream)
+        checker.accept_gap({"stream": stream.to_dict(), "gap": gap})
+        if int(gap["from_sequence"]) != previous + 1:
+            raise EchoAgentError(
+                "serialization_violation", "replay gap does not follow request"
+            )
+        previous = int(gap["snapshot_watermark"])
+    for event in value["events"]:
+        checker = _EventFeed(_AsyncQueue(1), stream, previous)
+        checker.accept_event({"stream": stream.to_dict(), "envelope": event})
+        current = _parse_positive_sequence(event.get("sequence"), "replay sequence")
+        if current != previous + 1:
+            raise EchoAgentError(
+                "serialization_violation", "replay sequence is not contiguous"
+            )
+        previous = current
+    if previous != int(sequence):
+        raise EchoAgentError(
+            "serialization_violation", "replay cursor differs from returned facts"
+        )
+    return value
+
+
+def _has_typed_extension_error(error: BaseException) -> bool:
+    data = getattr(error, "data", None)
+    return (
+        isinstance(data, dict)
+        and data.get("code") in _EXTENSION_ERROR_CODES
+        and isinstance(data.get("message"), str)
+        and data.get("retryable") in {"never", "always", "after_delay"}
+    )
+
+
+def _is_not_settled_observation(value: Any) -> bool:
+    """Classify only a complete Host-valid observation, preserving raw error data."""
+
+    def text(v: Any, limit: int) -> bool:
+        return (
+            isinstance(v, str)
+            and len(v) <= limit
+            and not any(0xD800 <= ord(c) <= 0xDFFF for c in v)
+        )
+
+    def nonblank(v: Any, limit: int) -> bool:
+        # Python isspace also accepts U+001C..001F; Rust does not.
+        return text(v, limit) and any(
+            not (
+                0x09 <= ord(c) <= 0x0D
+                or ord(c)
+                in {0x20, 0x85, 0xA0, 0x1680, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000}
+                or 0x2000 <= ord(c) <= 0x200A
+            )
+            for c in v
+        )
+
+    if (
+        not isinstance(value, dict)
+        or value.get("code") != "framework_error"
+        or value.get("retryable") != "never"
+    ):
+        return False
+    if (
+        not text(value.get("message"), 4096)
+        or value.get("operation") is not None
+        and not nonblank(value["operation"], 256)
+    ):
+        return False
+    handle = value.get("handle")
+    if handle is not None:
+        if (
+            not isinstance(handle, dict)
+            or not nonblank(handle.get("id"), 256)
+            or not isinstance(handle.get("generation"), str)
+        ):
+            return False
+        try:
+            # Reuse the wire decoder with a checked placeholder solely for its
+            # generation/kind validation; retain the original id unchanged.
+            WireHandle.from_dict(
+                {
+                    "id": "validation-id",
+                    "generation": handle["generation"],
+                    "kind": handle.get("kind"),
+                }
+            )
+        except (TypeError, ValueError, OverflowError):
+            return False
+    details = value.get("details")
+    if (
+        not isinstance(details, dict)
+        or not isinstance(details.get("fields"), list)
+        or len(details["fields"]) > 16
+    ):
+        return False
+    facade = details.get("facade")
+    if facade is not None and (
+        not isinstance(facade, dict)
+        or any(
+            facade.get(k) is not None and not text(facade[k], 2**63)
+            for k in (
+                "operation",
+                "signature_digest",
+                "receiver_kind",
+                "expected_type",
+                "required_feature",
+                "resource",
+            )
+        )
+    ):
+        return False
+    fields: dict[str, str] = {}
+    for entry in details["fields"]:
+        if (
+            not isinstance(entry, dict)
+            or not nonblank(entry.get("key"), 128)
+            or not text(entry.get("value"), 2048)
+            or entry["key"] in fields
+        ):
+            return False
+        fields[entry["key"]] = entry["value"]
+    return (
+        fields.get("observation") == "not_settled"
+        and nonblank(fields.get("run_id"), 2048)
+        and ("execution_id" not in fields or nonblank(fields["execution_id"], 2048))
+    )

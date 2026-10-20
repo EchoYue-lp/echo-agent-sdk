@@ -1,3 +1,7 @@
-# Large macOS debug test binaries fall back from compact unwind to DWARF.
-[target.'cfg(target_os = "macos")']
-rustflags = ["-A", "linker_messages"]
+# SDK development commands run from this repository or a workspace member.
+# Keep unwind and development checks while bounding Darwin EH metadata (ADR0040).
+[profile.dev]
+opt-level = 1
+debug-assertions = true
+overflow-checks = true
+panic = "unwind"

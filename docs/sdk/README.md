@@ -1,12 +1,19 @@
 # echo-agent SDK (standard ACP Host available)
 
 This is the single external entry point for the echo-agent multilingual SDK
-program. The SDK's goal is full **functional and semantic parity** between
-the Rust framework's public facade and TypeScript, Python and Java — without
-rewriting the agent framework in any of those languages.
+program. The SDK preserves the behavior of **explicitly accepted cross-language
+contracts** in TypeScript, Python and Java, while the Rust framework owns
+execution and state. Its complete Rust public inventory is drift telemetry;
+it does not automatically create a three-language API commitment.
 
-> **Current status: ACP conformant (standard profile) + core extension profile
-> + extension bridge + facade feature adapters delivered in the Rust Host.** The source-built `echo-agent-sdk-host` passes
+Capability governance tracks entrypoints, state authority, lifecycle, failure
+paths and behavioral evidence in the [capability map](governance/capability-map.md),
+[behavior matrix](governance/behavior-evidence-matrix.md) and
+[Finding ledger](governance/finding-ledger.md). Historical build and catalog
+gates do not close that audit; unresolved scopes remain explicit there.
+
+> **Implemented source candidate: standard ACP, core extension profile,
+> extension bridge and facade feature adapters. Final governance acceptance is open.** The source-built `echo-agent-sdk-host` passes
 > initialize/new/prompt/update/cancel and shutdown scenarios through the
 > official v1 Client, and the negotiated `_echo_agent/*` **core profile**
 > (Agent/Session/Run handles, full events, ACK/replay, restart recovery) passes
@@ -19,9 +26,10 @@ rewriting the agent framework in any of those languages.
 > ([facade-feature-adapters.md](facade-feature-adapters.md)). Plan 08 closes
 > the Rust Host's canonical source-operation, consumer-trait and public-stream
 > routing, including real Workflow/A2A pull streams. Source-built TypeScript,
-> Python and Java clients now resolve every canonical source and family
-> operation through the shared catalog and preserve all WireValue shapes. The
-> executable route baseline passes against one source-built Host. Manifest
+> Python and Java clients resolve the accepted source/family operations
+> through the shared catalog and preserve the declared WireValue shapes. The
+> executable route baseline passed against its recorded source-built Host;
+> current repair verification is separately bound. Manifest
 > schema v2 separates the current external contract from Host/Rust-only,
 > language-intrinsic, helper and deferred identities. See [Status
 > ladder](#status-ladder) for the exact claims.
@@ -43,8 +51,8 @@ rewriting the agent framework in any of those languages.
 - **Two profiles, one authority.** A standard ACP v1 client can use the
   Host's standard profile without knowing anything about echo-agent. The
   full echo-agent SDK profile negotiates `_echo_agent/*` extension methods
-  (via the official `_meta` capability mechanism) to cover the complete
-  public facade losslessly. Both profiles project the same Rust execution
+  (via the official `_meta` capability mechanism) for its explicitly accepted
+  external capability surface. Both profiles project the same Rust execution
   and state authority — the wire never becomes a second framework.
 
 Details of the two profiles, the extension namespace and the error/lossless
@@ -105,38 +113,70 @@ byte-stable:
 # regenerate after an intentional facade or contract change
 cargo run -p echo-sdk-protocol --bin export_schema --locked -- --update
 
-# read-only drift check (also run by scripts/verify.sh and CI)
+# read-only drift check (also run by SDK contract CI)
 ./scripts/check-sdk-contracts.sh
 ```
 
+During a framework adapter upgrade, the same generator can prepare a wire
+candidate without rerunning the upstream rustdoc inventory:
+
+```bash
+cargo run -p echo-sdk-protocol --bin export_schema --locked -- --wire-candidate-update
+./scripts/export-language-sdk-catalog.sh
+```
+
+This candidate combines the committed inventory and accepted identity scope
+with current wire definitions. It refreshes schema, fixtures, catalogs and
+their compatibility digest, and records its input hashes. It does not refresh
+framework provenance or accept new Rust identities. A release or completed
+governance outcome still requires full generation against the final published
+framework revision and the read-only contract gate above.
+
 ## Status ladder
 
-The SDK program distinguishes the following statuses; each implies the
-previous ones.
+The SDK program separates implementation milestones, snapshot-bound evidence
+and final accepted-contract delivery. The entries below distinguish historical
+source/seed results from current governance acceptance; catalog mapping counts
+alone are not behavioral evidence.
 
 | Status | Meaning | Reached |
 |---|---|---|
 | **Design** | The design document is agreed | ✅ |
-| **Contract** | Protocol contracts, schema, parity manifest exist and pass drift gates | ✅ |
+| **Contract** | Full generation and accepted source/catalog continuity match the final pin | Complete for the current framework pin: accepted continuity choices and the original full 28-profile/117-artifact generation/check executed |
 | **ACP conformant** | A standard ACP v1 client passes the supported profile against a real source-built Host | ✅ |
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
-| **Host facade parity** | Every canonical root operation/consumer trait/stream has a concrete Host route or evidence-backed language-local boundary | ✅ Plan 08 complete |
-| **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | ✅ source-built Host and language gates |
-| **External contract complete** | TypeScript, Python and Java pass every identity currently classified as `external_contract` | ✅ 5,622 canonical identities |
-| **Deferred capabilities dispositioned** | Every `deferred` capability has a product-level contract decision | ❌ 1,448 identities await capability grouping and review |
+| **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Historical Plan 08 route baseline; current capability/failure review remains separate |
+| **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | Snapshot-bound language gate passed; later repairs require current-source verification |
+| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Membership/catalog continuity and local matched-source gates passed at 5,621; four composite holds and exact main/platform acceptance remain pending |
+| **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,534 deferred identities, with no automatic acceptance |
 | **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
 
 ### Identity inventory scope
 
-The current parity manifest contains 9,724 canonical identities. TypeScript,
-Python, and Java all mark 5,622 of them `done`; the
-remaining 4,102 identities are all classified under the `intrinsic` route
-surface. Standard ACP, core extension, family, bridge, invoke, and value route
-surfaces have no remaining not-done canonical identities.
+The current Host pin is published framework
+`3560812caede84998a1f6f26d7bf3fa81ea0486c` from framework PR193.
+The original full 28-profile/117-artifact generation and contract gate completed
+against that pin. The current committed manifest has 10,973 canonical identities,
+with 5,621 accepted external identity/kind keys and 454 accepted routes; current
+scope counts are in the table below. See [source continuity](../../MIGRATION-SOURCE.md)
+and [current acceptance](governance/capability-review-remaining.md) for exact cuts.
+SDK208a/Host0bbc and the successor SDK9ef/Hosta17 retain distinct evidence cuts.
+The successor original Rust14 and the one whole language entry plus all three
+quickstarts now passed locally, with the media Finding concretely resolved.
+Exact SDK-main/platform/nativeHook and the historical Linux cause remain separate.
+
+An older extraction/wire-candidate note recorded 9,724 canonical identities,
+5,622 language-done identities and4,102 remaining intrinsic-route identities.
+Those are historical telemetry from that note, not the current committed
+manifest or current accepted membership. The old a634
+[Rust gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md) and
+[language gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
+links preserve their historical input cuts and do not qualify the current Host.
 
 These counts are SDK inventory telemetry, not repository-wide semantic progress
 and not an instruction to open one pull request per identity. The complete
-inventory remains the drift authority. Further language work is grouped by an
+inventory is non-blocking drift telemetry; only the explicitly accepted
+external contract and catalog are compatibility gates. Further language work is grouped by an
 externally useful SDK capability or a confirmed Finding, while whole-workspace
 governance is measured through Capability, Behavior, Rule, state authority,
 lifecycle, Finding, and Evidence coverage. See
@@ -147,19 +187,21 @@ the adapter route and per-language status:
 
 | `sdk_scope` | Canonical items | Current meaning |
 |---|---:|---|
-| `external_contract` | 5,622 | Accepted TypeScript, Python and Java behavior with named contract tests. |
-| `host_or_rust_only` | 1,774 | Process-local or Host-owned runtime authority. |
-| `language_intrinsic` | 790 | Rust syntax, trait implementations and callback types represented idiomatically. |
-| `internal_helper` | 90 | Rust testing support, not an SDK product surface. |
-| `deferred` | 1,448 | Potential capabilities awaiting capability-level contract review. |
+| `external_contract` | 5,621 | Frozen accepted canonical membership and language mapping; capability behavior requires separate evidence. |
+| `host_or_rust_only` | 1,908 | Process-local or Host-owned runtime authority. |
+| `language_intrinsic` | 819 | Rust syntax, trait implementations and callback types represented idiomatically. |
+| `internal_helper` | 91 | Rust testing support, not an SDK product surface. |
+| `deferred` | 2,534 | Potential capabilities awaiting capability-level contract review. |
 
 The scope is generated, aliases inherit their canonical identity, and no row
-is manually promoted. A delivered intrinsic route remains an external contract;
-a deferred item is not rejected, but it does not become thousands of separate
+is manually promoted. An intrinsic route becomes a blocking external contract
+only through an explicit accepted disposition; route membership alone does not
+promote it. A deferred item is not rejected, but it does not become thousands
+of separate
 tasks. See [ADR 0032](../adr/0032-sdk-contract-scope-classification.md).
 
-External contract completion supports claims only about the declared external
-SDK surface. It does not justify claiming that every public Rust identity is
+Acceptance and completed evidence support claims only about the declared
+external SDK surface. It does not justify claiming that every public Rust identity is
 available in every language. Executable routes use the canonical resolver and
 serializable values use the lossless WireValue algebra; Host/Rust-only,
 language-intrinsic, helper and deferred identities remain explicit inventory
@@ -329,3 +371,10 @@ without owning live-control registry state.
 - ADR 0028: `docs/adr/0028-source-first-multilanguage-sdk-runtime.md`
 - Official ACP documentation: <https://agentclientprotocol.com/>
 - Official Rust SDK: <https://github.com/agentclientprotocol/rust-sdk>
+
+
+Channel MessageHandler forward calls, cooperative stream close and executable
+three-language callback examples are documented in
+[Channel consumption](channel-handler-consumption.md). Full Rust inventory and
+intrinsic membership remain non-blocking telemetry; these examples exercise the
+six explicitly accepted Channel family operations.

@@ -289,6 +289,7 @@ fn extension_operation_taxonomy_is_closed_and_kind_bound() {
         ExtensionOperation::CallbackOnToolStart,
         ExtensionOperation::CallbackOnToolEnd,
         ExtensionOperation::CallbackOnToolError,
+        ExtensionOperation::CallbackOnToolInterrupted,
         ExtensionOperation::CallbackOnFinalAnswer,
         ExtensionOperation::CallbackOnIteration,
         ExtensionOperation::InterventionOnToolCall,
@@ -1056,4 +1057,777 @@ fn facade_operation_fixtures_round_trip_and_reject() {
         arguments: Vec::new(),
     };
     assert!(wildcard.validate().is_err());
+}
+
+#[test]
+fn authoritative_tool_facts_and_interruption_identity_are_lossless() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{ExtensionInvocation, ToolResultWire};
+    let result = serde_json::json!({
+        "kind":{"kind":"text"},"success":true,"output":"已完成 🧪","truncated":false,
+        "effects":[
+            {"effect":"file_read","path":"文档/计划.md"},
+            {"effect":"test_run","command":"cargo test","passed":false,"failure_count":"9007199254740993"}
+        ]
+    });
+    let parsed: ToolResultWire =
+        serde_json::from_value(result.clone()).map_err(|e| e.to_string())?;
+    assert_eq!(
+        serde_json::to_value(parsed).map_err(|e| e.to_string())?,
+        result
+    );
+    let unknown = serde_json::json!({
+        "kind":{"kind":"text"},"success":true,"output":"ok","truncated":false,
+        "effects":[{"effect":"unknown_effect","path":"x"}]
+    });
+    assert!(serde_json::from_value::<ToolResultWire>(unknown).is_err());
+    let interrupted = serde_json::json!({"operation":"callback_on_tool_interrupted","input":{
+        "agent":"智能体","call_id":"canonical-call","tool":"edit","input":{"kind":"null"},"error":"取消"
+    }});
+    let parsed: ExtensionInvocation =
+        serde_json::from_value(interrupted.clone()).map_err(|e| e.to_string())?;
+    assert_eq!(
+        serde_json::to_value(parsed).map_err(|e| e.to_string())?,
+        interrupted
+    );
+    Ok(())
+}
+
+#[test]
+fn managed_projection_authority_and_deadline_preserve_full_integer_range() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{
+        AgentComponentCallInputWire, AgentComponentCapabilitiesWire,
+        ConversationProjectionAuthorityWire, ConversationProjectionCapabilityWire,
+        PersistenceCallCapabilityWire, RuntimeStateCapabilityWire,
+    };
+    let authority = serde_json::json!({"conversation_id":"会话 🧭","epoch":"9007199254740993",
+        "revision":"18446744073709551615","lifecycle":"live","delete_receipt_retention_floor_epoch":"0"});
+    let parsed: ConversationProjectionAuthorityWire =
+        serde_json::from_value(authority.clone()).map_err(|e| e.to_string())?;
+    assert_eq!(
+        serde_json::to_value(parsed).map_err(|e| e.to_string())?,
+        authority
+    );
+    let request = serde_json::json!({"operation":"conversation_get_projection_authority_with_context","input":{
+        "conversation_id":"会话 🧭","context":{"absolute_deadline_unix_ms":"9223372036854775807"}}});
+    let parsed: AgentComponentCallInputWire =
+        serde_json::from_value(request.clone()).map_err(|e| e.to_string())?;
+    assert_eq!(
+        serde_json::to_value(parsed).map_err(|e| e.to_string())?,
+        request
+    );
+    let caps: AgentComponentCapabilitiesWire =
+        serde_json::from_value(serde_json::json!({})).map_err(|e| e.to_string())?;
+    assert_eq!(
+        caps.conversation_projection,
+        ConversationProjectionCapabilityWire::Unsupported
+    );
+    assert_eq!(caps.runtime_state, RuntimeStateCapabilityWire::Unsupported);
+    assert_eq!(
+        caps.persistence_call,
+        PersistenceCallCapabilityWire::Unsupported
+    );
+    for malformed in [
+        serde_json::json!({"operation":"conversation_get_projection_authority_with_context","input":{"conversation_id":"c"}}),
+        serde_json::json!({"operation":"conversation_get_projection_authority_with_context","input":{"conversation_id":"c","context":{"absolute_deadline_unix_ms":9223372036854775807_i64}}}),
+    ] {
+        assert!(serde_json::from_value::<AgentComponentCallInputWire>(malformed).is_err());
+    }
+    Ok(())
+}
+
+#[test]
+fn factory_origin_requires_distinct_same_generation_agent_target() -> Result<(), String> {
+    use echo_sdk_protocol::methods::ExtensionInvokeCall;
+    let original = serde_json::json!({
+        "extension":{"id":"child","generation":"7","kind":"extension"},
+        "factory_origin":{"id":"factory","generation":"7","kind":"extension"},
+        "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":"任务"}},
+        "deadline":{"seconds":"20","nanos":0}
+    });
+    let parsed: ExtensionInvokeCall =
+        serde_json::from_value(original.clone()).map_err(|e| e.to_string())?;
+    parsed.validate().map_err(str::to_string)?;
+    assert_eq!(
+        serde_json::to_value(parsed).map_err(|e| e.to_string())?,
+        original
+    );
+    for mutation in [
+        serde_json::json!({"id":"child","generation":"7","kind":"extension"}),
+        serde_json::json!({"id":"factory","generation":"8","kind":"extension"}),
+        serde_json::json!({"id":"factory","generation":"7","kind":"run"}),
+    ] {
+        let mut changed = original.clone();
+        changed
+            .as_object_mut()
+            .ok_or("factory fixture must be an object")?
+            .insert("factory_origin".to_string(), mutation);
+        let parsed: ExtensionInvokeCall =
+            serde_json::from_value(changed).map_err(|e| e.to_string())?;
+        assert!(parsed.validate().is_err());
+    }
+    let mut wrong_operation = original;
+    wrong_operation.as_object_mut().ok_or("factory fixture must be an object")?.insert("invocation".to_string(),serde_json::json!({"operation":"tool_validate_parameters","input":{"parameters":{"kind":"null"}}}));
+    let parsed: ExtensionInvokeCall =
+        serde_json::from_value(wrong_operation).map_err(|e| e.to_string())?;
+    assert!(parsed.validate().is_err());
+    Ok(())
+}
+
+#[test]
+fn delivery_claim_wire_shape_changes_its_admission_signature() -> Result<(), String> {
+    use echo_sdk_protocol::facade::{
+        family_operation_signature_digest, family_operation_wire_schema,
+    };
+    use sha2::{Digest as _, Sha256};
+    for operation in [
+        "delivery.claim_next",
+        "delivery.transition",
+        "delivery.defer",
+        "delivery.settle",
+    ] {
+        let old =
+            serde_json::to_vec(&serde_json::json!({"family":"delivery","operation":operation}))
+                .map_err(|e| e.to_string())?;
+        let old_digest = format!("sha256:{:x}", Sha256::digest(old));
+        let new_digest = family_operation_signature_digest("delivery", operation);
+        assert_ne!(
+            new_digest, old_digest,
+            "old id-only contract must not retain admission signature"
+        );
+        assert!(family_operation_wire_schema("delivery", operation).is_some());
+    }
+    for (family, operation) in [
+        ("memory", "memory.store.get"),
+        ("delivery", "delivery.enqueue"),
+        ("workflow", "workflow.graph.run"),
+    ] {
+        let old = serde_json::to_vec(&serde_json::json!({"family":family,"operation":operation}))
+            .map_err(|e| e.to_string())?;
+        assert_eq!(
+            family_operation_signature_digest(family, operation),
+            format!("sha256:{:x}", Sha256::digest(old))
+        );
+    }
+    let schema = family_operation_wire_schema("delivery", "delivery.transition")
+        .ok_or("missing delivery schema")?;
+    let validator = jsonschema::validator_for(schema.get("input").ok_or("missing input schema")?)
+        .map_err(|e| e.to_string())?;
+    let handle = serde_json::json!({"id":"ledger","generation":"3","kind":"facade_resource"});
+    let claim = serde_json::json!({"message_id":"消息","route":"inbox","payload":{"text":"数据"},"attempt_id":"attempt-1","attempt":1,"claimed_at":"2026-10-12T00:00:00Z"});
+    let valid_input = serde_json::json!([handle.clone(), claim, "effect_started", "turn-1"]);
+    let errors = validator
+        .iter_errors(&valid_input)
+        .map(|error| error.to_string())
+        .collect::<Vec<_>>();
+    assert!(
+        errors.is_empty(),
+        "valid delivery claim rejected: {errors:?}"
+    );
+    assert!(!validator.is_valid(&serde_json::json!([
+        handle,
+        "消息",
+        "effect_started",
+        "turn-1"
+    ])));
+    // Mutating the DTO-derived accepted shape changes the same signature input.
+    let mut mutated = schema;
+    mutated
+        .as_object_mut()
+        .ok_or("shape must be object")?
+        .insert(
+            "input".to_string(),
+            serde_json::json!({"type":"array","items":{"type":"string"}}),
+        );
+    let canonical = serde_json::json!({"family":"delivery","operation":"delivery.transition","wire_schema":mutated});
+    let bytes = serde_json::to_vec(&canonical).map_err(|e| e.to_string())?;
+    assert_ne!(
+        family_operation_signature_digest("delivery", "delivery.transition"),
+        format!("sha256:{:x}", Sha256::digest(bytes))
+    );
+    Ok(())
+}
+
+#[test]
+fn factory_create_binds_construction_to_the_reserved_instance() -> Result<(), String> {
+    use echo_sdk_protocol::methods::ExtensionInvokeCall;
+    let valid = serde_json::json!({
+        "extension":{"id":"factory","generation":"7","kind":"extension"},
+        "invocation_id":"create-1","invocation":{"operation":"factory_create_agent","input":{
+            "instance":{"id":"child","generation":"7","kind":"extension"},
+            "model":"model","name":"agent","system_prompt":"prompt","tool_count":"0"}},
+        "deadline":{"seconds":"20","nanos":0}
+    });
+    let parsed: ExtensionInvokeCall =
+        serde_json::from_value(valid.clone()).map_err(|e| e.to_string())?;
+    parsed.validate().map_err(str::to_string)?;
+    assert_eq!(
+        serde_json::to_value(parsed).map_err(|e| e.to_string())?,
+        valid
+    );
+    let mut missing = valid.clone();
+    missing
+        .pointer_mut("/invocation/input")
+        .and_then(serde_json::Value::as_object_mut)
+        .ok_or("missing fixture input")?
+        .remove("instance");
+    assert!(serde_json::from_value::<ExtensionInvokeCall>(missing).is_err());
+    let mut conflicting = valid;
+    conflicting
+        .pointer_mut("/invocation/input/instance")
+        .and_then(serde_json::Value::as_object_mut)
+        .ok_or("missing fixture instance")?
+        .insert("id".to_string(), serde_json::json!("factory"));
+    let parsed: ExtensionInvokeCall =
+        serde_json::from_value(conflicting).map_err(|e| e.to_string())?;
+    assert!(parsed.validate().is_err());
+    Ok(())
+}
+
+#[test]
+fn task_store_execution_facts_preserve_claim_revision_and_absent_result() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{TaskExecutionCommitWire, TaskExecutionWire};
+    let execution = serde_json::json!({"task_id":"任务 🧪","status":{"status":"running"},"retry_count":0,
+        "failure_fingerprint":null,"claim":{"claim_id":"claim-1","revision":"9007199254740993","attempt":1,"spec_hash":"digest"},
+        "interruption_requested":{"paused":{"reason":"暂停"}}});
+    let parsed: TaskExecutionWire =
+        serde_json::from_value(execution.clone()).map_err(|e| e.to_string())?;
+    assert!(parsed.result.is_none());
+    assert_eq!(
+        serde_json::to_value(&parsed).map_err(|e| e.to_string())?,
+        execution
+    );
+    let mut supplied = execution.clone();
+    supplied
+        .as_object_mut()
+        .ok_or("execution must be object")?
+        .insert("result".to_string(), serde_json::json!({"kind":"null"}));
+    let parsed: TaskExecutionWire =
+        serde_json::from_value(supplied.clone()).map_err(|e| e.to_string())?;
+    assert_eq!(parsed.result, Some(WireValue::Null));
+    assert_eq!(
+        serde_json::to_value(&parsed).map_err(|e| e.to_string())?,
+        supplied
+    );
+    let commit = serde_json::json!({"expected_revision":"9007199254740993","expected_executions":{"任务 🧪":execution},
+        "next":{"snapshot":{"revision":"9007199254740993","tasks":[]},
+            "context":{"goal":"目标","assumptions":[],"risks":[],"execution_mode":"parallel","metadata":{"kind":"null"}}}});
+    let parsed: TaskExecutionCommitWire =
+        serde_json::from_value(commit.clone()).map_err(|e| e.to_string())?;
+    assert_eq!(
+        serde_json::to_value(parsed).map_err(|e| e.to_string())?,
+        commit
+    );
+    let mut unsafe_number = commit;
+    unsafe_number
+        .as_object_mut()
+        .ok_or("commit must be object")?
+        .insert(
+            "expected_revision".to_string(),
+            serde_json::json!(9007199254740993_u64),
+        );
+    assert!(serde_json::from_value::<TaskExecutionCommitWire>(unsafe_number).is_err());
+    Ok(())
+}
+
+#[test]
+fn execution_cas_capability_requires_explicit_opt_in_and_matching_component() -> Result<(), String>
+{
+    use echo_sdk_protocol::methods::{AgentComponentCapabilitiesWire, ExtensionDescriptor};
+    let absent: AgentComponentCapabilitiesWire =
+        serde_json::from_value(serde_json::json!({})).map_err(|e| e.to_string())?;
+    assert!(!absent.execution_cas_v1);
+    let disabled: AgentComponentCapabilitiesWire =
+        serde_json::from_value(serde_json::json!({"execution_cas_v1":false}))
+            .map_err(|e| e.to_string())?;
+    assert!(!disabled.execution_cas_v1);
+    let enabled: AgentComponentCapabilitiesWire =
+        serde_json::from_value(serde_json::json!({"execution_cas_v1":true}))
+            .map_err(|e| e.to_string())?;
+    assert!(enabled.execution_cas_v1);
+    assert_eq!(
+        serde_json::to_value(&enabled)
+            .map_err(|e| e.to_string())?
+            .get("execution_cas_v1"),
+        Some(&serde_json::json!(true))
+    );
+    for illegal in [
+        serde_json::json!("true"),
+        serde_json::json!(1),
+        serde_json::json!(null),
+    ] {
+        assert!(
+            serde_json::from_value::<AgentComponentCapabilitiesWire>(
+                serde_json::json!({"execution_cas_v1":illegal})
+            )
+            .is_err()
+        );
+    }
+    for (component, valid) in [
+        ("revisioned_task_store", true),
+        ("conversation_store", false),
+        ("audit_logger", false),
+    ] {
+        let descriptor: ExtensionDescriptor = serde_json::from_value(
+            serde_json::json!({"kind":"agent_component","descriptor_version":1,
+            "component":component,"name":"store","capabilities":{"execution_cas_v1":true}}),
+        )
+        .map_err(|e| e.to_string())?;
+        assert_eq!(descriptor.validate().is_ok(), valid);
+    }
+    Ok(())
+}
+
+#[test]
+fn channels_forward_operations_freeze_typed_admission_shapes() -> Result<(), String> {
+    use echo_sdk_protocol::facade::{
+        FacadeFamily, family_operation_signature_digest, family_operation_wire_schema,
+    };
+    use echo_sdk_protocol::methods::{ChannelInboundMessageWire, ChannelOutboundMessageWire};
+    use sha2::{Digest as _, Sha256};
+    let operations = [
+        "channels.handler.handle",
+        "channels.handler.handle_stream",
+        "channels.handler.reply",
+        "channels.stream.next",
+        "channels.stream.cancel",
+        "channels.stream.close",
+    ];
+    for operation in operations {
+        assert!(FacadeFamily::Channels.operations().contains(&operation));
+        let shape =
+            family_operation_wire_schema("channels", operation).ok_or("missing channels shape")?;
+        let old =
+            serde_json::to_vec(&serde_json::json!({"family":"channels","operation":operation}))
+                .map_err(|error| error.to_string())?;
+        assert_ne!(
+            family_operation_signature_digest("channels", operation),
+            format!("sha256:{:x}", Sha256::digest(old))
+        );
+        let canonical = serde_json::to_vec(
+            &serde_json::json!({"family":"channels","operation":operation,"wire_schema":shape}),
+        )
+        .map_err(|error| error.to_string())?;
+        assert_eq!(
+            family_operation_signature_digest("channels", operation),
+            format!("sha256:{:x}", Sha256::digest(canonical))
+        );
+    }
+    assert!(family_operation_wire_schema("channels", "channels.handler.other").is_none());
+    assert!(
+        !FacadeFamily::Channels
+            .operations()
+            .contains(&"channels.handler.other")
+    );
+    let handle = serde_json::json!({"id":"manager","generation":"3","kind":"facade_resource"});
+    let stream = serde_json::json!({"id":"stream","generation":"3","kind":"stream"});
+    let inbound = serde_json::json!({"channel_id":"channel-中文","sender_id":"sender","chat_id":"chat","chat_type":"direct","text":"输入🌊","message_id":"message","timestamp":"18446744073709551615","attachments":[{"kind":"image","data_base64":"AP9BgA==","filename":""}]});
+    let outbound = serde_json::json!({"channel_id":"channel-中文","to":"chat","chat_type":"group","text":"回复🌊","reply_to":"","attachments":[{"kind":"file","data_base64":"","filename":null}]});
+    let parsed: ChannelInboundMessageWire =
+        serde_json::from_value(inbound.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(parsed.timestamp.to_u64(), Some(u64::MAX));
+    let parsed: ChannelOutboundMessageWire =
+        serde_json::from_value(outbound.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(parsed.reply_to.as_deref(), Some(""));
+    for (operation, message) in [
+        ("channels.handler.handle", inbound.clone()),
+        ("channels.handler.handle_stream", inbound.clone()),
+        ("channels.handler.reply", outbound.clone()),
+    ] {
+        let shape =
+            family_operation_wire_schema("channels", operation).ok_or("missing forward shape")?;
+        let validator = jsonschema::validator_for(shape.get("input").ok_or("missing input")?)
+            .map_err(|error| error.to_string())?;
+        let arguments = serde_json::json!([handle.clone(), "channel-中文", message]);
+        let errors: Vec<String> = validator
+            .iter_errors(&arguments)
+            .map(|error| error.to_string())
+            .collect();
+        assert!(errors.is_empty(), "valid forward args rejected: {errors:?}");
+        assert!(!validator.is_valid(&serde_json::json!([handle.clone(), "channel-中文"])));
+        assert!(!validator.is_valid(&serde_json::json!([
+            handle.clone(),
+            "channel-中文",
+            message,
+            null
+        ])));
+        assert!(!validator.is_valid(&serde_json::json!([
+            stream.clone(),
+            "channel-中文",
+            message
+        ])));
+        if let Some(object) = message.as_object() {
+            for required in object
+                .keys()
+                .filter(|key| key.as_str() != "attachments" && key.as_str() != "reply_to")
+            {
+                let mut missing = message.clone();
+                missing
+                    .as_object_mut()
+                    .ok_or("message is not object")?
+                    .remove(required);
+                assert!(
+                    !validator.is_valid(&serde_json::json!([
+                        handle.clone(),
+                        "channel-中文",
+                        missing
+                    ])),
+                    "required field {required} must not disappear"
+                );
+                let mut null = message.clone();
+                null.as_object_mut()
+                    .ok_or("message is not object")?
+                    .insert(required.clone(), serde_json::Value::Null);
+                assert!(
+                    !validator.is_valid(&serde_json::json!([handle.clone(), "channel-中文", null])),
+                    "required field {required} must not be null"
+                );
+            }
+        }
+        let mut malformed = message;
+        malformed
+            .as_object_mut()
+            .ok_or("message is not object")?
+            .insert("unknown".to_string(), serde_json::json!(true));
+        assert!(!validator.is_valid(&serde_json::json!([
+            handle.clone(),
+            "channel-中文",
+            malformed
+        ])));
+    }
+    let shape = family_operation_wire_schema("channels", "channels.handler.handle")
+        .ok_or("missing handle shape")?;
+    let validator = jsonschema::validator_for(shape.get("input").ok_or("missing input")?)
+        .map_err(|error| error.to_string())?;
+    for timestamp in [
+        serde_json::json!(1),
+        serde_json::json!("-1"),
+        serde_json::json!("01"),
+        serde_json::json!("18446744073709551616"),
+        serde_json::Value::Null,
+    ] {
+        let mut malformed = inbound.clone();
+        malformed
+            .as_object_mut()
+            .ok_or("message is not object")?
+            .insert("timestamp".to_string(), timestamp);
+        // Canonical/overflow admission is also enforced by the reused WireU64 DTO.
+        assert!(serde_json::from_value::<ChannelInboundMessageWire>(malformed.clone()).is_err());
+        assert!(!validator.is_valid(&serde_json::json!([
+            handle.clone(),
+            "channel-中文",
+            malformed
+        ])));
+    }
+    for (kind, data) in [
+        ("unknown", "AP9BgA=="),
+        ("image", "-_=="),
+        ("image", "AP9BgA"),
+        ("image", "AB=="),
+    ] {
+        let mut malformed = inbound.clone();
+        malformed
+            .as_object_mut()
+            .ok_or("message is not object")?
+            .insert(
+                "attachments".to_string(),
+                serde_json::json!([{"kind":kind,"data_base64":data}]),
+            );
+        assert!(!validator.is_valid(&serde_json::json!([
+            handle.clone(),
+            "channel-中文",
+            malformed
+        ])));
+    }
+    for kind in ["image", "file", "audio", "video"] {
+        for filename in [
+            None,
+            Some(serde_json::Value::Null),
+            Some(serde_json::json!("")),
+            Some(serde_json::json!("附件🌊")),
+        ] {
+            let mut attachment = serde_json::json!({"kind":kind,"data_base64":"AP9BgA=="});
+            if let Some(filename) = filename {
+                attachment
+                    .as_object_mut()
+                    .ok_or("attachment is not object")?
+                    .insert("filename".to_string(), filename);
+            }
+            let mut message = inbound.clone();
+            message
+                .as_object_mut()
+                .ok_or("message is not object")?
+                .insert("attachments".to_string(), serde_json::json!([attachment]));
+            assert!(validator.is_valid(&serde_json::json!([
+                handle.clone(),
+                "channel-中文",
+                message
+            ])));
+        }
+    }
+    let mut malformed = inbound.clone();
+    malformed
+        .as_object_mut()
+        .ok_or("message is not object")?
+        .insert("attachments".to_string(), serde_json::Value::Null);
+    assert!(!validator.is_valid(&serde_json::json!([
+        handle.clone(),
+        "channel-中文",
+        malformed
+    ])));
+    let mut minimal = inbound.clone();
+    minimal
+        .as_object_mut()
+        .ok_or("message is not object")?
+        .remove("attachments");
+    assert!(validator.is_valid(&serde_json::json!([
+        handle.clone(),
+        "channel-中文",
+        minimal
+    ])));
+    for operation in [
+        "channels.stream.next",
+        "channels.stream.cancel",
+        "channels.stream.close",
+    ] {
+        let shape =
+            family_operation_wire_schema("channels", operation).ok_or("missing control shape")?;
+        let validator =
+            jsonschema::validator_for(shape.get("input").ok_or("missing control input")?)
+                .map_err(|error| error.to_string())?;
+        assert!(validator.is_valid(&serde_json::json!([stream.clone()])));
+        assert!(!validator.is_valid(&serde_json::json!([handle.clone()])));
+        assert!(!validator.is_valid(&serde_json::json!([stream.clone(), stream.clone()])));
+    }
+    Ok(())
+}
+
+#[test]
+fn generated_channels_forward_fixtures_retain_session_and_full_owner_handles() -> Result<(), String>
+{
+    use echo_sdk_protocol::facade::family_operation_signature_digest;
+    use echo_sdk_protocol::methods::FeatureOperationRequest;
+    let fixtures: Vec<_> = schema::all_fixtures()
+        .into_iter()
+        .filter(|fixture| fixture.name.starts_with("channel-forward-"))
+        .collect();
+    assert_eq!(
+        fixtures.len(),
+        6,
+        "six approved forward operations require fixture proof"
+    );
+    for fixture in fixtures {
+        let request: FeatureOperationRequest = parse_fixture(&fixture)?;
+        request.validate().map_err(str::to_string)?;
+        assert_eq!(
+            request.signature_digest,
+            family_operation_signature_digest("channels", &request.operation)
+        );
+        assert!(request.handle.is_some_and(|handle| handle.kind == echo_sdk_protocol::handle::HandleKind::Session));
+        let resource = request
+            .arguments
+            .first()
+            .ok_or("fixture has no complete owner handle")?;
+        assert!(
+            matches!(resource, WireValue::Handle(handle) if handle.generation.to_u64() == Some(7))
+        );
+        assert_eq!(
+            request.arguments.len(),
+            if request.operation.starts_with("channels.handler.") {
+                3
+            } else {
+                1
+            }
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn channels_forward_result_shapes_preserve_the_existing_stream_envelope() -> Result<(), String> {
+    use echo_sdk_protocol::facade::family_operation_wire_schema;
+    let result_validator = |operation| -> Result<jsonschema::Validator, String> {
+        let shape =
+            family_operation_wire_schema("channels", operation).ok_or("missing result shape")?;
+        jsonschema::validator_for(shape.get("result").ok_or("missing result")?)
+            .map_err(|error| error.to_string())
+    };
+    let stream = serde_json::json!({"id":"stream","generation":"7","kind":"stream"});
+    let opened = result_validator("channels.handler.handle_stream")?;
+    assert!(opened.is_valid(&stream));
+    assert!(
+        !opened.is_valid(
+            &serde_json::json!({"id":"manager","generation":"7","kind":"facade_resource"})
+        )
+    );
+    assert!(result_validator("channels.handler.reply")?.is_valid(&serde_json::Value::Null));
+    assert!(!result_validator("channels.handler.reply")?.is_valid(&serde_json::json!(true)));
+    for operation in ["channels.stream.cancel", "channels.stream.close"] {
+        assert!(result_validator(operation)?.is_valid(&serde_json::json!(true)));
+        assert!(result_validator(operation)?.is_valid(&serde_json::json!(false)));
+        assert!(!result_validator(operation)?.is_valid(&serde_json::Value::Null));
+    }
+    let validator = result_validator("channels.stream.next")?;
+    let fields = vec![
+        serde_json::json!({"name":"stream","value":{"kind":"handle","value":stream}}),
+        serde_json::json!({"name":"sequence","value":{"kind":"u64","value":"1"}}),
+    ];
+    for variant in ["complete", "cancelled"] {
+        assert!(validator.is_valid(&serde_json::json!({"kind":"variant","value":{"type_id":"echo_sdk::FacadeStreamEvent","variant":variant,"fields":fields}})));
+    }
+    for variant in ["item", "failed"] {
+        let mut values = fields.clone();
+        values.push(serde_json::json!({"name":"value","value":{"kind":"map","value":[]}}));
+        let event = serde_json::json!({"kind":"variant","value":{"type_id":"echo_sdk::FacadeStreamEvent","variant":variant,"fields":values}});
+        let errors: Vec<_> = validator
+            .iter_errors(&event)
+            .map(|error| error.to_string())
+            .collect();
+        assert!(
+            errors.is_empty(),
+            "existing stream envelope rejected: {errors:?}"
+        );
+        assert!(!validator.is_valid(&serde_json::json!({"kind":"variant","value":{"type_id":"echo_sdk::FacadeStreamEvent","variant":variant,"fields":fields}})));
+    }
+    assert!(!validator.is_valid(&serde_json::json!({"kind":"bool","value":true})));
+    assert!(!validator.is_valid(&serde_json::json!({"kind":"variant","value":{"type_id":"different","variant":"complete","fields":fields}})));
+    assert!(!validator.is_valid(&serde_json::json!({"kind":"variant","value":{"type_id":"echo_sdk::FacadeStreamEvent","variant":"other","fields":fields}})));
+    Ok(())
+}
+
+// Approved A: these JSON callers compile against the old closed enums as well.
+// Unsupported capability/operation is a behavioral before, never a missing type.
+#[test]
+fn workflow_checkpoint_protected_claim_capability_contract() -> Result<(), String> {
+    use echo_sdk_protocol::methods::ExtensionDescriptor;
+
+    for enabled in [false, true] {
+        let raw = serde_json::json!({"protected_claim_v1":enabled});
+        let capabilities: AgentComponentCapabilitiesWire =
+            serde_json::from_value(raw).map_err(|error| error.to_string())?;
+        let back = serde_json::to_value(capabilities).map_err(|error| error.to_string())?;
+        assert_eq!(
+            back.get("protected_claim_v1"),
+            Some(&serde_json::json!(enabled))
+        );
+    }
+    for illegal in [
+        serde_json::json!("true"),
+        serde_json::json!(1),
+        serde_json::json!(null),
+    ] {
+        assert!(
+            serde_json::from_value::<AgentComponentCapabilitiesWire>(
+                serde_json::json!({"protected_claim_v1":illegal})
+            )
+            .is_err()
+        );
+    }
+    for (component, enabled, valid) in [
+        ("workflow_checkpoint_store", true, true),
+        ("workflow_checkpoint_store", false, true),
+        ("audit_logger", true, false),
+        ("audit_logger", false, true),
+    ] {
+        let mut capabilities = serde_json::json!({"protected_claim_v1":enabled});
+        if component == "workflow_checkpoint_store" {
+            capabilities
+                .as_object_mut()
+                .ok_or("capabilities must be object")?
+                .insert(
+                    "claim_heartbeat_interval_ms".to_string(),
+                    serde_json::json!("1000"),
+                );
+        }
+        let descriptor: ExtensionDescriptor = serde_json::from_value(serde_json::json!({
+            "kind":"agent_component","descriptor_version":1,
+            "component":component,"name":"checkpoint-provider","capabilities":capabilities
+        }))
+        .map_err(|error| error.to_string())?;
+        assert_eq!(
+            descriptor.validate().is_ok(),
+            valid,
+            "component={component}, enabled={enabled}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn workflow_checkpoint_protected_claim_operation_round_trips_as_unit() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{AgentComponentCallInputWire, AgentComponentCallResultWire};
+
+    let input = serde_json::json!({"operation":"workflow_checkpoint_protect_claim",
+        "input":{"checkpoint_id":"checkpoint-中文🙂","attempt_id":"attempt-原始🙂"}});
+    let typed: AgentComponentCallInputWire =
+        serde_json::from_value(input.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        input
+    );
+    let result = serde_json::json!({"operation":"workflow_checkpoint_protect_claim"});
+    let typed: AgentComponentCallResultWire =
+        serde_json::from_value(result.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        result
+    );
+    for malformed in [
+        serde_json::json!({"operation":"workflow_checkpoint_protect_claim","input":{"checkpoint_id":"c"}}),
+        serde_json::json!({"operation":"workflow_checkpoint_protect_claim","input":{"checkpoint_id":"c","attempt_id":1}}),
+        serde_json::json!({"operation":"workflow_checkpoint_protect_claim","input":{"checkpoint_id":"c","attempt_id":"a","unexpected":true}}),
+    ] {
+        assert!(serde_json::from_value::<AgentComponentCallInputWire>(malformed).is_err());
+    }
+    assert!(
+        serde_json::from_value::<AgentComponentCallResultWire>(serde_json::json!({
+            "operation":"workflow_checkpoint_protect_claim","value":{"accepted":true}
+        }))
+        .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn workflow_checkpoint_protected_claim_legacy_controls_are_closed() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{
+        AgentComponentCallInputWire, AgentComponentCallResultWire, ExtensionDescriptor,
+    };
+
+    let absent: AgentComponentCapabilitiesWire =
+        serde_json::from_value(serde_json::json!({})).map_err(|error| error.to_string())?;
+    assert!(!absent.execution_cas_v1);
+    let legacy: ExtensionDescriptor = serde_json::from_value(serde_json::json!({
+        "kind":"agent_component","descriptor_version":1,"component":"workflow_checkpoint_store",
+        "name":"legacy","capabilities":{"claim_heartbeat_interval_ms":"1000"}
+    }))
+    .map_err(|error| error.to_string())?;
+    assert!(legacy.validate().is_ok());
+    let renew = serde_json::json!({"operation":"workflow_checkpoint_renew_claim",
+        "input":{"checkpoint_id":"checkpoint-中文🙂","attempt_id":"attempt-原始🙂"}});
+    let typed: AgentComponentCallInputWire =
+        serde_json::from_value(renew.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        renew
+    );
+    let result = serde_json::json!({"operation":"workflow_checkpoint_renew_claim"});
+    let typed: AgentComponentCallResultWire =
+        serde_json::from_value(result.clone()).map_err(|error| error.to_string())?;
+    assert_eq!(
+        serde_json::to_value(typed).map_err(|error| error.to_string())?,
+        result
+    );
+    assert!(
+        serde_json::from_value::<AgentComponentCapabilitiesWire>(serde_json::json!({
+            "protected_claim_v2":true
+        }))
+        .is_err()
+    );
+    assert!(
+        serde_json::from_value::<AgentComponentCallInputWire>(serde_json::json!({
+            "operation":"workflow_checkpoint_protect_claim_v2","input":{}
+        }))
+        .is_err()
+    );
+    Ok(())
 }

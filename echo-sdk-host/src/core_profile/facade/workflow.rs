@@ -40,12 +40,7 @@ fn invalid(message: impl Into<String>) -> EchoSdkError {
 }
 
 fn framework(error: echo_agent::error::ReactError) -> EchoSdkError {
-    wire::sdk_error(
-        ExtensionErrorCode::FrameworkError,
-        wire::bounded_framework_message(&error.to_string()),
-        Retryability::Never,
-        METHOD,
-    )
+    wire::framework_error(&error, METHOD)
 }
 
 /// One compiled graph resource: the graph itself, its cooperative cancel
@@ -57,13 +52,58 @@ pub(crate) struct WorkflowGraphRecord {
     pub cancel: tokio_util::sync::CancellationToken,
 }
 
+fn require_protected_claims(
+    graph: &echo_agent::workflow::Graph,
+    resource: &WireHandle,
+) -> Result<(), EchoSdkError> {
+    // The Graph reads its original bound Store. This is only the SDK's
+    // canonical capability error; claim/protect/CRUD remain framework-owned.
+    if graph.supports_protected_claims() {
+        Ok(())
+    } else {
+        Err(wire::handle_error(
+            ExtensionErrorCode::FeatureUnavailable,
+            "workflow checkpoint store does not provide protected claims",
+            METHOD,
+            resource,
+        ))
+    }
+}
+
 /// One standalone SharedState resource (owner-checked like graphs).
 pub(crate) struct WorkflowStateRecord {
     pub state: echo_agent::workflow::SharedState,
 }
 
+fn optional_string_at<'a>(
+    arguments: &'a [serde_json::Value],
+    position: usize,
+    name: &str,
+) -> Result<Option<&'a str>, EchoSdkError> {
+    match arguments.get(position) {
+        None | Some(serde_json::Value::Null) => Ok(None),
+        Some(serde_json::Value::String(value)) => Ok(Some(value)),
+        Some(_) => Err(invalid(format!("workflow {name} must be a string or null"))),
+    }
+}
+
+fn tags_at(arguments: &[serde_json::Value], position: usize) -> Result<Vec<String>, EchoSdkError> {
+    match arguments.get(position) {
+        None | Some(serde_json::Value::Null) => Ok(Vec::new()),
+        Some(serde_json::Value::Array(items)) => items
+            .iter()
+            .map(|item| {
+                item.as_str()
+                    .map(str::to_string)
+                    .ok_or_else(|| invalid("every workflow tag must be a string"))
+            })
+            .collect(),
+        Some(_) => Err(invalid("workflow tags must be a string array or null")),
+    }
+}
+
 fn json_of(value: &WireValue, position: usize) -> Result<serde_json::Value, EchoSdkError> {
-    value.clone().into_json().map_err(|error| {
+    super::family_argument_json(value).map_err(|error| {
         invalid(format!(
             "workflow argument {position} is not a lossless wire value: {error}"
         ))
@@ -100,6 +140,24 @@ fn object_at(
             "workflow argument {position} must be an object"
         ))),
     }
+}
+
+/// The protocol checkpoint is an object. Serde's struct sequence support must
+/// not let a positional array reach the framework's checkpoint claim authority.
+fn checkpoint_at(
+    arguments: &[serde_json::Value],
+    position: usize,
+) -> Result<echo_agent::workflow::Checkpoint, EchoSdkError> {
+    let value = arguments
+        .get(position)
+        .filter(|value| value.is_object())
+        .ok_or_else(|| {
+            invalid(format!(
+                "workflow checkpoint at argument {position} must be an object"
+            ))
+        })?;
+    serde_json::from_value(value.clone())
+        .map_err(|error| invalid(format!("checkpoint is malformed: {error}")))
 }
 
 fn state_json(
@@ -293,14 +351,17 @@ pub(crate) async fn dispatch(
             // Agent nodes reuse the Session Agent's own provider: the
             // explicit client first (how the Host injects providers), the
             // LLM config as fallback for config-only agents.
-            let client = authorities.llm_client.clone();
+            let (client, llm_config) = authorities
+                .agent_handle
+                .read(|agent| (agent.llm_client().cloned(), agent.llm_config().cloned()))
+                .await;
             let graph = if client.is_some() {
                 definition
                     .build_graph_with_client(client)
                     .map_err(framework)?
             } else {
                 definition
-                    .build_graph_with_llm_config(authorities.llm_config.as_ref())
+                    .build_graph_with_llm_config(llm_config.as_ref())
                     .map_err(framework)?
             };
             let graph = match checkpoint_store.clone() {
@@ -358,32 +419,49 @@ pub(crate) async fn dispatch(
             let record = graph_record(handles, graphs, &resource, owner)?;
             let producer = streams.open(handles, &resource, owner, &request.operation)?;
             let sender = producer.sender.clone();
-            let cancel = producer.cancel.clone();
+            let cancel = producer.cleanup.clone();
             let graph = record.graph.clone();
             let state = shared_state_of(values);
+            let original_owner = producer.clone();
+            let source_cancel = record.cancel.clone();
             let background = tokio::spawn(async move {
                 let source = graph.run_stream(state).await;
                 let mut source = match source {
-                    Ok(source) => source,
+                    Ok(source) => source.fuse(),
                     Err(error) => {
-                        let _ = sender.send(Err(framework(error))).await;
+                        let error = framework(error);
+                        if !original_owner.record_observation(&error) {
+                            let _ = sender.send(Err(error)).await;
+                        }
                         return;
                     }
                 };
                 loop {
                     let item = tokio::select! {
-                        () = cancel.cancelled() => break,
+                        () = cancel.cancelled() => { source_cancel.cancel(); break; },
                         item = source.next() => item,
                     };
-                    let Some(event) = item else { break };
+                    let Some(event) = item else { return };
                     let item = event.map_err(framework).and_then(workflow_event_value);
-                    tokio::select! {
-                        () = cancel.cancelled() => break,
-                        result = sender.send(item) => {
-                            if result.is_err() {
-                                break;
-                            }
-                        }
+                    if let Err(error) = &item
+                        && original_owner.record_observation(error)
+                    {
+                        break;
+                    }
+                    let sent = tokio::select! {
+                        () = cancel.cancelled() => { source_cancel.cancel(); false },
+                        result = sender.send(item) => result.is_ok(),
+                    };
+                    if !sent {
+                        source_cancel.cancel();
+                        break;
+                    }
+                }
+                // Retain and drain this one opened source. Unknown physical
+                // ownership stays recorded even if an observer wrapper ends.
+                while let Some(event) = source.next().await {
+                    if let Err(error) = event {
+                        original_owner.record_observation(&framework(error));
                     }
                 }
             });
@@ -407,7 +485,7 @@ pub(crate) async fn dispatch(
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
             let checkpoint_id = string_at(&arguments, 1, "a checkpoint id")?;
             let decision = string_at(&arguments, 2, "a decision (approve|reject|defer)")?;
-            let reason = arguments.get(3).and_then(serde_json::Value::as_str);
+            let reason = optional_string_at(&arguments, 3, "reason")?;
             let decision = match decision.as_str() {
                 "approve" => echo_agent::workflow::ApprovalDecision::Approved,
                 "reject" => echo_agent::workflow::ApprovalDecision::Rejected {
@@ -421,6 +499,9 @@ pub(crate) async fn dispatch(
                 }
             };
             let record = graph_record(handles, graphs, &resource, owner)?;
+            if matches!(decision, echo_agent::workflow::ApprovalDecision::Approved) {
+                require_protected_claims(&record.graph, &resource)?;
+            }
             let checkpoint = record
                 .graph
                 .load_checkpoint(&checkpoint_id)
@@ -437,15 +518,9 @@ pub(crate) async fn dispatch(
         "workflow.graph.resume_exact" => {
             let resource =
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
-            let checkpoint = arguments
-                .get(1)
-                .cloned()
-                .ok_or_else(|| invalid("workflow.graph.resume_exact requires a checkpoint"))?;
-            let checkpoint: echo_agent::workflow::Checkpoint =
-                serde_json::from_value(checkpoint)
-                    .map_err(|error| invalid(format!("checkpoint is malformed: {error}")))?;
+            let checkpoint = checkpoint_at(&arguments, 1)?;
             let decision = string_at(&arguments, 2, "a decision (approve|reject|defer)")?;
-            let reason = arguments.get(3).and_then(serde_json::Value::as_str);
+            let reason = optional_string_at(&arguments, 3, "reason")?;
             let decision = match decision.as_str() {
                 "approve" => echo_agent::workflow::ApprovalDecision::Approved,
                 "reject" => echo_agent::workflow::ApprovalDecision::Rejected {
@@ -459,6 +534,9 @@ pub(crate) async fn dispatch(
                 }
             };
             let record = graph_record(handles, graphs, &resource, owner)?;
+            if matches!(decision, echo_agent::workflow::ApprovalDecision::Approved) {
+                require_protected_claims(&record.graph, &resource)?;
+            }
             let result = record
                 .graph
                 .resume(checkpoint, decision)
@@ -469,15 +547,10 @@ pub(crate) async fn dispatch(
         "workflow.graph.resume_with_state" => {
             let resource =
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
-            let checkpoint = arguments
-                .get(1)
-                .cloned()
-                .ok_or_else(|| invalid("workflow.graph.resume_with_state requires a checkpoint"))?;
-            let checkpoint: echo_agent::workflow::Checkpoint =
-                serde_json::from_value(checkpoint)
-                    .map_err(|error| invalid(format!("checkpoint is malformed: {error}")))?;
+            let checkpoint = checkpoint_at(&arguments, 1)?;
             let updates = object_at(&arguments, 2)?;
             let record = graph_record(handles, graphs, &resource, owner)?;
+            require_protected_claims(&record.graph, &resource)?;
             let result = record
                 .graph
                 .resume_with_state(checkpoint, updates)
@@ -490,8 +563,9 @@ pub(crate) async fn dispatch(
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
             let checkpoint_id = string_at(&arguments, 1, "a checkpoint id")?;
             let updates = object_at(&arguments, 2)?;
-            let branch_name = arguments.get(3).and_then(serde_json::Value::as_str);
+            let branch_name = optional_string_at(&arguments, 3, "branch name")?;
             let record = graph_record(handles, graphs, &resource, owner)?;
+            require_protected_claims(&record.graph, &resource)?;
             let result = record
                 .graph
                 .branch_from(&checkpoint_id, updates, branch_name.map(str::to_string))
@@ -503,19 +577,10 @@ pub(crate) async fn dispatch(
             let resource =
                 super::resource_handle_at(&arguments, 0, "a workflow graph resource", METHOD)?;
             let checkpoint_id = string_at(&arguments, 1, "a checkpoint id")?;
-            let label = arguments.get(2).and_then(serde_json::Value::as_str);
-            let tags: Vec<String> = arguments
-                .get(3)
-                .and_then(serde_json::Value::as_array)
-                .map(|items| {
-                    items
-                        .iter()
-                        .filter_map(|item| item.as_str().map(str::to_string))
-                        .collect()
-                })
-                .unwrap_or_default();
-            let record = graph_record(handles, graphs, &resource, owner)?;
+            let label = optional_string_at(&arguments, 2, "label")?;
+            let tags = tags_at(&arguments, 3)?;
             let tag_refs: Vec<&str> = tags.iter().map(String::as_str).collect();
+            let record = graph_record(handles, graphs, &resource, owner)?;
             record
                 .graph
                 .tag_checkpoint(&checkpoint_id, label, tag_refs)
@@ -531,8 +596,11 @@ pub(crate) async fn dispatch(
             let page: Vec<serde_json::Value> = infos
                 .iter()
                 .take(limits.page)
-                .map(|info| serde_json::to_value(info).unwrap_or_else(|_| serde_json::Value::Null))
-                .collect();
+                .map(|info| {
+                    serde_json::to_value(info)
+                        .map_err(|error| invalid(format!("checkpoint encoding failed: {error}")))
+                })
+                .collect::<Result<_, _>>()?;
             wire(serde_json::json!({
                 "checkpoints": page,
                 "truncated": infos.len() > limits.page,
@@ -688,4 +756,238 @@ pub(crate) fn drop_session_resources(
         .lock()
         .unwrap_or_else(|error| error.into_inner())
         .retain(|id, _| !closed.iter().any(|closed_id| closed_id == id));
+}
+
+#[cfg(test)]
+mod adapter_regression_tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn optional_workflow_fields_reject_malformed_values() {
+        assert!(tags_at(&[json!(["valid", 7])], 0).is_err());
+        assert!(tags_at(&[json!("one")], 0).is_err());
+        assert_eq!(
+            tags_at(&[json!(["中文🌳", "review"])], 0).ok(),
+            Some(vec!["中文🌳".to_string(), "review".to_string()])
+        );
+        assert!(optional_string_at(&[json!(7)], 0, "reason").is_err());
+        assert_eq!(
+            optional_string_at(&[json!(null)], 0, "reason").ok(),
+            Some(None)
+        );
+    }
+
+    struct CountingWorkflowClient {
+        name: &'static str,
+        answer: &'static str,
+        requests: std::sync::Mutex<Vec<echo_agent::llm::ChatRequest>>,
+    }
+
+    impl echo_agent::llm::LlmClient for CountingWorkflowClient {
+        fn chat(
+            &self,
+            _request: echo_agent::llm::ChatRequest,
+        ) -> futures::future::BoxFuture<'_, echo_agent::error::Result<echo_agent::llm::ChatResponse>>
+        {
+            Box::pin(async {
+                Err(echo_agent::error::ReactError::Other(
+                    "workflow must consume its AgentNode stream".to_string(),
+                ))
+            })
+        }
+
+        fn chat_stream(
+            &self,
+            request: echo_agent::llm::ChatRequest,
+        ) -> futures::future::BoxFuture<
+            '_,
+            echo_agent::error::Result<
+                futures::stream::BoxStream<
+                    'static,
+                    echo_agent::error::Result<echo_agent::llm::ChatChunk>,
+                >,
+            >,
+        > {
+            Box::pin(async move {
+                self.requests
+                    .lock()
+                    .map_err(|error| echo_agent::error::ReactError::Other(error.to_string()))?
+                    .push(request);
+                let chunk = echo_agent::llm::ChatChunk {
+                    delta: echo_agent::llm::types::DeltaMessage {
+                        role: Some("assistant".to_string()),
+                        content: Some(self.answer.to_string()),
+                        ..Default::default()
+                    },
+                    finish_reason: Some("stop".to_string()),
+                    usage: None,
+                };
+                Ok(Box::pin(futures::stream::once(async move { Ok(chunk) }))
+                    as futures::stream::BoxStream<
+                        'static,
+                        echo_agent::error::Result<echo_agent::llm::ChatChunk>,
+                    >)
+            })
+        }
+
+        fn model_name(&self) -> &str {
+            self.name
+        }
+    }
+
+    fn live_provider_request(
+        operation: &str,
+        values: Vec<serde_json::Value>,
+    ) -> Result<FeatureOperationRequest, Box<dyn std::error::Error>> {
+        Ok(FeatureOperationRequest {
+            operation: operation.to_string(),
+            signature_digest: String::new(),
+            handle: None,
+            arguments: values
+                .into_iter()
+                .map(WireValue::from_json)
+                .collect::<Result<_, _>>()?,
+        })
+    }
+
+    #[tokio::test]
+    async fn agent_node_uses_replaced_live_llm_after_session_services_capture()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let first = Arc::new(CountingWorkflowClient {
+            name: "provider-a",
+            answer: "stale provider A",
+            requests: std::sync::Mutex::new(Vec::new()),
+        });
+        let second = Arc::new(CountingWorkflowClient {
+            name: "provider-b",
+            answer: "live provider B 中文🌊",
+            requests: std::sync::Mutex::new(Vec::new()),
+        });
+        let agent = echo_agent::agent::ReactAgent::new(echo_agent::agent::AgentConfig::new(
+            "unused-model",
+            "live-services",
+            "unused Session prompt",
+        ))
+        .with_llm_client(first.clone());
+        let handle = echo_agent::agent::AgentHandle::new(agent);
+        let authorities = Arc::new(
+            handle
+                .read(|agent| {
+                    SessionAuthorityServices::of(handle.clone(), agent, std::path::PathBuf::new())
+                })
+                .await,
+        );
+        // Mutate the very Agent captured by the Session, not a new Agent or graph-specific client.
+        handle
+            .write(|agent| agent.set_llm_client(second.clone()))
+            .await;
+        let handles = HandleRegistry::new(1, 8);
+        let definition = crate::factory::PreparedAgentDefinition::new(
+            Default::default(),
+            first.clone(),
+            None,
+            false,
+        );
+        let (agent_address, _) = handles
+            .register_agent(Arc::new(definition), String::new())
+            .map_err(|error| std::io::Error::other(error.message))?;
+        handles
+            .register_session_with_cwd("session-owner".to_string(), agent_address.id, None)
+            .map_err(|error| std::io::Error::other(error.message))?;
+        let graphs = std::sync::Mutex::new(HashMap::new());
+        let states = std::sync::Mutex::new(HashMap::new());
+        let streams = super::super::stream::FacadeStreamRuntime::new(8, 5);
+        let limits = super::super::FacadeFamilyLimits {
+            max_resources: 8,
+            page: 8,
+        };
+        let definition = json!({"name":"live-provider", "nodes":[{"name":"agent_step","type":"agent","system_prompt":"actual workflow prompt 中文🙂","input_key":"task","output_key":"agent_out"}],"edges":[],"entry":"agent_step","finish":["agent_step"]}).to_string();
+        let build = live_provider_request("workflow.graph.build", vec![json!(definition)])?;
+        let built = dispatch(
+            &handles,
+            &graphs,
+            &states,
+            &streams,
+            &authorities,
+            None,
+            "session-owner",
+            &build,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        let resource: WireHandle = serde_json::from_value(
+            built
+                .get("resource")
+                .cloned()
+                .ok_or("graph build did not return its real resource")?,
+        )?;
+        let input = "execute original task 中文🌳";
+        let run = live_provider_request(
+            "workflow.graph.run_until_interrupt",
+            vec![serde_json::to_value(&resource)?, json!({"task":input})],
+        )?;
+        let outcome = dispatch(
+            &handles,
+            &graphs,
+            &states,
+            &streams,
+            &authorities,
+            None,
+            "session-owner",
+            &run,
+            limits,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        assert_eq!(outcome.get("outcome"), Some(&json!("completed")));
+        assert_eq!(
+            outcome.pointer("/state/values/agent_out"),
+            Some(&json!(second.answer))
+        );
+        assert_eq!(outcome.pointer("/state/values/task"), Some(&json!(input)));
+        assert_eq!(outcome.get("path"), Some(&json!(["agent_step"])));
+        assert_eq!(
+            first
+                .requests
+                .lock()
+                .map_err(|error| std::io::Error::other(error.to_string()))?
+                .len(),
+            0,
+            "captured provider A must not execute"
+        );
+        let requests = second
+            .requests
+            .lock()
+            .map_err(|error| std::io::Error::other(error.to_string()))?;
+        assert_eq!(
+            requests.len(),
+            1,
+            "the real AgentNode must consume provider B exactly once"
+        );
+        let request = requests.first().ok_or("provider B had no actual request")?;
+        assert!(
+            request
+                .messages
+                .iter()
+                .any(|message| message.role == echo_agent::llm::types::Role::User
+                    && message.content.as_text().as_deref() == Some(input))
+        );
+        assert!(request.messages.iter().any(|message| {
+            message.role == echo_agent::llm::types::Role::System
+                && message
+                    .content
+                    .as_text()
+                    .is_some_and(|text| text.contains("actual workflow prompt 中文🙂"))
+        }));
+        drop(requests);
+        handles
+            .close_facade_resource(&resource, "workflow.test.close")
+            .map_err(|error| std::io::Error::other(error.message))?;
+        drop_session_resources(&graphs, &states, std::slice::from_ref(&resource.id));
+        Ok(())
+    }
 }

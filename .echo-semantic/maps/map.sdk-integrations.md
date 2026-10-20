@@ -1,0 +1,1114 @@
+---
+schema_version: 1
+id: map.sdk-integrations
+kind: capability_map
+title: 集成能力与精确 source invoke
+risk: high
+observed_at: bd8e42e732588181b7a2589d91e9ffdce02d23e1
+boundary_refs:
+- boundary.sdk-integrations
+behavior_refs:
+- behavior.sdk-integrations
+- behavior.sdk-family-memory
+- behavior.sdk-family-workflow
+- behavior.sdk-family-delivery
+- behavior.sdk-family-state
+- behavior.sdk-family-trace
+- behavior.sdk-family-eval
+- behavior.sdk-family-improve
+- behavior.sdk-family-permission
+- behavior.sdk-family-mcp
+- behavior.sdk-family-a2a
+- behavior.sdk-family-lsp
+- behavior.sdk-family-channels
+- behavior.sdk-family-telemetry
+- behavior.sdk-family-topology
+- behavior.sdk-family-web
+- behavior.sdk-family-files
+- behavior.sdk-family-shell
+- behavior.sdk-family-git
+- behavior.sdk-family-database
+- behavior.sdk-family-rag
+- behavior.sdk-family-chart
+- behavior.sdk-family-media
+- behavior.sdk-family-data
+- behavior.sdk-family-statistics
+- behavior.sdk-family-research
+- behavior.sdk-family-content-guard
+- behavior.sdk-family-project-rules
+- behavior.sdk-family-testing
+- behavior.sdk-family-structured-output
+- behavior.sdk-family-source-operation
+- behavior.sdk-family-invoke
+rule_refs:
+- rule.framework-runtime-authority
+evidence_refs:
+- evidence.sdk-workflow-observation-source-gaps
+- evidence.sdk-channel-message-handler-consumer-audit
+- evidence.sdk-mcp-channel-owned-candidate
+- evidence.sdk-computation-50
+- evidence.sdk-managed-supporting-operation-boundary
+- evidence.sdk-rag-scalar-verification
+- evidence.sdk-task-memory-workflow-finite-observation
+- evidence.sdk-tools-bridge-finite-observation
+- evidence.sdk-integrations-finite-observation
+- evidence.sdk-workflow-successor-candidate
+- evidence.sdk-rag-project-rules
+- evidence.sdk-git-published-consumer-verification
+finding_refs:
+- finding.sdk-workflow-resume-observation-claim
+- finding.sdk-workflow-direct-run-observation-projection
+- finding.sdk-adapter-invalid-input
+- finding.sdk-delivery-exact-claim
+- finding.sdk-family-handle-argument-projection
+- finding.sdk-feature-failure-cause-fidelity
+- finding.sdk-live-agent-service-view
+- finding.sdk-lsp-response-fidelity
+- finding.sdk-mcp-batch-publication
+- finding.sdk-mcp-manager-owner
+- finding.sdk-trace-publication-quota
+- finding.sdk-channel-message-handler-consumer
+- finding.sdk-channel-resource-operation-admission
+- finding.sdk-rag-unicode-character-count
+- finding.sdk-database-describe-dynamic-value
+- finding.sdk-tool-artifact-context-propagation
+- finding.sdk-clinical-trials-total-count-request
+- finding.sdk-chart-dimension-integer-loss
+- finding.sdk-git-branch-switch-dirty-path-overwrite
+- finding.sdk-git-worktree-source-poll-stack-overflow
+- finding.sdk-tool-pid-observation-window
+audit_refs:
+- audit.sdk-computation-50-rereview
+- audit.sdk-task-memory-workflow-finite-trigger-input
+- audit.sdk-task-memory-workflow-finite-result-side-effect
+- audit.sdk-task-memory-workflow-finite-state-authority
+- audit.sdk-task-memory-workflow-finite-data-durability
+- audit.sdk-task-memory-workflow-finite-time-lifecycle
+- audit.sdk-task-memory-workflow-finite-failure-concurrency
+- audit.sdk-task-memory-workflow-finite-permission-external
+- audit.sdk-task-memory-workflow-finite-contract-evidence
+- audit.sdk-tools-bridge-finite-trigger-input
+- audit.sdk-tools-bridge-finite-result-side-effect
+- audit.sdk-tools-bridge-finite-state-authority
+- audit.sdk-tools-bridge-finite-data-durability
+- audit.sdk-tools-bridge-finite-time-lifecycle
+- audit.sdk-tools-bridge-finite-failure-concurrency
+- audit.sdk-tools-bridge-finite-permission-external
+- audit.sdk-tools-bridge-finite-contract-evidence
+- audit.sdk-integrations-finite-trigger-input
+- audit.sdk-integrations-finite-result-side-effect
+- audit.sdk-integrations-finite-state-authority
+- audit.sdk-integrations-finite-data-durability
+- audit.sdk-integrations-finite-time-lifecycle
+- audit.sdk-integrations-finite-failure-concurrency
+- audit.sdk-integrations-finite-permission-external
+- audit.sdk-integrations-finite-contract-evidence
+- audit.sdk-rag-scalar-rereview
+- audit.sdk-git-published-consumer-rereview
+related_map_refs:
+- map.sdk-product-boundary
+scenarios:
+  behavior-lifecycle-failure:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    finding_refs:
+    - finding.sdk-adapter-invalid-input
+    - finding.sdk-delivery-exact-claim
+    - finding.sdk-family-handle-argument-projection
+    - finding.sdk-feature-failure-cause-fidelity
+    - finding.sdk-live-agent-service-view
+    - finding.sdk-lsp-response-fidelity
+    - finding.sdk-mcp-batch-publication
+    - finding.sdk-mcp-manager-owner
+    - finding.sdk-trace-publication-quota
+    review_scope: Entry, unique authority, normal lifecycle and named failure obligations
+      have been inspected and linked. Mapped records the model, not bug-free/runtime/main
+      closure; open Findings remain explicit.
+  family-memory:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-memory
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-memory-permission-candidate
+    - evidence.sdk-task-memory-workflow-finite-observation
+    review_scope: 真实Store A→B、Memory59具名操作/权限/typedfailure、同Agent当前服务已实际审；可定位accepted行为/唯一服务/有限失败。内存无额外跨进程durability承诺，不泛全部backend。
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-state-authority
+  family-workflow:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-workflow
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-workflow-successor-candidate
+    - evidence.sdk-task-memory-workflow-finite-observation
+    review_scope: 原48/后继7accepted操作、checkpoint/type/claim、真实新graph LLM A→B已有限审；原pureRouter与新AgentNode分别定位，不承诺已建graph热换。物理B/12保独立。
+    finding_refs:
+    - finding.sdk-workflow-resume-observation-claim
+    - finding.sdk-workflow-direct-run-observation-projection
+    audit_refs:
+    - audit.sdk-task-memory-workflow-finite-state-authority
+  family-delivery:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-delivery
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-state:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-state
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-trace:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-trace
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-eval:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-eval
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-improve:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-improve
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-permission:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-permission
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-memory-permission-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-mcp:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-mcp
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-a2a:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-a2a
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-lsp:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-lsp
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-channels:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-channels
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-channel-message-handler-consumer-audit
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-telemetry:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-telemetry
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-time-lifecycle
+    - audit.sdk-integrations-finite-result-side-effect
+    review_scope: 原稳定subscriber根修与SDK blocking-work原owner、真实export/flush/公开关闭具名spec复审三链已闭；不推所有未知secret/endpoint，原case/source各epoch保。
+  family-topology:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-topology
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-web:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-web
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-files:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-files
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-shell:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-shell
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-git:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-git
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-git-published-consumer-verification
+    finding_refs:
+    - finding.sdk-git-branch-switch-dirty-path-overwrite
+    - finding.sdk-git-worktree-source-poll-stack-overflow
+    audit_refs:
+    - audit.sdk-git-published-consumer-rereview
+    review_scope: FrameworkFinal actualGit8sourceperspectives +CurrentTool actualpublishedpin9tool4source84native;
+      finite operation/dirty-state/worktree lifecycle; no remote/concurrent/allplatform
+      promises; newEvidence fe845 preserves own epoch.
+  family-database:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-database
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-rag:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-rag
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-chart:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-chart
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tool-input-validation-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-media:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-media
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-data:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-data
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-statistics:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-statistics
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-research:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-research
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    review_scope: Named builtin family source/authority/lifecycle/failure fields independently
+      examined in exact group; see linked5bcb Evidence. Originalmap observation unchanged
+      for unrelatedintegrations; no completeallcodec/futureprovider/main guarantee.
+  family-content-guard:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-content-guard
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-computation-50
+    audit_refs:
+    - audit.sdk-computation-50-rereview
+    review_scope: 原dispatch_content_guard调用唯一framework Guard，Unicode span/redact与保护文件实际oracle
+      source审；仅已接受动作/原pattern场景，无全secret策略或Agentrepair新配置。
+  family-project-rules:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-project-rules
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-rag-project-rules
+    - evidence.sdk-rag-scalar-verification
+    audit_refs:
+    - audit.sdk-rag-scalar-rereview
+    review_scope: 原RAG/ProjectRules32calls/13embeddingPOST、rank/Unicode/200/201及503坏JSON零indexmutation已具体审；不扩durable
+      restart或全部工程发现组合。
+  family-testing:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-testing
+    evidence_refs:
+    - evidence.sdk-testing-value-candidate
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-structured-output:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-structured-output
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-computation-50
+    audit_refs:
+    - audit.sdk-computation-50-rereview
+    review_scope: 仅accepted validate、optional/完整结果/typedfailure原compute50真实源审。运行时repair未accepted，不把无APIconsumer变缺口。
+  family-source-operation:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-source-operation
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+    review_scope: Specific accepted integration/registry-skill supporting role independently
+      examined, original790source restoredbd8 and later A2A native scope separately
+      proven. Not all sourceoperation methods or currentA scope/fullgenerator/main.
+  family-invoke:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    behavior_refs:
+    - behavior.sdk-family-invoke
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-computation-50
+    - evidence.sdk-tools-bridge-finite-observation
+    audit_refs:
+    - audit.sdk-tools-bridge-finite-trigger-input
+    review_scope: 只具名工具/Guard普通Session.invoke、位置绑定、canonical cause与完整值/19typederror及无effect。是这些consumer入口，不声称所有source
+      operations已审。
+  integration-finite-trigger-input:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-trigger-input
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-result-side-effect:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-result-side-effect
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-state-authority:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-state-authority
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-data-durability:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-data-durability
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-time-lifecycle:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-time-lifecycle
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-failure-concurrency:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-failure-concurrency
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-permission-external:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-permission-external
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+  integration-finite-contract-evidence:
+    status: mapped
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/permission.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    behavior_refs:
+    - behavior.sdk-integrations
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    audit_refs:
+    - audit.sdk-integrations-finite-contract-evidence
+    review_scope: Original independent reviewer finite accepted family/table scope
+      plus laterbd8 A2A proof;5sB/12/currentA/platform/main excluded.
+---
+
+# 集成能力与精确 source invoke
+
+## 能力范围
+
+CompiledOperationCatalog按确切accepted identity/signature/feature寻址，薄adapter调用live framework service。memory/workflow读取当前Agent服务，mixednamespace/配置错误在副作用前拒绝；Delivery携完整claim而不以id重建当前attempt；trace构造验证后发布，quota失败可复用。MCP config/file批量SDKalias原子发布保原best-effort native连接权威及exact Arc+Session；工具投影完整ToolResult/effects/artifact/canonical cause。LSP真实29request场景+manager生命周期有30观测/44原始请求；新诊断另42观测/42原始通知跨三语言全字段匹配，severity缺失与integer/text code无损、每URI错误/恢复/清空隔离、无URI走原runtime fatal/PID退出。两份证据各绑定fc63/4d43不同不可变Host，不互冒同一final输入。
+
+## 入口与输出
+
+源码入口与实际注册/分派路径由本 Map 的 source_refs 定位。输出为 typed response/error、framework committed event 或 generation-fenced handle；所有动态入口仍需逐场景验证。
+
+## 行为关系
+
+本能力经 official ACP/profile 或具体 catalog route 到 Host adapter，然后调用框架权威。跨能力调用与三语言消费见 docs/sdk/governance/capability-map.md。
+
+## 状态与数据流
+
+Framework 拥有 Run/Task/Store 的事实与终态；Host 只拥有寻址、可取消资源 owner 与协议发送状态；客户端确认已消费事实。
+
+## 策略来源与优先级
+
+用户八项治理目标与 AGENTS.md 约束行为；accepted external contract 约束兼容；compiled feature/canonical framework service 约束实现。完整 Rust inventory 不扩承诺。
+
+## 生命周期与失败路径
+
+CompiledOperationCatalog按确切accepted identity/signature/feature寻址，薄adapter调用live framework service。memory/workflow读取当前Agent服务，mixednamespace/配置错误在副作用前拒绝；Delivery携完整claim而不以id重建当前attempt；trace构造验证后发布，quota失败可复用。MCP config/file批量SDKalias原子发布保原best-effort native连接权威及exact Arc+Session；工具投影完整ToolResult/effects/artifact/canonical cause。LSP真实29request场景+manager生命周期有30观测/44原始请求；新诊断另42观测/42原始通知跨三语言全字段匹配，severity缺失与integer/text code无损、每URI错误/恢复/清空隔离、无URI走原runtime fatal/PID退出。两份证据各绑定fc63/4d43不同不可变Host，不互冒同一final输入。
+
+原阶段缺口（历史）：Workflow48行覆盖17/24已接受操作，原剩7项已有0744后继真实消费者证据；Memory/Permission59行、State/Trace/Delivery9项、MCP4项、LSP29请求/42诊断分别有来源。Guard/Pivot后继189ff与Tool新validator源须匹配自己的运行/复审；Channel inbound合同缺口单列。
+
+## 权限与敏感信息
+
+本地 SDK 不引入线上权限门控。继续保持框架自动行为 permission authority，凭据不进入日志/合同/错误；资源 gate 仅防止错误owner和无意数据丢失。
+
+## 用户侧投影
+
+TypeScript/Python/Java 对已接受能力暴露惯用接口，handle/error/value 必须无损；不能用成功默认值或丢字段改变权威事实。
+
+## 场景处置清单
+
+主场景mapped只表示模型已展开；关联family Behavior仍needs_review，具体Evidence按支持关系与原epoch读取。剩余义务：Workflow48行覆盖17/24已接受操作，原剩7项已有0744后继真实消费者证据；Memory/Permission59行、State/Trace/Delivery9项、MCP4项、LSP29请求/42诊断分别有来源。Guard/Pivot后继189ff与Tool新validator源须匹配自己的运行/复审；Channel inbound合同缺口单列。
+
+## 未展开项
+
+组级主路径mapped表示入口、唯一权威、生命周期与具名失败义务已建模；41个family Behavior仍needs_review，开放Finding及最终交付分别保留。旧候选的八crate临时patch与95ecpin保持原运行epoch；当前Host已pin published b909并移除patch，但最终nightlyprofiles/唯一合同生成与SDKwhole源码门禁仍待。frameworkmain交付证据不替SDK精确main/CI。完整Rust inventory仅遥测；accepted字段必须由唯一生成器明确裁决。
+
+Workflow48行覆盖17/24已接受操作，原剩7项已有0744后继真实消费者证据；Memory/Permission59行、State/Trace/Delivery9项、MCP4项、LSP29请求/42诊断分别有来源。Guard/Pivot后继189ff与Tool新validator源须匹配自己的运行/复审；Channel inbound合同缺口单列。
+
+## 当前观察、归档和后继边界
+
+原fc63证据已保存为仓库内不可变历史收据，原观察epoch不可恢复为Git时不补造提交。原6711证据归档支持具名局部断言；原27个历史输入中tools.rs已变，具名测试body保持可对照；55个6711运行输入中tools.rs和Workflow已变更。新Workflow语义或其它后继场景必须绑定自己的来源/日志；不把旧整套418/TS240/Python300/Java264冒充最终当前通过。支持见历史审计Evidence及evidence.sdk-parent-driver-candidate-verification的限制，family needs_review和开放Finding保留，主场景mapped不扩运行证据。
+
+## 建模完成与验证状态区别
+
+组级主路径已按入口、唯一权威、生命周期和具名失败义务完成映射，故主场景mapped。family Behavior仍needs_review，已知open Finding与有限证据保留；mapped不等于verified、所有lens covered或最终交付。剩余事项采用明确合同/故障原因，不以无限未枚举组合拒绝建模。
+
+## 当前模型重观察范围
+
+review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
+
+原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+## Task/Memory/Workflow后继有限关系
+
+本Map仅新增memory/workflow两family的02059具名Evidence/Audit关系，其它integration族的原观察版本、未知与状态不变；不把本次作者源审扩大成全部MCP/LSP/Channel已验证。
+
+## 内置十工具族后继有限关系
+
+只对files/shell/web/database/rag/chart/media/data/statistics/research十targetscene追加5bcb共享Evidence/8lensAudit与mapped范围；此Map其它能力的原observation、不确定性与状态不变。schema/parser/Store等唯一frameworkauthority不重复，任意未接受sourceoperation不自动进入菜单。
+
+## 原辅助测试出处
+
+sdks/typescript/test/lsp-diagnostics-host.test.js, sdks/python/tests/test_lsp_diagnostics_host.py, sdks/java/src/test/java/com/echoagent/sdk/LspDiagnosticsHostTest.java 保原569与历史收据，不假bd8已经提交；其原字段义务保，具体新group17source refs真实Git可查。
+
+## 当前Integration八视角范围
+
+原12family与2support角色scope按bd8真实Git观察，8审计具名examined、Map入口mapped；先前Task/Tool组后继Audit各自版本不改，原family其余范围/unknown/开放Finding继续保。memoryvolatile/Delivery8opsnonDurable、State7/Trace17、A2Afuturegen非restart/localSSE非remotephysical/Testingvalue非Mock必须按具体表，不以count或Catalog闭合。
+
+## 后继 Git 分支切换实际源码审结果
+
+framework_final_review 新有界八视角原source审 C0/I1/M0；具体 finding.sdk-git-branch-switch-dirty-path-overwrite 保open。a634 checkout -- target 被解释为路径恢复，不是分支切换，真实反例尚待执行，不能把静态确定反例写成executed RED。原Git已采status/diff/branch指定refs证据及旧审限制保持，当前缺口由此具名实现义务承接，不再用whole/main待验解释全部未知。SDK仍原薄adapter；新框架修复尚未发布或消费验证，不引用其它builtin10审作本族通过。
+
+## 已具真实有限源码审的当前模型入口
+
+- family-memory：真实Store A→B、Memory59具名操作/权限/typedfailure、同Agent当前服务已实际审；可定位accepted行为/唯一服务/有限失败。内存无额外跨进程durability承诺，不泛全部backend。
+- family-workflow：原48/后继7accepted操作、checkpoint/type/claim、真实新graph LLM A→B已有限审；原pureRouter与新AgentNode分别定位，不承诺已建graph热换。物理B/12保独立。
+- family-telemetry：原稳定subscriber根修与SDK blocking-work原owner、真实export/flush/公开关闭具名spec复审三链已闭；不推所有未知secret/endpoint，原case/source各epoch保。
+- family-content-guard：原dispatch_content_guard调用唯一framework Guard，Unicode span/redact与保护文件实际oracle source审；仅已接受动作/原pattern场景，无全secret策略或Agentrepair新配置。
+- family-structured-output：仅accepted validate、optional/完整结果/typedfailure原compute50真实源审。运行时repair未accepted，不把无APIconsumer变缺口。
+- family-invoke：只具名工具/Guard普通Session.invoke、位置绑定、canonical cause与完整值/19typederror及无effect。是这些consumer入口，不声称所有source operations已审。
+- family-project-rules：原RAG/ProjectRules32calls/13embeddingPOST、rank/Unicode/200/201及503坏JSON零indexmutation已具体审；不扩durable restart或全部工程发现组合。
+
+本次将原“候选/whole/main待”通用模板收敛到具名原审范围mapped，并不升级Behavior verified。当前Map主observed保原版本；后继Evidence/Audit分别保存自己的真实源码审/执行切点。Git另新Important保needs_review具体Finding，B/12/Windows与最终交付独立。
+
+## 后继 worktree adapter 实际崩溃
+
+真实Host da873的worktree removal发生栈溢出，原OS栈及同binary反汇编指向SDK巨大async dispatch poll，非递归/新框架Gitauthority。具体 finding.sdk-git-worktree-source-poll-stack-overflow 保open；只私有future分区修复候选尚未执行新Host验证，不能用旧whole通过掩已发现fatal窗口。
+
+## 新published pin的有限Git行为/生命周期映射
+
+已发布框架 main00782 的 GitBranchTool 修复使用原分支专用 git switch -- target，无 force/path restore；原F a634源码82cf的同名dirty损失与CLI2、Tool3fail→same4pass/最终cfd保护oracle独审三链保各正式F切点，不把SDKRepo当Framework树。
+
+SDK真实00782 pin/锁88d99，三语言正常SDK消费者首次各28调用、9个工具入口与4个既有source操作、每语6预期错误，实际不可变Host0f1ecf全部通过。只归一各自owned root，完整请求/结果/错误/refs/index/tree/files/physicalworktree全部字段一致；同名dirty switch实际改分支且bytes不变，非法branch/missing-ref/nonrepo/dirty拒绝的完整快照不变（partial staging明示例外，不声称回滚）。原cwd隔离与Session close后peer仍可用来自独立历史evidence.sdk-tool-behavior-candidate/其原epoch，不属于本次84当前PASS范围。worktree dirtyremove返回原typed拒绝且Hostalive，随后merge/remove/list真实完成，这也支持已独立闭合的栈修复，不重新混为branch源bug。
+
+CurrentTool本会话实际源码/84记录/所有字段与Java1/0/0/0 XML独审PASS C0/I0/M0。manifest的source_execution_commit f799是当时工作执行切点；四consumer实际字节哈希未变、executed copies与原raw保存于真正可恢复fe845，不能称f799已包含当时未tracked的这四测试。旧a634 before/failed记录与两种stack failed candidates全保，不拿旧失败覆盖新结果。
+
+这个Evidence observed fe845只定位明确当前修复消费者与原包。Framework Git仍唯一HEAD/heads refs/index/files/worktree权威，Host薄参数、Owner与完整ToolResult投影不产生第二管理器。本Finding同名dirty path恢复的具体数据丢失义务已由根修复＋SDK消费＋实际独审补齐，可本地resolved；Java/三语言完整28现在已实测，不再写待执行。
+
+本slice不是所有平台或任意并发Git变动/远程push，不能由84计数证明所有未列Git行为。Root最新完整Rust/语言与最终SDK main/合同需自己的冻结收据，manifest当时whole pending保历史；B物理残余、12身份迁移/完整生成继续原独立Finding。
+八视角具名范围：输入由原schema/参数校验；结果逐HEAD/heads/index/files而非消息；nativeGit/原frameworkhelper唯一权威；durability限Git objects/files与原managedmarker；生命周期限boundedprocess与实际物理worktree清理；并发失败本次限dirty拒绝，原cwd隔离是历史独立证据，并非任意同repo并行；权限保持既有localtool risk菜单，无公网门控；合同以原9Tool/4source精确consumer、完整值/typederror与pubpin证明。原早期仍缺文字属历史，不升级Behavior verified或baselineclosure，也不靠84数量全族complete。原observed/source_refs作为其它历史源模型点保，后继fe845明确Evidence/Audit各自sourcecut，未把旧run重命名当前。
+
+
+## 后继722 Linux CI局部开放记录
+
+`finding.sdk-tool-pid-observation-window` 当前open：ToolValue shell采样guard真实Linux []唯一cause仍未证，Darwin合法请求排队受控原50轮实际2.5925s/taskpending/nodispatch红，release后约112ms sameownedtail/TERM/完整结果/保护文件与PID清理均保持；不能据控例冒原Linux ps截断或生产shell坏。
+
+本记录发现观察基准722及PRmerge5d407仅定位后继测试/CI材料，Map原observed_at、所有旧scene/source_refs/status、行为义务和原Evidence审查仍属原epoch；新增只本owner的Finding引用，不复制到所有Map，不提升或失效全8视角/41族。原日志目前Admin完整Hash定位，正式Git归档后再补当期来源，不伪旧Git含未来raw；旧56/4是原切点，安装这三新具体缺陷后56resolved/7open，B3共享物理B与12连续性不改变。
+
+
+## 正式CI保存材料的当期观察（f68）
+
+本段当期观察Git `f68cb49bf421ecdb71dfa4775495c363e31b3324`仅定位正式保存的722运行材料，不把运行时间或源码测试执行标成f68。原发现点`722d09b1a0837f170d4af19cbc3e417d2131b5f3`、PR实际merge5d407、候选所有原Map观察/scenes/status/锚点与对应测试源码SHA保持。正式来源逐路径与Hash如下，可从该Git读取：
+
+- `docs/sdk/governance/evidence/sdk-722-ci-results/README.md`，Git f68 SHA256 `dcd6a9e4922a05527b189a2c03108a3ac73936d5107d022600dada1e570f0b27`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/manifest.json`，Git f68 SHA256 `4eb02f38b55191bfa761cd892b667733dcb26d4462eb655cfd2a22cbd379443e`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/SHA256SUMS.json`，Git f68 SHA256 `c22f92784ad1874ffcb0bb70ad312965e50bda78dcd69871230b2073006f1e44`。
+- `docs/sdk/governance/evidence/sdk-722-ci-results/jobs/116172597308.log`，Git f68 SHA256 `70548f9331858291e374f6e751581cfcf854d8767900d03738d5609041880547`。
+
+正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
+
+原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
+
+## Workflow B 新增开放义务（2026-10-16，有限源码调查）
+
+沿 SDK019e 已接受 declarative AgentNode/registered Llm 接线与外部公开 F f0a6cd1 的 Graph.resume，发现原未结算观察仍走普通 claim requeue、requeue失败丢 typed 身份。owner 仅 F Graph/journal/checkpoint；resume*、heartbeat/expiry/restart 的真实 after 仍未执行，不扩大 deferred StepFn/closure。
+
+独立的 SDK direct workflow.extension.run 仍 stringify ReactError，记录 wire 投影 Finding；测试源码准备而生产未修，等待公开新 pin/真实 red。两 Finding 保 open，不改变其它旧业务观察/coverage 或用原 Workflow48绿抹这两个义务；原 mapped 表示接线已展开，不表示行为修复。首部旧 observed_at 与其原场景来源保持；本新增观察的SDK019e/Ff0a来源由 evidence.sdk-workflow-observation-source-gaps 分别固定，不重标旧执行epoch。

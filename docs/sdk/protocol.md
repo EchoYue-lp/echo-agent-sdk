@@ -7,10 +7,12 @@ cancel subset now has a transport-neutral Rust Agent adapter and a real
 source-built stdio Host; the core extension profile and the extension bridge are delivered in
 that Host (see [sdk-core-profile.md](sdk-core-profile.md) and
 [sdk-extension-bridge.md](sdk-extension-bridge.md)). Source-built TypeScript,
-Python and Java clients now pass the executable route baseline against that
-Host; the first intrinsic value slice is also implemented in all three SDKs,
-while the remaining intrinsic facade mappings remain follow-up work (see the [status
-ladder](README.md#status-ladder)).
+Python and Java clients consume the accepted external contract. The current
+semantic-governance candidate is undergoing final validation; historical
+route baselines and catalog classifications are not behavior proof (see the
+[governance evidence matrix](governance/behavior-evidence-matrix.md)). Complete
+Rust public inventory and intrinsic membership are non-blocking telemetry,
+not a commitment to mirror every identity in three languages.
 
 ## Base protocol: official ACP v1
 
@@ -97,13 +99,30 @@ rejected before Session creation. See
 | Methods | standard ACP only | standard + negotiated `_echo_agent/*` core families |
 | Event view | ACP `session/update` (bounded projection) | full `EventEnvelope` extension stream + ACK/replay |
 | Negotiation | plain `initialize` | `initialize` + `_meta` hello/advertisement match |
-| Delivered | ✅ Rust Host | ✅ core families (Rust Host); source SDK client baselines ✅; full language parity ❌ |
+| Implementation | Rust Host | Source Host and three language clients; current governance candidate awaits final acceptance |
 
 A standard client ignores the `_meta` capability and keeps working. An SDK
 client **fails closed** when the extension protocol version, contract/source
 digest, required capability or feature set does not match — the Host stays
 Standard and extension calls answer method-not-found; it never silently
 degrades to partial parity (design §10.2).
+
+SDK clients also validate the advertisement itself during initialization:
+versions must equal 1 without integer narrowing; feature names are sorted and
+distinct in Rust Unicode scalar order; capability declarations are nonempty,
+distinct and retain their boolean `required` field. Every advertised WireU64
+limit must be present as canonical positive decimal text within u64 range;
+callback concurrency is a positive u32 and callback timeout retains valid
+seconds/nanos. Malformed advertisements return
+`extension_capability_mismatch` for `initialize` with retryability `never`,
+instead of dropping members or supplying queue defaults. This SDK validation
+does not change the plain ACP profile's `_meta` behavior.
+A rejected TypeScript handshake also uses the original stdio close owner:
+it sends stdin EOF and waits for the original EOF callback and native child
+exit before delivering the initialization error. A sent termination signal
+alone is not an exit receipt; the existing close deadline policy is unchanged.
+The initialization classification remains the primary error, with any cleanup
+failure retained as its cause.
 
 ## Extension namespace
 
@@ -165,7 +184,17 @@ facts ACP cannot (design §10.5):
   variant, handle and unknown additive values; method contracts have no
   schema-free JSON payload escape hatch
 
-All are covered by golden fixtures with mandatory lossless round-trips.
+Golden fixtures and language contract tests require lossless round-trips.
+Extension integer text must remain canonical and in range: JavaScript callers
+use `bigint` or wire constructors rather than unsafe `number`; Python integers
+and Java textual/big-integer values must not pass through floating point.
+Time retains signed seconds and nanoseconds, paths retain their declared
+encoding, and Unicode text is not byte-truncated. Native paths are accepted
+only where the receiving operation/platform supports their encoding.
+Map keys such as `__proto__`, `constructor` and `kind` are ordinary domain data;
+the tagged value envelope and a domain map must remain distinguishable.
+Optional result fields preserve absent versus explicit null where the DTO
+permits both (for example `TaskExecutionWire.result`).
 Native path and binary fields declare `echo-*` JSON Schema formats. The
 contract validator registers those formats with the same canonical no-pad
 base64 and absolute-path functions used by Rust runtime validation, preventing
@@ -173,6 +202,13 @@ language generators from accepting a relative encoded path that the Host
 would later reject.
 
 ## Error contract
+
+Framework feature errors preserve `framework_failure_category`,
+`framework_terminal_kind`, `framework_failure_code`, `framework_retryable`
+and, when present, `framework_http_status`. A framework timeout keeps its
+`timed_out` cause under `framework_error`; `extension_timeout` describes the
+reverse-call deadline. Cause retryability is evidence, while the operation's
+outer retry contract remains `never` to avoid repeating committed effects.
 
 Standard methods return standard ACP/JSON-RPC errors. `_echo_agent/*`
 methods use the typed envelope in
@@ -184,6 +220,13 @@ unavailability, stale/closed handles, framework errors, extension bridge
 failures (rejected/failed/timeout/disconnected), cancellation, host
 shutdown/exit, event gap/replay unavailability and payload/serialization
 bound violations.
+
+Language clients normalize the typed `EchoSdkError` in ACP `error.data` to
+`EchoAgentError` (TypeScript/Python) or `EchoAgentException` (Java), retaining
+`code`, message, `retryable`, operation, full handle and details. Standard
+ACP errors retain official wire semantics; clients do not infer a domain
+failure code from a human-readable ACP message. Transport errors without a
+typed data envelope remain distinguishable from Host domain errors.
 
 ## Events, replay and gaps
 
@@ -202,7 +245,13 @@ recovering through `run/replay`. Replay is cursor-based (stream handle,
 `after_sequence`, bounded `max_events`/bytes), journal/envelope sequence
 alignment is validated, and falling below the retention floor produces a
 typed `event_gap` with a snapshot watermark — events are incremental facts,
-never a substitute for a snapshot (design §11.2). A run has exactly one
+never a substitute for a snapshot (design §11.2). A fetched page does not mean
+it was consumed. After applying the snapshot and consuming replay facts, the
+client explicitly ACKs `next_cursor.last_processed_sequence`; successful
+snapshot/replay publication permits that ACK, and continuation must stay
+above the monotonically acknowledged floor. Queued outbound writes do not
+mean the client processed them. See [core recovery](sdk-core-profile.md#events-ack-and-replay).
+A run has exactly one
 authoritative terminal; EOF or process exit is never success, and a run that
 was active across a Host crash is recovered as `interrupted` without
 terminal or receipt (`run/wait` answers typed `host_exited`).
@@ -219,8 +268,11 @@ terminal or receipt (`run/wait` answers typed `host_exited`).
 - The complete Rust public inventory and Host catalog remain available as
   non-blocking telemetry/Host routing inputs. Cargo.lock, framework revision
   and Rust-only scope changes do not by themselves reject Extended mode.
-- Additive wire fields are forward-compatible; unknown values surface as
-  `WireValue::Unknown` without crashing older SDKs.
+- Unknown additive `WireValue` variants retain their tagged envelope for
+  round-trip; they do not become a null/default value. A missing discriminator
+  or malformed known variant is invalid, not an unknown additive variant.
+  Closed operation, component and result unions reject unknown alternatives;
+  general forward compatibility does not waive those checks.
 - Removing fields, changing defaults or terminal/cancel semantics, or
   reusing an error code is a breaking change: in this development-phase
   repository such a change updates Host, SDKs, fixtures, manifest and docs

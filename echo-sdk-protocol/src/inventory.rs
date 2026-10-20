@@ -1544,6 +1544,109 @@ pub fn render_accepted_external_contract_schema() -> String {
     serde_json::to_string_pretty(&schema).unwrap_or_default() + "\n"
 }
 
+/// Restore explicitly accepted source identities from the existing contract.
+/// Rustdoc reachability, route availability and language status never grant
+/// acceptance. New commitments and retirements are exact, reviewed deltas;
+/// the resulting existing contract remains the only persisted scope authority.
+pub fn apply_accepted_source_scope(
+    manifest: &mut ParityManifest,
+    accepted: &AcceptedExternalContract,
+    additions: &BTreeSet<(String, ItemKind)>,
+    retirements: &BTreeSet<(String, ItemKind)>,
+) -> Result<(), String> {
+    if accepted.schema_version != 1
+        || accepted.extension_protocol_version != manifest.extension_protocol_version
+    {
+        return Err("accepted scope seed has an incompatible schema/protocol version".to_string());
+    }
+    let source_identity = |entry: &ManifestEntry| {
+        entry
+            .source_paths
+            .iter()
+            .next()
+            .cloned()
+            .unwrap_or_else(|| entry.path.clone())
+    };
+    let mut seed = BTreeSet::new();
+    for entry in &accepted.entries {
+        if !entry.canonical || entry.sdk_scope != SdkScope::ExternalContract {
+            return Err(format!(
+                "accepted seed contains a noncanonical/nonexternal entry: {}",
+                entry.path
+            ));
+        }
+        let identity = source_identity(entry);
+        if !seed.insert((identity.clone(), entry.kind)) {
+            return Err(format!("accepted seed repeats source identity: {identity}"));
+        }
+    }
+    let mut current = BTreeMap::new();
+    for entry in manifest.entries.iter().filter(|entry| entry.canonical) {
+        let identity = source_identity(entry);
+        // Several intrinsic Rust impls can share the defining path (e.g.
+        // From<T> specializations). Their full signatures remain telemetry;
+        // they must not make the existing accepted seed unusable.
+        current
+            .entry((identity, entry.kind))
+            .or_insert_with(|| sdk_scope_for(&entry.source_paths, &entry.route, false));
+    }
+    for key in retirements {
+        let (identity, _) = key;
+        if !seed.contains(key) || additions.contains(key) {
+            return Err(format!(
+                "retirement must name one previously accepted source, without simultaneous acceptance: {identity}"
+            ));
+        }
+    }
+    let missing: Vec<String> = seed
+        .iter()
+        .filter(|key| !retirements.contains(*key) && !current.contains_key(*key))
+        .map(|(identity, kind)| format!("{identity} ({kind:?})"))
+        .collect();
+    // Report the complete deterministic closure before any manifest mutation.
+    // One missing identity retains the original diagnostic and admission rule.
+    if !missing.is_empty() {
+        return Err(format!(
+            "accepted source disappeared: {}; explicit retirement and replacement/error disposition are required",
+            missing.join(", ")
+        ));
+    }
+    for key in additions {
+        let (identity, _) = key;
+        if seed.contains(key) {
+            return Err(format!(
+                "source is already accepted, not a new acceptance delta: {identity}"
+            ));
+        }
+        match current.get(key) {
+            Some(SdkScope::Deferred) => {}
+            Some(_) => {
+                return Err(format!(
+                    "new source acceptance must name a reviewed deferred source, not a Rust/Host/local mechanism: {identity}"
+                ));
+            }
+            None => {
+                return Err(format!(
+                    "new acceptance source is absent from current inventory: {identity}"
+                ));
+            }
+        }
+    }
+    // Validate every requested delta before changing the caller's manifest.
+    // Signatures are deliberately not keys: changed accepted signatures must
+    // still enter the blocking contract digest, rather than silently retire.
+    for entry in &mut manifest.entries {
+        let identity = source_identity(entry);
+        let key = (identity, entry.kind);
+        if (seed.contains(&key) && !retirements.contains(&key)) || additions.contains(&key) {
+            entry.sdk_scope = SdkScope::ExternalContract;
+        } else {
+            entry.sdk_scope = sdk_scope_for(&entry.source_paths, &entry.route, false);
+        }
+    }
+    Ok(())
+}
+
 /// Render the non-blocking inventory telemetry summary. The complete
 /// `public-api.txt` and parity manifest remain the detailed evidence; this
 /// compact report makes their source revision, digest and scope counts easy to
@@ -1850,6 +1953,13 @@ fn sdk_scope_for(
         return SdkScope::InternalHelper;
     }
 
+    if source_paths
+        .iter()
+        .any(|source| source == "echo_agent::acp::AcpSession::reserve_recovered_turn_ids")
+    {
+        return SdkScope::HostOrRustOnly;
+    }
+
     let intrinsic_reason = route.route.strip_prefix("intrinsic:").unwrap_or_default();
     if matches!(
         intrinsic_reason,
@@ -1866,26 +1976,6 @@ fn sdk_scope_for(
     }
 
     SdkScope::Deferred
-}
-
-fn accepted_external_contract(route: &RouteObligation, language_contract_suffix: &str) -> bool {
-    if route.surface != "intrinsic" {
-        return true;
-    }
-
-    // Intrinsic behavior enters the external contract only through a named
-    // capability group. Generic suffixes are inventory dispositions, not
-    // accepted contracts. This decision is independent from implementation
-    // status.
-    !matches!(
-        language_contract_suffix,
-        "wire_value"
-            | "facade_operation"
-            | "facade_handle"
-            | "facade_stream"
-            | "facade_extension"
-            | "language_intrinsic"
-    )
 }
 
 /// Facade namespaces that only re-export items defined elsewhere; when an
@@ -3170,8 +3260,6 @@ pub fn manifest_entries(merged: &[InventoryEntry]) -> Vec<ManifestEntry> {
                 classification,
                 &route,
             );
-            let accepted_external_contract =
-                accepted_external_contract(&route, language_contract_suffix);
             let languages: BTreeMap<String, LanguageStatusRecord> = LANGUAGES
                 .iter()
                 .map(|language| {
@@ -3187,7 +3275,7 @@ pub fn manifest_entries(merged: &[InventoryEntry]) -> Vec<ManifestEntry> {
                     )
                 })
                 .collect();
-            let sdk_scope = sdk_scope_for(&entry.source_paths, &route, accepted_external_contract);
+            let sdk_scope = sdk_scope_for(&entry.source_paths, &route, false);
             ManifestEntry {
                 path: entry.path.clone(),
                 kind: entry.kind,
@@ -3261,6 +3349,11 @@ pub fn render_parity_manifest(
     merged: &[InventoryEntry],
 ) -> String {
     let document = manifest_document(extension_protocol_version, profiles, merged);
+    render_manifest_document(&document)
+}
+
+/// Render the already classified manifest without rediscovering acceptance.
+pub fn render_manifest_document(document: &ParityManifest) -> String {
     let generated = serde_json::to_string_pretty(&document.generated).unwrap_or_default();
     let mut output = format!(
         "{{\n  \"schema_version\": {},\n  \"extension_protocol_version\": {},\n  \"generated\": {},\n  \"entries\": [\n",
@@ -3322,6 +3415,31 @@ mod tests {
     }"##;
 
     #[test]
+    fn new_public_invoke_is_inventory_not_an_accepted_language_promise() -> Result<(), String> {
+        let entry = InventoryEntry {
+            path: "echo_agent::FuturePublicApi::execute".to_string(),
+            kind: ItemKind::Method,
+            source_paths: BTreeSet::from(["echo_core::FuturePublicApi::execute".to_string()]),
+            signatures: BTreeMap::new(),
+            profiles: BTreeSet::from(["default".to_string()]),
+            declared_feature_requirements: BTreeSet::new(),
+            automatically_derived: false,
+        };
+        let entries = manifest_entries(&[entry]);
+        let new = entries.first().ok_or("inventory identity missing")?;
+        assert_eq!(
+            new.route.surface, "invoke",
+            "counterexample must remain routable inventory"
+        );
+        assert_eq!(
+            new.sdk_scope,
+            SdkScope::Deferred,
+            "upstream public reachability must not automatically expand the accepted language contract"
+        );
+        Ok(())
+    }
+
+    #[test]
     fn extracts_trait_members_variants_and_skips_doc_hidden() -> Result<(), String> {
         let items = extract_public_items(SAMPLE).map_err(|error| error.to_string())?;
         let paths: Vec<&str> = items.iter().map(|item| item.path.as_str()).collect();
@@ -3352,41 +3470,6 @@ mod tests {
             .ok_or_else(|| "expected one merged item".to_string())?;
         assert!(features_of_entry(first).is_empty());
         Ok(())
-    }
-
-    #[test]
-    fn sdk_scope_acceptance_is_independent_from_language_status() {
-        let route = |surface: &str, route: &str| RouteObligation {
-            route: route.to_string(),
-            surface: surface.to_string(),
-            family: None,
-            method: None,
-            operation: None,
-            handler_operation: None,
-            required_feature: None,
-            required_features: Vec::new(),
-            feature_semantics: FeatureSemantics::Default,
-            signatures: Vec::new(),
-            mapping: String::new(),
-            validation: Vec::new(),
-        };
-        let executable = route("invoke", "source:echo_core::agent::Agent::name");
-        let accepted_intrinsic = route("intrinsic", "intrinsic:language-local-value-method");
-        let unaccepted_intrinsic = route("intrinsic", "intrinsic:callable-operation");
-
-        assert!(accepted_external_contract(&executable, "facade_operation"));
-        assert!(accepted_external_contract(
-            &accepted_intrinsic,
-            "response_format_values"
-        ));
-        assert!(!accepted_external_contract(
-            &unaccepted_intrinsic,
-            "facade_operation"
-        ));
-        assert_eq!(
-            sdk_scope_for(&BTreeSet::new(), &accepted_intrinsic, true),
-            SdkScope::ExternalContract
-        );
     }
 
     #[test]

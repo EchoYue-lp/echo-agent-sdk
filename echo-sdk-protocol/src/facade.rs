@@ -23,8 +23,9 @@
 //!   one family;
 //! - [`build_facade_operation_catalog`] renders the generated
 //!   `contracts/sdk/facade-operation-catalog.json` artifact from the parity
-//!   manifest plus this table, so route drift between manifest, method
-//!   catalog and generated contracts is a blocking generation failure.
+//!   manifest plus this table. The accepted external catalog is the blocking
+//!   compatibility surface; the complete Host catalog and Rust inventory
+//!   remain drift telemetry.
 //!
 //! Granularity contract: route ids are family-level for designed families
 //! (`family:memory`, `core:task`). Per-operation discriminants inside a
@@ -40,13 +41,172 @@ use crate::handle::HandleKind;
 use crate::inventory::{AcpRelationship, InventoryEntry, ItemKind, SemanticClass};
 use crate::methods::ExtensionKind;
 
-/// Digest of one frozen family-operation wire envelope. Deterministic from
-/// the family and operation identity alone: the generated catalog embeds it
-/// and the Host admission compares a request's `signature_digest` against it
-/// exactly, so an outdated or hand-built envelope fails closed.
+/// Typed decoded JSON shape of accepted family operations.
+/// `FeatureOperationRequest.arguments` remains a `WireValue` array; these
+/// schemas describe its lossless `into_json` projection, which the framework
+/// deserializer consumes. Deriving them here makes shape changes alter both
+/// the exported operation contract and its admission digest.
+pub fn family_operation_wire_schema(family: &str, operation: &str) -> Option<serde_json::Value> {
+    use crate::handle::WireHandle;
+    use crate::methods::{
+        ChannelInboundMessageWire, ChannelOutboundMessageWire, DeliveryClaimNextResultWire,
+        DeliveryClaimWire, DeliveryDeadlineWire, DeliveryMutationResultWire, DeliveryOutcomeWire,
+        DeliveryTransitionKindWire,
+    };
+    fn schema<T: schemars::JsonSchema>() -> serde_json::Value {
+        serde_json::to_value(schemars::schema_for!(T)).unwrap_or(serde_json::Value::Null)
+    }
+    if family == "channels" {
+        // Reuse the message DTOs without tightening unrelated reverse consumers.
+        // These forward admission shapes match the original Channel converter.
+        fn forward_shape<T: schemars::JsonSchema>(kind: &str) -> serde_json::Value {
+            let mut shape = schema::<T>();
+            if let Some(properties) = shape
+                .pointer_mut("/definitions/WireHandle/properties")
+                .and_then(serde_json::Value::as_object_mut)
+            {
+                properties.insert("kind".to_string(), serde_json::json!({"const":kind}));
+            }
+            if let Some(properties) = shape
+                .pointer_mut("/definitions/ChannelAttachmentWire/properties")
+                .and_then(serde_json::Value::as_object_mut)
+            {
+                properties.insert(
+                    "kind".to_string(),
+                    serde_json::json!({
+                        "type":"string", "enum":["image","file","audio","video"]
+                    }),
+                );
+                // STANDARD padded base64, including canonical trailing bits and empty bytes.
+                properties.insert("data_base64".to_string(), serde_json::json!({
+                    "type":"string", "pattern":"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/][AQgw]==|[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=)?$"
+                }));
+            }
+            shape
+        }
+        fn stream_event_shape() -> serde_json::Value {
+            let mut shape = forward_shape::<crate::scalar::WireValue>("stream");
+            let sequence = schema::<crate::scalar::WireNonZeroU64>();
+            let stream_field = serde_json::json!({
+                "type":"object", "required":["name","value"],
+                "properties":{"name":{"const":"stream"},"value":{"type":"object","properties":{"kind":{"const":"handle"}},"required":["kind"]}}
+            });
+            let sequence_field = serde_json::json!({
+                "type":"object", "required":["name","value"],
+                "properties":{"name":{"const":"sequence"},"value":{"type":"object","properties":{"kind":{"const":"u64"},"value":sequence},"required":["kind","value"]}}
+            });
+            let value_field = serde_json::json!({"type":"object","required":["name","value"],"properties":{"name":{"const":"value"},"value":{"type":"object","properties":{"kind":{"const":"map"}},"required":["kind"]}}});
+            let fields = serde_json::json!({"type":"array","minItems":2,"maxItems":3,
+                "items":{"properties":{"name":{"enum":["stream","sequence","value"]}}},
+                "allOf":[{"contains":stream_field},{"contains":sequence_field}]});
+            if let Some(object) = shape.as_object_mut() {
+                object.insert("allOf".to_string(), serde_json::json!([{
+                    "type":"object", "required":["kind","value"],
+                    "properties":{"kind":{"const":"variant"},"value":{
+                        "type":"object", "required":["type_id","variant","fields"],
+                        "properties":{"type_id":{"const":"echo_sdk::FacadeStreamEvent"},
+                            "variant":{"enum":["item","complete","failed","cancelled"]},"fields":fields},
+                        "allOf":[{"if":{"properties":{"variant":{"enum":["item","failed"]}}},
+                            "then":{"properties":{"fields":{"minItems":3,"maxItems":3,"contains":value_field}}},
+                            "else":{"properties":{"fields":{"minItems":2,"maxItems":2}}}}]
+                    }}
+                }]));
+            }
+            shape
+        }
+        let (input, result) = match operation {
+            "channels.handler.handle" => (
+                forward_shape::<(WireHandle, String, ChannelInboundMessageWire)>("facade_resource"),
+                forward_shape::<ChannelOutboundMessageWire>("facade_resource"),
+            ),
+            "channels.handler.handle_stream" => (
+                forward_shape::<(WireHandle, String, ChannelInboundMessageWire)>("facade_resource"),
+                schema::<WireHandle>(),
+            ),
+            "channels.handler.reply" => (
+                forward_shape::<(WireHandle, String, ChannelOutboundMessageWire)>(
+                    "facade_resource",
+                ),
+                schema::<()>(),
+            ),
+            "channels.stream.next" => (
+                forward_shape::<(WireHandle,)>("stream"),
+                stream_event_shape(),
+            ),
+            "channels.stream.cancel" | "channels.stream.close" => {
+                (forward_shape::<(WireHandle,)>("stream"), schema::<bool>())
+            }
+            _ => return None,
+        };
+        // The existing stream runtime returns WireValue::Variant, not a new DTO.
+        let mut result = result;
+        if operation == "channels.handler.handle_stream"
+            && let Some(properties) = result
+                .get_mut("properties")
+                .and_then(serde_json::Value::as_object_mut)
+        {
+            properties.insert("kind".to_string(), serde_json::json!({"const":"stream"}));
+        }
+        let mut contract = serde_json::json!({"input":input,"result":result});
+        if operation == "channels.stream.next"
+            && let Some(object) = contract.as_object_mut()
+        {
+            object.insert("stream_event".to_string(), serde_json::json!({
+                "type_id":"echo_sdk::FacadeStreamEvent",
+                "variants":["item","complete","failed","cancelled"],
+                "fields":{"stream":schema::<WireHandle>(),"sequence":schema::<crate::scalar::WireNonZeroU64>()},
+                "item_value":forward_shape::<ChannelOutboundMessageWire>("facade_resource"),
+                "failed_value":schema::<crate::error::EchoSdkError>()
+            }));
+        }
+        return Some(contract);
+    }
+    if family != "delivery" {
+        return None;
+    }
+    let (input, result) = match operation {
+        "delivery.claim_next" => (
+            schema::<(WireHandle,)>(),
+            schema::<DeliveryClaimNextResultWire>(),
+        ),
+        "delivery.transition" => (
+            schema::<(
+                WireHandle,
+                DeliveryClaimWire,
+                DeliveryTransitionKindWire,
+                String,
+            )>(),
+            schema::<DeliveryMutationResultWire>(),
+        ),
+        "delivery.defer" => (
+            schema::<(WireHandle, DeliveryClaimWire, String, DeliveryDeadlineWire)>(),
+            schema::<DeliveryMutationResultWire>(),
+        ),
+        "delivery.settle" => (
+            schema::<(
+                WireHandle,
+                DeliveryClaimWire,
+                DeliveryOutcomeWire,
+                Option<String>,
+                Option<String>,
+            )>(),
+            schema::<DeliveryMutationResultWire>(),
+        ),
+        _ => return None,
+    };
+    Some(serde_json::json!({"input": input, "result": result}))
+}
+
+/// Admission digest freezes a family's operation identity and any typed wire
+/// shape it owns. Families without a typed shape retain their existing digest.
 pub fn family_operation_signature_digest(family: &str, operation: &str) -> String {
+    let mut canonical = serde_json::json!({ "family": family, "operation": operation });
+    if let Some(schema) = family_operation_wire_schema(family, operation)
+        && let Some(object) = canonical.as_object_mut()
+    {
+        object.insert("wire_schema".to_string(), schema);
+    }
     use sha2::{Digest as _, Sha256};
-    let canonical = serde_json::json!({ "family": family, "operation": operation });
     let encoded = serde_json::to_vec(&canonical).unwrap_or_default();
     format!("sha256:{:x}", Sha256::digest(&encoded))
 }
@@ -391,6 +551,12 @@ impl FacadeFamily {
                 "channels.manager.stop_exact",
                 "channels.manager.stop_all",
                 "channels.plugin.send",
+                "channels.handler.handle",
+                "channels.handler.handle_stream",
+                "channels.handler.reply",
+                "channels.stream.next",
+                "channels.stream.cancel",
+                "channels.stream.close",
             ],
             Self::Topology => &[
                 "topology.tracker.open",
@@ -3330,6 +3496,82 @@ pub fn canonical_source_identity(entry: &InventoryEntry) -> String {
 /// Resolve the one canonical route for an inventory entry. The decision
 /// order is fixed: intrinsic → bridge traits → standard ACP projection →
 /// source-identity family match → value/invoke fallback.
+/// Capability decisions for newly exposed upstream seams. The bridge is
+/// accepted only where a current Host/runtime caller consumes it; independent
+/// import/metadata APIs and Rust-owned Team controllers do not become remote
+/// operations merely because rustdoc discovers a public identity.
+pub fn governance_source_disposition(identity: &str) -> Option<&'static str> {
+    // These getters consume native Task authority in the Host. Retiring the
+    // old public fields does not create a new cross-language getter API.
+    if matches!(
+        identity,
+        "echo_orchestration::tasks::runtime::TaskSubagentContext::run_id"
+            | "echo_orchestration::tasks::runtime::TaskSubagentContext::delegation_policy"
+            | "echo_orchestration::tasks::runtime::TaskSubagentContext::waived_dependency_ids"
+    ) {
+        return Some("process-local-task-subagent-context-getter");
+    }
+    if identity
+        == "echo_orchestration::tasks::revisioned::TaskRevisionService::supports_runtime_execution"
+    {
+        return Some("process-local-task-runtime-capability-preflight");
+    }
+    let method = identity.rsplit("::").next().unwrap_or(identity);
+    if identity.starts_with("echo_core::memory::conversation::ConversationStore::")
+        && matches!(
+            method,
+            "import_managed_messages"
+                | "import_managed_messages_with_context"
+                | "get_latest_managed_import"
+                | "get_latest_managed_import_with_context"
+                | "update_managed_conversation"
+                | "update_managed_conversation_with_context"
+        )
+    {
+        return Some("deferred-managed-import-and-metadata-without-host-caller");
+    }
+    if [
+        "echo_core::memory::conversation::ManagedConversationImportLocator",
+        "echo_core::memory::conversation::ManagedConversationMetadataUpdate",
+        "echo_core::memory::conversation::ManagedConversationMetadataUpdateStatus",
+        "echo_core::memory::conversation::ManagedConversationMetadataUpdateReceipt",
+    ]
+    .iter()
+    .any(|prefix| {
+        identity == *prefix
+            || identity
+                .strip_prefix(prefix)
+                .is_some_and(|suffix| suffix.starts_with("::"))
+    }) {
+        return Some("deferred-managed-import-and-metadata-without-host-caller");
+    }
+    if [
+        "echo_agent::agent::subagent::team::TeamRuntimeHandle",
+        "echo_agent::agent::subagent::team::TeamRuntimeServiceHandle",
+        "echo_agent::agent::subagent::team::TeamDispatchController",
+        "echo_agent::agent::subagent::team::TeamDispatchFn",
+        "echo_agent::agent::subagent::team::TeamReserveAttemptFn",
+        "echo_agent::agent::subagent::team::TeamRequestInterruptFn",
+        "echo_agent::agent::subagent::team::TeamRetireAttemptFn",
+        "echo_agent::agent::subagent::team::TeamReconcileAttemptFn",
+    ]
+    .iter()
+    .any(|prefix| {
+        identity == *prefix
+            || identity
+                .strip_prefix(prefix)
+                .is_some_and(|suffix| suffix.starts_with("::"))
+    }) || matches!(
+        identity,
+        "echo_agent::agent::subagent::team::TeamAgent::runtime_handle"
+            | "echo_agent::agent::subagent::team::TeamAgentBuilder::member_dispatch_controller"
+            | "echo_agent::agent::subagent::team::execute_team_on_runtime_service"
+    ) {
+        return Some("process-local-team-runtime-and-dispatch-authority");
+    }
+    None
+}
+
 pub fn resolve_route(
     entry: &InventoryEntry,
     class: SemanticClass,
@@ -3337,6 +3579,26 @@ pub fn resolve_route(
     semantic_rule: &'static str,
 ) -> CanonicalRoute {
     let identity = canonical_source_identity(entry);
+    // ADR 0034 migrates only the defining Rust source. Keep the accepted
+    // operations and their existing Host adapter stable across that move.
+    let security_operation = match identity.as_str() {
+        "echo_core::utils::retention::contains_secrets" => {
+            Some("echo_agent::security::contains_secrets")
+        }
+        "echo_core::utils::retention::redact_secrets" => {
+            Some("echo_agent::security::redact_secrets")
+        }
+        "echo_core::utils::retention::scan_secrets" => Some("echo_agent::security::scan_secrets"),
+        _ => None,
+    };
+    if let Some(operation) = security_operation {
+        return CanonicalRoute::SourceOperation {
+            operation: operation.to_string(),
+        };
+    }
+    if let Some(reason) = governance_source_disposition(&identity) {
+        return CanonicalRoute::Intrinsic { reason };
+    }
     if [
         "echo_core::tokenizer::Tokenizer::count_tokens",
         "echo_core::guard::content::ContentGuard::new",
@@ -3458,7 +3720,8 @@ pub fn resolve_route(
         // answers with real operations or a typed feature_unavailable —
         // never method-not-found for a negotiated client), or (3) an
         // in-process library seam served by embedding the Rust framework
-        // directly. There is no pending middle state.
+        // directly. Capability decisions above preserve explicit deferred
+        // seams without turning every discovered trait method into a promise.
         if let Some(kind) = typed_bridge_kind(&identity) {
             return CanonicalRoute::Bridge { kind };
         }
@@ -3708,6 +3971,7 @@ pub fn build_facade_operation_catalog(
                                 .iter()
                                 .map(|operation| serde_json::json!({
                                     "operation": operation,
+                                    "wire_schema": family_operation_wire_schema(descriptor.family.as_str(), operation),
                                     "signature_digests": [
                                         family_operation_signature_digest(
                                             descriptor.family.as_str(),
@@ -3784,6 +4048,7 @@ pub fn build_facade_operation_catalog(
                 .iter()
                 .map(|operation| serde_json::json!({
                     "operation": operation,
+                    "wire_schema": family_operation_wire_schema(descriptor.family.as_str(), operation),
                     "signature_digests": [
                         family_operation_signature_digest(descriptor.family.as_str(), operation)
                     ],

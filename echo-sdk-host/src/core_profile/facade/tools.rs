@@ -345,6 +345,13 @@ fn bind_parameters(
         .and_then(serde_json::Value::as_object)
         .map(|properties| properties.keys().cloned().collect())
         .unwrap_or_default();
+    // Positional arity is independent of whether trailing arguments are null.
+    if arguments.len() > keys.len() {
+        return Err(invalid(
+            operation,
+            "more arguments than the tool's schema declares",
+        ));
+    }
     let mut parameters = ToolParameters::new();
     for (key, value) in keys.into_iter().zip(arguments.iter()) {
         if !value.is_null() {
@@ -377,6 +384,13 @@ pub(crate) async fn dispatch_tool(
     // would be a harmless source-compatible alias. Both resolve to the same
     // single framework Tool instance.
     let tool_name = operation.strip_prefix(&prefix).unwrap_or(operation);
+    // Keep accepted SDK spellings while delegating to the original framework
+    // Tool instances; this adapter owns neither a parser nor a new operation.
+    let tool_name = match (family, tool_name) {
+        ("media", "pdf_extract") => "extract_pdf",
+        ("media", "excel_write") => "write_excel",
+        _ => tool_name,
+    };
     let arguments: Vec<serde_json::Value> = request
         .arguments
         .iter()
@@ -421,28 +435,56 @@ pub(crate) async fn dispatch_tool(
                 format!("unknown {family} tool {tool_name}; the family surface is closed"),
             )
         })?;
-    let parameters = bind_parameters(operation, tool.as_ref(), &arguments)?;
+    // Capture the actual Session Agent's artifact policy under its short
+    // read guard. The framework tool owns persistence/truncation; omitting
+    // this context silently disables accepted max_length behavior.
+    let (output_artifacts, conversation_id) = authorities
+        .agent_handle
+        .read(|agent| {
+            (
+                agent.tool_output_artifacts(),
+                agent.conversation_id().map(str::to_string),
+            )
+        })
+        .await;
     let context = ToolContext {
         working_dir: Some(authorities.working_dir.clone()),
+        conversation_id: conversation_id.or_else(|| Some(owner.to_string())),
+        call_id: Some(format!("call_{}", uuid::Uuid::new_v4())),
+        output_artifacts,
         ..ToolContext::default()
     };
-    let result = tool
-        .execute_with_context(parameters, &context)
+    run_bound_tool(operation, tool.as_ref(), &arguments, &context).await
+}
+
+async fn run_bound_tool(
+    operation: &str,
+    tool: &dyn Tool,
+    arguments: &[serde_json::Value],
+    context: &ToolContext,
+) -> Result<WireValue, EchoSdkError> {
+    let parameters = bind_parameters(operation, tool, arguments)?;
+    // A direct facade call uses the framework's existing input authority, just
+    // like ToolManager. Skipping it would let invalid enums silently default.
+    echo_agent::tools::execution::validate_tool_input(tool, &parameters)
         .await
-        .map_err(|error| {
-            wire::sdk_error(
-                ExtensionErrorCode::FrameworkError,
-                wire::bounded_framework_message(&error.to_string()),
-                Retryability::Never,
-                "_echo_agent/tool/op",
-            )
-            .with_operation(operation)
-        })?;
-    let value = serde_json::json!({
-        "success": result.success,
-        "output": result.output,
-        "error": result.error,
-    });
+        .map_err(|error| wire::framework_error(&error, operation))?;
+    let result = tool
+        .execute_with_context(parameters, context)
+        .await
+        .map_err(|error| wire::framework_error(&error, operation))?;
+    tool_result_value(operation, &result)
+}
+
+fn tool_result_value(
+    operation: &str,
+    result: &echo_agent::tools::ToolResult,
+) -> Result<WireValue, EchoSdkError> {
+    // Preserve terminal facts through the same typed projection used by the
+    // extension bridge. Text alone cannot describe a partial effect or artifact.
+    let result = wire::tool_result_to_wire(result).map_err(|error| invalid(operation, error))?;
+    let value =
+        serde_json::to_value(result).map_err(|error| invalid(operation, error.to_string()))?;
     WireValue::from_json(value).map_err(|error| invalid(operation, error.to_string()))
 }
 
@@ -660,6 +702,147 @@ mod tests {
             .await?;
         assert!(isolated.success);
         assert!(isolated.output.contains("No relevant documents"));
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod adapter_regression_tests {
+    use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    struct ValidatedTool {
+        validated: AtomicUsize,
+        executed: AtomicUsize,
+    }
+
+    impl Tool for ValidatedTool {
+        fn name(&self) -> &str {
+            "validated_fixture"
+        }
+        fn description(&self) -> &str {
+            "Input validation before a counted side effect"
+        }
+        fn parameters(&self) -> serde_json::Value {
+            serde_json::json!({"type":"object","properties":{"mode":{"type":"string","enum":["accept","custom_reject"]}},"required":["mode"],"additionalProperties":false})
+        }
+        fn validate_parameters<'a>(
+            &'a self,
+            parameters: &'a ToolParameters,
+        ) -> futures::future::BoxFuture<'a, echo_agent::error::Result<()>> {
+            Box::pin(async move {
+                self.validated.fetch_add(1, Ordering::SeqCst);
+                if parameters.get("mode").and_then(serde_json::Value::as_str)
+                    == Some("custom_reject")
+                {
+                    return Err(echo_agent::error::ToolError::InvalidParameter {
+                        name: "mode".to_string(),
+                        message: "custom rule rejected the input".to_string(),
+                    }
+                    .into());
+                }
+                Ok(())
+            })
+        }
+        fn execute<'a>(
+            &'a self,
+            _parameters: ToolParameters,
+        ) -> futures::future::BoxFuture<'a, echo_agent::error::Result<echo_agent::tools::ToolResult>>
+        {
+            Box::pin(async move {
+                self.executed.fetch_add(1, Ordering::SeqCst);
+                Ok(echo_agent::tools::ToolResult::success(
+                    "exact successful output",
+                ))
+            })
+        }
+    }
+
+    #[tokio::test]
+    async fn direct_tool_validation_precedes_custom_rules_and_execution()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let tool = ValidatedTool {
+            validated: AtomicUsize::new(0),
+            executed: AtomicUsize::new(0),
+        };
+        let context = ToolContext::default();
+        for arguments in [
+            vec![],
+            vec![serde_json::json!(42)],
+            vec![serde_json::json!("unknown")],
+            vec![serde_json::json!("accept"), serde_json::Value::Null],
+        ] {
+            let result = run_bound_tool("validated_fixture", &tool, &arguments, &context).await;
+            assert!(result.is_err(), "invalid input must not execute");
+            assert_eq!(tool.validated.load(Ordering::SeqCst), 0);
+            assert_eq!(tool.executed.load(Ordering::SeqCst), 0);
+        }
+        let error = run_bound_tool(
+            "validated_fixture",
+            &tool,
+            &[serde_json::json!("custom_reject")],
+            &context,
+        )
+        .await
+        .err()
+        .ok_or("custom validator must reject")?;
+        assert_eq!(error.code, ExtensionErrorCode::FrameworkError);
+        assert!(error.message.contains("custom rule rejected"));
+        assert_eq!(tool.validated.load(Ordering::SeqCst), 1);
+        assert_eq!(tool.executed.load(Ordering::SeqCst), 0);
+        let value = run_bound_tool(
+            "validated_fixture",
+            &tool,
+            &[serde_json::json!("accept")],
+            &context,
+        )
+        .await
+        .map_err(|error| std::io::Error::other(error.message))?
+        .into_json()?;
+        let result: echo_sdk_protocol::methods::ToolResultWire = serde_json::from_value(value)?;
+        assert!(result.success);
+        assert_eq!(result.output, "exact successful output");
+        assert_eq!(tool.validated.load(Ordering::SeqCst), 2);
+        assert_eq!(tool.executed.load(Ordering::SeqCst), 1);
+        Ok(())
+    }
+
+    #[test]
+    fn tool_family_projection_preserves_partial_effects_and_artifact()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut result = echo_agent::tools::ToolResult::failure(
+            echo_agent::tools::ToolFailureCategory::PartialSideEffect,
+            "partial edit",
+        )
+        .with_effect(echo_agent::tools::ToolEffect::FileEdit {
+            path: "中文🌳.txt".to_string(),
+        });
+        result.truncated = true;
+        result.data = Some(serde_json::json!({"remaining": 2}));
+        result.artifact = Some(echo_agent::tools::artifact::ToolOutputArtifactRef {
+            path: std::path::PathBuf::from("/tmp/中文🌳.txt"),
+            artifact_bytes: 42,
+            payload_bytes: 40,
+            sha256: "a".repeat(64),
+            retention: "run".to_string(),
+        });
+        result
+            .model_content
+            .push(echo_agent::tools::ToolResultContent::ImageUrl {
+                url: "https://example.com/image.png".to_string(),
+                detail: Some("high".to_string()),
+            });
+        let value = tool_result_value("files.edit_file", &result)
+            .map_err(|error| std::io::Error::other(error.message))?
+            .into_json()?;
+        let decoded: echo_sdk_protocol::methods::ToolResultWire = serde_json::from_value(value)?;
+        let roundtrip = wire::tool_result_from_wire(decoded).map_err(std::io::Error::other)?;
+        assert_eq!(roundtrip.effects, result.effects);
+        assert_eq!(roundtrip.artifact, result.artifact);
+        assert_eq!(roundtrip.failure, result.failure);
+        assert_eq!(roundtrip.data, result.data);
+        assert!(roundtrip.truncated);
+        assert_eq!(roundtrip.model_content, result.model_content);
         Ok(())
     }
 }

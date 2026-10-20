@@ -1,0 +1,122 @@
+---
+schema_version: 1
+id: audit.sdk-cancellation-observation-rereview
+kind: audit
+boundary_ref: boundary.sdk-resources-streams
+lens: failure_concurrency
+freshness: examined
+revision: 335193791c70a6cb077033c3f8f0cb1223e5266e
+finding_refs:
+- finding.sdk-cleanup-retry-owner
+- finding.sdk-sandbox-cleanup-order
+challenges:
+  original-6563-held-source-test-oracles:
+    revision: 410e0f1d857bbf8bcfd805376638794697524de9
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    - sdks/typescript/test/factory-host.test.js
+    - sdks/python/tests/test_factory_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/LateFactoryHostTest.java
+    - sdks/typescript/test/llm-workflow-stream-host.test.js
+    - sdks/python/tests/test_llm_workflow_stream_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/LlmWorkflowStreamHostTest.java
+    - sdks/shared/testing/llm_workflow_stream_fixture.py
+    - sdks/typescript/test/protocol-host.test.js
+    - sdks/python/tests/protocol_host_proxy.py
+    evidence_refs:
+    - evidence.sdk-cancellation-observation
+  full-facade-queue-cancellation-must-drain-original-source:
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    evidence_refs:
+    - evidence.sdk-cancellation-observation
+  original-callback-binding-and-response-projection:
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    evidence_refs:
+    - evidence.sdk-cancellation-observation
+  current-original-cleanup-and-late-factory-unit:
+    revision: 8481ba5823aa190cf76859d6af0570898c432bbd
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    - echo-sdk-host/tests/facade_feature_adapters_e2e.rs
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/test/java/com/echoagent/sdk/JavaClientCloseLifecycleTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/HostEarlyExitTest.java
+    - docs/sdk/sdk-extension-bridge.md
+    - docs/adr/0039-sdk-cancellation-observation.md
+    - echo-sdk-host/src/core_profile/wire.rs
+    evidence_refs:
+    - evidence.sdk-cancellation-observation
+  named-settlement-family-run:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/factory.rs
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-parent-driver-candidate-verification
+---
+
+# callback-bound / final-response 局部复审
+
+## 审查范围
+
+仅原callback绑定、collector与callback闭合顺序、unknown结果投影和普通final error回收。不是整个A/B runtime或SDK交付审查。
+
+## 已检查故障假设
+
+observer先unwind导致配额提前回收；错误ACK只保owner却让source终止；通用diagnostic覆盖合法foreign identity；普通final Error反而永远持有配额；EOF后的清理被误算成首次错误可见前释放。
+
+## 实际实现路径与证据
+
+原ACP调用构造owner并在唯一发送前绑定，collector同锁合并原事实。独立reader核两个实际before、六份完整after runner/raw/hash、1209项输入零漂移、不可变二进制及当前两源文件，最终局部pass、行动项0。主代理随后同不可变binary补跑原unwind完整selector1pass；对应来源与限制见evidence.sdk-cancellation-observation。
+
+后继reader整体源码审发现满队列发送不观察cancel，主代理先取得真实两chunk目标red，单独保留一chunk控制oracle错误，再最窄select修复。reader亲核before/after、无额外pull、原callback finished/lease0后才验close/handle/配额，增量pass、行动项0。最终配置构建和14a来源由独立reader及协调者另核pass；新共同cut的drain2/unwind1/direct1与三语late各1实际记录由各Evidence分别承载，不能用配置build替代这些运行事实。
+
+## 问题记录
+
+两项Important已修：错误ACK仍投影普通terminal；修复候选覆盖已有typed/raw合法observation。两项Minor已修：精匹配run/attempt；资源释放断言放在首次Err之后、EOF之前。未经后继独审覆盖的范围不继承本pass。
+
+## 残余风险
+
+宽Finding保持open，缺合法身份或原物理回执时可继续保留资源。已保存profile的Host已实际build0/零warning，SHA8bf4a1d6deb647e608153c807ca07785dd31f7d3223a88cc3daf9b835b8bff5c，EH15489244/unwind_info2979504，必要unwind定向1pass；这不是本局部独审或完整工程门禁的替代。
+
+后继配置表示与队列drain修复已构建新Host14a0cb58c44bdb84990262f1324e1a2513513a8b40fc0640a9d36f91f95e27e9，零警告/EH15488572/unwind_info2979480，构建输入与C2对应；这属于主代理实际构建证据，不偷换原局部reader的审查cut。新配置定向和native影响闭包仍独立验收。
+
+再后继C2整体增量reader已独立核新配置cut定向4项及新14a三语late-payload各1的实际原件，pass、行动项0；旧“仍待”的阶段描述不再作为当前状态。宽cleanup及其它原source未知/生命周期、完整平台/SDK/main仍在未检查范围内。
+
+## 未检查项
+
+全部A/B实现、Java native close、任意Graph晚到回执、跨进程持久恢复、完整三语言/平台/精确main CI、宿主nativeHook/Stop成功。
+
+
+## F6563有限源码及原运行增量
+
+原header335及其challenges、七控与14a审查保持历史。新增challenge只绑定当前6563精候选的原Rust两个case及九个既有测试路径；源码/actual原件独审C0/I0/M0。Factory03唯一M1已实修复且三语fresh通过，02未变Workflow/Tool单列原cut，原失败与错误观察方向均保留。独立reader亲核四constructor每个原request/reply恰1、typed Cancelled/no top error；Java原iid timeout后父仍拒绝，再同future释放/用户cleanup1，第二transport close不冒第二用户执行。
+
+当前有界结论及原日志精确身份见Evidence后继段；新pin/生成/Host/two Rust已有独立资格，未继承为官方完整语言或整个SDK通过。不关闭五Finding，不把原Task F988/14a重标为新Host。最终必要性与精候选canonical另执行；nativeHook/Stop、完整Rust/平台/main未由该复审证明。
+
+## 8481当前具名闭合与完整执行资格
+
+本challenge只把当前机器源码组绑定8481；旧header335和历史七控/14a等审查不重标。原reader对原factory成功Unit之后重复close的真实phase、最小Host修复、晚Unit/Error/取消waiter重入及最后owner Drop、普通failed/unknown/guard否定控制以及当前三语原生close/cleanup逐原件有界复审C0/I0/M0。原late reply必须在guard与lease实际释放后经同initializer填既有OnceCell，不能拿tombstone、Weak或本地通知推成功；首Timeout保持。当前Java close只在native选择权已确定后发布，write错误和同Process真实退出/同owner retry保原5秒策略。Sandbox先等原physical response才有canonical terminal。原six-control101与修后单control0分开记录；当前全223 lib cases及完整语言是另一个实际新epoch。此处不扩大为任意平台或未知Linux退出根因。
+
+当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-run`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-parent-driver-candidate-verification`。

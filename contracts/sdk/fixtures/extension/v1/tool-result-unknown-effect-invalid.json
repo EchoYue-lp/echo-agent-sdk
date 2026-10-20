@@ -1,0 +1,21 @@
+{
+  "name": "tool-result-unknown-effect-invalid",
+  "kind": "invalid",
+  "target": "ToolResultWire",
+  "description": "Unknown execution facts cannot silently disappear at a bridge boundary.",
+  "payload": {
+    "kind": {
+      "kind": "text"
+    },
+    "success": true,
+    "output": "done",
+    "truncated": false,
+    "effects": [
+      {
+        "effect": "unknown_effect",
+        "path": "x"
+      }
+    ]
+  },
+  "expect_error": "invalid_value"
+}

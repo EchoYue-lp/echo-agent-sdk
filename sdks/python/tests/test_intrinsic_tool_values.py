@@ -119,7 +119,16 @@ def test_local_tool_value_routes_have_completed_python_mappings() -> None:
         entry
         for entry in manifest["entries"]
         if entry["canonical"]
+        and entry["sdk_scope"] == "external_contract"
         and entry["route"]["route"] == "intrinsic:language-local-wire-helper"
     ]
     assert len(entries) == 28
     assert all(entry["languages"]["python"]["status"] == "done" for entry in entries)
+    unreviewed = next(
+        entry
+        for entry in manifest["entries"]
+        if entry["canonical"]
+        and "echo_core::tools::ToolResult::with_effect" in entry["source_paths"]
+    )
+    assert unreviewed["sdk_scope"] == "deferred"
+    assert unreviewed not in entries

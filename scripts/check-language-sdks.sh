@@ -57,14 +57,21 @@ host_state=$(mktemp -d "${TMPDIR:-/tmp}/echo-sdk-language-state.XXXXXX")
 host_config=$(mktemp "${TMPDIR:-/tmp}/echo-sdk-language-config.XXXXXX")
 jq --arg root "$host_state" '.sdk_profile.state_root = $root | .default_agent.agent.enable_memory = true | .default_agent.agent.memory_path = ($root + "/memory.jsonl")' \
   "$repo_root/echo-sdk-host/config.sdk.example.json" > "$host_config"
-export ECHO_AGENT_SDK_HOST="$repo_root/target/debug/echo-agent-sdk-host"
+host_target_dir=${CARGO_TARGET_DIR:-$repo_root/target}
+if [[ "$host_target_dir" != /* ]]; then
+  host_target_dir="$repo_root/$host_target_dir"
+fi
+export ECHO_AGENT_SDK_HOST="$host_target_dir/debug/echo-agent-sdk-host"
 export ECHO_AGENT_SDK_CONFIG="$host_config"
+export ECHO_AGENT_SDK_REQUIRE_HOST_E2E=1
+export ECHO_AGENT_SDK_OTLP_COLLECTOR
+ECHO_AGENT_SDK_OTLP_COLLECTOR=$(bash "$repo_root/scripts/build-telemetry-test-collector.sh")
 
 (cd "$repo_root/sdks/typescript" && npm ci && npm test && node dist-examples/examples/quickstart.js)
 (cd "$repo_root/sdks/python" && \
-  PYTHONPATH=src uv run --no-project --with ruff ruff check src tests examples && \
-  PYTHONPATH=src uv run --no-project --with ruff ruff format --check src tests examples && \
-  PYTHONPATH=src uv run --no-project --with pytest --with pytest-asyncio --with agent-client-protocol==0.12.1 pytest -q && \
+  PYTHONPATH=src uv run --no-project --with ruff ruff check src tests examples ../shared/testing && \
+  PYTHONPATH=src uv run --no-project --with ruff ruff format --check src tests examples ../shared/testing && \
+  PYTHONPATH=src uv run --no-project --with pytest --with pytest-asyncio --with agent-client-protocol==0.12.1 python -m pytest -q tests ../shared/testing && \
   PYTHONPATH=src uv run python examples/quickstart.py)
 (cd "$repo_root/sdks/java" && mvn -q test && mvn -q dependency:build-classpath -Dmdep.outputFile="$host_state/java.cp" && java -cp "target/classes:$(cat "$host_state/java.cp")" com.echoagent.sdk.Example "$ECHO_AGENT_SDK_HOST" "$ECHO_AGENT_SDK_CONFIG" "$repo_root/sdks/shared/facade-operation-catalog.json")
 

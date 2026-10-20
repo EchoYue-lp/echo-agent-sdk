@@ -31,6 +31,43 @@ class EventIdentityTest {
     }
 
     @Test
+    void runtimeLineageParentSurvivesNestedMapAndInvocationProjection() {
+        Map<String, Object> runtime = Map.of("turn_id", "turn-中文🙂", "run_id", "run-1",
+                "conversation_id", "conversation-1", "message_id", "message-1",
+                "execution_id", "execution-1", "subagent_lineage", Map.of("parent_event_id", "parent-中文🙂"));
+        var identity = EventIdentity.fromRuntimeContext(runtime);
+        assertEquals("parent-中文🙂", identity.parentEventId());
+        assertEquals("turn-中文🙂", identity.turnId());
+        assertEquals("run-1", identity.runId());
+        assertEquals("conversation-1", identity.conversationId());
+        assertEquals("message-1", identity.messageId());
+        assertEquals("execution-1", identity.executionId());
+        org.junit.jupiter.api.Assertions.assertFalse(identity.streamId().asStr().isBlank());
+        assertEquals("changed", identity.withParentEventId("changed").parentEventId());
+        assertEquals("parent-中文🙂", identity.parentEventId());
+        assertEquals("parent-中文🙂", EventIdentity.fromInvocation(Map.of("runtime", runtime)).parentEventId());
+        assertEquals(Map.of("parent_event_id", "parent-中文🙂"), runtime.get("subagent_lineage"));
+        org.junit.jupiter.api.Assertions.assertNull(EventIdentity.fromRuntimeContext(Map.of("turn_id", "t")).parentEventId());
+        org.junit.jupiter.api.Assertions.assertNull(EventIdentity.fromRuntimeContext(Map.of("turn_id", "t", "subagent_lineage", Map.of())).parentEventId());
+        var mutable = new java.util.HashMap<String, Object>(runtime);
+        mutable.put("subagent_lineage", null);
+        org.junit.jupiter.api.Assertions.assertNull(EventIdentity.fromRuntimeContext(mutable).parentEventId());
+        mutable.put("subagent_lineage", runtime.get("subagent_lineage"));
+        mutable.put("parent_event_id", "flat");
+        assertEquals("flat", EventIdentity.fromRuntimeContext(mutable).parentEventId());
+        mutable.put("parent_event_id", null);
+        assertEquals("parent-中文🙂", EventIdentity.fromRuntimeContext(mutable).parentEventId());
+        // Keep Java's original blank-flat rejection rather than changing normalization.
+        mutable.put("parent_event_id", "");
+        assertThrows(IllegalArgumentException.class, () -> EventIdentity.fromRuntimeContext(mutable));
+        assertEquals("7", EventIdentity.fromRuntimeContext(Map.of("turn_id", "t", "subagent_lineage", Map.of("parent_event_id", 7))).parentEventId());
+        for (String parent : java.util.List.of("", " ")) {
+            assertThrows(IllegalArgumentException.class, () -> EventIdentity.fromRuntimeContext(
+                    Map.of("turn_id", "t", "subagent_lineage", Map.of("parent_event_id", parent))));
+        }
+    }
+
+    @Test
     void eventIdentityMappingsAreComplete() throws Exception {
         JsonNode manifest = JsonSupport.MAPPER.readTree(
                 Files.readString(Path.of("../../contracts/sdk/parity-manifest.json")));

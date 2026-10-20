@@ -109,8 +109,18 @@ class IntrinsicToolValueTest {
         Path manifestPath = Path.of("../..", "contracts/sdk/parity-manifest.json");
         JsonNode manifest = JsonSupport.MAPPER.readTree(Files.readString(manifestPath));
         int count = 0;
+        boolean deferredObserved = false;
         for (JsonNode entry : manifest.path("entries")) {
+            if (entry.path("canonical").asBoolean()) {
+                for (JsonNode source : entry.path("source_paths")) {
+                    if ("echo_core::tools::ToolResult::with_effect".equals(source.asText())) {
+                        assertEquals("deferred", entry.path("sdk_scope").asText());
+                        deferredObserved = true;
+                    }
+                }
+            }
             if (entry.path("canonical").asBoolean()
+                    && "external_contract".equals(entry.path("sdk_scope").asText())
                     && "intrinsic:language-local-wire-helper".equals(
                     entry.path("route").path("route").asText())) {
                 count += 1;
@@ -119,5 +129,6 @@ class IntrinsicToolValueTest {
             }
         }
         assertEquals(28, count);
+        assertTrue(deferredObserved, "unreviewed Rust helper must remain telemetry only");
     }
 }

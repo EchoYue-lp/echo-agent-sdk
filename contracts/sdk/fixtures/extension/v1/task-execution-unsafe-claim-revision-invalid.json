@@ -1,0 +1,21 @@
+{
+  "name": "task-execution-unsafe-claim-revision-invalid",
+  "kind": "invalid",
+  "target": "TaskExecutionWire",
+  "description": "A JSON number cannot replace an exact execution claim revision.",
+  "payload": {
+    "task_id": "任务",
+    "status": {
+      "status": "running"
+    },
+    "retry_count": 0,
+    "failure_fingerprint": null,
+    "claim": {
+      "claim_id": "claim-1",
+      "revision": 9007199254740993,
+      "attempt": 1,
+      "spec_hash": "digest"
+    }
+  },
+  "expect_error": "invalid_value"
+}

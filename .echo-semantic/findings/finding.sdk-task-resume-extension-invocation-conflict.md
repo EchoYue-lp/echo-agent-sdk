@@ -1,0 +1,72 @@
+---
+schema_version: 1
+id: finding.sdk-task-resume-extension-invocation-conflict
+kind: finding
+type: implementation_bug
+status: resolved
+severity: high
+primary_focus: failure_concurrency
+focus:
+- time_lifecycle
+- state_authority
+- contract_evidence
+boundary_ref: boundary.sdk-task-subagent
+behavior_refs:
+- behavior.sdk-family-task
+- behavior.sdk-family-subagent
+- behavior.sdk-family-bridge
+rule_refs:
+- rule.framework-runtime-authority
+evidence_refs:
+- evidence.sdk-language-current-first-gate-failure
+- evidence.sdk-stream-cancellation-routing-verification
+- evidence.sdk-task-subagent-candidate
+audit_refs:
+- audit.sdk-stream-cancellation-routing-rereview
+decision_refs: []
+repair_evidence_refs:
+- evidence.sdk-stream-cancellation-routing-repair
+- evidence.sdk-task-subagent-candidate
+verification_evidence_refs:
+- evidence.sdk-stream-cancellation-routing-verification
+- evidence.sdk-task-subagent-candidate
+rereview_audit_refs:
+- audit.sdk-stream-cancellation-routing-rereview
+discovered_at: 30d7e219cc7d3aef0f75a19217c82898c363f50d
+---
+
+# Task pause恢复A2在extension准入冲突
+
+## 问题
+
+官方全语言门禁中exactpause场景原TaskStore12CAS记录A恢复pending/running后failed extension_conflict/exclusiveinvocation，真实callback没有A2。
+
+## 触发条件与影响
+
+A paused→resume，B/C已completed并保持canonicalresult，D仍pending，现不可宣同原ownerresume可用。immutable8d819/bridge43ec/mod7f1为actualepoch。
+
+## 证据
+
+原完整日志/runnerreceipt/TaskStore/配置已原字节归档。TS287中285pass2fail0skip，PythonJava尚未执行；另OS35sharedroot失败不是此根因。
+
+## 处理记录
+
+bridgeowner正在debug，尚不裁责任为SDK或framework，也不将失败归纯fixturetimeout。只登记Task/extension生命周期具体边界；原EOF有限resolved不回滚/不扩大证明。待actualrootcause/反例/修复/验证/复审三链齐备才closed，无新产品scope。
+
+## 已闭合的客户端子根因
+
+setupACK后过早删原invocation取消地址已3client真实红绿、9source/27archive、TS19PY39J27与独立PASS三链修复，记录该子根因有限resolved，不建立重复全familyFinding。原whole287/285/2失败与210file真实timeline保。
+
+## 仍开放的Framework物理结算义务
+
+另原outerselect提前Drop与5秒强abort物理结算由frameworkDowner独立处理；真实5.10秒claimcleared/Cancelled但originalproducer未停止仍open。协议取消地址到达不证明物理工作停止，不能以nativecooperative绿或本client三链关闭这个宽TaskFinding。framework proposed design docs/supreme/specs/2026-10-14-subagent-physical-settlement/design.md（三语言不持第二scheduler）等待独立设计review/必要人兼容选择；原诊断私Git286715f9/ref diagnostics/subagent-stream-grace-held可恢复。SDK只引用该上游链，不独自风险接受或更改5秒policy。
+
+## 后继14a有限消费者验证
+
+原上段是提案/旧强abort调查epoch，不再表示仍待同一用户选择：B已接受、framework988已公开，SDK335/404仅薄适配。后继formal-only独立Git候选保原pause/cancel/await/CRUD四例并增matching Task一例，当前14a三语整个Task suite各5实际通过、0fail/error/skip；原claim、same-source physical join、唯一matching CAS、B执行不重写及C/D依赖值由原Task Evidence/Audit承载。未把ordinary foreign-source knownfail混入套件或借当前S子集通过；它仍等独立F ACP修复。
+
+本对象仍open：该finite suite不证明超grace/owner丢失恢复/全部取消与资源失败组合，不以cooperative经典例或新matching例关闭宽物理结算义务。
+
+## 2026-10-19：当前具名缺陷本地闭合
+
+原客户端setup ACK取消地址、原SDK retained callback owner与上游通用Task/Subagent物理结算分别沿既有发布修复链闭合；当前8481三语各7真实Host任务消费、同原producer实际join后的唯一matching CAS、B canonical结果保持/C-D依赖复用，以及foreign source不伪Run receipt，具名证据与复审见Task Evidence和routing Audit当前challenge。provider拒写比较不弱化；错误metadata修复不是第二调度器。当前完整Rust及三语整体通过，resolved关闭原pause/resume准入冲突和本Finding的原物理结算缺陷，不扩任意crash/receipt丢失后的eventual恢复或新TaskContext DTO。旧proposed/open描述保历史。

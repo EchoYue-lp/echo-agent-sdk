@@ -6,13 +6,32 @@ status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
-focus: [data_durability, contract_evidence]
+focus:
+- data_durability
+- contract_evidence
 boundary: boundary.sdk-product
-observed_at: source:18de34be70afdcf30950277f1bc16142a058e3d4da6905fa4e1eee36f2a7663b
-code_refs: [AGENTS.md, MIGRATION-SOURCE.md, docs/adr/0001-sdk-repository-boundary.md]
-rule_refs: [rule.framework-runtime-authority]
-evidence_refs: [evidence.sdk-source-import, evidence.sdk-source-continuity, evidence.sdk-framework-pin, evidence.sdk-wave2-cutover-repair, evidence.sdk-wave2-cutover-final-verification, evidence.sdk-compatibility-gates]
-finding_refs: [finding.sdk-wave2-cutover-integrity]
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+code_refs:
+- AGENTS.md
+- MIGRATION-SOURCE.md
+- docs/adr/0001-sdk-repository-boundary.md
+rule_refs:
+- rule.framework-runtime-authority
+evidence_refs:
+- evidence.sdk-source-import
+- evidence.sdk-source-continuity
+- evidence.sdk-framework-pin
+- evidence.sdk-wave2-cutover-repair
+- evidence.sdk-wave2-cutover-final-verification
+- evidence.sdk-compatibility-gates
+- evidence.sdk-feature-wiring-verification
+- evidence.sdk-current-reviewed-rust-gates
+- evidence.sdk-be5-current-rust14
+finding_refs:
+- finding.sdk-wave2-cutover-integrity
+- finding.sdk-accepted-source-continuity
+- finding.sdk-dependency-warning-policy-conflict
+- finding.sdk-test-feature-wiring
 ---
 
 # SDK repository ownership
@@ -49,3 +68,26 @@ membership 只打印遥测，分类样例不要求未接受的 identity 必须�
 ## 裁决记录
 
 用户确认 SDK 是依赖 echo-agent 的独立产品，并作为 lp-agent 第四个 submodule。
+
+## 当前治理快照限制
+
+上述已验证行为绑定历史 `30d7e219`。本轮显式 framework 升级、扩展桥/Task/事件/资源修复及三语言变化仍在实现和反例验证中；当前源码摘要、合同生成、独立复审和 main 验收完成前，不恢复 verified/closure 声明。
+
+## 当前模型重观察范围
+
+review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610cecf001b2d`（源码摘要`17cf243e8d6341db0ce23c5b9ee39977ce4ab100d6ed1b17ec5a7bb26c19e138`）上重新观察。上列code_refs/各scenario source_refs已逐Gitblob读取并与当前文件SHA精确相同，原锚点均存在。模型继续描述原accepted入口、框架业务/终态权威、Host owner/generation与transport消费职责、生命周期及具名失败义务；源码定位核对不证明所有行为正确、运行证据fresh或合同生成闭合。
+
+原Behavior/status、Map场景mapped/needs_review、Rule/Asset处置、Finding/未决义务与Evidence原epoch支持范围全部保留。mapped仅入口模型，旧3ea不是本snapshot本体；历史receipt不得因本模型观察更新冒current运行。12source迁移、5秒物理结算与依赖50warning规则三选择仍未接受，完整生成/CI/main另验，任何新Rustwrapper不自动扩三语言合同。
+
+
+## 2026-10-20 具名有限结算
+
+本项verified只限原声明的具名合同单元及下列直接证据，非全SDK/平台或任意未列组合。原模型header observed_at为`56929154c1851473e9e4837901b610cecf001b2d`，原正文及Evidence各自runtime cut保留；当前模型观察绑定公开`04eb6ad50982656b5a8b8ea649619b6a383065ff`，不把旧测试重标为新Host执行。
+
+直接证据：`evidence.sdk-source-import`、`evidence.sdk-source-continuity`、`evidence.sdk-framework-pin`、`evidence.sdk-compatibility-gates`。
+
+具体复审入口：`audit.sdk-protocol-finite-state-authority`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+SDK资产与F运行权威分开；5621accepted才阻断，完整Rust仅遥测，duplicate例外不扩CLI。
