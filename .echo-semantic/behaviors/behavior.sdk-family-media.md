@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-family-media
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-integrations
-observed_at: 5bcbad2437e5c19f61101883044c4f67944cb97c
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
 code_refs:
 - echo-sdk-host/src/core_profile/facade/mod.rs
 - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -120,7 +120,7 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 原只text的不足由已有ToolsBridge Evidence文末后继承接：两accepted拼写不等原Tool名的真实old0bbc反例、新a17同probeafter及三语各一原媒体短链已实际执行。12unique操作/19call明确字段、文件、PNG model_content和错误/sentinel，不以telemetry或“未接受codec”排除既有承诺；不声称任意格式/所有选项/外部viewer或模型Run。原text default case与verifier完整保留并同文件回归通过。新finding.sdk-media-accepted-tool-name-routing跟踪同一两alias rootcause，当前open/空三链以待公开修复源码和最终当前门禁后精确闭合；本Behavior继续needs_review，不从focusedgreen直接升级。
 
 
-## 2026-10-20 具名有限结算
+## 2026-10-20 具名有限结算（9ef材料阶段历史）
 
 本项整体继续needs_review。原具名子链已有后继并不授整个composite或媒体最终资格；保原header观察版本和历史runtime cut，当前04eb源码定位及受控增量另记。
 
@@ -131,3 +131,10 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 源码后继分开核：原Root17be/0bbc读审在本项指出十二个non-text补证缺口，不能称当时媒体PASS。04eb薄增量与a17/三语focused另经C0：仅media两accepted名字到原Tool及原测试新增可选故事，原fixture五函数/默认HTTP/text oracles不变。这里确有媒体生产路径变化，不能把共用的非媒体路径连续性当媒体验证；原两个真实before与新直接after分cut保存，未借旧208a14为新源码完整资格。
 
 新12non-text/19call与原text已实际focused通过；04eb公开repair Evidence已绑定同源两alias Finding，该项仍OPEN，verification/rereview与最终新冻结完整门禁/精审待，不授全媒体最终资格。
+
+
+## 2026-10-20 媒体具名有限资格结算
+
+原model observed_at为`5bcbad2437e5c19f61101883044c4f67944cb97c`，原历史正文和Evidence各runtime cut保留。当前verified仅原accepted媒体的具名合同单元：原text default未弱化，十二non-text/19call的真实parser/writer/bytes/model_content/typed错误及不覆sentinel已after，最后匹配新源14/唯一whole+3quickstarts和独审均C0。原两alias Finding现具公开repair、实际verification、原Audit精rereview而本地resolved；联合Evidence按04eb代码与9ef运行分开记录，未借旧208a资格，也未外推所有codec/option/viewer/modelRun。
+
+50Behavior变为46有限verified/4整体hold；这里只提升媒体这一已验单元，不以它解除managed未知或bridge/familybridge/resources/languagewhole的main/平台/Hook条件。

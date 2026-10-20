@@ -2,7 +2,11 @@
 
 当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
 
-## 2026-10-20 媒体accepted名字新增同源义务
+## 2026-10-20 媒体同源义务具体三链闭合
+
+[finding.sdk-media-accepted-tool-name-routing](../../../.echo-semantic/findings/finding.sdk-media-accepted-tool-name-routing.md)沿公开04eb repair、9ef匹配最终14/唯一whole+3qs及原Audit精rereview本地resolved；当前74resolved/1open。只有managed历史Linux passive-exit仍open/无repair，即使当前Linux/本机case通过也不伪因果。联合Evidence保before仅TS/ExcelZIP timestamps差异/PNG protocol projection/无独立HostPID及归档floor事件。旧04eb/9ef前partial repair及空链记载保其阶段，不回写旧运行。
+
+## 2026-10-20 媒体accepted名字新增同源义务（04eb首源码历史）
 
 新增[finding.sdk-media-accepted-tool-name-routing](../../../.echo-semantic/findings/finding.sdk-media-accepted-tool-name-routing.md)一项open，current73resolved/2open。两accepted名字到同一原Tool的断点由old0bbc真实TS失败确认，新a17同case/三语19call focused after已过，原件在已有ToolsBridge Evidence后继；正式三链以公开修复Git和最后新源资格为准，不伪旧header或仅聊天结算。原四sourceFinding在17be的73resolved/1open切点保持，managed历史Linux未知仍独立open，后续没有虚构repair或风险接受。
 

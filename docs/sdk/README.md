@@ -147,7 +147,7 @@ alone are not behavioral evidence.
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
 | **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Historical Plan 08 route baseline; current capability/failure review remains separate |
 | **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | Snapshot-bound language gate passed; later repairs require current-source verification |
-| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Membership/catalog continuity complete at 5,621; final matched-source behavior/gates/main acceptance remain pending |
+| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Membership/catalog continuity and local matched-source gates passed at 5,621; four composite holds and exact main/platform acceptance remain pending |
 | **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,534 deferred identities, with no automatic acceptance |
 | **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
 
@@ -160,8 +160,10 @@ against that pin. The current committed manifest has 10,973 canonical identities
 with 5,621 accepted external identity/kind keys and 454 accepted routes; current
 scope counts are in the table below. See [source continuity](../../MIGRATION-SOURCE.md)
 and [current acceptance](governance/capability-review-remaining.md) for exact cuts.
-SDK208a/Host0bbc full local gates and 04eb/Hosta17 focused media results retain
-their own sources; the final successor-source whole entry/main/platform remain pending.
+SDK208a/Host0bbc and the successor SDK9ef/Hosta17 retain distinct evidence cuts.
+The successor original Rust14 and the one whole language entry plus all three
+quickstarts now passed locally, with the media Finding concretely resolved.
+Exact SDK-main/platform/nativeHook and the historical Linux cause remain separate.
 
 An older extraction/wire-candidate note recorded 9,724 canonical identities,
 5,622 language-done identities and4,102 remaining intrinsic-route identities.

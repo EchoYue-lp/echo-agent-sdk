@@ -82,3 +82,10 @@ Root的新空bare仅从远端exact fetch main30d7与三个必要tags，actual0�
 公开17be采用两Evidence observed_at和两Audit revision/source refs精指208a，因此此单一公开源成为必要机器引用。Root sole writer仅创建并正常非force推送annotated `refs/tags/evidence/sdk-governance/208a027f587446badaaa2058e6af3240457431d2`，tag object `4639fe0d97df13c4fe58e105e75c6e4144108c1b`，peeled commit `208a027f587446badaaa2058e6af3240457431d2`，tree `c77ba743599c488146e31f955d5548d9112c6e67`。远端tag/peeled精等核验；原proof sdk-208a-necessary-evidence-ref-proof.json（SHA25652c6a7aa8ef05a32090639defbad249c3184348f7fd659424d6311f1d1e17940）只保协调ignored任务。
 
 本条只记实际ref操作及remote peeled，不虚构新空冷仓/最终SDKmain strict通过；不为17be里程碑或私有ddc6打标签。新媒体Finding以实际oldHost208a代码为discovery，driver17be相关blob同字节；修复源码未来若被机器ref正式采用，再由Root逐必要性保存，最终仅新main+必要refs冷strict仍独立。
+
+
+## 2026-10-20 04eb媒体修复与具名模型的必要ref
+
+9ef正式采用的联合媒体Evidence/45个Behavior观察/原Audit named challenges精指公开04eb，故Root sole writer创建并非force推送annotated `refs/tags/evidence/sdk-governance/04eb6ad50982656b5a8b8ea649619b6a383065ff`；tag object `df15128b7391cc0ceb57cf9c9f1776ab4be0ac40`，peeled `04eb6ad50982656b5a8b8ea649619b6a383065ff`，tree `83361ab93848976532df57dc5c1cea67655cd0ef`。远端peeled已精核，原proof sdk-04eb-necessary-evidence-ref-proof.json4419B/caba6256a9fc50c7ba39af3257eb6714721e1cb6736bf8b6c97364503beacd18仅保协调ignored任务。
+
+只记实际ref耐久保存，不把它冒成最终新main/全必要refs空冷strict。17be相关blob虽作历史说明并未新增必要machine ref，不额外打tag；私有候选不tag。当前最终冷检仍须仅精新main+全部必要refs、无本地导入/alternates/task/PR源。

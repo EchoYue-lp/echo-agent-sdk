@@ -273,6 +273,16 @@ challenges:
     - sdks/java/src/test/java/com/echoagent/sdk/ToolBehaviorsHostTest.java
     evidence_refs:
     - evidence.sdk-media-accepted-route-repair-verification
+  media-two-alias-final-matched-verification:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs#dispatch_tool
+    - sdks/shared/testing/tool_behavior_fixture.py#verify_media
+    - sdks/typescript/test/tool-behaviors.test.js
+    - sdks/python/tests/test_tool_behaviors.py
+    - sdks/java/src/test/java/com/echoagent/sdk/ToolBehaviorsHostTest.java
+    evidence_refs:
+    - evidence.sdk-media-accepted-route-repair-verification
 ---
 
 # Tools/Bridge contract_evidence 有限审查
@@ -328,3 +338,10 @@ current_tool_boundary_review 本次真实有限审查明确该原缺陷 closeeli
 - `behavior.sdk-family-statistics`：有限named单元结算；证据`evidence.sdk-computation-50`、`evidence.sdk-tools-bridge-finite-observation`。
 - `behavior.sdk-family-web`：有限named单元结算；证据`evidence.sdk-search-sandbox-06bb`、`evidence.sdk-ordinary-tools-b909-verification`、`evidence.sdk-tool-value-natural-eof-after-candidate`、`evidence.sdk-tools-bridge-finite-observation`。
 - `behavior.sdk-family-media`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-media-accepted-route-repair-verification`。
+
+
+## 2026-10-20 两alias匹配完整后验复审
+
+只对finding.sdk-media-accepted-tool-name-routing闭合条件核具体修复/同原反例/三语真实文件图像及最后新源14与唯一whole后验；code/test与修复公开04eb逐字相同，运行cut9ef/1222/a17各自记录，不重标旧Evidence epoch。原独立读者source/native/newbuild/14/whole+3qs/#120各12/最终2418原件均C0，后归档floor事件与等字节稀疏表示保真也如实记录。repair/verification联合Evidence的两个角色对应真实事实，本项具完整具体三链可本地resolved。
+
+这不是整ToolsBridge/八风险组或97Audit新整体结论；原主revision/freshness/旧challenge保。managed passive-exit历史unknown及bridge/resources/languagewhole四composite保持其单独hold，SDKmain9CI/平台/nativeHook/全必要refs冷strict仍待。

@@ -94,9 +94,11 @@ The media successor repairs only the two accepted operation-to-Tool spellings.
 Its newly compiled Host `a17db78e5d3e73a5edf9ef529d387a218aa248d7042b08e12b88b843cd53baaf`
 has focused actual after evidence for both original counterexamples and the
 three native language media stories, retaining the original text oracles.
-The same-root-cause Finding stays open until public repair-source binding,
-current final gates and its concrete rereview chains. Old SDK208a full gates
-are not borrowed as successor-source acceptance.
+The same-root-cause Finding now has concrete repair/verification/rereview chains
+and is locally resolved after current SDK9ef frozen-source Rust14 and the one
+original whole language entry plus all three quickstarts completed successfully.
+Their source/Host proofs remain distinct from the old SDK208a evidence. Exact
+SDK-main/platform/nativeHook and the unrelated historical Linux cause remain pending.
 
 ### Previous 6563 source and runtime evidence
 

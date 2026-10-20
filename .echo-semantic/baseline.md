@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "fb9a608189cc7d35d2e0fae289e352133865e09965ba1fd64e15faef27aaf128"
+    "content_digest": "c8f8cf174c2139d36182d494af1afb453199361849518b009818b38342521214"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -853,6 +853,11 @@ e31/88a/4f三actualdiscovery revision已由Root显式annotated refs正常推送�
 两accepted拼写到原Tool的薄适配、同原真实反例after及三语12ops19call只支持新媒体focused后继。新增一项同根因Finding open/空三链保存真实历史，当前73resolved/2open；原四sourceclosed不复活，managed历史Linux未知不伪repair。原50Behavior/旧Audit状态与inventoryclosed/behavioropen不变；新源最终完整门禁、精machine refs/冷main/nativeHook仍须结算。README精356与必要208a ref事实已同步，SDKwebsite无镜像/新增入口，三quickstart代码不改，仍待最后新源入口实际执行，未跨仓部署或registry发布。
 
 
-## 2026-10-20 逐项具名Behavior与原Audit后继
+## 2026-10-20 逐项具名Behavior与原Audit后继（9ef材料阶段历史）
 
 原18core/17integrations/15values具体Evidence/Audit bindings已逐项落原Behavior：45个有限named单元verified、五项整体hold needs_review（extension-bridge/family-bridge/resources-streams/language-clients/media）。每项原model观察版本存正文，原Evidence runtime cut不重标；当前04eb源码观察与媒体受控增量另列，未借208a14给新Host整体验收。97个Audit主revision/freshness不提升，仅其指定named challenge新增，maps仍mapped；04eb修复源已公开，联合repair Evidence已绑定两alias Finding；Finding仍open，verification/rereview及最终新冻结源完整门禁/精审继续待。inventoryclosed/behavior_modelopen、Planready/PRDraft及main/platform/Hook/managed条件保留，最后新源适用完整门禁统一一次。
+
+
+## 2026-10-20 媒体三链与最终本地工程后验
+
+9ef/1222冻结的新源码原14Rust/最终fullHost/唯一whole三语及3quickstart全部actual0并各精scope独审C0；源码与04eb生产/测试/依赖/合同逐字同。两alias Finding现repair/verification/rereview三链齐、本地resolved，74resolved/1managedunknownopen；媒体有限verified后46verified/4wholehold。inventoryclosed/behavior_modelopen、原97Audit主revision/freshness/maps和Planready/PRDraft不批量变。后归档floor事件和同字节稀疏副本恢复保实际记录；currentlocalpass不替SDK精main9CI、平台/nativeHook/必要ref冷strict或managed历史原因。

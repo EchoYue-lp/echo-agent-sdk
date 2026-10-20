@@ -1,5 +1,11 @@
 # 当前能力模型的有限剩余验收
-## 2026-10-20 媒体后继当前剩余
+## 2026-10-20 当前本地工程与媒体三链已齐
+
+9ef/1222冻结原14Rust及最终fullfacade Host、唯一原whole三语/3quickstart全部0；TS358、Python442加18subtests、Java379/76freshXML，Java实际21.0.5，Hosta17 SHA/mtime与tracked输入不变。#120原各12实际涵盖，所有scope原件/after/工程/后归档保真独审C0；不借旧208a全套，不把07零doctest/11no-run当runtime，不累加重叠feature配置。
+
+媒体两alias Finding现具体三链closed，74resolved/1managedunknownopen；46有限Behavior verified，extension-bridge/family-bridge/resources-streams/language-clients四整体仍needs_review，97Audit主revision/freshness/maps不整体升级。后归档floor事件与等字节稀疏恢复保原件；原运行guard未触线。剩余为精SDKmain实际9CI、平台真实范围/nativeHook、必要refs冷strict与最后既有5specific交付回填；managed历史Linux原因未知保持open/无repair，不能以当前PASS/诊断代因果修复。详见联合媒体Evidence最终后验，不另造报告/矩阵/接口。
+
+## 2026-10-20 媒体后继剩余（9ef前材料阶段）
 
 同源pdf_extract/excel_write名字适配已有真实old0bbc red与新a17 after；原三语六族default+新增媒体故事各2pass，12个non-text成功操作/19call、真实Word/PDF/Excel/PNG和精错误/不覆sentinel由[原ToolsBridge Evidence后继](../../../.echo-semantic/evidence/evidence.sdk-tools-bridge-finite-observation.md)记录。定向Rust/fmt/strictClippy与新Hostbuild通过仅focused；04eb修复源已公开且联合repair Evidence已绑定；新Finding仍open，当前73resolved/2open，verification/rereview及最终新冻结源完整门禁/原Audit精审仍待，之后再具体闭合。
 

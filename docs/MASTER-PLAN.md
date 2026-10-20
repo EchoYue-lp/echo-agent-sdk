@@ -1,6 +1,12 @@
 # SDK 全能力语义治理进度
 
-## 2026-10-20 媒体accepted路由与真实消费者后继（当前）
+## 2026-10-20 媒体三链与匹配新源全套本地资格（当前）
+
+公开04eb修复码与实际9ef工程源码的production/tests/dependencies/contracts/CI逐字同；9ef/1222冻结原14Rust完整0，最终fullfacade Host实a17，唯一原whole入口TS358/PY442加18subtests/Java379/76freshXML及三quickstart全0。各精scope原读者C0，#120各12在本次whole实际涵盖，不重跑。媒体原实际反例/after/三语小故事及最后全套匹配，repair/verification/rereview绑定联合Evidence与原Audit精challenge后具体resolved；当前74resolved/1managedunknownopen、46有限Behavior verified/4整体hold。
+
+所有raw/provenance保ignored；后copy2把旧+新稀疏file展开造成归档floor事件，原whole运行guard未bound，后按同字节/mode/mtime/manifest不变的稀疏重建恢复并2418file再验0mismatch。拒绝的defaulttarget Cargo clean保持0删、不伪marker，旧native282Git/stable未动。下一步仅最后current材料/canonical/全必要ref冷检及精SDKmain9CI/平台/nativeHook；managed历史unknown不伪repair，全部可执行工作结束后再准确裁决。Planready/PRDraft，registry/W部署不在此scope。
+
+## 2026-10-20 媒体accepted路由与真实消费者后继（9ef前材料阶段）
 
 原50行读审仅媒体12个non-text缺具名后继；实际old0bbc又证明pdf_extract/excel_write与原Tool名不匹配，两条同根因。唯一SDK修复仍原Tool name适配，accepted16/原F/pin/lock/producer与Tool执行权威不变。新Hosta17真实build、两同probeafter、TS/PY/Java原default+newmedia各2pass和定向Rust/strictClippy/fmt均0；完整原件/范围由既有ToolsBridge Evidence文末承接，不新测试管理矩阵。04eb修复源已公开，联合repair Evidence已绑定新Finding，当前73resolved/2open；该Finding继续open，verification/rereview及最终新冻结源完整门禁/精审仍待，原Audit精challenge不假报整体验收。
 

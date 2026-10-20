@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-media-accepted-tool-name-routing
 kind: finding
 type: implementation_bug
-status: open
+status: resolved
 severity: high
 primary_focus: contract_evidence
 focus:
@@ -21,8 +21,10 @@ audit_refs: []
 decision_refs: []
 repair_evidence_refs:
 - evidence.sdk-media-accepted-route-repair-verification
-verification_evidence_refs: []
-rereview_audit_refs: []
+verification_evidence_refs:
+- evidence.sdk-media-accepted-route-repair-verification
+rereview_audit_refs:
+- audit.sdk-tools-bridge-finite-contract-evidence
 discovered_at: 208a027f587446badaaa2058e6af3240457431d2
 ---
 
@@ -58,6 +60,13 @@ PDF原raw872B/SHA25601dc8f7a4b3532f01e0d596025a96848ad96658ff33e6d5ea3d1005bf49f
 Excel before/after seed由同脚本生成、语义输入相同，五个XML entry原字节逐一相同；ZIP时间戳13:21:52与13:28:50不同，因此容器整体SHA不同，不能称seed ZIP byte-identical。PDF before/after输入SHA相同。此精度修正来自实际输入独核，不修改成功断言或重跑结果。
 
 
-## 公开修复源的后继绑定
+## 公开修复源的后继绑定（9ef前材料阶段）
 
 修复源码/原shared及三测试已公开于04eb6ad50982656b5a8b8ea649619b6a383065ff；repair_evidence_refs已绑定联合Evidence，原ToolsBridge contract-evidence追加精challenge。Finding仍open，verification_evidence_refs与rereview_audit_refs继续留空，待最终新冻结源完整Rust14、唯一whole语言/3quickstart和精确后验后再填，不以已有repair提前closed。
+
+
+## 2026-10-20 最终匹配源码资格后具体闭合
+
+04eb修复公开源与9ef最终工程源码的production/tests/dependencies/contracts/CI逐字无差；9ef原14Rust全部actual0/零warning/1222tracked无漂移、最终fullfacade Host实际a17不变、唯一原whole入口TS358/PY442加18子测试/Java379及76freshXML/三quickstart全部0，同一Host SHA/mtime与1222输入不变。原独立读者对源码/actualbefore-after/三语故事/newbuild/final14/whole及原件均C0/I0/M0，原ToolsBridge Audit只按本缺陷精challenge复审。故本项现在resolved，repair与verification分别引用联合Evidence的相应实际事实，rereview引用原Audit精challenge；没有新API/第二parser或改source合同来绕过失败。
+
+本地具体闭合不替SDK精main及实际9check、Windows/CI17、本机nativeHook/Stop或其它composite；managed历史Linux根因未知仍open/无repair，不能用本次PASS继承为它的因果修复。旧04eb初检查点open/空链及9ef前partialrepair的文字保各自历史时点。
