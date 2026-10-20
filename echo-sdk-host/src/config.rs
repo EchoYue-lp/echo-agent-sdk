@@ -182,6 +182,9 @@ impl SdkProfileConfig {
 pub(crate) struct PreparedHostConfig {
     pub framework: FrameworkConfig,
     pub llm_client: Arc<dyn LlmClient>,
+    /// Original validated provider config paired with this exact client.
+    /// Kept private to construction; never project or derive Debug/Serialize.
+    pub llm_config: LlmConfig,
     pub sdk_profile: Option<SdkProfileConfig>,
 }
 
@@ -286,6 +289,7 @@ impl SdkHostConfig {
         Ok(PreparedHostConfig {
             framework: self.default_agent,
             llm_client,
+            llm_config,
             sdk_profile: self.sdk_profile,
         })
     }
@@ -479,6 +483,8 @@ mod tests {
             }
         })?;
         assert!(prepared.framework.model.auth_token.is_none());
+        assert!(prepared.llm_config.api_key == "environment-secret");
+        assert_eq!(prepared.llm_config.model, prepared.llm_client.model_name());
         Ok(())
     }
 

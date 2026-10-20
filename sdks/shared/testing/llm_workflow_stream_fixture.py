@@ -91,6 +91,14 @@ def prepare(work):
         "history_prompt": "history follow-up🙂",
         "temperature": 0.375,
         "max_tokens": 513,
+        "compression": {
+            "evict": "old context 待淘汰🙂",
+            "retain": "retained context 保留🌊",
+            "next": "after compression 下一轮🧪",
+            "focus": "preserve retained decisions 保留🙂",
+            "token_limit": "100000",
+            "compressor_limit": "80000",
+        },
         "response": response,
         "llm_chunks": [
             {"kind": "llm", "value": {"role": "assistant", "content": "回答"}},
@@ -418,11 +426,87 @@ def verify_observation(spec, facts):
     assert facts["close"] is False
 
 
+def verify_compressor(spec, facts):
+    expected = spec["compression"]
+    assert facts["decoy_calls"] == 0
+    assert len(facts["compressions"]) == 3
+    assert len(facts["model_requests"]) == 3
+    assert len(facts["settlements"]) == 3
+    assert all(row["terminal"]["status"] == "completed" for row in facts["settlements"])
+    assert facts["binding"] == facts["original_extension"]
+    for index, call in enumerate(facts["compressions"]):
+        assert call["extension"] == facts["original_extension"]
+        assert call["invocation_id"] and call["deadline"]
+        assert int(call["input"]["token_limit"]) + int(call["protected_tokens"]) == int(
+            expected["compressor_limit"]
+        ), {
+            "index": index,
+            "limit": call["input"]["token_limit"],
+            "protected_tokens": call["protected_tokens"],
+        }
+        assert call["input"]["current_query"] == (
+            None if index == 0 else expected["retain"]
+        )
+        assert call["input"]["focus_instructions"] == (
+            expected["focus"] if index == 1 else None
+        )
+        assert call["token_count"] == "1"
+        assert call["wrong_owner"]["code"] == "invalid_value"
+        assert facts["released_tokenizers"][index]["code"] == "closed_handle"
+        assert call["output"]["checkpoint"] is None
+        before = call["input"]["messages"]
+        retained, evicted = call["output"]["messages"], call["output"]["evicted"]
+        assert len(before) == len(retained) + len(evicted)
+        assert index == 0 or any(
+            unbox(message["content"]) == expected["retain"] for message in retained
+        )
+        assert not any(
+            unbox(message["content"]) == expected["evict"] for message in retained
+        )
+        assert len(evicted) == (2 if index == 1 else 0)
+        stats = facts["compression_results"][index]["stats"]
+        source_before = facts["before_messages"][index]
+        source_after = facts["after_messages"][index]
+        excluded = [
+            message
+            for message in source_before
+            if not any(
+                candidate["role"] == message["role"]
+                and unbox(candidate["content"]) == message["content"]
+                for candidate in before
+            )
+        ]
+        assert call["protected_messages"] == excluded
+        assert int(stats["before_count"]) == len(source_before)
+        assert int(stats["after_count"]) == len(source_after)
+        assert int(stats["evicted"]) == len(evicted)
+        if index:
+            assert int(stats["before_count"]) - int(stats["after_count"]) == len(
+                evicted
+            )
+    first = facts["compressions"][1]
+    assert any(
+        unbox(message["content"]) == expected["evict"]
+        for message in first["output"]["evicted"]
+    )
+    # The independent model callback observes framework consumption, rather
+    # than trusting the compressor's own output or a locally reconstructed list.
+    next_messages = facts["model_requests"][2]["messages"]
+    next_text = [unbox(message["content"]) for message in next_messages]
+    assert expected["evict"] not in next_text
+    assert "answer: " + expected["evict"] not in next_text
+    assert expected["retain"] in next_text
+    assert "answer: " + expected["retain"] in next_text
+    assert next_text[-1] == expected["next"]
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--prepare", action="store_true")
-    parser.add_argument("--verify", choices=("llm", "workflow", "graph", "observation"))
+    parser.add_argument(
+        "--verify", choices=("llm", "workflow", "graph", "observation", "compressor")
+    )
     arguments = parser.parse_args()
     if arguments.prepare:
         prepare(arguments.work)

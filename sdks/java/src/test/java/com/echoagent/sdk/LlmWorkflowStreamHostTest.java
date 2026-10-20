@@ -110,6 +110,75 @@ class LlmWorkflowStreamHostTest {
         verify(setup, "llm", rows);
     }
 
+    @Test void liveCompressorConsumesContextAndReleasesOriginalHostTokenizer() throws Exception {
+        var setup = setup("compressor"); var spec = setup.spec(); var c = spec.path("compression");
+        var facts = JsonSupport.MAPPER.createObjectNode().put("decoy_calls", 0);
+        var requests = facts.putArray("model_requests"); var compressions = facts.putArray("compressions");
+        var results = facts.putArray("compression_results"); var released = facts.putArray("released_tokenizers"); var settlements = facts.putArray("settlements");
+        var beforeMessages = facts.putArray("before_messages"); var afterMessages = facts.putArray("after_messages");
+        var tokenizers = new CopyOnWriteArrayList<TokenizerReference>();
+        try (var sdk = setup.sdk()) {
+            var model = await(sdk.registerLlmClient("compression-model", LlmClientDescriptor.builder().modelName("fixture-model").supportsStreaming(false).build(), (call, cancellation) -> {
+                var request = call.input(); requests.add(request);
+                var messages = request.path("messages");
+                var message = spec.path("response").path("message").deepCopy();
+                ((ObjectNode) message).set("content", JsonSupport.MAPPER.createObjectNode().put("kind", "string").put("value", "answer: " + messages.path(messages.size() - 1).path("content").path("value").textValue()));
+                return CompletableFuture.completedFuture(LlmOutcome.result(LlmChatResponse.builder().message(message).finishReason("stop").usage(spec.path("response").path("usage")).raw(spec.path("response").path("raw")).build()));
+            }));
+            var agent = await(sdk.createAgent()); var session = await(agent.createSession());
+            // Session creation precedes both registrations; explicitly binding
+            // the first one must override the later default registration.
+            var original = await(sdk.registerContextCompressor("original-compressor", ContextCompressorDescriptor.named("original-compressor"), (call, cancellation) -> CompletableFuture.supplyAsync(() -> {
+                try {
+                    var row = compressions.addObject(); row.set("input", call.input()); row.set("extension", call.raw().path("extension"));
+                    row.set("invocation_id", call.raw().path("invocation_id")); row.set("deadline", call.raw().path("deadline"));
+                    var tokenizer = call.tokenizer(); tokenizers.add(tokenizer);
+                    row.put("token_count", await(sdk.countTokens(tokenizer, "hello")).toString());
+                    row.set("wrong_owner", observedError(sdk.countTokens(new TokenizerReference(tokenizer.resource(), "foreign-owner"), "hello")));
+                    var protectedMessages = row.putArray("protected_messages"); var protectedTokens = java.math.BigInteger.ZERO;
+                    for (var message : beforeMessages.path(beforeMessages.size() - 1)) {
+                        boolean present = false;
+                        for (var candidate : call.messages()) if (candidate.path("role").equals(message.path("role")) && candidate.path("content").path("value").equals(message.path("content"))) { present = true; break; }
+                        if (!present) { protectedMessages.add(message); protectedTokens = protectedTokens.add(await(sdk.countTokens(tokenizer, message.path("content").textValue()))); }
+                    }
+                    row.put("protected_tokens", protectedTokens.toString());
+                    var retained = new ArrayList<JsonNode>(); var evicted = new ArrayList<JsonNode>();
+                    for (var message : call.messages()) {
+                        String text = message.path("content").path("value").asText();
+                        (Set.of(c.path("evict").textValue(), "answer: " + c.path("evict").textValue()).contains(text) ? evicted : retained).add(message);
+                    }
+                    var output = CompressionOutput.builder().messages(retained).evicted(evicted).build(); row.set("output", output.toJson());
+                    return CompressionOutcome.result(output);
+                } catch (Exception error) { throw new CompletionException(error); }
+            })));
+            var decoy = await(sdk.registerContextCompressor("decoy-compressor", ContextCompressorDescriptor.named("decoy-compressor"), (call, cancellation) -> {
+                facts.put("decoy_calls", facts.path("decoy_calls").intValue() + 1);
+                return CompletableFuture.failedFuture(new AssertionError("wrong compressor selected"));
+            }));
+            facts.set("original_extension", original.wire().toJson());
+            await(session.invoke("echo_agent::agent::react::ReactAgent::set_token_limit", List.of(WireValues.u64(c.path("token_limit").textValue()))));
+            await(session.invoke("echo_agent::agent::react::ReactAgent::set_compressor", List.of(original.wire()))); facts.set("binding", original.wire().toJson());
+            beforeMessages.add(await(session.invoke("echo_agent::agent::react::ReactAgent::get_messages", List.of())));
+            results.add(await(session.invoke("echo_agent::agent::react::ReactAgent::force_compress_context", List.of())));
+            afterMessages.add(await(session.invoke("echo_agent::agent::react::ReactAgent::get_messages", List.of())));
+            released.add(observedError(sdk.countTokens(tokenizers.get(0), "hello")));
+            for (String text : List.of(c.path("evict").textValue(), c.path("retain").textValue())) {
+                var run = await(session.startChat(text)); settlements.add(await(run.waitForSettlement(Duration.ofSeconds(15)))); run.close();
+            }
+            beforeMessages.add(await(session.invoke("echo_agent::agent::react::ReactAgent::get_messages", List.of())));
+            results.add(await(session.invoke("echo_agent::agent::react::ReactAgent::force_compress_with_focus_and_hooks", List.of(c.path("focus").textValue(), WireValues.u64("64"), "manual"))));
+            afterMessages.add(await(session.invoke("echo_agent::agent::react::ReactAgent::get_messages", List.of())));
+            released.add(observedError(sdk.countTokens(tokenizers.get(1), "hello")));
+            beforeMessages.add(await(session.invoke("echo_agent::agent::react::ReactAgent::get_messages", List.of())));
+            results.add(await(session.invoke("echo_agent::agent::react::ReactAgent::force_compress_context", List.of())));
+            afterMessages.add(await(session.invoke("echo_agent::agent::react::ReactAgent::get_messages", List.of())));
+            released.add(observedError(sdk.countTokens(tokenizers.get(2), "hello")));
+            var next = await(session.startChat(c.path("next").textValue())); settlements.add(await(next.waitForSettlement(Duration.ofSeconds(15)))); next.close();
+            session.close(); agent.close(); original.close(); decoy.close(); model.close();
+        } finally { save(setup.work(), facts); }
+        verify(setup, "compressor", facts);
+    }
+
     @Test void workflowExtensionActualRunStreamsCauseCancelCloseAndOwner() throws Exception {
         var setup = setup("workflow"); var facts = JsonSupport.MAPPER.createObjectNode(); var calls = facts.putArray("calls");
         var completed = new AtomicInteger(); var callbacksCompleted = new AtomicInteger(); var producerErrors = new CopyOnWriteArrayList<String>();

@@ -10192,7 +10192,7 @@
           }
         }
       ],
-      "items": 10
+      "items": 12
     },
     {
       "route": "family:permission",
@@ -12366,7 +12366,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 132
+      "items": 144
     },
     {
       "route": "intrinsic:process-local-agent-owned-input-drain-hook",
@@ -15724,6 +15724,30 @@
       "items": 3
     },
     {
+      "route": "source:echo_agent::agent::react::ReactAgent::new_with_configured_llm_client",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::new_with_configured_llm_client",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:cc8d8fe19d123d0bf300b44886191447e2d754af6b60d73df5b1a437ce3980ea"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
       "route": "source:echo_agent::agent::react::ReactAgent::reconcile_mcp_entry",
       "surface": "invoke",
       "family": "source_operation",
@@ -16220,7 +16244,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:20f0cd58504e8514a4db2d3439f27d84aa92b151937b1794aa3eb21b7da042c4"
+        "sha256:d89f9521ed2bc018debd45a048a67f042da39395d62848f48fa41c3f3a528fc7"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -16412,7 +16436,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:62911c9493deabbb2c90b26a2f09df3cca1f68cc4694f354c84a3750860dc9af"
+        "sha256:37147e7e356bfcb8b3f3c01e8264dc4260933b3f31d92ca3075c35c28093fba0"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -26510,7 +26534,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 303
+      "items": 307
     },
     {
       "route": "value:statistics",
@@ -26687,5 +26711,5 @@
       "items": 432
     }
   ],
-  "total_items": 26695
+  "total_items": 26716
 }

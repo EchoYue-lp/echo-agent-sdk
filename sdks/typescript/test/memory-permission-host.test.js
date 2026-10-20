@@ -5,12 +5,61 @@ import { mkdtemp,readFile,writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
+import { createHash, randomUUID } from 'node:crypto';
 import assert from 'node:assert/strict';
 import { EchoAgentClient } from '../dist/client.js';
 import { fromWireValue,toWireValue } from '../dist/wire.js';
 const host=process.env.ECHO_AGENT_SDK_HOST?.trim();
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==='1'&&!host)throw new Error('required memory/permission Host binary is missing');
 const fixturePath=fileURLToPath(new URL('../../shared/testing/memory_permission_fixture.py',import.meta.url));
+test('live model setter changes the next actual HTTP request on the same Session',{skip:!host,timeout:60000},async()=>{
+ const work=await mkdtemp(join(tmpdir(),'sdk-live-model-typescript-'));
+ const fixture=spawn('python3',[fixturePath,'--work',work],{stdio:['ignore','ignore','inherit']});
+ const facts={cases:[]};let sdk;
+ try{
+  const deadline=Date.now()+5000;for(;;){try{await readFile(join(work,'ready'));break;}catch{assert.ok(Date.now()<deadline,'loopback fixture did not become ready');await new Promise(resolve=>setTimeout(resolve,10));}}
+  const config=JSON.parse(await readFile(join(work,'host.json'),'utf8'));
+  const credential='private-construction-'+randomUUID();
+  config.default_agent.model.auth_token=credential;
+  await writeFile(join(work,'host.json'),JSON.stringify(config));
+  const expectedAuth=createHash('sha256').update('Bearer '+credential).digest('hex');
+  sdk=await EchoAgentClient.spawn({hostCommand:host,args:['--config',join(work,'host.json')]});
+  let requestOffset=0,authOffset=0;
+  for(const variant of ['host_default','explicit']){
+   const explicit={variant:'explicit',config_version:1,model:{provider:config.default_agent.model.provider,name:config.default_agent.model.name,base_url:config.default_agent.model.base_url,api_protocol:config.default_agent.model.api_protocol,credential:{source:'inline',token:credential}},agent:{name:'live-model-explicit',system_prompt:'Original model definition 中文🙂',max_iterations:2}};
+   const agent=await sdk.createAgent(variant==='host_default'?{variant:'host_default'}:explicit),session=await agent.createSession(work),peer=await agent.createSession(work);
+   const row={variant,request_offset:requestOffset,auth_offset:authOffset,agent:agent.wire,session:session.wire,peer:peer.wire,settlements:[],session_model_names:[],replay:[],expected_models:[config.default_agent.model.name,'native-next-model']};facts.cases.push(row);
+   const first=await session.startRun({text:'first actual model request 中文🙂'});row.settlements.push(await first.wait({timeoutMs:15000}));assert.equal(row.settlements.at(-1).terminal?.status,'completed');row.replay.push(await first.replay('0',512));await first.close();
+   assert.equal(await session.invoke('echo_agent::agent::react::ReactAgent::set_model',[row.expected_models[1]]),null);
+   row.session_model_names.push(await session.invoke('echo_core::agent::Agent::model_name'));
+   const second=await session.startRun({text:'second actual model request 保留🌊'});row.settlements.push(await second.wait({timeoutMs:15000}));assert.equal(row.settlements.at(-1).terminal?.status,'completed');row.replay.push(await second.replay('0',512));await second.close();
+   const requests=(await readFile(join(work,'model-requests.jsonl'),'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+   assert.equal(requests.length-requestOffset,2,'one variant emitted more or fewer than its two original model requests');
+   row.http_requests=requests.slice(requestOffset,requestOffset+2);row.actual_models=row.http_requests.map(request=>request.model);
+   requestOffset=requests.length;
+   const auth=(await readFile(join(work,'model-auth-fingerprints.jsonl'),'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+   assert.equal(auth.length-authOffset,2);assert.equal(auth.length,requests.length,'each request must have its corresponding header fingerprint');
+   assert.equal(authOffset,row.request_offset);row.auth_fingerprints=auth.slice(authOffset,authOffset+2);authOffset=auth.length;
+   row.definition_model=await sdk.call('echo_core::agent::Agent::model_name',agent.wire,[]);
+   row.peer_model=await peer.invoke('echo_core::agent::Agent::model_name');row.description=await agent.describe();
+   await assert.rejects(session.invoke('echo_agent::agent::react::ReactAgent::set_model',['']),error=>{row.invalid_model_error={code:error.code,operation:error.operation,retryable:error.retryable,message:error.message,details:error.details};return error.code==='invalid_value'&&error.retryable==='never';});
+   assert.deepEqual(row.actual_models,row.expected_models,'set_model returned success but the original HTTP client kept its previous model');
+   assert.deepEqual(row.session_model_names,[row.expected_models[1]],'the Session accessor retained the boxed metadata snapshot');
+   assert.equal(row.definition_model,row.expected_models[0],'a Session mutation changed the Agent definition');assert.equal(row.peer_model,row.expected_models[0],'a model switch mutated another Session');
+   assert.equal(row.auth_fingerprints.length,2);assert.ok(row.auth_fingerprints.every(entry=>entry.authorization_sha256===expectedAuth&&entry.path==='/v1/chat/completions'));
+   assert.equal(JSON.stringify(row).includes(credential),false,'private construction credentials leaked in outward observations');
+   await peer.close();await session.close();await agent.close();
+  }
+  const allRequests=(await readFile(join(work,'model-requests.jsonl'),'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+  const allAuth=(await readFile(join(work,'model-auth-fingerprints.jsonl'),'utf8')).trim().split('\n').map(line=>JSON.parse(line));
+  assert.equal(allRequests.length,4);assert.equal(allAuth.length,allRequests.length);assert.equal(requestOffset,4);assert.equal(authOffset,4);
+ }finally{
+  try{await sdk?.close();}finally{
+   await writeFile(join(work,'live-model-observed.json'),JSON.stringify({host,host_sha256:fileSha256(host),...facts},null,2));console.log('Live model evidence:',work);
+   if(fixture.exitCode===null){const exited=new Promise(resolve=>fixture.once('exit',resolve));fixture.kill();await exited;}
+  }
+ }
+});
 test('memory and permission retain live authorities, context and actual effects',{skip:!host},async()=>{
 const work=await mkdtemp(join(tmpdir(),'sdk-memory-permission-typescript-'));
 const fixture=spawn('python3',[fixturePath,'--work',work],{stdio:['ignore','ignore','inherit']});

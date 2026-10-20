@@ -200,7 +200,16 @@ AgentComponent admission is operation-scoped. Workflow run/run-stream calls
 are exclusive because the Rust trait takes `&mut self`; Send+Sync `&self`
 components such as Store, AuditLogger, Guard, SearchProvider and Embedder may
 serve multiple Sessions concurrently. Same-Session callback mutation remains
-an independent `extension_conflict` rule.
+an independent `extension_conflict` rule. Read-only Session
+calls use the original Agent/Context authority. If a required guard can be
+locked immediately, reads remain available during a callback. If it is
+unavailable while any callback for that owner is active, the Host returns
+`extension_conflict`, `retryable: never`, and the original operation instead of
+waiting on the callback's parent or inventing an empty value. This owner-wide
+observation does not identify the request's origin: an external concurrent
+read can also conflict. After the callback ends, a caller can issue a new
+ordinary read; the Host does not retry it automatically. Snapshot capture is
+a mutation; listing existing snapshots remains a read.
 
 MCP transport notifications start polling only when `notification_rx()` is
 requested, use a bounded 64-item oldest-drop queue, and stop on transport

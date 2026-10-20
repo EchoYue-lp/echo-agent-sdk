@@ -59,7 +59,16 @@ statistics and snapshots additionally take the Host-issued Session handle and
 read the same ACP Session Agent used by Prompt/Run. Runtime configuration
 controls (`plan_mode`, `permission_mode`, `max_iterations`, `conversation_id`,
 model/temperature/token limits, thinking and disabled tools) use that same
-Session authority for reads and writes. Remaining builders and process-local
+Session authority for reads and writes. Session-scoped base
+`system_prompt` reads the framework trait's base value; `current_system_prompt`
+reads its effective runtime override. Neither reads the ACP construction cache.
+Successful live values come from the same owned Agent/Context guards. If a
+required guard is unavailable and the Session owner has an active callback,
+the existing `extension_conflict` error prevents parent/callback lock waiting.
+An external concurrent read can also conflict; this is an owner-wide fact,
+not a claim about the request's origin. Without such an active callback,
+ordinary reads await the original authority. No initial-value cache or
+synthetic empty state is used. Remaining builders and process-local
 trait seams stay explicit language-local helpers; they are not fabricated as
 remote handles.
 

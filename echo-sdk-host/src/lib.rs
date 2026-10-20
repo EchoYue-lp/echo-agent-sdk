@@ -433,11 +433,12 @@ pub async fn run_stdio_with_close_owner(
     match prepared.sdk_profile {
         #[cfg(feature = "sdk-core-profile")]
         Some(profile_config) => {
-            let profile = core_profile::SdkCoreProfile::install(
+            let profile = core_profile::SdkCoreProfile::install_with_llm_config(
                 &profile_config.state_root,
                 profile_config.limits,
                 prepared.framework,
                 prepared.llm_client,
+                Some(prepared.llm_config),
             )?;
             // The standard Session factory shares the profile's default
             // definition, so standard `session/new` and
@@ -458,8 +459,11 @@ pub async fn run_stdio_with_close_owner(
             profile_config.state_root.display()
         ))),
         None => {
-            let factory =
-                factory::DefaultHostSessionFactory::new(prepared.framework, prepared.llm_client);
+            let factory = factory::DefaultHostSessionFactory::new_configured(
+                prepared.framework,
+                prepared.llm_client,
+                prepared.llm_config,
+            );
             let adapter = AcpAgentAdapter::new(factory);
             connect_owned(
                 owner,

@@ -1331,6 +1331,68 @@ async fn session_authorities(
         .ok_or_else(|| framework(&request.operation, "Session authority is unavailable"))
 }
 
+/// Keep RPC reads tied to their original authority, including callbacks.
+/// Local callbacks can await a getter while their parent owns this lock;
+/// waiting for the parent in that case would deadlock the framework itself.
+async fn session_agent_read_guard(
+    state: &CoreProfileState,
+    request: &FeatureOperationRequest,
+) -> Result<tokio::sync::OwnedRwLockReadGuard<echo_agent::agent::ReactAgent>, EchoSdkError> {
+    let authorities = session_authorities(state, request).await?;
+    let agent = Arc::clone(authorities.agent_handle.inner());
+    if let Ok(guard) = Arc::clone(&agent).try_read_owned() {
+        return Ok(guard);
+    }
+    reject_unavailable_callback_read(state, request).await?;
+    Ok(agent.read_owned().await)
+}
+
+/// Hold both original guards through the Context projection, without dropping
+/// a successful try-lock and then calling a getter which locks it again.
+async fn session_context_read_guards(
+    state: &CoreProfileState,
+    request: &FeatureOperationRequest,
+) -> Result<
+    (
+        tokio::sync::OwnedRwLockReadGuard<echo_agent::agent::ReactAgent>,
+        tokio::sync::OwnedMutexGuard<echo_agent::compression::ContextManager>,
+    ),
+    EchoSdkError,
+> {
+    let agent = session_agent_read_guard(state, request).await?;
+    let context = Arc::clone(agent.context());
+    if let Ok(guard) = Arc::clone(&context).try_lock_owned() {
+        return Ok((agent, guard));
+    }
+    reject_unavailable_callback_read(state, request).await?;
+    let context = context.lock_owned().await;
+    Ok((agent, context))
+}
+
+async fn reject_unavailable_callback_read(
+    state: &CoreProfileState,
+    request: &FeatureOperationRequest,
+) -> Result<(), EchoSdkError> {
+    #[cfg(feature = "sdk-extension-bridge")]
+    {
+        let owner = source_session_owner(state, request).await?;
+        if state.extension_shared.has_active_session_callback(&owner) {
+            // This owner-wide fact does not identify this request's origin.
+            // An external concurrent read can also encounter the same conflict.
+            return Err(wire::sdk_error(
+                ExtensionErrorCode::ExtensionConflict,
+                "Session read authority is unavailable while an owner callback is active",
+                Retryability::Never,
+                METHOD,
+            )
+            .with_operation(request.operation.clone()));
+        }
+    }
+    #[cfg(not(feature = "sdk-extension-bridge"))]
+    let _ = (state, request);
+    Ok(())
+}
+
 async fn source_session_owner(
     state: &CoreProfileState,
     request: &FeatureOperationRequest,
@@ -1401,6 +1463,7 @@ fn is_session_agent_mutation(operation: &str) -> bool {
                 | "set_working_dir"
                 | "clear_working_dir"
                 | "reset"
+                | "snapshot"
         )
     )
 }
@@ -2370,6 +2433,17 @@ async fn dispatch_non_git_source(
     handles: &HandleRegistry,
     request: &FeatureOperationRequest,
 ) -> Result<WireValue, EchoSdkError> {
+    // Newly classified snapshot capture retains its original invalid-input
+    // precedence before applying the existing callback-mutation rule.
+    if matches!(
+        request.operation.as_str(),
+        "echo_agent::agent::ReactAgent::snapshot"
+            | "echo_agent::agent::react::ReactAgent::snapshot"
+    ) && request.arguments.len() != 1
+    {
+        let _ = session_authorities(state, request).await?;
+        return Err(invalid("snapshot accepts exactly one Session handle"));
+    }
     if is_session_agent_mutation(&request.operation) {
         reject_reentrant_session_mutation(state, request).await?;
     }
@@ -6364,21 +6438,11 @@ async fn dispatch_non_git_source(
                 ));
             }
             let value = if request.operation.ends_with("tool_definitions") {
-                serde_json::to_value(
-                    authorities
-                        .agent_handle
-                        .read(|agent| agent.tool_definitions())
-                        .await,
-                )
-            } else if request.operation.ends_with("::get_messages") {
-                serde_json::to_value(
-                    authorities
-                        .agent_handle
-                        .read_async(|agent| Box::pin(agent.get_messages()))
-                        .await,
-                )
+                let agent = session_agent_read_guard(state, request).await?;
+                serde_json::to_value(agent.tool_definitions())
             } else {
-                serde_json::to_value(authorities.agent_handle.read(Agent::messages).await)
+                let (_agent, context) = session_context_read_guards(state, request).await?;
+                serde_json::to_value(context.messages().to_vec())
             }
             .map_err(|error| framework(&request.operation, error.to_string()))?;
             snapshot_value(request, value)
@@ -6623,32 +6687,26 @@ fn dispatch_agent_context_source<'a>(
                     1 => Some(session_agent(state, request).await?),
                     _ => return Err(invalid("Agent accessor accepts zero or one Session handle")),
                 };
+                let live_guard = if live.is_some() {
+                    Some(session_agent_read_guard(state, request).await?)
+                } else {
+                    None
+                };
+                let live = live_guard.as_deref();
                 let value = match request.operation.rsplit_once("::").map(|(_, name)| name) {
                     Some("name") => live
                         .as_ref()
                         .map(|agent| serde_json::json!(agent.name()))
                         .unwrap_or_else(|| serde_json::json!(snapshot.name)),
                     Some("model_name") => live
-                        .as_ref()
                         .map(|agent| serde_json::json!(agent.model_name()))
                         .unwrap_or_else(|| serde_json::json!(snapshot.model_name)),
                     Some("system_prompt") => live
-                        .as_ref()
                         .map(|agent| serde_json::json!(agent.system_prompt()))
                         .unwrap_or_else(|| serde_json::json!(snapshot.system_prompt)),
-                    Some("current_system_prompt") => {
-                        if live.is_some() {
-                            let authorities = session_authorities(state, request).await?;
-                            serde_json::json!(
-                                authorities
-                                    .agent_handle
-                                    .read(|agent| agent.current_system_prompt())
-                                    .await
-                            )
-                        } else {
-                            serde_json::json!(snapshot.system_prompt)
-                        }
-                    }
+                    Some("current_system_prompt") => live
+                        .map(|agent| serde_json::json!(agent.current_system_prompt()))
+                        .unwrap_or_else(|| serde_json::json!(snapshot.system_prompt)),
                     Some("tool_names") | Some("list_tools") => live
                         .as_ref()
                         .map(|agent| serde_json::json!(agent.tool_names()))
@@ -6670,14 +6728,12 @@ fn dispatch_agent_context_source<'a>(
                 snapshot_value(request, value)
             }
             "echo_agent::agent::react::ReactAgent::skill_names" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid("skill_names accepts exactly one Session handle"));
                 }
-                let names = authorities
-                    .agent_handle
-                    .read(|agent| agent.skill_names())
-                    .await;
+                let agent = session_agent_read_guard(state, request).await?;
+                let names = agent.skill_names();
                 snapshot_value(
                     request,
                     serde_json::to_value(names)
@@ -6695,10 +6751,11 @@ fn dispatch_agent_context_source<'a>(
                     handles.agent(handle)?;
                     snapshot_value(request, serde_json::Value::Null)
                 } else {
-                    let agent = session_agent(state, request).await?;
                     if request.arguments.len() != 1 {
+                        let _ = session_authorities(state, request).await?;
                         return Err(invalid("current_run_id accepts zero or one Session handle"));
                     }
+                    let agent = session_agent_read_guard(state, request).await?;
                     snapshot_value(request, serde_json::json!(agent.current_run_id()))
                 }
             }
@@ -6709,21 +6766,23 @@ fn dispatch_agent_context_source<'a>(
                     handles.agent(handle)?;
                     snapshot_value(request, serde_json::Value::Null)
                 } else {
-                    let agent = session_agent(state, request).await?;
                     if request.arguments.len() != 1 {
+                        let _ = session_authorities(state, request).await?;
                         return Err(invalid("current_run_id accepts zero or one Session handle"));
                     }
+                    let agent = session_agent_read_guard(state, request).await?;
                     snapshot_value(request, serde_json::json!(agent.current_run_id()))
                 }
             }
             "echo_core::agent::Agent::disabled_tool_names"
             | "echo_agent::agent::Agent::disabled_tool_names" => {
-                let agent = session_agent(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "live Agent accessor accepts exactly one Session handle",
                     ));
                 }
+                let agent = session_agent_read_guard(state, request).await?;
                 snapshot_value(
                     request,
                     serde_json::to_value(agent.disabled_tool_names())
@@ -6731,12 +6790,13 @@ fn dispatch_agent_context_source<'a>(
                 )
             }
             "echo_agent::agent::react::ReactAgent::disabled_tool_names" => {
-                let agent = session_agent(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "live Agent accessor accepts exactly one Session handle",
                     ));
                 }
+                let agent = session_agent_read_guard(state, request).await?;
                 snapshot_value(
                     request,
                     serde_json::to_value(agent.disabled_tool_names())
@@ -6745,12 +6805,13 @@ fn dispatch_agent_context_source<'a>(
             }
             "echo_core::agent::Agent::token_usage_summary"
             | "echo_agent::agent::Agent::token_usage_summary" => {
-                let agent = session_agent(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "live Agent accessor accepts exactly one Session handle",
                     ));
                 }
+                let agent = session_agent_read_guard(state, request).await?;
                 let usage = agent.token_usage_summary();
                 snapshot_value(
                     request,
@@ -6766,12 +6827,13 @@ fn dispatch_agent_context_source<'a>(
                 )
             }
             "echo_agent::agent::react::ReactAgent::token_usage_summary" => {
-                let agent = session_agent(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "live Agent accessor accepts exactly one Session handle",
                     ));
                 }
+                let agent = session_agent_read_guard(state, request).await?;
                 let usage = agent.token_usage_summary();
                 snapshot_value(
                     request,
@@ -6788,14 +6850,12 @@ fn dispatch_agent_context_source<'a>(
             }
             "echo_agent::agent::ReactAgent::max_iterations"
             | "echo_agent::agent::react::ReactAgent::max_iterations" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid("max_iterations accepts exactly one Session handle"));
                 }
-                let max_iterations = authorities
-                    .agent_handle
-                    .read(|agent| agent.max_iterations())
-                    .await;
+                let agent = session_agent_read_guard(state, request).await?;
+                let max_iterations = agent.max_iterations();
                 let max_iterations = u64::try_from(max_iterations)
                     .map_err(|_| framework(&request.operation, "max_iterations exceeds WireU64"))?;
                 snapshot_value(
@@ -6805,32 +6865,23 @@ fn dispatch_agent_context_source<'a>(
             }
             "echo_agent::agent::ReactAgent::is_plan_mode"
             | "echo_agent::agent::react::ReactAgent::is_plan_mode" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid("is_plan_mode accepts exactly one Session handle"));
                 }
-                snapshot_value(
-                    request,
-                    serde_json::json!(
-                        authorities
-                            .agent_handle
-                            .read(|agent| agent.is_plan_mode())
-                            .await
-                    ),
-                )
+                let agent = session_agent_read_guard(state, request).await?;
+                snapshot_value(request, serde_json::json!(agent.is_plan_mode()))
             }
             "echo_agent::agent::ReactAgent::get_permission_mode"
             | "echo_agent::agent::react::ReactAgent::get_permission_mode" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "get_permission_mode accepts exactly one Session handle",
                     ));
                 }
-                let mode = authorities
-                    .agent_handle
-                    .read(|agent| agent.get_permission_mode())
-                    .await;
+                let agent = session_agent_read_guard(state, request).await?;
+                let mode = agent.get_permission_mode();
                 snapshot_value(
                     request,
                     serde_json::to_value(mode)
@@ -6839,14 +6890,12 @@ fn dispatch_agent_context_source<'a>(
             }
             "echo_agent::agent::ReactAgent::context_stats"
             | "echo_agent::agent::react::ReactAgent::context_stats" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid("context_stats accepts exactly one Session handle"));
                 }
-                let stats = authorities
-                    .agent_handle
-                    .read_async(|agent| Box::pin(agent.context_stats()))
-                    .await;
+                let (_agent, context) = session_context_read_guards(state, request).await?;
+                let stats = (context.messages().len(), context.token_estimate());
                 snapshot_value(
                     request,
                     serde_json::to_value(stats)
@@ -6871,14 +6920,12 @@ fn dispatch_agent_context_source<'a>(
             }
             "echo_agent::agent::ReactAgent::snapshots"
             | "echo_agent::agent::react::ReactAgent::snapshots" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid("snapshots accepts exactly one Session handle"));
                 }
-                let snapshots = authorities
-                    .agent_handle
-                    .read(|agent| agent.snapshots())
-                    .await;
+                let agent = session_agent_read_guard(state, request).await?;
+                let snapshots = agent.snapshots();
                 snapshot_value(
                     request,
                     serde_json::to_value(snapshots)
@@ -6887,16 +6934,14 @@ fn dispatch_agent_context_source<'a>(
             }
             "echo_agent::agent::ReactAgent::latest_snapshot"
             | "echo_agent::agent::react::ReactAgent::latest_snapshot" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "latest_snapshot accepts exactly one Session handle",
                     ));
                 }
-                let snapshot = authorities
-                    .agent_handle
-                    .read(|agent| agent.latest_snapshot())
-                    .await;
+                let agent = session_agent_read_guard(state, request).await?;
+                let snapshot = agent.latest_snapshot();
                 snapshot_value(
                     request,
                     serde_json::to_value(snapshot)
@@ -6905,56 +6950,41 @@ fn dispatch_agent_context_source<'a>(
             }
             "echo_agent::agent::ReactAgent::conversation_id"
             | "echo_agent::agent::react::ReactAgent::conversation_id" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "conversation_id accepts exactly one Session handle",
                     ));
                 }
+                let agent = session_agent_read_guard(state, request).await?;
                 snapshot_value(
                     request,
-                    serde_json::to_value(
-                        authorities
-                            .agent_handle
-                            .read(|agent| agent.conversation_id().map(str::to_string))
-                            .await,
-                    )
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
+                    serde_json::to_value(agent.conversation_id().map(str::to_string))
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
                 )
             }
             "echo_agent::agent::ReactAgent::has_memory_layer_manager"
             | "echo_agent::agent::react::ReactAgent::has_memory_layer_manager" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid(
                         "has_memory_layer_manager accepts exactly one Session handle",
                     ));
                 }
-                snapshot_value(
-                    request,
-                    serde_json::json!(
-                        authorities
-                            .agent_handle
-                            .read(|agent| agent.has_memory_layer_manager())
-                            .await
-                    ),
-                )
+                let agent = session_agent_read_guard(state, request).await?;
+                snapshot_value(request, serde_json::json!(agent.has_memory_layer_manager()))
             }
             "echo_agent::agent::ReactAgent::thinking"
             | "echo_agent::agent::react::ReactAgent::thinking" => {
-                let authorities = session_authorities(state, request).await?;
                 if request.arguments.len() != 1 {
+                    let _ = session_authorities(state, request).await?;
                     return Err(invalid("thinking accepts exactly one Session handle"));
                 }
+                let agent = session_agent_read_guard(state, request).await?;
                 snapshot_value(
                     request,
-                    serde_json::to_value(
-                        authorities
-                            .agent_handle
-                            .read(|agent| agent.thinking().cloned())
-                            .await,
-                    )
-                    .map_err(|error| framework(&request.operation, error.to_string()))?,
+                    serde_json::to_value(agent.thinking().cloned())
+                        .map_err(|error| framework(&request.operation, error.to_string()))?,
                 )
             }
             "echo_agent::agent::ReactAgent::set_plan_mode"
@@ -7035,7 +7065,8 @@ fn dispatch_agent_context_source<'a>(
                 authorities
                     .agent_handle
                     .write(|agent| agent.set_model(&model))
-                    .await;
+                    .await
+                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
                 snapshot_value(request, serde_json::Value::Null)
             }
             "echo_agent::agent::ReactAgent::set_temperature"

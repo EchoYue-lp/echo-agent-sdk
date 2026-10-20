@@ -52,6 +52,101 @@ test("registered LLM requests usage terminal error and cancellation", { skip: !h
   finish(work, "llm", rows);
 });
 
+test("live scalar configuration changes original LLM thinking and visible tools", { skip: !host, timeout: 30000 }, async () => {
+  const { work, spec, sdk } = await setup("scalar"), facts = { requests: [], settlements: [], replay: [] };
+  try {
+    const registration = await sdk.registerLlmClient("live-scalar-model", { kind: "llm_client", descriptor_version: 1, model_name: "fixture-model", supports_streaming: false }, async call => {
+      facts.requests.push(call.invocation.input);
+      return { operation: "llm_chat", value: structuredClone(spec.response) };
+    });
+    const agent = await sdk.createAgent(), session = await agent.createSession();
+    const names = "echo_core::agent::Agent::tool_names";
+    facts.registered_before = await session.invoke(names); assert.ok(facts.registered_before.includes("read_file"));
+    await session.invoke("echo_agent::agent::react::ReactAgent::set_thinking", ["4000"]);
+    facts.configured_thinking = await session.invoke("echo_agent::agent::react::ReactAgent::thinking");
+    assert.ok(JSON.stringify(facts.configured_thinking).includes("4000"));
+    await session.invoke("echo_agent::agent::react::ReactAgent::set_disabled_tools", [["read_file"]]);
+    facts.registered_while_hidden = await session.invoke(names); assert.ok(facts.registered_while_hidden.includes("read_file"));
+    const first = await session.startRun({ text: "hidden tool and explicit thinking 中文🙂" });
+    facts.settlements.push(await first.wait({ timeoutMs: 15000 })); facts.replay.push(await first.replay("0", 512)); await first.close();
+    assert.equal(facts.settlements[0].terminal?.status, "completed"); assert.equal(facts.requests.length, 1);
+    assert.deepEqual(fromWireValue(facts.requests[0].thinking), facts.configured_thinking);
+    assert.ok(!facts.requests[0].tools.some(tool => tool.name === "read_file"));
+    facts.model_before_failed_switch = await session.invoke("echo_core::agent::Agent::model_name");
+    await assert.rejects(session.invoke("echo_agent::agent::react::ReactAgent::set_model", ["cannot-rebuild-opaque-client"]), error => {
+      facts.opaque_model_error = { ...errorFact(error), retryable: error.retryable };
+      return error.code === "framework_error" && error.retryable === "never";
+    });
+    assert.equal(await session.invoke("echo_core::agent::Agent::model_name"), facts.model_before_failed_switch);
+    await session.invoke("echo_agent::agent::react::ReactAgent::set_thinking", [null]);
+    await session.invoke("echo_agent::agent::react::ReactAgent::set_disabled_tools", [null]);
+    facts.registered_after_restore = await session.invoke(names); assert.deepEqual(facts.registered_after_restore, facts.registered_before);
+    const second = await session.startRun({ text: "restored model tool visibility 保留🌊" });
+    facts.settlements.push(await second.wait({ timeoutMs: 15000 })); facts.replay.push(await second.replay("0", 512)); await second.close();
+    assert.equal(facts.settlements[1].terminal?.status, "completed"); assert.equal(facts.requests.length, 2);
+    assert.equal(facts.requests[1].thinking ?? null, null);
+    assert.ok(facts.requests[1].tools.some(tool => tool.name === "read_file"));
+    for (const replay of facts.replay) for (const event of replay.events) {
+      const payload = event.payload ?? event.envelope?.payload;
+      assert.ok(!["tool_start", "tool_end", "tool_call", "tool_result"].includes(payload?.event_type), "scalar configuration executed an unexpected tool");
+    }
+    await session.close(); await agent.close(); await registration.close();
+  } finally { await sdk.close(); writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2)); console.log(`Live scalar evidence: ${work}`); }
+});
+
+test("live compressor retains actual context and releases its original Host tokenizer", { skip: !host, timeout: 60000 }, async () => {
+  const { work, spec, sdk } = await setup("compressor"), c = spec.compression;
+  const facts = { model_requests: [], compressions: [], compression_results: [], released_tokenizers: [], settlements: [], before_messages: [], after_messages: [], decoy_calls: 0 };
+  const tokenizers = [];
+  try {
+    const model = await sdk.registerLlmClient("compression-model", { kind: "llm_client", descriptor_version: 1, model_name: "fixture-model", supports_streaming: false }, async call => {
+      const request = call.invocation.input; facts.model_requests.push(request);
+      const response = structuredClone(spec.response);
+      response.message.content = { kind: "string", value: "answer: " + request.messages.at(-1).content.value };
+      return { operation: "llm_chat", value: response };
+    });
+    const agent = await sdk.createAgent(), session = await agent.createSession();
+    // Bind after creation: latest registered defaults cannot prove that a
+    // source setter changed the live Session's ContextManager.
+    const original = await sdk.registerContextCompressor("original-compressor", { kind: "context_compressor", descriptor_version: 1, name: "original-compressor" }, async call => {
+      const input = call.invocation.input;
+      const row = { input, extension: call.extension, invocation_id: call.invocation_id, deadline: call.deadline };
+      facts.compressions.push(row); tokenizers.push(input.tokenizer);
+      row.token_count = String(await sdk.countTokens(input.tokenizer, "hello"));
+      row.wrong_owner = await observedError(sdk.countTokens({ ...input.tokenizer, owner_session_id: "foreign-owner" }, "hello"));
+      const previous = facts.before_messages.at(-1);
+      row.protected_messages = previous.filter(message => !input.messages.some(candidate => candidate.role === message.role && candidate.content.value === message.content));
+      let protectedTokens = 0n;
+      for (const message of row.protected_messages) protectedTokens += await sdk.countTokens(input.tokenizer, message.content);
+      row.protected_tokens = String(protectedTokens);
+      const evicted = input.messages.filter(message => [c.evict, "answer: " + c.evict].includes(message.content.value));
+      const messages = input.messages.filter(message => !evicted.includes(message));
+      row.output = { messages, evicted, checkpoint: null };
+      return { operation: "compressor_compress", value: row.output };
+    });
+    const decoy = await sdk.registerContextCompressor("decoy-compressor", { kind: "context_compressor", descriptor_version: 1, name: "decoy-compressor" }, async () => { facts.decoy_calls++; throw Error("wrong compressor selected"); });
+    facts.original_extension = original.wire;
+    await session.invoke("echo_agent::agent::react::ReactAgent::set_token_limit", [wireU64(c.token_limit)]);
+    await session.invoke("echo_agent::agent::react::ReactAgent::set_compressor", [original.wire]); facts.binding = original.wire;
+    facts.before_messages.push(await session.invoke("echo_agent::agent::react::ReactAgent::get_messages"));
+    facts.compression_results.push(await session.invoke("echo_agent::agent::react::ReactAgent::force_compress_context"));
+    facts.after_messages.push(await session.invoke("echo_agent::agent::react::ReactAgent::get_messages"));
+    facts.released_tokenizers.push(await observedError(sdk.countTokens(tokenizers[0], "hello")));
+    for (const text of [c.evict, c.retain]) { const run = await session.startRun({ text }); facts.settlements.push(await run.wait({ timeoutMs: 15000 })); await run.close(); }
+    facts.before_messages.push(await session.invoke("echo_agent::agent::react::ReactAgent::get_messages"));
+    facts.compression_results.push(await session.invoke("echo_agent::agent::react::ReactAgent::force_compress_with_focus_and_hooks", [c.focus, wireU64("64"), "manual"]));
+    facts.after_messages.push(await session.invoke("echo_agent::agent::react::ReactAgent::get_messages"));
+    facts.released_tokenizers.push(await observedError(sdk.countTokens(tokenizers[1], "hello")));
+    facts.before_messages.push(await session.invoke("echo_agent::agent::react::ReactAgent::get_messages"));
+    facts.compression_results.push(await session.invoke("echo_agent::agent::react::ReactAgent::force_compress_context"));
+    facts.after_messages.push(await session.invoke("echo_agent::agent::react::ReactAgent::get_messages"));
+    facts.released_tokenizers.push(await observedError(sdk.countTokens(tokenizers[2], "hello")));
+    const next = await session.startRun({ text: c.next }); facts.settlements.push(await next.wait({ timeoutMs: 15000 })); await next.close();
+    await session.close(); await agent.close(); await original.close(); await decoy.close(); await model.close();
+  } finally { await sdk.close(); writeFileSync(join(work, "observed.json"), JSON.stringify(facts, null, 2)); }
+  finish(work, "compressor", facts);
+});
+
 test("Workflow extension streams preserve node error owner cancel and close", { skip: !host, timeout: 60000 }, async () => {
   const { work, spec, sdk } = await setup("workflow"), facts = { calls: [], producer_completed: 0, producer_errors: [], callbacks_completed: 0, control_terminals: {cancel:0,close:0}, control_items: {} }, producers = [], started = {}, releases = {};
   try {

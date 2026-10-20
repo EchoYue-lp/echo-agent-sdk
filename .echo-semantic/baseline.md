@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "0c83e07dd4486e25f1aba51f495c7d322619e7f07e6cab81db13fd3b252cabba"
+    "content_digest": "ef417474a460c287533f3b5024f275df2edb65c79d2cca62b63ac146b8bf794d"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -837,3 +837,7 @@ capability inventory与八视角审查保持open，动态入口见Discovery；�
 ## 2026-10-19 新增Finding发现源的必要引用保存
 
 e31/88a/4f三actualdiscovery revision已由Root显式annotated refs正常推送及空冷仓仅remote main+三exact tags取回核字节。正式provenance追加三行原commit/tag/tree与有限资格；不修改observed_at/发现时间或把其当当前SDK main/Host/nativeHook/strict行为通过。当前所有open、Behavior/Audit状态及闭合标志保留，最终新main全必要ref冷strict独立。
+
+## 2026-10-20 精main356源码与finite consumer检查点
+
+当前候选消费已接受Fmain356、真实lock11Git源only、原完整28producer/117及fullcontract实际0；新Host0bbc的具名模型/scalar/三语compressor/base/busy/core/live03 finite after与各自原source/typed/raw/独审对应，原before/fixturecompile01及Clientselfwait02失败保留。只声明这些具体范围，不以绿色计数或原邻例源码carry代替执行。三lead时态与deferred2534真实边界已同步；新named Rust身份未接受、opaqueString不建第二cursor。原14Rust/唯一完整语言3qs/依赖/currentsemantic/preciseSDKmain等仍待，五open Finding按其各自三链后再结算；所有Behavior/Audit状态和闭合标志不批量提升，PR5 Draft/Plan ready不变。

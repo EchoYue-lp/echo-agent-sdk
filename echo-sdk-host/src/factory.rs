@@ -6,7 +6,7 @@ use echo_agent::agent::AgentHandle;
 use echo_agent::agent::{Agent, AgentConfig, ReactAgent};
 use echo_agent::config::FrameworkConfig;
 use echo_agent::error::{ReactError, Result};
-use echo_agent::llm::LlmClient;
+use echo_agent::llm::{LlmClient, LlmConfig};
 use echo_agent::state::RuntimeStateStore;
 use std::sync::Arc;
 
@@ -26,6 +26,10 @@ pub(crate) struct PreparedAgentDefinition {
     id: Arc<str>,
     framework: Arc<FrameworkConfig>,
     llm_client: Arc<dyn LlmClient>,
+    /// Immutable, original construction config for this exact prepared client.
+    /// Session model changes never mutate this template. Custom-client injection
+    /// remains opaque and clears the live framework's rebuild config.
+    llm_config: Option<LlmConfig>,
     state_store: Option<Arc<dyn RuntimeStateStore>>,
     host_default: bool,
     /// Bridge context for host-language extension proxies. When present,
@@ -47,11 +51,19 @@ impl PreparedAgentDefinition {
             id: Arc::from(uuid::Uuid::new_v4().to_string().as_str()),
             framework: Arc::new(framework),
             llm_client,
+            llm_config: None,
             state_store,
             host_default,
             #[cfg(feature = "sdk-extension-bridge")]
             extensions: None,
         }
+    }
+
+    /// Preserve the original validated config, not the scrubbed public config.
+    /// The definition intentionally implements neither Debug nor Serialize.
+    pub(crate) fn with_llm_config(mut self, config: LlmConfig) -> Self {
+        self.llm_config = Some(config);
+        self
     }
 
     /// Attach the connection's extension bridge so Session Agents built
@@ -103,7 +115,16 @@ impl PreparedAgentDefinition {
             .session_id(&session_id)
             .conversation_id(&session_id)
             .working_dir(Some(context.cwd.clone()));
-        let mut agent = ReactAgent::new(agent_config).with_llm_client(self.llm_client.clone());
+        // Seed only configured construction, before registered extensions can
+        // intentionally replace the client and clear its rebuild authority.
+        let mut agent = match self.llm_config.as_ref() {
+            Some(config) => ReactAgent::new_with_configured_llm_client(
+                agent_config,
+                self.llm_client.clone(),
+                config.clone(),
+            )?,
+            None => ReactAgent::new(agent_config).with_llm_client(self.llm_client.clone()),
+        };
         #[cfg(feature = "framework-human-loop")]
         agent.build_permission_service();
         if let Some(store) = &self.state_store {
@@ -444,11 +465,17 @@ pub(crate) struct DefaultHostSessionFactory {
 }
 
 impl DefaultHostSessionFactory {
-    pub fn new(framework: FrameworkConfig, llm_client: Arc<dyn LlmClient>) -> Self {
+    /// Host-local validated config and its exact original shared client.
+    pub(crate) fn new_configured(
+        framework: FrameworkConfig,
+        llm_client: Arc<dyn LlmClient>,
+        llm_config: LlmConfig,
+    ) -> Self {
         Self {
-            definition: std::sync::Arc::new(PreparedAgentDefinition::new(
-                framework, llm_client, None, true,
-            )),
+            definition: Arc::new(
+                PreparedAgentDefinition::new(framework, llm_client, None, true)
+                    .with_llm_config(llm_config),
+            ),
         }
     }
 
@@ -501,15 +528,19 @@ mod tests {
                 ..AgentSettings::default()
             },
         };
-        let client = LlmConfig::for_provider(
+        let llm_config = LlmConfig::for_provider(
             "local",
             "http://127.0.0.1:9/v1/chat/completions",
             "",
             "fixture-model",
             LlmApiProtocol::ChatCompletions,
-        )?
-        .build_client()?;
-        Ok(DefaultHostSessionFactory::new(framework, Arc::from(client)))
+        )?;
+        let client = llm_config.build_client()?;
+        Ok(DefaultHostSessionFactory::new_configured(
+            framework,
+            Arc::from(client),
+            llm_config,
+        ))
     }
 
     fn context(id: &str, cwd: PathBuf, mcp_servers: Vec<McpServer>) -> AcpSessionContext {
@@ -554,6 +585,14 @@ mod tests {
             .llm_client()
             .ok_or_else(|| ReactError::Other("second Session has no LLM client".to_string()))?;
         assert!(Arc::ptr_eq(first_llm, second_llm));
+        assert_eq!(
+            first.llm_config().map(|config| config.model.as_str()),
+            Some("fixture-model")
+        );
+        assert_eq!(
+            second.llm_config().map(|config| config.model.as_str()),
+            Some("fixture-model")
+        );
         Agent::close(&first).await?;
         Agent::close(&second).await?;
         Ok(())

@@ -910,6 +910,7 @@ pub(crate) fn framework_from_wire(
     (
         echo_agent::config::FrameworkConfig,
         std::sync::Arc<dyn echo_agent::llm::LlmClient>,
+        echo_agent::llm::LlmConfig,
     ),
     String,
 > {
@@ -956,9 +957,9 @@ pub(crate) fn framework_from_wire(
     let model = ModelConfig {
         provider: config.model.provider.clone(),
         name: config.model.name.clone(),
-        // The credential is consumed to build the client above; retaining it
-        // in the long-lived FrameworkConfig would leak inline secrets through
-        // debug/state inspection and is unnecessary for future Sessions.
+        // Public descriptive config remains scrubbed. Only the private
+        // original LlmConfig below retains this client's construction payload;
+        // do not reconstruct it from public snapshots or reread the environment.
         auth_token: None,
         base_url: Some(base_url.clone()),
         api_protocol: Some(api_protocol),
@@ -974,18 +975,20 @@ pub(crate) fn framework_from_wire(
         enable_tools: true,
         ..AgentSettings::default()
     };
+    let llm_config = LlmConfig::for_provider(
+        &config.model.provider,
+        &base_url,
+        credential_token.as_deref().unwrap_or(""),
+        &config.model.name,
+        api_protocol,
+    )
+    .map_err(|error| format!("failed to build model client: {error}"))?;
     let llm_client: std::sync::Arc<dyn echo_agent::llm::LlmClient> = std::sync::Arc::from(
-        LlmConfig::for_provider(
-            &config.model.provider,
-            &base_url,
-            credential_token.as_deref().unwrap_or(""),
-            &config.model.name,
-            api_protocol,
-        )
-        .and_then(|client_config| client_config.build_client())
-        .map_err(|error| format!("failed to build model client: {error}"))?,
+        llm_config
+            .build_client()
+            .map_err(|error| format!("failed to build model client: {error}"))?,
     );
-    Ok((FrameworkConfig { model, agent }, llm_client))
+    Ok((FrameworkConfig { model, agent }, llm_client, llm_config))
 }
 
 #[cfg(test)]

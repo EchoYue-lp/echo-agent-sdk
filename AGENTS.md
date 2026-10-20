@@ -17,6 +17,22 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
+2026-10-20后继：Host源码已切正式接受的framework精main
+`3560812caede84998a1f6f26d7bf3fa81ea0486c`，PR193精squash tree
+`bbacaad650b935c516194a9373580fe7747c8256`与已审8138一致，精CI39355472505七项SUCCESS。
+当前SDK真实lock为58599a9f，656包版本/checksum/边不变，仅8framework+3vendor Git来源切356；
+唯一完整28profile/117产物update与原fullcontract入口均actual0，Protocol5/42/91全过。
+accepted5621/454routes无增退，仅set_model原签名20f→d89承接Result<()>，新10canonical身份无一自动接受。
+当前Host0bbc72ba实际build0/零warning/1216tracked零漂移，保存opt1/assertions/overflow/unwind；
+模型双构造HTTP、三语compressor、base/current及busy两个原probe、core和live原例各有限after已执行通过。
+live曾有fixture E0382编译失败及Client有序handler自等待运行失败，原件保、仅夹具修后03通过，不冒生产retained red。
+原14Rust整套、同Host唯一完整语言入口/3quickstarts、依赖和最终semantic/main仍待。
+下列6563/8481/098212结果仅其原sourcecut，不能继承为356后继通过。
+accepted identity/kind范围保持；原set_model与已接受聚合类型的实际签名后继由原生成器列精delta，
+新Rust构造入口/内部sidecar的named身份不自动成为三语言API。具名Finding仍按各自三链结算，不由finite green自动关闭；PR5 Draft及SDKmain验收保持。
+
+### 前一6563验证切点（历史）
+
 仓库迁移从 `echo-agent@c5f7688` 补齐 SDK-owned 源码与过滤历史，原 extraction pin 为
 `27c7701e1eb116db1076da7f84bb68898544a44c`；该历史归属保留在 `MIGRATION-SOURCE.md`。
 当前 Host 精确依赖已发布 framework `6563d26570cc4a8d93c86b7e37443b0559476807`，

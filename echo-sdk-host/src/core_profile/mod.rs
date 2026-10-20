@@ -102,6 +102,21 @@ impl SdkCoreProfile {
         Ok(Self { state })
     }
 
+    /// Private configured startup shares the existing persistence/admission path.
+    /// The public custom-client installer remains opaque and unchanged.
+    pub(crate) fn install_with_llm_config(
+        state_root: &std::path::Path,
+        limits: crate::config::SdkProfileLimits,
+        framework: echo_agent::config::FrameworkConfig,
+        llm_client: std::sync::Arc<dyn echo_agent::llm::LlmClient>,
+        llm_config: Option<echo_agent::llm::LlmConfig>,
+    ) -> Result<Self, HostError> {
+        let state = CoreProfileState::install_with_llm_config(
+            state_root, limits, framework, llm_client, llm_config,
+        )?;
+        Ok(Self { state })
+    }
+
     /// Handle generation of this Host incarnation.
     pub fn generation(&self) -> u64 {
         self.state.handles.generation()

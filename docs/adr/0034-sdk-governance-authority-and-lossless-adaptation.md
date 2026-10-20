@@ -510,3 +510,43 @@ the matching framework revision and complete catalog/digest consumers as one
 reviewed snapshot. Never restore only an individual retired field/seed key,
 reintroduce obsolete runtime owners, or claim a pre-migration blocked candidate
 is a verified release. No rollback, pin downgrade or merge is executed here.
+
+## 2026-10-20 configured construction and fallible authority reads
+
+The accepted follow-up keeps the same framework/Host boundary. Framework main
+3560812 supplies one construction-only API for an original validated LlmConfig
+and its original prepared client Arc. SDK factories privately retain that pair;
+they do not infer credentials from scrubbed FrameworkConfig, reread the environment
+per Session, rebuild the client again, or seed configuration after an extension
+has deliberately replaced the client. The public custom-Arc installer remains
+opaque. Runtime model/profile/context state remains in the live ReactAgent.
+
+A Session source getter reads the original owned Agent/Context rather than ACP
+construction metadata or a try-lock default. A guard available immediately is
+used for the exact original projection, including during callbacks. If a required
+guard is unavailable and the owner has an active callback, the existing
+ExtensionConflict/Never error prevents local parent/callback deadlock. That is an
+owner-wide fact, not proof of a request's origin; external concurrent reads can
+also conflict. Otherwise ordinary reads await the original lock. Context messages
+and statistics are projected while holding the same Context guard, not by dropping
+a successful try-lock and calling an async getter which locks again. Snapshot
+capture is a mutation; existing snapshot listings remain reads. Base system prompt,
+effective runtime override and no-Session definition facts keep separate meanings.
+
+Rejected alternatives are stale initial-value caches, invented empty states,
+always-await callback cycles, and new SDK model/snapshot/projection authorities.
+Existing Tokio locks and the existing active-session-callback/error channel suffice.
+The reference lock semantics are the official [Tokio RwLock](https://docs.rs/tokio/latest/tokio/sync/struct.RwLock.html)
+and [Tokio Mutex](https://docs.rs/tokio/latest/tokio/sync/struct.Mutex.html).
+The original helper/callback source candidates received independent C0/I0/M0
+review; adoption does not itself prove current Host runtime behavior.
+
+Original credentials are an intentional private in-memory construction payload:
+PreparedHostConfig and PreparedAgentDefinition gain no Debug/Serialize projection,
+FrameworkConfig remains scrubbed, and no new wire field or model cache is added.
+Accepted setter/aggregate signatures update through the sole generator and are
+reviewed as exact contract deltas; new Rust constructor or internal cursor named
+fields do not automatically enter SDK identity scope. Managed messages_json stays
+an opaque string, including framework schema-3 provenance, with no SDK parser or
+second cursor. Current consumers, privacy/error controls, full gates, exact SDK
+main CI and only-remote-main recovery remain required before closure.

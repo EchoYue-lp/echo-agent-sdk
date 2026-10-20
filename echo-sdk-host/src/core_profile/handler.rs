@@ -164,20 +164,24 @@ fn build_definition(
     let definition = match config {
         AgentConfigWire::HostDefault => state.default_definition.clone(),
         AgentConfigWire::Explicit(explicit) => {
-            let (framework, client) = wire::framework_from_wire(&explicit).map_err(|error| {
-                wire::sdk_error(
-                    ExtensionErrorCode::InvalidConfig,
-                    error,
-                    Retryability::Never,
-                    "_echo_agent/agent/create",
+            let (framework, client, llm_config) =
+                wire::framework_from_wire(&explicit).map_err(|error| {
+                    wire::sdk_error(
+                        ExtensionErrorCode::InvalidConfig,
+                        error,
+                        Retryability::Never,
+                        "_echo_agent/agent/create",
+                    )
+                })?;
+            Arc::new(
+                PreparedAgentDefinition::new(
+                    framework,
+                    client,
+                    Some(state.state_store.clone()),
+                    false,
                 )
-            })?;
-            Arc::new(PreparedAgentDefinition::new(
-                framework,
-                client,
-                Some(state.state_store.clone()),
-                false,
-            ))
+                .with_llm_config(llm_config),
+            )
         }
     };
     Ok((definition, fingerprint))

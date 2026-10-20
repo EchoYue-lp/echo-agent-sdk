@@ -1,5 +1,15 @@
 # SDK 全能力语义治理进度
 
+## 2026-10-20 精main356后的有限消费者补证（当前）
+
+- Root已接受F精main3560812/treebbacaad/source4ad，PR193 squash与已审8138树同，精CI39355472505七项SUCCESS及remote-only冷strict已验；不冒SDKmain。
+- 真实lock58599a9f：656包同版本/checksum/边，仅8framework+3vendor Git源6563→356。原HTTPScurl28自然101保留，同argv单进程同repo SSH恢复0；canonical HTTPS来源不变，无path patch/手缓存/改global配置。
+- 唯一原28profile/117产物update及原fullcontract实际0，Protocol5/42/91、catalog/exact356/noFdependency检查0。accepted5621/454routes不增退，仅set_model签名20f→d89；原cursor/Restored聚合digest实际未变。新增10canonical=deferred6+HostRust4，不自动接受新Ctor/context_only named API；语言shared导出后仅该signature/source合同digest后继，保schema。
+- 新Host0bbc72ba build0/零warning/1216tracked0漂移，保存opt1/assertions/overflow/unwind及EH/unwind；原SDK构造/Result/Agent+Context读策略源C0不等运行。当前模型default/explicit同Session实际HTTP A/B、独立scalar opaque拒绝/工具thinking、三语compressor、base/current与ordinary busy两个原probe及core/live原case有限after通过，彼此sourcecut/原件独立。
+- live01为fixture E0382未运行；单clone修后live02为Client有序handler内block_task自等待，allowed强assert真实失败；仅live fixture移同连接task，仍等ALL子RPC断言后答原callback，Error/panic显式交原responder。原03caseactual1pass，Policy/Promoter两层代表、父完成/2Run与保留事实ord0/1/2各一次强assert执行，5batch6item不再旧6batch9item；不是全callback/Host自然退出/SDKmain资格。
+- 目前收口focused unit/lint/必要性currentlead与原Evidence，准备及时源码checkpoint；原14Rust完整、同新Host唯一官方全语言/3qs、fresh依赖扫描、当前semantic/独审/冷main及mainCI仍待。五具名open仍依其三链结算，managed历史Linux根因未知单独；所有Behavior needs_review不批量提升。
+- 原资源target9GiB/free5GiB/jobs1/inc0不变，Root已释放F专用缓存并交SDKsole队列；不动default未标记8GB/F/其它缓存。PR5继续OPEN DRAFT，Issue120待SDKmain精验收，不registry发布。
+
 ## 执行来源与边界
 
 执行来源：用户八项治理工作与 active goal `01a12de5-2e2a-7861-9e97-b45cdb727ed3`。

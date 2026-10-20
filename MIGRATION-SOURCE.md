@@ -56,6 +56,34 @@ boundary remains recorded in `contracts/sdk/source-contract.json` and
 
 ## Current Governance Candidate Pin
 
+The current source pin is accepted published framework
+`3560812caede84998a1f6f26d7bf3fa81ea0486c`, tree
+`bbacaad650b935c516194a9373580fe7747c8256`, from
+[PR #193](https://github.com/EchoYue-lp/echo-agent/pull/193).
+Its exact-main [CI run 39355472505](https://github.com/EchoYue-lp/echo-agent/actions/runs/39355472505)
+completed all seven jobs successfully. The squash tree matches reviewed framework
+`8138d81efa69a3852d81ddef70c7f417c8a3b962`; upstream source digest is
+`4ad31ae30cca2dfe0d0b04d90dd656b2f3ddb3280337f5e4407e9fbe6fed8276`.
+The SDK lock SHA is
+`58599a9f95c7b524fe63c97a560d2bac235539570b2ed9ed6165586c793444a3`:
+all 656 package identities, versions, checksums and dependency edges are unchanged;
+only eight framework and three upstream vendored Git sources moved to this pin.
+The sole full 28-profile/117-artifact update and original full contract entry both
+exited zero. Accepted identities/kinds remain 5621 and routes remain 454; only the
+accepted set_model signature digest changed from 20f0cd… to d89f95… for Result<()>.
+No new constructor or cursor named field was automatically accepted.
+
+The current Host build is `0bbc72ba1cb08e7264704647566e490afc4918de57cc22fcee8a414fe9e518a8`.
+It preserves the saved development profile, has zero build warnings and zero
+tracked-source drift, and passes named finite model, compressor, base/current,
+busy-read, core and live consumer after cases. These are distinct source/runtime
+cuts; two test-fixture failures remain preserved rather than relabelled as product
+repairs. The complete applicable Rust/language/dependency/semantic gates and exact
+SDK main acceptance remain pending. Prior results below retain their historical
+provenance; upstream acceptance and focused consumers do not imply SDK release.
+
+### Previous 6563 source and runtime evidence
+
 The current Host dependency is published framework
 `6563d26570cc4a8d93c86b7e37443b0559476807`, tree
 `2875ec0d92aed44b35e0fe9b6b00357380c1557d`, merged through

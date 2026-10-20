@@ -2095,6 +2095,28 @@ async fn negotiated_facade_admission_fails_closed() -> Result<(), Box<dyn std::e
                 .block_task()
                 .await?;
 
+            let base_prompt_operation = "echo_core::agent::Agent::system_prompt";
+            let new_base_prompt = "owned base B 原系统提示🙂";
+            invoke_facade(
+                &connection,
+                "echo_agent::agent::react::ReactAgent::set_system_prompt",
+                &agent,
+                vec![session_argument(&session.session), serde_json::json!({
+                    "kind": "string", "value": new_base_prompt
+                })],
+            )
+            .await?;
+            let live_base = invoke_facade(
+                &connection, base_prompt_operation, &agent,
+                vec![session_argument(&session.session)],
+            ).await?;
+            assert_eq!(live_base, serde_json::json!(new_base_prompt));
+            let live_current = invoke_facade(
+                &connection, react_prompt_operation, &agent,
+                vec![session_argument(&session.session)],
+            ).await?;
+            assert_eq!(live_current, serde_json::json!(new_base_prompt));
+
             let set_prompt = "echo_core::agent::Agent::set_system_prompt";
             invoke_facade(
                 &connection,
@@ -2131,6 +2153,16 @@ async fn negotiated_facade_admission_fails_closed() -> Result<(), Box<dyn std::e
             )
             .await?;
             assert_eq!(current_prompt, serde_json::json!("runtime override"));
+            let base_after_override = invoke_facade(
+                &connection, base_prompt_operation, &agent,
+                vec![session_argument(&session.session)],
+            ).await?;
+            assert_eq!(base_after_override, serde_json::json!(new_base_prompt));
+            let definition_after_override = invoke_facade(
+                &connection, base_prompt_operation, &agent, Vec::new(),
+            ).await?;
+            assert_eq!(definition_after_override, react_prompt);
+
 
             let load_skills_operation =
                 "echo_agent::agent::react::ReactAgent::load_skills_from_dir";

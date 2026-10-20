@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import threading
 import time
@@ -794,6 +795,24 @@ def main():
                         "a", encoding="utf-8"
                     ) as output:
                         output.write(json.dumps(value, ensure_ascii=False) + "\n")
+                    # Record only the actual header fingerprint, never a token.
+                    # Existing body observations and response behavior stay exact.
+                    with (args.work / "model-auth-fingerprints.jsonl").open(
+                        "a", encoding="utf-8"
+                    ) as output:
+                        output.write(
+                            json.dumps(
+                                {
+                                    "path": self.path,
+                                    "authorization_sha256": hashlib.sha256(
+                                        self.headers.get("Authorization", "").encode(
+                                            "utf-8"
+                                        )
+                                    ).hexdigest(),
+                                }
+                            )
+                            + "\n"
+                        )
                 user = next(
                     (
                         message.get("content", "")

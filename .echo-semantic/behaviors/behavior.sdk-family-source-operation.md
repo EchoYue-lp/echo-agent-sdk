@@ -123,3 +123,9 @@ Behavior保持needs_review；入口具名mapped/examined不自动41verified、fu
 ## 2026-10-19 忙时读取不等实际空状态
 
 新增finding.sdk-busy-session-read-authority记录原MCP initialize屏障真实native：已配置cwd的普通Session并发getter在原writer持锁时返回null，释放并完整load后cwd仍同路径。原wrapper同步try_read默认不可作为RPC状态；修复候选必须读取原authority且处理Agent与Context回调父子等待，不伪缓存/新协议/改F同步Trait。Context层和snapshot实际mutation仅源码调查，不冒native已闭合；本条open/空三链，原base/model/projection/managed各自独立。
+
+## 2026-10-20 当前薄适配与finite after承接
+
+原Integration Evidence后继记录精F356/锁11Git源only、唯一生成/完整合同和当前Host0bbc的具名consumer。SDK构造只私有保存原validated config+sameArc并在extensions前用F新constructor；opaque custom replacement继续清cfg，set_model Result透原error/成功Unit。Session model/base/current/definition区分、同Agent/Context guard及时typed不可用和snapshot真实mutation分类由原ADR0034/产品文档约束，不建立第二model/cursor或权限闸。
+
+模型双构造HTTP/独立scalar opaque、三语compressor、两个原publicSDKbase/busyprobe、core和live03 finite after已有actual0及对应独审；01编译与02 Client自等待夹具失败保原件，03仅调整同callback原responder的调度，不换原父/子RPC与强assert。retained旧fact0/1/2各一次，真实schema3仍opaqueString；四open source Finding需各自三链后另结算。原policy默认/条件Sink/RunStore支持菜单与actual消费区别保，未执行36filtered邻例不伪PASS。完整Rust/语言/依赖/semantic/main独立，本Behavior继续needs_review。

@@ -1,4 +1,10 @@
 # 当前能力模型的有限剩余验收
+## 2026-10-20 精pin356的有限补证与剩余整套验收
+
+原28profile/117产物update、fullcontract/Protocol5/42/91与精锁11Git源only已实际通过；新Host0bbc下具名模型/scalar/三语compressor/base/busy/core/live有限after通过。live01编译错误和02Client自等待是两项测试夹具失败，均原样保，不当Host生产反例；03原case已执行强callback/retained断言。源码/运行独审按具体后继原件结算，不借此宣布原14Rust完整、唯一官方整语言/3quickstarts、依赖/currentsemantic/SDKmain或managedLinux完成。
+
+当前deferred按[356集合观察](deferred-capabilities.md#当前集合观察2026-10-20framework3560812)为2534；旧6563/2528段是历史，新增6named identity未自动接受，4新Context方法仍Host/Rust-only。当前5个open Finding仍按各自三链结算，Behavior不批量升verified，PR5继续Draft。原文下方“新增open/after待”属于其真实发现或准备切点，后继以本段有限证据承接，原before/raw及限制不抹。
+
 
 ## 2026-10-19 忙时Session读取新增开放义务
 
@@ -40,7 +46,7 @@ S正规resume/adopt/PF不冒native preEdit/Stop成功。原c0bc对S新ignored se
 
 八类完成性盘点复用已有边界、源码anchors与七组八视角的有限Audit，没有新增可确认runtime缺陷。[历史行为矩阵](behavior-evidence-matrix.md)的“仍缺”按后继正式Evidence对账：Agent/Session/Run的steer三语与意图A具名证明见[evidence.sdk-acp-agent-run-finite-observation](../../../.echo-semantic/evidence/evidence.sdk-acp-agent-run-finite-observation.md)；A2A九操作、已批准Channel forward及LSP诊断的有限后继见[evidence.sdk-integrations-finite-observation](../../../.echo-semantic/evidence/evidence.sdk-integrations-finite-observation.md)。原Telemetry export/flush、FileAuthority replacement、Session rules实际prompt的原件/限制分别由[历史证明位置](semantic-history.md)对应包与已有Evidence承接，不再因旧矩阵段落重复执行同一未变能力。
 
-这些后继不证明每个accepted constructor/setter都经过真实consumer；不把未advertise的标准Session方法、11个DTO当11条forward、Graph晚到回执或Windows三语言平台列为已验证。历史Map内/tmp仅为当时诊断位置，当前恢复依赖正式Evidence及不可变Git/asset；未保存的本机路径不成为最终验收来源。deferred原文档集合脚本已按实际2528项分组重核，route投影不自动接受identity，详见[当前集合观察](deferred-capabilities.md#当前集合观察2026-10-17)。
+这些后继不证明每个accepted constructor/setter都经过真实consumer；不把未advertise的标准Session方法、11个DTO当11条forward、Graph晚到回执或Windows三语言平台列为已验证。历史Map内/tmp仅为当时诊断位置，当前恢复依赖正式Evidence及不可变Git/asset；未保存的本机路径不成为最终验收来源。deferred原文档集合脚本已按实际2528项分组重核，route投影不自动接受identity，详见[当前集合观察](deferred-capabilities.md#当前集合观察2026-10-20framework3560812)。
 
 ## 历史有限验收（2026-10-15）
 

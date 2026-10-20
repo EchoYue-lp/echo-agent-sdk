@@ -13435,7 +13435,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:20f0cd58504e8514a4db2d3439f27d84aa92b151937b1794aa3eb21b7da042c4"
+        "sha256:d89f9521ed2bc018debd45a048a67f042da39395d62848f48fa41c3f3a528fc7"
       ],
       "input": {
         "encoding": "wire_value_array",

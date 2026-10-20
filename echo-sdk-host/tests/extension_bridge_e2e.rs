@@ -494,6 +494,12 @@ struct SdkDispatch {
     compressor_extensions: SharedVec<String>,
     component_operations: SharedVec<String>,
     source_store_embeddings: SharedVec<(ExtensionInvokeCall, Vec<f32>)>,
+    live_probe_enabled: Arc<std::sync::atomic::AtomicBool>,
+    live_probe_calls: SharedVec<ExtensionInvokeCall>,
+    live_probe_originals: SharedVec<WireHandle>,
+    live_probe_read_owner: Arc<Mutex<Option<(WireHandle, WireHandle)>>>,
+    live_probe_read_facts: SharedVec<serde_json::Value>,
+    live_run_store: Arc<echo_agent::trace::InMemoryRunStore>,
     cancel_notices: SharedVec<String>,
     /// Hold responders that must never answer (timeout/cancel scenarios).
     silent: Arc<Mutex<Vec<HeldFixtureInvocation>>>,
@@ -962,6 +968,8 @@ impl TaskStoreDispatch {
 #[derive(Default)]
 struct ManagedStoreDispatch {
     enabled: std::sync::atomic::AtomicBool,
+    live_projection_checks: std::sync::atomic::AtomicBool,
+    live_projection_batches: Mutex<Vec<TranscriptProjectionBatchWire>>,
     delay_before_commit: std::sync::atomic::AtomicBool,
     lose_first_apply_response: std::sync::atomic::AtomicBool,
     conversation: Mutex<Option<ConversationProjectionAuthorityWire>>,
@@ -1064,6 +1072,13 @@ impl ManagedStoreDispatch {
                     .lock()
                     .unwrap_or_else(|error| error.into_inner());
                 let existed = slot.is_some();
+                if self.live_projection_checks.load(Ordering::Acquire)
+                    && slot.as_ref().is_some_and(|authority| {
+                        authority.conversation_id != request.conversation.conversation_id
+                    })
+                {
+                    return Err(Self::error("corrupt_state"));
+                }
                 let authority = slot
                     .get_or_insert_with(|| ConversationProjectionAuthorityWire {
                         conversation_id: request.conversation.conversation_id.clone(),
@@ -1090,16 +1105,29 @@ impl ManagedStoreDispatch {
                 )
             }
             AgentComponentCallInputWire::ConversationGetProjectionAuthorityWithContext {
+                conversation_id,
                 ..
-            } => Ok(
-                AgentComponentCallResultWire::ConversationGetProjectionAuthorityWithContext {
-                    authority: self
+            } => {
+                if self.live_projection_checks.load(Ordering::Acquire)
+                    && self
                         .conversation
                         .lock()
                         .unwrap_or_else(|error| error.into_inner())
-                        .clone(),
-                },
-            ),
+                        .as_ref()
+                        .is_some_and(|authority| authority.conversation_id != *conversation_id)
+                {
+                    return Err(Self::error("corrupt_state"));
+                }
+                Ok(
+                    AgentComponentCallResultWire::ConversationGetProjectionAuthorityWithContext {
+                        authority: self
+                            .conversation
+                            .lock()
+                            .unwrap_or_else(|error| error.into_inner())
+                            .clone(),
+                    },
+                )
+            }
             AgentComponentCallInputWire::RuntimeLoadManagedStateWithContext {
                 scope_id,
                 runtime_state_id,
@@ -1152,6 +1180,11 @@ impl ManagedStoreDispatch {
                 batch,
                 ..
             } => {
+                if self.live_projection_checks.load(Ordering::Acquire) {
+                    live_projection_batch(batch)
+                        .and_then(|batch| batch.validate().map_err(|error| error.to_string()))
+                        .map_err(|_| Self::error("corrupt_state"))?;
+                }
                 let mut receipts = self
                     .receipts
                     .lock()
@@ -1170,6 +1203,13 @@ impl ManagedStoreDispatch {
                     .lock()
                     .unwrap_or_else(|error| error.into_inner());
                 let authority = slot.as_mut().ok_or_else(|| Self::error("corrupt_state"))?;
+                if self.live_projection_checks.load(Ordering::Acquire)
+                    && (authority.conversation_id != batch.conversation_id
+                        || authority.epoch != batch.conversation_epoch
+                        || authority.lifecycle != ConversationProjectionLifecycleWire::Live)
+                {
+                    return Err(Self::error("corrupt_state"));
+                }
                 let revision = authority
                     .revision
                     .to_u64()
@@ -1186,6 +1226,12 @@ impl ManagedStoreDispatch {
                 self.projected_items
                     .fetch_add(batch.items.len(), Ordering::AcqRel);
                 self.mutations.fetch_add(1, Ordering::AcqRel);
+                if self.live_projection_checks.load(Ordering::Acquire) {
+                    self.live_projection_batches
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .push(batch.clone());
+                }
                 Ok(AgentComponentCallResultWire::ConversationApplyTranscriptProjectionWithContext { receipt })
             }
             _ => Err(Self::error("unsupported")),
@@ -1727,6 +1773,12 @@ where
     let compressor_extensions = dispatch.compressor_extensions.clone();
     let component_operations = dispatch.component_operations.clone();
     let source_store_embeddings = dispatch.source_store_embeddings.clone();
+    let live_probe_enabled = dispatch.live_probe_enabled.clone();
+    let live_probe_calls = dispatch.live_probe_calls.clone();
+    let live_probe_originals = dispatch.live_probe_originals.clone();
+    let live_probe_read_owner = dispatch.live_probe_read_owner.clone();
+    let live_probe_read_facts = dispatch.live_probe_read_facts.clone();
+    let live_run_store = dispatch.live_run_store.clone();
     let cancel_notices = dispatch.cancel_notices.clone();
     let silent = dispatch.silent.clone();
     let stream_producers = dispatch.stream_producers.clone();
@@ -1762,6 +1814,12 @@ where
                 let compressor_extensions = compressor_extensions.clone();
                 let component_operations = component_operations.clone();
                 let source_store_embeddings = source_store_embeddings.clone();
+                let live_probe_enabled = live_probe_enabled.clone();
+                let live_probe_calls = live_probe_calls.clone();
+                let live_probe_originals = live_probe_originals.clone();
+                let live_probe_read_owner = live_probe_read_owner.clone();
+                let live_probe_read_facts = live_probe_read_facts.clone();
+                let live_run_store = live_run_store.clone();
                 let silent = silent.clone();
                 let stream_producers = stream_producers.clone();
                 let hang = hang.clone();
@@ -1794,6 +1852,12 @@ where
                     let compressor_extensions = compressor_extensions.clone();
                     let component_operations = component_operations.clone();
                     let source_store_embeddings = source_store_embeddings.clone();
+                    let live_probe_enabled = live_probe_enabled.clone();
+                    let live_probe_calls = live_probe_calls.clone();
+                    let live_probe_originals = live_probe_originals.clone();
+                    let live_probe_read_owner = live_probe_read_owner.clone();
+                    let live_probe_read_facts = live_probe_read_facts.clone();
+                    let live_run_store = live_run_store.clone();
                     let silent = silent.clone();
                     let stream_producers = stream_producers.clone();
                     let hang = hang.clone();
@@ -1822,6 +1886,15 @@ where
                     async move {
                         let operation = call.invocation.operation();
                         let original_call = call.clone();
+                        if live_probe_enabled.load(Ordering::Acquire) {
+                            live_probe_calls.lock().unwrap_or_else(|error| error.into_inner()).push(original_call.clone());
+                            if matches!(&call.invocation, ExtensionInvocation::AgentComponentCall(_) | ExtensionInvocation::AgentComponentCallStream(_))
+                                && !live_probe_originals.lock().unwrap_or_else(|error| error.into_inner()).contains(&call.extension) {
+                                return responder.respond(ExtensionInvokeOutcome::Error { error: EchoSdkError::new(
+                                    ExtensionErrorCode::InvalidValue, "decoy component must not consume the original provider state", Retryability::Never,
+                                ) });
+                            }
+                        }
                         operations
                             .lock()
                             .expect("operations lock")
@@ -1921,7 +1994,19 @@ where
                                     ),
                                 })
                             }
-                            ExtensionInvocation::LlmChat(_) => {
+                            ExtensionInvocation::LlmChat(input) => {
+                                if live_probe_enabled.load(Ordering::Acquire) {
+                                    let mut response = chat_response_wire("live service finalanswer 中文🙂");
+                                    if !input.messages.iter().any(|message| message.role == "tool") {
+                                        response.message.content = WireValue::String(String::new());
+                                        response.message.tool_calls = Some(vec![LlmToolCallWire {
+                                            id: "source-live-shell-call".to_string(), call_type: "function".to_string(),
+                                            function_name: "shell".to_string(), arguments: r#"{"command":"printf sandbox"}"#.to_string(),
+                                        }]);
+                                        response.finish_reason = Some("tool_calls".to_string());
+                                    }
+                                    return responder.respond(ExtensionInvokeOutcome::Result { result: ExtensionResult::LlmChat(response) });
+                                }
                                 let mut response = chat_response_wire("fixture chat answer");
                                 if missing_finish_reason.load(Ordering::Acquire) {
                                     response.finish_reason = None;
@@ -1972,11 +2057,17 @@ where
                                     }
                                 });
                                 tokio::time::sleep(Duration::from_millis(25)).await;
+                                let (messages, evicted) = if live_probe_enabled.load(Ordering::Acquire) {
+                                    input.messages.into_iter().partition::<Vec<_>, _>(|message| {
+                                        !(message.role == "assistant" && message.tool_calls.is_none()
+                                            && message.content == WireValue::String("live service finalanswer 中文🙂".to_string()))
+                                    })
+                                } else { (input.messages, Vec::new()) };
                                 responder.respond(ExtensionInvokeOutcome::Result {
                                     result: ExtensionResult::CompressorCompress(
                                         CompressionOutputWire {
-                                            messages: input.messages,
-                                            evicted: Vec::new(),
+                                            messages,
+                                            evicted,
                                             checkpoint: None,
                                         },
                                     ),
@@ -2018,6 +2109,7 @@ where
                                     let signature_digest = facade_digest(mutation)
                                         .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?;
                                     let conflicts = reentrant_conflicts.clone();
+                                    let connection = connection.clone();
                                     tokio::spawn(async move {
                                         let Ok(message) = UntypedMessage::new(
                                             "_echo_agent/facade/invoke",
@@ -2063,6 +2155,55 @@ where
                                         Ok(result) => ExtensionInvokeOutcome::Result { result: ExtensionResult::AgentComponentCall(AgentComponentResultWire { component: input.component, result }) },
                                         Err(error) => ExtensionInvokeOutcome::Error { error: *error },
                                     });
+                                }
+                                if live_probe_enabled.load(Ordering::Acquire) && input.component == AgentComponentKindWire::RunStore {
+                                    let result = live_run_store_reply(live_run_store.as_ref(), &input.call).await;
+                                    return responder.respond(match result {
+                                        Ok(Some(result)) => ExtensionInvokeOutcome::Result { result: ExtensionResult::AgentComponentCall(AgentComponentResultWire {component: input.component, result}) },
+                                        Ok(None) => ExtensionInvokeOutcome::Error { error: EchoSdkError::new(ExtensionErrorCode::InvalidValue, "live RunStore received another component operation", Retryability::Never) },
+                                        Err(error) => ExtensionInvokeOutcome::Error { error: EchoSdkError::new(ExtensionErrorCode::ExtensionFailed, error, Retryability::Never) },
+                                    });
+                                }
+                                if live_probe_enabled.load(Ordering::Acquire) {
+                                    let live_read_result = match &input.call {
+                                        AgentComponentCallInputWire::MemoryPromoterPromote { evicted } => Some((true, AgentComponentCallResultWire::MemoryPromoterPromote {
+                                            submitted: WireU64::from_u64(u64::try_from(evicted.len()).unwrap_or(u64::MAX)),
+                                            promoted: WireU64::from_u64(0), deduplicated: WireU64::from_u64(0),
+                                        })),
+                                        AgentComponentCallInputWire::SkillLoadAllows { descriptor } => Some((false, AgentComponentCallResultWire::SkillLoadAllows { allowed: descriptor.name != "blocked" })),
+                                        _ => None,
+                                    };
+                                    if let Some((context_held, result)) = live_read_result {
+                                        let owner = live_probe_read_owner.lock().unwrap_or_else(|error| error.into_inner()).clone();
+                                        let (agent, session) = owner.ok_or_else(|| RpcError::internal_error().data("missing live read owner"))?;
+                                        let task_connection = connection.clone();
+                                        // Ordered inbound handlers cannot await replies on their
+                                        // own connection. Keep this original callback outstanding
+                                        // while the connection task performs its nested reads.
+                                        connection.spawn(async move {
+                                            let reads = futures::FutureExt::catch_unwind(std::panic::AssertUnwindSafe(
+                                                live_probe_authority_reads(&task_connection, &agent, &session, context_held)
+                                            )).await;
+                                            let reads = match reads {
+                                                Ok(result) => result,
+                                                Err(_) => Err(RpcError::internal_error().data("live callback read assertion failed")),
+                                            };
+                                            match reads {
+                                                Ok(facts) => {
+                                                    live_probe_read_facts.lock().unwrap_or_else(|error| error.into_inner()).push(facts);
+                                                    responder.respond(ExtensionInvokeOutcome::Result {
+                                                        result: ExtensionResult::AgentComponentCall(AgentComponentResultWire { component: input.component, result }),
+                                                    })?;
+                                                }
+                                                Err(error) => {
+                                                    live_probe_read_facts.lock().unwrap_or_else(|error| error.into_inner()).push(serde_json::json!({"phase":"live-callback-read-error", "error":format!("{error:?}")}));
+                                                    responder.respond_with_error(error)?;
+                                                }
+                                            }
+                                            Ok(())
+                                        })?;
+                                        return Ok(());
+                                    }
                                 }
                                 let result = match input.call {
                                     AgentComponentCallInputWire::ConversationCreate { conversation } => {
@@ -2119,7 +2260,11 @@ where
                                     AgentComponentCallInputWire::RuntimeClearConversation { .. } => AgentComponentCallResultWire::RuntimeClearConversation,
                                     AgentComponentCallInputWire::AuditLog { .. } => AgentComponentCallResultWire::AuditLog,
                                     AgentComponentCallInputWire::AuditQuery { .. } => AgentComponentCallResultWire::AuditQuery { events: Vec::new() },
-                                    AgentComponentCallInputWire::ContextProject { .. } => AgentComponentCallResultWire::ContextProject { projections: Vec::new() },
+                                    AgentComponentCallInputWire::ContextProject { .. } => {
+                                        if live_probe_enabled.load(Ordering::Acquire) {
+                                            live_projector_reply().map_err(|error| RpcError::internal_error().data(error))?
+                                        } else { AgentComponentCallResultWire::ContextProject { projections: Vec::new() } }
+                                    },
                                     AgentComponentCallInputWire::MemoryTrigger { .. } => AgentComponentCallResultWire::MemoryTrigger { disposition: "persist".to_string() },
                                     AgentComponentCallInputWire::GuardCheck { .. } => {
                                         AgentComponentCallResultWire::GuardCheck {
@@ -2302,11 +2447,9 @@ where
                                     AgentComponentCallInputWire::IntentClassify { .. } => AgentComponentCallResultWire::IntentClassify {
                                         intent: WireValue::String("Fallback".to_string()),
                                     },
-                                    AgentComponentCallInputWire::SkillLoadAllows { descriptor } => {
-                                        AgentComponentCallResultWire::SkillLoadAllows {
-                                            allowed: descriptor.name != "blocked",
-                                        }
-                                    }
+                                    AgentComponentCallInputWire::SkillLoadAllows { descriptor } => AgentComponentCallResultWire::SkillLoadAllows {
+                                        allowed: descriptor.name != "blocked",
+                                    },
                                     AgentComponentCallInputWire::SandboxExecuteStream { .. }
                                     | AgentComponentCallInputWire::WorkflowRunStream { .. } => {
                                         return responder.respond(ExtensionInvokeOutcome::Error {
@@ -2958,6 +3101,127 @@ async fn unregister(
         .block_task()
         .await?;
     Ok(response.released)
+}
+
+/// Exercise one original callback at each actual lock layer; this never
+/// declares that every callback or getter has been verified reentrant.
+async fn live_probe_authority_reads(
+    connection: &ConnectionTo<agent_client_protocol::Agent>,
+    agent: &WireHandle,
+    session: &WireHandle,
+    context_held: bool,
+) -> Result<serde_json::Value, RpcError> {
+    let mut facts =
+        serde_json::json!({"context_held": context_held, "successes": [], "conflicts": []});
+    if context_held {
+        // The parent owns Context but only shares the Agent. Prove the active
+        // callback does not cause a blanket refusal of available Agent data.
+        for (operation, expected) in [
+            ("echo_core::agent::Agent::model_name", "fixture-model"),
+            (
+                "echo_core::agent::Agent::system_prompt",
+                "Answer the user directly.",
+            ),
+        ] {
+            let response = tokio::time::timeout(
+                Duration::from_secs(2),
+                invoke_source_operation(
+                    connection,
+                    agent.clone(),
+                    operation,
+                    vec![WireValue::Handle(session.clone())],
+                ),
+            )
+            .await
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))??;
+            assert_eq!(response.value, WireValue::String(expected.to_string()));
+            if let Some(values) = facts
+                .get_mut("successes")
+                .and_then(serde_json::Value::as_array_mut)
+            {
+                values.push(serde_json::json!({"operation": operation, "value": expected}));
+            } else {
+                return Err(RpcError::internal_error().data("invalid read fact fixture"));
+            }
+        }
+    }
+    if !context_held {
+        // Owner validation and invalid arity precede the unavailable read lock.
+        for operation in [
+            "echo_agent::agent::react::ReactAgent::skill_names",
+            "echo_agent::agent::react::ReactAgent::snapshot",
+        ] {
+            let result = tokio::time::timeout(
+                Duration::from_secs(2),
+                invoke_source_operation(
+                    connection,
+                    agent.clone(),
+                    operation,
+                    vec![WireValue::Handle(session.clone()), WireValue::Null],
+                ),
+            )
+            .await
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            let error = result.err().ok_or_else(|| {
+                RpcError::internal_error().data("extra getter argument was accepted")
+            })?;
+            let typed = EchoSdkError::from_jsonrpc_data(error.data.as_ref())
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            assert_eq!(typed.code, ExtensionErrorCode::InvalidValue);
+            assert_eq!(typed.retryable, Retryability::Never);
+            assert_eq!(
+                typed.operation.as_deref(),
+                Some("_echo_agent/facade/invoke")
+            );
+            assert_eq!(
+                typed.message,
+                if operation.ends_with("::skill_names") {
+                    "skill_names accepts exactly one Session handle"
+                } else {
+                    "snapshot accepts exactly one Session handle"
+                }
+            );
+        }
+    }
+    let operations: &[&str] = if context_held {
+        &[
+            "echo_agent::agent::react::ReactAgent::get_messages",
+            "echo_agent::agent::react::ReactAgent::context_stats",
+            "echo_agent::agent::react::ReactAgent::snapshot",
+        ]
+    } else {
+        &["echo_core::agent::Agent::working_dir"]
+    };
+    for operation in operations {
+        let result = tokio::time::timeout(
+            Duration::from_secs(2),
+            invoke_source_operation(
+                connection,
+                agent.clone(),
+                operation,
+                vec![WireValue::Handle(session.clone())],
+            ),
+        )
+        .await
+        .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+        let error = result.err().ok_or_else(|| {
+            RpcError::internal_error().data("busy authority returned a fabricated value")
+        })?;
+        let typed = EchoSdkError::from_jsonrpc_data(error.data.as_ref())
+            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+        assert_eq!(typed.code, ExtensionErrorCode::ExtensionConflict);
+        assert_eq!(typed.retryable, Retryability::Never);
+        assert_eq!(typed.operation.as_deref(), Some(*operation));
+        if let Some(values) = facts
+            .get_mut("conflicts")
+            .and_then(serde_json::Value::as_array_mut)
+        {
+            values.push(serde_json::json!({"operation": operation, "error": typed}));
+        } else {
+            return Err(RpcError::internal_error().data("invalid conflict fact fixture"));
+        }
+    }
+    Ok(facts)
 }
 
 async fn invoke_source_operation(
@@ -4549,6 +4813,758 @@ async fn context_compressor_registration_drives_session_compression()
         2,
         "each compressor callback must reach its Host-owned tokenizer"
     );
+    host.child.kill().await?;
+    Ok(())
+}
+
+fn live_component_decode<T: serde::de::DeserializeOwned>(value: &WireValue) -> Result<T, String> {
+    let json = value
+        .clone()
+        .into_json()
+        .map_err(|error| error.to_string())?;
+    serde_json::from_value(json).map_err(|error| error.to_string())
+}
+
+// Only field conversion lives here. The framework's existing canonical
+// projection validator owns payload digests, message binding and ordinals.
+fn live_projection_batch(
+    batch: &TranscriptProjectionBatchWire,
+) -> Result<echo_agent::memory::TranscriptProjectionBatch, String> {
+    let items = batch
+        .items
+        .iter()
+        .map(|item| {
+            if item.message.id.is_some() {
+                return Err("canonical projection carries an assigned message id".to_string());
+            }
+            let message = serde_json::from_value(
+                serde_json::to_value(&item.message).map_err(|error| error.to_string())?,
+            )
+            .map_err(|error| error.to_string())?;
+            Ok(echo_agent::memory::TranscriptProjectionItem {
+                ordinal: item
+                    .ordinal
+                    .to_u64()
+                    .ok_or_else(|| "invalid projection ordinal".to_string())?,
+                digest: item.digest.clone(),
+                message,
+            })
+        })
+        .collect::<Result<Vec<_>, String>>()?;
+    Ok(echo_agent::memory::TranscriptProjectionBatch {
+        schema_version: batch.schema_version,
+        operation_id: batch.operation_id.clone(),
+        payload_digest: batch.payload_digest.clone(),
+        conversation_id: batch.conversation_id.clone(),
+        conversation_epoch: batch
+            .conversation_epoch
+            .to_u64()
+            .ok_or_else(|| "invalid conversation epoch".to_string())?,
+        generation_id: batch.generation_id.clone(),
+        items,
+    })
+}
+
+fn live_component_value<T: serde::Serialize>(value: T) -> Result<WireValue, String> {
+    let json = serde_json::to_value(value).map_err(|error| error.to_string())?;
+    WireValue::from_json(json).map_err(|error| error.to_string())
+}
+
+// Delegate to the existing framework authority rather than acknowledging an
+// unrecorded write. Unknown/invalid input returns an error to the original responder.
+async fn live_run_store_reply(
+    store: &dyn echo_agent::trace::RunStore,
+    input: &AgentComponentCallInputWire,
+) -> Result<Option<AgentComponentCallResultWire>, String> {
+    use AgentComponentCallInputWire as Input;
+    use AgentComponentCallResultWire as Output;
+    let result = match input {
+        Input::RunSave { run } => {
+            let run: echo_agent::trace::Run = live_component_decode(run)?;
+            store.save(run).await.map_err(|error| error.to_string())?;
+            Output::RunSave
+        }
+        Input::RunLoad { run_id } => Output::RunLoad {
+            run: store
+                .load(run_id)
+                .await
+                .map_err(|error| error.to_string())?
+                .map(live_component_value)
+                .transpose()?,
+        },
+        Input::RunListBySession { session_id } => Output::RunListBySession {
+            runs: store
+                .list_by_session(session_id)
+                .await
+                .map_err(|error| error.to_string())?
+                .into_iter()
+                .map(live_component_value)
+                .collect::<Result<Vec<_>, _>>()?,
+        },
+        Input::RunListAll { limit } => {
+            let limit = limit
+                .to_u64()
+                .and_then(|value| usize::try_from(value).ok())
+                .ok_or_else(|| "invalid live RunListAll limit".to_string())?;
+            Output::RunListAll {
+                runs: store
+                    .list_all(limit)
+                    .await
+                    .map_err(|error| error.to_string())?
+                    .into_iter()
+                    .map(live_component_value)
+                    .collect::<Result<Vec<_>, _>>()?,
+            }
+        }
+        Input::RunAppendEvent { run_id, event } => {
+            let event: echo_agent::trace::RunEvent = live_component_decode(event)?;
+            store
+                .append_event(run_id, event)
+                .await
+                .map_err(|error| error.to_string())?;
+            Output::RunAppendEvent
+        }
+        Input::RunListByParent { parent_run_id } => Output::RunListByParent {
+            runs: store
+                .list_by_parent_run(parent_run_id)
+                .await
+                .map_err(|error| error.to_string())?
+                .into_iter()
+                .map(live_component_value)
+                .collect::<Result<Vec<_>, _>>()?,
+        },
+        _ => return Ok(None),
+    };
+    Ok(Some(result))
+}
+
+fn live_projector_reply() -> Result<AgentComponentCallResultWire, String> {
+    let marker = "live-service-projector 中文🙂";
+    let message = LlmMessageWire {
+        role: "system".to_string(),
+        content: WireValue::String(marker.to_string()),
+        tool_calls: None,
+        name: None,
+        tool_call_id: None,
+        reasoning_content: None,
+        reasoning_blocks: None,
+    };
+    let projection = live_component_value(serde_json::json!({
+        "marker": marker,
+        "message": message,
+    }))?;
+    Ok(AgentComponentCallResultWire::ContextProject {
+        projections: vec![projection],
+    })
+}
+
+#[cfg(all(feature = "framework-shell", feature = "sdk-facade-adapters"))]
+#[tokio::test]
+async fn live_session_component_setters_drive_original_consumers()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let state_root = directory.path().join("state");
+    let config = write_config(
+        directory.path(),
+        "http://127.0.0.1:1/v1/chat/completions",
+        &state_root,
+    );
+    let skill_dir = directory.path().join("live-policy");
+    for name in ["allowed", "blocked"] {
+        let path = skill_dir.join(name);
+        std::fs::create_dir_all(&path)?;
+        std::fs::write(
+            path.join("SKILL.md"),
+            format!("---\nname: {name}\ndescription: Live policy source proof\n---\nbody 中文🙂\n"),
+        )?;
+    }
+    let dispatch = Arc::new(SdkDispatch::default());
+    dispatch.live_probe_enabled.store(true, Ordering::Release);
+    dispatch.managed.enabled.store(true, Ordering::Release);
+    dispatch
+        .managed
+        .live_projection_checks
+        .store(true, Ordering::Release);
+    let expected_originals = dispatch.live_probe_originals.clone();
+    let live_read_owner = dispatch.live_probe_read_owner.clone();
+    let context_snapshots = Arc::new(Mutex::new(Vec::new()));
+    let observed_context = context_snapshots.clone();
+    let mut host = spawn_host(&config).await?;
+    let (originals, decoys, session_id, llm, compressor) =
+        drive_sdk(&mut host, dispatch.clone(), move |connection| {
+            Box::pin(async move {
+                connection
+                    .send_request(initialize_request(Some(client_hello())))
+                    .block_task()
+                    .await?;
+                let llm = register_extension(
+                    &connection,
+                    ExtensionKind::LlmClient,
+                    "live-service-llm",
+                    llm_descriptor_with_streaming("fixture-model", false),
+                    None,
+                )
+                .await?;
+                let agent = connection
+                    .send_request(AgentCreateRequest {
+                        config: AgentConfigWire::HostDefault,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?
+                    .agent;
+                // This is the only Session. Its factory ran before any component
+                // registration, so later callbacks cannot be explained by defaults.
+                let session = connection
+                    .send_request(SessionCreateRequest {
+                        agent: agent.clone(),
+                        working_dir: Some(WirePath::Utf8 {
+                            path: skill_dir.display().to_string(),
+                        }),
+                        session_id: None,
+                        idempotency_id: None,
+                    })
+                    .block_task()
+                    .await?;
+                *live_read_owner.lock().unwrap_or_else(|error| error.into_inner()) = Some((agent.clone(), session.session.clone()));
+                let mut originals = Vec::new();
+                let mut decoys = Vec::new();
+                for (component, setter) in [
+                    (AgentComponentKindWire::AuditLogger, "set_audit_logger"),
+                    (
+                        AgentComponentKindWire::ContextProjector,
+                        "set_pre_model_context_projector",
+                    ),
+                    (AgentComponentKindWire::RunStore, "set_run_store"),
+                    (
+                        AgentComponentKindWire::ConversationStore,
+                        "set_conversation_store",
+                    ),
+                    (AgentComponentKindWire::RuntimeStateStore, "set_state_store"),
+                    (
+                        AgentComponentKindWire::SandboxExecutor,
+                        "set_sandbox_executor",
+                    ),
+                    (
+                        AgentComponentKindWire::MemoryPromoter,
+                        "set_memory_promoter",
+                    ),
+                    (
+                        AgentComponentKindWire::MemoryTriggerSink,
+                        "set_memory_trigger_sink",
+                    ),
+                    (
+                        AgentComponentKindWire::IntentClassifier,
+                        "set_intent_router",
+                    ),
+                    (
+                        AgentComponentKindWire::SkillLoadPolicy,
+                        "set_skill_load_policy",
+                    ),
+                ] {
+                    let capabilities = AgentComponentCapabilitiesWire {
+                        conversation_projection: if component
+                            == AgentComponentKindWire::ConversationStore
+                        {
+                            ConversationProjectionCapabilityWire::AtomicV1
+                        } else {
+                            ConversationProjectionCapabilityWire::Unsupported
+                        },
+                        runtime_state: if component == AgentComponentKindWire::RuntimeStateStore {
+                            RuntimeStateCapabilityWire::RevisionedV1
+                        } else {
+                            RuntimeStateCapabilityWire::Unsupported
+                        },
+                        persistence_call: if matches!(
+                            component,
+                            AgentComponentKindWire::ConversationStore
+                                | AgentComponentKindWire::RuntimeStateStore
+                        ) {
+                            PersistenceCallCapabilityWire::AbsoluteDeadlineV1
+                        } else {
+                            PersistenceCallCapabilityWire::Unsupported
+                        },
+                        isolation_level: (component == AgentComponentKindWire::SandboxExecutor)
+                            .then_some("process".to_string()),
+                        ..Default::default()
+                    };
+                    let original = register_extension(
+                        &connection,
+                        ExtensionKind::AgentComponent,
+                        &format!("live-original-{setter}"),
+                        ExtensionDescriptor::AgentComponent {
+                            descriptor_version: 1,
+                            component,
+                            name: format!("live-original-{setter}"),
+                            capabilities: capabilities.clone(),
+                        },
+                        None,
+                    )
+                    .await?;
+                    expected_originals
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner())
+                        .push(original.clone());
+                    let decoy = register_extension(
+                        &connection,
+                        ExtensionKind::AgentComponent,
+                        &format!("live-decoy-{setter}"),
+                        ExtensionDescriptor::AgentComponent {
+                            descriptor_version: 1,
+                            component,
+                            name: format!("live-decoy-{setter}"),
+                            capabilities,
+                        },
+                        None,
+                    )
+                    .await?;
+                    let response = invoke_source_operation(
+                        &connection,
+                        agent.clone(),
+                        &format!("echo_agent::agent::react::ReactAgent::{setter}"),
+                        vec![
+                            WireValue::Handle(session.session.clone()),
+                            WireValue::Handle(original.clone()),
+                        ],
+                    )
+                    .await?;
+                    assert_eq!(response.value, WireValue::Null);
+                    originals.push((component, original));
+                    decoys.push(decoy);
+                }
+                invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::set_conversation_id",
+                    vec![
+                        WireValue::Handle(session.session.clone()),
+                        WireValue::String("source-live-conversation".to_string()),
+                    ],
+                )
+                .await?;
+                invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::set_permission_mode",
+                    vec![
+                        WireValue::Handle(session.session.clone()),
+                        WireValue::String("full-auto".to_string()),
+                    ],
+                )
+                .await?;
+                assert_eq!(
+                    invoke_source_operation(
+                        &connection,
+                        agent.clone(),
+                        "echo_agent::agent::react::ReactAgent::has_memory_layer_manager",
+                        vec![WireValue::Handle(session.session.clone())],
+                    )
+                    .await?
+                    .value,
+                    WireValue::Bool(false)
+                );
+                let discovered = invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::discover_skills",
+                    vec![
+                        WireValue::Handle(session.session.clone()),
+                        WireValue::List(vec![WireValue::Path(WirePath::Utf8 {
+                            path: skill_dir.display().to_string(),
+                        })]),
+                    ],
+                )
+                .await?;
+                assert_eq!(
+                    discovered.value,
+                    WireValue::List(vec![WireValue::String("allowed".to_string())])
+                );
+                let compressor = register_extension(
+                    &connection,
+                    ExtensionKind::ContextCompressor,
+                    "live-service-compressor",
+                    ExtensionDescriptor::ContextCompressor {
+                        descriptor_version: 1,
+                        name: "live-service-compressor".to_string(),
+                    },
+                    None,
+                )
+                .await?;
+                invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::set_compressor",
+                    vec![
+                        WireValue::Handle(session.session.clone()),
+                        WireValue::Handle(compressor.clone()),
+                    ],
+                )
+                .await?;
+                let prompt = connection
+                    .send_request(v1::PromptRequest::new(
+                        v1::SessionId::new(session.acp_session_id.clone()),
+                        vec![v1::ContentBlock::Text(v1::TextContent::new(
+                            "source service user input 中文🙂",
+                        ))],
+                    ))
+                    .block_task()
+                    .await?;
+                assert_eq!(prompt.stop_reason, v1::StopReason::EndTurn);
+                let messages = invoke_source_operation(&connection, agent.clone(), "echo_agent::agent::react::ReactAgent::get_messages",
+                    vec![WireValue::Handle(session.session.clone())],
+                ).await?.value.into_json().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                observed_context.lock().unwrap_or_else(|error| error.into_inner()).push(serde_json::json!({"phase":"before-compress", "messages":messages}));
+                invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::force_checkpoint",
+                    vec![WireValue::Handle(session.session.clone())],
+                )
+                .await?;
+                let compressed = invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::force_compress_with_focus_and_hooks",
+                    vec![
+                        WireValue::Handle(session.session.clone()),
+                        WireValue::String("preserve decisions".to_string()),
+                        WireValue::U64(WireU64::from_u64(64)),
+                        WireValue::String("manual".to_string()),
+                    ],
+                )
+                .await?
+                .value
+                .into_json()
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                assert_eq!(
+                    compressed
+                        .get("stats")
+                        .and_then(|stats| stats.get("evicted")),
+                    Some(&serde_json::json!(1))
+                );
+                let messages = invoke_source_operation(&connection, agent.clone(), "echo_agent::agent::react::ReactAgent::get_messages",
+                    vec![WireValue::Handle(session.session.clone())],
+                ).await?.value.into_json().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                observed_context.lock().unwrap_or_else(|error| error.into_inner()).push(serde_json::json!({"phase":"after-compress-before-prompt", "messages":messages}));
+                // Preserve the original public checkpoint in this consumer
+                // recipe; the next managed turn restores its canonical state.
+                invoke_source_operation(&connection, agent.clone(), "echo_agent::agent::react::ReactAgent::force_checkpoint",
+                    vec![WireValue::Handle(session.session.clone())],
+                ).await?;
+                let prompt = connection
+                    .send_request(v1::PromptRequest::new(
+                        v1::SessionId::new(session.acp_session_id.clone()),
+                        vec![v1::ContentBlock::Text(v1::TextContent::new(
+                            "after live service compression 保留🌊",
+                        ))],
+                    ))
+                    .block_task()
+                    .await?;
+                assert_eq!(prompt.stop_reason, v1::StopReason::EndTurn);
+                let restored = invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::resume_from_state_store",
+                    vec![WireValue::Handle(session.session.clone())],
+                )
+                .await?;
+                assert_ne!(restored.value, WireValue::Null);
+                // No accepted operation installs MemoryLayerManager in this Host.
+                // Binding the sink must not invent that precondition or a trigger.
+                assert_eq!(
+                    invoke_source_operation(
+                        &connection,
+                        agent.clone(),
+                        "echo_agent::agent::react::ReactAgent::has_memory_layer_manager",
+                        vec![WireValue::Handle(session.session.clone())],
+                    )
+                    .await?
+                    .value,
+                    WireValue::Bool(false)
+                );
+                invoke_source_operation(
+                    &connection,
+                    agent.clone(),
+                    "echo_agent::agent::react::ReactAgent::shutdown",
+                    vec![WireValue::Handle(session.session.clone())],
+                )
+                .await?;
+                connection
+                    .send_request(SessionCloseRequest {
+                        session: session.session,
+                    })
+                    .block_task()
+                    .await?;
+                connection
+                    .send_request(AgentCloseRequest { agent })
+                    .block_task()
+                    .await?;
+                for handle in originals
+                    .iter()
+                    .map(|(_, handle)| handle)
+                    .chain(decoys.iter())
+                    .chain([&llm, &compressor])
+                {
+                    assert!(unregister(&connection, handle).await?);
+                }
+                Ok((originals, decoys, session.acp_session_id, llm, compressor))
+            })
+        })
+        .await?;
+    let calls = dispatch
+        .live_probe_calls
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    if let Ok(path) = std::env::var("ECHO_AGENT_SDK_LIVE_PROBE_EVIDENCE") {
+        let snapshots = context_snapshots
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .clone();
+        let runtime = dispatch
+            .managed
+            .runtime
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .values()
+            .cloned()
+            .collect::<Vec<_>>();
+        let batches = dispatch
+            .managed
+            .live_projection_batches
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .clone();
+        std::fs::write(
+            path,
+            serde_json::to_vec_pretty(
+                &serde_json::json!({"callbacks":calls,"context_snapshots":snapshots,"runtime":runtime,"batches":batches}),
+            )?,
+        )?;
+    }
+    let mut ids = std::collections::HashSet::new();
+    let mut operations = Vec::new();
+    let mut llm_inputs = Vec::new();
+    let mut audit = Vec::new();
+    let mut promoted = Vec::new();
+    for call in calls {
+        assert!(!call.invocation_id.is_empty());
+        assert!(ids.insert(call.invocation_id));
+        assert!(
+            !decoys.contains(&call.extension),
+            "latest registration replaced an explicit live binding"
+        );
+        assert_eq!(
+            call.context
+                .as_ref()
+                .and_then(|context| context.session_id.as_deref()),
+            Some(session_id.as_str())
+        );
+        match call.invocation {
+            ExtensionInvocation::AgentComponentCall(input) => {
+                let original = originals
+                    .iter()
+                    .find(|(component, _)| *component == input.component)
+                    .ok_or("callback used an unbound component")?;
+                assert_eq!(call.extension, original.1);
+                operations.push(input.call.operation());
+                match input.call {
+                    AgentComponentCallInputWire::AuditLog { event } => audit.push(
+                        live_component_decode::<echo_agent::audit::AuditEvent>(&event)?,
+                    ),
+                    AgentComponentCallInputWire::MemoryPromoterPromote { evicted } => {
+                        promoted.push(evicted)
+                    }
+                    _ => {}
+                }
+            }
+            ExtensionInvocation::LlmChat(input) => {
+                assert_eq!(call.extension, llm);
+                llm_inputs.push(input);
+            }
+            ExtensionInvocation::CompressorCompress(_) => assert_eq!(call.extension, compressor),
+            _ => return Err("live probe received an unexpected reverse-operation kind".into()),
+        }
+    }
+    for operation in [
+        AgentComponentOperationWire::AuditLog,
+        AgentComponentOperationWire::ContextProject,
+        AgentComponentOperationWire::RunSave,
+        AgentComponentOperationWire::RunLoad,
+        AgentComponentOperationWire::RunAppendEvent,
+        AgentComponentOperationWire::ConversationEnsureProjectionEpochWithContext,
+        AgentComponentOperationWire::ConversationGetProjectionAuthorityWithContext,
+        AgentComponentOperationWire::ConversationApplyTranscriptProjectionWithContext,
+        AgentComponentOperationWire::RuntimeLoadManagedStateWithContext,
+        AgentComponentOperationWire::RuntimeCompareAndSaveCheckpointWithContext,
+        AgentComponentOperationWire::RuntimeAcknowledgeTranscriptProjectionWithContext,
+        AgentComponentOperationWire::SandboxCleanup,
+        AgentComponentOperationWire::MemoryPromoterPromote,
+        AgentComponentOperationWire::IntentClassify,
+        AgentComponentOperationWire::SkillLoadAllows,
+    ] {
+        assert!(
+            operations.contains(&operation),
+            "live consumer was not reached: {operation:?}; observed: {operations:?}"
+        );
+    }
+    assert!(operations.iter().any(|operation| matches!(
+        operation,
+        AgentComponentOperationWire::SandboxExecute
+            | AgentComponentOperationWire::SandboxExecuteWithLimits
+            | AgentComponentOperationWire::SandboxExecuteWithLimitsAndCancel
+    )));
+    assert!(!operations.contains(&AgentComponentOperationWire::MemoryTrigger));
+    assert!(audit.iter().all(|event| event.agent_name == "fixture-agent"
+        && event.session_id.as_deref() == Some(session_id.as_str())));
+    assert!(audit.iter().any(
+        |event| matches!(&event.event_type, echo_agent::audit::AuditEventType::UserInput {content}
+        if content == "source service user input 中文🙂")
+    ));
+    assert!(audit.iter().any(
+        |event| matches!(&event.event_type, echo_agent::audit::AuditEventType::FinalAnswer {content}
+        if content == "live service finalanswer 中文🙂")
+    ));
+    assert_eq!(llm_inputs.len(), 3);
+    assert!(
+        llm_inputs
+            .iter()
+            .all(|input| input.messages.iter().any(|message| message.content
+                == WireValue::String("live-service-projector 中文🙂".to_string())
+                || serde_json::to_string(&message.content)
+                    .is_ok_and(|text| text.contains("live-service-projector 中文🙂"))))
+    );
+    assert!(
+        llm_inputs.get(1).is_some_and(|input| input
+            .messages
+            .iter()
+            .any(|message| message.role == "tool"
+                && serde_json::to_string(&message.content)
+                    .is_ok_and(|text| text.contains("sandbox answer"))))
+    );
+    assert!(llm_inputs.get(2).is_some_and(|input| {
+        input.messages.iter().all(|message| {
+            message.content != WireValue::String("live service finalanswer 中文🙂".to_string())
+        })
+    }));
+    assert_eq!(promoted.len(), 1);
+    assert!(promoted.first().is_some_and(|messages| {
+        messages.len() == 1
+            && messages.first().is_some_and(|message| {
+                message.role == "assistant"
+                    && message.content
+                        == WireValue::String("live service finalanswer 中文🙂".to_string())
+            })
+    }));
+    use echo_agent::trace::RunStore as _;
+    let runs = dispatch.live_run_store.list_all(16).await?;
+    assert_eq!(runs.len(), 2);
+    for summary in runs {
+        let run = dispatch
+            .live_run_store
+            .load(&summary.run_id)
+            .await?
+            .ok_or("original RunStore lost its saved run")?;
+        assert_eq!(run.status, echo_agent::trace::RunStatus::Completed);
+        assert_eq!(
+            run.final_output.as_deref(),
+            Some("live service finalanswer 中文🙂")
+        );
+        assert!(run.finished_at.is_some() && !run.events.is_empty());
+    }
+    let batches = dispatch
+        .managed
+        .live_projection_batches
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    assert!(!batches.is_empty());
+    assert_eq!(
+        dispatch.managed.projected_items.load(Ordering::Acquire),
+        batches.iter().map(|batch| batch.items.len()).sum::<usize>()
+    );
+    let mut retained_user = Vec::new();
+    let mut retained_call = Vec::new();
+    let mut retained_result = Vec::new();
+    for batch in batches {
+        assert_eq!(batch.conversation_id, "source-live-conversation");
+        live_projection_batch(&batch)?.validate()?;
+        for item in &batch.items {
+            let message = &item.message;
+            let binding = (
+                batch.conversation_epoch.clone(),
+                batch.generation_id.clone(),
+                item.ordinal.clone(),
+            );
+            if message.role == "user"
+                && message.content.as_deref() == Some("source service user input 中文🙂")
+            {
+                retained_user.push(binding);
+            } else if message.role == "assistant"
+                && message
+                    .tool_calls_json
+                    .as_deref()
+                    .is_some_and(|calls| calls.contains("source-live-shell-call"))
+            {
+                retained_call.push(binding);
+            } else if message.role == "tool" && message.content.as_deref() == Some("sandbox answer")
+            {
+                retained_result.push(binding);
+            }
+        }
+    }
+    for (actual, ordinal) in [(retained_user, 0), (retained_call, 1), (retained_result, 2)] {
+        assert_eq!(
+            actual,
+            vec![(
+                WireU64::from_u64(1),
+                "source-live-conversation".to_string(),
+                WireU64::from_u64(ordinal)
+            )],
+            "a retained original fact received a new projection identity"
+        );
+    }
+    assert!(
+        !dispatch
+            .managed
+            .runtime
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .is_empty()
+    );
+    let read_facts = dispatch
+        .live_probe_read_facts
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .clone();
+    assert!(
+        read_facts
+            .iter()
+            .any(|fact| fact.get("context_held") == Some(&serde_json::Value::Bool(true)))
+    );
+    assert!(
+        read_facts
+            .iter()
+            .any(|fact| fact.get("context_held") == Some(&serde_json::Value::Bool(false)))
+    );
+    for fact in read_facts {
+        let held = fact
+            .get("context_held")
+            .and_then(serde_json::Value::as_bool)
+            .ok_or("missing callback read phase")?;
+        assert_eq!(
+            fact.get("successes")
+                .and_then(serde_json::Value::as_array)
+                .map(Vec::len),
+            Some(if held { 2 } else { 0 })
+        );
+        assert_eq!(
+            fact.get("conflicts")
+                .and_then(serde_json::Value::as_array)
+                .map(Vec::len),
+            Some(if held { 3 } else { 1 })
+        );
+    }
     host.child.kill().await?;
     Ok(())
 }

@@ -14,9 +14,12 @@ import pytest
 from echo_agent_sdk import (
     AgentComponentCall,
     AgentComponentDescriptor,
+    CompressionOutcome,
+    ContextCompressorDescriptor,
     EchoAgentClient,
     EchoAgentError,
     LlmClientDescriptor,
+    TokenizerReference,
     WireHandle,
 )
 
@@ -89,6 +92,184 @@ async def collect(session, stream, bound=12):
         if variant != "item":
             return events
     raise AssertionError("workflow did not reach bounded terminal")
+
+
+async def test_live_compressor_consumes_context_and_releases_host_tokenizer():
+    work, spec, sdk = await setup("compressor")
+    c = spec["compression"]
+    facts = {
+        "model_requests": [],
+        "compressions": [],
+        "compression_results": [],
+        "released_tokenizers": [],
+        "settlements": [],
+        "before_messages": [],
+        "after_messages": [],
+        "decoy_calls": 0,
+    }
+    tokenizers = []
+    try:
+
+        async def model_handler(call, _cancellation):
+            request = dict(call.request)
+            facts["model_requests"].append(request)
+            response = copy.deepcopy(spec["response"])
+            response["message"]["content"] = {
+                "kind": "string",
+                "value": "answer: " + request["messages"][-1]["content"]["value"],
+            }
+            return response
+
+        model = await sdk.register_llm_client(
+            "compression-model",
+            LlmClientDescriptor("fixture-model", False),
+            model_handler,
+        )
+        agent = await sdk.create_agent()
+        session = await agent.create_session()
+
+        class Compressor:
+            async def compress(self, call, _cancellation):
+                tokenizer = call.tokenizer
+                tokenizers.append(tokenizer)
+                row = {
+                    "input": {
+                        "messages": list(call.messages),
+                        "token_limit": str(call.token_limit),
+                        "current_query": call.current_query,
+                        "focus_instructions": call.focus_instructions,
+                        "tokenizer": {
+                            "resource": tokenizer.resource.to_dict(),
+                            "owner_session_id": tokenizer.owner_session_id,
+                        },
+                    },
+                    "extension": call.extension.to_dict(),
+                    "invocation_id": call.invocation_id,
+                    "deadline": call.deadline,
+                }
+                facts["compressions"].append(row)
+                row["token_count"] = str(await sdk.count_tokens(tokenizer, "hello"))
+                row["wrong_owner"] = await observed_error(
+                    sdk.count_tokens(
+                        TokenizerReference(tokenizer.resource, "foreign-owner"), "hello"
+                    )
+                )
+                previous = facts["before_messages"][-1]
+                row["protected_messages"] = [
+                    message
+                    for message in previous
+                    if not any(
+                        candidate["role"] == message["role"]
+                        and candidate["content"]["value"] == message["content"]
+                        for candidate in call.messages
+                    )
+                ]
+                protected_tokens = 0
+                for message in row["protected_messages"]:
+                    protected_tokens += await sdk.count_tokens(
+                        tokenizer, message["content"]
+                    )
+                row["protected_tokens"] = str(protected_tokens)
+                evicted = tuple(
+                    message
+                    for message in call.messages
+                    if message["content"].get("value")
+                    in (c["evict"], "answer: " + c["evict"])
+                )
+                messages = tuple(
+                    message for message in call.messages if message not in evicted
+                )
+                row["output"] = {
+                    "messages": list(messages),
+                    "evicted": list(evicted),
+                    "checkpoint": None,
+                }
+                return CompressionOutcome(messages, evicted, None)
+
+        class Decoy:
+            async def compress(self, _call, _cancellation):
+                facts["decoy_calls"] += 1
+                raise AssertionError("wrong compressor selected")
+
+        original = await sdk.register_context_compressor(
+            "original-compressor",
+            ContextCompressorDescriptor("original-compressor"),
+            Compressor(),
+        )
+        decoy = await sdk.register_context_compressor(
+            "decoy-compressor", ContextCompressorDescriptor("decoy-compressor"), Decoy()
+        )
+        facts["original_extension"] = original.wire.to_dict()
+        await session.invoke(
+            "echo_agent::agent::react::ReactAgent::set_token_limit",
+            [int(c["token_limit"])],
+        )
+        await session.invoke(
+            "echo_agent::agent::react::ReactAgent::set_compressor", [original.wire]
+        )
+        facts["binding"] = original.wire.to_dict()
+        facts["before_messages"].append(
+            await session.invoke("echo_agent::agent::react::ReactAgent::get_messages")
+        )
+        facts["compression_results"].append(
+            await session.invoke(
+                "echo_agent::agent::react::ReactAgent::force_compress_context"
+            )
+        )
+        facts["after_messages"].append(
+            await session.invoke("echo_agent::agent::react::ReactAgent::get_messages")
+        )
+        facts["released_tokenizers"].append(
+            await observed_error(sdk.count_tokens(tokenizers[0], "hello"))
+        )
+        for text in (c["evict"], c["retain"]):
+            run = await session.start_run(text)
+            facts["settlements"].append(await run.wait(timeout=15))
+            await run.close()
+        facts["before_messages"].append(
+            await session.invoke("echo_agent::agent::react::ReactAgent::get_messages")
+        )
+        facts["compression_results"].append(
+            await session.invoke(
+                "echo_agent::agent::react::ReactAgent::force_compress_with_focus_and_hooks",
+                [c["focus"], 64, "manual"],
+            )
+        )
+        facts["after_messages"].append(
+            await session.invoke("echo_agent::agent::react::ReactAgent::get_messages")
+        )
+        facts["released_tokenizers"].append(
+            await observed_error(sdk.count_tokens(tokenizers[1], "hello"))
+        )
+        facts["before_messages"].append(
+            await session.invoke("echo_agent::agent::react::ReactAgent::get_messages")
+        )
+        facts["compression_results"].append(
+            await session.invoke(
+                "echo_agent::agent::react::ReactAgent::force_compress_context"
+            )
+        )
+        facts["after_messages"].append(
+            await session.invoke("echo_agent::agent::react::ReactAgent::get_messages")
+        )
+        facts["released_tokenizers"].append(
+            await observed_error(sdk.count_tokens(tokenizers[2], "hello"))
+        )
+        run = await session.start_run(c["next"])
+        facts["settlements"].append(await run.wait(timeout=15))
+        await run.close()
+        await session.close()
+        await agent.close()
+        await original.close()
+        await decoy.close()
+        await model.close()
+    finally:
+        await sdk.close()
+        (work / "observed.json").write_text(
+            json.dumps(facts, ensure_ascii=False, indent=2)
+        )
+    print(f"LLM/Workflow evidence: {work}")
+    print(await helper(work, "--verify", "compressor"))
 
 
 async def test_llm_real_registered_provider_full_requests_usage_failure_and_cancel():

@@ -2,6 +2,24 @@
 
 本页维护 D01–D14 的产品范围和接受条件。当前治理验收、开放问题及 CI 状态仅以[当前剩余验收](capability-review-remaining.md)为准；下面的前一阶段记录保留其原观察切点，不代表当前状态。
 
+## 当前集合观察（2026-10-20，framework3560812）
+
+原唯一生成器已在精确已发布F3560812下实际完成28profiles/117产物update及fullcheck，canonical库存10973，scope为external5621、Host/Rust-only1908、internal91、language_intrinsic819、deferred2534。accepted identity/kind与454routes不增退；计数只界定集合，不是完成率。下面原6563/2528的2026-10-17段保其历史切点，不改写为今天。
+
+新增canonical10项中，4个Context transform方法是Host/Rust-only；6个仍deferred，按原D01–D14互斥规则归属：
+
+| 原组 | 本次新增，非accepted named API | 原6563数→356数 |
+| --- | --- | ---: |
+| D01 | ReactAgent::new_with_configured_llm_client | 430→431 |
+| D04 | PreparedContextTransform | 84→85 |
+| D06 | TranscriptContextOnlyMessage及digest/position字段，TranscriptProjectionCheckpoint::context_only | 269→273 |
+| 其它D组 | 无新增 | 原数不变 |
+| 合计 | 6项，无自动接受或退役 | 2528→2534 |
+
+原accepted聚合/既有字段不因新named identity仍deferred而丢掉合法完整值：RuntimeStore messages_json仍原样String，当前真实schema3/sidecar由框架解释；SDK不新增DTO/field selector/并行cursor。新配置构造器由Host Rust调用，但deferred是原生成分类，不能手工改称已接受或Host-only。parity entries另有11alias新增不独立计入canonical；只按本表集合归属，不扩大三语合同。
+
+本次deferred surface遥测为bridge47, family9, intrinsic1530, invoke202, standard2, value744，不把route可见性当accepted承诺。三语已接受构造/consumer及错误边界沿原具名Evidence；新SDK整套与main另验，不追加每Rust identity测试。
+
 ## 当前集合观察（2026-10-17）
 
 本SDK固定公开framework6563d26570cc4a8d93c86b7e37443b0559476807，其唯一generator生成的当前候选清单中，canonical deferred为2528项，明确accepted canonical为5621项；这不是framework仓库发布的SDK产物。原D01–D14选择规则仍完整、互斥：无重复、未分组或accepted交叉；不因route投影存在就自动接受该Rust identity。当前deferred的route surface分别为intrinsic1530、bridge47、standard2、value740、invoke201、family8。

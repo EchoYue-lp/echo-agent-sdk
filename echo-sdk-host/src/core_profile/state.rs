@@ -114,6 +114,16 @@ impl CoreProfileState {
         framework: echo_agent::config::FrameworkConfig,
         llm_client: std::sync::Arc<dyn echo_agent::llm::LlmClient>,
     ) -> std::result::Result<std::sync::Arc<Self>, HostError> {
+        Self::install_with_llm_config(state_root, limits, framework, llm_client, None)
+    }
+
+    pub(crate) fn install_with_llm_config(
+        state_root: &Path,
+        limits: SdkProfileLimits,
+        framework: echo_agent::config::FrameworkConfig,
+        llm_client: Arc<dyn echo_agent::llm::LlmClient>,
+        llm_config: Option<echo_agent::llm::LlmConfig>,
+    ) -> std::result::Result<Arc<Self>, HostError> {
         #[cfg(feature = "sdk-facade-adapters")]
         let facade = super::facade::SessionFacadeRuntime::new(&limits);
         Self::install_with_facade(
@@ -121,6 +131,7 @@ impl CoreProfileState {
             limits,
             framework,
             llm_client,
+            llm_config,
             #[cfg(feature = "sdk-facade-adapters")]
             facade,
         )
@@ -143,7 +154,7 @@ impl CoreProfileState {
     ) -> std::result::Result<Arc<Self>, HostError> {
         let facade =
             super::facade::SessionFacadeRuntime::with_subagent_capacity_for_test(&limits, capacity);
-        Self::install_with_facade(state_root, limits, framework, llm_client, facade)
+        Self::install_with_facade(state_root, limits, framework, llm_client, None, facade)
     }
 
     fn install_with_facade(
@@ -151,6 +162,7 @@ impl CoreProfileState {
         limits: SdkProfileLimits,
         framework: echo_agent::config::FrameworkConfig,
         llm_client: Arc<dyn echo_agent::llm::LlmClient>,
+        llm_config: Option<echo_agent::llm::LlmConfig>,
         #[cfg(feature = "sdk-facade-adapters")] facade: super::facade::SessionFacadeRuntime,
     ) -> std::result::Result<Arc<Self>, HostError> {
         let persistence = CorePersistence::open(state_root)
@@ -160,13 +172,13 @@ impl CoreProfileState {
         let extension_shared = Arc::new(super::extension_bridge::ExtensionBridgeShared::new());
         #[cfg(feature = "sdk-extension-bridge")]
         let extension_bridge: Option<Arc<super::extension_bridge::ExtensionBridge>>;
+        let mut definition =
+            PreparedAgentDefinition::new(framework, llm_client, Some(state_store.clone()), true);
+        if let Some(config) = llm_config {
+            definition = definition.with_llm_config(config);
+        }
         #[allow(unused_mut)]
-        let mut default_definition = Arc::new(PreparedAgentDefinition::new(
-            framework,
-            llm_client,
-            Some(state_store.clone()),
-            true,
-        ));
+        let mut default_definition = Arc::new(definition);
         // The bridge is created unbound (the state does not exist yet) and
         // captured by the default definition so every Session Agent built
         // from it resolves registered extensions; the state binds itself
