@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "40ee1b3b157fff947b8080d06ead6de8b5614816ae62c6cda4cf58e63b2720b0"
+    "content_digest": "fb9a608189cc7d35d2e0fae289e352133865e09965ba1fd64e15faef27aaf128"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -848,6 +848,11 @@ e31/88a/4f三actualdiscovery revision已由Root显式annotated refs正常推送�
 公开208a同源原14Rust、唯一完整语言3qs与fresh锁依赖实际完成；四sourceFinding由两精确Evidence/两rereview按原义务本地resolved，当前73resolved/1open。source refs保208a实际源码，原03filtered与后whole05执行分cut；原fetch失败、deny49例外及Java21范围不抹。原50Behavior/95Audit历史不批量改状态，新2Audit只审四条；managed历史Linux根因未知、最终具名结算/平台/main/nativeHook与冷历史仍独立。inventory_closure closed、behavior_model_closure open、Plan ready及PR5 Draft保持，未接受接口/示例/官网行为无变化；三个原quickstart已实际验，跨仓官网由Root所有者统一，不在本SDK复制。
 
 
-## 2026-10-20 媒体双alias focused源码与正式历史
+## 2026-10-20 媒体双alias首源码检查点（04eb历史）
 
 两accepted拼写到原Tool的薄适配、同原真实反例after及三语12ops19call只支持新媒体focused后继。新增一项同根因Finding open/空三链保存真实历史，当前73resolved/2open；原四sourceclosed不复活，managed历史Linux未知不伪repair。原50Behavior/旧Audit状态与inventoryclosed/behavioropen不变；新源最终完整门禁、精machine refs/冷main/nativeHook仍须结算。README精356与必要208a ref事实已同步，SDKwebsite无镜像/新增入口，三quickstart代码不改，仍待最后新源入口实际执行，未跨仓部署或registry发布。
+
+
+## 2026-10-20 逐项具名Behavior与原Audit后继
+
+原18core/17integrations/15values具体Evidence/Audit bindings已逐项落原Behavior：45个有限named单元verified、五项整体hold needs_review（extension-bridge/family-bridge/resources-streams/language-clients/media）。每项原model观察版本存正文，原Evidence runtime cut不重标；当前04eb源码观察与媒体受控增量另列，未借208a14给新Host整体验收。97个Audit主revision/freshness不提升，仅其指定named challenge新增，maps仍mapped；04eb修复源已公开，联合repair Evidence已绑定两alias Finding；Finding仍open，verification/rereview及最终新冻结源完整门禁/精审继续待。inventoryclosed/behavior_modelopen、Planready/PRDraft及main/platform/Hook/managed条件保留，最后新源适用完整门禁统一一次。

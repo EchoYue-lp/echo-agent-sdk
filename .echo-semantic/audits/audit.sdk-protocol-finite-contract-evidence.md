@@ -60,6 +60,42 @@ challenges:
     - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/combined-receipt.json
     evidence_refs:
     - evidence.sdk-protocol-finite-observation
+  named-settlement-family-intrinsic:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/src/wire.ts
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/src/echo_agent_sdk/wire.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/WireValues.java
+    - echo-sdk-protocol/src/scalar.rs
+    - echo-sdk-protocol/src/error.rs
+    - contracts/sdk/accepted-external-contract.json
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-integrations-finite-observation
+  named-settlement-family-structured-output:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-computation-50
+  named-settlement-family-value:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-protocol/src/scalar.rs
+    evidence_refs:
+    - evidence.sdk-protocol-finite-observation
 ---
 
 # Protocol contract_evidence 有限审查
@@ -100,3 +136,12 @@ facade_inventory 八个具名真实 fixture 覆盖新可路由项不接受、ali
 
 seed 未在此改动，完整28 profiles 的12 missing source 按原明确合同正确阻写，旧身份是否迁移/退役仍待用户。该正确阻断不是旧自动接受 bug 仍未修，也不是 full generator 已通过。库存量不成为能力完成分母，不自动接受 API、关闭全部模型或宣称 SDK main 完成。
 本 challenge 是 SDKcap 本次新增实际 source review；不是从协商 PASS 或 generic catalog 完成标志借来的通过。原其它 Protocol challenge 保持。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-intrinsic`：有限named单元结算；证据`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-parent-driver-candidate-verification`、`evidence.sdk-integrations-finite-observation`。
+- `behavior.sdk-family-structured-output`：有限named单元结算；证据`evidence.sdk-computation-50`。
+- `behavior.sdk-family-value`：有限named单元结算；证据`evidence.sdk-protocol-finite-observation`。

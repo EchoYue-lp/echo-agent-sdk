@@ -49,6 +49,18 @@ challenges:
     - echo-sdk-host/tests/facade_feature_adapters_e2e.rs
     evidence_refs:
     - evidence.sdk-task-subagent-candidate
+  named-settlement-family-subagent:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    evidence_refs:
+    - evidence.sdk-task-subagent-candidate
+    - evidence.sdk-stream-cancellation-routing-verification
+    - evidence.sdk-task-memory-workflow-finite-observation
 ---
 
 # stream-cancellation-routing-rereview
@@ -99,3 +111,10 @@ scope外操作、任意组合与后继Channelforward新实现。
 原fa62 header和569 routing组保历史。本次对8481已有七场景的精身份、原PID真实join、唯一matching CAS、兄弟结果不重写、foreign setup/stream不构造canonical receipt，以及provider错误字段无损和拒写合同独立复审C0/I0/M0；三语各7实际通过由同一官方入口承载。原framework物理结算与typed cancellation生命周期修复取已发布6563原链，不把cooperative测试误当超grace反证。SDK adapter保持薄，未新建Store/调度器/claimauthority。原Task新fixture只使真实原callback在cancel notice后闭合，typed duplicate强拒绝与原期限不动。
 
 当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-subagent`：有限named单元结算；证据`evidence.sdk-task-subagent-candidate`、`evidence.sdk-stream-cancellation-routing-verification`、`evidence.sdk-task-memory-workflow-finite-observation`。

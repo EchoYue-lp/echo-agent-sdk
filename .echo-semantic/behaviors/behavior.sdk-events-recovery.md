@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-events-recovery
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-events-recovery
-observed_at: cd5b78467f77ac28919cf9dda6877662bed744f4
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
 code_refs:
 - echo-sdk-host/src/core_profile/events.rs
 - echo-sdk-host/src/core_profile/persistence.rs
@@ -94,3 +94,16 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 原#120、ACK消费与stream具体缺陷三链resolved继续有效，不重复造关闭对象或操作外部Issue。新增liveJournal场景证明settledRun且Host/connection仍活时目录换代两次明确replay_unavailable/after_delay、原Runreceipt/peerSession完整page不变，restore同inode/原两fileSHA后完整page相同；三语言12/12/9零skip。它是既有正确失败路径补证，不是生产redgreen；不扩为activewritepartialcrash或任意网络故障。
 
 已接受event-replay及共享资源stream的入口、单一authority、正常生命周期/具名错误和恢复已有finiteexamined闭包；映射仅boundedmodel，Behavior保持needs_review，八个全局风险和baseline不因此全covered。宽cleanup与5秒B保持原Finding理由，12身份/完整生成/平台/main独立；其它resourcefamily/sourceoperation未审方法不从这条共享owner路径泛推全部无损。
+
+
+## 2026-10-20 具名有限结算
+
+本项verified只限原声明的具名合同单元及下列直接证据，非全SDK/平台或任意未列组合。原模型header observed_at为`cd5b78467f77ac28919cf9dda6877662bed744f4`，原正文及Evidence各自runtime cut保留；当前模型观察绑定公开`04eb6ad50982656b5a8b8ea649619b6a383065ff`，不把旧测试重标为新Host执行。
+
+直接证据：`evidence.sdk-ack-recovery-verification`、`evidence.sdk-gap-watermark-host-verification`、`evidence.sdk-events-resources-finite-observation`。
+
+具体复审入口：`audit.sdk-ack-recovery-rereview`、`audit.sdk-gap-watermark-host-rereview`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+支持范围仍限原named consumer/字段/副作用及其明确失败；未接受identity/任意provider、codec、选项或竞态组合不自动加入分母。

@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-family-git
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-integrations
-observed_at: 56929154c1851473e9e4837901b610cecf001b2d
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
 code_refs:
 - echo-sdk-host/src/core_profile/facade/mod.rs
 - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -29,6 +29,7 @@ evidence_refs:
 - evidence.sdk-candidate-behavior-verification
 - evidence.sdk-tool-behavior-candidate
 - evidence.sdk-git-published-consumer-verification
+- evidence.sdk-integrations-finite-observation
 finding_refs:
 - finding.sdk-git-branch-switch-dirty-path-overwrite
 - finding.sdk-git-worktree-source-poll-stack-overflow
@@ -125,3 +126,16 @@ CurrentTool本会话实际源码/84记录/所有字段与Java1/0/0/0 XML独审PA
 
 本slice不是所有平台或任意并发Git变动/远程push，不能由84计数证明所有未列Git行为。Root最新完整Rust/语言与最终SDK main/合同需自己的冻结收据，manifest当时whole pending保历史；B物理残余、12身份迁移/完整生成继续原独立Finding。
 八视角具名范围：输入由原schema/参数校验；结果逐HEAD/heads/index/files而非消息；nativeGit/原frameworkhelper唯一权威；durability限Git objects/files与原managedmarker；生命周期限boundedprocess与实际物理worktree清理；并发失败本次限dirty拒绝，原cwd隔离是历史独立证据，并非任意同repo并行；权限保持既有localtool risk菜单，无公网门控；合同以原9Tool/4source精确consumer、完整值/typederror与pubpin证明。原早期仍缺文字属历史，不升级Behavior verified或baselineclosure，也不靠84数量全族complete。原observed/source_refs作为其它历史源模型点保，后继fe845明确Evidence/Audit各自sourcecut，未把旧run重命名当前。
+
+
+## 2026-10-20 具名有限结算
+
+本项verified只限原声明的具名合同单元及下列直接证据，非全SDK/平台或任意未列组合。原模型header observed_at为`56929154c1851473e9e4837901b610cecf001b2d`，原正文及Evidence各自runtime cut保留；当前模型观察绑定公开`04eb6ad50982656b5a8b8ea649619b6a383065ff`，不把旧测试重标为新Host执行。
+
+直接证据：`evidence.sdk-tool-behavior-candidate`、`evidence.sdk-git-published-consumer-verification`、`evidence.sdk-integrations-finite-observation`。
+
+具体复审入口：`audit.sdk-integrations-finite-contract-evidence`、`audit.sdk-integrations-finite-result-side-effect`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+支持范围仍限原named consumer/字段/副作用及其明确失败；未接受identity/任意provider、codec、选项或竞态组合不自动加入分母。

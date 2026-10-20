@@ -32,6 +32,23 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-after.json
     evidence_refs:
     - evidence.sdk-events-resources-finite-observation
+  named-settlement-resources-streams:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/bounded_stdio.rs
+    - echo-sdk-host/src/config.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs#accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled
+    - echo-sdk-host/src/core_profile/facade/stream.rs#cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence
+    - echo-sdk-host/src/core_profile/facade/mod.rs#family_handle_argument_retains_opaque_resource_address
+    evidence_refs:
+    - evidence.sdk-stream-producer-verification
+    - evidence.sdk-channel-resource-admission
+    - evidence.sdk-llm-workflow-stream
+    - evidence.sdk-sandbox-natural-eof-verification
+    - evidence.sdk-events-resources-finite-observation
 ---
 
 # Events/Resources contract_evidence 有界审查
@@ -59,3 +76,10 @@ known5秒B物理结算与宽cleanup原Finding保open。12source/kind、未接受
 ## 未检查项
 
 active-write/partial-write journal injection及任意未承诺组合，不作为本slice虚拟缺证分母；closed oldIssue状态不在本作者操作范围。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-resources-streams`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-stream-producer-verification`、`evidence.sdk-channel-resource-admission`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-sandbox-natural-eof-verification`、`evidence.sdk-events-resources-finite-observation`。

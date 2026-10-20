@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-family-subagent
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-task-subagent
-observed_at: 02059dd3014633a23c188e30e73b0634a8c5621d
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
 code_refs:
 - echo-sdk-host/src/core_profile/facade/task.rs
 - echo-sdk-host/src/core_profile/facade/task_runtime.rs
@@ -105,3 +105,16 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 原正式a634/790whole TaskJ4/WFcheckpointJ1/MemoryJ1/LLMWFJ3及三语强断言支持exactCAS、canonicaldeps、短await不耗结果、liveStore、checkpoint/claimack与streamcancel具名路径。Taskcontext四Host getter消费为runid/waiver/nonwaivedmissingresult/nondefaultpolicy；三nativeCallback仅runid来自SessionACP，不宣完整3fieldreverseDTO。ContextInheritance纯值不是livehistory/memory继承E2E；compressor真实注册消费不推全部三nativehook重入取消，这一具体支持性缺口保留。
 
 Behavior保持needs_review/场景mapped只表有限审查闭包。内存Store/checkpoint无额外crossprocessdurability保证，5秒physicalB/wideTaskFinding仍open、12sourceidentity仍待人，当前A已有批准但其实现后原生/全gate另切点。scope外未接受sourceoperation/构造器不纳新增义务，也不以‘所有组合未穷尽’否定已审能力路径。
+
+
+## 2026-10-20 具名有限结算
+
+本项verified只限原声明的具名合同单元及下列直接证据，非全SDK/平台或任意未列组合。原模型header observed_at为`02059dd3014633a23c188e30e73b0634a8c5621d`，原正文及Evidence各自runtime cut保留；当前模型观察绑定公开`04eb6ad50982656b5a8b8ea649619b6a383065ff`，不把旧测试重标为新Host执行。
+
+直接证据：`evidence.sdk-task-subagent-candidate`、`evidence.sdk-stream-cancellation-routing-verification`、`evidence.sdk-task-memory-workflow-finite-observation`。
+
+具体复审入口：`audit.sdk-stream-cancellation-routing-rereview`、`audit.sdk-task-memory-workflow-finite-state-authority`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+支持范围仍限原named consumer/字段/副作用及其明确失败；未接受identity/任意provider、codec、选项或竞态组合不自动加入分母。

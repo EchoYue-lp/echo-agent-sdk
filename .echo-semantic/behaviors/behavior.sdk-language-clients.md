@@ -120,3 +120,16 @@ TS与Java两specific stdio关闭缺陷的repair/当前same-source verification/�
 Python与Java原纯值构造入口丢失 accepted runtime.subagent_lineage.parent_event_id：Python先将lineage容器转字符串再查字段，Java只查flat字段。原0ebe同一Python/Java probe各exit1；TS原nested peer exit0。185559仅修原投影：保容器到叶值转换、原flat优先与语言各自空值校验、不变UUID/其余identity字段/immutable更新；不新增API或Host状态权威。实际after同probe各exit0；Python3.10原模块3项与JUnit类3项均0失败/0skip，Java实际Oracle21运行且--release17编译通过，不冒已执行JDK17。SDKcap原源码、具名pure-value测试及材料审PASS C0/I0/M0；本元作者只回收该有限结论。
 
 仅这一个accepted pure-value parent投影局部闭合；不是全部lineage/跨进程事件/Host集成或Linux/JDK17完整语言验证。Map/Behavior仍保持原needs_review。B3、12accepted-source、合同13、PID/Linux和Host退出未知原因独立。历史raw不新增S包，下面Admin定位可保原byte恢复，不伪source_refs已在Git。
+
+
+## 2026-10-20 具名有限结算
+
+本项整体继续needs_review。原具名子链已有后继并不授整个composite或媒体最终资格；保原header观察版本和历史runtime cut，当前04eb源码定位及受控增量另记。
+
+直接证据：`evidence.sdk-language-client-lifecycle-current`、`evidence.sdk-typescript-stdio-close-specific-closure`、`evidence.sdk-java-stdio-close-specific-closure`、`evidence.sdk-event-identity-nested-parent-closure`。
+
+具体复审入口：`audit.sdk-language-client-lifecycle-contract-evidence`、`audit.sdk-language-client-lifecycle-state-authority`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+只结算已审local/wire/owner/ACK等named链；整体managed/platform/main/Hook仍hold，Oracle21不冒CI17。

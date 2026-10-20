@@ -33,6 +33,25 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.FactoryCleanupLifecycleTest.xml
     evidence_refs:
     - evidence.sdk-language-client-lifecycle-current
+  named-settlement-language-clients:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/src/wire.ts
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/src/echo_agent_sdk/wire.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/WireValues.java
+    - echo-sdk-protocol/src/scalar.rs
+    - echo-sdk-protocol/src/error.rs
+    - contracts/sdk/accepted-external-contract.json
+    - scripts/check-language-sdks.sh
+    - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+    evidence_refs:
+    - evidence.sdk-language-client-lifecycle-current
+    - evidence.sdk-typescript-stdio-close-specific-closure
+    - evidence.sdk-java-stdio-close-specific-closure
+    - evidence.sdk-event-identity-nested-parent-closure
 ---
 
 # 客户端 唯一业务与资源权威 有限复审
@@ -64,3 +83,10 @@ ACK/Factory阶段完成/取消投影和 retained original owner 源已实际独�
 ## factory-instance-routing具名复审范围
 
 原scope独立reviewer本session逐源码/实际native断言核对：三native5 distinct child/same descriptor、parallel closeA/B live/parent再构造、PY invalid factoryorigin stalegeneration零handler effect。Hostfactory_origin exactrouting与真实callback匹配，不用managedstore/LlmGraph代。 本条是原业务审查真实性回收，不另造engine执行。对应故障项可局部闭；主revision与原challenge仍保原76601观察，新challenge以ad实际提交源码/原运行收据定位，不把旧时间重标。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-language-clients`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-language-client-lifecycle-current`、`evidence.sdk-typescript-stdio-close-specific-closure`、`evidence.sdk-java-stdio-close-specific-closure`、`evidence.sdk-event-identity-nested-parent-closure`。

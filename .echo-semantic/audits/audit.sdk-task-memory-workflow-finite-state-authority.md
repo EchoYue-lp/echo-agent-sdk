@@ -79,6 +79,76 @@ challenges:
     - docs/sdk/governance/evidence/sdk-final-idempotency-rust-gates/original/05-workspace-tests.log
     evidence_refs:
     - evidence.sdk-task-memory-workflow-finite-observation
+  named-settlement-family-memory:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-memory-permission-candidate
+    - evidence.sdk-task-memory-workflow-finite-observation
+  named-settlement-family-subagent:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    evidence_refs:
+    - evidence.sdk-task-subagent-candidate
+    - evidence.sdk-stream-cancellation-routing-verification
+    - evidence.sdk-task-memory-workflow-finite-observation
+  named-settlement-family-task:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    evidence_refs:
+    - evidence.sdk-task-subagent-candidate
+    - evidence.sdk-task-context-direct-getter-consumption
+    - evidence.sdk-task-memory-workflow-finite-observation
+  named-settlement-family-workflow:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-workflow-successor-candidate
+    - evidence.sdk-llm-workflow-stream
+    - evidence.sdk-python-typed-component-stream-verification
+    - evidence.sdk-task-memory-workflow-finite-observation
+  named-settlement-task-subagent:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs#claim_task
+    - echo-sdk-host/src/core_profile/facade/subagent.rs#collect_result
+    - echo-sdk-host/tests/core_profile_e2e.rs#task_cancel_is_exact_and_pending_sibling_continues
+    evidence_refs:
+    - evidence.sdk-task-memory-workflow-finite-observation
+    - evidence.sdk-model-read-retained-verification
 ---
 
 # Task/Memory/Workflow state_authority 有限审查
@@ -123,3 +193,14 @@ SessionServices取liveAgenttaskrevisionservice同Arc，CRUD/runtime同framework 
 
 此处仅证明替换后新建 graph 使用当前 provider，不承诺已建 graph 中途热换，不新增 SDK setter、RPC 或跨进程持久化。Memory 与 Workflow 原具体 captured authority 缺陷三链足够本地 resolved；B 物理结算、12 身份处置、平台与 SDK main 均独立。
 主 02059 审查与原 challenge 保持；本 challenge 使用后继实际 source review 和具名消费断言，不借整个 group 审查代替新 LLM 证明。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-memory`：有限named单元结算；证据`evidence.sdk-memory-permission-candidate`、`evidence.sdk-task-memory-workflow-finite-observation`。
+- `behavior.sdk-family-subagent`：有限named单元结算；证据`evidence.sdk-task-subagent-candidate`、`evidence.sdk-stream-cancellation-routing-verification`、`evidence.sdk-task-memory-workflow-finite-observation`。
+- `behavior.sdk-family-task`：有限named单元结算；证据`evidence.sdk-task-subagent-candidate`、`evidence.sdk-task-context-direct-getter-consumption`、`evidence.sdk-task-memory-workflow-finite-observation`。
+- `behavior.sdk-family-workflow`：有限named单元结算；证据`evidence.sdk-workflow-successor-candidate`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-python-typed-component-stream-verification`、`evidence.sdk-task-memory-workflow-finite-observation`。
+- `behavior.sdk-task-subagent`：有限named单元结算；证据`evidence.sdk-task-memory-workflow-finite-observation`、`evidence.sdk-model-read-retained-verification`。

@@ -99,6 +99,81 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/inputs-before.json
     evidence_refs:
     - evidence.sdk-integrations-finite-observation
+  named-settlement-family-delivery:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+  named-settlement-family-improve:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-eval-improve-topology
+    - evidence.sdk-factory-child-settlement-verification
+  named-settlement-family-project-rules:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-rag-project-rules
+  named-settlement-family-source-operation:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    - evidence.sdk-model-read-retained-repair
+    - evidence.sdk-model-read-retained-verification
+  named-settlement-family-trace:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
 ---
 
 # Integrations state_authority 有限审查
@@ -146,3 +221,14 @@ Delivery内存不crossprocessdurable；checkpoint7/Trace17区别；configuredsan
 ## run-steer-canonical-turn-context具体旧缺陷复核
 
 原独立frameworkFinal本session三链artifactreview确匹配：根修复frameworka634 echo-core/src/agent/mod.rs + src/acp/runtime.rs reservedcanonicalturn/fallback；Hostconsumer严格identity不放宽，3nativeHTTPsecondrequestUnicode/accepted/lateempty/2wait真实证明；oldbefore/diagcompat限制保。 这是既有实际source/strongassert复核的回收；此新challenge观察ad的真实文件，不改变原主revision/bd8的第一次Integration/source审范围。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-delivery`：有限named单元结算；证据`evidence.sdk-state-trace-delivery-candidate`、`evidence.sdk-integrations-finite-observation`。
+- `behavior.sdk-family-improve`：有限named单元结算；证据`evidence.sdk-eval-improve-topology`、`evidence.sdk-factory-child-settlement-verification`。
+- `behavior.sdk-family-project-rules`：有限named单元结算；证据`evidence.sdk-rag-project-rules`。
+- `behavior.sdk-family-source-operation`：有限named单元结算；证据`evidence.sdk-integrations-finite-observation`、`evidence.sdk-model-read-retained-repair`、`evidence.sdk-model-read-retained-verification`。
+- `behavior.sdk-family-trace`：有限named单元结算；证据`evidence.sdk-state-trace-delivery-candidate`、`evidence.sdk-integrations-finite-observation`。

@@ -66,7 +66,25 @@ challenges:
     - echo-sdk-host/src/core_profile/facade/task_runtime.rs
     evidence_refs:
     - evidence.sdk-official-current-language-gate
-
+  named-settlement-language-clients:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/src/wire.ts
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/src/echo_agent_sdk/wire.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/WireValues.java
+    - echo-sdk-protocol/src/scalar.rs
+    - echo-sdk-protocol/src/error.rs
+    - contracts/sdk/accepted-external-contract.json
+    - scripts/check-language-sdks.sh
+    - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+    evidence_refs:
+    - evidence.sdk-language-client-lifecycle-current
+    - evidence.sdk-typescript-stdio-close-specific-closure
+    - evidence.sdk-java-stdio-close-specific-closure
+    - evidence.sdk-event-identity-nested-parent-closure
 ---
 
 # 客户端 精确来源与惯用语言入口 有限复审
@@ -111,3 +129,10 @@ JsonSupport.java与native-projection-invalid13corpus、三ProtocolIntegrity测�
 ## 三个Java fixture后继challenge的范围
 
 本次只回收ACK原portable route1case、Tool/SDKcap原pending-response fixture16case、FrameFinal原Task constrained-pool两负例与after完整class两profile各4case的有限复审；模型作者不新冒源码审者。主revision76601、既有challenge与历史正文精确保留，三个新challenge分别绑定8156/b9bc/131真实after源，不改旧运行时点。测试路径/物理frame完成前置/测试阻塞executor是三个独立support原因，不归框架生产调度/取消/持久性bug；新Linux工程验收仍待，原7open和B/12不由这些局部结果关闭。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-language-clients`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-language-client-lifecycle-current`、`evidence.sdk-typescript-stdio-close-specific-closure`、`evidence.sdk-java-stdio-close-specific-closure`、`evidence.sdk-event-identity-nested-parent-closure`。

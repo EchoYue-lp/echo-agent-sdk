@@ -30,6 +30,7 @@ evidence_refs:
 - evidence.sdk-tool-behavior-candidate
 - evidence.sdk-computation-50
 - evidence.sdk-tools-bridge-finite-observation
+- evidence.sdk-media-accepted-route-repair-verification
 finding_refs:
 - finding.sdk-media-accepted-tool-name-routing
 ---
@@ -114,6 +115,19 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 本对象needs_review不提升verified；八lens只具名examined。network原时点/内存Rag非crossprocess/未acceptcodec或constructor具体不承诺、5sphysicalB/12sourcekind/最终新源wholemain保独立。原ToolValue/Rag取证source保4feb taggedGit；FileAuthority补包若当前尚未commit其实际原件不假5bcbsourceRef，finite审scope不变，正式交付另逐包绑定。宽feature-failure-cause仅Tool/LLM子scope已修复，原Workflow/Memory/Eval其它义务未自动关。
 
 
-## 2026-10-20：十二个non-text accepted消费者与同源路由修复
+## 2026-10-20：十二个non-text accepted消费者与同源路由修复（04eb首检查点历史）
 
 原只text的不足由已有ToolsBridge Evidence文末后继承接：两accepted拼写不等原Tool名的真实old0bbc反例、新a17同probeafter及三语各一原媒体短链已实际执行。12unique操作/19call明确字段、文件、PNG model_content和错误/sentinel，不以telemetry或“未接受codec”排除既有承诺；不声称任意格式/所有选项/外部viewer或模型Run。原text default case与verifier完整保留并同文件回归通过。新finding.sdk-media-accepted-tool-name-routing跟踪同一两alias rootcause，当前open/空三链以待公开修复源码和最终当前门禁后精确闭合；本Behavior继续needs_review，不从focusedgreen直接升级。
+
+
+## 2026-10-20 具名有限结算
+
+本项整体继续needs_review。原具名子链已有后继并不授整个composite或媒体最终资格；保原header观察版本和历史runtime cut，当前04eb源码定位及受控增量另记。
+
+直接证据：`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-tool-behavior-candidate`、`evidence.sdk-computation-50`、`evidence.sdk-tools-bridge-finite-observation`、`evidence.sdk-media-accepted-route-repair-verification`。
+
+具体复审入口：`audit.sdk-tools-bridge-finite-contract-evidence`、`audit.sdk-tools-bridge-finite-data-durability`、`audit.sdk-tools-bridge-finite-failure-concurrency`、`audit.sdk-tools-bridge-finite-permission-external`、`audit.sdk-tools-bridge-finite-result-side-effect`、`audit.sdk-tools-bridge-finite-state-authority`、`audit.sdk-tools-bridge-finite-time-lifecycle`、`audit.sdk-tools-bridge-finite-trigger-input`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc读审在本项指出十二个non-text补证缺口，不能称当时媒体PASS。04eb薄增量与a17/三语focused另经C0：仅media两accepted名字到原Tool及原测试新增可选故事，原fixture五函数/默认HTTP/text oracles不变。这里确有媒体生产路径变化，不能把共用的非媒体路径连续性当媒体验证；原两个真实before与新直接after分cut保存，未借旧208a14为新源码完整资格。
+
+新12non-text/19call与原text已实际focused通过；04eb公开repair Evidence已绑定同源两alias Finding，该项仍OPEN，verification/rereview与最终新冻结完整门禁/精审待，不授全媒体最终资格。

@@ -39,6 +39,47 @@ challenges:
     evidence_refs:
     - evidence.sdk-model-read-retained-repair
     - evidence.sdk-model-read-retained-verification
+  named-settlement-agent-session-run:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/lib.rs#manual_close_keeps_active_run_actor_until_cleanup_and_receipt_settle
+    - echo-sdk-host/tests/core_profile_e2e.rs#explicit_session_create_reserves_persisted_turn_identity_before_new_run
+    - sdks/python/tests/test_parallel_sessions_host.py
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-model-read-retained-verification
+  named-settlement-family-session:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/factory.rs
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-model-read-retained-verification
+  named-settlement-family-source-operation:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-integrations-finite-observation
+    - evidence.sdk-model-read-retained-repair
+    - evidence.sdk-model-read-retained-verification
 ---
 
 # 精SDK208a的具名风险复审承接
@@ -68,3 +109,12 @@ owner active是全局谓词；普通并发也可有冲突，无自动重试。re
 ## 未检查项
 
 完整SourceOperation/intrinsic所有组合、自然Host退出/retirement、任意peerHTTP/Secrets、Windows/Temurin17全部消费者、当前14Rust/唯一官方整语言及qs/依赖/semantic/nativeHook/精SDKmain CI。相关工程可有后继证据，但本页不借尚未完成的门禁为四Finding之外背书。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-agent-session-run`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-model-read-retained-verification`。
+- `behavior.sdk-family-session`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-model-read-retained-verification`。
+- `behavior.sdk-family-source-operation`：有限named单元结算；证据`evidence.sdk-integrations-finite-observation`、`evidence.sdk-model-read-retained-repair`、`evidence.sdk-model-read-retained-verification`。

@@ -56,6 +56,17 @@ challenges:
     - echo-sdk-host/src/core_profile/wire.rs
     evidence_refs:
     - evidence.sdk-cancellation-observation
+  named-settlement-family-run:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/factory.rs
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-parent-driver-candidate-verification
 ---
 
 # callback-bound / final-response 局部复审
@@ -102,3 +113,10 @@ observer先unwind导致配额提前回收；错误ACK只保owner却让source终�
 本challenge只把当前机器源码组绑定8481；旧header335和历史七控/14a等审查不重标。原reader对原factory成功Unit之后重复close的真实phase、最小Host修复、晚Unit/Error/取消waiter重入及最后owner Drop、普通failed/unknown/guard否定控制以及当前三语原生close/cleanup逐原件有界复审C0/I0/M0。原late reply必须在guard与lease实际释放后经同initializer填既有OnceCell，不能拿tombstone、Weak或本地通知推成功；首Timeout保持。当前Java close只在native选择权已确定后发布，write错误和同Process真实退出/同owner retry保原5秒策略。Sandbox先等原physical response才有canonical terminal。原six-control101与修后单control0分开记录；当前全223 lib cases及完整语言是另一个实际新epoch。此处不扩大为任意平台或未知Linux退出根因。
 
 当前8481/Host098212的完整Rust14、同一官方完整三语入口及3quickstarts、源码身份和原件定位统一见[共同工程验证摘要](../evidence/evidence.sdk-cancellation-observation.md)。本处仅维护下列具名行为及范围，不复制另一份全套计数或升级平台/main结论。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-run`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-parent-driver-candidate-verification`。

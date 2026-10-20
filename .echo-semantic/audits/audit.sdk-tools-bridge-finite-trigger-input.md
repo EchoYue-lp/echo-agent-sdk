@@ -41,6 +41,64 @@ challenges:
     evidence_refs:
     - evidence.sdk-tools-bridge-finite-observation
     - evidence.sdk-tool-input-validation-candidate
+  named-settlement-extension-bridge:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt
+    - sdks/shared/testing/managed_persistence_backend.py
+    - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/LateFactoryHostTest.java
+    evidence_refs:
+    - evidence.sdk-channel-message-handler-consumer-audit
+    - evidence.sdk-managed-retirement
+    - evidence.sdk-llm-workflow-stream
+    - evidence.sdk-python-typed-component-stream-verification
+    - evidence.sdk-managed-supporting-operation-boundary
+    - evidence.sdk-extension-teardown-prefix-verification
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-bridge:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-managed-retirement
+    - evidence.sdk-llm-workflow-stream
+    - evidence.sdk-python-typed-component-stream-verification
+    - evidence.sdk-managed-supporting-operation-boundary
+    - evidence.sdk-eval-improve-topology
+    - evidence.sdk-search-sandbox-06bb
+    - evidence.sdk-channel-cooperative-two
+    - evidence.sdk-extension-teardown-prefix-verification
+    - evidence.sdk-stream-cancellation-routing-verification
+    - evidence.sdk-factory-child-settlement-verification
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-media:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-computation-50
+    - evidence.sdk-tools-bridge-finite-observation
+    - evidence.sdk-media-accepted-route-repair-verification
 ---
 
 # Tools/Bridge trigger_input 有限审查
@@ -73,3 +131,12 @@ challenges:
 
 原 adapter 跳过唯一 framework schema/custom validator 的具体 bug 已改为同一 validate_tool_input，参数绑定拒 excess arity（含 null），没有第二 validator。真实 prototype not_a_chart_type→假 line 的原成功和修后 typed InvalidParameter 保在旧专属 Evidence；正式 spy 强断言 missing/type/enum/excessNull/customBad 全 executes0、valid 精确 executes1，最新原05真实通过。后继 Chart 整数义务独立已有61原生/独审闭合，不以旧非法 enum 修复替整数证明，不把 helper 自动接受为三语言 API。
 current_tool_boundary_review 本次真实有限审查明确该原缺陷 closeeligible；本新 challenge 保主5bcb/旧审正文及已知范围，不借宽 tools family PASS。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-extension-bridge`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-channel-message-handler-consumer-audit`、`evidence.sdk-managed-retirement`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-python-typed-component-stream-verification`、`evidence.sdk-managed-supporting-operation-boundary`、`evidence.sdk-extension-teardown-prefix-verification`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-bridge`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-parent-driver-candidate-verification`、`evidence.sdk-managed-retirement`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-python-typed-component-stream-verification`、`evidence.sdk-managed-supporting-operation-boundary`、`evidence.sdk-eval-improve-topology`、`evidence.sdk-search-sandbox-06bb`、`evidence.sdk-channel-cooperative-two`、`evidence.sdk-extension-teardown-prefix-verification`、`evidence.sdk-stream-cancellation-routing-verification`、`evidence.sdk-factory-child-settlement-verification`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-media`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-tool-behavior-candidate`、`evidence.sdk-computation-50`、`evidence.sdk-tools-bridge-finite-observation`、`evidence.sdk-media-accepted-route-repair-verification`。

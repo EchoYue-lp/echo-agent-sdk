@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-family-standard
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-acp
-observed_at: 622d7931e01556161441d22de0697f6f35f24f17
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
 code_refs:
 - echo-sdk-host/src/lib.rs
 - echo-sdk-host/src/factory.rs
@@ -108,3 +108,16 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 原SDKcap独立Protocol8lens source审BLOCK的specificshape现经合法Hostproxy真before修复/newinitowner增量及实际源/材料独审PASS，source622d与原gate取证同。JBigIntegerexactversion/capfeatures全member拒/17canonicalpositiveu64/positivecallbacku32/2duration/nonemptydistinctcaps、Unicodecodepointsortedfeatures；Python officialValidationError仅initialize typed，TSfailedinithelper实际EOF/childexit持有原owner，原primaryerrorcleanupcause保。六genuineJava前误接受、TS/PY两shape/PYtypedoverflow与七afterOnly负例不混；TS37/PYintegrity31/原J21/PY25按freeze各切点，不旧782whole复用为新source完整通过。
 
 具体negotiationFinding修复/反例/verification/actualrereview三链已齐可localresolved，Behaviour仍needs_review/8lensexamined不全familyverified。core_rpc_contract/stdstdio4/plain/mismatchedhello和require_extended/negotiate_hello直接引用真实，旧运行time不因观察622d被重标；Windowsnative、fullgenerator12/B5physical平台/main独立。协议类编译catalog不是全部Rustinventorylanguageparity，无新接口/字段/错误taxonomy。
+
+
+## 2026-10-20 具名有限结算
+
+本项verified只限原声明的具名合同单元及下列直接证据，非全SDK/平台或任意未列组合。原模型header observed_at为`622d7931e01556161441d22de0697f6f35f24f17`，原正文及Evidence各自runtime cut保留；当前模型观察绑定公开`04eb6ad50982656b5a8b8ea649619b6a383065ff`，不把旧测试重标为新Host执行。
+
+直接证据：`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-protocol-finite-observation`。
+
+具体复审入口：`audit.sdk-acp-agent-run-finite-contract-evidence`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+标准permission没有新sender或回调重入承诺。

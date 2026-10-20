@@ -22,6 +22,22 @@ challenges:
     evidence_refs:
     - evidence.sdk-computation-50
     - evidence.sdk-chart-dimension-integer-loss-current-source
+  named-settlement-family-invoke:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-computation-50
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
 ---
 
 # computation-50-rereview
@@ -59,3 +75,10 @@ scope外操作、任意组合与后继Channelforward新实现。
 当前b909 Chart`echo-tools/src/chart.rs` SHA`cc9ea45f5a7fd942b923c81156314a359069da96757435d3e9ef7a41e94a3c47` width/height u64→u32 wrap/negativefallback，独立新I1绑定`finding.sdk-chart-dimension-integer-loss`仍open；不会将原50PASS或未publishedN修复当此整数义务通过，现SDK569/b909仍BLOCK，不新增宽度近似接受/default规则。
 
 上方追加source_refs逐569Gitblob=currentfileSHA精确，现14/newbb4f632+54 sourcecut实际范围匹配。原FaultHypothesis文本保留并在本次业务代码复核，源码变化闭包按原scope检查；statusexamined不等全无缺陷，supports/limits/41coverage/closure不提升。Framework业务源属于独立publishedGitb909，对native工具用既有pin/buildmanifest定位，不将framework文件伪置SDKtree。原历史整仓3ea/9e缺失仍未知，不把原run重新标为569。full28gen/三兼容人选/LinuxWindows/main仍分开。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-invoke`：有限named单元结算；证据`evidence.sdk-computation-50`、`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-parent-driver-candidate-verification`。

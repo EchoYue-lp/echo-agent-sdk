@@ -49,6 +49,23 @@ challenges:
     - sdks/java/src/test/java/com/echoagent/sdk/GapAckHostTest.java
     evidence_refs:
     - evidence.sdk-events-resources-finite-observation
+  named-settlement-resources-streams:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs
+    - echo-sdk-host/src/bounded_stdio.rs
+    - echo-sdk-host/src/config.rs
+    - echo-sdk-host/src/core_profile/facade/stream.rs#accepted_cancel_between_snapshot_and_terminal_commit_returns_cancelled
+    - echo-sdk-host/src/core_profile/facade/stream.rs#cancelled_pull_during_failed_cleanup_preserves_error_and_terminal_sequence
+    - echo-sdk-host/src/core_profile/facade/mod.rs#family_handle_argument_retains_opaque_resource_address
+    evidence_refs:
+    - evidence.sdk-stream-producer-verification
+    - evidence.sdk-channel-resource-admission
+    - evidence.sdk-llm-workflow-stream
+    - evidence.sdk-sandbox-natural-eof-verification
+    - evidence.sdk-events-resources-finite-observation
 ---
 
 # Events/Resources failure_concurrency 有界审查
@@ -83,3 +100,10 @@ active-write/partial-write journal injection及任意未承诺组合，不作为
 原真实gap4到达先于dupACK、三caller fullhandle successor barrier及原count/frame/cleanup强不变量的FrameFinal实际有限审，接e58未过滤完整语言/三quickstart和Host终态success；不重开#120或借新ACK投影三链。
 
 两revision挑战保修复源与新组合执行输入的准确范围，原top revision/旧challenge/body及freshness含义不变。本次元候选需独立材料审后Root批准安装才生效；当前不伪另一次源码/工程运行。只此specific localclosed，不接受B/12、Host cause、全物理cleanup、全部CI/main或1173连续性义务。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-resources-streams`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-stream-producer-verification`、`evidence.sdk-channel-resource-admission`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-sandbox-natural-eof-verification`、`evidence.sdk-events-resources-finite-observation`。

@@ -30,6 +30,37 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.TelemetryHostTest.xml
     evidence_refs:
     - evidence.sdk-integrations-finite-observation
+  named-settlement-family-delivery:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+  named-settlement-family-state:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-state-trace-delivery-candidate
+    - evidence.sdk-integrations-finite-observation
+    - evidence.sdk-model-read-retained-verification
 ---
 
 # Integrations data_durability 有限审查
@@ -57,3 +88,11 @@ Delivery内存不crossprocessdurable；checkpoint7/Trace17区别；configuredsan
 ## 未检查项
 
 任意未接受constructor/sourceoperation/codec/backend和远端物理finally，非这个finite菜单义务。原A2Afuturegen不是重启证明。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-delivery`：有限named单元结算；证据`evidence.sdk-state-trace-delivery-candidate`、`evidence.sdk-integrations-finite-observation`。
+- `behavior.sdk-family-state`：有限named单元结算；证据`evidence.sdk-state-trace-delivery-candidate`、`evidence.sdk-integrations-finite-observation`、`evidence.sdk-model-read-retained-verification`。

@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-family-intrinsic
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-language-clients
-observed_at: bd8e42e732588181b7a2589d91e9ffdce02d23e1
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
 code_refs:
 - sdks/typescript/src/client.ts
 - sdks/typescript/src/wire.ts
@@ -109,3 +109,16 @@ Behavior保持needs_review；入口具名mapped/examined不自动41verified、fu
 原accepted合同551 canonical intrinsic/12routes/59桶均无remote method/operation。原处置表将其分八类，以具名本地构造、getter、不可变modifier、UTF-8/JSON、精确usage/value、policy/算法、clock、TurnMode、ACP/Sandbox值测试及同源完整语言运行承接；catalog done不作消费完成证据。544项/58桶与ContextInheritance7项/1桶的分类不按每Rustidentity造测试，也不自动承诺Host执行JWT/Hook/重试/压缩/OS隔离。
 
 Context纯值源与代表断言、未接受from_parent/新DTO、Host process-local parent_context边界已在原Task/Subagent Evidence及处置表分清；不是live父会话继承E2E。本次只归并已C0证据与合同边界，不改本Behavior needs_review/human_confirmed，不把原whole套计数赋给新dirty源码或最终main。
+
+
+## 2026-10-20 具名有限结算
+
+本项verified只限原声明的具名合同单元及下列直接证据，非全SDK/平台或任意未列组合。原模型header observed_at为`bd8e42e732588181b7a2589d91e9ffdce02d23e1`，原正文及Evidence各自runtime cut保留；当前模型观察绑定公开`04eb6ad50982656b5a8b8ea649619b6a383065ff`，不把旧测试重标为新Host执行。
+
+直接证据：`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-parent-driver-candidate-verification`、`evidence.sdk-integrations-finite-observation`。
+
+具体复审入口：`audit.sdk-protocol-finite-contract-evidence`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+accepted本地8组与Context值/pure delegate；不承诺RPC安装或任意live父继承。

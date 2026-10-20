@@ -1,9 +1,9 @@
 # 当前能力模型的有限剩余验收
 ## 2026-10-20 媒体后继当前剩余
 
-同源pdf_extract/excel_write名字适配已有真实old0bbc red与新a17 after；原三语六族default+新增媒体故事各2pass，12个non-text成功操作/19call、真实Word/PDF/Excel/PNG和精错误/不覆sentinel由[原ToolsBridge Evidence后继](../../../.echo-semantic/evidence/evidence.sdk-tools-bridge-finite-observation.md)记录。定向Rust/fmt/strictClippy与新Hostbuild通过仅focused；一项新Finding仍open/空三链，当前73resolved/2open，待精修复Git/最终当前门禁/原Audit具体复审后另闭合。
+同源pdf_extract/excel_write名字适配已有真实old0bbc red与新a17 after；原三语六族default+新增媒体故事各2pass，12个non-text成功操作/19call、真实Word/PDF/Excel/PNG和精错误/不覆sentinel由[原ToolsBridge Evidence后继](../../../.echo-semantic/evidence/evidence.sdk-tools-bridge-finite-observation.md)记录。定向Rust/fmt/strictClippy与新Hostbuild通过仅focused；04eb修复源已公开且联合repair Evidence已绑定；新Finding仍open，当前73resolved/2open，verification/rereview及最终新冻结源完整门禁/原Audit精审仍待，之后再具体闭合。
 
-其余49行已有原具名证据可有界承接，不复活17be四closed缺陷，不以绿色计数批量verified或把单row推整八风险组；bridge/resources/语言client整体、managed历史Linux/main/平台/nativeHook条件仍独立。Root核SDK website directdelta0、无SDKdocs/examples镜像，三quickstart代码未改；最终新源入口仍待实际执行，官网/F镜像与gitlink由各owner维护。下面208a/0bbc全套只保其原切点，不借给媒体新源。
+原50行按明确读者bindings与每项边界结算45个有限Behavior verified、5项needs_review；后者为extension-bridge/family-bridge/resources-streams/语言client整体和media（完整新源门禁与三链待）。原97Audit主revision/freshness不提升，仅其指定named challenge追加；原maps仍mapped。04eb源码受控增量与原Evidence/runtime cut分开，未复活17be四closed缺陷，未由单row推整八风险组或全SDK。managed历史Linux/main/平台/nativeHook条件仍独立。Root核SDK website directdelta0、无SDKdocs/examples镜像，三quickstart代码未改；最终新源入口仍待实际执行，官网/F镜像与gitlink由各owner维护。下面208a/0bbc全套只保其原切点，不借给媒体新源。
 
 ## 2026-10-20 精pin356的本地工程与四缺陷闭合（媒体前基线）
 

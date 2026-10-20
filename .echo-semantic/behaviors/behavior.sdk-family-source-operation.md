@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-family-source-operation
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-integrations
-observed_at: bd8e42e732588181b7a2589d91e9ffdce02d23e1
+observed_at: 04eb6ad50982656b5a8b8ea649619b6a383065ff
 code_refs:
 - echo-sdk-host/src/core_profile/facade/mod.rs
 - echo-sdk-host/src/core_profile/facade/registry.rs
@@ -136,3 +136,16 @@ Behavior保持needs_review；入口具名mapped/examined不自动41verified、fu
 ## 2026-10-20：四个具名source缺陷三链后继
 
 model/base/busy/retained四Finding按新增两Evidence及两精确风险视角rereview在本地resolved。修复源208a及F356、同原反例finite after与后续同208a原14Rust/唯一完整语言3qs/fresh依赖分cut承接，原source分组菜单与支持范围不变。whole05实际执行邻例不倒填03的36filtered；model HTTP与opaque scalar仍两原case，17处schema3保持opaqueString。原owner/receiver、callback错误/arity优先与同Agent/Context guard语义不增加权限闸或第二状态。此Behavior继续needs_review；最终逐项能力与原Audit结算、managed历史Linux、平台/main和nativeHook/Stop独立，不能由四Bug闭合批量verified。
+
+
+## 2026-10-20 具名有限结算
+
+本项verified只限原声明的具名合同单元及下列直接证据，非全SDK/平台或任意未列组合。原模型header observed_at为`bd8e42e732588181b7a2589d91e9ffdce02d23e1`，原正文及Evidence各自runtime cut保留；当前模型观察绑定公开`04eb6ad50982656b5a8b8ea649619b6a383065ff`，不把旧测试重标为新Host执行。
+
+直接证据：`evidence.sdk-integrations-finite-observation`、`evidence.sdk-model-read-retained-repair`、`evidence.sdk-model-read-retained-verification`。
+
+具体复审入口：`audit.sdk-model-read-state-rereview`、`audit.sdk-retained-identity-rereview`、`audit.sdk-integrations-finite-state-authority`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+原12能力义务/272操作只作漏项核对；17be四Finding closed不复活，媒体独立Finding不被此项消除。

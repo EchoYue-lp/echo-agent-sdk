@@ -27,6 +27,35 @@ challenges:
     evidence_refs:
     - evidence.sdk-ack-recovery-repair
     - evidence.sdk-ack-recovery-verification
+  named-settlement-events-recovery:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/events.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/wire.rs
+    - echo-sdk-protocol/src/event.rs
+    - echo-sdk-host/src/core_profile/events.rs#real_journal_retention_page_authorizes_only_its_returned_watermark
+    - echo-sdk-host/src/core_profile/events.rs#replay_publication_failure_and_empty_future_page_grant_no_ack_coverage
+    - echo-sdk-host/tests/core_profile_e2e.rs#consumed_multiple_replay_page_ack_resumes_live_after_page_cursor
+    - sdks/shared/testing/gap_ack_fixture.py
+    - sdks/typescript/test/gap-ack-host.test.js
+    - sdks/python/tests/test_gap_ack_host.py
+    evidence_refs:
+    - evidence.sdk-ack-recovery-verification
+    - evidence.sdk-gap-watermark-host-verification
+    - evidence.sdk-events-resources-finite-observation
+  named-settlement-family-event-replay:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/events.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-protocol/src/event.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    evidence_refs:
+    - evidence.sdk-ack-recovery-verification
+    - evidence.sdk-gap-watermark-host-verification
+    - evidence.sdk-events-resources-finite-observation
 ---
 
 # ack-recovery-rereview
@@ -62,3 +91,11 @@ scope外操作、任意组合与后继Channelforward新实现。
 本次已检查：Retentiongap requestcursor→snapshot connectedclosure / ordinarypages merge orderindependent;empty/disconnected/interior cursors never authorize；Actualliveinclusive512ranges do not fill pendingjump gaps; pendingACKforwardgap can arrive but never commits/discards before officialsuccess; failedsendqueue retained。当前函数定位：observeReplay；acknowledge；_replay_ranges；pending_ack_sequences；observeReplay；replayCoversCursor；public CompletionStage<Void> notify；publishGap；publishEvent。实际afterproof范围：AckSubmissionTest / TS12/PY23/J18 cases;newfull publicgap andheldCompletion routing, not physicalprune3native。
 
 上方追加source_refs逐569Gitblob=currentfileSHA精确，现14/newbb4f632+54 sourcecut实际范围匹配。原FaultHypothesis文本保留并在本次业务代码复核，源码变化闭包按原scope检查；statusexamined不等全无缺陷，supports/limits/41coverage/closure不提升。Framework业务源属于独立publishedGitb909，对native工具用既有pin/buildmanifest定位，不将framework文件伪置SDKtree。原历史整仓3ea/9e缺失仍未知，不把原run重新标为569。full28gen/三兼容人选/LinuxWindows/main仍分开。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-events-recovery`：有限named单元结算；证据`evidence.sdk-ack-recovery-verification`、`evidence.sdk-gap-watermark-host-verification`、`evidence.sdk-events-resources-finite-observation`。
+- `behavior.sdk-family-event-replay`：有限named单元结算；证据`evidence.sdk-ack-recovery-verification`、`evidence.sdk-gap-watermark-host-verification`、`evidence.sdk-events-resources-finite-observation`。

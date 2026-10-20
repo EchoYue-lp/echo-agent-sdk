@@ -142,32 +142,34 @@ alone are not behavioral evidence.
 | Status | Meaning | Reached |
 |---|---|---|
 | **Design** | The design document is agreed | ✅ |
-| **Contract** | Full generation and accepted source/catalog continuity match the final pin | Pending: twelve source choices and full generation |
+| **Contract** | Full generation and accepted source/catalog continuity match the final pin | Complete for the current framework pin: accepted continuity choices and the original full 28-profile/117-artifact generation/check executed |
 | **ACP conformant** | A standard ACP v1 client passes the supported profile against a real source-built Host | ✅ |
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
 | **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Historical Plan 08 route baseline; current capability/failure review remains separate |
 | **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | Snapshot-bound language gate passed; later repairs require current-source verification |
-| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Pending final continuity/behavior/main acceptance; 5,622 is the frozen seed count |
-| **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance | [14 bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); final inventory regeneration pending |
+| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Membership/catalog continuity complete at 5,621; final matched-source behavior/gates/main acceptance remain pending |
+| **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,534 deferred identities, with no automatic acceptance |
 | **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
 
 ### Identity inventory scope
 
-The following counts describe the committed extraction inventory used by the
-wire candidate. They are historical telemetry, not a freshly generated a634
-public inventory or proof that the twelve continuity choices were accepted.
-The current pin is `a6346643bda47679a96760f56f45e41fd73b61b0`; see
-[source continuity](../../MIGRATION-SOURCE.md), the
-[a634 Rust gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md) and
-[complete language gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
-for exact input cuts. Subsequent repairs and final publication/idempotency
-validation remain separately bound.
+The current Host pin is published framework
+`3560812caede84998a1f6f26d7bf3fa81ea0486c` from framework PR193.
+The original full 28-profile/117-artifact generation and contract gate completed
+against that pin. The current committed manifest has 10,973 canonical identities,
+with 5,621 accepted external identity/kind keys and 454 accepted routes; current
+scope counts are in the table below. See [source continuity](../../MIGRATION-SOURCE.md)
+and [current acceptance](governance/capability-review-remaining.md) for exact cuts.
+SDK208a/Host0bbc full local gates and 04eb/Hosta17 focused media results retain
+their own sources; the final successor-source whole entry/main/platform remain pending.
 
-The committed parity manifest contains 9,724 canonical identities. TypeScript,
-Python, and Java all mark 5,622 of them `done`; the
-remaining 4,102 identities are all classified under the `intrinsic` route
-surface. Standard ACP, core extension, family, bridge, invoke, and value route
-surfaces have no remaining not-done canonical identities.
+An older extraction/wire-candidate note recorded 9,724 canonical identities,
+5,622 language-done identities and4,102 remaining intrinsic-route identities.
+Those are historical telemetry from that note, not the current committed
+manifest or current accepted membership. The old a634
+[Rust gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-a634-rust-gates/README.md) and
+[language gate](https://github.com/EchoYue-lp/echo-agent-sdk/blob/0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9/docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/README.md)
+links preserve their historical input cuts and do not qualify the current Host.
 
 These counts are SDK inventory telemetry, not repository-wide semantic progress
 and not an instruction to open one pull request per identity. The complete
@@ -183,11 +185,11 @@ the adapter route and per-language status:
 
 | `sdk_scope` | Canonical items | Current meaning |
 |---|---:|---|
-| `external_contract` | 5,622 | Frozen accepted canonical membership and language mapping; capability behavior requires separate evidence. |
-| `host_or_rust_only` | 1,774 | Process-local or Host-owned runtime authority. |
-| `language_intrinsic` | 790 | Rust syntax, trait implementations and callback types represented idiomatically. |
-| `internal_helper` | 90 | Rust testing support, not an SDK product surface. |
-| `deferred` | 1,448 | Potential capabilities awaiting capability-level contract review. |
+| `external_contract` | 5,621 | Frozen accepted canonical membership and language mapping; capability behavior requires separate evidence. |
+| `host_or_rust_only` | 1,908 | Process-local or Host-owned runtime authority. |
+| `language_intrinsic` | 819 | Rust syntax, trait implementations and callback types represented idiomatically. |
+| `internal_helper` | 91 | Rust testing support, not an SDK product surface. |
+| `deferred` | 2,534 | Potential capabilities awaiting capability-level contract review. |
 
 The scope is generated, aliases inherit their canonical identity, and no row
 is manually promoted. An intrinsic route becomes a blocking external contract

@@ -30,6 +30,18 @@ challenges:
     - sdks/java/src/test/java/com/echoagent/sdk/SecretScanHostTest.java
     evidence_refs:
     - evidence.sdk-accepted-source-continuity-gate
+  named-settlement-family-task:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/task.rs
+    - echo-sdk-host/src/core_profile/facade/task_runtime.rs
+    - echo-sdk-host/src/core_profile/facade/subagent.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    evidence_refs:
+    - evidence.sdk-task-subagent-candidate
+    - evidence.sdk-task-context-direct-getter-consumption
+    - evidence.sdk-task-memory-workflow-finite-observation
 ---
 
 # 已批准SDK源身份迁移的独立复审
@@ -78,3 +90,10 @@ SDK action/归档continuity/main由父任务后继整合；无发布、合main�
 ## 未检查项
 
 不替Linux/Windows原生消费者、B新pin、全SDK main/CI、第三工具迁移或全局行为闭合验收。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-family-task`：有限named单元结算；证据`evidence.sdk-task-subagent-candidate`、`evidence.sdk-task-context-direct-getter-consumption`、`evidence.sdk-task-memory-workflow-finite-observation`。

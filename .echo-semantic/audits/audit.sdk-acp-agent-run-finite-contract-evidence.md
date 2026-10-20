@@ -34,6 +34,33 @@ challenges:
     - docs/sdk/governance/evidence/sdk-a634-rust-gates/10-ci-core-profile.log
     evidence_refs:
     - evidence.sdk-acp-agent-run-finite-observation
+  named-settlement-acp:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-protocol/src/capability.rs
+    - echo-sdk-host/src/lib.rs#run_stdio_with_close_owner
+    - echo-sdk-host/tests/stdio_e2e.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs#extended_standard_prompt_bridges_shared_core_handles
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-protocol-finite-observation
+  named-settlement-family-standard:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/lib.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/features.rs
+    - echo-sdk-host/src/core_profile/mod.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-protocol/src/capability.rs
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-protocol-finite-observation
 ---
 
 # ACP/AgentSessionRun contract_evidence 有限审查
@@ -61,3 +88,11 @@ Akeyconnectiongeneration不可durable跨restart；B5physical/12/生成/平台/ma
 ## 未检查项
 
 未advertiseSessionlist/publicsave/Hostrunclose、未接受Rusthelper及全unlisted组合不纳本slice；任意remotephysical必须真实原authority证据。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-acp`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-protocol-finite-observation`。
+- `behavior.sdk-family-standard`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-protocol-finite-observation`。

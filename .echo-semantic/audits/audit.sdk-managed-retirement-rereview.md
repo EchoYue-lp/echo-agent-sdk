@@ -6,7 +6,8 @@ boundary_ref: boundary.sdk-extension-bridge
 lens: contract_evidence
 freshness: examined
 revision: 56929154c1851473e9e4837901b610cecf001b2d
-finding_refs: []
+finding_refs:
+- finding.sdk-managed-restart-passive-host-exit-timeout
 challenges:
   actual-source-and-consumer-boundary:
     revision: 56929154c1851473e9e4837901b610cecf001b2d
@@ -20,6 +21,13 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-factory-final/source-after.json
     evidence_refs:
     - evidence.sdk-managed-retirement
+  managed-passive-exit-unknown-frontier:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt
+    evidence_refs:
+    - evidence.sdk-managed-retirement
+    - evidence.sdk-cancellation-observation
 ---
 
 # managed-retirement-rereview
@@ -55,3 +63,10 @@ scope外操作、任意组合与后继Channelforward新实现。
 本次已检查：Originalcanonicalclear leads actual eighthreverseconsumer/CASretirement once;Unsupported rejects mutation;lostACK/restart sameexactreceipt；Scope-retirement/delete3reverseDTO support vsnoacceptedforwardconsumer remainsRustHostboundary not newSDKAPI;explicit stablecaller identity。当前函数定位：retire_runtime_generation_with_context；begin_scope_retirement_with_context；continue_scope_retirement_with_context；clear_persisted_runtime_incarnation；delete_persisted_conversation。实际afterproof范围：Newbb4f ManagedRetirementHostTest 2each +20backend/Taskstore executionCAS;not all11forwardoperations。
 
 上方追加source_refs逐569Gitblob=currentfileSHA精确，现14/newbb4f632+54 sourcecut实际范围匹配。原FaultHypothesis文本保留并在本次业务代码复核，源码变化闭包按原scope检查；statusexamined不等全无缺陷，supports/limits/41coverage/closure不提升。Framework业务源属于独立publishedGitb909，对native工具用既有pin/buildmanifest定位，不将framework文件伪置SDKtree。原历史整仓3ea/9e缺失仍未知，不把原run重新标为569。full28gen/三兼容人选/LinuxWindows/main仍分开。
+
+
+## 2026-10-20 被动退出未知义务的明确关联
+
+本Audit的原managed数据退役/receipt消费PASS不等首Host自然被动退出证明。现明确关联finding.sdk-managed-restart-passive-host-exit-timeout，保其implementation_bug/open及repair三链空；历史0ebe/F00782原Linux10秒timeout根因未知，同F后继Linuxbridge28/0/0与208a本机whole05/12通过只为各自回归，不冒因果repair。当前04eb原测试保10秒被动wait及已有phase诊断，无删断言/kill/retry-as-pass，也未新增CI。引用的旧managed Evidence仅其数据退役范围，cancellation Evidence明确被动退出未知，两者不能相互代替。
+
+最终精SDKmain Linux原sdk-host整bridge及原日志会提供当前回归；即使通过，仍须分别记当前回归和历史根因未知，不凭之resolved或填虚构repair。Root只在全部可执行工作完成后处理准确残余裁决；risk_accepted必须有人的decision_refs。主header revision/freshness与原challenge原件不重标，当前只新增这一具体unknown frontier。

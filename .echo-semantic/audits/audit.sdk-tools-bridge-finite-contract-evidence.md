@@ -9,6 +9,7 @@ revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
 finding_refs:
 - finding.sdk-feature-failure-cause-fidelity
 - finding.sdk-managed-store-adaptation
+- finding.sdk-media-accepted-tool-name-routing
 challenges:
   builtin-tool-and-reverse-bridge-obligation:
     revision: 5bcbad2437e5c19f61101883044c4f67944cb97c
@@ -59,6 +60,219 @@ challenges:
     - evidence.sdk-tools-bridge-finite-observation
     - evidence.sdk-managed-retirement
     - evidence.sdk-managed-supporting-operation-boundary
+  named-settlement-extension-bridge:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs#managed_commit_disconnect_restart_replays_same_receipt
+    - sdks/shared/testing/managed_persistence_backend.py
+    - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/LateFactoryHostTest.java
+    evidence_refs:
+    - evidence.sdk-channel-message-handler-consumer-audit
+    - evidence.sdk-managed-retirement
+    - evidence.sdk-llm-workflow-stream
+    - evidence.sdk-python-typed-component-stream-verification
+    - evidence.sdk-managed-supporting-operation-boundary
+    - evidence.sdk-extension-teardown-prefix-verification
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-bridge:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-protocol/src/methods.rs
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-parent-driver-candidate-verification
+    - evidence.sdk-managed-retirement
+    - evidence.sdk-llm-workflow-stream
+    - evidence.sdk-python-typed-component-stream-verification
+    - evidence.sdk-managed-supporting-operation-boundary
+    - evidence.sdk-eval-improve-topology
+    - evidence.sdk-search-sandbox-06bb
+    - evidence.sdk-channel-cooperative-two
+    - evidence.sdk-extension-teardown-prefix-verification
+    - evidence.sdk-stream-cancellation-routing-verification
+    - evidence.sdk-factory-child-settlement-verification
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-chart:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-tool-input-validation-candidate
+    - evidence.sdk-be5-shared-chart61-ci
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-data:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-computation-50
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-database:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-ordinary-tools-b909-verification
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-files:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-ordinary-tools-b909-verification
+    - evidence.sdk-tool-value-natural-eof-after-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+    - evidence.sdk-integrations-finite-observation
+  named-settlement-family-media:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-candidate-behavior-verification
+    - evidence.sdk-tool-behavior-candidate
+    - evidence.sdk-computation-50
+    - evidence.sdk-tools-bridge-finite-observation
+    - evidence.sdk-media-accepted-route-repair-verification
+  named-settlement-family-rag:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-rag-project-rules
+    - evidence.sdk-rag-scalar-verification
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-research:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-ordinary-tools-b909-verification
+    - evidence.sdk-tool-value-natural-eof-after-candidate
+    - evidence.sdk-external-timeout-oracle
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-shell:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-search-sandbox-06bb
+    - evidence.sdk-sandbox-natural-eof-verification
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-statistics:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-computation-50
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-family-web:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/mod.rs
+    - echo-sdk-host/src/core_profile/facade/registry.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - echo-sdk-host/src/core_profile/facade/integrations.rs
+    - echo-sdk-host/src/core_profile/facade/memory.rs
+    - echo-sdk-host/src/core_profile/facade/workflow.rs
+    - echo-sdk-host/src/core_profile/facade/state_delivery.rs
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - echo-sdk-host/src/core_profile/facade/observability.rs
+    evidence_refs:
+    - evidence.sdk-search-sandbox-06bb
+    - evidence.sdk-ordinary-tools-b909-verification
+    - evidence.sdk-tool-value-natural-eof-after-candidate
+    - evidence.sdk-tools-bridge-finite-observation
+  named-settlement-media-two-alias-repair:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/facade/tools.rs#dispatch_tool
+    - sdks/shared/testing/tool_behavior_fixture.py#verify_media
+    - sdks/typescript/test/tool-behaviors.test.js
+    - sdks/python/tests/test_tool_behaviors.py
+    - sdks/java/src/test/java/com/echoagent/sdk/ToolBehaviorsHostTest.java
+    evidence_refs:
+    - evidence.sdk-media-accepted-route-repair-verification
 ---
 
 # Tools/Bridge contract_evidence 有限审查
@@ -95,3 +309,22 @@ challenges:
 
 原 managed capability/deadline/revision/receipt 适配义务结合既有 managed-retirement 独审与 supporting-operation-boundary：missing capability 先于 mutation 拒绝，deadline 过期不 commit，commit 后丢 ACK 保 OutcomeUnknown，disconnect/restart 使用同 exact receipt，typed checkpoint 大 revision 与 subsecond 字段无损；具名 tests 在最新原05真实通过。第八个 native consumer 与 backend20 证据保原 epoch，不宣全部11 forward；三逆 DTO 保 schema/RustHost supporting 边界，无已接受 forward 不新造 API。
 current_tool_boundary_review 本次真实有限审查明确该原缺陷 closeeligible；本新 challenge 保主5bcb/旧审正文及已知范围，不借宽 tools family PASS。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-extension-bridge`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-channel-message-handler-consumer-audit`、`evidence.sdk-managed-retirement`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-python-typed-component-stream-verification`、`evidence.sdk-managed-supporting-operation-boundary`、`evidence.sdk-extension-teardown-prefix-verification`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-bridge`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-parent-driver-candidate-verification`、`evidence.sdk-managed-retirement`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-python-typed-component-stream-verification`、`evidence.sdk-managed-supporting-operation-boundary`、`evidence.sdk-eval-improve-topology`、`evidence.sdk-search-sandbox-06bb`、`evidence.sdk-channel-cooperative-two`、`evidence.sdk-extension-teardown-prefix-verification`、`evidence.sdk-stream-cancellation-routing-verification`、`evidence.sdk-factory-child-settlement-verification`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-chart`：有限named单元结算；证据`evidence.sdk-tool-input-validation-candidate`、`evidence.sdk-be5-shared-chart61-ci`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-data`：有限named单元结算；证据`evidence.sdk-computation-50`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-database`：有限named单元结算；证据`evidence.sdk-tool-behavior-candidate`、`evidence.sdk-ordinary-tools-b909-verification`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-files`：有限named单元结算；证据`evidence.sdk-ordinary-tools-b909-verification`、`evidence.sdk-tool-value-natural-eof-after-candidate`、`evidence.sdk-tools-bridge-finite-observation`、`evidence.sdk-integrations-finite-observation`。
+- `behavior.sdk-family-media`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-candidate-behavior-verification`、`evidence.sdk-tool-behavior-candidate`、`evidence.sdk-computation-50`、`evidence.sdk-tools-bridge-finite-observation`、`evidence.sdk-media-accepted-route-repair-verification`。
+- `behavior.sdk-family-rag`：有限named单元结算；证据`evidence.sdk-rag-project-rules`、`evidence.sdk-rag-scalar-verification`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-research`：有限named单元结算；证据`evidence.sdk-ordinary-tools-b909-verification`、`evidence.sdk-tool-value-natural-eof-after-candidate`、`evidence.sdk-external-timeout-oracle`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-shell`：有限named单元结算；证据`evidence.sdk-search-sandbox-06bb`、`evidence.sdk-sandbox-natural-eof-verification`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-statistics`：有限named单元结算；证据`evidence.sdk-computation-50`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-web`：有限named单元结算；证据`evidence.sdk-search-sandbox-06bb`、`evidence.sdk-ordinary-tools-b909-verification`、`evidence.sdk-tool-value-natural-eof-after-candidate`、`evidence.sdk-tools-bridge-finite-observation`。
+- `behavior.sdk-family-media`：仅named子链/实际after，整体仍hold；证据`evidence.sdk-media-accepted-route-repair-verification`。

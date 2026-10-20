@@ -34,6 +34,31 @@ challenges:
     - docs/sdk/governance/evidence/sdk-a634-rust-gates/10-ci-core-profile.log
     evidence_refs:
     - evidence.sdk-acp-agent-run-finite-observation
+  named-settlement-agent-session-run:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/factory.rs
+    - echo-sdk-host/src/lib.rs#manual_close_keeps_active_run_actor_until_cleanup_and_receipt_settle
+    - echo-sdk-host/tests/core_profile_e2e.rs#explicit_session_create_reserves_persisted_turn_identity_before_new_run
+    - sdks/python/tests/test_parallel_sessions_host.py
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-model-read-retained-verification
+  named-settlement-family-run:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/handles.rs
+    - echo-sdk-host/src/core_profile/state.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/factory.rs
+    evidence_refs:
+    - evidence.sdk-acp-agent-run-finite-observation
+    - evidence.sdk-parent-driver-candidate-verification
 ---
 
 # ACP/AgentSessionRun state_authority 有限审查
@@ -61,3 +86,11 @@ Akeyconnectiongeneration不可durable跨restart；B5physical/12/生成/平台/ma
 ## 未检查项
 
 未advertiseSessionlist/publicsave/Hostrunclose、未接受Rusthelper及全unlisted组合不纳本slice；任意remotephysical必须真实原authority证据。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-agent-session-run`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-model-read-retained-verification`。
+- `behavior.sdk-family-run`：有限named单元结算；证据`evidence.sdk-acp-agent-run-finite-observation`、`evidence.sdk-parent-driver-candidate-verification`。

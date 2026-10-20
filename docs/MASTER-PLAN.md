@@ -2,9 +2,9 @@
 
 ## 2026-10-20 媒体accepted路由与真实消费者后继（当前）
 
-原50行读审仅媒体12个non-text缺具名后继；实际old0bbc又证明pdf_extract/excel_write与原Tool名不匹配，两条同根因。唯一SDK修复仍原Tool name适配，accepted16/原F/pin/lock/producer与Tool执行权威不变。新Hosta17真实build、两同probeafter、TS/PY/Java原default+newmedia各2pass和定向Rust/strictClippy/fmt均0；完整原件/范围由既有ToolsBridge Evidence文末承接，不新测试管理矩阵。一个新Finding open/空三链保存历史，当前73resolved/2open；先公开精确修复源，再按最少Evidence及原Audit精challenge关闭，不能把dirty源码假绑17be已修。
+原50行读审仅媒体12个non-text缺具名后继；实际old0bbc又证明pdf_extract/excel_write与原Tool名不匹配，两条同根因。唯一SDK修复仍原Tool name适配，accepted16/原F/pin/lock/producer与Tool执行权威不变。新Hosta17真实build、两同probeafter、TS/PY/Java原default+newmedia各2pass和定向Rust/strictClippy/fmt均0；完整原件/范围由既有ToolsBridge Evidence文末承接，不新测试管理矩阵。04eb修复源已公开，联合repair Evidence已绑定新Finding，当前73resolved/2open；该Finding继续open，verification/rereview及最终新冻结源完整门禁/精审仍待，原Audit精challenge不假报整体验收。
 
-下一步沿原50行及原56风险入口逐项具名settle，保bridge/resources/clients整体受managedLinux/main/Hook限制，不机械批量verified。最后冻结源统一取得适用完整门禁、canonical/必要ref冷取回与精main CI；媒体后继不借旧208a14/whole通过。SDK新窗口独占，资源floor及不触碰外缓存规则不变；PR5 Draft/Plan ready，registry/W部署排除。
+原50行现已按18core/17integrations/15values原读者bindings逐项结算：45个有限named Behavior verified，extension-bridge/family-bridge/resources-streams/语言client整体及media五项仍needs_review；媒体待新源全量/三链，另外四项保managedLinux/main/Hook条件。每项04eb源码观察与原历史Evidence cut/受控media增量分别说明，未机械推整八风险组/maps/freshness。新联合Evidence只为两alias真实repair/after，原ToolsBridge Audit精challenge承接，Finding仍open。最后冻结源统一取得适用完整门禁、canonical/必要ref冷取回与精main CI；媒体后继不借旧208a14/whole通过。SDK新窗口独占，资源floor及不触碰外缓存规则不变；PR5 Draft/Plan ready，registry/W部署排除。
 
 ## 2026-10-20 精main356后的有限消费者补证（媒体前基线）
 

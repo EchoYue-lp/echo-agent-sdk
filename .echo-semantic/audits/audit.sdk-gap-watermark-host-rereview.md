@@ -35,6 +35,35 @@ challenges:
     evidence_refs:
     - evidence.sdk-gap-watermark-host-repair
     - evidence.sdk-gap-watermark-host-verification
+  named-settlement-events-recovery:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/events.rs
+    - echo-sdk-host/src/core_profile/persistence.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-host/src/core_profile/wire.rs
+    - echo-sdk-protocol/src/event.rs
+    - echo-sdk-host/src/core_profile/events.rs#real_journal_retention_page_authorizes_only_its_returned_watermark
+    - echo-sdk-host/src/core_profile/events.rs#replay_publication_failure_and_empty_future_page_grant_no_ack_coverage
+    - echo-sdk-host/tests/core_profile_e2e.rs#consumed_multiple_replay_page_ack_resumes_live_after_page_cursor
+    - sdks/shared/testing/gap_ack_fixture.py
+    - sdks/typescript/test/gap-ack-host.test.js
+    - sdks/python/tests/test_gap_ack_host.py
+    evidence_refs:
+    - evidence.sdk-ack-recovery-verification
+    - evidence.sdk-gap-watermark-host-verification
+    - evidence.sdk-events-resources-finite-observation
+  named-settlement-family-event-replay:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - echo-sdk-host/src/core_profile/events.rs
+    - echo-sdk-host/src/core_profile/handler.rs
+    - echo-sdk-protocol/src/event.rs
+    - echo-sdk-host/tests/core_profile_e2e.rs
+    evidence_refs:
+    - evidence.sdk-ack-recovery-verification
+    - evidence.sdk-gap-watermark-host-verification
+    - evidence.sdk-events-resources-finite-observation
 ---
 
 # gap-watermark-host-rereview
@@ -72,3 +101,11 @@ actual新当前源码业务复审PASS0：eventse4/handlerfa6/coreE2Ebe8，12stro
 真实当前SDK source_refs在上方追加，逐569Gitblob读取/currentSHA完全一致/锚点存在；新14Rust与bb4f完整三语632input/54build实际scope对应。原历史审查正文、原source marker `source:pending`、旧inputHash/raw/time不变，原whole3ea/9e缺失仍不造整树；这个新观察不宣称旧运行发生Git569。当前变化的调用方/feature/owner路径已在本次独立源码复审核，不由只存在锚点或count推PASS。
 
 原支持范围、旧failure未知与limits保持；只追加这五故障的当前有界afterproof，特别ordinaryTools这里只承接Clinical，不扩大另外四族新复审。12acceptedsource迁移、5秒物理结算、依赖50warning规则仍未人批，Linux/Windows/main/fullgeneration另验；statusexamined不表示全无缺陷，41/coverage/closure/Finding状态不自动改变。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-events-recovery`：有限named单元结算；证据`evidence.sdk-ack-recovery-verification`、`evidence.sdk-gap-watermark-host-verification`、`evidence.sdk-events-resources-finite-observation`。
+- `behavior.sdk-family-event-replay`：有限named单元结算；证据`evidence.sdk-ack-recovery-verification`、`evidence.sdk-gap-watermark-host-verification`、`evidence.sdk-events-resources-finite-observation`。

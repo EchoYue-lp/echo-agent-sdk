@@ -19,7 +19,8 @@ evidence_refs:
 - evidence.sdk-tools-bridge-finite-observation
 audit_refs: []
 decision_refs: []
-repair_evidence_refs: []
+repair_evidence_refs:
+- evidence.sdk-media-accepted-route-repair-verification
 verification_evidence_refs: []
 rereview_audit_refs: []
 discovered_at: 208a027f587446badaaa2058e6af3240457431d2
@@ -49,7 +50,14 @@ PDF原raw872B/SHA25601dc8f7a4b3532f01e0d596025a96848ad96658ff33e6d5ea3d1005bf49f
 
 新Hosta17db78e5d3e73a5edf9ef529d387a218aa248d7042b08e12b88b843cd53baaf实际新编译退出0，保opt1/assertions/overflow/unwind；同原两probe只改expectedHostSHA后各actual0，PDF真实text与info控制通过，Excel真实writer文件产生；真正写→读同文件由三语原fixture媒体短链另证。原六族默认case及新增media sibling在TS/Python/Java各2pass/0fail/0skip，每个media故事12个成功操作/5typed RPC error/2structured tool failure，Word/PDF真实parser、Excel ZIP cells/精CSV bytes、图像bytes/model_content及错误不覆sentinel均已强断言。不是新全语言整套或新源码14资格。
 
+### 04eb首源码检查点（历史）
+
 本项在此focused检查点仍open、三链空：先保存修复源码/测试与真实历史，后继以公开修复Git绑定最小实际repair/verification Evidence及原Audit精challenge，并在新冻结源适用完整门禁与独审后再具体关闭。不能把dirty源假绑为17be已修、以旧208a全套借资格，或用本项关闭managed历史Linux/main/平台/nativeHook义务。
 
 
 Excel before/after seed由同脚本生成、语义输入相同，五个XML entry原字节逐一相同；ZIP时间戳13:21:52与13:28:50不同，因此容器整体SHA不同，不能称seed ZIP byte-identical。PDF before/after输入SHA相同。此精度修正来自实际输入独核，不修改成功断言或重跑结果。
+
+
+## 公开修复源的后继绑定
+
+修复源码/原shared及三测试已公开于04eb6ad50982656b5a8b8ea649619b6a383065ff；repair_evidence_refs已绑定联合Evidence，原ToolsBridge contract-evidence追加精challenge。Finding仍open，verification_evidence_refs与rereview_audit_refs继续留空，待最终新冻结源完整Rust14、唯一whole语言/3quickstart和精确后验后再填，不以已有repair提前closed。

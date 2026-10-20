@@ -44,6 +44,17 @@ challenges:
     - docs/sdk/governance/evidence/sdk-language-a634-reviewed-final/java-surefire/TEST-com.echoagent.sdk.ProtocolIntegrityTest.xml
     evidence_refs:
     - evidence.sdk-protocol-finite-observation
+  named-settlement-repository-ownership:
+    revision: 04eb6ad50982656b5a8b8ea649619b6a383065ff
+    source_refs:
+    - AGENTS.md
+    - MIGRATION-SOURCE.md
+    - docs/adr/0001-sdk-repository-boundary.md
+    evidence_refs:
+    - evidence.sdk-source-import
+    - evidence.sdk-source-continuity
+    - evidence.sdk-framework-pin
+    - evidence.sdk-compatibility-gates
 ---
 
 # Protocol state_authority 有限审查
@@ -75,3 +86,10 @@ Windowsnative路径、fullacceptedgenerator12source、5sphysicalB/platform/main�
 ## 原具名协议入口/消费断言直接定位
 
 core_rpc_contract与stdio4、plain/mismatchedhello实测试、negotiate_hello/require_extended生产入口，以及原JavaProtocolIntegrityXML9均追加真实622d直接refs。原oldRust/三native命令时间为历史，622d源/receipt观察不把后继A新增coretests当原命令已运行；这只是该Protocol故障义务的可复核来源补齐，不要求新工程门禁或全fields矩阵。
+
+
+## 2026-10-20 具名后继的有界结算
+
+主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
+
+- `behavior.sdk-repository-ownership`：有限named单元结算；证据`evidence.sdk-source-import`、`evidence.sdk-source-continuity`、`evidence.sdk-framework-pin`、`evidence.sdk-compatibility-gates`。

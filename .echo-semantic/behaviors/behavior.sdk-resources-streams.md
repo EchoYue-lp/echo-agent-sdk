@@ -95,3 +95,16 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 原#120、ACK消费与stream具体缺陷三链resolved继续有效，不重复造关闭对象或操作外部Issue。新增liveJournal场景证明settledRun且Host/connection仍活时目录换代两次明确replay_unavailable/after_delay、原Runreceipt/peerSession完整page不变，restore同inode/原两fileSHA后完整page相同；三语言12/12/9零skip。它是既有正确失败路径补证，不是生产redgreen；不扩为activewritepartialcrash或任意网络故障。
 
 已接受event-replay及共享资源stream的入口、单一authority、正常生命周期/具名错误和恢复已有finiteexamined闭包；映射仅boundedmodel，Behavior保持needs_review，八个全局风险和baseline不因此全covered。宽cleanup与5秒B保持原Finding理由，12身份/完整生成/平台/main独立；其它resourcefamily/sourceoperation未审方法不从这条共享owner路径泛推全部无损。
+
+
+## 2026-10-20 具名有限结算
+
+本项整体继续needs_review。原具名子链已有后继并不授整个composite或媒体最终资格；保原header观察版本和历史runtime cut，当前04eb源码定位及受控增量另记。
+
+直接证据：`evidence.sdk-stream-producer-verification`、`evidence.sdk-channel-resource-admission`、`evidence.sdk-llm-workflow-stream`、`evidence.sdk-sandbox-natural-eof-verification`、`evidence.sdk-events-resources-finite-observation`。
+
+具体复审入口：`audit.sdk-events-resources-finite-contract-evidence`、`audit.sdk-events-resources-finite-data-durability`、`audit.sdk-events-resources-finite-failure-concurrency`、`audit.sdk-events-resources-finite-permission-external`、`audit.sdk-events-resources-finite-result-side-effect`、`audit.sdk-events-resources-finite-state-authority`、`audit.sdk-events-resources-finite-time-lifecycle`、`audit.sdk-events-resources-finite-trigger-input`；只读者已按这一个named单元核权威、生命周期、失败与证据边界，不能由共享对象推整八风险组。
+
+源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
+
+原handle/stream/EOF/cancel具名证据保留；managed历史Linux/main/Hook使整个composite继续hold。
