@@ -15,7 +15,8 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs: []
-audit_refs: []
+audit_refs:
+- audit.sdk-managed-retirement-rereview
 decision_refs: []
 repair_evidence_refs: []
 verification_evidence_refs: []
@@ -44,3 +45,16 @@ discovered_at: 0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9
 ## 2026-10-19：当前本地验证与精确main Linux待验
 
 状态仍open，原Linux运行38674982406/job116226422816的10秒第一次Host被动退出根因仍未知。当前8481ba5823aa190cf76859d6af0570898c432bbd原完整Rust矩阵里的相同managed restart case已在本机实际通过，诊断保原10秒/同Host/passive wait，无kill/retry-as-pass；这是当前revision的本地回归证据，不能称已复现或修复历史Linux根因。没有填写虚构repair/verification/rereview三链。唯一剩余验收入口是最终合入后的精确SDK main Linux原套件及其原日志/CI Artifact；若失败按原phase诊断继续，不能以本地PASS或已经合并为豁免。平台验收成功后仍分别保“当前回归通过”和“历史根因未知”，不得杜撰生产修复。
+
+
+## 2026-10-20 同生产源码首次Linux PASS的强反证
+
+失败源是SDK0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9，首次后继Linux PASS精head为e58a3e0c07cf0b6b24d570df07063301a888ddc6（原run38696176970，同bridge28/0fail/0ignore）。逐Git对象核：两版Host production src树都为b601874d724c56f68c1d22cccc1fb814bb86f3f0；Protocol src树同6fff1a9cd6b8bfd8167b88dc4b1c6b24c717c330；Cargo.lock Git blob同017220fd23f465cbdbbced2c87da03a01e7050d8；rust-ci.yml Git blob同96ae6cbc5bd46f712a55096d74040ca8d42c0140，CI命令未变。F00782/ACP2.1.0/Tokio1.53.1未变。唯一Host文件差异是原10秒passive wait失败后的额外诊断，没有延长期限、强制kill或retry-as-pass。由此首次PASS没有可指认的生产repair，不能借后来的Factory lateUnit/CustomAgent等修复归因本次历史超时。
+
+原失败发生first-host-exit十秒wait处：首场景drive、projected_items>0和first.is_ok已过，第二Host尚未spawn。缺的是那次失败Host是否实际读EOF、阻在哪个cleanup/callback/Run、还是cleanup后runtime进程退出的现场证据。已审链中Responder持outgoing sender而非ChildStdin；transport future持stdin，connect_with foreground结束在非closing分支会drop background/transport，没有找到确定自持环。EOF后的ACP pendingError/cancel→原managed invoke释放guard/lease→F boundeddrain路径已有；这只是已检查路径与未找到反例，不能推出原失败没有阻塞。Tokio stdin blocking read仍仅候选，不是已证原因。
+
+当前main.rs的Git blob8f0bec708035e625848f0613f6979e03fbd97b3d及bounded_stdio.rs的3edcc69eedeccb32587e65aae58a05113e0918b3自失败源到当前86fe逐字同；这不声称整个后继Host源码未变化。当前a17/9ef原14和whole通过是新的匹配回归资格，不是历史因果repair。原失败日志与首PASS日志由原读者按完整SHA独核，保各自运行cut；Git树/锁/CI字节对照的本任务ignored记录managed-history-production-comparison.json1223B/79b0a71990e58cbbdf9029c9c019016069fd6885339a4d8cee56c6878d996bcb不是新的运行或报告事实源。e58原必要tag已存在，不新增tag/报告/测试。
+
+## 当前未知义务与最后裁决边界
+
+状态继续OPEN，type保持implementation_bug，repair/verification/rereview三链不填；原Audit关联只保存具体反证与unknown frontier。最后精SDKmain Linux原套件及日志只能再提供当前回归：若PASS仍分别记录“当前回归通过”和“历史根因未知”，不能以诊断/一次PASS关闭。所有可执行工作结束后，若仍缺真实因果，只把这一精确残余交由人决定接受或继续真实RCA；risk_accepted须人的decision_refs，本材料没有替人裁决，也不删原10秒断言或新增CI。
