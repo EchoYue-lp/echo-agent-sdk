@@ -147,7 +147,7 @@ alone are not behavioral evidence.
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
 | **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Historical Plan 08 route baseline; current capability/failure review remains separate |
 | **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | Snapshot-bound language gate passed; later repairs require current-source verification |
-| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Membership/catalog continuity and local matched-source gates passed at 5,621; four composite holds and exact main/platform acceptance remain pending |
+| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Membership/catalog continuity, local matched-source gates and the nine exact-main CI jobs passed at 5,621; four composite holds, the historical managed-exit cause and native Hook/Stop remain pending |
 | **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,534 deferred identities, with no automatic acceptance |
 | **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
 

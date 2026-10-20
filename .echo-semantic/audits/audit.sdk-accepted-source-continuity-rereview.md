@@ -42,6 +42,20 @@ challenges:
     - evidence.sdk-task-subagent-candidate
     - evidence.sdk-task-context-direct-getter-consumption
     - evidence.sdk-task-memory-workflow-finite-observation
+  exact-main-1e1-delivery-qualification:
+    revision: 1e1c4f03f670561d6ca804a56d35967eeea191ce
+    source_refs:
+    - contracts/sdk/accepted-external-contract.json
+    - contracts/sdk/accepted-facade-operation-catalog.json
+    - contracts/sdk/inventory-telemetry.json
+    - contracts/sdk/source-contract.json
+    - Cargo.lock
+    - echo-sdk-host/src/core_profile/facade/tools.rs
+    - scripts/check-sdk-contracts.sh
+    - scripts/check-language-sdks.sh
+    - .github/workflows/rust-ci.yml
+    evidence_refs:
+    - evidence.sdk-accepted-source-continuity-gate
 ---
 
 # 已批准SDK源身份迁移的独立复审
@@ -97,3 +111,10 @@ SDK action/归档continuity/main由父任务后继整合；无发布、合main�
 主header revision/freshness及原挑战仍保原审查cut；这里只记录下列named单元，原17be/0bbc读审与04eb受控media增量分开，旧Evidence运行不重标。任何一个row不能推整八风险组或整composite资格。
 
 - `behavior.sdk-family-task`：有限named单元结算；证据`evidence.sdk-task-subagent-candidate`、`evidence.sdk-task-context-direct-getter-consumption`、`evidence.sdk-task-memory-workflow-finite-observation`。
+
+
+## 2026-10-20 精确main交付后继
+
+主header revision/freshness和全部原challenge保持原观察，本具名后继只绑定精SDKmain 1e1c4f03f670561d6ca804a56d35967eeea191ce。PR5已MERGED，GitHub签名verified/valid；原push CI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918)确实执行该head，9个job均自然SUCCESS。
+
+当前Host只pin已发布framework3560812caede84998a1f6f26d7bf3fa81ea0486c；真实lock SHA256 58599a9f95c7b524fe63c97a560d2bac235539570b2ed9ed6165586c793444a3。原唯一28profile/117产物更新、完整合同入口和当前源码本地14Rust及完整三语言/3quickstarts已有各自实际收据；本段不重标旧运行。接受边界5621身份/454routes，当前set_model签名承接Result<()>，完整Rustinventory的10973canonical身份只作遥测；新Rust身份没有自动加入跨语言合同。精main原sdk-contract、source-language及其它七job实际SUCCESS提供当前平台回归。保持50Behavior中46有限verified/4整体needs_review、历史managed根因未知及nativeHook/Stop独立；不由本段提升整组或全局闭合。

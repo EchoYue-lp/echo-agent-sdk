@@ -54,7 +54,7 @@ from the complete Rust inventory telemetry. The exact blocking/non-blocking
 boundary remains recorded in `contracts/sdk/source-contract.json` and
 `contracts/sdk/inventory-telemetry.json`.
 
-## Current Governance Candidate Pin
+## Current Host Pin
 
 The current source pin is accepted published framework
 `3560812caede84998a1f6f26d7bf3fa81ea0486c`, tree
@@ -97,8 +97,8 @@ three native language media stories, retaining the original text oracles.
 The same-root-cause Finding now has concrete repair/verification/rereview chains
 and is locally resolved after current SDK9ef frozen-source Rust14 and the one
 original whole language entry plus all three quickstarts completed successfully.
-Their source/Host proofs remain distinct from the old SDK208a evidence. Exact
-SDK-main/platform/nativeHook and the unrelated historical Linux cause remain pending.
+Their source/Host proofs remain distinct from the old SDK208a evidence.
+SDK main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce) now has nine successful original exact-head CI jobs and a remote-main-plus-35-necessary-tags cold strict check. Windows CI is a compatibility build check. Native Hook/Stop and the unrelated historical Linux cause remain pending; the latter is still OPEN.
 
 ### Previous 6563 source and runtime evidence
 

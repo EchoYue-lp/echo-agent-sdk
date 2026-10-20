@@ -29,6 +29,14 @@ challenges:
     - docs/sdk/governance/evidence/sdk-4994-ci-results/jobs/116211906823.log
     evidence_refs:
     - evidence.sdk-cargo-deny-bootstrap-closure
+  exact-main-1e1-delivery-qualification:
+    revision: 1e1c4f03f670561d6ca804a56d35967eeea191ce
+    source_refs:
+    - .github/workflows/rust-ci.yml
+    - Cargo.lock
+    - deny.toml
+    evidence_refs:
+    - evidence.sdk-cargo-deny-bootstrap-closure
 ---
 
 # CIbootstrap有限源与remote事实复审
@@ -68,3 +76,10 @@ Root已取得4994全部八job自然终态5success/3failure并完成正式28归�
 原上文“remote raw未提交/候选不可装”是Admin前稿封存时点，原字节另保before。现在完整4994原八job后验28正式文件已在真实SDK Git `9061a9551807de14edb0227249ee07c12b31b0bd`保存；本次Evidence/Audit当期观察9061只定位原源码/原后验材料，不冒新9061执行。实际job116211906823为PRhead4994、checkoutmerge29a2d95，在日志中stable必要安装/default先于show，旧overrideerror消失，audit及4deny成功，精确50crate版本数组与原6bc0ed已批准组相同，其它warnings/errors0由SDKcap真实独审PASS0，原raw完整保。
 
 原Findingspecificbootstrap的repair（f68单existinginput）/remoteverification/独立rereview三链现有事实足局部resolved资格；只待本轮元artifact审与Root安装准入，不再把已提交正式包当pending。新来源sourceRefs逐9061Git核而非把futurepaths放4994；discovered722/原失败日志/同source修复时点保。若本轮安装只有bootstrap闭合，整体57resolved6open：Gap/PID仍newLinux后验不全、原PIDuniqueLinuxcauseunknown，B3/12合同待决与全部CI5success3failure/合同13/Windowsnative/SDKmain保持独立。
+
+
+## 2026-10-20 精确main交付后继
+
+主header revision/freshness和全部原challenge保持原观察，本具名后继只绑定精SDKmain 1e1c4f03f670561d6ca804a56d35967eeea191ce。PR5已MERGED，GitHub签名verified/valid；原push CI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918)确实执行该head，9个job均自然SUCCESS。
+
+精main原dependency-policy job118535120314实际SUCCESS。原action的rust-version:stable生效，日志先安装cargo/std/rustc、将stable-x86_64-unknown-linux-musl设default，再输出rustup当前toolchain；旧未安装override错误不存在。cargoaudit正常结束，deny实际advisories/bans/licenses/sources均ok；保留49条warning[duplicate]而非宣称零warning。原始joblog1049560B/SHA2563d9ef4442cab7d59d3723834f560c96550e1edadf58f15fed04a42c6c1bec269保存在任务ignored证据。原722失败、4994部分失败和9061后验仍是其历史切点，当前通过不覆盖或抹除它们；不从bootstrap成功推历史Host因果已修。
