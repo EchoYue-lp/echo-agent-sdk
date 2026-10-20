@@ -16,12 +16,22 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class ToolBehaviorsHostTest {
     @Test void sixFamiliesPreserveNativeResultsFailuresAndActualLocalEffects() throws Exception {
+        runToolStory(false);
+    }
+
+    @Test void acceptedNonTextMediaPreservesParsedFilesPixelsAndTypedFailures() throws Exception {
+        runToolStory(true);
+    }
+
+    private void runToolStory(boolean media) throws Exception {
         var host = System.getenv("ECHO_AGENT_SDK_HOST");
         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertNotNull(host, "required tool behavior Host binary missing");
         assumeTrue(host != null && !host.isBlank(), "real Host binary required");
         var fixturePath = Path.of("../shared/testing/tool_behavior_fixture.py").toAbsolutePath();
         var work = Files.createTempDirectory("sdk-java-tool-behaviors-");
-        var fixture = new ProcessBuilder("python3", fixturePath.toString(), "--work", work.toString()).redirectError(ProcessBuilder.Redirect.INHERIT).start();
+        var fixtureArgs = new ArrayList<>(List.of("python3", fixturePath.toString(), "--work", work.toString()));
+        if (media) fixtureArgs.add("--media");
+        var fixture = new ProcessBuilder(fixtureArgs).redirectError(ProcessBuilder.Redirect.INHERIT).start();
         EchoAgentClient sdk = null;
         boolean passed = false;
         try {
@@ -59,23 +69,27 @@ class ToolBehaviorsHostTest {
             }
             sessions.get("b").close(); agent.close(); sdk.close(); sdk = null;
             Files.writeString(work.resolve("results.json"), JsonSupport.MAPPER.writeValueAsString(results));
-            var verified = new ProcessBuilder("python3", fixturePath.toString(), "--work", work.toString(), "--verify", work.resolve("results.json").toString()).redirectErrorStream(true).start();
+            var verifyArgs = new ArrayList<>(List.of("python3", fixturePath.toString(), "--work", work.toString(), "--verify", work.resolve("results.json").toString()));
+            if (media) verifyArgs.add("--media");
+            var verified = new ProcessBuilder(verifyArgs).redirectErrorStream(true).start();
             var output = new String(verified.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
             assertTrue(verified.waitFor(10, TimeUnit.SECONDS));
             assertEquals(0, verified.exitValue(), output + "\nEvidence: " + work);
             var evidence = JsonSupport.MAPPER.readTree(output);
-            assertEquals(6, evidence.path("capability_families").intValue());
+            if (media) assertEquals(12, evidence.path("successful_operations").intValue());
+            else assertEquals(6, evidence.path("capability_families").intValue());
             assertEquals(scenario.path("steps").size(), evidence.path("native_calls").intValue());
             System.out.println("Tool behavior verified: " + evidence);
+            if (media) System.out.println("Accepted media evidence: " + work);
             passed = true;
         } finally {
             if (sdk != null) sdk.close();
             fixture.destroy(); assertTrue(fixture.waitFor(5, TimeUnit.SECONDS));
-            if (passed) {
+            if (passed && !media) {
                 try (var files = Files.walk(work)) {
                     for (var file : files.sorted(java.util.Comparator.reverseOrder()).toList()) Files.deleteIfExists(file);
                 }
-            } else System.err.println("Tool behavior evidence retained: " + work);
+            } else if (!passed) System.err.println("Tool behavior evidence retained: " + work);
         }
     }
 }

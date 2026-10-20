@@ -17,12 +17,14 @@ FIXTURE = (
 )
 
 
-@pytest.mark.asyncio
-@pytest.mark.skipif(not HOST, reason="real Host binary required")
-async def test_six_tool_families_preserve_results_failures_and_local_effects():
+async def _run_tool_story(media=False):
     work = Path(tempfile.mkdtemp(prefix="sdk-py-tool-behaviors-"))
     fixture = await asyncio.create_subprocess_exec(
-        sys.executable, str(FIXTURE), "--work", str(work)
+        sys.executable,
+        str(FIXTURE),
+        "--work",
+        str(work),
+        *(["--media"] if media else []),
     )
     sdk = None
     passed = False
@@ -82,6 +84,7 @@ async def test_six_tool_families_preserve_results_failures_and_local_effects():
             str(work),
             "--verify",
             str(work / "results.json"),
+            *(["--media"] if media else []),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
@@ -90,18 +93,35 @@ async def test_six_tool_families_preserve_results_failures_and_local_effects():
             output.decode() + diagnostics.decode() + f"\nEvidence: {work}"
         )
         evidence = json.loads(output)
-        assert evidence["capability_families"] == 6
+        if media:
+            assert evidence["successful_operations"] == 12
+        else:
+            assert evidence["capability_families"] == 6
         assert evidence["native_calls"] == len(scenario["steps"])
         print("Tool behavior verified: " + json.dumps(evidence))
+        if media:
+            print(f"Accepted media evidence: {work}")
         passed = True
     finally:
         if sdk is not None:
             await sdk.close()
         fixture.terminate()
         await asyncio.wait_for(fixture.wait(), timeout=5)
-        if passed:
+        if passed and not media:
             import shutil
 
             shutil.rmtree(work)
-        else:
+        elif not passed:
             print(f"Tool behavior evidence retained: {work}", file=sys.stderr)
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(not HOST, reason="real Host binary required")
+async def test_six_tool_families_preserve_results_failures_and_local_effects():
+    await _run_tool_story()
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(not HOST, reason="real Host binary required")
+async def test_accepted_non_text_media_preserves_parsed_files_pixels_and_failures():
+    await _run_tool_story(media=True)

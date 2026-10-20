@@ -526,11 +526,380 @@ def verify(work: Path, results_path: Path) -> dict:
     }
 
 
+# The non-text media story exercises the accepted leaf Tools, never a model or
+# an alternate parser. Existing six-family preparation/assertions stay intact.
+MEDIA_NON_TEXT = (
+    "view_image",
+    "pdf_extract",
+    "pdf_info",
+    "read_excel",
+    "excel_info",
+    "excel_to_csv",
+    "excel_profile",
+    "excel_write",
+    "read_word",
+    "word_info",
+    "word_structure",
+    "image_fetch",
+)
+
+
+def media_zip(parts: dict[str, str]) -> bytes:
+    import io
+    import zipfile
+
+    output = io.BytesIO()
+    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, content in parts.items():
+            entry = zipfile.ZipInfo(name, date_time=(2020, 1, 1, 0, 0, 0))
+            entry.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(entry, content.encode("utf-8"))
+    return output.getvalue()
+
+
+def media_png() -> bytes:
+    import struct
+    import zlib
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return (
+            struct.pack(">I", len(data))
+            + kind
+            + data
+            + struct.pack(">I", zlib.crc32(kind + data))
+        )
+
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(b"\x00\xff\x00\x00"))
+        + chunk(b"IEND", b"")
+    )
+
+
+def prepare_media(work: Path, url: str) -> None:
+    work.mkdir(parents=True, exist_ok=True)
+    (work / "artifact-temp").mkdir()
+    (work / "paper.pdf").write_bytes(pdf_bytes())
+    (work / "pixel.png").write_bytes(media_png())
+    rel = "http://schemas.openxmlformats.org/package/2006/relationships"
+    office = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    word = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    (work / "document.docx").write_bytes(
+        media_zip(
+            {
+                "[Content_Types].xml": '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>',
+                "_rels/.rels": f'<Relationships xmlns="{rel}"><Relationship Id="rId1" Type="{office}/officeDocument" Target="word/document.xml"/></Relationships>',
+                "word/_rels/document.xml.rels": f'<Relationships xmlns="{rel}"/>',
+                "word/document.xml": f'<w:document xmlns:w="{word}"><w:body><w:p><w:r><w:t>媒体标题 中文🙂</w:t></w:r></w:p><w:p><w:r><w:t>Body media parser 42.</w:t></w:r></w:p><w:tbl><w:tr><w:tc><w:p><w:r><w:t>left</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>right</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:sectPr/></w:body></w:document>',
+            }
+        )
+    )
+    for name in ["broken.pdf", "broken.xlsx", "broken.docx", "unsupported.png"]:
+        (work / name).write_bytes(b"invalid controlled media\n")
+    for name in ["protected.xlsx", "protected.csv"]:
+        (work / name).write_bytes(b"must-survive-media-failure\n")
+    inputs = {
+        p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in work.iterdir()
+        if p.is_file()
+    }
+    (work / "media-baseline.json").write_text(json.dumps(inputs))
+    path = lambda name: str(work / name)
+    steps = []
+
+    def add(name: str, operation: str, args: list, **extra: object) -> None:
+        steps.append(
+            {
+                "id": name,
+                "family": "media",
+                "operation": operation,
+                "arguments": args,
+                "session": "a",
+                **extra,
+            }
+        )
+
+    add("pdf-info", "pdf_info", [path("paper.pdf")])
+    add("pdf-text", "pdf_extract", [path("paper.pdf"), "1", True])
+    add(
+        "excel-write",
+        "excel_write",
+        [
+            path("generated.xlsx"),
+            "数据",
+            ["label", "value"],
+            [["中文🙂", 3], ["beta", 7]],
+        ],
+    )
+    add("excel-read", "read_excel", [path("generated.xlsx"), "数据", 10, 0])
+    add("excel-info", "excel_info", [path("generated.xlsx")])
+    add("excel-profile", "excel_profile", [path("generated.xlsx"), "数据"])
+    add(
+        "excel-csv",
+        "excel_to_csv",
+        [path("generated.xlsx"), path("generated.csv"), "数据"],
+    )
+    add("word-read", "read_word", [path("document.docx"), False])
+    add("word-info", "word_info", [path("document.docx")])
+    add("word-structure", "word_structure", [path("document.docx")])
+    add("image-view", "view_image", [path("pixel.png"), "low"])
+    add("image-fetch", "image_fetch", [url + "/pixel.png", 1])
+    add("pdf-malformed", "pdf_extract", [path("broken.pdf"), "all", False], error=True)
+    add("excel-malformed", "read_excel", [path("broken.xlsx")], error=True)
+    add("word-malformed", "read_word", [path("broken.docx"), False], error=True)
+    add(
+        "image-unsupported",
+        "view_image",
+        [path("unsupported.png"), "high"],
+        failure="invalid_arguments",
+    )
+    add(
+        "image-url-unsupported",
+        "image_fetch",
+        ["ftp://example.invalid/image.png", 1],
+        failure="permanent",
+    )
+    add(
+        "excel-invalid-write",
+        "excel_write",
+        [path("protected.xlsx"), "数据", ["label"], "not-an-array"],
+        error=True,
+    )
+    add(
+        "excel-invalid-export",
+        "excel_to_csv",
+        [path("broken.xlsx"), path("protected.csv"), "数据"],
+        error=True,
+    )
+    assert {step["operation"] for step in steps} == set(MEDIA_NON_TEXT)
+    (work / "scenario.json").write_text(
+        json.dumps(
+            {
+                "steps": steps,
+                "sessions": {"a": str(work), "b": str(work)},
+                "media_non_text_operations": list(MEDIA_NON_TEXT),
+            },
+            ensure_ascii=False,
+        )
+    )
+    config = {
+        "schema_version": 1,
+        "default_agent": {
+            "model": {
+                "provider": "fixture",
+                "name": "media-fixture",
+                "base_url": url + "/v1/chat/completions",
+                "api_protocol": "chat_completions",
+                "auth_token": "fixture-secret",
+            },
+            "agent": {
+                "name": "media-proof",
+                "system_prompt": "fixture",
+                "enable_tools": True,
+                "enable_memory": False,
+                "max_iterations": 2,
+            },
+        },
+        "sdk_profile": {"state_root": str(work / "state")},
+    }
+    (work / "host.json").write_text(json.dumps(config))
+
+
+def verify_media(work: Path, results_path: Path) -> dict:
+    import base64
+    import xml.etree.ElementTree as ET
+    import zipfile
+
+    scenario = json.loads((work / "scenario.json").read_text())
+    rows = json.loads(results_path.read_text())
+    assert [r["id"] for r in rows] == [s["id"] for s in scenario["steps"]], (
+        "missing/duplicate/reordered calls"
+    )
+    assert len(rows) == 19
+    results = {row["id"]: row for row in rows}
+    for step, row in zip(scenario["steps"], rows):
+        if step.get("error"):
+            assert row["outcome"] == "error", row
+            assert row["code"] == "framework_error", row
+            assert row["operation"] == step["operation"], row
+            assert row["retryable"] == "never", row
+            fields = {item["key"]: item["value"] for item in row["details"]["fields"]}
+            assert fields == {
+                "framework_failure_category": "tool",
+                "framework_terminal_kind": "failed",
+                "framework_failure_code": "tool",
+                "framework_retryable": "false",
+            }, row
+            continue
+        assert row["outcome"] == "result", row
+        value = row["value"]
+        assert value["success"] is (not bool(step.get("failure"))), row
+        assert value["truncated"] is False, row
+        assert value.get("effects", []) == [], row
+        if step.get("failure"):
+            assert value["kind"] == {
+                "kind": "structured_error",
+                "error_code": "tool_error",
+            }, row
+            category = step["failure"]
+            assert value["failure"] == {
+                "category": category,
+                "recovery": "correct_arguments"
+                if category == "invalid_arguments"
+                else "stop",
+                "side_effect": "none",
+            }, row
+            assert value["error"], row
+        elif step["id"] == "image-view":
+            assert value["kind"] == {"kind": "image", "mime_type": "image/png"}, row
+        else:
+            assert value["kind"] == {"kind": "text"}, row
+        if step["id"] != "image-view":
+            assert value.get("model_content", []) == [], row
+
+    def output(name: str) -> str:
+        return results[name]["value"]["output"]
+
+    assert "Page count: 1" in output("pdf-info")
+    assert PDF_TEXT in output("pdf-text") and "pages 1, total 1 pages" in output(
+        "pdf-text"
+    )
+    assert "PDF Metadata" in output("pdf-text")
+    read = output("excel-read")
+    assert "Sheet: 数据\nTotal rows: 3\nTotal cols: 2" in read
+    assert "label\tvalue\n中文🙂\t3\nbeta\t7" in read
+    assert "数据 (3 rows x 2 cols)" in output("excel-info")
+    assert "value [numeric]: 0 nulls (0.0%) | min=3.00 max=7.00 mean=5.00" in output(
+        "excel-profile"
+    )
+    expected_csv = "\ufefflabel,value\n中文🙂,3\nbeta,7".encode()
+    assert (work / "generated.csv").read_bytes() == expected_csv
+    assert "2 rows, 2 cols" in output("excel-write")
+    with zipfile.ZipFile(work / "generated.xlsx") as workbook:
+        ns = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+        strings = [
+            "".join(node.itertext())
+            for node in ET.fromstring(workbook.read("xl/sharedStrings.xml")).findall(
+                "s:si", ns
+            )
+        ]
+        cells = ET.fromstring(workbook.read("xl/worksheets/sheet1.xml")).findall(
+            "s:sheetData/s:row/s:c", ns
+        )
+        actual = {}
+        for cell in cells:
+            value = cell.find("s:v", ns)
+            assert value is not None
+            actual[cell.attrib["r"]] = (
+                strings[int(value.text)] if cell.attrib.get("t") == "s" else value.text
+            )
+        assert actual == {
+            "A1": "label",
+            "B1": "value",
+            "A2": "中文🙂",
+            "B2": "3",
+            "A3": "beta",
+            "B3": "7",
+        }
+    assert (
+        output("word-read")
+        == "媒体标题 中文🙂\nBody media parser 42.\n\n[Table content]\nleft | right\n"
+    )
+    assert "Paragraph count: 2" in output("word-info")
+    assert "Paragraph 1: 媒体标题 中文🙂" in output("word-structure")
+    assert "Statistics: 2 paragraphs, 1 tables" in output("word-structure")
+    png = (work / "pixel.png").read_bytes()
+    uri = "data:image/png;base64," + base64.b64encode(png).decode()
+    view = results["image-view"]["value"]
+    assert view["mime_type"] == "image/png"
+    assert view["metadata"] == {
+        "path": str((work / "pixel.png").resolve()),
+        "byte_size": str(len(png)),
+    }
+    assert view["model_content"] == [{"kind": "image_url", "url": uri, "detail": "low"}]
+    assert base64.b64decode(view["model_content"][0]["url"].split(",", 1)[1]) == png
+    assert output("image-fetch").endswith("Data URI: " + uri)
+    assert "Content-Type: image/png" in output("image-fetch")
+    assert (
+        "Unsupported or invalid image" in results["image-unsupported"]["value"]["error"]
+    )
+    assert (
+        "URL must start with http:// or https://"
+        in results["image-url-unsupported"]["value"]["error"]
+    )
+    for name, digest in json.loads((work / "media-baseline.json").read_text()).items():
+        assert hashlib.sha256((work / name).read_bytes()).hexdigest() == digest, name
+    requests = [
+        json.loads(line) for line in (work / "http.jsonl").read_text().splitlines()
+    ]
+    assert requests == [{"method": "GET", "path": "/pixel.png"}], requests
+    assert not (work / "state/runs").exists() or not any(
+        (work / "state/runs").rglob("*")
+    )
+    summary = {
+        "accepted_non_text_operations": sorted(MEDIA_NON_TEXT),
+        "native_calls": len(rows),
+        "successful_operations": 12,
+        "typed_rpc_errors": 5,
+        "structured_tool_failures": 2,
+        "png_sha256": hashlib.sha256(png).hexdigest(),
+        "csv_sha256": hashlib.sha256(expected_csv).hexdigest(),
+        "xlsx_sha256": hashlib.sha256(
+            (work / "generated.xlsx").read_bytes()
+        ).hexdigest(),
+        "view_image_model_content_exact": True,
+        "image_fetch_textual_uri_exact": True,
+        "input_and_failure_sentinels_unchanged": True,
+        "limits": [
+            "one-page unencrypted PDF, generated OOXML workbook and DOCX, one PNG only",
+            "view_image model_content wire projection; no model Run or external viewer execution",
+            "image_fetch returns a textual data URI, not inferred model_content",
+            "not arbitrary codec, oversized input or every optional field combinations",
+        ],
+    }
+    (work / "media-verified.json").write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2)
+    )
+    return summary
+
+
+def serve_media(work: Path) -> None:
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            with (work / "http.jsonl").open("a", encoding="utf-8") as output:
+                output.write(json.dumps({"method": "GET", "path": self.path}) + "\n")
+            body = media_png() if self.path == "/pixel.png" else b"not media"
+            self.send_response(200 if self.path == "/pixel.png" else 404)
+            self.send_header(
+                "Content-Type",
+                "image/png" if self.path == "/pixel.png" else "text/plain",
+            )
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *_args: object) -> None:
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    prepare_media(work, f"http://127.0.0.1:{server.server_port}")
+    (work / "ready").touch()
+    server.serve_forever()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--verify", type=Path)
+    parser.add_argument("--media", action="store_true")
     args = parser.parse_args()
+    if args.media:
+        if args.verify:
+            print(json.dumps(verify_media(args.work, args.verify)))
+        else:
+            serve_media(args.work)
+        return
     if args.verify:
         print(json.dumps(verify(args.work, args.verify)))
         return

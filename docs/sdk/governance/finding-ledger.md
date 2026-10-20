@@ -2,7 +2,11 @@
 
 当前验收与阻断状态统一见[当前有限验收](capability-review-remaining.md)。本页只维护其独有能力结构、逐项处置或历史账本；下文历史切点的计数、证据与义务保留。
 
-## 2026-10-20 四个source缺陷的本地三链闭合
+## 2026-10-20 媒体accepted名字新增同源义务
+
+新增[finding.sdk-media-accepted-tool-name-routing](../../../.echo-semantic/findings/finding.sdk-media-accepted-tool-name-routing.md)一项open，current73resolved/2open。两accepted名字到同一原Tool的断点由old0bbc真实TS失败确认，新a17同case/三语19call focused after已过，原件在已有ToolsBridge Evidence后继；正式三链以公开修复Git和最后新源资格为准，不伪旧header或仅聊天结算。原四sourceFinding在17be的73resolved/1open切点保持，managed历史Linux未知仍独立open，后续没有虚构repair或风险接受。
+
+## 2026-10-20 四个source缺陷的本地三链闭合（媒体前基线）
 
 当前74个Finding中73 resolved、1 open。model/base/busy/retained四条只按[原修复](../../../.echo-semantic/evidence/evidence.sdk-model-read-retained-repair.md)、[直接验证与同源工程后验](../../../.echo-semantic/evidence/evidence.sdk-model-read-retained-verification.md)及state-authority/data-durability两具名rereview闭合；新2Audit只服务这四条，不批量晋级原56风险单元或50Behavior。managed历史Linux passive-exit仍open/根因未知，等待SDK精main Linux原套件；#120本地三语各12已含本次whole，外部Issue待精main后由Root结算。以下各“新增open/after待”保发现时点原文，不恢复为当前已闭合四条的阻塞。
 

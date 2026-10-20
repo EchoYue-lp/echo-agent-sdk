@@ -17,6 +17,10 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
+当前媒体后继只修SDK两accepted名字到原Tool的薄映射，新Hosta17db78e已有实际build/同原反例after及三语各2 focused通过，旧text oracles保。新增一项同源Finding仍open/空三链，待公开修复Git及最后新冻结源完整门禁/独审后闭合；不借下列208a旧14/whole资格给媒体后继。managed历史Linux/main/平台/nativeHook与具名50结算仍独立，PR5 Draft/Plan ready。
+
+### 208a已验证基线（媒体修复前）
+
 2026-10-20后继：Host源码已切正式接受的framework精main
 `3560812caede84998a1f6f26d7bf3fa81ea0486c`，PR193精squash tree
 `bbacaad650b935c516194a9373580fe7747c8256`与已审8138一致，精CI39355472505七项SUCCESS。

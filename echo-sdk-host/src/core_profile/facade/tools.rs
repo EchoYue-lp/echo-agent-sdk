@@ -384,6 +384,13 @@ pub(crate) async fn dispatch_tool(
     // would be a harmless source-compatible alias. Both resolve to the same
     // single framework Tool instance.
     let tool_name = operation.strip_prefix(&prefix).unwrap_or(operation);
+    // Keep accepted SDK spellings while delegating to the original framework
+    // Tool instances; this adapter owns neither a parser nor a new operation.
+    let tool_name = match (family, tool_name) {
+        ("media", "pdf_extract") => "extract_pdf",
+        ("media", "excel_write") => "write_excel",
+        _ => tool_name,
+    };
     let arguments: Vec<serde_json::Value> = request
         .arguments
         .iter()

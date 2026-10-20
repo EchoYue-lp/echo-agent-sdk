@@ -75,3 +75,10 @@ Git 官方说明 annotated tag 保存标签元数据；默认 fetch 只自动取
 | `4f8382fda176415749a625063a946b21cae15f5d` | `df1b02b2403b471e84f7c82cee14799bfcc2f361` | `d57ee3276f2903a480f25bad0532f90d931c71c1` |
 
 Root的新空bare仅从远端exact fetch main30d7与三个必要tags，actual0；无alternates/taskbranch/PR refs或本地对象导入。tag/commit/tree与12个具名source/provenance blobs（每版本的SourceOps、factory、CoreState及本provenance）逐字一致。完整push/冷取回原件保在协调ignored任务local的sdk-three-discovery-evidence-refs-proof.json（10691B / d19bd5000d863754cdf5a52ce4759bc52d5952f336fddda24657dc76a2efd441）及sdk-discovery-refs-cold-proof.json（13341B / 9078a656f29c0a4b13728866e9d6479f2591299268fc1df88c10f89ce9e86dc6）。这是历史发现源可恢复性；不是新main、当前Host、原生Hook或最终strict行为验收。busy读取Finding实际discovery也是4f，不额外给e924或私有9a/8f打tag。最终精main加全部必要refs冷strict仍独立。
+
+
+## 2026-10-20 四source三链引用208a的必要保存
+
+公开17be采用两Evidence observed_at和两Audit revision/source refs精指208a，因此此单一公开源成为必要机器引用。Root sole writer仅创建并正常非force推送annotated `refs/tags/evidence/sdk-governance/208a027f587446badaaa2058e6af3240457431d2`，tag object `4639fe0d97df13c4fe58e105e75c6e4144108c1b`，peeled commit `208a027f587446badaaa2058e6af3240457431d2`，tree `c77ba743599c488146e31f955d5548d9112c6e67`。远端tag/peeled精等核验；原proof sdk-208a-necessary-evidence-ref-proof.json（SHA25652c6a7aa8ef05a32090639defbad249c3184348f7fd659424d6311f1d1e17940）只保协调ignored任务。
+
+本条只记实际ref操作及remote peeled，不虚构新空冷仓/最终SDKmain strict通过；不为17be里程碑或私有ddc6打标签。新媒体Finding以实际oldHost208a代码为discovery，driver17be相关blob同字节；修复源码未来若被机器ref正式采用，再由Root逐必要性保存，最终仅新main+必要refs冷strict仍独立。

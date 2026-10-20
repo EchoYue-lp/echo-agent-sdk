@@ -30,7 +30,8 @@ evidence_refs:
 - evidence.sdk-tool-behavior-candidate
 - evidence.sdk-computation-50
 - evidence.sdk-tools-bridge-finite-observation
-finding_refs: []
+finding_refs:
+- finding.sdk-media-accepted-tool-name-routing
 ---
 
 # SDK family media
@@ -111,3 +112,8 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 入口工具经唯一frameworkschema/customvalidator/ToolManager；FileAuthority/Polars/Pivot/provider各原authority不复制。Bridge descriptor/kind/gen注册后实际注入Session，ToolContext/artifact、Llm messages/usage/finish、Store namespace/commit、Hook/callback/intervention保持原owner/失败策略。remoteTool Cancelled/extension_timeout经ToolFailure::from_error按risk保分类与副作用，LLM Cancelled经AgentCancelled，合法旧3fail→samebody3pass callerTokenfalse/lease0，初坏descriptor是fixture错误不生产反例。
 
 本对象needs_review不提升verified；八lens只具名examined。network原时点/内存Rag非crossprocess/未acceptcodec或constructor具体不承诺、5sphysicalB/12sourcekind/最终新源wholemain保独立。原ToolValue/Rag取证source保4feb taggedGit；FileAuthority补包若当前尚未commit其实际原件不假5bcbsourceRef，finite审scope不变，正式交付另逐包绑定。宽feature-failure-cause仅Tool/LLM子scope已修复，原Workflow/Memory/Eval其它义务未自动关。
+
+
+## 2026-10-20：十二个non-text accepted消费者与同源路由修复
+
+原只text的不足由已有ToolsBridge Evidence文末后继承接：两accepted拼写不等原Tool名的真实old0bbc反例、新a17同probeafter及三语各一原媒体短链已实际执行。12unique操作/19call明确字段、文件、PNG model_content和错误/sentinel，不以telemetry或“未接受codec”排除既有承诺；不声称任意格式/所有选项/外部viewer或模型Run。原text default case与verifier完整保留并同文件回归通过。新finding.sdk-media-accepted-tool-name-routing跟踪同一两alias rootcause，当前open/空三链以待公开修复源码和最终当前门禁后精确闭合；本Behavior继续needs_review，不从focusedgreen直接升级。

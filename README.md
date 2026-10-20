@@ -8,14 +8,22 @@ framework, connected through a source-built ACP Host and the
 
 The SDK-owned import and extraction history includes the original clean pin
 `27c7701e1eb116db1076da7f84bb68898544a44c`. The current Host pins published
-framework `6563d26570cc4a8d93c86b7e37443b0559476807` from
-[framework PR #191](https://github.com/EchoYue-lp/echo-agent/pull/191), with its
-signed source and all seven exact-main CI jobs verified. The canonical producer
-completed all 28 actual profiles and wrote 117 artifacts; the complete contract
-check passed with zero blocking or telemetry drift. The 5,621 accepted
-identity/kind keys and 454 accepted routes are unchanged. The new
-`RunEntry::wait_result` remains Host/Rust-only telemetry. New Host behavior,
-full Rust/language gates and exact SDK-main CI still require their own results.
+framework `3560812caede84998a1f6f26d7bf3fa81ea0486c` from
+[framework PR #193](https://github.com/EchoYue-lp/echo-agent/pull/193), with its
+exact squash tree and all seven exact-main CI jobs verified. The canonical
+producer completed all 28 profiles and wrote 117 artifacts; the complete
+contract check passed without blocking or telemetry drift. The 5,621 accepted
+identity/kind keys and 454 accepted routes are unchanged. Only the accepted
+`set_model` Rust signature follows its fallible result; new named framework
+constructors and context-only fields are not automatically language APIs.
+Current source, Host and gate qualifications remain tied to their actual cuts;
+see [current acceptance](docs/sdk/governance/capability-review-remaining.md).
+Exact SDK-main/platform CI and native Hook/Stop acceptance remain separate.
+
+The previous `6563d26570cc4a8d93c86b7e37443b0559476807` checkpoint came from
+[framework PR #191](https://github.com/EchoYue-lp/echo-agent/pull/191). Its
+`RunEntry::wait_result` inventory entry remains Host/Rust-only telemetry; those
+historical runtime results do not qualify the current successor source.
 
 An earlier governance candidate resolved
 `00782b8aeddefe2ea8c566922cbdee6aedc80d70` from

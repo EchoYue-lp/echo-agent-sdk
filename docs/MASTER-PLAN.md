@@ -1,6 +1,12 @@
 # SDK 全能力语义治理进度
 
-## 2026-10-20 精main356后的有限消费者补证（当前）
+## 2026-10-20 媒体accepted路由与真实消费者后继（当前）
+
+原50行读审仅媒体12个non-text缺具名后继；实际old0bbc又证明pdf_extract/excel_write与原Tool名不匹配，两条同根因。唯一SDK修复仍原Tool name适配，accepted16/原F/pin/lock/producer与Tool执行权威不变。新Hosta17真实build、两同probeafter、TS/PY/Java原default+newmedia各2pass和定向Rust/strictClippy/fmt均0；完整原件/范围由既有ToolsBridge Evidence文末承接，不新测试管理矩阵。一个新Finding open/空三链保存历史，当前73resolved/2open；先公开精确修复源，再按最少Evidence及原Audit精challenge关闭，不能把dirty源码假绑17be已修。
+
+下一步沿原50行及原56风险入口逐项具名settle，保bridge/resources/clients整体受managedLinux/main/Hook限制，不机械批量verified。最后冻结源统一取得适用完整门禁、canonical/必要ref冷取回与精main CI；媒体后继不借旧208a14/whole通过。SDK新窗口独占，资源floor及不触碰外缓存规则不变；PR5 Draft/Plan ready，registry/W部署排除。
+
+## 2026-10-20 精main356后的有限消费者补证（媒体前基线）
 
 - Root已接受F精main3560812/treebbacaad/source4ad，PR193 squash与已审8138树同，精CI39355472505七项SUCCESS及remote-only冷strict已验；不冒SDKmain。
 - 真实lock58599a9f：656包同版本/checksum/边，仅8framework+3vendor Git源6563→356。原HTTPScurl28自然101保留，同argv单进程同repo SSH恢复0；canonical HTTPS来源不变，无path patch/手缓存/改global配置。

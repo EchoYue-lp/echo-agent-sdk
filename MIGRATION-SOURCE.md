@@ -73,7 +73,7 @@ exited zero. Accepted identities/kinds remain 5621 and routes remain 454; only t
 accepted set_model signature digest changed from 20f0cd… to d89f95… for Result<()>.
 No new constructor or cursor named field was automatically accepted.
 
-The current Host build is `0bbc72ba1cb08e7264704647566e490afc4918de57cc22fcee8a414fe9e518a8`.
+The pre-media-repair SDK208a Host build is `0bbc72ba1cb08e7264704647566e490afc4918de57cc22fcee8a414fe9e518a8`.
 It preserves the saved development profile, has zero build warnings and zero
 tracked-source drift, and passes named finite model, compressor, base/current,
 busy-read, core and live consumer after cases. These are distinct source/runtime
@@ -89,6 +89,14 @@ resolved only through their concrete three-link chains. Named semantic
 settlement, historical Linux unknown, nativeHook/Stop and exact SDK main
 acceptance remain separate. Prior results below retain their historical
 provenance; upstream acceptance and focused consumers do not imply SDK release.
+
+The media successor repairs only the two accepted operation-to-Tool spellings.
+Its newly compiled Host `a17db78e5d3e73a5edf9ef529d387a218aa248d7042b08e12b88b843cd53baaf`
+has focused actual after evidence for both original counterexamples and the
+three native language media stories, retaining the original text oracles.
+The same-root-cause Finding stays open until public repair-source binding,
+current final gates and its concrete rereview chains. Old SDK208a full gates
+are not borrowed as successor-source acceptance.
 
 ### Previous 6563 source and runtime evidence
 

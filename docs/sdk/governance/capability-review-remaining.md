@@ -1,5 +1,11 @@
 # 当前能力模型的有限剩余验收
-## 2026-10-20 精pin356的本地工程与四缺陷闭合
+## 2026-10-20 媒体后继当前剩余
+
+同源pdf_extract/excel_write名字适配已有真实old0bbc red与新a17 after；原三语六族default+新增媒体故事各2pass，12个non-text成功操作/19call、真实Word/PDF/Excel/PNG和精错误/不覆sentinel由[原ToolsBridge Evidence后继](../../../.echo-semantic/evidence/evidence.sdk-tools-bridge-finite-observation.md)记录。定向Rust/fmt/strictClippy与新Hostbuild通过仅focused；一项新Finding仍open/空三链，当前73resolved/2open，待精修复Git/最终当前门禁/原Audit具体复审后另闭合。
+
+其余49行已有原具名证据可有界承接，不复活17be四closed缺陷，不以绿色计数批量verified或把单row推整八风险组；bridge/resources/语言client整体、managed历史Linux/main/平台/nativeHook条件仍独立。Root核SDK website directdelta0、无SDKdocs/examples镜像，三quickstart代码未改；最终新源入口仍待实际执行，官网/F镜像与gitlink由各owner维护。下面208a/0bbc全套只保其原切点，不借给媒体新源。
+
+## 2026-10-20 精pin356的本地工程与四缺陷闭合（媒体前基线）
 
 当前公开SDK208a、Host0bbc的原14Rust、唯一完整语言入口及三个quickstart均实际0并独审C0；TS357、PY441加18子测试、Java378及76fresh XML，Java实际21.0.5。1216tracked零漂移、Host哈希mtime不变；各配置计数不合并unique，第7项0doctest与第11项compile-only不当runtime。#120各12具名场景已含本次whole，不重复跑。新真实锁三项fresh审计actual0，仅原政策49个精确duplicate组，无新组/版本/其它类别；原HTTPS抓取失败和官方同repo精URL的进程传输恢复保原件。工程原件与限制由[四缺陷验证后继](../../../.echo-semantic/evidence/evidence.sdk-model-read-retained-verification.md)统一定位。
 

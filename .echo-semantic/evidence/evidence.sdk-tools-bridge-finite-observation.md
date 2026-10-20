@@ -65,7 +65,7 @@ Builtin具名有限审查表：
 | database | INT/TEXT/null/default7/PK/nullable/SQLxruntimecell；cursor/readonlytransaction/坏SQLtyped；同DBhash拒写。 |
 | rag | chunk/overlap200/201scalar/ranksource；liveSessionRagStore/Embedder；第二503/坏JSON/空embedding原index不变；内存无跨process承诺。 |
 | chart | 唯一schemavalidator与7mark/数据/checkedu32widthheight；null/omit原绑定；非法type/negative/overflow明确error；shared61不是统计能力数量。 |
-| media | 已接受UTF8stats/unique/export原字节；missing/type/arity错误不overwrite；未接受codec不纳义务。 |
+| media | 历史原finite只证UTF8stats/unique/export原字节及missing/type/arity不overwrite；不能据“未接受codec”排除其它12个既有accepted non-text操作。本轮直接后继见文末。 |
 | data | sort/select/aggregate/join/Pivotcells；Polars唯一；nullindex/labels碰撞/unknownaggregate拒绝；原Inputexport字节；29/61。 |
 | statistics | 已知mean/quantile/sampledeviation；非法列/nonnumerictyped，叶调用无新store；shared61只原统计具名case。 |
 | research | 原6工具PDF/BibTeX字段bytes/artifact；HTTP503/坏PDF/4provider语义错误及严格30s观察；只时点。 |
@@ -155,3 +155,21 @@ FileAuthority当前three-language-final包尚未进入此Git，故具体source_r
 ## 历史证明存储的有界表示迁移
 
 原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+
+
+## 2026-10-20：accepted媒体双名称断点与三语真实消费后继
+
+原17be检查点后逐行审查确认：16个accepted媒体操作中的12个non-text缺具名consumer，旧text与研究PDF路径不能代替。原Host0bbc上PDF/Excel相邻合法parser控制真实成功后，accepted pdf_extract/excel_write各因原Tool名不匹配被unknown拒绝，已登记finding.sdk-media-accepted-tool-name-routing一项同源义务。before只有TS public SDK，两原raw872B/01dc8f7a4b3532f01e0d596025a96848ad96658ff33e6d5ea3d1005bf49f382f和875B/6d6baa8820c81d721c8a37f4d11aa36a96a10b5651b470b3413eb3bf8148ce88；两个更早probe错误没有媒体RPC，不当产品反例。
+
+Host薄适配仅media两alias到同一framework Tool，原operation/schema/validate/execute/owner/context不变；原source审C0。新编译Hosta17db78e（完整SHA见Finding）159709568B，EH15491112/unwind2979912，原保存配置且build0/zeroWarn/1220guard0；原Java构建读者C0。两同probeafter各0，PDF真正extract到原text；Excelwrite产生真实XLSX，后继同文件读取由下列故事验证。build raw38950B/4864e90e6d5ac3e267c44005564df4340520fc74fcd56d3183baf2feab38ee06；两个after raw220B/5d34fa8e2931c53a0f96d09567d6566edd78cd54e70f95e7ab7d28ecc1590155和224B/6dfc06dfbd9ebc24df3043d76dc1abb68bbc1aa1d51febf5117bf6912e768f12。
+
+原shared tool_behavior_fixture.py仅新增可选--media，旧git/pdf_bytes/prepare/decode_typed_data/verify五函数与default HTTP Handler逐字保持；三原测试文件只保原named默认故事并加同transport helper的media sibling。TS、PY、Java各2实际PASS、零fail/skip，默认仍29步/原text oracles，media各19call/12unique accepted successes/5typed RPC errors/2structured failures。精正向操作是view_image、pdf_extract、pdf_info、read_excel、excel_info、excel_to_csv、excel_profile、excel_write、read_word、word_info、word_structure、image_fetch；没有新增接口或ExcelLoad第13项。
+
+媒体故事检查同一native writer生成XLSX→真实read/info/profile→CSV：ZIP单元格/Unicode/数值精等，CSV含UTF8 BOM原bytes精等；DOCX2段落1表的原text/info/structure；单页PDF metadata/pages/text；PNG真实bytes/MIME/metadata与低detail ImageUrl model_content精等；image_fetch只检查其原文本data URI和唯一GET，不伪model_content或模型Run。坏PDF/XLSX/DOCX透framework_error/Never及完整原tool失败字段；unsupported image与URL保各structured category/recovery/side_effect；invalid write/export后原两个sentinel及所有输入sha不变。报告effects为空不代实际文件副作用，已另查真实文件。
+
+各语言新HostSHA及mtime恒定、1220tracked零漂移；TS raw17112B/6d196810a98e12fc0322be2dd2a5be39aacbd840a528e3f861a9f00a0bafead7，PY1597B/5af7308e629456378aa4e61cebeddfc53fe53962c67b1f4a6c80d91401fbbb30，Java1425B/4d6d1049440f4110d4541777b318c110747486db476933468711839e59c0254d；Java fresh XML10478B/975740e91d8e35a61bbb74dee01c4cb139dd1b8ff0134e70393be858497eab43为2/0/0/0、实际Oracle21.0.5。原三媒体work及63file/74396B副本逐源核0mismatch；focused native proof70203B/289a131364886ba65de370d7e31e0276f24725da23d69c99c39d8672ebb458f7只保ignored原件。当前fmtcheck、strict lib/bin Clippy、原Rust六族case（1pass/0fail/ignore/filter）均actual0/零warning/1220guard0；Rust原case不是media12已跑的声明。
+
+本段保存focused工作树epoch及明确after，不改本Evidence原observed_at为当前Git、不把旧source refs冒新修复链；实际修复Git发布后另按最少必要三链绑定。一个DOCX/OOXML/PNG/单页非加密PDF不外推任意codec、oversize/所有optional/外部viewer渲染或自然Host物理退出。新源码最终适用完整门禁、50行具名结算、精main/平台/nativeHook与managed历史未知仍独立。
+
+
+Excel before/after seed由同脚本生成、语义输入相同，五个XML entry原字节逐一相同；ZIP时间戳13:21:52与13:28:50不同，因此容器整体SHA不同，不能称seed ZIP byte-identical。PDF before/after输入SHA相同。此精度修正来自实际输入独核，不修改成功断言或重跑结果。

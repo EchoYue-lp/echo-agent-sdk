@@ -10,9 +10,9 @@ import { EchoAgentClient, EchoAgentError } from "../dist/index.js";
 const host = process.env.ECHO_AGENT_SDK_HOST;
 if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === "1" && !host) throw new Error("required tool behavior Host binary missing");
 const fixturePath = fileURLToPath(new URL("../../shared/testing/tool_behavior_fixture.py", import.meta.url));
-test("six tool families preserve native results, failures and real local effects", { skip: !host, timeout: 120000 }, async () => {
+async function runToolStory(media = false) {
   const work = mkdtempSync(join(tmpdir(), "sdk-ts-tool-behaviors-"));
-  const fixture = spawn("python3", [fixturePath, "--work", work], { stdio: ["ignore", "ignore", "inherit"] });
+  const fixture = spawn("python3", [fixturePath, "--work", work, ...(media ? ["--media"] : [])], { stdio: ["ignore", "ignore", "inherit"] });
   let sdk, passed = false;
   try {
     const deadline = Date.now() + 10000;
@@ -40,15 +40,20 @@ test("six tool families preserve native results, failures and real local effects
     }
     await sessions.b.close(); await agent.close(); await sdk.close(); sdk = undefined;
     writeFileSync(join(work, "results.json"), JSON.stringify(results, (_, value) => typeof value === "bigint" ? value.toString() : value));
-    const verified = spawnSync("python3", [fixturePath, "--work", work, "--verify", join(work, "results.json")], { encoding: "utf8" });
+    const verified = spawnSync("python3", [fixturePath, "--work", work, "--verify", join(work, "results.json"), ...(media ? ["--media"] : [])], { encoding: "utf8" });
     assert.equal(verified.status, 0, `${verified.stderr}\n${verified.stdout}\nEvidence: ${work}`);
     const evidence = JSON.parse(verified.stdout);
-    assert.equal(evidence.capability_families, 6); assert.equal(evidence.native_calls, scenario.steps.length);
+    if (media) assert.equal(evidence.successful_operations, 12); else assert.equal(evidence.capability_families, 6);
+    assert.equal(evidence.native_calls, scenario.steps.length);
     process.stdout.write(`Tool behavior verified: ${JSON.stringify(evidence)}\n`);
+    if (media) process.stdout.write(`Accepted media evidence: ${work}\n`);
     passed = true;
   } finally {
     await sdk?.close(); fixture.kill();
     await new Promise(resolve => fixture.exitCode !== null || fixture.signalCode !== null ? resolve() : fixture.once("exit", resolve));
-    if (passed) rmSync(work, { recursive: true, force: true }); else process.stderr.write(`Tool behavior evidence retained: ${work}\n`);
+    if (passed && !media) rmSync(work, { recursive: true, force: true }); else if (!passed) process.stderr.write(`Tool behavior evidence retained: ${work}\n`);
   }
-});
+}
+
+test("six tool families preserve native results, failures and real local effects", { skip: !host, timeout: 120000 }, () => runToolStory(false));
+test("accepted non-text media preserves parsed files pixels and typed failures", { skip: !host, timeout: 120000 }, () => runToolStory(true));
