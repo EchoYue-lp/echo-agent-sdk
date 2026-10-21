@@ -161,3 +161,81 @@ fresh 三项依赖扫描、完整三语言/3 quickstart、Windows native/main CI
 当前 AGENTS/README 的剩余完整门禁说明仍按原切点保留；AGENTS 可能进入
 InstructionResolver 运行时输入，未来必要的 current lead/dated 分界变更须在最终受影响
 运行验证前明确评估并验证，不能仅按普通 metadata 盲目复用行为结果。
+
+## 2026-10-22 current lead 运行指令输入后继（受影响验收待执行）
+
+本次仅将 AGENTS.md 当前迁移门禁中容易把单条12与14条总集合混读的阶段句，改为稳定的
+A03来源观察边界与本既有 Evidence 的具名日期后继链接。A03 的 no-deps/resolve=null
+历史事实、全部规则、pin、合同、政策及旧章节均保留；其它五份来源/政策说明不变。
+本后继 committable 源码摘要为 `3f078657a0cae39a512ade2e422c41b6a5863a8dbc2998990df038536bc6b7c2`，源码1225文件中仅 AGENTS.md
+这个非语义支持文件变化；另两项为 Baseline 当前摘要与本既有 Evidence 追加。
+
+AGENTS.md 会在启用 project-rules 的路径进入 InstructionResolver 的运行时输入，
+因此本次明确不是可以无条件承接全部旧运行结果的普通 metadata 更新。
+旧05的523通过只保留其原AGENTS/runtime cut；不宣称新指令输入已取得同一523资格。
+原12 bridge-only不含project-rules，既有31通过可依该明确影响边界承接，仍不认定历史
+managed UNKNOWN 的因果修复。原01/02/03/04及06等编译、语法资格在实际Rust、manifest、
+lock、include、config等编译输入不变的有界等价证明下保留各原epoch；不重标旧全仓摘要。
+
+在此后继指令输入下，待执行原13 fullfacade（core/facade）的实际影响验证、新fullfacade
+Host以及完整三语言/3quickstarts。只读复核确认最早读取S AGENTS的是原13：fullfacade
+显式启用project-rules，handler/factory传入S cwd；原07虽allfeatures但无可执行Agent
+doctest，09默认与10 core-profile未启project-rules，11仅no-run，14指定组合也未启用。
+这些原必要gate可依各自实际资格推进，原13必须在最终指令下直接取证，避免先跑再重跑。
+当前不冒原13/新Host/整套语言验证已通过，不更新97个
+Audit或四个整体行为hold；behavior_model_closure=open、历史首因UNKNOWN及其余依赖、
+Windows/main/冷恢复等未完成项保持。没有新增文稿、协议、状态权威或生成117产物。
+
+## 2026-10-22 stable lead 当前输入的有限后继资格
+
+原01/02 formatter、03/04 Clippy、06无默认feature编译、07两crate零用例doctest、
+08 Protocol211、09默认Host35、10 core-profile112、11仅编译7个executable等入口已各有
+对应原source/runtime epoch的实际资格。编译/语法输入未变的部分按有界等价承接；
+07没有可执行Agent doctest，08不执行Agent，09/10未启project-rules，11不执行用例。
+原12 bridge-only31也不含project-rules，依这个具体负向影响范围保留；这些分布于不同
+feature/runtime切点的结果不是重新跑过的同一全仓数字或新增unique能力总数。
+
+在上述明确的 AGENTS 运行指令输入调整之后，source1225/stage3/PF840 所绑定的
+committable 摘要 `3f078657a0cae39a512ade2e422c41b6a5863a8dbc2998990df038536bc6b7c2`
+下，原13 fullfacade 的 core33 与 facade12 两个完整 target 实际45通过、零失败/忽略/过滤；
+这是最终稳定 lead 下的真实 project-rules/InstructionResolver 影响验证。
+原14仍为原精确 argv 指定的一项 canonical source-operation 测试，实际1通过、零失败/忽略、
+25 filtered（过滤来自原命令，不是新增跳过）。旧05的523保持其旧 AGENTS/runtime cut；
+不把当前45或原 bridge31相加为独立能力数，也不冒新指令下同一523已重验。
+
+原完整合同检查实际 mode=check、28 rustdoc profiles、113 blocking artifacts current，
+协议5/42/91各通过且零失败/忽略/过滤；单独非阻断 Rust inventory telemetry gate 也实际0。
+两者都观察到4项 telemetry drift、36646 inventory items/rustdoc format61，未更新生成物：
+`contracts/sdk/public-api.txt`（19091206→19094482 bytes）、
+`contracts/sdk/parity-manifest.json`（37238428→37242669 bytes）、
+`contracts/sdk/facade-operation-catalog.json`（900931 bytes同长内容变化）、
+`contracts/sdk/inventory-telemetry.json`（1460 bytes同长内容变化）。这是完整 Rust 库存信号，
+不扩大 accepted5621 identity/kind、454 routes 或自动生成117产物；实际 generator/provenance
+错误仍属阻断。当前原始113阻断合同与 accepted/source/shared catalog 均匹配。
+
+新 fullfacade Host 原显式 build 真实自然0、零编译/链接警告；在没有其它producer时，
+真实 stable-target producer 独占流式复制一件到 ignored `sdk-f7bac-qualified-host/echo-agent-sdk-host`。
+source/dest 均159744272 bytes、mode0755、SHA256
+`2c0bdfecfad72145849825f98caa92423eb240431095c8d98364cd6f8a799a5b`，
+源 ns/inode/nlink/dev 前后同，副本独立 inode/nlink1 且纳秒mtime一致，文件及父目录fsync。
+copy cap200000000 bytes、入场dual6GiB+actualsize+512MiB reserve与结束6GiB+512MiB均满足。
+本件是实际 producer 的独立副本，不代表官方完整语言脚本会使用 outside copy；该脚本仍会
+自行 build 并绑定 owned stable-target producer，后继必须真实核前后身份与 fresh Java XML。
+
+上述各命令实际 Cargo/Node/guard/caller 均自然0、signal/error=null、raw完整不截断、
+零编译/链接警告、无resource bound；source1225/暂存index3/PF、原4pycs/old19/原12两件及
+actual framework2332全前后同、remainingProducer=[]。AGENTS在内的865项非语义输入
+在本次有限验证期间未再改；这里只追加已有Evidence，保留全部旧失败与各自source/runtime epoch。
+
+原件仅在本工作区 local `sdk-parallel-delivery-01a14385/sdk-f7bac-accepted-runtime/`：
+13 raw3775B SHA43e43f0386df7babec123dd085c388f0572eb57f09fc5d2de2eee9a15bc5c71e；
+14 raw1410B SHA551849d0d4442fcf1aba2875f0a672e41d30055ac9c04c9045518e6f26326b45；
+contract raw14921B SHA4a2add0bbafaf3c3ff4a97077b70aa0722f9ac4bda9a12ccf0bd78a3f7c07daf；
+telemetry raw14326B SHA53e3926d464a5cc50d94bb02918a46bbf7ac4386d407b35bb83283be6d8b429a；
+Host/custody小proof3376B SHA4c437734e8ead3ff3a6ab391dd8ad8e0aba5d8f7aa0e8c36cd8dca3e71f28ff0，
+并各有真实native.run、guard、caller及source-after原件；文件哈希只核身份不替代原件。
+
+新SDK own4b来源双副本已独立保真准备，但尚未进行该sourcecut的三项依赖扫描；
+完整三语言与3quickstarts/fresh XML、Windows native/mainCI/冷恢复仍待各自真实验收。
+本节不能把Root来源准备冒SCANPASS、也不把文档边界充分或本机有限绿升级为4whole闭合。
+历史managed首因UNKNOWN、behavior_model_closure=open与4整体hold保持，main/registry不发布。

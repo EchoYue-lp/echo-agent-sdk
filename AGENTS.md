@@ -21,7 +21,8 @@ superproject 中的规则文件才能冷启动。
 PR197/原mainCI39605663648七项SUCCESS及remote-only cold已由主协调者独审接受。
 A03使用冻结的既有用户镜像缓存，官方Cargo离线update和locked metadata均实际退出0，精锁SHA256为1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa。
 metadata仅no-deps（resolve=null），不证明fresh registry、冷缓存、yanked状态或完整依赖图。
-SDK仍待fresh三policy扫描、新Host原未过滤12/14Rust、完整三语与3quickstarts及Windows重验；
+A03仅记录该次来源观察；阶段资格与未完成项见[既有来源Evidence](.echo-semantic/evidence/evidence.sdk-source-continuity.md)的具名日期后继。
+14条Rust、新fullfacade Host、三policy、完整三语/3quickstarts及Windows/main验收须各自取证，不互相替代。
 旧e736第12项101与7a81诊断101继续保留，不借F定向或全量结果称SDK通过。
 本切片只承接原运行时owner修复和来源，accepted5621/454不扩、不自动update117产物，
 历史managed首因UNKNOWN及4whole闭合按具体证据另验。精duplicate门禁仅实施原SDK有界接受合同。
