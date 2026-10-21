@@ -14,6 +14,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-source-continuity
 - evidence.sdk-event-identity-nested-parent-closure
 - evidence.sdk-language-client-lifecycle-current
 - evidence.sdk-typescript-stdio-close-specific-closure
@@ -27,6 +28,7 @@ evidence_refs:
 - evidence.sdk-protocol-finite-observation
 - evidence.sdk-integrations-finite-observation
 finding_refs:
+- finding.sdk-default-stderr-backpressure
 - finding.sdk-language-external-ack-projection-admission-ordering
 - finding.sdk-event-identity-nested-parent-projection
 - finding.sdk-ack-submission-consumption
@@ -164,11 +166,14 @@ scenarios:
     rule_refs:
     - rule.framework-runtime-authority
     evidence_refs:
+    - evidence.sdk-source-continuity
     - evidence.sdk-language-client-lifecycle-current
     audit_refs:
     - audit.sdk-language-client-lifecycle-failure-concurrency
     review_scope: Named failure_concurrency source obligations actually examined,
       C0/I0/M0; mapped is not all-family verified or SDK main acceptance.
+      Default-stderr ownership successor is limited to finding.sdk-default-stderr-backpressure
+      and its new Audit challenge; the original observed_at and source refs retain their epoch.
   client-lifecycle-permission-external:
     status: mapped
     source_refs:
@@ -497,3 +502,12 @@ map原observed_at76601仍定位原场景源码，此后继文字明确观察9a�
 ## 三语言ACK投影竞态的局部闭合
 
 `finding.sdk-language-external-ack-projection-admission-ordering` 的26c/4256真实before、Java2e0与TS/PY69cb修复/有限after/独审由原lifecycle Evidence和failure-concurrency Audit承接。只这一个同根因局部resolved，不重开旧iterator/gap自动ACK或#120权威，不增加queue/Framework调度器。原Map观察/scene/status及七open保持；总transport内存、新Linux完整语言/CI、B12/合同13/Hostcause/continuity/payload/main独立。
+
+
+## 2026-10-22 默认诊断ownership具名后继
+
+仅增加`finding.sdk-default-stderr-backpressure`与复用`evidence.sdk-source-continuity`、
+`audit.sdk-language-client-lifecycle-failure-concurrency`的新challenge链。Python19/20与TS21B/22
+各自独立before/repair/native after，24五场真实Host只支持原诊断/退出/ACK/flush范围。
+原观察版本与其source_refs/既有场景、status保持；本组仍needs_review（Map仍mapped），
+不由这一具体Finding局部resolved升级四whole、managed历史UNKNOWN或完整语言/main。

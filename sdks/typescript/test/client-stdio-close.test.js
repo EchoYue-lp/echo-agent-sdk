@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,existsSync,readFileSync,writeFileSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,existsSync,readFileSync,writeFileSync,openSync,closeSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {EchoAgentClient} from '../dist/index.js';
@@ -22,6 +23,82 @@ async function until(predicate,ms=1500){const end=performance.now()+ms;while(!pr
 const exited=child=>child.exitCode!==null||child.signalCode!==null;
 function facts(context,extra={}){const output=join(context.work,'observed.json'),previous=existsSync(output)?JSON.parse(readFileSync(output,'utf8')):{};writeFileSync(output,JSON.stringify({...previous,pid:context.child.pid,eof:existsSync(join(context.work,'eof')),exit_code:context.child.exitCode,signal_code:context.child.signalCode,...extra},null,2));}
 async function clean(context,waiters=[]){writeFileSync(join(context.work,'release'),'exit');await Promise.allSettled(waiters);if(!exited(context.child)){context.child.kill('SIGKILL');await new Promise(resolve=>context.child.once('exit',resolve));}facts(context);}
+
+// Real official ACP peer. Diagnostics precede the first initialize response;
+// the maintained metadata fixture and current digests define the SDK contract.
+const DIAGNOSTIC_PEER = [
+  "import fs from 'node:fs'; import path from 'node:path';",
+  "import {Readable,Writable} from 'node:stream';",
+  "import {agent,methods,ndJsonStream} from '@agentclientprotocol/sdk';",
+  "const [work,kind,sdkRoot]=process.argv.slice(1);",
+  "const payload=kind==='two_mib'?Buffer.alloc(2097152,0x42):kind==='unicode_crlf'?Buffer.from('诊断 中😀\\nCRLF\\r\\n尾\\n'):Buffer.alloc(0);",
+  "const mark=name=>fs.writeFileSync(path.join(work,name+'.json'),JSON.stringify({pid:process.pid}));",
+  "mark('peer-started'); let offset=0;",
+  "while(offset<payload.length){const count=fs.writeSync(2,payload,offset,payload.length-offset);if(count<=0)throw Error('diagnostic write made no progress');offset+=count;}",
+  "const document=JSON.parse(fs.readFileSync(path.join(sdkRoot,'contracts/sdk/fixtures/extension/v1/capability-meta-valid.json'),'utf8')).payload;",
+  "Object.assign(document,JSON.parse(fs.readFileSync(path.join(sdkRoot,'sdks/shared/contract-digests.json'),'utf8')));",
+  "const app=agent({name:'diagnostic-peer'}).onRequest(methods.agent.initialize,({params})=>{mark('peer-initialized');return {protocolVersion:params.protocolVersion,agentCapabilities:{_meta:{echo_agent:document}}};});",
+  "const connection=app.connect(ndJsonStream(Writable.toWeb(process.stdout),Readable.toWeb(process.stdin)));",
+  "await connection.closed; mark('peer-stopped');",
+].join('\n');
+
+const DIAGNOSTIC_DRIVER = [
+  "import fs from 'node:fs'; import path from 'node:path'; import assert from 'node:assert/strict';",
+  "import childProcess from 'node:child_process'; import {syncBuiltinESMExports} from 'node:module';",
+  "import {EchoAgentClient} from './dist/index.js';",
+  "const [work,kind,mode,sdkRoot,peerSource]=process.argv.slice(1); const callback=mode==='callback';",
+  "const realSpawn=childProcess.spawn; let child,exited,stderrEnded=Promise.resolve();",
+  "// Observe only the exact original child object for failure cleanup; never read its diagnostics.",
+  "childProcess.spawn=(...args)=>{child=realSpawn(...args);exited=new Promise(resolve=>child.once('exit',resolve));if(callback&&child.stderr)stderrEnded=new Promise((resolve,reject)=>{if(child.stderr.readableEnded)resolve();else{child.stderr.once('end',resolve);child.stderr.once('error',reject);}});childProcess.spawn=realSpawn;syncBuiltinESMExports();return child;};syncBuiltinESMExports();",
+  "let sdk,attempt,timer,failure,mainExit=null,mainSignal=null,cleanupSignal=null;const chunks=[];",
+  "try{",
+  " const options={hostCommand:process.execPath,args:['--input-type=module','-e',peerSource,work,kind,sdkRoot]};",
+  " if(callback)options.onStderr=chunk=>chunks.push(chunk);",
+  " attempt=EchoAgentClient.spawn(options);attempt.catch(()=>{});",
+  " sdk=await Promise.race([attempt,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('default spawn did not initialize')),6000);})]);clearTimeout(timer);",
+  " assert.equal(sdk.process,child,'test observation must retain the original Process');",
+  " await sdk.close();if(callback)await stderrEnded;mainExit=child.exitCode;mainSignal=child.signalCode;",
+  " assert.equal(mainExit,0);assert.equal(mainSignal,null);",
+  "}catch(error){failure=error;}finally{",
+  " clearTimeout(timer);childProcess.spawn=realSpawn;syncBuiltinESMExports();",
+  " if(child&&child.exitCode===null&&child.signalCode===null){cleanupSignal='SIGKILL';child.kill('SIGKILL');await exited;}",
+  " if(attempt)await attempt.catch(()=>{});",
+  " fs.writeFileSync(path.join(work,'callback.raw'),Buffer.from(chunks.join(''),'utf8'));",
+  " fs.writeFileSync(path.join(work,'diagnostic-receipt.json'),JSON.stringify({pid:child?.pid,mode,kind,mainExit,mainSignal,cleanupSignal,failure:failure?String(failure):null},null,2));",
+  "}",
+  "if(failure)throw failure;",
+].join('\n');
+
+for (const scenario of [
+  {kind:'empty',mode:'default'},
+  {kind:'two_mib',mode:'default'},
+  {kind:'unicode_crlf',mode:'default'},
+  {kind:'two_mib',mode:'callback'},
+]) test('native diagnostic ownership '+scenario.mode+'/'+scenario.kind,{timeout:20000},()=>{
+  mkdirSync(ROOT,{recursive:true});
+  const work=mkdtempSync(join(ROOT,'diagnostics-'+scenario.mode+'-'+scenario.kind+'-'));
+  const sdkRoot=fileURLToPath(new URL('../../../',import.meta.url));
+  const cwd=fileURLToPath(new URL('../',import.meta.url));
+  const stderrFile=join(work,'application-stderr.raw');
+  const stderrDescriptor=openSync(stderrFile,'wx');
+  let result;
+  try{
+    result=spawnSync(process.execPath,['--input-type=module','-e',DIAGNOSTIC_DRIVER,work,scenario.kind,scenario.mode,sdkRoot,DIAGNOSTIC_PEER],{
+      cwd,stdio:['ignore','pipe',stderrDescriptor],timeout:15000,
+    });
+  }finally{closeSync(stderrDescriptor);}
+  writeFileSync(join(work,'driver-stdout.raw'),result.stdout??Buffer.alloc(0));
+  assert.equal(result.error,undefined);assert.equal(result.signal,null);assert.equal(result.status,0,readFileSync(stderrFile,'utf8'));
+  const receipt=JSON.parse(readFileSync(join(work,'diagnostic-receipt.json'),'utf8'));
+  assert.equal(receipt.mainExit,0);assert.equal(receipt.mainSignal,null);assert.equal(receipt.cleanupSignal,null);assert.equal(receipt.failure,null);
+  assert.equal(JSON.parse(readFileSync(join(work,'peer-initialized.json'),'utf8')).pid,receipt.pid);
+  assert.equal(JSON.parse(readFileSync(join(work,'peer-stopped.json'),'utf8')).pid,receipt.pid);
+  const expected=scenario.kind==='two_mib'?Buffer.alloc(2097152,0x42):scenario.kind==='unicode_crlf'?Buffer.from('诊断 中😀\nCRLF\r\n尾\n'):Buffer.alloc(0);
+  assert.deepEqual(result.stdout,Buffer.alloc(0),'ACP stdout must not leak to application stdout');
+  assert.deepEqual(readFileSync(stderrFile),scenario.mode==='default'?expected:Buffer.alloc(0));
+  assert.deepEqual(readFileSync(join(work,'callback.raw')),scenario.mode==='callback'?expected:Buffer.alloc(0));
+  console.log('stdio diagnostic evidence:',work);
+});
 
 test('public close sends native stdin EOF and awaits normal original child exit',{timeout:10000},async()=>{
  const c=await setup('exit');let closing;try{closing=c.sdk.close();await until(()=>existsSync(join(c.work,'eof')));await closing;assert.equal(c.child.exitCode,0);assert.equal(c.child.signalCode,null);facts(c);console.log('stdio EOF evidence:',c.work);}finally{await clean(c,closing?[closing]:[]);}

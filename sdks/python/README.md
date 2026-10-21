@@ -5,6 +5,11 @@ asyncio client and launches the Host command supplied by the caller. It does
 not install Python, Rust, or a prebuilt Host.
 Use Python 3.10 or newer; the SDK does not install an interpreter.
 
+Child diagnostics inherit the application's stderr; stdout remains owned by
+the ACP protocol. The SDK creates no private diagnostic pipe, so
+sdk.process.stderr is None. If the application redirects its own stderr to
+a pipe, the application owns that pipe's reader.
+
 ```bash
 uv sync
 uv run python - <<'PY'

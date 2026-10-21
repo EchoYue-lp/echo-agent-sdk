@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "8a840da4012d4fb09bb221de9e8791a2161759e8cc8fca15e7e35898ec6ac55b"
+    "content_digest": "a92b96b149d204822aa6ffdb42b512e7257293e2eb1a9511d46a169c87da578b"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "open",
@@ -861,3 +861,12 @@ e31/88a/4f三actualdiscovery revision已由Root显式annotated refs正常推送�
 ## 2026-10-20 媒体三链与最终本地工程后验
 
 9ef/1222冻结的新源码原14Rust/最终fullHost/唯一whole三语及3quickstart全部actual0并各精scope独审C0；源码与04eb生产/测试/依赖/合同逐字同。两alias Finding现repair/verification/rereview三链齐、本地resolved，74resolved/1managedunknownopen；媒体有限verified后46verified/4wholehold。inventoryclosed/behavior_modelopen、原97Audit主revision/freshness/maps和Planready/PRDraft不批量变。后归档floor事件和同字节稀疏副本恢复保实际记录；currentlocalpass不替SDK精main9CI、平台/nativeHook/必要ref冷strict或managed历史原因。
+
+
+## 2026-10-22 默认stderr共同义务的有限结算
+
+新增`finding.sdk-default-stderr-backpressure`一项，Python19/20与TS21B/22独立真实因果及有界native after，
+24真实PY1/Java1/TS3退出/ACK/flush支持其原五场范围；既有Evidence与language failure-concurrency Audit新challenge闭三链。
+实际76 Findings=75resolved+managed历史UNKNOWN1open，46finite verified/4whole needs_review不变。
+本次官方committable digest为`a92b96b149d204822aa6ffdb42b512e7257293e2eb1a9511d46a169c87da578b`；原base30d、inventoryclosed/behavior_modelopen及旧历史切点保。
+原whole1/21a01 UNKNOWN不改，完整三语/3quickstarts/平台/main仍另验；只有本具体子项局部resolved，非全SDK完成。

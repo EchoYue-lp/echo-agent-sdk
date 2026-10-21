@@ -3476,6 +3476,9 @@ class EchoAgentClient:
             *args,
             cwd=cwd,
             env=merged_env,
+            # Diagnostics inherit the application's stderr. A private unread
+            # pipe can block the child before initialize returns a client.
+            transport_kwargs={"stderr": None},
             observers=_event_observers(events, max_buffered_events),
         )
         try:

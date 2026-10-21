@@ -395,6 +395,7 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
         "mode": "Python public sdk.close only; no fixture EOF",
     }
     sdk = shutdown = closing = None
+    proxy_process = None
 
     async def barrier(name):
         async def ready():
@@ -403,11 +404,41 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
 
         await asyncio.wait_for(ready(), 10)
 
+    async def record_proxy_exit():
+        # host-exit.json is the Rust child's wait receipt. The outer Python
+        # proxy must also really exit before its final stderr can be complete.
+        try:
+            await asyncio.wait_for(proxy_process.wait(), 5)
+        finally:
+            stderr_path = work / "host.stderr"
+            stderr_bytes = stderr_path.read_bytes()
+            terminated = proxy_process.returncode is not None
+            facts["proxy_exit"] = {
+                "pid": proxy_process.pid,
+                "returncode": proxy_process.returncode,
+                "terminated": terminated,
+                "stderr_complete_after_proxy_exit": terminated,
+                "stderr_bytes": len(stderr_bytes),
+                "stderr_sha256": file_sha256(stderr_path),
+            }
+            with (work / "proxy-exit.json").open("x") as output:
+                json.dump(facts["proxy_exit"], output, indent=2)
+        assert proxy_process.returncode == 0, facts["proxy_exit"]
+        assert terminated, "proxy stderr cannot be complete before real exit"
+        for marker in (b"Fatal Python error:", b"BrokenPipeError", b"Traceback ("):
+            assert marker not in stderr_bytes, bytes(stderr_bytes)
+
     async def close_sdk():
-        if sdk is not None:
-            await sdk.close()
-        if shutdown is not None:
-            await asyncio.wait_for(asyncio.gather(shutdown, return_exceptions=True), 5)
+        try:
+            if sdk is not None:
+                await sdk.close()
+            if shutdown is not None:
+                await asyncio.wait_for(
+                    asyncio.gather(shutdown, return_exceptions=True), 5
+                )
+        finally:
+            if proxy_process is not None:
+                await record_proxy_exit()
 
     def evidence():
         (work / "wire-observed.json").write_text(
@@ -426,12 +457,15 @@ async def test_public_close_waits_for_real_slow_telemetry_flush():
             str(work),
             "--proxy-host",
             HOST,
+            "--proxy-stderr-file",
+            str(work / "host.stderr"),
             env={
                 "RUST_LOG": "info",
                 "OTEL_METRIC_EXPORT_INTERVAL": "60000",
                 "OTEL_BSP_SCHEDULE_DELAY": "60000",
             },
         )
+        proxy_process = sdk.process
         agent = await sdk.create_agent()
         session = await agent.create_session(str(work))
         await session.invoke(

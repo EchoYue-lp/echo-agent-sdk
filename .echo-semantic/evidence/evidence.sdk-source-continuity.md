@@ -390,3 +390,106 @@ Host、三policy资格各保其实际epoch，不改写原raw/失败/历史header
 不自动resolved四whole或历史managedUNKNOWN。Baseline仅刷新当前摘要，inventory/behavior
 闭合状态不变；公共合同/产品API/示例和网站能力未变，因此不改examples/echo-website。
 main/Windows/冷恢复仍各自验收，非本切片发布授权。
+
+
+## 2026-10-22 默认stderr共同Finding及三语言真实退出后继
+
+本节对应`finding.sdk-default-stderr-backpressure`，repair与verification复用本Evidence，
+rereview复用既有language failure-concurrency Audit的新challenge。代码切点
+`source:a92b96b149d204822aa6ffdb42b512e7257293e2eb1a9511d46a169c87da578b`，真实base为45914042ea7f9e5b05f5111415c52538c0b106c7加本次精stage10；
+历史Evidence observed_at=b80、source_refs及全部旧正文保留，新的测试精锚只在Audit新challenge。
+
+本切片实际源码/说明归属（唯一owner均为SDK；不改framework/Host生产/wire/依赖）：
+- `sdks/python/src/echo_agent_sdk/client.py`：仅给原ACP spawn传stderr=None及原因注释。
+- `sdks/python/tests/test_client_close_callbacks.py`：真实默认启动三参数官方ACP peer回归。
+- `sdks/python/README.md`：默认诊断继承应用stderr、process.stderr None与父sink的owner。
+- `sdks/typescript/src/client.ts`：默认inherit/显式onStderr原PIPE及listener，内部nullable类型不cast/export。
+- `sdks/typescript/test/client-stdio-close.test.js`：官方Node Agent/ndJsonStream的新默认三组及callback一组。
+- `sdks/typescript/README.md`：既有callback与默认诊断ownership说明。
+- `sdks/shared/testing/telemetry_host_fixture.py`：test-only exclusive binary stderr-file fd2保持到真正解释器退出。
+- `sdks/python/tests/test_telemetry_host.py`：沿原Process真实wait后读取shared file，无额外drain。
+- `sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java`：复用既有test-only原Process观察与fullfile。
+- `sdks/typescript/test/telemetry-host.test.js`：仅原wire三模式移为shared file及真实proxy终态断言；其余原三个函数体不变。
+
+### 默认私有stderr pipe的独立before与after
+
+Python19：真实public SDK与官方ACP peer的0stderr控制通过；2MiB B在握手前停滞，
+只对同原Process增加sole drain后同一个原future继续，child自然0。RootT本机原件
+`.echo-semantic/local/sdk-governance-acceptance/python-default-stderr-backpressure-probe/actual-result-proof.json`
+9557B/SHA45154914c254109ad56b716f52365feca277d691f19427a56d5af81922788924。
+TS21B：Node22 noOnStderr/0reader/nonflowing原promise pending，原write后/init marker尚无，
+只加同child data reader后原promise完成、精2MiB/EOF/child自然0；RootT同本机根下
+`python-default-stderr-backpressure-probe/typescript-candidate/actual-attempt02-result-proof.json`
+14224B/SHAa1e1dbaa823286ea1f3bc057e785475df2405093e364cd88163956d0c821f35c。
+TS21a01是控制已正常退出后的晚EOF订阅失败，UNKNOWN/native1/outer125原件保，2MiB当次未执行，
+不得把它当生产red或改0。上述RootT与下面S local均只本机原件定位，不是Git code_refs/source_refs。
+
+Python20实际原Pythoncwd生命周期模块10PASS/0failerror/0skip（新0/2MiB/25B Unicode-LF-CRLF
+三例+原七例）。新三例不加child reader/transport override/换child，应用fd2普通文件收全原字节，
+真正默认SDK initialize/close/同原Process自然0，main成功无cleanup替代，应用stdout为空。
+原件为S任务local `sdk-f7bac-formal-source-20261021-01/python-default-stderr-fix/`：
+`native-three-cases-minproof.json`8901B/SHAd53863614f45957af62b6489e495cfa058749f8a103757d679fdfca7b7a05e9c；
+原命令`.venv/bin/python -B -m pytest -q tests/test_client_close_callbacks.py --basetemp <该任务新目录> --junitxml <新XML>`，
+native/Node/guard自然0、18.39s、peak162398208B、无bound/guard信号/UIDPGID残留；原Ruff/fmt/syntax同cwd全0。
+
+TS22原stdio文件16PASS/0failcancelledskip/todo（新默认0/2MiB/25B Unicode-LF-CRLF三例、
+既有onStderr 2MiB一例、原close十二例）。使用官方Node ACP peer和维护的metadata/digests，
+不加Python前置或手写RPCmirror；只观察同原child对象不加默认drain，不把cleanup信号当成功。
+原`npm run build`、`npm run build:examples`、Node--check和`node --test test/client-stdio-close.test.js`
+均自然0；closeStdioOwned函数体逐字节保持，内部nullable stderr无export/cast。
+本机原件为S任务local `sdk-f7bac-formal-source-20261021-01/typescript-default-stderr-fix/`：
+`native-four-cases-minproof.json`9697B/SHA8ecd5e2f582ca0e642de7444a8e5f5e000cef6a016f0f4c11fd446180bedd1f1，
+`direct-source-test-phase-proof.json`6178B/SHAe1b5d4da0a7353e1af51e3c22687333581f934b966bc65cad063c1308b3feacd。
+原native7.18s、peak258899968B、无bound/guard信号/UIDPGID残留；默认/回调2MiB精SHA均
+7995dfceebfb9fa8972d361d53d899f6e268ecd6d823b5737198041fabc02e20，Unicode25B精SHA
+45ca338ffaf84a7effbffaae99a3d7a45a05bfe28bdfeebed4fe429f8513db75。显式callback验证用ASCII，
+不泛推任意多字节跨chunk解码。原七/十二关闭故障用例各保其intentional失败清理范围，不称其child全自然0。
+
+### 17/23观测与24实际五个真实Host场景
+
+既有proxy采用原child.wait事实，三语言分别记录外层代理真实终态；shared可选fd2捕获在child前
+O_EXCL打开并加O_BINARY（POSIX0）后dup2，直到Python解释器最终退出才由OS关闭，不恢复/提前关fd2。
+原本机smoke8741B与binary8853B各保其cut；后者65B独立LF/CRLF/中😀/atexit晚输出精等，
+是Mac本机证据与Windows源语义补强，不是Windows错误复现或Windows CI通过。17 Java仅单文件
+release17编译到独立classes/旧637class+18jar不动是17 asof；24标准Maven正常重编译已授权，
+旧三Telemetry类及旧Telemetry XML/text的小副本保，不能再声24缓存不变。
+
+24实际命令顺序为原Python publicclose精pytest一项+freshJUnit、
+`mvn -o -q -Dtest=TelemetryHostTest#publicCloseWaitsForRealSlowTelemetryFlush test`原一项+freshJUnit，
+以及`node --test --test-name-pattern=telemetry slow flush retains original Host owner test/telemetry-host.test.js`
+原三项；Java的-o只该本机focused，不加到最终原whole入口。当前TS源共六项，其余三项被明确namefilter
+未执行，Node22实际TAP只报告3PASS/0skip，不冒unfiltered6或平台豁免。
+
+PY1/Java1/TS3合五场均真正Rust child自然0、原Python proxy自然0/信号空、parent_pid关系同原对象，
+真实proxy终止后完整host.stderr字节/SHA核对，无三已确认Python fatal/BrokenPipe/Traceback marker。
+TS三场shutdown waiter实际以transport_error/closed_handle settled，而非成功shutdown响应；
+物理flush结论来自Host0、实际collector记录与ACK/held屏障。input_eof在hold时未调用publicclose，
+其close_settled=false是未调用初值，不当作活动close waiter；publicclose与rpc_cancel按原调用/请求身份结算。
+
+原件为S任务local `sdk-f7bac-formal-source-20261021-01/telemetry-focused-five-24/focused-runtime-output/`：
+`actual-five-focused-minproof.json`31070B/SHAbdbfa113f0b1f18c38669d457ac3808feda91e7165ed249e314ba4b85f242272，
+含三原argv/Node/guard/caller、fresh XML/TAP与五份proxy/Rust receipt/fullstderr/holdflush原件定位。
+Py raw98B/SHA93c088ea44701d55ee105654a6587cad21d503ab26286ad5169a7ee0b2eb4f13；Java329B/
+SHA26d236bf5169aba60affad492af3adeb0362ea8a9ceb6ade53ac88c1b64c8d84；TS1652B/
+SHAa1b55f5508be0d55d60995712c088a1ce3f76fe2f27f59ace9bf5a83eba33619。各native/Node/guard/caller0、
+signal/error=null、raw完整、source1225/staged10index/PF/原4pyc/F2332及真实Host+copy2c/collector3d99/
+TS22 dist身份全前后同；无budget bound，精UIDPGID及全局producer含collector剩余空。
+没有Rust/Cargo/Hostbuild/collectorbuild/whole或扫描重跑。固定opt1/assertions/overflow/unwind、
+own8GiB/dual6GiBfloor+512MiB reserve/2s与warm/cold准入保持，不以本机focused冒新全套数字。
+
+### 成熟实现参考与完成边界
+
+默认诊断ownership参考官方MCP TypeScript固定fa56d815：
+https://github.com/modelcontextprotocol/typescript-sdk/blob/fa56d815aceceb089a695e765c98a83b8ce75421/src/client/stdio.ts
+（Root核8338B/SHA09427858bda9c2005fc8bd480083ed899717f4c521107a17f845ed0f907d8d00），
+以及官方MCP Python v1.12.4 stdio_client默认errlog=sys.stderr：
+https://github.com/modelcontextprotocol/python-sdk/blob/v1.12.4/src/mcp/client/stdio/__init__.py
+（Root核8991B/SHAc18c54e5eda974d3f500db9fae8c70acfd2ea728b2aeee71d5cb323f670ded3e）。
+本项目仅用既有ACP None继承与Node显式callback分支；不引库/API，不照搬其session/group/2s清理。
+
+本具体共同Finding由真实repair/verification/rereview局部resolved，实际75resolved+managedUNKNOWN1open=76；
+46finite verified与4whole hold、behavior_model_closure=open保持。原e391 whole自然1、旧各epoch/失败
+与21a01 UNKNOWN保持；五场不替当前完整三语/3quickstarts、Windows/精main CI等后续验收。
+accepted5621 identity/kind及454routes不增退，完整Rust inventory仅遥测不扩三语言合同；旧Rust/合同/
+Host/三policy各原source/runtime切点不重标。README两语言已同步；examples调用无变且22 examples编译0，
+website没有SDK投影（已有只读C0），CI原glob/入口会覆盖新tests所以无需改job；不新增发布或merge授权。

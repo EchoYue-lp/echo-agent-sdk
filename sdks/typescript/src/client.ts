@@ -1,5 +1,5 @@
 import { MANAGED_OPERATIONS, validateManagedFields, validateManaged } from "./managed.js";
-import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { spawn, type ChildProcessByStdio } from "node:child_process";
 import { Readable, Writable } from "node:stream";
 import {
   client as createAcpClient,
@@ -68,6 +68,7 @@ import { fromWireValue, isWireHandle, isWireValue, toWireValue } from "./wire.js
 const DEFAULT_QUEUE_CAPACITY = 256;
 const MAX_QUEUE_CAPACITY = 4096;
 const DEFAULT_CLOSE_WAIT_MS = 5000;
+type StdioChild = ChildProcessByStdio<Writable, Readable, Readable | null>;
 
 export interface SpawnOptions {
   readonly hostCommand: string;
@@ -310,7 +311,7 @@ export class EchoAgentClient {
   readonly capability: EchoAgentCapability;
   private readonly app: ClientApp;
   private readonly connection: ClientConnection;
-  private readonly process: ChildProcessWithoutNullStreams;
+  private readonly process: StdioChild;
   private readonly extensionHandlers: Map<string, ExtensionHandler>;
   private readonly events: Map<string, StreamFeed>;
   private readonly updates: Map<string, AsyncQueue<unknown>>;
@@ -323,7 +324,7 @@ export class EchoAgentClient {
   private constructor(
     app: ClientApp,
     connection: ClientConnection,
-    child: ChildProcessWithoutNullStreams,
+    child: StdioChild,
     catalog: FacadeCatalog,
     capability: EchoAgentCapability,
     extensionHandlers: Map<string, ExtensionHandler>,
@@ -343,16 +344,20 @@ export class EchoAgentClient {
   }
 
   static async spawn(options: SpawnOptions): Promise<EchoAgentClient> {
-    const child = spawn(options.hostCommand, [...(options.args ?? [])], {
+    const spawnOptions = {
       cwd: options.cwd,
       env: options.env ? { ...process.env, ...options.env } : process.env,
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-    if (!child.stdin || !child.stdout || !child.stderr) {
+    };
+    // Only an explicit callback owns a diagnostic pipe. Otherwise inherit the
+    // application's stderr so diagnostics cannot block initialization unread.
+    const child = options.onStderr
+      ? spawn(options.hostCommand, [...(options.args ?? [])], { ...spawnOptions, stdio: ["pipe", "pipe", "pipe"] })
+      : spawn(options.hostCommand, [...(options.args ?? [])], { ...spawnOptions, stdio: ["pipe", "pipe", "inherit"] });
+    if (!child.stdin || !child.stdout || (options.onStderr && !child.stderr)) {
       child.kill();
       throw new EchoAgentError("transport_error", "Host did not expose all stdio pipes");
     }
-    if (options.onStderr) {
+    if (options.onStderr && child.stderr) {
       child.stderr.on("data", (chunk: Buffer) => options.onStderr?.(chunk.toString("utf8")));
     }
     await new Promise<void>((resolve, reject) => {
@@ -1130,7 +1135,7 @@ export class EchoAgentClient {
 
   // Both normal close and a rejected handshake settle the same original child.
   // Its existing EOF callback and native exit obligations are unchanged.
-  private static async closeStdioOwned(child: ChildProcessWithoutNullStreams, connection: ClientConnection, cause?: unknown): Promise<void> {
+  private static async closeStdioOwned(child: StdioChild, connection: ClientConnection, cause?: unknown): Promise<void> {
     const hasExited = () => child.exitCode !== null || child.signalCode !== null;
     let onExit: () => void = () => {};
     const exited = new Promise<void>((resolve) => {

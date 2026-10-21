@@ -514,13 +514,29 @@ if __name__ == "__main__":
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--console", action="store_true")
     parser.add_argument("--proxy-host")
+    parser.add_argument("--proxy-stderr-file", type=Path)
     parser.add_argument("--cleanup-host", action="store_true")
     parser.add_argument("--serve", action="store_true")
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
+    if args.proxy_stderr_file is not None and not args.proxy_host:
+        parser.error("--proxy-stderr-file requires --proxy-host")
     if args.cleanup_host:
         cleanup_host(args.work)
     elif args.proxy_host:
+        if args.proxy_stderr_file is not None:
+            # Test-only capture includes interpreter finalization after proxy()
+            # returns. Never restore/close fd2 early; O_EXCL protects prior logs.
+            descriptor = os.open(
+                args.proxy_stderr_file,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0),
+                0o600,
+            )
+            try:
+                os.dup2(descriptor, sys.stderr.fileno())
+            finally:
+                if descriptor != sys.stderr.fileno():
+                    os.close(descriptor)
         proxy(args.work, args.proxy_host)
     elif args.serve:
         serve(args.work)
