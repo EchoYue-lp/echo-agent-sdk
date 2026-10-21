@@ -39,3 +39,125 @@ source-first design 和 SDK 文档链接检查。
 
 最终 MR merge commit 与远端 main ancestry 仍需在本分支交付后由 Git 对账证明。Protocol purity、
 framework pin、合同分离、Host E2E 与三语言门禁由后续 Evidence 分别证明。
+
+## 2026-10-21 f7bac source-only 后继（运行时尚待验证）
+
+本段仅追加当前来源事实，保留上述历史 observed_at、source_refs、正文与 limitations。
+SDK 基准为 `09f670fbbde98bc44a7c710c6419a6ea0d7d469c`，本次由同一任务正式承接
+20 个工程文件；协调授权为 `SDK-F7BAC-FORMAL-SOURCE-20261021-01`。
+framework 精 main 为 `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，tree 为
+`0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`，sole parent 为
+`6849bfcab74d9a55d4f70987adcd13835bb9789d`。协调者已接受 PR197 原 main CI
+39605663648 七项 SUCCESS 与 remote-only cold 源码复核；上游验收不证明 SDK Host 通过。
+
+`echo-sdk-host/Cargo.toml` 的唯一 framework pin、`Cargo.lock` 与
+`scripts/check-sdk-contracts.sh` 的来源断言同步到该 revision。锁文件 SHA256 为
+`1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`；相对既有
+webpki 补丁锁，仅 8 个 framework 包及 3 个上游 vendor 包共 11 条 Git source 变化，
+全部 656 包的版本、checksum、依赖边保持。复用上游既有校验器与 14 个纯 Python 测试：
+`scripts/check-cargo-deny-baseline.py`、`scripts/tests/test_cargo_deny_baseline.py`，
+`.cargo/cargo-deny-duplicate-baseline.json` 仍严格保留原 SDK 已接受的 49 组、107 项
+registry 身份；authorization、比较逻辑、命令及警告类别边界不扩。子进程仅固定
+CARGO_TERM_COLOR=never，不清洗 raw、不放宽 ANSI/未知渲染、不新增 offline scanner 选项。
+`.github/workflows/rust-ci.yml` 接入相同检查，
+`docs/sdk/governance/dependency-warning-policy-proposal.md`、`README.md`、
+`MIGRATION-SOURCE.md`、`AGENTS.md` 与 `docs/sdk/README.md` 如实同步来源及剩余验收。
+
+A03 在冻结的既有用户镜像缓存及独立 Cargo home 中实际执行一次
+`cargo update --offline -p echo_agent --precise f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
+和一次 `cargo metadata --locked --offline --no-deps --format-version 1`，均自然退出 0，
+产出的完整锁文件逐字匹配上述 SHA。metadata 的 resolve=null，仅为 no-deps 来源观察；
+这不是完整依赖图、fresh registry、冷缓存或 yanked 状态验证。A01 的 Cargo 自然退出
+UNKNOWN、A02 经授权 SIGINT 的失败原件均保留，不以 A03 成功改写。A03 的来源、缓存
+前后身份及实际退出原件仅在当前工作区
+`.echo-semantic/local/sdk-parallel-delivery-01a14385/sdk-f7bac-source-candidate-v1/resolver-a03-execution/`
+可用；具名 minproof 为 `source-only-final-minproof.json`，9223 bytes，SHA256
+`50922abb5e8d499e211ecde403701490e3378c09f77028d4388e29e428a6e230`。
+
+提交闭包保留原有 8 个测试/fixture 的 e736 字节与模式：
+`echo-sdk-host/tests/extension_bridge_e2e.rs`，`sdks/shared/testing/a2a_host_fixture.py`，
+`sdks/typescript/test/a2a-host.test.js`，`sdks/python/tests/test_a2a_host.py`，
+`sdks/java/src/test/java/com/echoagent/sdk/A2AHostTest.java`，
+`sdks/typescript/test/family-route-host.test.js`，`sdks/python/tests/test_family_route_host.py`，
+`sdks/java/src/test/java/com/echoagent/sdk/FamilyRouteHostTest.java`。
+FamilyRoute 三项是当前 Windows CI 调用的直接依赖；Store/A2A 另外五项是同一目标已经接受
+的补证，不冒称为 Windows 的直接依赖。CI/锁与新增采用 12 项重叠 2 项，因此总数为 20。
+framework 保留唯一执行/取消/settlement 权威，SDK 不新增 driver、状态机或公共接口。
+
+固定 canonical 校验器 SHA256 `950a606e3b8225c802d61f1b0a6ce4b71ed0949d7b12ad73aec1cf76dbfd9c66`
+在真实 HEAD09f、可恢复 base 对象、精确 stage 新 3 个文件的正常 Git view 中，官方
+source_digest 实算为 `74885331db1137991513d5bfe0c831d462b395d21c7089e863de743762aaf7fb`。
+该 view 的全部 1225 个 tracked 文件与 S 字节/模式相同；摘要排除 360 个语义文件，
+实际绑定 865 个源码/支持文件。S 另有原 4 个受保护、未跟踪 pyc，未删除、移动、忽略或暂存；
+S 全输入 1229 文件域（含 pyc）的官方源码摘要为
+`0010846b7afc5e655b75c882daf529b029049d95358d674c99871242c8e489b4`，对应 869 个非语义路径。
+Baseline 仅绑定可提交 1225 域；两个域及 pyc 身份原件位于本任务 local 的
+`sdk-f7bac-formal-source-20261021-01/normal-gitview-source-domains.json`。
+该普通 Git view 不是冷恢复或原生 Stop 通过证明，S 的 PF 和受保护输入仍独立核对。
+
+原 e736 未过滤第 12 项失败 101、7a81 诊断失败 101 均未在新 pin 上重验；新的 Host、
+原 14 Rust、fresh 三项依赖扫描、完整三语言及三个 quickstart、Windows/main CI 仍待实际
+执行。历史 managed 首因仍 UNKNOWN，4 个整体行为 hold 与 behavior_model_closure=open
+保持；accepted 5621 identity/kind、454 routes 不扩，不自动生成 117 产物，不提升旧 Audit
+或 Finding 状态。示例继续由原三个 quickstart 验证；本次没有公开 API 或官网产品承诺变化，
+不新增官网内容。本段来源事实不替代后续工程验收及自然宿主 Stop。
+
+## 2026-10-22 f7bac 阶段资格（其余门禁继续待验）
+
+本节是上述 source-only 切点之后的新执行事实，不改写历史 header、失败或旧“待验”条目。
+实际执行仍在 SDK HEAD `09f670fbbde98bc44a7c710c6419a6ea0d7d469c` 的精确暂存 22 路径、
+1225 tracked 文件上，committable 源码摘要仍为
+`74885331db1137991513d5bfe0c831d462b395d21c7089e863de743762aaf7fb`，
+framework pin、11 Git 来源、锁 SHA1c865、accepted 5621/454 与原始 4 个 pyc 均保持。
+
+本阶段原 14 条 Rust 中仅 01/02/03/04/05/12 已实际合格：同源 fmt/fmt-check 为 0；
+03 为原 workspace/all-targets/all-features Clippy，04 为原 lib/bins 严格 panic-family Clippy，
+均自然退出 0、零警告。05 原 `cargo test --workspace --all-targets --all-features --locked`
+实际 13 个 harness（含 main 零用例 harness）、523 passed、0 failed/ignored/filtered：
+Host lib223、core33、extension39、facade12、stdio4、governance1、Protocol lib42、
+export9、ACP5、coreRPC22、extension contract42、inventory91。两个 ordinary Store
+提交后 unregister/disconnect 具名用例均通过。原未过滤 12 bridge-profile 整 target 另为
+31 passed、0 failed/ignored/filtered；它与 05 的语义覆盖有重叠，不相加为独立能力数。
+managed 断连重启、lost-ack 与背压用例在当前 f7 切点通过，仅证明当前有限回归；
+不能据此认定历史 0ebe UNKNOWN 与 e736 原失败同因或关闭历史 Finding。
+
+实际 Cargo、Node、guard、caller 均自然 0，signal/error=null、原 raw 完整不截断，
+1225 文件字节/模式、暂存索引、PF、4 个 pyc、旧 19 原件与实际 framework checkout2332
+前后相同，remaining producer=[]。05 观察到的 own target 峰值为 4263927808 bytes，
+最低双探针可用空间为 11845799936 bytes，没有触发资源边界；未改变已接受的
+opt1/assertions/overflow/unwind/jobs1/inc0/debug0/strip 编译配置。
+原12两件实际 producer 已独立保存，后续全语言入口仍会自行 build，不能假定它使用该副本。
+
+本地原件仅在当前工作区：
+`.echo-semantic/local/sdk-parallel-delivery-01a14385/sdk-f7bac-accepted-runtime/`。
+05 raw `f7bac-rust-05-v2-a01.log` 为 72222 bytes、SHA256
+`5dd3d4c46cf34c96135e640d5f3aa15e24a63c6bd72883ca758d4339b38c5b75`；
+具名 milestone minproof 为 6172 bytes、SHA256
+`149517f3aed9be69fad478932723f3c129e0e87416fa9bf6fa1f1724fd35d8d4`，
+并链接各真实 Node/guard/caller/source-after 原件。04 a01 的外层日志命名冲突在启动 Cargo
+之前被防覆盖检查拒绝，负证据保留；协调者授权修正输出路径后的 a02 实际合格，
+不是重跑失败的 Rust case 或改变测试/预算。
+
+本次两个 JS test 的 `node --check` 和三个 Python test/fixture 的 AST/compile-only
+已在与 S 全部 1225 文件逐字节/模式相同的冻结副本中自然退出 0。
+实际 Node22.22.0、Python3.12.4；未 import 待检模块、未写 pyc、未执行 test case/Host。
+该语法资格不证明 Node20/Python3.10 最低版本运行或三语言 E2E。
+原件为本任务 local `sdk-f7bac-formal-source-20261021-01/focused-syntax/syntax-final-proof.json`，
+12147 bytes、SHA256 `dd6399acd46d24c2d32e31582bc5b26eb943380a1842fe0bcab25245c4e147a4`。
+
+冻结副本 Java target 初始不存在；在 MAVEN_OPTS=-Xmx256m 下执行一次
+`mvn -o -q test-compile` 实际自然 0，未运行 Surefire、test case 或 Host，未联网补依赖。
+实际 JDK21.0.5，637 个新 class 均为 major61（既有 release17 目标），包括本次两项
+A2AHostTest 与 FamilyRouteHostTest，已逐项绑定其源 SHA 和新 class SHA。
+这不是 JDK17 runtime、Windows 或完整 Java SDK E2E 通过。
+原件为上述任务 local `sdk-f7bac-formal-source-20261021-01/focused-java-compile/java-compile-final-proof.json`，
+287696 bytes、SHA256 `1c64c82194932678f9f27650203604a995a586f0c63a1ba2b29363ab06dd7937`。
+
+原06/07/08/09/10/11/13/14、完整 contract/非阻断 Rust telemetry、新 fullfacade Host、
+fresh 三项依赖扫描、完整三语言/3 quickstart、Windows native/main CI/冷恢复仍待分别验收；
+本阶段 checkpoint 仍需真实材料门禁、必要性复审与任务分支提交，不能由本节自动完成。
+本阶段提交只是可继续验收的任务分支 checkpoint，不能替代合入 main 的完整门禁。
+4 个整体行为 hold、behavior_model_closure=open 与历史 managed 首因 UNKNOWN 保持。
+当前 AGENTS/README 的剩余完整门禁说明仍按原切点保留；AGENTS 可能进入
+InstructionResolver 运行时输入，未来必要的 current lead/dated 分界变更须在最终受影响
+运行验证前明确评估并验证，不能仅按普通 metadata 盲目复用行为结果。

@@ -8,7 +8,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
 from echo_agent_sdk import EchoAgentClient, EchoAgentError, WireHandle
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
@@ -17,18 +16,36 @@ if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
 FIXTURE = Path(__file__).resolve().parents[2] / "shared/testing/a2a_host_fixture.py"
 
 
+@pytest.mark.parametrize("quota", [False, True])
 @pytest.mark.asyncio
 @pytest.mark.skipif(not HOST, reason="real Host required")
-async def test_accepted_a2a_http_sse_owner_and_errors():
+async def test_accepted_a2a_http_sse_owner_and_errors(quota):
     root = Path(
         os.environ.get("ECHO_AGENT_SDK_A2A_ROOT", "../../target/a2a-native")
     ).resolve()
     root.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="python-", dir=root))
+    if quota:
+        (work / "quota").write_text("1")
     peer = await asyncio.create_subprocess_exec(
         sys.executable, str(FIXTURE), "--work", str(work)
     )
     rows, values = [], {}
+
+    async def fixture_result(*arguments):
+        check = await asyncio.create_subprocess_exec(
+            sys.executable,
+            str(FIXTURE),
+            "--work",
+            str(work),
+            *arguments,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+        )
+        output, _ = await asyncio.wait_for(check.communicate(), 20)
+        assert check.returncode == 0, output.decode()
+        return json.loads(output)
+
     try:
 
         async def ready():
@@ -52,6 +69,10 @@ async def test_accepted_a2a_http_sse_owner_and_errors():
                 if step.get("action") == "close_session":
                     await sessions["a"].close()
                     rows.append({"id": step["id"], "value": True})
+                    continue
+                if step.get("action") == "await_source_closed":
+                    source = await fixture_result("--await-source", step["source"])
+                    rows.append({"id": step["id"], "value": True, "source": source})
                     continue
                 args = []
                 for arg in step["args"]:
@@ -111,20 +132,15 @@ async def test_accepted_a2a_http_sse_owner_and_errors():
                         default=lambda value: value.to_dict(),
                     )
                 )
+            if quota:
+                proof = await fixture_result("--verify")
+                assert proof["quota_slot_recovered"]
+                await sessions["a"].close()
             await sessions["b"].close()
             await agent.close()
-        check = await asyncio.create_subprocess_exec(
-            sys.executable,
-            str(FIXTURE),
-            "--work",
-            str(work),
-            "--verify",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT,
-        )
-        output, _ = await check.communicate()
-        assert check.returncode == 0, output.decode()
-        assert len(json.loads(output)["operations"]) == 9
+        if not quota:
+            proof = await fixture_result("--verify")
+            assert len(proof["operations"]) == 9
         print(f"A2A evidence {work}")
     finally:
         (work / "results.json").write_text(

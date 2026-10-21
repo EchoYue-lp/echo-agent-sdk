@@ -2,6 +2,21 @@
 
 Status: accepted
 
+## 新pin来源与机器门禁（SDK扫描与运行时仍待验证）
+
+当前framework pin为精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，SDK最小锁SHA256
+`1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`。相对既有webpki补丁锁5b5d，仅8framework+3vendor Git来源变，
+全部656包的版本、checksum及依赖边保持。A03使用冻结的既有用户镜像缓存，官方Cargo离线update与locked metadata均实际退出0，精锁为上述1c865。
+metadata仅no-deps（resolve=null），不证明完整图、fresh registry、冷缓存或yanked状态；fresh SDK扫描、新Host及完整门禁仍待验证。
+`.cargo/cargo-deny-duplicate-baseline.json`机械绑定该精确锁，保留原SDK49组/107项
+精确version/source身份；原历史50组中zip消失的复验和原始日志归属保留。
+复用正式framework校验器及真实彩色parent→plain child反例，锁定cargo-deny0.20.2，
+保持严格原raw语法、四类检查与scanner自然退出，child只设置CARGO_TERM_COLOR=never；
+不清洗原raw、不接收ANSI、不新增offlineflag、不扩来源/类别或忽略规则。
+CI记录原scanner raw与自然退出，再比较精集合；任何新组/版本/来源或未知渲染均拒绝。
+原cargo audit --deny warnings保留；新SDK原三policy、14Rust/Host/完整语言/平台验收另行执行。
+本段不是当前新锁扫描结果，也不把原e736失败、诊断失败或历史UNKNOWN改为通过。
+
 Human decision: 2026-10-14，用户明确答复“接受有界 duplicate 提示例外（推荐）”。
 
 Reviewed proposal SHA-256: `4c94073065a063d72cc863d658787961bad538250296c56990a5e86b722a83c7`。

@@ -97,6 +97,84 @@ jobs:
           cache-targets: "false"
       - name: Compile SDK workspace for Windows
         run: cargo check --workspace --lib --all-features --locked
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: sdks/typescript/package-lock.json
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Build the Windows Host for native path consumers
+        shell: bash
+        run: cargo build -p echo-sdk-host --no-default-features --features sdk-facade-adapters --locked
+      - name: Run named Windows native path consumers
+        shell: bash
+        env:
+          ECHO_AGENT_SDK_HOST: ${{ github.workspace }}/target/debug/echo-agent-sdk-host.exe
+          ECHO_AGENT_SDK_REQUIRE_HOST_E2E: "1"
+          ECHO_AGENT_SDK_REQUIRE_WINDOWS_NATIVE: "1"
+        run: |
+          # Bash pipefail propagates every native command, including commands piped to tee.
+          set -euo pipefail
+          export ECHO_AGENT_SDK_CONFIG="$RUNNER_TEMP/sdk-windows-native-path-config.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']).resolve()
+          document = json.loads(Path('echo-sdk-host/config.sdk.example.json').read_text())
+          document['sdk_profile']['state_root'] = str(root / 'sdk-windows-native-state')
+          if 'memory_path' in document['default_agent']['agent']:
+              document['default_agent']['agent']['memory_path'] = str(root / 'sdk-windows-native-memory.jsonl')
+          Path(os.environ['ECHO_AGENT_SDK_CONFIG']).write_text(json.dumps(document))
+          PY
+          export SDK_WINDOWS_TAP="$RUNNER_TEMP/sdk-windows-native-path.tap"
+          export SDK_WINDOWS_PYXML="$RUNNER_TEMP/sdk-windows-native-path-python.xml"
+          export SDK_WINDOWS_JAVA_XML="$GITHUB_WORKSPACE/sdks/java/target/surefire-reports/TEST-com.echoagent.sdk.FamilyRouteHostTest.xml"
+          export SDK_WINDOWS_XML_START="$RUNNER_TEMP/sdk-windows-native-case-start.json"
+          python - <<'PY'
+          import json
+          import os
+          import time
+          from pathlib import Path
+          python_report = Path(os.environ['SDK_WINDOWS_PYXML'])
+          java_report = Path(os.environ['SDK_WINDOWS_JAVA_XML'])
+          assert not python_report.exists() and not java_report.exists(), 'selected native reports must be fresh; preserve an unexpected existing report'
+          Path(os.environ['SDK_WINDOWS_XML_START']).write_text(json.dumps({'started_ns': time.time_ns(), 'python_xml': str(python_report), 'java_xml': str(java_report)}))
+          PY
+          (cd sdks/typescript && npm ci && npm run build && node --test --test-name-pattern="^Windows native PluginRegistry paths preserve UTF-16 units through a real consumer$" test/family-route-host.test.js) | tee "$SDK_WINDOWS_TAP"
+          node --input-type=module - <<'JS'
+          import {readFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const text = readFileSync(process.env.SDK_WINDOWS_TAP, 'utf8');
+          const line = text.split(/\r?\n/).find(line => /^ok \d+ - Windows native PluginRegistry paths preserve UTF-16 units through a real consumer$/.test(line));
+          assert.ok(line, 'named Windows native case must pass without SKIP');
+          assert.match(text, /^# pass 1$/m); assert.match(text, /^# fail 0$/m);
+          console.log('TypeScript native case=1 pass/0 failure/0 case skip; unrelated TAP name-filter deselection remains visible');
+          JS
+          (cd sdks/python && PYTHONPATH=src uv run --no-project --with pytest --with pytest-asyncio --with agent-client-protocol==0.12.1 python -m pytest -q -s tests/test_family_route_host.py::test_windows_native_plugin_registry_path_round_trip --junitxml="$SDK_WINDOWS_PYXML")
+          (cd sdks/java && mvn -q -Dtest=FamilyRouteHostTest#windowsNativePluginRegistryPathRoundTrip test)
+          python - <<'PY'
+          import json
+          import os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          started = json.loads(Path(os.environ['SDK_WINDOWS_XML_START']).read_text())
+          reports = [('Python', Path(started['python_xml']), 'test_windows_native_plugin_registry_path_round_trip', 'tests.test_family_route_host'), ('Java', Path(started['java_xml']), 'windowsNativePluginRegistryPathRoundTrip', 'com.echoagent.sdk.FamilyRouteHostTest')]
+          for language, path, name, classname in reports:
+              assert path.is_file() and path.stat().st_mtime_ns >= started['started_ns'], (language, path, 'report must be created in this invocation')
+              root = ET.parse(path).getroot()
+              cases = root.findall('.//testcase')
+              suites = [root] if root.tag == 'testsuite' else root.findall('.//testsuite')
+              assert len(cases) == 1 and cases[0].get('name') == name and cases[0].get('classname') == classname, (language, path)
+              assert sum(int(suite.get('tests', '0')) for suite in suites) == 1, (language, path)
+              assert all(sum(int(suite.get(key, '0')) for suite in suites) == 0 for key in ['failures', 'errors', 'skipped']), (language, path)
+              assert not any(cases[0].find(tag) is not None for tag in ['skipped', 'failure', 'error']), (language, path)
+              print(f'{language} Windows native case: 1 passed, 0 failed, 0 skipped; report={path}; mtime_ns={path.stat().st_mtime_ns}; start_ns={started["started_ns"]}')
+          PY
 
   # Blocking SDK contract signal: deterministic regeneration of the accepted
   # external contract, extension schema and fixtures must produce zero drift.
@@ -177,10 +255,32 @@ jobs:
       - uses: taiki-e/install-action@cargo-audit
       - name: Audit vulnerabilities and maintenance warnings
         run: cargo audit --deny warnings
-      - uses: EmbarkStudios/cargo-deny-action@v2
+      - uses: actions/setup-python@v6
         with:
-          rust-version: stable
-          arguments: --workspace --all-features --locked
+          python-version: "3.11"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny@0.20.2
+      - name: Test the exact dependency diagnostic gate
+        run: python -B -m unittest discover -s scripts/tests -p 'test_cargo_deny_baseline.py'
+      - name: Check all cargo-deny policies and exact accepted duplicates
+        id: deny_baseline
+        run: |
+          python -B scripts/check-cargo-deny-baseline.py --capture \
+            --root "$GITHUB_WORKSPACE" \
+            --baseline .cargo/cargo-deny-duplicate-baseline.json \
+            --raw "$RUNNER_TEMP/cargo-deny.raw.log" \
+            --receipt "$RUNNER_TEMP/cargo-deny.receipt.json"
+      - name: Preserve the original scanner output and natural exit
+        if: ${{ always() && steps.deny_baseline.outcome != 'skipped' }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: cargo-deny-original-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/cargo-deny.raw.log
+            ${{ runner.temp }}/cargo-deny.receipt.json
 
   semantic:
     name: SDK semantic source and change evidence

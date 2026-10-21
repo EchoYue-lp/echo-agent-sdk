@@ -31,6 +31,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::io::{AsyncReadExt as _, AsyncWriteExt as _};
 use tokio::net::TcpListener;
+use tokio::sync::Notify;
 
 mod support;
 
@@ -487,6 +488,14 @@ fn stderr_text(host: &HostProcess) -> String {
 
 type SharedRawStore = Arc<Mutex<std::collections::BTreeMap<(Vec<String>, String), WireValue>>>;
 
+#[derive(Default)]
+struct StoreDeleteControl {
+    armed: std::sync::atomic::AtomicBool,
+    calls: AtomicUsize,
+    committed_notice: Notify,
+    pending: Mutex<Option<(Responder<ExtensionInvokeOutcome>, bool)>>,
+}
+
 /// The fake SDK dispatcher state shared by client handlers.
 #[derive(Default)]
 struct SdkDispatch {
@@ -529,6 +538,7 @@ struct SdkDispatch {
     task_store: Arc<TaskStoreDispatch>,
     interrupted_callbacks: SharedVec<CallbackToolInterruptedInput>,
     raw_store: SharedRawStore,
+    store_delete_control: Arc<StoreDeleteControl>,
 }
 
 /// A parked original request, never a synthesized retry or replacement call.
@@ -1806,6 +1816,7 @@ where
     let task_store = dispatch.task_store.clone();
     let interrupted_callbacks = dispatch.interrupted_callbacks.clone();
     let raw_store = dispatch.raw_store.clone();
+    let store_delete_control = dispatch.store_delete_control.clone();
     let connect = Client
         .builder()
         .on_receive_request(
@@ -1845,6 +1856,7 @@ where
                 let task_store = task_store.clone();
                 let interrupted_callbacks = interrupted_callbacks.clone();
                 let raw_store = raw_store.clone();
+                let store_delete_control = store_delete_control.clone();
                 move |call: ExtensionInvokeCall,
                       responder: Responder<ExtensionInvokeOutcome>,
                       connection: ConnectionTo<agent_client_protocol::Agent>| {
@@ -1883,6 +1895,7 @@ where
                     let task_store = task_store.clone();
                     let interrupted_callbacks = interrupted_callbacks.clone();
                     let raw_store = raw_store.clone();
+                    let store_delete_control = store_delete_control.clone();
                     async move {
                         let operation = call.invocation.operation();
                         let original_call = call.clone();
@@ -1963,7 +1976,20 @@ where
                                     },
                                 })
                             }
-                            ExtensionInvocation::StoreDelete(_) => {
+                            ExtensionInvocation::StoreDelete(input) => {
+                                if store_delete_control.armed.load(Ordering::Acquire) {
+                                    store_delete_control.calls.fetch_add(1, Ordering::AcqRel);
+                                    let deleted = raw_store.lock().unwrap_or_else(|error| error.into_inner())
+                                        .remove(&(input.namespace, input.key)).is_some();
+                                    let mut pending = store_delete_control.pending.lock().unwrap_or_else(|error| error.into_inner());
+                                    if pending.is_some() {
+                                        return Err(RpcError::internal_error().data("unexpected second backend Store delete"));
+                                    }
+                                    *pending = Some((responder, deleted));
+                                    // notify_one retains readiness if the scenario has not yet polled.
+                                    store_delete_control.committed_notice.notify_one();
+                                    return Ok(());
+                                }
                                 responder.respond(ExtensionInvokeOutcome::Result {
                                     result: ExtensionResult::StoreDelete(true),
                                 })
@@ -4216,6 +4242,266 @@ async fn store_and_human_loop_extensions_round_trip() -> Result<(), Box<dyn std:
     );
     host.child.kill().await?;
     Ok(())
+}
+
+async fn invoke_memory_probe(
+    connection: &ConnectionTo<agent_client_protocol::Agent>,
+    session: &WireHandle,
+    operation: &str,
+    value: Option<&str>,
+) -> Result<FeatureOperationResponse, RpcError> {
+    let mut arguments = vec![
+        WireValue::List(vec![WireValue::String("delete-barrier".into())]),
+        WireValue::String("key".into()),
+    ];
+    if let Some(value) = value {
+        arguments.push(WireValue::String(value.into()));
+    }
+    let request = FeatureOperationRequest {
+        operation: operation.to_string(),
+        signature_digest: echo_sdk_protocol::facade::family_operation_signature_digest(
+            "memory", operation,
+        ),
+        handle: Some(session.clone()),
+        arguments,
+    };
+    let response = connection
+        .send_request(UntypedMessage::new(
+            "_echo_agent/memory/op",
+            serde_json::to_value(request)
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+        )?)
+        .block_task()
+        .await?;
+    serde_json::from_value(response)
+        .map_err(|error| RpcError::internal_error().data(error.to_string()))
+}
+
+async fn store_delete_commit_boundary(disconnect: bool) -> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let config = write_config_with_features(
+        directory.path(),
+        "http://127.0.0.1:1/v1/chat/completions",
+        &directory.path().join("state"),
+        true,
+        false,
+        false,
+    );
+    // Successful fresh work after settlement must reuse the original single invocation slot.
+    set_profile_limit(&config, "max_extension_invocations", 1)?;
+    let mut host = spawn_host(&config).await?;
+    let dispatch = Arc::new(SdkDispatch::default());
+    dispatch
+        .store_delete_control
+        .armed
+        .store(true, Ordering::Release);
+    let scenario_dispatch = dispatch.clone();
+    let pending = drive_sdk(&mut host, dispatch.clone(), move |connection| {
+        Box::pin(async move {
+            connection
+                .send_request(initialize_request(Some(client_hello())))
+                .block_task()
+                .await?;
+            let descriptor = || ExtensionDescriptor::Store {
+                descriptor_version: 1,
+                search_modes: vec![SearchModeWire::Keyword],
+            };
+            let store = register_extension(
+                &connection,
+                ExtensionKind::Store,
+                "sdk-delete-barrier",
+                descriptor(),
+                None,
+            )
+            .await?;
+            let agent = connection
+                .send_request(AgentCreateRequest {
+                    config: AgentConfigWire::HostDefault,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?
+                .agent;
+            let session = connection
+                .send_request(SessionCreateRequest {
+                    agent: agent.clone(),
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            invoke_memory_probe(
+                &connection,
+                &session.session,
+                "memory.store.put",
+                Some("committed-value"),
+            )
+            .await?;
+            let original_connection = connection.clone();
+            let original_session = session.session.clone();
+            let original = tokio::spawn(async move {
+                invoke_memory_probe(
+                    &original_connection,
+                    &original_session,
+                    "memory.store.delete",
+                    None,
+                )
+                .await
+            });
+            tokio::time::timeout(
+                Duration::from_secs(10),
+                scenario_dispatch
+                    .store_delete_control
+                    .committed_notice
+                    .notified(),
+            )
+            .await
+            .map_err(|_| {
+                RpcError::internal_error().data("committed Store delete barrier missing")
+            })?;
+            assert!(
+                scenario_dispatch
+                    .raw_store
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner())
+                    .is_empty()
+            );
+            assert_eq!(
+                scenario_dispatch
+                    .store_delete_control
+                    .calls
+                    .load(Ordering::Acquire),
+                1
+            );
+            assert!(
+                !original.is_finished(),
+                "delete response must remain held after backend mutation"
+            );
+            if disconnect {
+                // Returning the foreground drops the actual official transport.
+                // The pending caller stays outside this scope so its transport failure is observable.
+                return Ok(Some(original));
+            }
+            assert!(
+                unregister(&connection, &store).await?,
+                "external unregister is the admission barrier"
+            );
+            let rejected =
+                invoke_memory_probe(&connection, &session.session, "memory.store.delete", None)
+                    .await;
+            let error = rejected.err().ok_or_else(|| {
+                RpcError::internal_error().data("new delete after unregister succeeded")
+            })?;
+            let error = EchoSdkError::from_jsonrpc_data(error.data.as_ref())
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+            assert_eq!(error.code, ExtensionErrorCode::FrameworkError);
+            assert!(error.message.contains("closed_handle"));
+            assert_eq!(error.retryable, Retryability::Never);
+            assert_eq!(
+                scenario_dispatch
+                    .store_delete_control
+                    .calls
+                    .load(Ordering::Acquire),
+                1,
+                "new call must fail before the backend"
+            );
+            let held = scenario_dispatch
+                .store_delete_control
+                .pending
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .take()
+                .ok_or_else(|| {
+                    RpcError::internal_error().data("original committed Store response missing")
+                })?;
+            assert!(held.1);
+            held.0.respond(ExtensionInvokeOutcome::Result {
+                result: ExtensionResult::StoreDelete(held.1),
+            })?;
+            let first = original
+                .await
+                .map_err(|error| RpcError::internal_error().data(error.to_string()))??;
+            assert_eq!(
+                first
+                    .value
+                    .into_json()
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                serde_json::json!({"deleted": true})
+            );
+            assert!(!unregister(&connection, &store).await?);
+            let replacement = register_extension(
+                &connection,
+                ExtensionKind::Store,
+                "sdk-delete-barrier",
+                descriptor(),
+                None,
+            )
+            .await?;
+            let fresh = connection
+                .send_request(SessionCreateRequest {
+                    agent,
+                    working_dir: None,
+                    session_id: None,
+                    idempotency_id: None,
+                })
+                .block_task()
+                .await?;
+            let got =
+                invoke_memory_probe(&connection, &fresh.session, "memory.store.get", None).await?;
+            assert_eq!(
+                got.value
+                    .into_json()
+                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
+                serde_json::Value::Null
+            );
+            assert!(unregister(&connection, &replacement).await?);
+            Ok(None)
+        })
+    })
+    .await?;
+    if let Some(original) = pending {
+        let result = tokio::time::timeout(Duration::from_secs(10), original).await??;
+        assert!(
+            result.is_err(),
+            "actual transport disconnect must fail the pending ordinary Store caller"
+        );
+        let held = dispatch
+            .store_delete_control
+            .pending
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .take();
+        assert!(
+            held.is_some_and(|(_, deleted)| deleted),
+            "backend delete stays committed; no managed receipt/replay claim"
+        );
+    }
+    assert_eq!(
+        dispatch.store_delete_control.calls.load(Ordering::Acquire),
+        1
+    );
+    assert!(
+        dispatch
+            .raw_store
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .is_empty()
+    );
+    let _ = host.child.kill().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn store_delete_commit_survives_unregister_barrier() -> Result<(), Box<dyn std::error::Error>>
+{
+    store_delete_commit_boundary(false).await
+}
+
+#[tokio::test]
+async fn store_delete_disconnect_reports_failure_after_backend_commit()
+-> Result<(), Box<dyn std::error::Error>> {
+    store_delete_commit_boundary(true).await
 }
 
 /// Scenario A3: an AgentFactory creates a correctly typed CustomAgent handle,

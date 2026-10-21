@@ -591,7 +591,7 @@ dependencies = [
 [[package]]
 name = "calamine"
 version = "0.36.1"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "atoi_simd",
  "byteorder",
@@ -1135,7 +1135,7 @@ dependencies = [
 [[package]]
 name = "docx-rs"
 version = "0.4.22"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "base64",
  "crc32fast",
@@ -1227,7 +1227,7 @@ dependencies = [
 [[package]]
 name = "echo_agent"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "agent-client-protocol",
  "async-stream",
@@ -1274,7 +1274,7 @@ dependencies = [
 [[package]]
 name = "echo_core"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "async-stream",
  "chrono",
@@ -1303,7 +1303,7 @@ dependencies = [
 [[package]]
 name = "echo_execution"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "dashmap",
  "dirs",
@@ -1328,7 +1328,7 @@ dependencies = [
 [[package]]
 name = "echo_integration"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1359,7 +1359,7 @@ dependencies = [
 [[package]]
 name = "echo_macros"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -1370,7 +1370,7 @@ dependencies = [
 [[package]]
 name = "echo_orchestration"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1398,7 +1398,7 @@ dependencies = [
 [[package]]
 name = "echo_state"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "chrono",
  "echo_core",
@@ -1416,7 +1416,7 @@ dependencies = [
 [[package]]
 name = "echo_tools"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "async-trait",
  "base64",
@@ -4787,7 +4787,7 @@ dependencies = [
 [[package]]
 name = "rust_xlsxwriter"
 version = "0.82.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3560812caede84998a1f6f26d7bf3fa81ea0486c#3560812caede84998a1f6f26d7bf3fa81ea0486c"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 dependencies = [
  "zip",
 ]
@@ -4858,9 +4858,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-webpki"
-version = "0.103.14"
+version = "0.103.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0527518605e68109d875e248ea259b6758801cf165e4b2c2733ae3b51f12535a"
+checksum = "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
 dependencies = [
  "ring",
  "rustls-pki-types",

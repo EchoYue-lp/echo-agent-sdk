@@ -142,7 +142,7 @@ alone are not behavioral evidence.
 | Status | Meaning | Reached |
 |---|---|---|
 | **Design** | The design document is agreed | ✅ |
-| **Contract** | Full generation and accepted source/catalog continuity match the final pin | Complete for the current framework pin: accepted continuity choices and the original full 28-profile/117-artifact generation/check executed |
+| **Contract** | Full generation and accepted source/catalog continuity match the final pin | Prior 356 generation/check is historical; the new pin awaits the actual read-only contract gate without automatic regeneration |
 | **ACP conformant** | A standard ACP v1 client passes the supported profile against a real source-built Host | ✅ |
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
 | **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Historical Plan 08 route baseline; current capability/failure review remains separate |
@@ -153,7 +153,27 @@ alone are not behavioral evidence.
 
 ### Identity inventory scope
 
-The current Host pin is published framework
+The source-built Host now pins accepted framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
+(tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`), from
+[PR #197](https://github.com/EchoYue-lp/echo-agent/pull/197). Its original
+[main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)
+completed all seven jobs, followed by an independent remote-only cold source
+check. This upstream acceptance is not a passing SDK Host or consumer result.
+The SDK lock SHA-256 is `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
+upstream vendored Git source identities change from the existing webpki-patched
+SDK lock; all 656 package versions, checksums and dependency edges are unchanged.
+A03 official Cargo update and locked offline metadata each exited 0 using frozen
+existing user-mirror cache inputs, and produced this exact lock. The metadata used
+`--no-deps` (`resolve=null`); this is source-only proof, not fresh registry, cold
+cache, yanked-status or full graph validation. Fresh SDK scans, a new Host and
+the complete SDK gates remain pending.
+Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
+provenance does not authorize a 117-artifact update, new public language APIs,
+or automatic closure of the historical managed-exit cause.
+
+The inventory figures below remain the earlier generated cut.
+
+The previously generated Host pin was published framework
 `3560812caede84998a1f6f26d7bf3fa81ea0486c` from framework PR193.
 The original full 28-profile/117-artifact generation and contract gate completed
 against that pin. The current committed manifest has 10,973 canonical identities,

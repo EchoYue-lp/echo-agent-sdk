@@ -14,12 +14,65 @@ REMOTE_SESSION = "远端-session-🙂"
 TASK = "task-中文🙂"
 
 
-def scenario(base):
+def scenario(base, quota=False):
     client = {"ref": "open", "field": "resource"}
     normal = {"ref": "stream"}
     held = {"ref": "held"}
     closing = {"ref": "closing"}
-    return [
+    if quota:
+        return [
+            {"id": "open", "op": "a2a.client.open", "args": []},
+            {"id": "other", "session": "b", "op": "a2a.client.open", "args": []},
+            {
+                "id": "held",
+                "op": "a2a.task.stream.open",
+                "args": [client, base + "/quota-held/held", TEXT, REMOTE_SESSION],
+            },
+            {
+                "id": "quota_rejected",
+                "op": "a2a.task.stream.open",
+                "args": [client, base + "/quota-held/rejected", TEXT, REMOTE_SESSION],
+                "error": "payload_too_large",
+            },
+            {
+                "id": "rejected_source_closed",
+                "action": "await_source_closed",
+                "source": "rejected",
+            },
+            {
+                "id": "other_get",
+                "session": "b",
+                "op": "a2a.task.get",
+                "args": [{"ref": "other", "field": "resource"}, base + "/a2a", TASK],
+            },
+            {"id": "close_held", "op": "a2a.stream.close", "args": [held]},
+            {
+                "id": "held_source_closed",
+                "action": "await_source_closed",
+                "source": "held",
+            },
+            {
+                "id": "reopened",
+                "op": "a2a.task.stream.open",
+                "args": [client, base + "/stream", TEXT, REMOTE_SESSION],
+            },
+            {"id": "item_one", "op": "a2a.stream.next", "args": [{"ref": "reopened"}]},
+            {"id": "item_two", "op": "a2a.stream.next", "args": [{"ref": "reopened"}]},
+            {"id": "terminal", "op": "a2a.stream.next", "args": [{"ref": "reopened"}]},
+            {
+                "id": "old_closed",
+                "op": "a2a.stream.next",
+                "args": [held],
+                "error": "closed_handle",
+            },
+            {
+                "id": "reopened_closed",
+                "op": "a2a.stream.next",
+                "args": [{"ref": "reopened"}],
+                "error": "closed_handle",
+            },
+        ]
+    steps = [
         {"id": "open", "op": "a2a.client.open", "args": []},
         {"id": "discover", "op": "a2a.discover", "args": [client, base]},
         {
@@ -108,11 +161,16 @@ def scenario(base):
             "error": "closed_handle",
         },
     ]
+    return steps
 
 
 def serve(work):
     work.mkdir(parents=True, exist_ok=True)
     lock = threading.Lock()
+    source_started = {name: threading.Event() for name in ("held", "rejected")}
+    source_closed = {name: threading.Event() for name in ("held", "rejected")}
+    source_ids = {name: [] for name in ("held", "rejected")}
+    closures = {}
 
     def capture(value):
         with lock, (work / "http.jsonl").open("a", encoding="utf8") as out:
@@ -140,6 +198,23 @@ def serve(work):
             self.close_connection = True
 
         def do_GET(self):
+            if self.path.startswith("/quota-source-closed/"):
+                name = self.path.removeprefix("/quota-source-closed/")
+                assert name in source_started
+                started = source_started[name].wait(timeout=5)
+                closed = started and source_closed[name].wait(timeout=5)
+                with lock:
+                    value = {
+                        "source": name,
+                        "started": started,
+                        "closed": closed,
+                        "request_ids": list(source_ids[name]),
+                        "closure": closures.get(name),
+                        "held_started": source_started["held"].is_set(),
+                        "held_closed": source_closed["held"].is_set(),
+                    }
+                self.reply(value)
+                return
             capture({"path": self.path, "method": "GET"})
             assert self.path == "/.well-known/agent.json", self.path
             self.reply(
@@ -158,6 +233,43 @@ def serve(work):
         def do_POST(self):
             request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             capture({"path": self.path, "method": "POST", "request": request})
+            if self.path.startswith("/quota-held/"):
+                name = self.path.removeprefix("/quota-held/")
+                assert (
+                    name in source_started
+                    and request["method"] == "tasks/sendSubscribe"
+                )
+                with lock:
+                    source_ids[name].append(request["id"])
+                self.send_response(200)
+                self.send_header("Content-Type", "text/event-stream")
+                self.send_header("Connection", "close")
+                self.end_headers()
+                self.wfile.write(b": independent quota source ready\n\n")
+                self.wfile.flush()
+                source_started[name].set()
+                # These two sources never produce finite events or stop themselves.
+                # Only the original HTTP client's socket drop satisfies each event.
+                try:
+                    assert self.rfile.read(1) == b"", (
+                        "held source received unexpected client data"
+                    )
+                    closure = "eof"
+                except ConnectionResetError:
+                    closure = "connection_reset"
+                capture(
+                    {
+                        "path": self.path,
+                        "source": name,
+                        "request_id": request["id"],
+                        "source_socket_closed": closure,
+                    }
+                )
+                with lock:
+                    closures[name] = closure
+                source_closed[name].set()
+                self.close_connection = True
+                return
             if self.path == "/held":
                 assert request["method"] == "tasks/sendSubscribe"
                 self.send_response(200)
@@ -234,8 +346,9 @@ def serve(work):
 
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     base = f"http://127.0.0.1:{server.server_port}"
+    quota = (work / "quota").exists()
     (work / "scenario.json").write_text(
-        json.dumps(scenario(base), ensure_ascii=False, indent=2)
+        json.dumps(scenario(base, quota=quota), ensure_ascii=False, indent=2)
     )
     config = {
         "schema_version": 1,
@@ -249,7 +362,10 @@ def serve(work):
             },
             "agent": {"name": "a2a-proof", "enable_tools": True},
         },
-        "sdk_profile": {"state_root": str(work / "state")},
+        "sdk_profile": {
+            "state_root": str(work / "state"),
+            "limits": {"max_facade_streams": 1} if quota else {},
+        },
     }
     (work / "host.json").write_text(json.dumps(config))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -286,6 +402,28 @@ def decode(value):
     return value
 
 
+def await_source_closed(work, name):
+    from urllib.request import urlopen
+
+    steps = json.loads((work / "scenario.json").read_text())
+    base = next(step for step in steps if step["id"] == "held")["args"][1].removesuffix(
+        "/quota-held/held"
+    )
+    with urlopen(base + "/quota-source-closed/" + name, timeout=15) as response:
+        value = json.load(response)
+    assert value["source"] == name and value["started"] and value["closed"], value
+    assert len(value["request_ids"]) == 1, value
+    assert value["closure"] in ("eof", "connection_reset"), value
+    if name == "rejected":
+        assert value["held_started"] and not value["held_closed"], value
+    else:
+        assert value["held_closed"], value
+    (work / ("source-closed-" + name + ".json")).write_text(
+        json.dumps(value, ensure_ascii=False, indent=2)
+    )
+    print(json.dumps(value, ensure_ascii=False))
+
+
 def verify(work):
     rows = json.loads((work / "results.json").read_text())
     steps = json.loads((work / "scenario.json").read_text())
@@ -298,6 +436,87 @@ def verify(work):
             assert row["error"]["message"] and row["error"]["operation"], row
         else:
             assert "error" not in row, row
+    if (work / "quota").exists():
+        rejected_source = results["rejected_source_closed"]["source"]
+        held_source = results["held_source_closed"]["source"]
+        assert rejected_source["source"] == "rejected" and rejected_source["closed"]
+        assert rejected_source["held_started"] and not rejected_source["held_closed"]
+        assert held_source["source"] == "held" and held_source["closed"]
+        assert (
+            len(rejected_source["request_ids"]) == len(held_source["request_ids"]) == 1
+        )
+        assert rejected_source["request_ids"] != held_source["request_ids"]
+        step_ids = [step["id"] for step in steps]
+        assert (
+            step_ids.index("quota_rejected")
+            < step_ids.index("rejected_source_closed")
+            < step_ids.index("close_held")
+        )
+        assert (
+            step_ids.index("close_held")
+            < step_ids.index("held_source_closed")
+            < step_ids.index("reopened")
+        )
+        assert all(step.get("action") != "close_session" for step in steps)
+        rejected = results["quota_rejected"]
+        assert "value" not in rejected, "quota refusal must not publish a stream handle"
+        assert rejected["error"]["code"] == "payload_too_large"
+        assert rejected["error"]["retryable"] == "after_delay"
+        assert results["close_held"]["value"] is True
+        assert results["other_get"]["value"]["id"] == TASK
+        assert results["held"]["value"] != results["reopened"]["value"]
+        sequences = []
+        for name, variant, sequence in [
+            ("item_one", "item", "1"),
+            ("item_two", "item", "2"),
+            ("terminal", "complete", "3"),
+        ]:
+            value = decode(results[name]["value"])
+            assert (
+                value["type"] == "echo_sdk::FacadeStreamEvent"
+                and value["variant"] == variant
+            )
+            assert str(value["fields"]["sequence"]) == sequence
+            sequences.append(sequence)
+            if variant == "item":
+                expected = "one 中文🙂" if name == "item_one" else "two 中文🙂"
+                assert (
+                    value["fields"]["value"]["artifact"]["parts"][0]["text"] == expected
+                )
+        http = [
+            json.loads(line) for line in (work / "http.jsonl").read_text().splitlines()
+        ]
+        assert any(row.get("request", {}).get("method") == "tasks/get" for row in http)
+        for name, fact in [("held", held_source), ("rejected", rejected_source)]:
+            requests = [
+                row
+                for row in http
+                if row.get("path") == "/quota-held/" + name and row.get("request")
+            ]
+            assert (
+                len(requests) == 1
+                and requests[0]["request"]["id"] == fact["request_ids"][0]
+            )
+            assert any(
+                row.get("source") == name
+                and row.get("request_id") == fact["request_ids"][0]
+                and row.get("source_socket_closed")
+                for row in http
+            )
+        normalized = {
+            "quota_slot_recovered": True,
+            "sequences": sequences,
+            "operations": sorted({step["op"] for step in steps if "op" in step}),
+            "errors": {
+                row["id"]: row["error"]["code"] for row in rows if "error" in row
+            },
+            "scope": "Host HTTP source drop and slot recovery only; subscribe may precede quota refusal, no remote physical task-stop guarantee",
+        }
+        (work / "normalized.json").write_text(
+            json.dumps(normalized, ensure_ascii=False, indent=2)
+        )
+        print(json.dumps(normalized, ensure_ascii=False))
+        return
     assert results["discover"]["value"]["name"] == "远端 Agent🙂"
     for name, state in [
         ("send", "completed"),
@@ -331,8 +550,7 @@ def verify(work):
     assert results["close_stream"]["value"] is True
     assert results["close_stream_twice"]["value"] is False
     http = [json.loads(line) for line in (work / "http.jsonl").read_text().splitlines()]
-    assert len(http) == 8, http
-    assert [row.get("request", {}).get("method", "GET") for row in http] == [
+    expected_http_methods = [
         "GET",
         "tasks/send",
         "tasks/get",
@@ -342,6 +560,10 @@ def verify(work):
         "tasks/sendSubscribe",
         "tasks/sendSubscribe",
     ]
+    assert len(http) == len(expected_http_methods), http
+    assert [
+        row.get("request", {}).get("method", "GET") for row in http
+    ] == expected_http_methods
     for row in (http[1], http[5]):
         assert row["request"]["params"]["sessionId"] == REMOTE_SESSION
         assert row["request"]["params"]["message"] == {
@@ -380,8 +602,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--verify", action="store_true")
+    parser.add_argument("--await-source", choices=("held", "rejected"))
     args = parser.parse_args()
-    if args.verify:
+    if args.await_source:
+        await_source_closed(args.work, args.await_source)
+    elif args.verify:
         verify(args.work)
     else:
         serve(args.work)

@@ -56,7 +56,27 @@ boundary remains recorded in `contracts/sdk/source-contract.json` and
 
 ## Current Host Pin
 
-The current source pin is accepted published framework
+The source-built Host now pins accepted framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
+(tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`), from
+[PR #197](https://github.com/EchoYue-lp/echo-agent/pull/197). Its original
+[main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)
+completed all seven jobs, followed by an independent remote-only cold source
+check. This upstream acceptance is not a passing SDK Host or consumer result.
+The SDK lock SHA-256 is `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
+upstream vendored Git source identities change from the existing webpki-patched
+SDK lock; all 656 package versions, checksums and dependency edges are unchanged.
+A03 official Cargo update and locked offline metadata each exited 0 using frozen
+existing user-mirror cache inputs, and produced this exact lock. The metadata used
+`--no-deps` (`resolve=null`); this is source-only proof, not fresh registry, cold
+cache, yanked-status or full graph validation. Fresh SDK scans, a new Host and
+the complete SDK gates remain pending.
+Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
+provenance does not authorize a 117-artifact update, new public language APIs,
+or automatic closure of the historical managed-exit cause.
+
+### Previous 356 source and runtime evidence
+
+The previous source pin was accepted published framework
 `3560812caede84998a1f6f26d7bf3fa81ea0486c`, tree
 `bbacaad650b935c516194a9373580fe7747c8256`, from
 [PR #193](https://github.com/EchoYue-lp/echo-agent/pull/193).
