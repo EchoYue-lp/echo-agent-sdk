@@ -239,3 +239,54 @@ Host/custody小proof3376B SHA4c437734e8ead3ff3a6ab391dd8ad8e0aba5d8f7aa0e8c36cd8
 完整三语言与3quickstarts/fresh XML、Windows native/mainCI/冷恢复仍待各自真实验收。
 本节不能把Root来源准备冒SCANPASS、也不把文档边界充分或本机有限绿升级为4whole闭合。
 历史managed首因UNKNOWN、behavior_model_closure=open与4整体hold保持，main/registry不发布。
+
+
+## 2026-10-22 同一 own4b 来源的三项依赖扫描有限资格
+
+在任务分支 `5f0863ccb426677be639382ff848c37927a9b3dd`、当前 PF77c、
+1225 tracked/index clean 与非语义865项摘要
+`3f078657a0cae39a512ade2e422c41b6a5863a8dbc2998990df038536bc6b7c2`
+下，原两项 audit 与一次 cargo-deny 已实际执行；中间 registry-origin view generator
+只是审计输入生成，不是第四项扫描。四步的原命令/Node/guard/caller 均自然0，
+signal/error=null，raw完整不截断，无resource bound，前后源码、PF、原4pycs、old19
+与actual framework2332不变，结束手工 remainingProducer=[]。没有重跑原Rust/合同/Host。
+
+两项 audit 均显式使用 SDK own `audit-db`、`--no-fetch --deny warnings`，
+实际加载1348 advisory、检查656 dependency，均零警告。cargo-audit二进制绑定
+原版本读取0.22.2，cargo-deny原inner receipt实际0.20.2；工具字节身份前后同。
+审计view由f7bac既有helper生成；656包及全部依赖边逐字段核对，仅 calamine0.36.1、
+docx-rs0.4.22、rust_xlsxwriter0.82.0 的source/checksum换为既有registry来源，
+其余653包全同，实际构建 Cargo.lock SHA256 1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa不变。view172646B，SHA256
+`24cc21a58c05ea613450d89dc53e2a63a4c6b6849de65d17f932b1d985f51f5e`。
+
+cargo-deny保留原workspace/all-features/locked四类check及正常online fetch。
+原始700410B/10659行完整输出保留49个warning[duplicate]，既有严格helper对当前
+SDK精确baseline4fba逐组比对：49组、107个version/source身份完全匹配；其它警告0，
+末行advisories/bans/licenses/sources均ok。原natural inner、外层比较、Node、guard、
+caller分别0，非ANSI清洗、offline、政策阈值放宽或借用framework的duplicate基线。
+
+两件SDK own DB全程actual HEAD为`4b587f00996ebe5c05a73eaef105ef241e876414`、
+tree为`523058420679c8a4901e43e8e5fcb1e1406e7436`；各1367个物理nonGit文件的
+SET/SHA/mode、origin、config/hooks/info规则与工具/政策身份全保持，未见锁残留或
+alternate/link。deny正常fetch改写FETCH_HEAD、ORIG_HEAD、index、refs及其logs、
+shallow操作记录，逐项保留实际变化；初始1392文件的完整复制身份只表示copy-as-of，
+不宣称扫描后所有Git内部字节/metadata仍同，也未把HEAD或正文变更当作可忽略记账。
+
+原件仅在本工作区local `sdk-parallel-delivery-01a14385/sdk-f7bac-formal-source-20261021-01/final5f-policy3-candidate/actual-output/`：
+`policy3-finite-minproof.json`（42822B，SHA256
+`5bd1389fa3dcefd5fb7a300015aaf10e7741cdaf364243914a0b1a01441dcdde`）
+列出原argv/时点、四步native.run/guard/caller、external-before/after、实际49组107身份，
+以及`registry-origin-field-delta-proof.json`的逐字段结果。
+原audit raw319B/SHA6fe500c00206190efd2525baa3d66e771477fe6d8e48a203c727bb391dc9f239；
+origins-audit raw577B/SHA02b50901829344245d5b0fe74d5ac8596a80da3d4684191424ed7995bf05ae33；
+deny原raw700410B/SHA753f436253d8806e3801dfb289efab47550e4f61cbc9ac08a1f19673c6ff1869，
+其inner receipt与外层167B/SHA95e534c0cf4f88f78e33bac3c3e020f456244f6e52147a2c23ee6b2af5f1dd2d
+各自保留，不把仅有hash视作命令已经执行的替代证明。
+
+另有一次生成后只读字段reader误用ambient Python3.10，导入tomllib时因Python3.10缺模块失败1；
+明确使用既有Python3.12读取同一已生成原件后实际0。主协调者已接受该reader环境修正；
+原失败保留并与scanner分列，没有scanner/generator重试或安装依赖，不声称所有命令零失败。
+
+本节仅补齐三项依赖扫描的有限资格。完整三语言/3quickstarts及freshXML、Windows native、
+mainCI/冷恢复仍待分别验收；4whole/behavior_model_closure=open与历史managed首因UNKNOWN
+均不升级。没有新增公共合同、协议或状态权威，不更新117生成物、97Audit或Baseline。
