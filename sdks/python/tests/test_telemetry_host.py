@@ -1,12 +1,15 @@
 """Accepted telemetry: real Agent records, local OTLP receipt and lifecycle."""
 
 import asyncio
+import base64
 import inspect
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import threading
+import time
 from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 
@@ -78,6 +81,131 @@ def test_host_exit_publication_is_complete_before_visible(tmp_path, monkeypatch)
     receipt = tmp_path / "host-exit.json"
     assert receipt.exists()
     assert json.loads(receipt.read_text()) == expected
+
+
+def test_proxy_partial_writes_preserve_utf8_bytes(monkeypatch):
+    from telemetry_host_fixture import write_all
+
+    data = "中😀\r\n完整字节\n".encode()
+    received = bytearray()
+
+    def partial_write(_descriptor, block):
+        count = min(3, len(block))
+        received.extend(block[:count])
+        return count
+
+    monkeypatch.setattr(os, "write", partial_write)
+    write_all(123, data)
+    assert received == data
+
+    monkeypatch.setattr(os, "write", lambda _descriptor, _block: 0)
+    with pytest.raises(OSError, match="no progress"):
+        write_all(123, data)
+
+
+@pytest.mark.parametrize("close_stdout", [False, True])
+def test_proxy_reaps_child_without_buffered_stdio_finalization(tmp_path, close_stdout):
+    # Use the same proxy implementation with an explicit Python argv, including
+    # on Windows. No Rust Host, shell executable or platform skip is involved.
+    child = tmp_path / "synthetic_child.py"
+    child.write_text(
+        r"""
+from pathlib import Path
+import base64
+import json
+import os
+import sys
+import time
+
+work = Path(sys.argv[2]).parent
+expected = base64.b64decode((work / "input.b64").read_bytes())
+received = sys.stdin.buffer.read(len(expected)) if expected else sys.stdin.buffer.read()
+temporary = work / "received.tmp"
+temporary.write_text(json.dumps({"pid": os.getpid(), "input": base64.b64encode(received).decode()}))
+temporary.replace(work / "received.json")
+deadline = time.monotonic() + 5
+while not (work / "release-child").exists():
+    if time.monotonic() > deadline:
+        raise TimeoutError("test did not release synthetic child")
+    time.sleep(0.005)
+sys.stdout.buffer.write(("out 中😀\r\n" * 16384).encode())
+sys.stdout.buffer.flush()
+sys.stderr.buffer.write("synthetic stderr 中😀\n".encode())
+sys.stderr.buffer.flush()
+""",
+        encoding="utf8",
+    )
+    payload = b"" if close_stdout else ("in 中😀\r\n" * 1024).encode()
+    (tmp_path / "input.b64").write_bytes(base64.b64encode(payload))
+    (tmp_path / "host.json").write_text("{}")
+    program = (
+        "import sys; from pathlib import Path; "
+        "sys.path.insert(0, sys.argv[1]); "
+        "from telemetry_host_fixture import proxy; "
+        "proxy(Path(sys.argv[2]), sys.executable, host_args=(sys.argv[3],))"
+    )
+    process = None
+    with (
+        (tmp_path / "stdout.raw").open("wb") as stdout,
+        (tmp_path / "stderr.raw").open("wb") as stderr,
+    ):
+        process = subprocess.Popen(
+            [
+                sys.executable,
+                "-B",
+                "-c",
+                program,
+                str(SHARED),
+                str(tmp_path),
+                str(child),
+            ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE if close_stdout else stdout,
+            stderr=stderr,
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+        )
+        try:
+            if close_stdout:
+                process.stdin.close()
+                process.stdout.close()
+            else:
+                # Deliberately split a multibyte character across parent writes;
+                # keep this stdin open until after the proxy naturally exits.
+                process.stdin.write(payload[:4])
+                process.stdin.flush()
+                process.stdin.write(payload[4:])
+                process.stdin.flush()
+            deadline = time.monotonic() + 5
+            while not (tmp_path / "received.json").exists():
+                assert process.poll() is None, "proxy exited before forwarding input"
+                assert time.monotonic() < deadline, (
+                    "synthetic child did not receive input"
+                )
+                time.sleep(0.005)
+            received = json.loads((tmp_path / "received.json").read_text())
+            assert base64.b64decode(received["input"]) == payload
+            (tmp_path / "release-child").write_text("release original synthetic child")
+            assert process.wait(timeout=8) == 0
+        finally:
+            (tmp_path / "release-child").write_text(
+                "release during failed test cleanup"
+            )
+            if not process.stdin.closed:
+                process.stdin.close()
+            if process.poll() is None:
+                process.terminate()
+                process.wait(timeout=5)
+    exit_receipt = json.loads((tmp_path / "host-exit.json").read_text())
+    assert exit_receipt == {
+        "pid": received["pid"],
+        "returncode": 0,
+        "observed_by_original_parent": True,
+    }
+    assert (tmp_path / "stderr.raw").read_bytes() == "synthetic stderr 中😀\n".encode()
+    if not close_stdout:
+        assert (tmp_path / "stdout.raw").read_bytes() == (
+            "out 中😀\r\n" * 16384
+        ).encode()
 
 
 async def helper(work, *args):

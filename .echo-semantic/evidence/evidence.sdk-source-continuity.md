@@ -340,3 +340,53 @@ SHA46f89db773cd379d20c8ad07f4aab011a9c405f9d837abd4978231cb430cbbd8
 解释或关闭；历史managed首因UNKNOWN、四whole hold与behavior_model_closure=open保持。
 公开API/语言示例和网站功能未变，因此本测试夹具切片不改examples/echo-website；
 后续完整入口、平台/精main与具名残余结算仍须另行真实验收。
+
+
+## 2026-10-22 telemetry proxy独立退出缺陷子项（本机纯回归已验，整体后验待执行）
+
+Owner是SDK测试夹具 `sdks/shared/testing/telemetry_host_fixture.py::proxy`，
+与前节JSON发布窗口、旧Host-init/pre-retry缺陷、历史managed未知原因分列；不新增Finding。
+在已提交publication修复4566a3b上，单次真实proxy/明确synthetic Python child反例分别观察：
+父stdin保持open时proxy自然-6，stderr为_enter_buffered_busy stdin锁fatal；父stdin正常EOF而
+stdout消费者先关闭时proxy自然120，stderr为TextIOWrapper stdout BrokenPipe。两件真实
+parent child.wait均记录各自synthetic PID/returncode0；没有cleanup信号、重试或残留进程。
+各一次观察不是“保证必现”，更不是Rust Host或SDK运行验收。
+原件在任务local `sdk-f7bac-formal-source-20261021-01/telemetry-proxy-lifecycle-probe-v2/actual-output/`：
+`probe-minproof.json`4990B/SHA3b2b9eb16047e5f6ded6ffefce79c7e4484f38019cf1cd3bc6b43193c3acd622，
+含原argv、自然proxy/child/cleanup码、两stderr、资源和实际sameUID/PGID剩余空的观察。
+
+根因边界：原daemon input_loop可在父stdin仍open时阻塞sys.stdin.buffer并保有Python
+buffered-reader锁；原输出读者关闭后forward虽接住BrokenPipe，Python输出缓冲仍在
+interpreter finalflush再报错。真实child已退出0不能替代proxy的真实退出状态。
+
+本修复继续复用同一child/Popen/input_lock/control/child.wait与publish_host_exit；
+父stdin用os.read取原始字节、保完整行及EOF尾帧，child管道无Python缓冲；
+`sdks/shared/testing/telemetry_host_fixture.py::write_all`按实际os.write返回长度写完全部
+字节，不把UTF8分块当字符切割。输出消费者关闭后仍排空原child stdout/stderr直到EOF，
+不再留下Python输出pending buffer，也不以os._exit、延长超时、无条件join开放stdin或
+吞掉真实child stderr替代退出。private host_args仅让纯回归传显式Python interpreter argv；
+真实CLI默认[host,--config,...]与三语言wire/API和原强断言完全不变。
+
+直接验证归属 `sdks/python/tests/test_telemetry_host.py`：新增不受HOST skip约束的
+`test_proxy_partial_writes_preserve_utf8_bytes`与
+`test_proxy_reaps_child_without_buffered_stdio_finalization`（两个param值）。
+连同原publication回归，共4项实际PASS/0skip；执行真实同proxy函数+明确synthetic child，
+父stdinopen模式须代理自然0且逐字节收到212992B含中文/emoji/CRLF输出，提前关闭输出
+读者模式须原child被排空且自然0；两者exit receipt的原childPID/code和代理码分别核对，
+stderr精确等于synthetic预期字节、无fatal/BrokenPipe泄漏，整个实际UID/PGID无残留。
+纯部分write回归另验证3字节前缀多次写与0进度报错，不伪transport状态机或mock exit0。
+测试源采用显式sys.executable+script，未加平台skip；本机运行不冒Windows实测。
+
+原Pythoncwd一次Ruffformat、精3testIDs展开4pass、Ruffcheck、format--check及2文件
+AST+compile-only五命令均自然0/nullsignal/error/raw完整，各30s/256MiB内，未执行
+Rust Host/collector/整套语言/Cargo/扫描或安装依赖。直接原件位于同任务local
+`sdk-f7bac-formal-source-20261021-01/telemetry-proxy-fix/direct-validation-proof.json`，
+9210B/SHA0e01d67ad6db29e97d8db2d912da78a893bbf49c7846e4cad260b9f1d33fdee6。
+当前committable非语义摘要为`8a840da4012d4fb09bb221de9e8791a2161759e8cc8fca15e7e35898ec6ac55b`；旧publication252ed、原whole e391失败1与旧工程、
+Host、三policy资格各保其实际epoch，不改写原raw/失败/历史header/source_refs。
+
+子项本机有界修复与直接回归已具上述证据，整体闭合条件仍是最终冻结cut的原完整语言入口
+三语言+3quickstarts/freshXML/actualHost/source/resource收据及独立复审；尚未取得该后验，
+不自动resolved四whole或历史managedUNKNOWN。Baseline仅刷新当前摘要，inventory/behavior
+闭合状态不变；公共合同/产品API/示例和网站能力未变，因此不改examples/echo-website。
+main/Windows/冷恢复仍各自验收，非本切片发布授权。
