@@ -345,6 +345,19 @@ def verify(work: Path) -> None:
     print(json.dumps(proof))
 
 
+def publish_host_exit(work: Path, pid: int, returncode: int) -> None:
+    """Publish complete JSON before the three SDK existence barriers can pass."""
+    # Each proxy owns one isolated work directory. Publishing by same-directory
+    # rename keeps readers from seeing the final path during a partial write.
+    temporary = work / "host-exit.json.tmp"
+    temporary.write_text(
+        json.dumps(
+            {"pid": pid, "returncode": returncode, "observed_by_original_parent": True}
+        )
+    )
+    temporary.replace(work / "host-exit.json")
+
+
 def proxy(work: Path, host: str) -> None:
     """Transparent stdio wrapper owning precisely one real child process."""
     child = subprocess.Popen(
@@ -435,11 +448,7 @@ def proxy(work: Path, host: str) -> None:
             forwarders.append(thread)
     code = child.wait()
     done.set()
-    (work / "host-exit.json").write_text(
-        json.dumps(
-            {"pid": child.pid, "returncode": code, "observed_by_original_parent": True}
-        )
-    )
+    publish_host_exit(work, child.pid, code)
     # The actual output readers drain exactly once, before wrapper EOF.
     for thread in forwarders:
         thread.join()

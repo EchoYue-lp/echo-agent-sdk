@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import tempfile
+import threading
 from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 
@@ -29,6 +30,54 @@ FIXTURE = (
 SHARED = Path(__file__).resolve().parents[2] / "shared/testing"
 sys.path.insert(0, str(SHARED))
 from file_sha256 import file_sha256
+
+
+def test_host_exit_publication_is_complete_before_visible(tmp_path, monkeypatch):
+    # This pure fixture regression runs without a Host or OTLP collector. Pause
+    # the actual writer after half the JSON, not after an arbitrary sleep.
+    from telemetry_host_fixture import publish_host_exit
+
+    partial = threading.Event()
+    release = threading.Event()
+    failures = []
+    original_write_text = Path.write_text
+    expected = {"pid": 123, "returncode": 0, "observed_by_original_parent": True}
+
+    def paused_write_text(path, text, *args, **kwargs):
+        if path.parent != tmp_path:
+            return original_write_text(path, text, *args, **kwargs)
+        with path.open("w", encoding="utf8") as output:
+            middle = len(text) // 2
+            output.write(text[:middle])
+            output.flush()
+            partial.set()
+            if not release.wait(5):
+                raise TimeoutError("test did not release the controlled JSON writer")
+            output.write(text[middle:])
+        return len(text)
+
+    def write_exit():
+        try:
+            publish_host_exit(tmp_path, expected["pid"], expected["returncode"])
+        except OSError as error:
+            failures.append(error)
+
+    monkeypatch.setattr(Path, "write_text", paused_write_text)
+    writer = threading.Thread(target=write_exit, daemon=False)
+    writer.start()
+    try:
+        assert partial.wait(5), "actual publisher did not reach the write barrier"
+        assert not (tmp_path / "host-exit.json").exists(), (
+            "final exit receipt became visible before its JSON was complete"
+        )
+    finally:
+        release.set()
+        writer.join(timeout=5)
+    assert not writer.is_alive(), "controlled publisher thread did not terminate"
+    assert not failures, failures
+    receipt = tmp_path / "host-exit.json"
+    assert receipt.exists()
+    assert json.loads(receipt.read_text()) == expected
 
 
 async def helper(work, *args):

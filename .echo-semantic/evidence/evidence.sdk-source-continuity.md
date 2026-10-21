@@ -290,3 +290,53 @@ deny原raw700410B/SHA753f436253d8806e3801dfb289efab47550e4f61cbc9ac08a1f19673c6f
 本节仅补齐三项依赖扫描的有限资格。完整三语言/3quickstarts及freshXML、Windows native、
 mainCI/冷恢复仍待分别验收；4whole/behavior_model_closure=open与历史managed首因UNKNOWN
 均不升级。没有新增公共合同、协议或状态权威，不更新117生成物、97Audit或Baseline。
+
+
+## 2026-10-22 telemetry测试退出JSON原子发布修复（完整语言仍失败）
+
+SDK e391fe72 的唯一原完整语言入口实际自然1：TypeScript360项/358通过/1失败/
+1项Windows专用NOT_RUN_PLATFORM，失败为 telemetry slow flush (input_eof) 在最终
+host-exit.json存在后JSON.parse报Unexpected end，读取到不完整JSON；未保存读取瞬间字节，
+下述确定性反例证明该窗口机制，不把受控0bytes冒作原whole瞬间快照。Python/Java、全部3quickstarts未执行；
+保留原raw121327B/SHA70d8408d7a2472b787d69a9c77b07f49d2a437267871564a8413f7bd6ebe8ca8，
+不得借已有49政策或Rust绿冒当前whole通过。原script/Node/guard/caller各1，
+无resource bound/source drift；actualHost及独立copy均159744272B/2c0bdf/0755。
+该失败原件及7045B/SHA175a7798708f127366c12ba0367009bbc8483af431ea0f5b33d7b863d75682c6
+有限proof在任务local `sdk-f7bac-formal-source-20261021-01/e391-wholelanguage-candidate/actual-output/`。
+
+只读沿TS/Python/Java同一exists-then-parse协议追到共享fixture最终路径直接write_text。
+受控单次原writer AST反例在创建0bytes后暂停，Node原exists/read/JSON.parse实际1；
+写完放行并join后同payload68B读取0。1538B结果SHA2ad3e6ff0bf39ee304fe8cdff8ef28791bf1bb9c44e7190245158e35415ea490
+位于同任务local `sdk-f7bac-formal-source-20261021-01/telemetry-json-publication-probe/actual-output/result.json`；
+该probe的pid/returncode是明确的synthetic输入，不冒新Host运行。
+
+本修复源码归属为
+`sdks/shared/testing/telemetry_host_fixture.py::publish_host_exit`；纯回归归属为
+`sdks/python/tests/test_telemetry_host.py::test_host_exit_publication_is_complete_before_visible`。
+二者都是SDK测试夹具边界，下面的发布和反例结论仅指这两个实际修改路径。
+
+本修复切片仅SDK-owned shared telemetry fixture：复用同仓tmp→replace模式，
+真实父进程child.wait返回的原pid/code仍为唯一来源；publish_host_exit把完整JSON先写
+同一隔离目录的临时路径，再rename发布最终host-exit.json。三语言原有exists/read/
+returncode0、hold/ACK/EOF强断言及全部超时不变；不耦合managed持久性backend，
+没有framework/Host生产/API/新协议或状态权威变化。
+
+现有Python telemetry文件中的纯确定性回归不依赖Host/collector且不受Host skip约束：
+Event在实际writer写到一半时固定观察最终path仍absent；release/join后原读取须获得
+完整精payload。对提取的旧直接发布行为该回归明确失败1；单点atomic修复后同回归
+1通过/0skip，Ruff格式化/检查、format--check、两文件AST+compile-only全部0。
+每命令30秒/256MiB内，无真实Host/collector/Cargo/整套语言/扫描或安装依赖；
+中间Ruff I001/BLE001失败原件保留，收窄测试异常捕获；另根目录Ruff与原入口Python
+工作目录的import分组推断不同，补核后恢复原import分组，最终以原Python工作目录重验0。
+本阶段原件在同任务local `sdk-f7bac-formal-source-20261021-01/telemetry-atomic-publish-fix/`，
+`publisher-old-direct-red.*`保原反例；`direct-validation-python-cwd-proof.json`8952B/
+SHA46f89db773cd379d20c8ad07f4aab011a9c405f9d837abd4978231cb430cbbd8
+列最终5条实际命令、native/Node收据和资源边界。当前committable非语义摘要为`252ed07318cd0684867d1e5e0aeeb6be548967fe18df3daa6e5a341f60d1f037`；
+这两项夹具/测试变化不重标旧3f工程/Host/三policy的各自source/runtime epoch。
+
+本节只支持JSON发布窗口的修复与纯回归，不是完整语言后验或生产Host修复。
+同次现场Python proxy在Rust child正常退出后出现daemon buffered-stdin finalization fatal，
+其它模式出现stdout BrokenPipe，分别保真实stderr，尚未修复/验证，不用本原子写修复
+解释或关闭；历史managed首因UNKNOWN、四whole hold与behavior_model_closure=open保持。
+公开API/语言示例和网站功能未变，因此本测试夹具切片不改examples/echo-website；
+后续完整入口、平台/精main与具名残余结算仍须另行真实验收。
