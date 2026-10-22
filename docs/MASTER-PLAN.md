@@ -1,5 +1,23 @@
 # SDK 全能力语义治理进度
 
+## 2026-10-22 精main工程已验收，accepted语义材料最终结算
+
+工程交付：PR7已合并至a9f267f636cd4d1553a8bff335c3203ab0b8a5ac，soleparent09f/tree01ac与已审24d2同，
+签名valid；原pushCI39709057560 attempt1九job全部SUCCESS，only-GitHub-main+36refs冷strict0。
+Windows三语目标各1pass/0failure/0CASEskip/4nativecalls；Linux完整三语/三个quickstart通过、实际Temurin17；
+Linux managed原case通过但首Host ExitStatus被原代码丢弃，不作首Host退出码0或旧因果repair断言。
+
+唯一历史残余已由真实人明确接受：旧首次Host10秒passive-exit超时原因仍UNKNOWN，Finding risk_accepted，
+不填修复三链、不放宽10秒、不豁免后续同类新失败。两个bridge共享一个decision；资源/流和语言客户端按自身accepted义务独立结算。
+本日期按已接受义务结算为50verified、75resolved+1risk_accepted/0open，inventory及accepted behavior model闭合；
+不新增Rust公共合同、不扩5621/454、不刷97Audit/Map。原失败/原epoch/六条真实不完整close、protected Workflow未知receipt/
+Mac96sample四大gapUNKNOWN及平台范围均保。以下旧阶段still-open/hold文字按其历史时态保留。
+
+工程执行资格固定为上述a9快照；本节语义结算由同一最终材料快照的独审、严格门禁及正常主线交付验证，
+精确提交的CI与冷恢复分别验收，不把语义flag等同包发布。registry发布/官网部署不在范围。
+自有编译缓存已按单独许可官方clean0，Host/collector outside独立copy保真、默认target/原19/4pyc不动；
+旧producer路径退役，不能复用旧fence假当前存在，未来consumer绑定或精pin重建另需授权。
+
 ## 2026-10-22 f7bac 当前分支完整语言入口的有限资格（a584f5b）
 
 SDK任务分支已公开 `a584f5b7191cdf733c2ce2c9398b199abbc9ebf9`，Host继续精确pin

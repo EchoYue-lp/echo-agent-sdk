@@ -5,10 +5,10 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "13cb71e0a103c376c1364b341eaedb1e7cd339db3398611849b504f297d345ba"
+    "content_digest": "afbd878172b388fec40676864b61e15db6d6cb1ccb265e4ca78c75156b484bb6"
   },
   "inventory_closure": "closed",
-  "behavior_model_closure": "open",
+  "behavior_model_closure": "closed",
   "map_refs": [
     "map.sdk-product-boundary",
     "map.sdk-acp",
@@ -880,3 +880,14 @@ e31/88a/4f三actualdiscovery revision已由Root显式annotated refs正常推送�
 五telemetry真Host/proxy自然0仅限五场；Channel和protectedWorkflow保真实不完整close/原receipt未知边界。
 旧stderr challenge以同a92b工程摘要的Git01ef33保存原观察；当前摘要仅续入实际MASTER-PLAN支持文档后继，非旧runtime重标。
 75resolved/managedUNKNOWN1open、46finiteverified/4wholehold、inventoryclosed/behavior_modelopen不变；final strict/必要refs冷检/mainCI仍待。
+
+
+## 2026-10-22 最终accepted范围闭合结论
+
+精main a9/tree01ac、PR7、原九CI attempt1与GitHub-only36refs冷strict已独审接受，真实Windows三case和LinuxJava17边界已验。
+四个整体Behavior按其原accepted义务逐项结算，与原46合为50verified；原75resolved保持，唯一managed历史首Host10秒原因UNKNOWN
+由真实人的唯一decision接受为risk_accepted，0open。无虚构repair/首Host退出码0，不放宽10秒或未来失败门禁。
+Active Discovery header unresolved=[]、97Audit原具名examined不改、Map场景和全原证据/风险限制保；本closure只指accepted SDK模型，
+不是所有Rust库存/所有可能后端/故障组合证明。取消的插件专项不作为本SDK阻断条件；不生成额外native流程。
+source_snapshot摘要按当前唯一MASTER-PLAN支持文稿后继精算，旧runtimecut/失败不重标。inventory_closure与behavior_model_closure
+在上述明确范围closed；registry发布/官网部署不含。最终材料由同一快照的独审、严格门禁与正常主线交付验证，精确提交CI和冷恢复分别验收；语义flag不等同包发布。
