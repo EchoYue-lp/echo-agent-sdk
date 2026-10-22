@@ -598,3 +598,17 @@ ownroot及原Host/collector producer路径现absent；defaulttarget8198811648B�
 Host2c和collector3d99独立outside copy保精bytes/mode/ns/inode；旧运行栅栏保历史，不能再用作当前producer存在断言。
 未来copy-use绑定或精pin/profile Cargo重建另需授权，未copyback冒新build；不归档全缓存/不触其它缓存。
 原件local `own-target-clean-37/official-clean-retirement-minproof.json`2864B/SHAeadcefd8a5ffd680fe28783a5a212e2ce08fc6c33ee296615d8d3a98c5e220b9。
+
+
+## 2026-10-22 当前状态文档与已接受eb事实同步
+
+六个current-status入口此前仍称candidate/pending，现仅同步已接受SDK main
+`eb22398676310fcbd67e9f4babe4afcefd56ed06`与原九CI39720432985/36ref GitHub-only冷严格验证的既有事实：
+`README.md`、`docs/sdk/README.md`、`sdks/typescript/README.md`、`sdks/python/README.md`、
+`sdks/java/README.md`、`docs/sdk/governance/capability-review-remaining.md`。
+50Behavior verified、75resolved+1真实human risk_accepted/0open与97Audit有界examined范围不变；
+managed历史首因UNKNOWN、三修复链空/10s/后续新失败门禁、真实不完整close/claim与原采样缺口保。
+旧历史章节/原失败和各自source/runtime cut保原文，代码示例与Design不改，accepted5621/454及4项非阻断Rust遥测漂移不扩。
+原193编译/合同输入与已接受快照逐字节相同，故本纯文案切片不重新运行Rust/Host/语言/scanner/生成器；
+Baseline仅以实际canonical六文档内容投影机械更新工程摘要，不声称旧snapshot与新文案相同。
+本文固定记录eb接受事实；后继文档提交按其适用门禁独立验证，不追加ack-CI文稿循环，不发布registry或部署官网。
