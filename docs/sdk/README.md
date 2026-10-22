@@ -12,8 +12,11 @@ paths and behavioral evidence in the [capability map](governance/capability-map.
 [Finding ledger](governance/finding-ledger.md). Historical build and catalog
 gates do not close that audit; unresolved scopes remain explicit there.
 
-> **Implemented source candidate: standard ACP, core extension profile,
-> extension bridge and facade feature adapters. Final governance acceptance is open.** The source-built `echo-agent-sdk-host` passes
+> **Accepted SDK governance snapshot: [eb223986](https://github.com/EchoYue-lp/echo-agent-sdk/commit/eb22398676310fcbd67e9f4babe4afcefd56ed06).**
+> Standard ACP, core extension profile, extension bridge and accepted facade
+> adapters passed [nine original exact-main CI jobs](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39720432985) and a
+> GitHub-only cold source check with 36 necessary refs. Current scope and
+> retained risks are in [current acceptance](governance/capability-review-remaining.md). The source-built `echo-agent-sdk-host` passes
 > initialize/new/prompt/update/cancel and shutdown scenarios through the
 > official v1 Client, and the negotiated `_echo_agent/*` **core profile**
 > (Agent/Session/Run handles, full events, ACK/replay, restart recovery) passes
@@ -142,12 +145,12 @@ alone are not behavioral evidence.
 | Status | Meaning | Reached |
 |---|---|---|
 | **Design** | The design document is agreed | ✅ |
-| **Contract** | Full generation and accepted source/catalog continuity match the final pin | Prior 356 generation/check is historical; the new pin awaits the actual read-only contract gate without automatic regeneration |
+| **Contract** | Accepted source/catalog continuity and blocking artifacts match the accepted contract | Full 28-profile read-only check passed: 113 blocking artifacts current; four non-blocking Rust inventory drift artifacts retained without a 117-artifact update |
 | **ACP conformant** | A standard ACP v1 client passes the supported profile against a real source-built Host | ✅ |
 | **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
-| **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Historical Plan 08 route baseline; current capability/failure review remains separate |
-| **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | Snapshot-bound language gate passed; later repairs require current-source verification |
-| **External contract complete** | Accepted capability behavior, lifecycle and failures pass the final generated contract and matched-source evidence | Membership/catalog continuity, local matched-source gates and the nine exact-main CI jobs passed at 5,621; four composite holds, the historical managed-exit cause and native Hook/Stop remain pending |
+| **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Accepted capability/failure obligations settled at eb223986; historical Plan 08 evidence keeps its original execution cut |
+| **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | Original full three-language entry and three quickstarts passed at eb223986; Linux Temurin 17 and three named native Windows consumers have separate actual evidence |
+| **External contract complete** | Accepted capability behavior, lifecycle and failures have contract, matched-source evidence and explicit residual decisions | Accepted 5,621 identities / 454 routes: 50 behaviors verified, 75 Findings resolved and one historical risk accepted by the human; 97 Audits remain bounded examined observations |
 | **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,534 deferred identities, with no automatic acceptance |
 | **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
 
@@ -165,8 +168,12 @@ SDK lock; all 656 package versions, checksums and dependency edges are unchanged
 A03 official Cargo update and locked offline metadata each exited 0 using frozen
 existing user-mirror cache inputs, and produced this exact lock. The metadata used
 `--no-deps` (`resolve=null`); this is source-only proof, not fresh registry, cold
-cache, yanked-status or full graph validation. Fresh SDK scans, a new Host and
-the complete SDK gates remain pending.
+cache, yanked-status or full graph validation. Subsequent SDK acceptance at
+[eb223986](https://github.com/EchoYue-lp/echo-agent-sdk/commit/eb22398676310fcbd67e9f4babe4afcefd56ed06) passed [all nine original exact-main CI jobs](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39720432985)
+and a GitHub-only cold source check using 36 necessary historical refs.
+It records 50 verified behaviors, 75 resolved Findings and one human-accepted
+historical risk; the four non-blocking Rust inventory drift artifacts remain
+telemetry and were not regenerated.
 Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
 provenance does not authorize a 117-artifact update, new public language APIs,
 or automatic closure of the historical managed-exit cause.

@@ -18,8 +18,12 @@ SDK lock; all 656 package versions, checksums and dependency edges are unchanged
 A03 official Cargo update and locked offline metadata each exited 0 using frozen
 existing user-mirror cache inputs, and produced this exact lock. The metadata used
 `--no-deps` (`resolve=null`); this is source-only proof, not fresh registry, cold
-cache, yanked-status or full graph validation. Fresh SDK scans, a new Host and
-the complete SDK gates remain pending.
+cache, yanked-status or full graph validation. Subsequent SDK acceptance at
+[eb223986](https://github.com/EchoYue-lp/echo-agent-sdk/commit/eb22398676310fcbd67e9f4babe4afcefd56ed06) passed [all nine original exact-main CI jobs](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39720432985)
+and a GitHub-only cold source check using 36 necessary historical refs.
+It records 50 verified behaviors, 75 resolved Findings and one human-accepted
+historical risk; the four non-blocking Rust inventory drift artifacts remain
+telemetry and were not regenerated.
 Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
 provenance does not authorize a 117-artifact update, new public language APIs,
 or automatic closure of the historical managed-exit cause.
@@ -66,8 +70,10 @@ verification and do not inherit those earlier passes.
 The [twelve accepted-source continuity choices](docs/sdk/governance/accepted-source-continuity-proposal.md)
 have been accepted and implemented through the canonical producer; their
 authority is recorded in [ADR0034](docs/adr/0034-sdk-governance-authority-and-lossless-adaptation.md).
-SDK main acceptance remains pending. Published dependency and passing bounded runtime checks do not by
-themselves establish final compatibility or release. This source repository
+Accepted SDK main governance is recorded at [eb223986](https://github.com/EchoYue-lp/echo-agent-sdk/commit/eb22398676310fcbd67e9f4babe4afcefd56ed06).
+Its accepted scope and retained risk boundaries are documented in
+[current acceptance](docs/sdk/governance/capability-review-remaining.md).
+This source acceptance does not authorize registry publication. This source repository
 does not publish a bundled Host or runtime.
 See [MIGRATION-SOURCE.md](MIGRATION-SOURCE.md) and
 [ADR 0001](docs/adr/0001-sdk-repository-boundary.md) for the source boundary,
