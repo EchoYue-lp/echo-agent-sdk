@@ -14,7 +14,7 @@ finding_refs:
 - finding.sdk-language-consumption-ack
 challenges:
   specific-default-stderr-backpressure:
-    revision: source:a92b96b149d204822aa6ffdb42b512e7257293e2eb1a9511d46a169c87da578b
+    revision: 01ef33aad7a4856a92d007b8ed31b404bcd29c25
     source_refs:
     - sdks/python/src/echo_agent_sdk/client.py#spawn
     - sdks/python/tests/test_client_close_callbacks.py#test_default_spawn_inherits_diagnostics_without_a_private_pipe
@@ -171,3 +171,11 @@ input_eof在hold期间没有活动publicclose waiter，其close_settled=false是
 Map/Behavior的整体状态与managed历史UNKNOWN均保；原完整语言1和完整whole/平台/main
 未验不由focused替代。父应用stderr被其自身重定向时的sink消费与任意callback Unicode
 分块语义未被本项泛推保证；本次callback精字节验证使用原2MiB ASCII输入。
+
+
+## 2026-10-22 原stderr challenge的可恢复Git锚点
+
+固定canonical实际证明01ef33工程digest等于原a92b；specific-default-stderr-backpressure仅从临时source摘要转为该真实Git。
+原8条source_refs及19/20/21/22/24运行切点不变，不重标执行；a584f5b仅2测试import空行AST等价。
+33独立whole证据由既有source-continuity Evidence后继承接，96sample资源缺口UNKNOWN、受控不完整close与Windows未运行边界保留。
+主revision76601、其它challenge及四整体hold/managedUNKNOWN不升级；必要历史Git锚点由Root最终统一持久化与冷检，当前未推tag。

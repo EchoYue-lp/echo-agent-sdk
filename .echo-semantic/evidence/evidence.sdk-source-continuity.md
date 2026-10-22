@@ -493,3 +493,67 @@ https://github.com/modelcontextprotocol/python-sdk/blob/v1.12.4/src/mcp/client/s
 accepted5621 identity/kind及454routes不增退，完整Rust inventory仅遥测不扩三语言合同；旧Rust/合同/
 Host/三policy各原source/runtime切点不重标。README两语言已同步；examples调用无变且22 examples编译0，
 website没有SDK投影（已有只读C0），CI原glob/入口会覆盖新tests所以无需改job；不新增发布或merge授权。
+
+
+## 2026-10-22 a584f5b 原完整入口33的有限后继
+
+这是原30失败之后的新执行事实；本Evidence历史header、原e391自然1、19/20/21/22/24各自源码/runtime cut保持。
+30在01ef33源码上完成TS364总/363通过/1精Windows平台未运行，随后原Python Ruff在
+`sdks/python/tests/test_a2a_host.py`及`sdks/python/tests/test_family_route_host.py`报I001并自然1；
+Python pytest、其quickstart与Java未执行，不能借旧XML。实际Ruff0.16.6将pytest归third-party、echo_agent_sdk归本地src；
+31只为这两个测试各补一个分组空行，AST前后完全一致，原cwd全src/tests/examples/shared check0、format195文件0。
+checkpoint `a584f5b7191cdf733c2ce2c9398b199abbc9ebf9` 已正常推送，soleparent01ef33，未改Rust/API/运行语义。
+
+33新source1226=865工程+361语义，PF1dc9、cleanindex、原4pyc/old19，实际framework2332、Host producer与独立copy2c
+在运行前后相同。唯一原 `bash scripts/check-language-sdks.sh` 未加selector/离线Maven/telemetryroot覆盖；
+PYTEST_ADDOPTS只保原生skip说明与新本次JUnit报告。script、Node、guard、caller实际0，signal/error=null，完整raw不截断。
+实际TS364=363通过+1精Windows skip；Python450通过+1精Windows skip，另18成功subtests，普通唯一XML节点451、
+JUnit声明469=450+1+18，failures/errors0；76freshJava XML总381=380通过+1精Windows skip，failures/errors0。
+三原quickstart均完成（TS/PY两个echo-agent标记、Java connected及最终source-check标记）。
+实际Mac、Node22/Python3.10/Java21.0.5；不是Windows原生或Temurin17/最低版本资格。三精Windows用例均NOT_RUN_PLATFORM。
+
+原件仅当前工作区ignored任务local可用：
+`sdk-f7bac-formal-source-20261021-01/a584f5b-wholelanguage-bound-32/actual-output/`内
+`f7bac-languages-full-a584f5b-a02.log`266826B/SHA256
+`2e48351a0dc44fce7c1f3709463ae11c60ce6c495507c7dae88a0fd60225c65e`，
+同stem的run/receipt/caller-final/resources及python-junit.xml和独立76份Java XML保留；
+`whole33-result-observation/whole33-finite-result-minproof.json`14697B/SHA256
+`dcf63d42cf23c43a41d11e8ae5db40c934048e039b899a3713d602c12dbd15bc`只作原件定位，不作源码引用。
+原30raw251875B/SHA256 `18ced1702597e7ae7e6596dfe066dcb762b27c5faeb6268dde64b9fa9a4b9b9b`仍保，未重写为通过。
+
+### 功能结果与资源观测分列
+
+原guard返回`guardQualification=OBSERVED`、`commandCompletion=OBSERVED`，未改写。
+Node墙钟2026-10-22T00:37:21.957Z至01:38:58.266Z，3696.309秒；caller墙钟3700.072秒。
+96实际采样中观测own最大8362754048B、default最大8198811648B、dual-free最小6844030976B，
+样本均未观察到8GiB cap/6GiB floor越线，signals[]、boundTriggered=false，原PGID90589/UID501终态live[]/producers[]。
+但有4个大墙钟间隔：1049.834098、1048.344665、705.487668、579.234522秒；
+最大从01:10:53.814514Z到01:28:23.648612Z。原样本只记wall ISO；guard循环sample/du/probe→写flush→阈值/poll→sleep2，
+未记录逐样本monotonic，stop阶段的monotonic未被本次调用。缺口资源覆盖UNKNOWN，不推原因、不冒连续2秒/全时峰值；
+这与功能原入口自然0分开，不补采历史、不新增自动全套重跑门槛。
+
+### 真终态与受控不完整close边界
+
+五telemetry场景（TS rpc_cancel/input_eof/public_close、PY publicclose、Java publicclose）各原Rust Host与原proxy真实自然0，
+parent_pid匹配，proxy终止后完整stderr/SHA与collector llm.calls/held-release成立。TS/PY stderr各2622B，Java2630B；
+PYproxy3090→Host3091、Javaproxy4266→Host4267，五场详细原件在`whole33-result-observation/five-actual-telemetry-exit-identities.json`。
+Java shutdown waiter由transport终止异常settled，不说成功shutdown响应；本段自然0仅该五场，不泛指whole全部Host。
+继承stderr后可见的218条ACP outgoing错误消息与22条其它runtime WARN原样保；后22条中16属显式cancel/failure/config负例，
+6条是真实不完整close诊断：Channel genuine connection.close后的5条stop/close/finalowner、protectedWorkflow1条not_settled。
+Channel测试只证明finally/PID消失，不能证明profile stop成功或远端owner结算；protectedWorkflow本次facts
+SIGTERM/host_signal_requested=true/framework_receipt_proved=false，transport cleanup不补receipt/claim不变。
+源码边界见TS channel-handler-forward-host.test.js原206/232/262附近、workflow-checkpoint-host.test.js原79–88、
+既有sdk-extension-bridge说明与workflow-observation-source-gaps Evidence；不新增Finding/生产修复来清零这些已定义边界。
+
+### 旧资格、当前摘要与历史引用
+
+固定canonical实际计算：Git01ef33的工程摘要正是旧`a92b96b149d204822aa6ffdb42b512e7257293e2eb1a9511d46a169c87da578b`；
+因此仅将既有Audit specific-default-stderr-backpressure challenge revision从source:a92b转为真实Git01ef33，
+保其8条原source_refs及19/20/21/22/24运行记录不动。新源两空行不重标旧运行；Audit主revision76601及其它challenge保持。
+新checkpoint a584f5b工程摘要为`f217875aae2571a5a266f245aa30439753a7e04c6aec79cbb9ede67dd16673cf`；
+最终仅MASTER-PLAN支持文档更新会使候选工程摘要进一步变化，由实际canonical overlay计算并写Baseline，不把受保护4pyc算入committable域。
+原14Rust各命令/feature/测试与AGENTS时态按上文保留；实际Rust55源、crate树及Cargo manifests/lock/config同原静态切点，
+framework2332同，未触发重编译；旧05的523仍是旧AGENTS切点，13/14最终project-rules的45/1有独立实际资格。
+完整合同check的113阻断项、4项非阻断Rust库存漂移及三policy各实际原epoch/精49重复组边界保持，不自动update117。
+accepted5621/454不扩，75resolved/1managed历史UNKNOWNopen、46finite verified/4整体hold、inventoryclosed/behavior_modelopen保持。
+正式材料最终strict/必要历史ref冷取回/精SDK main CI仍待；不发布registry或部署官网。
