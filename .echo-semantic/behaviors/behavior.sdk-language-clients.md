@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-language-clients
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-language-clients
-observed_at: 76601b242d7c354352f3b5c7d4bf099873746b14
+observed_at: a9f267f636cd4d1553a8bff335c3203ab0b8a5ac
 code_refs:
 - sdks/typescript/src/client.ts
 - sdks/typescript/src/wire.ts
@@ -144,3 +144,22 @@ Python与Java原纯值构造入口丢失 accepted runtime.subagent_lineage.paren
 各自独立before/repair/native after，24五场真实Host只支持原诊断/退出/ACK/flush范围。
 原观察版本与其source_refs/既有场景、status保持；本组仍needs_review（Map仍mapped），
 不由这一具体Finding局部resolved升级四whole、managed历史UNKNOWN或完整语言/main。
+
+
+## 2026-10-22 精main与已接受义务的最终结算
+
+本节是精公开main `a9f267f636cd4d1553a8bff335c3203ab0b8a5ac` 的最终accepted范围结算，
+旧正文中的needs_review/仍待、各observed_at和原runtime计数保留为历史，不改称本次执行。
+本次逐Git读取全部header code_refs及锚点均存在；当前观察header仅表示该源码复核，旧Evidence运行epoch不重标。
+精main PR7 soleparent09f/tree01ac、签名valid，原pushCI39709057560 attempt1九job全SUCCESS，
+only-GitHub-main+36必要refs冷strict实际0；accepted5621/454保持，不扩大完整Rust库存或所有可能输入组合。
+
+| 已接受义务 | 最终依据与保留边界 |
+|---|---|
+| 官方ACP transport与无损值/error/handle/operation投影 | 原accepted5621/454合同、Unicode/path/大整数/bytes/time/错误/重试细节、nested parent及source-operation具名证据；完整Rust inventory只遥测。 |
+| ACK/迟订阅/feed/replay与失败不commit | 原ACK/recovery/consumption与failed/pending/cancelled边界，既有八lens和真实consumer证据不被总计数代替。 |
+| stdio/Factory/public close与默认诊断 | 原TS/Java具体close与Python3.10、默认stderr19/20/21B/22/24链；五telemetry原Host/proxy自然0仅五场，shutdown waiter transport异常不说成功响应。 |
+| 最终完整三语/示例与Java runtime | 精main Linux原入口actual0/三quickstarts，TS363通过+1Windows未运行、Python450通过+1Windows未运行另18subtests；Temurin17，Java原mvn-q整体成功，不冒本地380/76XML为CI逐case结果。 |
+| Windows原生路径消费者 | 精main Windows job原TS/PY/Java各1目标case通过、0fail/0CASEskip、各4nativecalls，保UTF16孤立代理，freshPYJavaXML。TS其它namefilter未选不算目标skip；不等于全Windows SDK测试。 |
+
+本组按实际两平台accepted义务verified，不把Mac单机收窄为全部承诺；不额外接受managed历史风险，也不泛推所有Host/remoteowner自然退出。
