@@ -1,5 +1,28 @@
 # SDK 全能力语义治理进度
 
+## 2026-10-22 f7bac 当前分支完整语言入口的有限资格（a584f5b）
+
+SDK任务分支已公开 `a584f5b7191cdf733c2ce2c9398b199abbc9ebf9`，Host继续精确pin
+framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，accepted5621/454不扩。
+原30完整入口在TS363通过、1项Windows平台未运行后，因Python两项Ruff I001自然1；
+31仅两测试各加一个import分组空行，AST完全一致，原cwd全范围Ruff check/format均0，195文件已格式化。
+33在此新源码单独执行原 `bash scripts/check-language-sdks.sh`：script/Node/guard/caller均自然0，
+TS363通过+1平台未运行；Python450通过+1平台未运行，另18成功subtests（451普通XML节点、声明469）；
+Java380通过+1平台未运行、76份fresh XML。三个原quickstart均执行完成；实际Java21.0.5，不冒CI17/最低版本。
+
+原guardQualification=OBSERVED；96实际资源采样均未观察到阈值越线，4个大墙钟采样缺口保UNKNOWN，
+最大1049.834098秒，未记录逐样本monotonic，不能断言持续每2秒或全时峰值，也不推测缺口原因。
+五个telemetry场景的原Host/proxy自然0只覆盖该五场。218条ACP outgoing错误消息和22条其它runtime WARN原样保留：
+后22条中16为显式受控cancel/failure/config，6为真实不完整close诊断；Channel断连仅证明finally/PID消失，
+不证明profile stop或远端owner结算；protected Workflow保SIGTERM/host_signal_requested=true、
+framework_receipt_proved=false，不用transport cleanup补receipt或改变claim。未为消除这些已定义边界新增生产修复。
+
+原14Rust、113阻断合同/4项非阻断Rust库存漂移及精49重复版本政策各保原epoch；编译输入未变的部分仅按有界等价承接，
+旧05的523不重标为当前AGENTS下新运行。19/20/21/22/24默认stderr证据仍保其原cut，33是独立whole观察。
+具名stderr Audit challenge采用真实Git01ef锚点保存原a92b观察，不重标旧执行；最终必要历史ref/冷恢复由Root一次性核定。
+当前75resolved+managed历史UNKNOWN1open、46finite verified/4整体needs_review、inventoryclosed/behavior_modelopen保持；
+精SDK main/CI/必要ref冷校验与最终正式材料门禁仍待，registry发布/官网部署不在范围。详情与原件定位见既有source-continuity Evidence的新后继。
+
 ## 2026-10-20 精确SDK main与来源恢复
 
 SDK PR5已squash到精main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce)，soleparent30d7e219，tree98c4与已审7361一致，GitHub签名valid；原pushCI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918) 九job全部SUCCESS。实际范围含Linux原套件、三语言原完整入口及Windows编译检查；不冒Windows原生运行全覆盖。仅remote main+35必要公开tags的新空仓固定c0bc strict/base30d/changeEvidence实际0。Host仍pinframework356，accepted5621/454不扩；CLI后继Builder不触发SDK改pin/生成。

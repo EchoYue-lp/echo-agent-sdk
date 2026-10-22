@@ -17,6 +17,18 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
+当前Host pin为已接受framework精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`/tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`，
+PR197/原mainCI39605663648七项SUCCESS及remote-only cold已由主协调者独审接受。
+A03使用冻结的既有用户镜像缓存，官方Cargo离线update和locked metadata均实际退出0，精锁SHA256为1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa。
+metadata仅no-deps（resolve=null），不证明fresh registry、冷缓存、yanked状态或完整依赖图。
+A03仅记录该次来源观察；阶段资格与未完成项见[既有来源Evidence](.echo-semantic/evidence/evidence.sdk-source-continuity.md)的具名日期后继。
+14条Rust、新fullfacade Host、三policy、完整三语/3quickstarts及Windows/main验收须各自取证，不互相替代。
+旧e736第12项101与7a81诊断101继续保留，不借F定向或全量结果称SDK通过。
+本切片只承接原运行时owner修复和来源，accepted5621/454不扩、不自动update117产物，
+历史managed首因UNKNOWN及4whole闭合按具体证据另验。精duplicate门禁仅实施原SDK有界接受合同。
+
+### 前一已接受SDK main（历史）
+
 当前公开修复04eb两accepted名字到原Tool的薄映射已具同源Finding三链，本地resolved；当前74resolved/1managedunknownopen，46有限Behavior verified/4整体hold。9ef冻结1222输入原14Rust全部0/零编译warning/guard0，最终fullfacade Host实为a17不变，唯一原完整语言TS358/PY442加18subtests/Java379及76freshXML/3quickstarts全部0，各精独审C0；旧text oracles保、旧runtime cut不重标。后归档copy2 floor事件与同字节稀疏恢复如实保，原whole运行guard未bound，不删原件/伪marker/改限额。97Audit主字段/maps不整体升级。SDK PR5已squash到精main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce)，soleparent30d7e219，tree98c4与已审7361一致，GitHub签名valid；原pushCI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918) 九job全部SUCCESS。实际范围含Linux原套件、三语言原完整入口及Windows编译检查；不冒Windows原生运行全覆盖。仅remote main+35必要公开tags的新空仓固定c0bc strict/base30d/changeEvidence实际0。Host仍pinframework356，accepted5621/454不扩；CLI后继Builder不触发SDK改pin/生成。历史managed passive-exit根因仍未知/OPEN，当前main回归不能充作因果repair；74resolved/1open、46有限Behavior verified/4整体needs_review及baseline behavior_model open保持。nativeHook/Stop与最后人类残余裁决仍独立，Plan整体READY不转完成；registry发布和网站部署不在scope。
 
 

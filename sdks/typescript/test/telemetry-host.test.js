@@ -20,7 +20,7 @@ async function bounded(action, label) {
   } finally { clearTimeout(timer); }
 }
 
-async function fixtureScope(work, body, { close = async () => {}, evidence = () => {} } = {}) {
+async function fixtureScope(work, body, { close = async () => {}, observeProxy = () => {}, evidence = () => {} } = {}) {
   let service, exited, primary, result;
   const failures = [];
   try {
@@ -36,6 +36,7 @@ async function fixtureScope(work, body, { close = async () => {}, evidence = () 
   for (const cleanup of [
     () => writeFileSync(join(work, "release-export"), "cleanup release"),
     () => bounded(close, "SDK close"),
+    () => bounded(observeProxy, "proxy observation"),
     () => execFileSync("python3", [fixture, "--work", work, "--cleanup-host"], { stdio: "pipe" }),
     () => writeFileSync(join(work, "stop"), "stop"),
     async () => {
@@ -136,7 +137,7 @@ for (const mode of ["rpc_cancel", "input_eof", "public_close"]) test(`telemetry 
   await fixtureScope(work, async () => {
     facts.host_sha256 = fileSha256(host);
     await barrier("ready"); const scenario = JSON.parse(readFileSync(join(work, "scenario.json"), "utf8"));
-    sdk = await EchoAgentClient.spawn({ hostCommand: "python3", args: [fixture, "--work", work, "--proxy-host", host], env: { RUST_LOG: "info", OTEL_METRIC_EXPORT_INTERVAL: "60000", OTEL_BSP_SCHEDULE_DELAY: "60000" }, onStderr: text => writeFileSync(join(work, "host.stderr"), text, { flag: "a" }) });
+    sdk = await EchoAgentClient.spawn({ hostCommand: "python3", args: [fixture, "--work", work, "--proxy-host", host, "--proxy-stderr-file", join(work, "host.stderr")], env: { RUST_LOG: "info", OTEL_METRIC_EXPORT_INTERVAL: "60000", OTEL_BSP_SCHEDULE_DELAY: "60000" } });
     const agent = await sdk.createAgent(), session = await agent.createSession(work);
     await session.invoke("telemetry.init", [scenario.endpoint, scenario.service_name, false]);
     const run = await session.startRun({ text: "Read probe.txt using read_file and consume its full content." });
@@ -179,6 +180,33 @@ for (const mode of ["rpc_cancel", "input_eof", "public_close"]) test(`telemetry 
     }
   }, {
     close: () => sdk?.close(),
+    observeProxy: () => {
+      // The Rust child receipt is distinct from the original Python proxy's
+      // real terminal state, including interpreter-finalization diagnostics.
+      const proxy = sdk?.process;
+      const terminal = !!proxy && (proxy.exitCode !== null || proxy.signalCode !== null);
+      const stderrPath = join(work, "host.stderr");
+      const stderrPresent = existsSync(stderrPath);
+      const diagnostic = stderrPresent ? readFileSync(stderrPath) : Buffer.alloc(0);
+      facts.proxy_exit = {
+        pid: proxy?.pid ?? null,
+        exitCode: proxy?.exitCode ?? null,
+        signalCode: proxy?.signalCode ?? null,
+        terminal,
+        stderr_present: stderrPresent,
+        stderr_complete_after_proxy_exit: terminal && stderrPresent,
+        stderr_bytes: stderrPresent ? diagnostic.length : null,
+        stderr_sha256: stderrPresent ? fileSha256(stderrPath) : null,
+      };
+      writeFileSync(join(work, "proxy-exit.json"), JSON.stringify(facts.proxy_exit, null, 2), { flag: "wx" });
+      assert.ok(terminal, "original SDK proxy has not actually exited");
+      assert.equal(proxy.exitCode, 0, JSON.stringify(facts.proxy_exit));
+      assert.equal(proxy.signalCode, null);
+      assert.ok(stderrPresent, "original proxy stderr capture missing");
+      for (const marker of ["Fatal Python error:", "BrokenPipeError", "Traceback ("]) {
+        assert.equal(diagnostic.includes(Buffer.from(marker)), false, diagnostic.toString("utf8"));
+      }
+    },
     evidence: () => {
       writeFileSync(join(work, "wire-observed.json"), JSON.stringify(facts, null, 2));
       console.log(`Telemetry wire evidence: ${work}`);

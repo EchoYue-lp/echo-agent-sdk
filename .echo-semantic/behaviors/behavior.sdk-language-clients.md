@@ -28,6 +28,7 @@ code_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-source-continuity
 - evidence.sdk-event-identity-nested-parent-closure
 - evidence.sdk-language-client-lifecycle-current
 - evidence.sdk-typescript-stdio-close-specific-closure
@@ -40,6 +41,7 @@ evidence_refs:
 - evidence.sdk-official-factory-final-language-gate
 - evidence.sdk-be5-official-full-language
 finding_refs:
+- finding.sdk-default-stderr-backpressure
 - finding.sdk-event-identity-nested-parent-projection
 - finding.sdk-typescript-stdio-close-ownership
 - finding.sdk-java-stdio-process-first-close
@@ -133,3 +135,12 @@ Python与Java原纯值构造入口丢失 accepted runtime.subagent_lineage.paren
 源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
 
 只结算已审local/wire/owner/ACK等named链；整体managed/platform/main/Hook仍hold，Oracle21不冒CI17。
+
+
+## 2026-10-22 默认诊断ownership具名后继
+
+仅增加`finding.sdk-default-stderr-backpressure`与复用`evidence.sdk-source-continuity`、
+`audit.sdk-language-client-lifecycle-failure-concurrency`的新challenge链。Python19/20与TS21B/22
+各自独立before/repair/native after，24五场真实Host只支持原诊断/退出/ACK/flush范围。
+原观察版本与其source_refs/既有场景、status保持；本组仍needs_review（Map仍mapped），
+不由这一具体Finding局部resolved升级四whole、managed历史UNKNOWN或完整语言/main。

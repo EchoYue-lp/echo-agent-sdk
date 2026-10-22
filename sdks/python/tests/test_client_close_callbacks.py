@@ -1,8 +1,10 @@
 """Close real official ACP tasks while a reverse callback is pending."""
 
 import asyncio
+import hashlib
 import json
 import sys
+from pathlib import Path
 from unittest.mock import AsyncMock
 
 import pytest
@@ -10,6 +12,117 @@ from acp.client.connection import ClientSideConnection
 from acp.stdio import spawn_agent_process
 
 from echo_agent_sdk.client import EchoAgentClient, _Callbacks
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("payload_kind", ["empty", "two_mib", "unicode_crlf"])
+async def test_default_spawn_inherits_diagnostics_without_a_private_pipe(
+    tmp_path, capfdbinary, payload_kind
+):
+    # Capture only the application's inherited fd2. No SDK child pipe is read
+    # or substituted, including before initialize completes.
+    payloads = {
+        "empty": b"",
+        "two_mib": b"B" * (2 * 1024 * 1024),
+        "unicode_crlf": "诊断 中😀\nCRLF\r\n尾\n".encode(),
+    }
+    payload = payloads[payload_kind]
+    peer = tmp_path / "official_agent.py"
+    peer.write_text(
+        r"""
+import asyncio
+import json
+import os
+import sys
+from pathlib import Path
+from acp import Agent, InitializeResponse, run_agent
+
+sdk, work, kind = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
+payload = {
+    "empty": b"",
+    "two_mib": b"B" * (2 * 1024 * 1024),
+    "unicode_crlf": "诊断 中😀\nCRLF\r\n尾\n".encode(),
+}[kind]
+document = json.loads((sdk / "contracts/sdk/fixtures/extension/v1/capability-meta-valid.json").read_text())["payload"]
+document.update(json.loads((sdk / "sdks/shared/contract-digests.json").read_text()))
+
+def mark(name):
+    temporary = work / (name + ".tmp")
+    temporary.write_text(json.dumps({"pid": os.getpid()}))
+    temporary.replace(work / (name + ".json"))
+
+async def main():
+    remaining = memoryview(payload)
+    while remaining:
+        written = os.write(sys.stderr.fileno(), remaining)
+        if written <= 0:
+            raise OSError("diagnostic write made no progress")
+        remaining = remaining[written:]
+
+    class OfficialPeer(Agent):
+        async def initialize(self, protocol_version, client_capabilities=None, client_info=None, **kwargs):
+            mark("initialized")
+            return InitializeResponse.model_validate({
+                "protocolVersion": protocol_version,
+                "agentCapabilities": {"_meta": {"echo_agent": document}},
+            })
+
+    await run_agent(OfficialPeer())
+    mark("stopped")
+
+asyncio.run(main())
+""",
+        encoding="utf8",
+    )
+    client = process = None
+    main_exit = cleanup_exit = None
+    initialized = close_completed = False
+    try:
+        client = await asyncio.wait_for(
+            EchoAgentClient.spawn(
+                sys.executable,
+                "-B",
+                str(peer),
+                str(Path(__file__).resolve().parents[3]),
+                str(tmp_path),
+                payload_kind,
+            ),
+            5,
+        )
+        process = client.process
+        initialized = True
+        await asyncio.wait_for(client.close(), 5)
+        close_completed = True
+        main_exit = await process.wait()
+    finally:
+        try:
+            if process is not None and process.returncode is None:
+                await client.close()
+                cleanup_exit = process.returncode
+        finally:
+            captured = capfdbinary.readouterr()
+            (tmp_path / "stderr.raw").write_bytes(captured.err)
+            (tmp_path / "stdout.raw").write_bytes(captured.out)
+            (tmp_path / "receipt.json").write_text(
+                json.dumps(
+                    {
+                        "payload_kind": payload_kind,
+                        "pid": None if process is None else process.pid,
+                        "initialized": initialized,
+                        "main_close_completed": close_completed,
+                        "main_native_exit": main_exit,
+                        "cleanup_native_exit": cleanup_exit,
+                        "stderr_bytes": len(captured.err),
+                        "stderr_sha256": hashlib.sha256(captured.err).hexdigest(),
+                    }
+                )
+            )
+    assert main_exit == 0
+    assert cleanup_exit is None, "cleanup must not substitute for natural success"
+    assert captured.out == b"", "ACP stdout leaked into application output"
+    assert captured.err == payload
+    assert json.loads((tmp_path / "initialized.json").read_text())["pid"] == process.pid
+    assert json.loads((tmp_path / "stopped.json").read_text())["pid"] == process.pid
 
 
 @pytest.mark.asyncio

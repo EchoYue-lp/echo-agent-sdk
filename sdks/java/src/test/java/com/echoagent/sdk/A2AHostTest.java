@@ -23,12 +23,28 @@ class A2AHostTest {
     static <T> T await(CompletionStage<T> stage) throws Exception {
         return stage.toCompletableFuture().get(15, TimeUnit.SECONDS);
     }
-    @Test void acceptedA2AHttpSseOwnerAndErrors() throws Exception {
+    static JsonNode fixtureResult(Path work, String... arguments) throws Exception {
+        var command = new ArrayList<String>(List.of("python3", FIXTURE.toString(), "--work", work.toString()));
+        command.addAll(List.of(arguments));
+        var process = new ProcessBuilder(command).redirectErrorStream(true).start();
+        try {
+            assertTrue(process.waitFor(20, TimeUnit.SECONDS), "fixture source barrier must finish");
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            assertEquals(0, process.exitValue(), output);
+            return JsonSupport.MAPPER.readTree(output);
+        } finally {
+            if (process.isAlive()) process.destroyForcibly();
+        }
+    }
+    @Test void acceptedA2AHttpSseOwnerAndErrors() throws Exception { run(false); }
+    @Test void a2aQuotaRejectionReleasesOriginalFacadeSlot() throws Exception { run(true); }
+    void run(boolean quota) throws Exception {
         String host = System.getenv("ECHO_AGENT_SDK_HOST");
         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank());
         assumeTrue(host != null && !host.isBlank(), "real Host required");
         Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_A2A_ROOT", "../../target/a2a-native")).toAbsolutePath().normalize();
         Files.createDirectories(root); Path work = Files.createTempDirectory(root, "java-");
+        if (quota) Files.writeString(work.resolve("quota"), "1");
         var peer = new ProcessBuilder("python3", FIXTURE.toString(), "--work", work.toString())
                 .redirectOutput(ProcessBuilder.Redirect.DISCARD).redirectError(work.resolve("peer.stderr").toFile()).start();
         EchoAgentClient sdk = null; var rows = JsonSupport.MAPPER.createArrayNode();
@@ -47,6 +63,11 @@ class A2AHostTest {
                 var row = rows.addObject().put("id", step.path("id").asText());
                 if ("close_session".equals(step.path("action").asText())) {
                     await(sessions.get("a").closeAsync()); row.put("value", true); continue;
+                }
+                if ("await_source_closed".equals(step.path("action").asText())) {
+                    row.put("value", true).set("source", fixtureResult(work, "--await-source", step.path("source").asText()));
+                    Files.writeString(work.resolve("results.json"), rows.toString());
+                    continue;
                 }
                 var args = new ArrayList<Object>();
                 for (var arg : step.path("args")) {
@@ -81,12 +102,13 @@ class A2AHostTest {
                 }
                 Files.writeString(work.resolve("results.json"), rows.toString());
             }
-            await(sessions.get("b").closeAsync()); await(agent.closeAsync());
             Files.writeString(work.resolve("results.json"), rows.toString());
-            var check = new ProcessBuilder("python3", FIXTURE.toString(), "--work", work.toString(), "--verify").redirectErrorStream(true).start();
-            String output = new String(check.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            assertEquals(0, check.waitFor(), output);
-            assertEquals(9, JsonSupport.MAPPER.readTree(output).path("operations").size());
+            if (quota) {
+                assertTrue(fixtureResult(work, "--verify").path("quota_slot_recovered").asBoolean());
+                await(sessions.get("a").closeAsync());
+            }
+            await(sessions.get("b").closeAsync()); await(agent.closeAsync());
+            if (!quota) assertEquals(9, fixtureResult(work, "--verify").path("operations").size());
             System.out.println("A2A evidence " + work);
         } finally {
             Files.writeString(work.resolve("results.json"), rows.toString());

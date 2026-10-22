@@ -7,6 +7,10 @@ artifact is bundled.
 The source client requires Node.js 20 or newer (the compiler target is
 ES2022).
 
+Without onStderr, child diagnostics inherit the application's stderr.
+Supplying onStderr retains a diagnostic pipe with the SDK's existing listener
+delivering string chunks. ACP protocol messages continue to use stdout.
+
 ```bash
 npm install
 npm run build

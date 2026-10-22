@@ -7,11 +7,25 @@ lens: failure_concurrency
 freshness: examined
 revision: 76601b242d7c354352f3b5c7d4bf099873746b14
 finding_refs:
+- finding.sdk-default-stderr-backpressure
 - finding.sdk-language-external-ack-projection-admission-ordering
 - finding.sdk-factory-instance-routing
 - finding.sdk-language-close-retry
 - finding.sdk-language-consumption-ack
 challenges:
+  specific-default-stderr-backpressure:
+    revision: 01ef33aad7a4856a92d007b8ed31b404bcd29c25
+    source_refs:
+    - sdks/python/src/echo_agent_sdk/client.py#spawn
+    - sdks/python/tests/test_client_close_callbacks.py#test_default_spawn_inherits_diagnostics_without_a_private_pipe
+    - sdks/typescript/src/client.ts#StdioChild
+    - sdks/typescript/test/client-stdio-close.test.js#native diagnostic ownership
+    - sdks/python/tests/test_telemetry_host.py#record_proxy_exit
+    - sdks/typescript/test/telemetry-host.test.js#observeProxy
+    - sdks/java/src/test/java/com/echoagent/sdk/TelemetryHostTest.java#observeProxy
+    - sdks/shared/testing/telemetry_host_fixture.py#proxy-stderr-file
+    evidence_refs:
+    - evidence.sdk-source-continuity
   named-current-client-obligation:
     revision: 76601b242d7c354352f3b5c7d4bf099873746b14
     source_refs:
@@ -136,3 +150,32 @@ ACK乱序/取消pending写不充洞；earlyACK/terminal不复活取消地址，�
 ## 本次ACK竞态的有限复审
 
 原26c Linux Java窗口及三语各自受控before→after按复用Evidence本次段保存。Java2e0由FrameFinal实际源码/after审PASS；TS/PY69cb由SDKcap实际source/postMinor/after审PASS。69cb是执行时2e0dirty精确四源的后保存观察，不冒新执行时间；成功投影与容量进展、失败/pending不消费、取消/关闭/身份边界及版本/总transport内存限制均保。只此竞态localresolved，原top76601/旧challenge/旧Finding义务不改，不推全语言/新Linux/七open/continuity绿。
+
+
+## 2026-10-22 默认stderr背压的有限复审
+
+边界为language-clients，视角为failure_concurrency。可反证假设是默认启动在initialize前
+创建无owner的stderr pipe，诊断写满后阻止握手；Python19和TS21B各独立实际反例、
+同原future/child在sole drain后恢复，非timeout/重启/强杀归因，21a01晚EOF UNKNOWN保留。
+当前具体修复复用原ACP/Node spawn的stderr继承，stdout/stdin和原close body保持，
+显式TS callback仍有原读者。对PY20默认三组+原七、TS22默认三组/callback一组+原十二，
+逐原件核自然exit/完整stderr/stdout隔离；对24实际五场另核Rust child0、真正proxy0、
+terminal后完整stderr、held-export/ACK/collector llm.calls，Root及独立读者C0/I0/M0。
+
+TS shutdown waiter在这些关闭场景实际得到transport_error或closed_handle并settled，
+不是成功shutdown响应；物理flush结论来自Host自然0、实际collector/ACK和原屏障。
+input_eof在hold期间没有活动publicclose waiter，其close_settled=false是尚未调用close的
+初值，不当作一个未完成close操作。public_close与rpc_cancel按各自原调用/取消身份断言结算。
+
+仅本Finding的repair/verification/rereview闭合。主revision76601、其它challenge/97Audit、
+Map/Behavior的整体状态与managed历史UNKNOWN均保；原完整语言1和完整whole/平台/main
+未验不由focused替代。父应用stderr被其自身重定向时的sink消费与任意callback Unicode
+分块语义未被本项泛推保证；本次callback精字节验证使用原2MiB ASCII输入。
+
+
+## 2026-10-22 原stderr challenge的可恢复Git锚点
+
+固定canonical实际证明01ef33工程digest等于原a92b；specific-default-stderr-backpressure仅从临时source摘要转为该真实Git。
+原8条source_refs及19/20/21/22/24运行切点不变，不重标执行；a584f5b仅2测试import空行AST等价。
+33独立whole证据由既有source-continuity Evidence后继承接，96sample资源缺口UNKNOWN、受控不完整close与Windows未运行边界保留。
+主revision76601、其它challenge及四整体hold/managedUNKNOWN不升级；必要历史Git锚点由Root最终统一持久化与冷检，当前未推tag。

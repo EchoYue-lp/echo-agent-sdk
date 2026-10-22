@@ -345,13 +345,37 @@ def verify(work: Path) -> None:
     print(json.dumps(proof))
 
 
-def proxy(work: Path, host: str) -> None:
+def publish_host_exit(work: Path, pid: int, returncode: int) -> None:
+    """Publish complete JSON before the three SDK existence barriers can pass."""
+    # Each proxy owns one isolated work directory. Publishing by same-directory
+    # rename keeps readers from seeing the final path during a partial write.
+    temporary = work / "host-exit.json.tmp"
+    temporary.write_text(
+        json.dumps(
+            {"pid": pid, "returncode": returncode, "observed_by_original_parent": True}
+        )
+    )
+    temporary.replace(work / "host-exit.json")
+
+
+def write_all(descriptor: int, data: bytes) -> None:
+    """Forward every byte even when a pipe write accepts only a prefix."""
+    remaining = memoryview(data)
+    while remaining:
+        written = os.write(descriptor, remaining)
+        if written <= 0:
+            raise OSError("stdio write made no progress")
+        remaining = remaining[written:]
+
+
+def proxy(work: Path, host: str, *, host_args: tuple[str, ...] = ()) -> None:
     """Transparent stdio wrapper owning precisely one real child process."""
     child = subprocess.Popen(
-        [host, "--config", str(work / "host.json")],
+        [host, *host_args, "--config", str(work / "host.json")],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        bufsize=0,
     )
     (work / "host-process.json").write_text(
         json.dumps({"pid": child.pid, "parent_pid": os.getpid(), "host": host})
@@ -366,41 +390,57 @@ def proxy(work: Path, host: str) -> None:
                 child.stdin.close()
 
     def input_loop():
+        # The parent can keep stdin open after the child exits. A daemon blocked
+        # in Python's buffered reader then aborts interpreter finalization; raw
+        # reads retain no buffered-stdio lock and preserve the original bytes.
+        pending = bytearray()
+
+        def forward_line(line):
+            try:
+                message = json.loads(line)
+                if message.get("params", {}).get("operation") == "telemetry.shutdown":
+                    shutdown_id[:] = [message["id"]]
+                    (work / "shutdown-request.json").write_text(json.dumps(message))
+            except (ValueError, KeyError, AttributeError):
+                pass
+            with lock:
+                if child.stdin.closed:
+                    return False
+                write_all(child.stdin.fileno(), line)
+            return True
+
         try:
-            for line in sys.stdin.buffer:
-                try:
-                    message = json.loads(line)
-                    if (
-                        message.get("params", {}).get("operation")
-                        == "telemetry.shutdown"
-                    ):
-                        shutdown_id[:] = [message["id"]]
-                        (work / "shutdown-request.json").write_text(json.dumps(message))
-                except (ValueError, KeyError, AttributeError):
-                    pass
-                with lock:
-                    if child.stdin.closed:
-                        break
-                    child.stdin.write(line)
-                    child.stdin.flush()
+            while True:
+                block = os.read(sys.stdin.fileno(), 65536)
+                if not block:
+                    if pending:
+                        forward_line(bytes(pending))
+                    break
+                pending.extend(block)
+                while b"\n" in pending:
+                    end = pending.index(b"\n") + 1
+                    line = bytes(pending[:end])
+                    del pending[:end]
+                    if not forward_line(line):
+                        return
         except (BrokenPipeError, ValueError):
             pass
         finally:
             close_input()
 
-    def forward(source, output):
+    def forward(source, descriptor):
         output_open = True
         while True:
-            data = source.read1(65536)
+            data = os.read(source.fileno(), 65536)
             if not data:
                 break
             if output_open:
                 try:
-                    output.write(data)
-                    output.flush()
+                    write_all(descriptor, data)
                 except BrokenPipeError:
                     # A cancelled public client no longer consumes its pipe;
-                    # still drain the original child until actual process EOF.
+                    # drain the original child without a pending Python buffer
+                    # that would fail again during interpreter finalization.
                     output_open = False
 
     def control():
@@ -417,16 +457,18 @@ def proxy(work: Path, host: str) -> None:
                 }
                 with lock:
                     if not child.stdin.closed:
-                        child.stdin.write((json.dumps(message) + "\n").encode())
-                        child.stdin.flush()
+                        write_all(
+                            child.stdin.fileno(),
+                            (json.dumps(message) + "\n").encode(),
+                        )
                         (work / "cancel-sent.json").write_text(json.dumps(message))
                 cancelled = True
 
     forwarders = []
     for target, args in [
         (input_loop, ()),
-        (forward, (child.stdout, sys.stdout.buffer)),
-        (forward, (child.stderr, sys.stderr.buffer)),
+        (forward, (child.stdout, sys.stdout.fileno())),
+        (forward, (child.stderr, sys.stderr.fileno())),
         (control, ()),
     ]:
         thread = threading.Thread(target=target, args=args, daemon=True)
@@ -435,11 +477,7 @@ def proxy(work: Path, host: str) -> None:
             forwarders.append(thread)
     code = child.wait()
     done.set()
-    (work / "host-exit.json").write_text(
-        json.dumps(
-            {"pid": child.pid, "returncode": code, "observed_by_original_parent": True}
-        )
-    )
+    publish_host_exit(work, child.pid, code)
     # The actual output readers drain exactly once, before wrapper EOF.
     for thread in forwarders:
         thread.join()
@@ -476,13 +514,29 @@ if __name__ == "__main__":
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--console", action="store_true")
     parser.add_argument("--proxy-host")
+    parser.add_argument("--proxy-stderr-file", type=Path)
     parser.add_argument("--cleanup-host", action="store_true")
     parser.add_argument("--serve", action="store_true")
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
+    if args.proxy_stderr_file is not None and not args.proxy_host:
+        parser.error("--proxy-stderr-file requires --proxy-host")
     if args.cleanup_host:
         cleanup_host(args.work)
     elif args.proxy_host:
+        if args.proxy_stderr_file is not None:
+            # Test-only capture includes interpreter finalization after proxy()
+            # returns. Never restore/close fd2 early; O_EXCL protects prior logs.
+            descriptor = os.open(
+                args.proxy_stderr_file,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0),
+                0o600,
+            )
+            try:
+                os.dup2(descriptor, sys.stderr.fileno())
+            finally:
+                if descriptor != sys.stderr.fileno():
+                    os.close(descriptor)
         proxy(args.work, args.proxy_host)
     elif args.serve:
         serve(args.work)

@@ -44,6 +44,7 @@ class TelemetryHostTest {
         Cleanup closeSdk = () -> {
             if (sdk != null) sdk.closeAsync().toCompletableFuture().get(5, TimeUnit.SECONDS);
         };
+        Cleanup observeProxy = () -> {};
         Cleanup evidence = () -> {};
 
         FixtureOwner(Path work) throws Exception {
@@ -72,6 +73,7 @@ class TelemetryHostTest {
             for (Cleanup cleanup : List.<Cleanup>of(
                     () -> Files.writeString(work.resolve("release-export"), "cleanup actual response"),
                     () -> closeSdk.run(),
+                    () -> observeProxy.run(),
                     () -> helper(work, "--cleanup-host"),
                     () -> Files.writeString(work.resolve("stop"), "stop"),
                     this::reap,
@@ -166,10 +168,40 @@ class TelemetryHostTest {
             facts.put("host_sha256", FileSha256.sha256(Path.of(host)));
             EchoAgentClient sdk;
             barrier(work, "ready"); var scenario = JsonSupport.MAPPER.readTree(work.resolve("scenario.json").toFile());
-            sdk = await(EchoAgentClient.spawn("python3", List.of(FIXTURE.toString(), "--work", work.toString(), "--proxy-host", host),
+            Path proxyStderr = work.resolve("host.stderr");
+            sdk = await(EchoAgentClient.spawn("python3", List.of(FIXTURE.toString(), "--work", work.toString(),
+                    "--proxy-host", host, "--proxy-stderr-file", proxyStderr.toString()),
                     Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"),
                     Map.of("RUST_LOG", "info", "OTEL_METRIC_EXPORT_INTERVAL", "60000", "OTEL_BSP_SCHEDULE_DELAY", "60000")));
             owned.sdk = sdk;
+            // Test-only original Process observation, following TaskSubagentHostTest.
+            // The production SDK gains no process getter or logging dependency.
+            var transportField = EchoAgentClient.class.getDeclaredField("transport");
+            transportField.setAccessible(true);
+            var originalTransport = transportField.get(sdk);
+            var processField = originalTransport.getClass().getDeclaredField("process");
+            processField.setAccessible(true);
+            Process originalProxy = (Process) processField.get(originalTransport);
+            owned.observeProxy = () -> {
+                boolean terminated = !originalProxy.isAlive();
+                byte[] stderr = Files.readAllBytes(proxyStderr);
+                var proxyExit = JsonSupport.MAPPER.createObjectNode()
+                        .put("pid", originalProxy.pid())
+                        .put("terminated", terminated)
+                        .put("stderr_complete_after_proxy_exit", terminated)
+                        .put("stderr_bytes", stderr.length)
+                        .put("stderr_sha256", FileSha256.sha256(proxyStderr));
+                if (terminated) proxyExit.put("returncode", originalProxy.exitValue());
+                else proxyExit.putNull("returncode");
+                facts.set("proxy_exit", proxyExit);
+                Files.writeString(work.resolve("proxy-exit.json"), proxyExit.toString(),
+                        java.nio.file.StandardOpenOption.CREATE_NEW);
+                assertTrue(terminated, "original proxy has not actually exited");
+                assertEquals(0, originalProxy.exitValue(), proxyExit.toString());
+                String diagnostic = new String(stderr, StandardCharsets.UTF_8);
+                for (String marker : List.of("Fatal Python error:", "BrokenPipeError", "Traceback ("))
+                    assertFalse(diagnostic.contains(marker), diagnostic);
+            };
             var agent = await(sdk.createAgent()); var session = await(agent.createSession(work.toString()));
             await(session.invoke("telemetry.init", List.of(scenario.path("endpoint").textValue(), scenario.path("service_name").textValue(), false)));
             var run = await(session.startChat("Read probe.txt using read_file and consume its full content."));
