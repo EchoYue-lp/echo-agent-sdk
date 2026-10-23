@@ -1389,13 +1389,13 @@ public final class EchoAgentClient implements AutoCloseable {
     }
 
     void closeEvents(WireHandle stream) {
-        BoundedPublisher publisher = eventPublishers.get(stream.id());
-        if (publisher != null) publisher.close();
+        BoundedPublisher publisher = eventPublishers.computeIfAbsent(stream.id(), ignored -> newEventPublisher(stream));
+        publisher.validateExpectedStream(stream);
+        publisher.close();
     }
 
     void closeUpdates(String sessionId) {
-        BoundedPublisher publisher = updatePublishers.get(sessionId);
-        if (publisher != null) publisher.close();
+        updatePublishers.computeIfAbsent(sessionId, ignored -> new BoundedPublisher()).close();
     }
 
     public ExtensionStreamWriter streamWriter(WireHandle stream) {

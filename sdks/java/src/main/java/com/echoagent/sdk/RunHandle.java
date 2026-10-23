@@ -17,6 +17,7 @@ public final class RunHandle implements AutoCloseable {
     private final WireHandle stream;
     private final AtomicBoolean closed = new AtomicBoolean();
     private CompletionStage<Void> closeStage;
+    private final CompletableFuture<Void> scopeClosed = new CompletableFuture<>();
 
     RunHandle(EchoAgentClient client, WireHandle wire, WireHandle stream) {
         this.client = client;
@@ -94,25 +95,40 @@ public final class RunHandle implements AutoCloseable {
      */
     public synchronized CompletionStage<Void> closeAsync() {
         if (closed.get()) return CompletableFuture.completedFuture(null);
-        if (closeStage != null) return closeStage;
+        if (closeStage != null) return closeStage.thenApply(ignored -> null);
         var result = new CompletableFuture<Void>();
         closeStage = result;
-        cancelInternal().thenCompose(ignored -> waitInternal(Duration.ofSeconds(5))).thenApply(wait -> {
+        var cleanup = cancelInternal().thenCompose(ignored -> waitInternal(Duration.ofSeconds(5))).thenApply(wait -> {
             if (wait == null || !wait.path("settled").asBoolean(false)) throw new EchoAgentException(
                     "cancellation_timeout", "run did not settle before close timeout", "after_delay", "_echo_agent/run/wait", wire.toJson());
-            return null;
-        }).whenComplete((ignored, error) -> {
+            return (Void) null;
+        });
+        // Parent disposal may finish before an already submitted child RPC
+        // reply arrives. End this local observer without cancelling that RPC.
+        CompletableFuture.anyOf(cleanup.toCompletableFuture(), scopeClosed).whenComplete((ignored, error) -> {
+            boolean released;
             synchronized (this) {
-                if (error == null) {
-                    closed.set(true);
-                    client.closeEvents(stream);
-                }
+                // Host disposal or a completed parent close only releases the
+                // local subscription. It is never a successful Run terminal.
+                released = error == null || closed.get() || inaccessibleOwner(error);
+                if (released) closeFromSession();
                 closeStage = null;
             }
-            if (error == null) result.complete(null);
+            if (released) result.complete(null);
             else result.completeExceptionally(error);
         });
-        return result;
+        return result.thenApply(ignored -> null);
+    }
+
+    synchronized void closeFromSession() {
+        closed.set(true);
+        client.closeEvents(stream);
+        scopeClosed.complete(null);
+    }
+
+    private boolean inaccessibleOwner(Throwable error) {
+        String code = EchoAgentException.from(error, "run/close").code();
+        return "closed_handle".equals(code) || "stale_handle".equals(code) || "host_exited".equals(code);
     }
 
     @Override public void close() {

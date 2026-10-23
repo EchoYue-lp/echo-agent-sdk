@@ -214,6 +214,8 @@ class AsyncQueue<T> implements AsyncIterable<T> {
 
 interface StreamFeed {
   readonly queue: AsyncQueue<FacadeStreamItem>;
+  disposed?: boolean;
+  scopeClosure?: { readonly promise: Promise<void>; readonly resolve: () => void };
   handle?: WireHandle;
   lastEventSequence: bigint;
   replayRanges?: Array<{base: bigint; end: bigint; recoveryBase?: bigint}>;
@@ -991,7 +993,11 @@ export class EchoAgentClient {
   }
 
   endEvents(streamId: string): void {
-    this.events.get(streamId)?.queue.end();
+    const feed = this.events.get(streamId);
+    if (!feed) return;
+    feed.disposed = true;
+    feed.scopeClosure?.resolve();
+    feed.queue.end();
   }
 
   endUpdates(sessionId: string): void {
@@ -1079,6 +1085,12 @@ export class EchoAgentClient {
   }
 
   private async *iterateEvents(feed: StreamFeed): AsyncIterable<FacadeStreamItem> {
+    if (!feed.scopeClosure) {
+      let resolve!: () => void;
+      const promise = new Promise<void>(done => { resolve = done; });
+      feed.scopeClosure = { promise, resolve };
+      if (feed.disposed) resolve();
+    }
     let pendingSequence: string | undefined;
     try {
       for await (const queued of feed.queue) {
@@ -1091,15 +1103,21 @@ export class EchoAgentClient {
         // A gap requires explicit replay/snapshot recovery and an explicit ACK.
         pendingSequence = "gap" in item ? undefined : item.envelope.sequence;
         yield item;
-        if (pendingSequence && feed.handle) {
-          await this.acknowledge(feed.handle, pendingSequence);
+        if (pendingSequence && feed.handle && !feed.disposed) {
+          // Disposal ends this observer even when the original ACK writer is
+          // pending. That original submission keeps its own completion owner.
+          try {
+            await Promise.race([this.acknowledge(feed.handle, pendingSequence), feed.scopeClosure.promise]);
+          } catch (error) {
+            if (!feed.disposed) throw error;
+          }
           pendingSequence = undefined;
         }
       }
     } finally {
-      if (pendingSequence && feed.handle && !this.closed) {
+      if (pendingSequence && feed.handle && !this.closed && !feed.disposed) {
         try {
-          await this.acknowledge(feed.handle, pendingSequence);
+          await Promise.race([this.acknowledge(feed.handle, pendingSequence), feed.scopeClosure.promise]);
         } catch {
           // The Host may already have exited while the consumer was closing.
         }
@@ -1275,8 +1293,13 @@ export class ExtensionStreamWriter {
   }
 }
 
+// Module-private scope disposal, distinct from a Run's authoritative terminal.
+const closeRunScope = Symbol("closeRunScope");
+
 export class SessionHandle {
   private closed = false;
+  private closeOperation?: Promise<void>;
+  private readonly runs = new Set<RunHandle>();
   constructor(
     readonly client: EchoAgentClient,
     readonly agent: WireHandle,
@@ -1306,7 +1329,12 @@ export class SessionHandle {
       input: input.mode === "execute" ? { kind: "execute", task: input.text } : { kind: "chat", text: input.text },
     });
     if (response.first_event) this.client.publishFirstEvent(response.stream, response.first_event);
-    return new RunHandle(this.client, response.run, response.stream);
+    const run = new RunHandle(this.client, response.run, response.stream);
+    // An accepted start reply can arrive after the parent close reply. It
+    // still belongs to that disposed scope and must not reopen a local feed.
+    if (this.closed) run[closeRunScope]();
+    else this.runs.add(run);
+    return run;
   }
 
   async invoke<T = unknown>(operation: string, args: readonly unknown[] = []): Promise<T> {
@@ -1324,8 +1352,26 @@ export class SessionHandle {
 
   async close(): Promise<void> {
     if (this.closed) return;
+    if (this.closeOperation) return this.closeOperation;
+    let resolveClose!: () => void;
+    let rejectClose!: (error: unknown) => void;
+    const operation = new Promise<void>((resolve, reject) => { resolveClose = resolve; rejectClose = reject; });
+    // Publish the owner before submitting the RPC, including synchronous reentry.
+    this.closeOperation = operation;
+    void this.closeOwned().then(resolveClose, rejectClose);
+    try {
+      await operation;
+    } catch (error) {
+      if (this.closeOperation === operation) this.closeOperation = undefined;
+      throw error;
+    }
+  }
+
+  private async closeOwned(): Promise<void> {
     await this.client.request("_echo_agent/session/close", { session: this.wire });
     this.closed = true;
+    for (const run of this.runs) run[closeRunScope]();
+    this.runs.clear();
     this.client.endUpdates(this.acpSessionId);
   }
 
@@ -1366,6 +1412,9 @@ export class SessionHandle {
 
 export class RunHandle {
   private closed = false;
+  private closeOperation?: Promise<void>;
+  private resolveScopeClose!: () => void;
+  private readonly scopeClosed = new Promise<void>(resolve => { this.resolveScopeClose = resolve; });
   constructor(readonly client: EchoAgentClient, readonly wire: WireHandle, readonly stream: WireHandle) {}
   get events(): AsyncIterable<FacadeStreamItem> { return this.client.eventsFor(this.stream.id, this.stream); }
   get(): Promise<RunGetResult> {
@@ -1422,14 +1471,44 @@ export class RunHandle {
 
   async close(): Promise<void> {
     if (this.closed) return;
-    const state = await this.get().catch((error) => { throw error; });
-    if (!isTerminalStatus(state.status)) {
-      await this.cancel();
-      const settled = await this.wait({ timeoutMs: DEFAULT_CLOSE_WAIT_MS });
-      if (!settled.settled) throw new EchoAgentError("timeout", "run did not settle before close timeout", "after_delay");
+    if (this.closeOperation) return this.closeOperation;
+    let resolveClose!: () => void;
+    let rejectClose!: (error: unknown) => void;
+    const operation = new Promise<void>((resolve, reject) => { resolveClose = resolve; rejectClose = reject; });
+    this.closeOperation = operation;
+    void Promise.race([this.closeOwned(), this.scopeClosed]).then(resolveClose, rejectClose);
+    try {
+      await operation;
+    } catch (error) {
+      if (this.closeOperation === operation) this.closeOperation = undefined;
+      throw error;
     }
+  }
+
+  private async closeOwned(): Promise<void> {
+    try {
+      const state = await this.get();
+      if (!isTerminalStatus(state.status)) {
+        await this.cancel();
+        const settled = await this.wait({ timeoutMs: DEFAULT_CLOSE_WAIT_MS });
+        if (!settled.settled) throw new EchoAgentError("timeout", "run did not settle before close timeout", "after_delay");
+      }
+    } catch (error) {
+      const code = EchoAgentError.fromUnknown(error).code;
+      // Released/stale ownership or a dead Host makes this local subscription
+      // unusable. Disposal says nothing about the Run's business outcome.
+      if (!this.closed && code !== "closed_handle" && code !== "stale_handle" && code !== "host_exited") throw error;
+    }
+    this[closeRunScope]();
+  }
+
+  [closeRunScope](): void {
     this.closed = true;
+    // Materialize the same ended mailbox even if nobody subscribed before
+    // disposal, so a later events getter cannot create a new live mailbox.
+    this.client.eventsFor(this.stream.id, this.stream);
     this.client.endEvents(this.stream.id);
+    this.resolveScopeClose();
   }
 
   private ensureOpen(): void {

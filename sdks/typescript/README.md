@@ -232,6 +232,16 @@ exit must not be treated as a successful terminal. Facade resources validate
 owner plus complete generation-fenced handles; failed publication rolls back
 construction rather than returning an unusable handle.
 
+Successful Session close also disposes that Session's local Run subscriptions,
+including a start reply arriving after close. Buffered facts remain readable,
+then the iterator ends; a first subscription after close is already finite.
+This local EOF is not a Run terminal or receipt. Failed parent close retains
+the child scope for retry. Concurrent close calls share the original cleanup;
+parent disposal releases local observers without cancelling submitted RPC/ACK
+owners. A child close may dispose its mailbox after `closed_handle`,
+`stale_handle` or `host_exited`; `host_shutting_down` remains a retryable failure.
+See [ADR0041](../../docs/adr/0041-session-close-local-child-scope.md).
+
 Factory callbacks echo the Host-reserved instance handle. Child invocations
 carry `factory_origin`, binding that instance to its parent registration.
 Concurrent same-name factory instances remain independent; no name-based

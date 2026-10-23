@@ -3,6 +3,8 @@ package com.echoagent.sdk;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -17,6 +19,7 @@ public final class SessionHandle implements AutoCloseable {
     private final String acpSessionId;
     private final WireHandle taskRun;
     private final AtomicBoolean closed = new AtomicBoolean();
+    private final Set<RunHandle> runs = new HashSet<>();
     private CompletionStage<Void> closeStage;
 
     SessionHandle(EchoAgentClient client, WireHandle agent, WireHandle wire, String acpSessionId, WireHandle taskRun) {
@@ -51,7 +54,13 @@ public final class SessionHandle implements AutoCloseable {
             WireHandle run = WireHandle.fromJson(result.path("run"));
             WireHandle stream = WireHandle.fromJson(result.path("stream"));
             RunHandle handle = new RunHandle(client, run, stream);
-            client.publishFirstEvent(stream, result.path("first_event"));
+            synchronized (this) {
+                client.publishFirstEvent(stream, result.path("first_event"));
+                // A delayed successful start reply still belongs to the
+                // already disposed parent scope; it must not reopen a feed.
+                if (closed.get()) handle.closeFromSession();
+                else runs.add(handle);
+            }
             return handle;
         });
     }
@@ -82,13 +91,15 @@ public final class SessionHandle implements AutoCloseable {
 
     public synchronized CompletionStage<Void> closeAsync() {
         if (closed.get()) return CompletableFuture.completedFuture(null);
-        if (closeStage != null) return closeStage;
+        if (closeStage != null) return closeStage.thenApply(ignored -> null);
         var result = new CompletableFuture<Void>();
         closeStage = result;
         client.request("_echo_agent/session/close", JsonSupport.MAPPER.createObjectNode().set("session", wire.toJson())).thenApply(ignored -> null).whenComplete((ignored, error) -> {
             synchronized (this) {
                 if (error == null) {
                     closed.set(true);
+                    runs.forEach(RunHandle::closeFromSession);
+                    runs.clear();
                     client.closeUpdates(acpSessionId);
                 }
                 closeStage = null;
@@ -96,7 +107,8 @@ public final class SessionHandle implements AutoCloseable {
             if (error == null) result.complete(null);
             else result.completeExceptionally(error);
         });
-        return result;
+        // Each caller observes the retained owner through a dependent future.
+        return result.thenApply(ignored -> null);
     }
 
     @Override public void close() {
