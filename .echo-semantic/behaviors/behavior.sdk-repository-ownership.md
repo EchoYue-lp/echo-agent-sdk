@@ -18,6 +18,7 @@ code_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-tokio-io-safety-current
 - evidence.sdk-source-import
 - evidence.sdk-source-continuity
 - evidence.sdk-framework-pin
@@ -91,3 +92,12 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
 
 SDK资产与F运行权威分开；5621accepted才阻断，完整Rust仅遥测，duplicate例外不扩CLI。
+
+## 2026-10-24 Tokio dependency ownership 的有限后继
+
+复用本仓既有dependency policy与唯一精确duplicate gate，不新增依赖管理或风险接受权威。
+Tokio1.53.1的RUSTSEC-2026-0386由定向1.53.3补丁处置；SDK保持原framework pin和Host/Protocol/
+accepted合同，原49组107身份不扩，scanner自然出口与精集合比较分别保留。
+新Evidence `evidence.sdk-tokio-io-safety-current` 自行绑定本候选source摘要；
+本Behavior header的旧Git及旧正文/证据epoch不重标为新锁运行。
+受影响运行门禁、新Host完整语言与精确main CI仍按新证据各自结算，旧UNKNOWN裁决不变。

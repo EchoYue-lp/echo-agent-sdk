@@ -4,8 +4,8 @@
   "id": "baseline.repository",
   "kind": "baseline",
   "source_snapshot": {
-    "base_revision": "4acd5b81cf3f64b17a7aed546d4aaa2e145e52cb",
-    "content_digest": "02777d702f5c96ea9b2bb980318b7b3a0f2e1c7e698fb954d947591a864b19f1"
+    "base_revision": "3daaa573a60d83e7064ff0796c48bc67ddd6297b",
+    "content_digest": "56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "closed",
@@ -914,3 +914,22 @@ source_snapshot 和 `behavior.sdk-language-clients`，新增
 原 inventory/behavior_model 的 accepted 范围闭合状态、历史 UNKNOWN 的人类
 `risk_accepted` 裁决及所有证据限制保持。更新摘要不代表本次修复提交的精确 main CI
 已通过，也不代表 Linux/Windows、Temurin17、冷缓存、registry 发布或官网部署已有新验收。
+
+## 2026-10-24 Tokio I/O safety 候选的有限来源后继
+
+source_snapshot.base_revision 保留真实已发布SDK main
+`3daaa573a60d83e7064ff0796c48bc67ddd6297b` 作为当前比较祖先；它仍含Tokio1.53.1，
+不能冒称该Git包含新补丁。content_digest独立绑定本次非.echo工作树候选，
+新 `evidence.sdk-tokio-io-safety-current` 的 observed_at 使用合同已有的
+`source:<同一摘要>`，诚实表示此候选，未借短命分支commit伪造永久Git来源。
+主代理会在精确Tokio squash main CI通过后，以独立metadata后继将此临时摘要锚点
+续为真实公开main SHA；新的业务增量不得留下不可解析的旧source摘要。
+
+本切片只将Tokio1.53.1升级为官方patched1.53.3，655其它锁包和Tokio依赖边不变，
+旧framework pin、Host/Protocol源码、合同、CI和风险范围不变。新鲜audit自然0，
+49组107项duplicate精身份和四类deny检查实际0，原14policy tests实际0。
+HTTPS抓取网络失败、offline缺新crate和主动磁盘中断的原件各保留，不能当通过。
+运行门禁/新Tokio Host/全语言与精main CI的实际状态见该具名Evidence，旧语言结果不续称新锁。
+
+原accepted范围closure、其它Behavior/Audit主状态、旧Evidence epoch及历史UNKNOWN的
+原人类risk_accepted保留；本次未新增ignore、扩duplicate集合或接受Tokio unsound。

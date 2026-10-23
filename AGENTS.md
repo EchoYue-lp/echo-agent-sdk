@@ -19,8 +19,14 @@ superproject 中的规则文件才能冷启动。
 
 当前Host pin为已接受framework精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`/tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`，
 PR197/原mainCI39605663648七项SUCCESS及remote-only cold已由主协调者独审接受。
-A03使用冻结的既有用户镜像缓存，官方Cargo离线update和locked metadata均实际退出0，精锁SHA256为1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa。
-metadata仅no-deps（resolve=null），不证明fresh registry、冷缓存、yanked状态或完整依赖图。
+2026-10-23 Tokio I/O safety 后继将锁内 tokio 1.53.1 定向升级为 1.53.3，当前精锁SHA256为
+`822ee9a6936f25978283d38d4d07e4e8d7e006ec5834bfeaf80542f79e1ed52e`。
+656包中仅 Tokio version/checksum 变化，655其它包、Tokio依赖边、framework pin及manifest均不变；
+官方checksum核验及full locked metadata实际0。fresh audit（1351条advisories）与cargo-deny四检查
+scanner均实际0，原49组107项duplicate身份精确不变，机器基线仅重绑本锁，不扩风险接受。
+HTTPS fetch失败原件保留，后继以进程级同官方RustSec仓SSH传输真实fresh fetch通过；不是no-fetch结果。
+A03的原1c865锁与用户镜像离线来源观察保留为历史，不重标其运行epoch；新Tokio运行门禁与精mainCI另验。
+A03 原 metadata 仅 no-deps（resolve=null），不证明fresh registry、冷缓存、yanked状态或完整依赖图。
 A03仅记录该次来源观察；阶段资格与未完成项见[既有来源Evidence](.echo-semantic/evidence/evidence.sdk-source-continuity.md)的具名日期后继。
 14条Rust、新fullfacade Host、三policy、完整三语/3quickstarts及Windows/main验收须各自取证，不互相替代。
 旧e736第12项101与7a81诊断101继续保留，不借F定向或全量结果称SDK通过。

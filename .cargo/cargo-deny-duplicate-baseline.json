@@ -2,7 +2,7 @@
   "schema_version": 1,
   "authorization": "ACCEPTED_BY_HUMAN",
   "repository": "EchoYue-lp/echo-agent-sdk",
-  "lock_sha256": "1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa",
+  "lock_sha256": "822ee9a6936f25978283d38d4d07e4e8d7e006ec5834bfeaf80542f79e1ed52e",
   "policy_sha256": "b18307d3e0afa05d0c1ad32004b59cb0a7fe62136e90037bec17738545b3013f",
   "tool_version": "cargo-deny 0.20.2",
   "command": [
@@ -692,6 +692,6 @@
       ]
     }
   ],
-  "current_lock_validation": "A03_OFFICIAL_CARGO_UPDATE_AND_LOCKED_OFFLINE_NO_DEPS_METADATA_ACTUAL0_EXACT_LOCK_1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa; frozen existing user-mirror cache, metadata resolve=null, not fresh registry/cold/yanked/full-graph proof; fresh SDK scan/new Host/full gates PENDING; only11Git-source lines changed; unchanged49groups107registry identities remain historical accepted membership, not a new scanner observation",
+  "current_lock_validation": "TOKIO_IO_SAFETY_20261023_PATCH_1_53_3; exact old49groups107registry identities retained; fresh cargo-audit deny-warnings actual0 with1351advisories84d943a6; cargo-deny0.20.2 four-check scanner natural0 and exact49group identity comparison0; HTTPS fetch failures retained, fresh same-official-repository SSH transport successor0; all655 other package blocks and Tokio dependency edges unchanged; full locked metadata0; runtime gates/new Host/full languages pending at this metadata write",
   "framework_pin": "f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
 }
