@@ -2813,6 +2813,7 @@ class _EventFeed:
     )
     delivery_tail: asyncio.Future[None] | None = None
     live_ranges: list[tuple[int, int]] = field(default_factory=list)
+    scope_closed: asyncio.Event = field(default_factory=asyncio.Event)
 
     def bind(self, handle: WireHandle) -> None:
         if handle.kind != "stream":
@@ -3980,14 +3981,14 @@ class EchoAgentClient:
                 feed.bind(stream)
             except EchoAgentError as error:
                 feed.queue.fail(error, discard_pending=True)
-        return self._iterate_events(feed.queue, stream)
+        return self._iterate_events(feed, stream)
 
     async def _iterate_events(
-        self, queue: _AsyncQueue, stream: WireHandle | None
+        self, feed: _EventFeed, stream: WireHandle | None
     ) -> AsyncIterator[Any]:
         pending: Any = None
         try:
-            async for queued in queue:
+            async for queued in feed.queue:
                 value = queued
                 acknowledged = (
                     self._event_cursors.get(stream, 0) if stream is not None else 0
@@ -4012,13 +4013,49 @@ class EchoAgentClient:
                 # Gaps need explicit replay/snapshot recovery and an explicit ACK.
                 pending = None if isinstance(value, dict) and "gap" in value else value
                 yield value
-                if pending is not None and stream is not None:
-                    await self._ack_event(stream, pending)
+                if (
+                    pending is not None
+                    and stream is not None
+                    and not feed.scope_closed.is_set()
+                ):
+                    await self._ack_while_scope_open(feed, stream, pending)
                     pending = None
         finally:
-            if pending is not None and stream is not None and not self._closed:
+            if (
+                pending is not None
+                and stream is not None
+                and not self._closed
+                and not feed.scope_closed.is_set()
+            ):
                 with contextlib.suppress(Exception):
-                    await self._ack_event(stream, pending)
+                    await self._ack_while_scope_open(feed, stream, pending)
+
+    async def _ack_while_scope_open(
+        self, feed: _EventFeed, stream: WireHandle, value: Any
+    ) -> None:
+        # Keep the original ACK submission alive, but do not hold a disposed
+        # iterator open waiting for its native writer. EOF is not consumption.
+        acknowledgement = asyncio.create_task(self._ack_event(stream, value))
+
+        def observe_failure(completed: asyncio.Task[None]) -> None:
+            if not completed.cancelled():
+                completed.exception()
+
+        acknowledgement.add_done_callback(observe_failure)
+        disposed = asyncio.create_task(feed.scope_closed.wait())
+        try:
+            done, _ = await asyncio.wait(
+                (acknowledgement, disposed), return_when=asyncio.FIRST_COMPLETED
+            )
+            if acknowledgement in done:
+                try:
+                    await acknowledgement
+                except Exception:
+                    if not feed.scope_closed.is_set():
+                        raise
+        finally:
+            disposed.cancel()
+            await asyncio.gather(disposed, return_exceptions=True)
 
     async def _ack_event(self, stream: WireHandle, value: Any) -> None:
         if not isinstance(value, dict):
@@ -4620,7 +4657,10 @@ class SessionHandle:
         self.acp_session_id = acp_session_id
         self.task_run = task_run
         self._closed = False
-        self._runs: dict[str, RunHandle] = {}
+        # Idempotency can return the same wire Run through distinct local
+        # handles. Keep every returned object in this parent resource scope.
+        self._runs: set[RunHandle] = set()
+        self._close_task: asyncio.Task[None] | None = None
 
     async def prompt(self, text: str) -> Any:
         self._ensure_open("session/prompt")
@@ -4663,7 +4703,12 @@ class SessionHandle:
             WireHandle.from_dict(response["run"]),
             WireHandle.from_dict(response["stream"]),
         )
-        self._runs[run.wire.id] = run
+        # A start response may arrive after the successful parent close. It
+        # retains that original scope and cannot publish another live child.
+        if self._closed:
+            run._mark_closed()
+        else:
+            self._runs.add(run)
         return run
 
     async def invoke(self, operation: str, arguments: Iterable[Any] = ()) -> Any:
@@ -4689,12 +4734,29 @@ class SessionHandle:
     async def close(self) -> None:
         if self._closed:
             return
+        task = self._close_task
+        if task is None or task.done():
+            task = asyncio.create_task(
+                self._close_owned(), name="echo-agent session close"
+            )
+            self._close_task = task
+
+            def observe_failure(completed: asyncio.Task[None]) -> None:
+                if not completed.cancelled():
+                    completed.exception()
+
+            task.add_done_callback(observe_failure)
+        # A caller owns only its wait, as on the existing Client close path.
+        await asyncio.shield(task)
+
+    async def _close_owned(self) -> None:
         await self.client.request(
             "echo_agent/session/close", {"session": self.wire.to_dict()}
         )
         self._closed = True
-        for run in self._runs.values():
+        for run in self._runs:
             run._mark_closed()
+        self._runs.clear()
         queue = self.client._updates.get(self.acp_session_id)
         if queue is not None:
             queue.close()
@@ -4726,6 +4788,9 @@ class RunHandle:
         self.wire = wire
         self.stream = stream
         self._closed = False
+        self._close_task: asyncio.Task[None] | None = None
+        self._close_cleanup: asyncio.Task[None] | None = None
+        self._scope_closed = asyncio.Event()
 
     @property
     def events(self) -> AsyncIterator[Any]:
@@ -4843,6 +4908,41 @@ class RunHandle:
 
         if self._closed:
             return
+        task = self._close_task
+        if task is None or task.done():
+            task = asyncio.create_task(self._close_owned(), name="echo-agent run close")
+            self._close_task = task
+
+            def observe_failure(completed: asyncio.Task[None]) -> None:
+                if not completed.cancelled():
+                    completed.exception()
+
+            task.add_done_callback(observe_failure)
+        await asyncio.shield(task)
+
+    async def _close_owned(self) -> None:
+        cleanup = asyncio.create_task(
+            self._settle_close(), name="echo-agent run close RPC"
+        )
+        self._close_cleanup = cleanup
+
+        def observe_failure(completed: asyncio.Task[None]) -> None:
+            if not completed.cancelled():
+                completed.exception()
+
+        cleanup.add_done_callback(observe_failure)
+        disposed = asyncio.create_task(self._scope_closed.wait())
+        try:
+            done, _ = await asyncio.wait(
+                (cleanup, disposed), return_when=asyncio.FIRST_COMPLETED
+            )
+            if cleanup in done:
+                await cleanup
+        finally:
+            disposed.cancel()
+            await asyncio.gather(disposed, return_exceptions=True)
+
+    async def _settle_close(self) -> None:
         try:
             await self.client.request(
                 "echo_agent/run/cancel", {"run": self.wire.to_dict()}
@@ -4856,11 +4956,10 @@ class RunHandle:
                     "echo_agent/run/wait",
                 )
         except EchoAgentError as error:
-            if error.code not in {
+            if not self._closed and error.code not in {
                 "closed_handle",
                 "stale_handle",
                 "host_exited",
-                "host_shutting_down",
             }:
                 raise
         self._mark_closed()
@@ -4869,8 +4968,10 @@ class RunHandle:
         if self._closed:
             return
         self._closed = True
+        self._scope_closed.set()
         feed = self.client._events.get(self.stream.id)
         if feed is not None:
+            feed.scope_closed.set()
             feed.queue.close()
 
     def _ensure_open(self, operation: str) -> None:

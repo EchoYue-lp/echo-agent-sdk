@@ -228,6 +228,17 @@ exit must not be treated as a successful terminal. Facade resources validate
 owner plus complete generation-fenced handles; failed publication rolls back
 construction rather than returning an unusable handle.
 
+Successful Session close disposes its local Run publishers, including a start
+reply arriving after close. Buffered facts are retained before publisher
+completion; first Run/update subscriptions after close are already finite.
+Completion is local resource disposal, not a Run terminal or receipt. Failed
+parent close retains the child scope for retry. Each concurrent close caller
+receives an independent observer of the same cleanup owner; cancelling one
+observer cannot cancel that owner. A child close may dispose its publisher
+after `closed_handle`, `stale_handle` or `host_exited`; `host_shutting_down`
+continues to fail and retain retry state. Submitted RPC/ACK owners survive local
+scope disposal. See [ADR0041](../../docs/adr/0041-session-close-local-child-scope.md).
+
 Client `closeAsync()` first waits for its existing callback/resource cleanup.
 The native transport then drains accepted frames through the official writer,
 closes the original child process's stdin, and awaits that same process's actual

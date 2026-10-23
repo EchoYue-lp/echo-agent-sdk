@@ -262,6 +262,16 @@ not prove a failure path.
 
 A failed Agent/Session/Run close retains its local cleanup state so the caller
 can retry; only successful cleanup ends the stream/releases the owner.
+Successful Session close disposes all its locally returned Runs, including a
+late start reply. Existing iterators retain buffered facts and then end; a new
+subscription through a closed handle keeps its existing `closed_handle`
+failure. EOF does not synthesize a terminal or receipt. Session and Run close
+waiters share an original shielded cleanup task, so cancelling one waiter does
+not cancel another's cleanup. Disposing the scope stops a local ACK/close
+observer without cancelling its original submitted operation.
+`closed_handle`, `stale_handle` and `host_exited` allow local Run disposal;
+`host_shutting_down` retains the failure and stream for retry.
+See [ADR0041](../../docs/adr/0041-session-close-local-child-scope.md).
 Client close retains one asynchronous cleanup owner. Cancelling a waiting caller
 leaves that operation available to a second `close()` waiter; `_closed` becomes
 true only after connection cleanup and actual child-process exit. The official

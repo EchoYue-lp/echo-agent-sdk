@@ -112,6 +112,12 @@ compiled. A core-only build does not advertise those additional surfaces.
   return `invalid_request` before new effects. A genuinely closed owner or
   published resource returns `closed_handle`, and that key cannot recreate it.
   Client-side `RunHandle.close()` alone does not retire the Host Run.
+  A successful parent `SessionHandle.close()` disposes its client-owned child
+  subscriptions, including a delayed start response. Buffered facts are retained
+  before local EOF/completion; that boundary never synthesizes a business
+  terminal or receipt. Failed parent close keeps the local scope retryable.
+  The existing Host tombstones and post-close replay rules are unchanged; see
+  [ADR0041](../adr/0041-session-close-local-child-scope.md).
 - The first keyed job retains its existing Host settlement owner when an RPC
   observer is dropped. Cancellation before effect admission releases the key;
   after admission the original result/cleanup settles without a second

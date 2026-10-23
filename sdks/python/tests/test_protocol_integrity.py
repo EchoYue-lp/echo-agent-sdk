@@ -521,7 +521,7 @@ async def test_observed_snapshot_ack_filters_covered_queue_without_future_ack():
     feed.last_live_sequence = 3
     feed.last_gap_watermark = 4
     queue.close()
-    assert [value async for value in client._iterate_events(queue, stream)] == [
+    assert [value async for value in client._iterate_events(feed, stream)] == [
         {
             "stream": stream.to_dict(),
             "gap": {
