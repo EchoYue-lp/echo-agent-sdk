@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-language-clients
-observed_at: a9f267f636cd4d1553a8bff335c3203ab0b8a5ac
+observed_at: 4acd5b81cf3f64b17a7aed546d4aaa2e145e52cb
 code_refs:
 - sdks/typescript/src/client.ts
 - sdks/typescript/src/wire.ts
@@ -25,9 +25,19 @@ code_refs:
 - contracts/sdk/accepted-external-contract.json
 - scripts/check-language-sdks.sh
 - sdks/java/src/test/java/com/echoagent/sdk/FactoryCleanupLifecycleTest.java
+- sdks/java/src/main/java/com/echoagent/sdk/RunHandle.java
+- sdks/java/src/main/java/com/echoagent/sdk/SessionHandle.java
+- sdks/typescript/test/session-parent-close.test.js
+- sdks/typescript/test/session-parent-close-host.test.js
+- sdks/python/tests/test_session_parent_close.py
+- sdks/python/tests/test_session_parent_close_host.py
+- sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseTest.java
+- sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseHostTest.java
+- docs/adr/0041-session-close-local-child-scope.md
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-session-parent-close-current
 - evidence.sdk-source-continuity
 - evidence.sdk-event-identity-nested-parent-closure
 - evidence.sdk-language-client-lifecycle-current
@@ -163,3 +173,27 @@ only-GitHub-main+36必要refs冷strict实际0；accepted5621/454保持，不扩�
 | Windows原生路径消费者 | 精main Windows job原TS/PY/Java各1目标case通过、0fail/0CASEskip、各4nativecalls，保UTF16孤立代理，freshPYJavaXML。TS其它namefilter未选不算目标skip；不等于全Windows SDK测试。 |
 
 本组按实际两平台accepted义务verified，不把Mac单机收窄为全部承诺；不额外接受managed历史风险，也不泛推所有Host/remoteowner自然退出。
+
+## 2026-10-23 Session 父关闭的本地子 scope 后继
+
+header 当前源码观察为真实 Git `4acd5b81cf3f64b17a7aed546d4aaa2e145e52cb`；
+旧正文、Evidence 的运行 epoch、main CI 和 accepted 风险裁决均按原范围保留。
+本次新增证据仅是 `evidence.sdk-session-parent-close-current`。
+
+Session 只在成功收到原 `session/close` 回复后处置本地 Run/feed scope：所有已返回
+对象（包括同 wire 的不同本地 alias）都收到该信号；晚到 start 回复立即本地关闭；
+缓冲事实可读，之后 EOF，既不合成 terminal/receipt，也不证明遗失的 Host 通知已恢复。
+父关闭失败时保留子 scope 供重试。TS/Java 的首次迟订阅保持已结束 mailbox；Python
+维持既有 closed-handle 查询/新订阅拒绝，不重开已释放的 Host Run。
+
+并发 close 共享原操作 owner；Python shield 和 Java dependent future 让观察者取消
+不能取消原关闭。scope 处置可结束本地 ACK/child-close 等待，但不取消已提交 RPC/ACK、
+不推进已确认消费水位。`closed_handle`/`stale_handle`/`host_exited` 可释放本地订阅；
+`host_shutting_down`、settlement timeout 等保留 typed failure 和重试状态。权威终态仍归
+framework/Host；没有新增 wire 路由、公共 accepted member、全局子句柄 registry 或状态机。
+
+原完整语言入口在 macOS 实际0：TS380通过/1平台skip，Python463通过/1平台skip另18subtests，
+Java78 fresh XML共394项、393执行通过/1平台skip、0错误；三quickstart实际执行。原61项工程
+输入与当前源码相同，具名独审 PASS 及本地真实Host两窗口证据见新Evidence。
+这些不是 Linux/Windows 或 Temurin17 新运行，也不替代当前精main CI；原历史UNKNOWN
+接受及其余能力覆盖不因这个有限后继被扩大或重新结算。
