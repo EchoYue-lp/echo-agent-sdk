@@ -101,3 +101,8 @@ accepted合同，原49组107身份不扩，scanner自然出口与精集合比较
 新Evidence `evidence.sdk-tokio-io-safety-current` 自行绑定本候选source摘要；
 本Behavior header的旧Git及旧正文/证据epoch不重标为新锁运行。
 受影响运行门禁、新Host完整语言与精确main CI仍按新证据各自结算，旧UNKNOWN裁决不变。
+
+
+### 2026-10-24 Tokio 来源观察已归档到公开main
+
+具名后继 `evidence.sdk-tokio-io-safety-current` 已从当前树source摘要锚续接到真实公开main `449934d22f3ab69b867f02cfb64565e073c8660e`；其非.echo源码与先前已验候选相同。此前source:过程描述保留为历史，不作为永久Git ref。原Behavior/header、UNKNOWN、人类风险裁决和全局覆盖不变；这个纯元数据后继仍独立核精确mainCI。

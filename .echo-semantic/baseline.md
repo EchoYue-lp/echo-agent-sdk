@@ -4,7 +4,7 @@
   "id": "baseline.repository",
   "kind": "baseline",
   "source_snapshot": {
-    "base_revision": "3daaa573a60d83e7064ff0796c48bc67ddd6297b",
+    "base_revision": "449934d22f3ab69b867f02cfb64565e073c8660e",
     "content_digest": "56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c"
   },
   "inventory_closure": "closed",
@@ -933,3 +933,11 @@ HTTPS抓取网络失败、offline缺新crate和主动磁盘中断的原件各保
 
 原accepted范围closure、其它Behavior/Audit主状态、旧Evidence epoch及历史UNKNOWN的
 原人类risk_accepted保留；本次未新增ignore、扩duplicate集合或接受Tokio unsound。
+
+
+## 2026-10-24 已续接公开的 Tokio 源码提交
+
+[SDK PR12](https://github.com/EchoYue-lp/echo-agent-sdk/pull/12) 已实际 squash 为公开 main `449934d22f3ab69b867f02cfb64565e073c8660e`。
+本次 source_snapshot.base_revision 续接该真实祖先；非.echo 源码摘要仍为 `56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c`，与已完成16项本地执行的候选源码一致。
+`evidence.sdk-tokio-io-safety-current` 的 observed_at 同步续为该公开 Git 提交，避免将当前树 source: 锚永久保留。
+只是来源观察归档；不重写原执行 HEAD、时间、失败或平台限制，不扩大任何行为／审计／风险接受。最后的纯元数据提交须另行核验精确 main CI。

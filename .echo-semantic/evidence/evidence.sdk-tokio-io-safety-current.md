@@ -2,7 +2,7 @@
 schema_version: 1
 id: evidence.sdk-tokio-io-safety-current
 kind: evidence
-observed_at: source:56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c
+observed_at: 449934d22f3ab69b867f02cfb64565e073c8660e
 source_refs:
 - Cargo.lock
 - .cargo/cargo-deny-duplicate-baseline.json
@@ -18,7 +18,7 @@ source_refs:
 supports:
 - behavior.sdk-repository-ownership
 limitations:
-- The source digest identifies this actual candidate, not a claim that the ancestor main 3daaa573 already contains Tokio 1.53.3; the merged public main must become a later durable Git anchor.
+- The original executions used the candidate source:56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c, not this later Git HEAD; public main 449934d22f3ab69b867f02cfb64565e073c8660e archives the same source bytes. The metadata successor still requires its own precise main CI.
 - Fresh dependency scans prove only their exact policy and lock scope; new Tokio Rust gates, rebuilt Host language consumers and precise main CI have separate execution evidence.
 - Existing duplicate identities and accepted risks are unchanged; the Tokio unsound advisory is patched, not ignored or accepted as a new risk.
 - Original network fetch failures, missing-crate offline failure and disk-pressure interruption remain recorded as failures or interrupted execution.
@@ -179,3 +179,14 @@ CI/Host/Protocol/三语言源码没有验证后漂移。官方语言生成了14�
 本地资格只支持本新锁及具名矩阵，仍不是Linux/Windows或精main交付。后继SDK main全部
 CI与合入后真实Git observed_at续接，由主代理独立完成；旧UNKNOWN/风险裁决、全局覆盖与
 其它Evidence epoch保持，不由本地全绿扩成所有SDK输入/后端/故障组合完成。
+
+
+## 2026-10-24 公开 Git 锚点续接
+
+原 source: 阶段是上文保留的实际过程。现 [PR12](https://github.com/EchoYue-lp/echo-agent-sdk/pull/12)
+已实际合入 main `449934d22f3ab69b867f02cfb64565e073c8660e`，该提交与已审分支的完整 tree 相同；源摘要仍为 `56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c`。
+header observed_at 续接此真实、可从后继main祖先恢复的Git提交；source_refs 现在读取这份公开源码，
+不依赖删除后不可达的临时任务分支。原16成功步骤、两个SIGINT、旧HEAD、wall-clock、平台skip和反射／运行来源均保持其原义。
+
+本后继只改.echo元数据，Cargo.lock、依赖policy、Host、Protocol、语言源码、accepted产物和CI配置均无差异。
+这是同源观察归档，不伪装成重新执行，也不声称此前 source: 锚本身是Git ref。最终交付以最后纯元数据main提交的完整CI结果为准。
