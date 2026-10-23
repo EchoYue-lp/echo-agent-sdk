@@ -4,8 +4,8 @@
   "id": "baseline.repository",
   "kind": "baseline",
   "source_snapshot": {
-    "base_revision": "30d7e219cc7d3aef0f75a19217c82898c363f50d",
-    "content_digest": "b4ccdedb020a8fd5aa514f7ea7b5b59a65150a37db11a79ce3b7a38899f89b76"
+    "base_revision": "4acd5b81cf3f64b17a7aed546d4aaa2e145e52cb",
+    "content_digest": "02777d702f5c96ea9b2bb980318b7b3a0f2e1c7e698fb954d947591a864b19f1"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "closed",
@@ -891,3 +891,26 @@ Active Discovery header unresolved=[]、97Audit原具名examined不改、Map场�
 不是所有Rust库存/所有可能后端/故障组合证明。取消的插件专项不作为本SDK阻断条件；不生成额外native流程。
 source_snapshot摘要按当前唯一MASTER-PLAN支持文稿后继精算，旧runtimecut/失败不重标。inventory_closure与behavior_model_closure
 在上述明确范围closed；registry发布/官网部署不含。最终材料由同一快照的独审、严格门禁与正常主线交付验证，精确提交CI和冷恢复分别验收；语义flag不等同包发布。
+
+## 2026-10-23 Session 父关闭本地子订阅的有限后继
+
+当前 source_snapshot 绑定真实 SDK main
+`4acd5b81cf3f64b17a7aed546d4aaa2e145e52cb`（tree
+`42891bc3e8f61b0c09b4545859b44dee374d9c0e`）。其原 CI
+[39954703736](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39954703736)
+的 semantic job `120417516242` 在既有公开 action `c0bc306` 上实际报告当前源码摘要
+`02777d702f5c96ea9b2bb980318b7b3a0f2e1c7e698fb954d947591a864b19f1`；
+同时报告材料旧摘要和未更新同次语义对象，原失败不改写为成功。此处只更新已存在的
+source_snapshot 和 `behavior.sdk-language-clients`，新增
+`evidence.sdk-session-parent-close-current` 记录真实修复、验证输入及限制。
+
+本次唯一行为增量是三语言 Session 成功关闭后终止本地返回的 Run/feed scope，包含
+晚到 start、同 wire 不同本地 alias、ACK/close 观察者及原操作所有权；不合成业务终态，
+失败保留重试。Host、Protocol、framework pin、accepted5621/454 合同与依赖均未改动。
+原完整语言命令在本地 macOS 实际退出0；61项工程输入与当前Git逐文件一致，具体计数、
+独审与三平台限制由该新 Evidence 说明。这里只续接本具名能力，不新增全局 coverage、
+不批量重标其余 Behavior/Audit，不重标旧 epoch 或原首 Host10秒 UNKNOWN 的因果。
+
+原 inventory/behavior_model 的 accepted 范围闭合状态、历史 UNKNOWN 的人类
+`risk_accepted` 裁决及所有证据限制保持。更新摘要不代表本次修复提交的精确 main CI
+已通过，也不代表 Linux/Windows、Temurin17、冷缓存、registry 发布或官网部署已有新验收。
