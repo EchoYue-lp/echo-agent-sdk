@@ -557,3 +557,58 @@ framework2332同，未触发重编译；旧05的523仍是旧AGENTS切点，13/14
 完整合同check的113阻断项、4项非阻断Rust库存漂移及三policy各实际原epoch/精49重复组边界保持，不自动update117。
 accepted5621/454不扩，75resolved/1managed历史UNKNOWNopen、46finite verified/4整体hold、inventoryclosed/behavior_modelopen保持。
 正式材料最终strict/必要历史ref冷取回/精SDK main CI仍待；不发布registry或部署官网。
+
+
+## 2026-10-22 精main工程交付与唯一人类残余处置
+
+[SDK PR7](https://github.com/EchoYue-lp/echo-agent-sdk/pull/7)已普通squash至精main
+`a9f267f636cd4d1553a8bff335c3203ab0b8a5ac`，soleparent09f670fb、tree01ac807d与已审24d2完全同、服务器签名valid。
+原push[CI39709057560](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39709057560) attempt1九job全部SUCCESS。
+Linux Host原managed case日志实际ok，bridge31/0fail/0ignore/0filter，最终core33/facade12/无reverse原1项25filtered均通过。
+首Host10秒wait返回但ExitStatus原代码丢弃，不作exitcode0断言；旧失败首因UNKNOWN不因回归变成repair。
+
+Windows原job119595762499：TS/PY/Java三个具名case各实际1pass/0failure/0CASEskip、4nativecalls、UTF16孤立代理保全，
+PYJava报告fresh；TS其它namefilter未选不计目标skip，Windows Temurin17.0.20-101。
+Linux完整语言原job119595762629：TS363pass+1Windows未运行；PY450pass+1Windows未运行另18subtests；
+Temurin17.0.20-1，三个原quickstart与最终source marker齐。Java原mvn-q整体通过，不把本机380/76XML冒CI逐case计数。
+旧Mac whole33与96sample/四大墙钟gap UNKNOWN继续保原cut；六条真实不完整close、protectedclaim/unknownreceipt边界均不清零。
+
+新空仓仅GitHub main+36必要公开refs，full1226/tree01ac/source13cb精同、no localobjects/alternates/shallow/taskrefs，
+fixed950a strictsnapshot/base09f/changeEvidence实际0（73.981秒、417759232B、无bound/signals）。
+main实具必要01ef历史锚点，工程digest=a92b、八source refs及祖先459可恢复；旧runtime19/20/21/22/24不重标。
+原件仅本工作区local `sdk-f7bac-formal-source-20261021-01/main-delivery-36/`：
+`exact-main-nine-CI-cold-delivery-minproof.json`10395B/SHA5ec96d40cd9db4a2f2fc276c38135b87bce98c5e76e494974e30513798f5322f；
+LinuxHost raw171606B/SHAd457f8df1dfa86b39f1594088fdaf1a44ded6f0a9e30ca9e7e9e134380e9a314，managed实际原1424行；
+Windows raw125359B/SHAa4cf1317f4b79aba9c10627b1da4a7aec2a86d24f339d808f1175c24446e1320；
+source-language raw215338B/SHA0b4b1c370893597220fb7086b463f6757fbb2061d927c70bcde8688d3e3c849a。
+
+真实人于03:28:19.660Z接受唯一历史首Host10秒超时原因未知残余，详见
+`evidence.sdk-managed-passive-exit-residual-human-decision`；Finding为risk_accepted而非resolved，原三链空保留。
+resources-streams按原accepted资源/流义务独立结算；language-clients结合真实两平台/Java17结算；两个bridge复用同一个human决定。
+50Behavior的verified仅限明确accepted5621/454范围；75resolved+1risk_accepted/0open不扩完整Rust库存或所有输入/后端。
+原97Audit/Map场景与各source/runtime epoch不批刷。最终材料本身须独审/strict/正常任务分支交付，工程main资格与材料交付分列。
+
+## 2026-10-22 自有编译缓存的受控退役（非新运行）
+
+在精main九CI及独立custody审查后，仅自有stable-host-target执行官方
+`cargo clean --target-dir <task-local stable-host-target>`实际0，原raw Removed24057files/7.7GiB；
+10.8795秒、60440576B、无signals/越限，source1226/index/PF/原4pyc/old19和outside copies前后等。
+ownroot及原Host/collector producer路径现absent；defaulttarget8198811648B未动。
+真实afterfree双15478120448B只是03:30:52Z快照，不保证其它任务准入。
+Host2c和collector3d99独立outside copy保精bytes/mode/ns/inode；旧运行栅栏保历史，不能再用作当前producer存在断言。
+未来copy-use绑定或精pin/profile Cargo重建另需授权，未copyback冒新build；不归档全缓存/不触其它缓存。
+原件local `own-target-clean-37/official-clean-retirement-minproof.json`2864B/SHAeadcefd8a5ffd680fe28783a5a212e2ce08fc6c33ee296615d8d3a98c5e220b9。
+
+
+## 2026-10-22 当前状态文档与已接受eb事实同步
+
+六个current-status入口此前仍称candidate/pending，现仅同步已接受SDK main
+`eb22398676310fcbd67e9f4babe4afcefd56ed06`与原九CI39720432985/36ref GitHub-only冷严格验证的既有事实：
+`README.md`、`docs/sdk/README.md`、`sdks/typescript/README.md`、`sdks/python/README.md`、
+`sdks/java/README.md`、`docs/sdk/governance/capability-review-remaining.md`。
+50Behavior verified、75resolved+1真实human risk_accepted/0open与97Audit有界examined范围不变；
+managed历史首因UNKNOWN、三修复链空/10s/后续新失败门禁、真实不完整close/claim与原采样缺口保。
+旧历史章节/原失败和各自source/runtime cut保原文，代码示例与Design不改，accepted5621/454及4项非阻断Rust遥测漂移不扩。
+原193编译/合同输入与已接受快照逐字节相同，故本纯文案切片不重新运行Rust/Host/语言/scanner/生成器；
+Baseline仅以实际canonical六文档内容投影机械更新工程摘要，不声称旧snapshot与新文案相同。
+本文固定记录eb接受事实；后继文档提交按其适用门禁独立验证，不追加ack-CI文稿循环，不发布registry或部署官网。

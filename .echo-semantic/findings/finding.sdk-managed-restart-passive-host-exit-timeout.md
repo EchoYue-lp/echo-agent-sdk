@@ -3,7 +3,7 @@ schema_version: 1
 id: finding.sdk-managed-restart-passive-host-exit-timeout
 kind: finding
 type: implementation_bug
-status: open
+status: risk_accepted
 severity: medium
 primary_focus: time_lifecycle
 focus:
@@ -14,10 +14,13 @@ behavior_refs:
 - behavior.sdk-extension-bridge
 rule_refs:
 - rule.framework-runtime-authority
-evidence_refs: []
+evidence_refs:
+- evidence.sdk-source-continuity
+- evidence.sdk-managed-passive-exit-residual-human-decision
 audit_refs:
 - audit.sdk-managed-retirement-rereview
-decision_refs: []
+decision_refs:
+- evidence.sdk-managed-passive-exit-residual-human-decision
 repair_evidence_refs: []
 verification_evidence_refs: []
 rereview_audit_refs: []
@@ -58,3 +61,15 @@ discovered_at: 0ebe15f66d0aa57c7b7a92ae68cd1be106114ae9
 ## 当前未知义务与最后裁决边界
 
 状态继续OPEN，type保持implementation_bug，repair/verification/rereview三链不填；原Audit关联只保存具体反证与unknown frontier。最后精SDKmain Linux原套件及日志只能再提供当前回归：若PASS仍分别记录“当前回归通过”和“历史根因未知”，不能以诊断/一次PASS关闭。所有可执行工作结束后，若仍缺真实因果，只把这一精确残余交由人决定接受或继续真实RCA；risk_accepted须人的decision_refs，本材料没有替人裁决，也不删原10秒断言或新增CI。
+
+
+## 2026-10-22 真实人的历史残余接受
+
+人的明确选择已到齐，当前状态为risk_accepted，不是resolved。唯一裁决见
+`evidence.sdk-managed-passive-exit-residual-human-decision`；两个bridge复用同一决定。
+原run38674982406/job116226422816的首次Host10秒被动退出超时与首因UNKNOWN完整保留。
+当前精main a9f267f6 的原Linux bridge整套31通过，其中具名managed restart case实际ok；
+原10秒wait返回后代码丢弃首Host ExitStatus，不能称其原生退出码0。九CI与冷恢复证明当前回归，不提供旧失败因果repair。
+repair_evidence_refs、verification_evidence_refs、rereview_audit_refs继续空，不把人的风险接受填成修复三链。
+不延长/删除10秒断言、不增加kill/retry-as-pass、不豁免后续同类新失败，也不改变Store/receipt/claim权威。
+上文OPEN/仍待段落保其历史时态；本日期决定是当前处置，不删除负证据或制造旧现场。

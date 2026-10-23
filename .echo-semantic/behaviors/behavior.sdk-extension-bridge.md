@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-extension-bridge
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-extension-bridge
-observed_at: 5bcbad2437e5c19f61101883044c4f67944cb97c
+observed_at: a9f267f636cd4d1553a8bff335c3203ab0b8a5ac
 code_refs:
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - echo-sdk-host/src/core_profile/handler.rs
@@ -25,6 +25,8 @@ code_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-managed-passive-exit-residual-human-decision
+- evidence.sdk-source-continuity
 - evidence.sdk-channel-message-handler-consumer-audit
 - evidence.sdk-managed-retirement
 - evidence.sdk-llm-workflow-stream
@@ -33,6 +35,7 @@ evidence_refs:
 - evidence.sdk-extension-teardown-prefix-verification
 - evidence.sdk-tools-bridge-finite-observation
 finding_refs:
+- finding.sdk-managed-restart-passive-host-exit-timeout
 - finding.sdk-extension-pending-stream-owner
 - finding.sdk-factory-instance-routing
 - finding.sdk-managed-store-adaptation
@@ -109,3 +112,22 @@ Tool/LLM/Store/Hook/AgentCallback/Intervention六角色依原currentTool8lens实
 源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
 
 已知callback/teardown/producer/EOF/cancel/factory具名链可承接；managed历史Linux未知/main/Hook使整个composite继续hold。
+
+
+## 2026-10-22 精main与已接受义务的最终结算
+
+本节是精公开main `a9f267f636cd4d1553a8bff335c3203ab0b8a5ac` 的最终accepted范围结算，
+旧正文中的needs_review/仍待、各observed_at和原runtime计数保留为历史，不改称本次执行。
+本次逐Git读取全部header code_refs及锚点均存在；当前观察header仅表示该源码复核，旧Evidence运行epoch不重标。
+精main PR7 soleparent09f/tree01ac、签名valid，原pushCI39709057560 attempt1九job全SUCCESS，
+only-GitHub-main+36必要refs冷strict实际0；accepted5621/454保持，不扩大完整Rust库存或所有可能输入组合。
+
+| 已接受义务 | 最终依据与保留边界 |
+|---|---|
+| register/unregister、typed descriptor、官方连接反向调用及实例路由 | 原Tool/LLM/Store/hook/callback/Intervention六角色与Factory具名失败/重入/撤销链及原八lens Evidence/Audit继续有效；Host只管地址/lease/owner，framework决定业务commit/terminal。 |
+| pending stream、deadline/cancel/disconnect与teardown owner | 原stream reservation、prefix/teardown及生产者错误/EOF证据承接；取消不撤销commit、不把transport结束当远端settled。 |
+| accepted supporting Store/managed CAS与lost ACK/restart | 原managed supporting/retirement与main Linux原bridge31/0/0/0，具名managed_commit_disconnect_restart_replays_same_receipt实际ok；首Host10秒wait已返回，但原代码丢弃ExitStatus，不能说首Host exitcode0。 |
+| Channel/Workflow不完整关闭语义 | main已审22条非outgoing WARN中6条真实不完整close；Channel finally/PID消失不证明profile stop/remote owner结算；protectedWorkflow SIGTERM/host_signal_requested=true、framework_receipt_proved=false，原claim不变。 |
+| 历史首次Host被动退出超时 | 原0ebe一次10秒超时原因仍UNKNOWN，按唯一真实人类裁决 risk_accepted；不填repair、不放宽10秒，不豁免后续新失败。 |
+
+本条verified表示上述已接受bridge义务及其明确unknown/error行为已经结算，包含被人接受的具名历史残余；不把该残余变成因果修复。

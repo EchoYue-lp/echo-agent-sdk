@@ -254,8 +254,13 @@ memory-trigger implementations without moving Agent lifecycle state into Python.
 The compatibility promise is the explicitly accepted external contract and
 accepted facade catalog. Complete Rust public inventory/intrinsic membership
 is non-blocking telemetry; it is not a requirement to expose every Rust
-identity in all languages. The current governance candidate awaits final
-contract, real-Host three-language and exact-main acceptance. The
+identity in all languages. Accepted governance at [eb223986](https://github.com/EchoYue-lp/echo-agent-sdk/commit/eb22398676310fcbd67e9f4babe4afcefd56ed06)
+passed [nine original exact-main CI jobs](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39720432985) and a GitHub-only
+cold source check with 36 necessary refs: 50 behaviors verified, 75 Findings
+resolved and one historical risk explicitly accepted by the human. The
+[current acceptance summary](../../docs/sdk/governance/capability-review-remaining.md)
+retains the UNKNOWN managed-exit cause and its unchanged ten-second assertion;
+risk acceptance is not a repair. The
 [capability/evidence matrix](../../docs/sdk/governance/behavior-evidence-matrix.md)
 records behavior evidence and remaining scope; catalog `done` labels alone do
 not prove a failure path.

@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-family-bridge
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-extension-bridge
-observed_at: 5bcbad2437e5c19f61101883044c4f67944cb97c
+observed_at: a9f267f636cd4d1553a8bff335c3203ab0b8a5ac
 code_refs:
 - echo-sdk-host/src/core_profile/extension_bridge.rs
 - echo-sdk-host/src/core_profile/handler.rs
@@ -21,6 +21,8 @@ code_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-managed-passive-exit-residual-human-decision
+- evidence.sdk-source-continuity
 - evidence.sdk-candidate-behavior-verification
 - evidence.sdk-parent-driver-candidate-verification
 - evidence.sdk-managed-retirement
@@ -35,6 +37,7 @@ evidence_refs:
 - evidence.sdk-factory-child-settlement-verification
 - evidence.sdk-tools-bridge-finite-observation
 finding_refs:
+- finding.sdk-managed-restart-passive-host-exit-timeout
 - finding.sdk-python-agent-component-stream-projection
 - finding.sdk-sandbox-canonical-stream-routing
 - finding.sdk-custom-agent-invocation-cancel-projection
@@ -133,3 +136,22 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
 
 已知reversecallback与owner链可承接；managed历史Linux/main/Hook未结，不授整个bridge最终资格。
+
+
+## 2026-10-22 精main与已接受义务的最终结算
+
+本节是精公开main `a9f267f636cd4d1553a8bff335c3203ab0b8a5ac` 的最终accepted范围结算，
+旧正文中的needs_review/仍待、各observed_at和原runtime计数保留为历史，不改称本次执行。
+本次逐Git读取全部header code_refs及锚点均存在；当前观察header仅表示该源码复核，旧Evidence运行epoch不重标。
+精main PR7 soleparent09f/tree01ac、签名valid，原pushCI39709057560 attempt1九job全SUCCESS，
+only-GitHub-main+36必要refs冷strict实际0；accepted5621/454保持，不扩大完整Rust库存或所有可能输入组合。
+
+| 已接受义务 | 最终依据与保留边界 |
+|---|---|
+| typed Tool/LLM/Store/hook/callback/Intervention真实consumer | 原family Evidence及tools-bridge八lens逐角色合法消费/typed错误/副作用/owner证据复用，不新建协议或未接受Rust API。 |
+| 反向stream/owner、Factory locality与cleanup | 原Python typed stream、cancel路由、factory settlement、teardown prefix具名链已结；false/failed/pending不伪Complete，framework业务权威不变。 |
+| managed deadline/commit/restart supporting operation | 原Store权威/精CAS与managed边界及main Linux具名原case通过；不是全11DTO/任意后端的无条件durability保证。 |
+| Channel断连、protected Workflow未知receipt | 真实不完整close仍是合同允许失败路径；连接finally/PID消失不是profile成功结算，SIGTERM cleanup不补framework receipt、不释放原claim。 |
+| 唯一历史managed残余 | 与behavior.sdk-extension-bridge共享同一人的decision Evidence；原10秒超时首因UNKNOWN被接受为risk_accepted，不新增第二次裁决或repair。 |
+
+当前verified只覆盖原accepted family bridge承诺及明确限制；原candidate/raw/failed/unknown事实保留，不把具名计数泛推所有复用方。

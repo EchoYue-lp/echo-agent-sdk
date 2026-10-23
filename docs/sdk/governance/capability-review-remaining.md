@@ -1,4 +1,35 @@
-# 当前能力模型的有限剩余验收
+# 当前能力模型的验收状态
+
+## 2026-10-22 已接受的 SDK 治理快照
+
+当前事实锚点为[SDK main eb223986](https://github.com/EchoYue-lp/echo-agent-sdk/commit/eb22398676310fcbd67e9f4babe4afcefd56ed06)，
+Host仍精确依赖已接受framework f7bac62，accepted 5,621 identity/kind keys及454 routes不扩。
+[原push CI39720432985](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39720432985) attempt1九job全部SUCCESS，
+新空仓仅从GitHub main和36个必要历史refs恢复1227文件后，固定canonical严格摘要/引用/变更依据检查实际0。
+这分别证明精确main执行资格与源码恢复资格，不把旧运行重标为当前结果。
+
+- 50个Behavior在明确accepted范围verified；75个Finding resolved、1个risk_accepted、0个open。
+  inventory_closure与accepted behavior_model_closure为closed，不扩大完整Rust库存、所有后端或所有故障组合。
+- 97个Audit保各自原source/runtime cut和有界examined含义，不等于不存在缺陷；Map与原场景限制不批量升级。
+- 完整三语言原入口和三个quickstart实际通过；Linux使用Temurin17。Windows三语具名路径消费者各1pass、
+  0failure、0目标case skip、4native calls，保UTF-16孤立代理及fresh PY/Java报告；不是全Windows SDK套件资格。
+  Java CI原mvn-q整体通过，不把本机380case/76XML作为CI逐case观察。
+- 唯一历史managed首Host10秒被动退出超时首因仍UNKNOWN。真实人已明确接受该历史残余，Finding为risk_accepted，
+  repair/verification/rereview三链仍空；不称修复、不放宽10秒断言，后续同类新失败仍阻断验收。
+  当前Linux原managed case通过仅证明回归，首Host ExitStatus被原代码丢弃，不作首Host退出码0断言。
+- Channel/Workflow真实不完整close、未知receipt和protected claim边界保留；Mac原96次资源采样的四个大墙钟缺口
+  仍标UNKNOWN，不由CI成功或模型closed清零。四项Rust inventory漂移仍是非阻断遥测，不自动更新117产物。
+- 已取消的独立宿主插件原生专项不再列为本SDK剩余交付门禁。npm/PyPI/Maven/crates.io发布、官网部署仍不在本范围。
+
+正式对象和原件定位见[既有来源Evidence](../../../.echo-semantic/evidence/evidence.sdk-source-continuity.md)、
+[唯一人的风险裁决](../../../.echo-semantic/evidence/evidence.sdk-managed-passive-exit-residual-human-decision.md)及
+[Baseline](../../../.echo-semantic/baseline.md)。新变更按各自适用门禁验收；本文固定记录已接受eb事实，
+不要求每个后继文档提交再回填自身CI，从而避免ack-CI文稿循环。
+
+## 历史验收记录（原正文保留）
+
+以下章节的“当前、OPEN、hold、待验”仅属于各自日期切点；以前述2026-10-22状态及正式对象为当前。
+原失败、UNKNOWN、测试计数和证据限制不删除、不改称新的通过。
 
 ## 2026-10-20 精确main回归已完成，残余保持
 

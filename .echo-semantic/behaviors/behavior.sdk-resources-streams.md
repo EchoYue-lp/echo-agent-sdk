@@ -2,7 +2,7 @@
 schema_version: 1
 id: behavior.sdk-resources-streams
 kind: behavior
-status: needs_review
+status: verified
 expectation: human_confirmed
 risk: high
 primary_focus: state_authority
@@ -12,7 +12,7 @@ focus:
 - contract_evidence
 - data_durability
 boundary: boundary.sdk-resources-streams
-observed_at: cd5b78467f77ac28919cf9dda6877662bed744f4
+observed_at: a9f267f636cd4d1553a8bff335c3203ab0b8a5ac
 code_refs:
 - echo-sdk-host/src/core_profile/handles.rs
 - echo-sdk-host/src/core_profile/facade/mod.rs
@@ -25,6 +25,7 @@ code_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-source-continuity
 - evidence.sdk-stream-producer-verification
 - evidence.sdk-channel-resource-admission
 - evidence.sdk-llm-workflow-stream
@@ -108,3 +109,23 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 源码后继分开核：原Root17be/0bbc具名review与04eb薄增量分别C0。04eb相对17be只在media lookup保两accepted名字到原Tool，三测试wrapper新增可选媒体故事，原fixture五函数/默认HTTP/旧oracles不变；本项所依非媒体生产路径不因共有文件名改变而假报重审或全套新运行。新媒体after另由a17/三语focused证明，未借旧208a14为新源码完整资格。
 
 原handle/stream/EOF/cancel具名证据保留；managed历史Linux/main/Hook使整个composite继续hold。
+
+
+## 2026-10-22 精main与已接受义务的最终结算
+
+本节是精公开main `a9f267f636cd4d1553a8bff335c3203ab0b8a5ac` 的最终accepted范围结算，
+旧正文中的needs_review/仍待、各observed_at和原runtime计数保留为历史，不改称本次执行。
+本次逐Git读取全部header code_refs及锚点均存在；当前观察header仅表示该源码复核，旧Evidence运行epoch不重标。
+精main PR7 soleparent09f/tree01ac、签名valid，原pushCI39709057560 attempt1九job全SUCCESS，
+only-GitHub-main+36必要refs冷strict实际0；accepted5621/454保持，不扩大完整Rust库存或所有可能输入组合。
+
+| 已接受义务 | 最终依据与保留边界 |
+|---|---|
+| kind/owner/generation与typed Handle地址 | 原Registry/完整DTO/opaque resource address与family-handle三链，不引入第二状态权威。 |
+| stream生产者终态、EOF/panic/error与terminal次序 | 原producer、sandbox natural EOF、accepted cancel/terminal锁下仲裁和failed cleanup保owner具名链；不以drop/EOF伪成功。 |
+| ACK/replay与消费水位 | 原events-resources finite及liveJournal换代明确replay_unavailable/after_delay、Run receipt/peer page与原文件恢复证据；非active-write crash或任意网络故障保证。 |
+| admission/quota及cleanup retry | 原Channel resource admission与A2A真实配额回滚/关闭、MCP精Arc/LSP不复活共享owner证据；重试保同owner，不放宽失败路径。 |
+| 最终源码/运行/合同 | 原14Rust feature epochs和193输入等价、113阻断合同、main九CI及完整三语/三个quickstarts与冷恢复。 |
+
+本对象不包含历史managed首Host因果义务，不借人的风险接受清掉资源缺口；本次按原accepted资源/流义务独立verified。
+未列任意backend/所有输入组合、平台全矩阵或未来API均未新增承诺。
