@@ -2,7 +2,37 @@
 
 Status: accepted
 
-## 新pin来源与机器门禁（SDK扫描与运行时仍待验证）
+## 2026-10-23 Tokio I/O safety 定向补丁
+
+当前锁 SHA256 为
+`822ee9a6936f25978283d38d4d07e4e8d7e006ec5834bfeaf80542f79e1ed52e`。
+SDK main `3daaa573a60d83e7064ff0796c48bc67ddd6297b` 的原依赖CI
+[39978621886](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39978621886)
+在 fresh 1351-advisory 数据库上发现
+[RUSTSEC-2026-0386](https://rustsec.org/advisories/RUSTSEC-2026-0386.html)：
+Tokio 1.53.1 的 AsyncFd 构造不满足 I/O safety。定向升级到官方已修补的1.53.3；
+crate SHA256 `ce3335fa71841cda333a58d7615b03901380ecf09d59b3296d21f8bbac0dde4e`
+与 crates.io 官方版本元数据和实际下载原包相同，not yanked。
+
+656包中只改 Tokio version/checksum，655其它包的完整锁块、Tokio依赖边、
+framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0` pin与manifests保持。
+Cargo最初定向update产生的无关socket2/windows-sys边回写已保原日志并排除；
+恢复原边后full `cargo metadata --locked --format-version 1` 实际0，不是no-deps证明。
+初次offline metadata只因新Tokio crate未缓存而101，在线官方包下载后的验证保持原锁。
+
+fresh `cargo audit --deny warnings --json` 实际0、0vulnerabilities、warnings为空，
+数据库1351条/HEAD `84d943a6deeb8cc6c6f632531aaf4f1c62275239`。
+`cargo-deny0.20.2` 原workspace/all-features/locked四检查scanner自然0；
+原49组107项duplicate的精确name/version/source集合完全相同，无新增诊断类别。
+机器基线只更新lock摘要与此观察说明，policy/command/tool/groups及原human授权不变；
+复用原raw的精确gate实际0，14项gate单测实际0。duplicate提示仍完整保留，不称零warning审计。
+
+两次原HTTPS RustSec fetch网络失败均保留为失败；后继仅进程级把官方同repo传输改为SSH，
+默认fresh fetch实际成功，不使用no-fetch、不改持久Git配置或风险例外。
+新Tokio运行门禁、patched Host完整语言与精mainCI分别验收；本次鲜扫描不替代这些边界，
+旧Host和旧语言运行不重标为新Tokio验证。以下旧锁/扫描只保留其原epoch。
+
+## 新pin来源与机器门禁（历史A03：当时SDK扫描与运行时仍待验证）
 
 当前framework pin为精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，SDK最小锁SHA256
 `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`。相对既有webpki补丁锁5b5d，仅8framework+3vendor Git来源变，
