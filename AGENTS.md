@@ -15,6 +15,28 @@ superproject 中的规则文件才能冷启动。
 `echo-agent` 是独立通用框架，也是本仓库的上游依赖；`echo-agent-cli` 是 EKO 应用，
 不是 SDK 行为权威。依赖方向只能是 SDK 指向 framework，framework 不得依赖本仓库。
 
+## 已批准的产品收敛与能力退役合同（2026-10-24）
+
+- EKO 以 GUI 为主入口，继续保留 IM 收发、cron 定时触发、GUI 内置终端、MCP、
+  Task/Subagent、HITL、共享会话/任务恢复和文件持久化。独立 TUI、REPL/CLI、JSONL
+  产品入口进入退役范围，不再要求扩张其与 GUI 的长期能力对等；GUI 内置终端、Agent
+  shell、桌面启动参数、构建命令和独立 SDK Host stdio 不属于该入口退役。
+- 这是本地个人产品的入口取舍；用户直接操作终端或配置 MCP 不套用 Agent 自动执行
+  权限门控。EKO 不引入 SQLite，但不得因此删除通用框架或 SDK 的合理存储选项。
+- A2A 与 LSP 是用户明确批准的具名跨仓能力退役例外，不能泛化为“EKO 未调用就删
+  框架 public API”。按 [ADR 0042](docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md)
+  和 [精确 accepted 清单](docs/sdk/governance/a2a-lsp-retirement-boundary.md) 核对 source/kind、
+  route、feature、Host adapter、三语言表面和消费者；完整 Rust inventory 仅做遥测，
+  不扩大删除分母。ACP、MCP、channels、Task/Subagent、取消/恢复及其它 accepted 合同继续保留。
+- 撤销 API 时先让 EKO/SDK 消费者在旧框架仍保留 API 的条件下解除依赖并完成适用验证，
+  再物理删除框架实现；EKO CI 跟踪 framework main，各中间主线必须可构建。
+  新增 API 仍由框架先交付、消费者后采用。SDK Host 的精确 framework pin 独立于顶层
+  gitlink；可先在原 pin 上去依赖，不为指针整齐擅改 manifest 或 lock。
+- 当前实现、feature、语言 API 和生成合同仍完整存在，本批只固化规则、ADR 和清单，
+  不表示运行时已经退役。后续退役必须同步协商、广告与显式错误；不得空成功、静默过滤
+  或伪造恢复兼容层。保留完整能力恢复分支/tag、既有来源 refs、精锁 duplicate 政策、
+  历史风险及全部失败证据，不借退役改写旧验收结论或自动关闭 Finding。
+
 ## 当前迁移门禁
 
 当前Host pin为已接受framework精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`/tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`，
@@ -128,6 +150,21 @@ SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确�
 - 生成物只能由仓库唯一生成入口更新，禁止手工修改生成 JSON 来绕过漂移检查。
 - 示例必须进入可执行编译或测试链路。
 - 架构变化必须记录 ADR，包含背景、候选、决策、取舍和影响。
+
+## 构建并发与批次后清理（强制）
+
+- 同机最多两条 focused Rust 构建/测试并发，完整 all-feature/GUI/Host/语言矩阵同一时间
+  只运行一套；每条 Rust 构建 `jobs <= 2`，dev/test debuginfo 关闭。
+- 各 worktree 使用自有独立 target，不与其它聊天或 primary 共用 `CARGO_TARGET_DIR`。
+  重构建前后记录 `df`/`du`；可用空间低于 5 GiB 时停止启动新的重构建。
+- 每个编译/测试批次实际结束后，先把必要日志、真实退出状态及需保留的 Host/制品保存到
+  target 外（原始日志放本仓 ignored `.echo-semantic/local/<task-id>/`）；确认该准确 target
+  无活动 cargo/rustc/Host 或其它读取者后，及时 `cargo clean` 本任务自有 target。
+  自定义 target 必须显式指定；记录实际命令和出口，清理失败不得声称空间已释放。
+  不得先删唯一证据再声称可恢复，也不清其它聊天或 primary 缓存。
+- 纯文档/只读任务未产生 Cargo 产物时报告清理不适用，不为形式清理无关目录；
+  分支、worktree、未提交/未跟踪源码、stash、保留 tag 和历史原件的维护清理继续按
+  独立授权及协调归属执行，不借 `cargo clean` 扩大范围。
 
 ## 分支、提交与交付
 
