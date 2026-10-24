@@ -32,12 +32,15 @@ superproject 中的规则文件才能冷启动。
   再物理删除框架实现；EKO CI 跟踪 framework main，各中间主线必须可构建。
   新增 API 仍由框架先交付、消费者后采用。SDK Host 的精确 framework pin 独立于顶层
   gitlink；可先在原 pin 上去依赖，不为指针整齐擅改 manifest 或 lock。
-- 当前实现、feature、语言 API 和生成合同仍完整存在，本批只固化规则、ADR 和清单，
-  不表示运行时已经退役。后续退役必须同步协商、广告与显式错误；不得空成功、静默过滤
-  或伪造恢复兼容层。保留完整能力恢复分支/tag、既有来源 refs、精锁 duplicate 政策、
-  历史风险及全部失败证据，不借退役改写旧验收结论或自动关闭 Finding。
+- Plan04 在 SDK 消费者侧撤销 A2A/LSP 的269项 accepted 身份、23条路由和39个操作，
+  保留5352项身份/431条路由且无新增接受；框架原 pin 的实现仍存在，只做 inventory 遥测。
+  这不代表框架/EKO 或整个跨仓 Outcome 已完成。协商、广告与显式失败必须同步，
+  不得空成功、静默过滤或伪造恢复兼容层。保留完整能力恢复分支/tag、既有来源 refs、
+  精锁 duplicate 政策、历史风险及全部失败证据，不借退役改写旧验收或自动关闭 Finding。
 
 ## 当前迁移门禁
+
+以下 pin 升级/媒体与依赖验证记录保持各自历史运行切点，不代替 Plan04 新消费者验收。
 
 当前Host pin为已接受framework精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`/tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`，
 PR197/原mainCI39605663648七项SUCCESS及remote-only cold已由主协调者独审接受。
@@ -58,7 +61,6 @@ A03仅记录该次来源观察；阶段资格与未完成项见[既有来源Evid
 ### 前一已接受SDK main（历史）
 
 当前公开修复04eb两accepted名字到原Tool的薄映射已具同源Finding三链，本地resolved；当前74resolved/1managedunknownopen，46有限Behavior verified/4整体hold。9ef冻结1222输入原14Rust全部0/零编译warning/guard0，最终fullfacade Host实为a17不变，唯一原完整语言TS358/PY442加18subtests/Java379及76freshXML/3quickstarts全部0，各精独审C0；旧text oracles保、旧runtime cut不重标。后归档copy2 floor事件与同字节稀疏恢复如实保，原whole运行guard未bound，不删原件/伪marker/改限额。97Audit主字段/maps不整体升级。SDK PR5已squash到精main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce)，soleparent30d7e219，tree98c4与已审7361一致，GitHub签名valid；原pushCI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918) 九job全部SUCCESS。实际范围含Linux原套件、三语言原完整入口及Windows编译检查；不冒Windows原生运行全覆盖。仅remote main+35必要公开tags的新空仓固定c0bc strict/base30d/changeEvidence实际0。Host仍pinframework356，accepted5621/454不扩；CLI后继Builder不触发SDK改pin/生成。历史managed passive-exit根因仍未知/OPEN，当前main回归不能充作因果repair；74resolved/1open、46有限Behavior verified/4整体needs_review及baseline behavior_model open保持。nativeHook/Stop与最后人类残余裁决仍独立，Plan整体READY不转完成；registry发布和网站部署不在scope。
-
 
 ### 208a已验证基线（媒体修复前）
 

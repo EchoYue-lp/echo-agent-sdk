@@ -1,5 +1,15 @@
 # echo-agent TypeScript SDK (source)
 
+## A2A/LSP consumer withdrawal
+
+This source no longer supports A2A/LSP SDK families, native A2A/JWT helpers,
+or the LSP plugin capability/fields. Old operations, required features and
+contract digests fail explicitly; there is no successful compatibility stub.
+ACP, MCP, Task/Subagent, Host stdio, streams/cancellation/recovery and Session
+parent/child close semantics remain supported. The framework build pin is
+unchanged; its full Rust inventory is not the accepted language contract.
+The original executable example stays in the full language source gate.
+
 This directory contains the source-only TypeScript ACP Client for `echo-agent`.
 It uses the official `@agentclientprotocol/sdk` v1 client and starts the Host
 executable supplied by the caller. No Host binary, Node runtime, or npm
@@ -51,18 +61,6 @@ Failure categories are closed and preserve Rust recovery (`restore_then_retry`
 for unavailable, `verify_then_retry` for timeout/partial side effects,
 `retry` for transient and `stop` otherwise); ordinary JSON objects are always
 encoded as maps even when they contain `kind`/`value` keys.
-The A2A `TaskState` union and `taskStateCanTransitionTo` helper preserve the
-closed terminal and transition table without adding a wire route.
-`A2AMessage`, `A2ATaskStatus`, `AgentProvider` and `AgentSkill` provide the
-same immutable text/status/provider/skill value constructors.
-`AgentCard.builder(...)` provides the immutable card value and fluent local
-builder; it does not synthesize a card from a Host-owned Agent.
-`A2AArtifact.new(...)` and `A2AError.new(...)` preserve the corresponding
-wire fields without adding a network route.
-`TaskStatusUpdateEvent`, `TaskArtifactUpdateEvent` and `A2AStreamResponse`
-preserve the typed stream event union locally.
-`A2ATaskParams`, `A2ATaskRequest`, `A2ATask`, and `A2ATaskResponse` preserve
-the nested task envelope values without executing a task.
 `ThinkingLevel` and `thinkingLevelParse(...)` preserve Rust reasoning aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` preserve accepted/drained/settled
 values without owning the active Agent turn.
@@ -87,8 +85,6 @@ runtime values without owning the connection or event ledger.
 lossless shutdown duration without constructing an ACP adapter.
 `ExtensionLeaseError` preserves the typed lease failure display text without
 owning admission or concurrency decisions.
-`JwtConfig` and `JwtClaims` preserve local A2A auth configuration and subject
-projection; JWT verification remains Host-owned.
 `DependencyKind` and `SkillSource` preserve dependency/source values without
 probing or loading skills.
 `ContextInheritance` preserves sync/fresh/fork/teammate/team defaults without
@@ -299,7 +295,6 @@ code. Use `bigint`, decimal text or `wireU64`/`wireI64` for full-range integers;
 unsafe JavaScript numbers are rejected. Tagged unknown values round-trip,
 while missing discriminators/malformed known nested values fail. Domain keys
 such as `__proto__`, `constructor` and `kind` remain map data, not SDK metadata.
-
 
 ### Channel handler consumption examples
 

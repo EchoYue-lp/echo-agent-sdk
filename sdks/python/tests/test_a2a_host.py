@@ -1,156 +1,137 @@
-"""Accepted A2A calls use a real Host and the shared HTTP/SSE peer."""
-
-import asyncio
 import json
 import os
-import sys
+import shutil
 import tempfile
 from pathlib import Path
 
 import pytest
 
-from echo_agent_sdk import EchoAgentClient, EchoAgentError, WireHandle
+from echo_agent_sdk import EchoAgentClient, EchoAgentError
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
-if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
-    raise RuntimeError("required A2A Host missing")
-FIXTURE = Path(__file__).resolve().parents[2] / "shared/testing/a2a_host_fixture.py"
+CONFIG = os.environ.get("ECHO_AGENT_SDK_CONFIG")
+if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not (HOST and CONFIG):
+    raise RuntimeError("real Host/config required")
+pytestmark = [
+    pytest.mark.asyncio,
+    pytest.mark.skipif(not (HOST and CONFIG), reason="real Host required"),
+]
+RETIRED = json.loads(
+    (
+        Path(__file__).parents[2] / "shared/testing/a2a_lsp_retirement_contract.json"
+    ).read_text()
+)
 
 
-@pytest.mark.parametrize("quota", [False, True])
-@pytest.mark.asyncio
-@pytest.mark.skipif(not HOST, reason="real Host required")
-async def test_accepted_a2a_http_sse_owner_and_errors(quota):
-    root = Path(
-        os.environ.get("ECHO_AGENT_SDK_A2A_ROOT", "../../target/a2a-native")
-    ).resolve()
-    root.mkdir(parents=True, exist_ok=True)
-    work = Path(tempfile.mkdtemp(prefix="python-", dir=root))
-    if quota:
-        (work / "quota").write_text("1")
-    peer = await asyncio.create_subprocess_exec(
-        sys.executable, str(FIXTURE), "--work", str(work)
+async def test_retired_features_fail_negotiation():
+    for feature in ("a2a", "lsp"):
+        with pytest.raises(EchoAgentError) as failure:
+            await EchoAgentClient.spawn(
+                HOST, "--config", CONFIG, required_features=[feature]
+            )
+        assert failure.value.code == "feature_unavailable"
+
+
+async def test_retired_methods_operations_and_source_invokes_fail():
+    async with await EchoAgentClient.spawn(HOST, "--config", CONFIG) as sdk:
+        agent = await sdk.create_agent()
+        session = await agent.create_session()
+        count = 0
+        for family in RETIRED["families"]:
+            route = next(
+                route
+                for route in RETIRED["routes"]
+                if route["route"] == "family:" + family["family"]
+            )
+            for operation in family["operations"]:
+                signature = next(
+                    item["signature_digests"][0]
+                    for item in route["operation_signatures"]
+                    if item["operation"] == operation
+                )
+                with pytest.raises(EchoAgentError):
+                    await sdk.request(
+                        family["methods"][0],
+                        {
+                            "operation": operation,
+                            "signature_digest": signature,
+                            "handle": session.wire.to_dict(),
+                            "arguments": [],
+                        },
+                    )
+                count += 1
+        assert count == 39
+        for route in (route for route in RETIRED["routes"] if route["operation"]):
+            with pytest.raises(EchoAgentError):
+                await sdk.request(
+                    "_echo_agent/facade/invoke",
+                    {
+                        "operation": route["operation"],
+                        "signature_digest": route["signature_digests"][0],
+                        "handle": agent.wire.to_dict(),
+                        "arguments": [
+                            {"kind": "handle", "value": session.wire.to_dict()}
+                        ],
+                    },
+                )
+        old_values = [
+            {
+                "kind": "variant",
+                "value": {
+                    "type_id": "echo_core::plugin::capability::PluginCapability",
+                    "variant": "LspServer",
+                    "fields": [],
+                },
+            },
+            {
+                "kind": "record",
+                "value": {
+                    "type_id": "echo_agent::plugin::prepared::PluginWiringResult",
+                    "fields": [{"name": "lsp_discovered", "value": {"kind": "null"}}],
+                },
+            },
+            {
+                "kind": "record",
+                "value": {
+                    "type_id": "echo_core::plugin::registry::ResolvedComponents",
+                    "fields": [{"name": "lsp_config_file", "value": {"kind": "null"}}],
+                },
+            },
+        ]
+        for value in old_values:
+            with pytest.raises(EchoAgentError) as failure:
+                await sdk.request(
+                    "_echo_agent/facade/invoke",
+                    {
+                        "operation": "retirement.probe",
+                        "signature_digest": "sha256:" + "0" * 64,
+                        "handle": agent.wire.to_dict(),
+                        "arguments": [value],
+                    },
+                )
+            assert failure.value.code == "invalid_value"
+            assert "invalid facade argument" in failure.value.message
+        await session.close()
+        other = await agent.create_session()
+        await other.close()
+        await agent.close()
+
+
+async def test_old_source_digest_is_rejected():
+    shared = Path(__file__).parents[2] / "shared"
+    output = Path(tempfile.mkdtemp(prefix="sdk-retired-digest-"))
+    shutil.copyfile(
+        shared / "facade-operation-catalog.json",
+        output / "facade-operation-catalog.json",
     )
-    rows, values = [], {}
-
-    async def fixture_result(*arguments):
-        check = await asyncio.create_subprocess_exec(
-            sys.executable,
-            str(FIXTURE),
-            "--work",
-            str(work),
-            *arguments,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT,
-        )
-        output, _ = await asyncio.wait_for(check.communicate(), 20)
-        assert check.returncode == 0, output.decode()
-        return json.loads(output)
-
-    try:
-
-        async def ready():
-            while not (work / "ready").exists():
-                assert peer.returncode is None
-                await asyncio.sleep(0.005)
-
-        await asyncio.wait_for(ready(), 10)
-        async with await EchoAgentClient.spawn(
+    digests = json.loads((shared / "contract-digests.json").read_text())
+    digests["source_contract_digest"] = RETIRED["old_source_contract_digest"]
+    (output / "contract-digests.json").write_text(json.dumps(digests))
+    with pytest.raises(EchoAgentError) as failure:
+        await EchoAgentClient.spawn(
             HOST,
             "--config",
-            str(work / "host.json"),
-            env={"NO_PROXY": "127.0.0.1,localhost", "no_proxy": "127.0.0.1,localhost"},
-        ) as sdk:
-            agent = await sdk.create_agent()
-            sessions = {
-                "a": await agent.create_session(str(work)),
-                "b": await agent.create_session(str(work)),
-            }
-            for step in json.loads((work / "scenario.json").read_text()):
-                if step.get("action") == "close_session":
-                    await sessions["a"].close()
-                    rows.append({"id": step["id"], "value": True})
-                    continue
-                if step.get("action") == "await_source_closed":
-                    source = await fixture_result("--await-source", step["source"])
-                    rows.append({"id": step["id"], "value": True, "source": source})
-                    continue
-                args = []
-                for arg in step["args"]:
-                    if isinstance(arg, dict) and "ref" in arg:
-                        value = values[arg["ref"]]
-                        if "field" in arg:
-                            value = value[arg["field"]]
-                        if "generation_delta" in arg:
-                            value = {
-                                **(
-                                    value.to_dict()
-                                    if isinstance(value, WireHandle)
-                                    else value
-                                ),
-                                "generation": str(
-                                    int(
-                                        value.generation
-                                        if isinstance(value, WireHandle)
-                                        else value["generation"]
-                                    )
-                                    + arg["generation_delta"]
-                                ),
-                            }
-                        if isinstance(value, dict) and set(value) == {
-                            "id",
-                            "generation",
-                            "kind",
-                        }:
-                            value = WireHandle.from_dict(value)
-                        args.append(value)
-                    else:
-                        args.append(arg)
-                row = {"id": step["id"]}
-                try:
-                    row["value"] = await sessions[step.get("session", "a")].invoke(
-                        step["op"], args
-                    )
-                    assert "error" not in step, f"{step['id']} unexpectedly succeeded"
-                    values[step["id"]] = row["value"]
-                except EchoAgentError as error:
-                    assert "error" in step
-                    row["error"] = {
-                        "code": error.code,
-                        "message": error.message,
-                        "operation": error.operation,
-                        "retryable": error.retryable,
-                        "details": error.details,
-                        "handle": error.handle.to_dict() if error.handle else None,
-                    }
-                    assert error.code == step["error"], row
-                rows.append(row)
-                (work / "results.json").write_text(
-                    json.dumps(
-                        rows,
-                        ensure_ascii=False,
-                        indent=2,
-                        default=lambda value: value.to_dict(),
-                    )
-                )
-            if quota:
-                proof = await fixture_result("--verify")
-                assert proof["quota_slot_recovered"]
-                await sessions["a"].close()
-            await sessions["b"].close()
-            await agent.close()
-        if not quota:
-            proof = await fixture_result("--verify")
-            assert len(proof["operations"]) == 9
-        print(f"A2A evidence {work}")
-    finally:
-        (work / "results.json").write_text(
-            json.dumps(
-                rows,
-                ensure_ascii=False,
-                indent=2,
-                default=lambda value: value.to_dict(),
-            )
+            CONFIG,
+            catalog_path=output / "facade-operation-catalog.json",
         )
-        (work / "stop").write_text("stop")
-        await asyncio.wait_for(peer.wait(), 5)
+    assert failure.value.code == "extension_capability_mismatch"

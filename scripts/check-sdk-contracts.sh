@@ -24,6 +24,7 @@ fi
 
 cargo run -q -p echo-sdk-protocol --bin export_schema --locked -- --check
 scripts/export-language-sdk-catalog.sh --check
+python3 scripts/check-a2a-lsp-retirement.py
 
 protocol_tree=$(cargo tree -q -p echo-sdk-protocol --no-default-features --locked)
 if printf '%s\n' "$protocol_tree" | grep -Eq '(^|[[:space:]])echo_(agent|core|execution|integration|macros|orchestration|state|tools)([[:space:]]|$)'; then
@@ -45,4 +46,5 @@ cargo test -q -p echo-sdk-protocol \
   --test facade_inventory \
   --test acp_baseline \
   --test extension_contract \
+  --test a2a_lsp_retirement \
   --locked

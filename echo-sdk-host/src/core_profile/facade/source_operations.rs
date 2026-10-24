@@ -468,6 +468,10 @@ fn plugin_install_source(
 fn resolved_plugin_components_value(
     value: echo_agent::plugin::ResolvedComponents,
 ) -> Result<WireValue, EchoSdkError> {
+    let mut diagnostics = value.diagnostics;
+    if value.lsp_config_file.is_some() {
+        diagnostics.push("LSP plugin components are retired in the SDK; other resolved components remain available".to_string());
+    }
     let paths = |items: Vec<PathBuf>| {
         items
             .into_iter()
@@ -515,18 +519,8 @@ fn resolved_plugin_components_value(
                 value: optional_path(value.mcp_config_file)?,
             },
             echo_sdk_protocol::scalar::WireField {
-                name: "lsp_config_file".to_string(),
-                value: optional_path(value.lsp_config_file)?,
-            },
-            echo_sdk_protocol::scalar::WireField {
                 name: "diagnostics".to_string(),
-                value: WireValue::List(
-                    value
-                        .diagnostics
-                        .into_iter()
-                        .map(WireValue::String)
-                        .collect(),
-                ),
+                value: WireValue::List(diagnostics.into_iter().map(WireValue::String).collect()),
             },
         ],
     })
@@ -8287,6 +8281,42 @@ fn dispatch_analysis_source<'a>(
 #[cfg(test)]
 mod classify_tests {
     use super::*;
+
+    #[test]
+    fn resolved_plugin_projection_retires_lsp_without_losing_other_components()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let value = resolved_plugin_components_value(echo_agent::plugin::ResolvedComponents {
+            skill_dirs: vec![std::env::current_dir()?],
+            agent_files: vec![],
+            hooks_file: None,
+            mcp_config_file: None,
+            lsp_config_file: Some(std::env::current_dir()?.join("lsp.json")),
+            diagnostics: vec!["original diagnostic".to_string()],
+        })
+        .map_err(|error| error.message)?;
+        let WireValue::Record { fields, .. } = value else {
+            return Err("expected resolved component record".into());
+        };
+        assert!(!fields.iter().any(|field| field.name == "lsp_config_file"));
+        assert!(fields.iter().any(|field| field.name == "skill_dirs"
+            && matches!(&field.value, WireValue::List(paths) if paths.len() == 1)));
+        let diagnostics = fields
+            .iter()
+            .find(|field| field.name == "diagnostics")
+            .ok_or("diagnostics absent")?;
+        let WireValue::List(messages) = &diagnostics.value else {
+            return Err("diagnostics are not a list".into());
+        };
+        assert_eq!(messages.len(), 2);
+        assert!(
+            matches!(messages.first(), Some(WireValue::String(message)) if message == "original diagnostic")
+        );
+        assert!(
+            matches!(messages.get(1), Some(WireValue::String(message)) if message.contains("retired"))
+        );
+        Ok(())
+    }
+
     use echo_sdk_protocol::scalar::{WireField, WireMapEntry};
 
     const CLASSIFY: &str = "echo_orchestration::runtime::turn_driver::TurnOutcome::classify";

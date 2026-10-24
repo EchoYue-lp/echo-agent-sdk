@@ -1,0 +1,1254 @@
+{
+  "baseline_revision": "961da0e0d17b815653d80cb4bf4973248f543770",
+  "old_source_contract_digest": "sha256:f79a28b7607e075fd9442cf96c70423398b7bd3b3074ad94b5e0f9ea091b21a4",
+  "families": [
+    {
+      "family": "a2a",
+      "source_routed": true,
+      "methods": [
+        "_echo_agent/a2a/op"
+      ],
+      "capability": "feature_surfaces",
+      "required_feature": "a2a",
+      "operations": [
+        "a2a.client.open",
+        "a2a.discover",
+        "a2a.task.send",
+        "a2a.task.get",
+        "a2a.task.cancel",
+        "a2a.task.stream.open",
+        "a2a.stream.next",
+        "a2a.stream.cancel",
+        "a2a.stream.close"
+      ],
+      "source_prefixes": [
+        "echo_agent::a2a"
+      ],
+      "validation": [
+        "echo-sdk-protocol/tests/facade_inventory.rs",
+        "echo-sdk-protocol/tests/core_rpc_contract.rs"
+      ]
+    },
+    {
+      "family": "lsp",
+      "source_routed": true,
+      "methods": [
+        "_echo_agent/lsp/op"
+      ],
+      "capability": "feature_surfaces",
+      "required_feature": "lsp",
+      "operations": [
+        "lsp.manager.open",
+        "lsp.manager.open_exact",
+        "lsp.manager.load_config",
+        "lsp.manager.set_project_root",
+        "lsp.manager.start_server",
+        "lsp.manager.stop_server",
+        "lsp.manager.restart_server",
+        "lsp.manager.shutdown_all",
+        "lsp.manager.get_client",
+        "lsp.manager.get_client_for_file",
+        "lsp.server.status",
+        "lsp.language.list",
+        "lsp.language.configured",
+        "lsp.server.running",
+        "lsp.server.status_all",
+        "lsp.client.language",
+        "lsp.client.is_running",
+        "lsp.client.is_initialized",
+        "lsp.client.initialize",
+        "lsp.client.shutdown",
+        "lsp.client.diagnostics",
+        "lsp.client.goto_definition",
+        "lsp.client.find_references",
+        "lsp.client.hover",
+        "lsp.client.completion",
+        "lsp.client.did_open",
+        "lsp.client.did_change",
+        "lsp.client.did_save",
+        "lsp.client.did_close",
+        "lsp.client.status"
+      ],
+      "source_prefixes": [
+        "echo_core::lsp",
+        "echo_integration::lsp",
+        "echo_agent::tools::lsp"
+      ],
+      "validation": [
+        "echo-sdk-protocol/tests/facade_inventory.rs",
+        "echo-sdk-protocol/tests/core_rpc_contract.rs"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "route": "family-operation:a2a:a2a.discover:echo_agent::a2a::client::A2AClient::discover",
+      "surface": "invoke",
+      "family": "a2a",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::a2a::client::A2AClient::discover",
+      "handler_operation": "a2a.discover",
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:7d62153b40eefd6ed61f45dba1ca6367eb874190f8d1d7d4d2d8ccef7dc96d71"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:a2a:a2a.task.cancel:echo_agent::a2a::client::A2AClient::cancel_task",
+      "surface": "invoke",
+      "family": "a2a",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::a2a::client::A2AClient::cancel_task",
+      "handler_operation": "a2a.task.cancel",
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:09d2c1e75c867ebe96b0cd20488577e0410b01ceb20383819aeb147a3da47976"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:a2a:a2a.task.get:echo_agent::a2a::client::A2AClient::get_task",
+      "surface": "invoke",
+      "family": "a2a",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::a2a::client::A2AClient::get_task",
+      "handler_operation": "a2a.task.get",
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:09d2c1e75c867ebe96b0cd20488577e0410b01ceb20383819aeb147a3da47976"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:a2a:a2a.task.send:echo_agent::a2a::client::A2AClient::send_task",
+      "surface": "invoke",
+      "family": "a2a",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::a2a::client::A2AClient::send_task",
+      "handler_operation": "a2a.task.send",
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:09d2c1e75c867ebe96b0cd20488577e0410b01ceb20383819aeb147a3da47976"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:a2a:a2a.task.send:echo_agent::a2a::client::A2AClient::send_task_with_session",
+      "surface": "invoke",
+      "family": "a2a",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::a2a::client::A2AClient::send_task_with_session",
+      "handler_operation": "a2a.task.send",
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:6ea6b8f388d18d1238df41e84e62cba9495e2db3ce91205c33b3b8b049555e48"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:a2a:a2a.task.stream.open:echo_agent::a2a::client::A2AClient::send_task_streaming",
+      "surface": "invoke",
+      "family": "a2a",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::a2a::client::A2AClient::send_task_streaming",
+      "handler_operation": "a2a.task.stream.open",
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:73842f4d9b3537a3ca6408c99bdbf0033dd24eb14b97d431622e54f5a3a85746"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:a2a:a2a.task.stream.open:echo_agent::a2a::client::A2AClient::send_task_streaming_with_session",
+      "surface": "invoke",
+      "family": "a2a",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::a2a::client::A2AClient::send_task_streaming_with_session",
+      "handler_operation": "a2a.task.stream.open",
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:330986929ffaade509dcfe368c08430d2686e407c1f7d7bee94ddc6749a2a9f0"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.language.configured:echo_integration::lsp::manager::LspManager::configured_languages",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::configured_languages",
+      "handler_operation": "lsp.language.configured",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:c1ae410357501893abfe18b337004399da517d7834b3c36cca0164bea620079d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.get_client:echo_integration::lsp::manager::LspManager::get_client",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::get_client",
+      "handler_operation": "lsp.manager.get_client",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:00cd30cecbf972fc73ef3e0ad36fcae5766f2fef33c4c10d1089bb11fcf4efdf"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.get_client_for_file:echo_integration::lsp::manager::LspManager::get_client_for_file",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::get_client_for_file",
+      "handler_operation": "lsp.manager.get_client_for_file",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:98adcc86b030222b7f84ddd3e50542c9146cde6d89daca1091eebac5c761a14e"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.load_config:echo_integration::lsp::manager::LspManager::load_config",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::load_config",
+      "handler_operation": "lsp.manager.load_config",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:552060cb9d4d63b0fcf9a3b641004dfa43c9241bd996eaf5a39e1ceccf92a089"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.open_exact:echo_integration::lsp::manager::LspManager::new",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::new",
+      "handler_operation": "lsp.manager.open_exact",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:2f5eebc1ff134da6b6459e78f9782a92256ca70bd65dbd89d443791bc5dc4720"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.restart_server:echo_integration::lsp::manager::LspManager::restart_server",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::restart_server",
+      "handler_operation": "lsp.manager.restart_server",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:b48b95cbb3ad9831170b90c3268281931e9614070d4614762571da7d23d6a781"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.set_project_root:echo_integration::lsp::manager::LspManager::set_project_root",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::set_project_root",
+      "handler_operation": "lsp.manager.set_project_root",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:c5de97a6b88fbbeaee5625b57906b280fad1eab6210418dd92eb8dec944be216"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.shutdown_all:echo_integration::lsp::manager::LspManager::shutdown_all",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::shutdown_all",
+      "handler_operation": "lsp.manager.shutdown_all",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:b68d9ec719084ba2f20a27d9c1713c4f154f2cfb54d5811f804b86074c4abf45"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.start_server:echo_integration::lsp::manager::LspManager::start_server",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::start_server",
+      "handler_operation": "lsp.manager.start_server",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:b48b95cbb3ad9831170b90c3268281931e9614070d4614762571da7d23d6a781"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.manager.stop_server:echo_integration::lsp::manager::LspManager::stop_server",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::stop_server",
+      "handler_operation": "lsp.manager.stop_server",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:b48b95cbb3ad9831170b90c3268281931e9614070d4614762571da7d23d6a781"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.server.running:echo_integration::lsp::manager::LspManager::running_servers",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::running_servers",
+      "handler_operation": "lsp.server.running",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:c1ae410357501893abfe18b337004399da517d7834b3c36cca0164bea620079d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family-operation:lsp:lsp.server.status_all:echo_integration::lsp::manager::LspManager::status_all",
+      "surface": "invoke",
+      "family": "lsp",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::lsp::manager::LspManager::status_all",
+      "handler_operation": "lsp.server.status_all",
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:279f03121179a8ed253e875531b67816f664fcb8ca440355fedc261da06e62f8"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "family:a2a",
+      "surface": "family",
+      "family": "a2a",
+      "method": "_echo_agent/a2a/op",
+      "operation": null,
+      "handler_operation": null,
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [
+        {
+          "operation": "a2a.client.open",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:c3fb2190b59a0703542c85750c462e41ecf3c56e64745899b8994770c7d168ae"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.discover",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:a6be71946ac9b76b5a104b70fd4304b1faec268fc665d59f8480d68d6dfccf67"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.task.send",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:f543b2167744af4cf0e8c0798de370e8cfeecda1885438d405482cdb28f82e79"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.task.get",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:d13116ca1d2d8529d99552fc22b000979cdee6049b00daacbd9c0191e51c059d"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.task.cancel",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:1c64e72472ab8334e905baf18b4c262a87496c9e4a492412d070c188295699aa"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.task.stream.open",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:162cf694f8e82917731544770c5ef228a93f568f4485b5b99cde73390393daa3"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.stream.next",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:e31a4cc2f4b27212f16d785c22e02f7ed162ab25040e04a8a950a736bb91d082"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.stream.cancel",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:5e603e60c6e56e0bb4f1b3a8597f330d0145197e3c6c86caef197bc0dbd9e880"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "a2a.stream.close",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:e5e4c78442af656edf7c12663f2c24e8ac2221aec140bf17edc5351576be2020"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        }
+      ],
+      "items": 1
+    },
+    {
+      "route": "family:lsp",
+      "surface": "family",
+      "family": "lsp",
+      "method": "_echo_agent/lsp/op",
+      "operation": null,
+      "handler_operation": null,
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [
+        {
+          "operation": "lsp.manager.open",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:24ac3d6f1e224591a5aad5b02e27a8261fc5493ceed9eda1bd1de2f483bd78ce"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.open_exact",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:ac6ebf3897b0a5b9e972a075882ded48db53a155a93ecb2e04f617d4cb047da0"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.load_config",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:bb63fefd063afb136163e264320891235b137ceeecb7d6e0d74a8bc4e2ae06d9"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.set_project_root",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:ad59636b15de84fcd403709f54ed7e24b389f559afab6d7071c5a51928a78214"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.start_server",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:2a301fb1cb3cfcfec5fd6c3ca59c46b0ac96a6716ca29a5be085bb8c68fa9bd7"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.stop_server",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:fc082a08eec81977a509ec9a55b693f1f77215a875ed928e97f0c11a8bfcbdb9"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.restart_server",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:fbd45ebaa174f852673c238f683ff160de42708ee2b21d80f3ff2d6eb27c1e3d"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.shutdown_all",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:12fe1c3024bf04117d1170e9a68cac6be8c96a8b465e2273066002176bdff53e"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.get_client",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:d6fbf53b4545af2dbb44cf3abdc2455648e8612f9fb7e510131e33cff5ee4530"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.manager.get_client_for_file",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:3e0e1e01527aa7a6affe8202a593f2597649442b60ab09335114a962452c4d3d"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.server.status",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:fb722371f7f07d1ed1e15f2a14eb11d04befbeb3b94c759dba9a45235ec9d9da"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.language.list",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:33beb83fff2b688b72177e5e1e933972a53f115c0d9d9df57d9ffc693766f364"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.language.configured",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:bc853be51e13c957bb170ae3f1f58820bc1f2173822da22e121dee0cf87930a2"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.server.running",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:8d2cd3e68daca29889f8584b0a8a136b24da2ec9344b3e2d9253f3ece9629e4d"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.server.status_all",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:debb64a18c84ca9163ba0dfd3ac2c74a6e6a3eb0cef28e26ff6e7912090c7314"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.language",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:8ea5c54b6100c042de1a69a2d39771f0ab9c0db7f67eac52fee7121ced8adf8a"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.is_running",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:74e3d8a0908ab5a44fdbccfade5766b47c0a0c40a23aee1b6e48852801cce5b3"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.is_initialized",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:679cbb0150b69e1f9d105a6fce32ab17f353b758f820c43d13be99f0a1c8c135"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.initialize",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:0a154eca283429a33b5003744329d6404e9a0572dc5eec61a055136e16db1937"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.shutdown",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:ca0a860350cf676afd4529df07284e1a0200993d29591ca1a855ed7a30da39cc"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.diagnostics",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:dc849c459cec4b58c8e8923ea988940810e6c588bbd35abb5dab90afd241ffc7"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.goto_definition",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:ef9cf6dbba5c99dffb5e1dc0f527fd92c8980155ddb34e402e6f35730a8b422b"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.find_references",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:7ae34d882a3e176cb06c86590f57d89a27673dc526536d2396f7640e5c966615"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.hover",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:0f72b81631552d160d7d065337a31e3608d8f1b046914f4af76e1a939c0fdde3"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.completion",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:53c6560e107c66ea166715b0ebf6b7fc037f68c76ab3b19cf832ff4eecc4fd21"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.did_open",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:51af2d15a28056ba1ef58a833dafa167d6d0d3762b5b4614d14e0c4e5c901c86"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.did_change",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:f089986c898c9e605cffe6dbe067a4d29603fe6c62badc472d18f311eef69421"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.did_save",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:45210a3c6c985b6fcdbb876a757f3b56d408cc0da7539408865ea2223bc59452"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.did_close",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:0a34f1e22d760e6b782e1b7ee3b3048cfbc26b37408d22c2f3a911573e82a0b0"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        },
+        {
+          "operation": "lsp.client.status",
+          "wire_schema": null,
+          "signature_digests": [
+            "sha256:db80167f039ced765a26f7f06c339270ae3ed89bf57ad2fbcc7973ade50b87fd"
+          ],
+          "input": {
+            "encoding": "wire_value_array",
+            "description": "FeatureOperationRequest.arguments"
+          },
+          "result": {
+            "encoding": "wire_value",
+            "description": "FeatureOperationResponse.value"
+          }
+        }
+      ],
+      "items": 1
+    },
+    {
+      "route": "value:a2a",
+      "surface": "value",
+      "family": "a2a",
+      "method": null,
+      "operation": null,
+      "handler_operation": null,
+      "required_feature": "a2a",
+      "required_features": [
+        "a2a"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:663bff8c5efb04915b7670f724966d73226af541ef75f73dfc90a5a40f4a24e8"
+      ],
+      "input": null,
+      "result": null,
+      "operation_signatures": [],
+      "items": 105
+    },
+    {
+      "route": "value:lsp",
+      "surface": "value",
+      "family": "lsp",
+      "method": null,
+      "operation": null,
+      "handler_operation": null,
+      "required_feature": "lsp",
+      "required_features": [
+        "lsp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:663bff8c5efb04915b7670f724966d73226af541ef75f73dfc90a5a40f4a24e8"
+      ],
+      "input": null,
+      "result": null,
+      "operation_signatures": [],
+      "items": 93
+    }
+  ]
+}

@@ -1,5 +1,12 @@
 # echo-agent-sdk
 
+## SDK 消费者解耦
+
+Plan04 精确退役 A2A/LSP 的269项 accepted 身份、23条路由和39个操作，保留5352项
+身份/431条路由，新增接受为0。Host 独立 pin 仍为 f7bac62e；框架物理删除另属后续结果。
+ACP/MCP/Task/Subagent、Host stdio 与 R2 生命周期保留。详见
+[ADR0042](docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md)。下方历史验收保持原快照范围。
+
 `echo-agent` Rust 框架的源码优先 TypeScript、Python 和 Java SDK，通过源码构建的 ACP
 Host 与 `_echo_agent/*` 扩展合同连接同一个 Rust 运行时权威。
 

@@ -139,7 +139,7 @@ fn sdk_scope_is_complete_deterministic_and_alias_safe() -> TestResult {
         ("echo_agent::testing::MockAgent", SdkScope::InternalHelper),
         ("echo_agent::Tool", SdkScope::LanguageIntrinsic),
         ("echo_agent::a2a::A2AServer", SdkScope::HostOrRustOnly),
-        ("echo_agent::a2a::A2AClient::new", SdkScope::Deferred),
+        ("echo_agent::a2a::A2AClient::new", SdkScope::HostOrRustOnly),
     ] {
         if let Some(entry) = manifest.entries.iter().find(|entry| entry.path == path) {
             assert_eq!(entry.sdk_scope, scope, "scope classification: {path}");
@@ -420,174 +420,6 @@ fn local_tool_value_intrinsics_have_language_behavior_evidence() -> TestResult {
             assert!(
                 mapping.contract_test.ends_with("/local_tool_values"),
                 "{language}: {} has the wrong contract test",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_task_state_intrinsics_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_task_state"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 10, "A2A TaskState intrinsic set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_value_intrinsics_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 14, "A2A value intrinsic set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_agent_card_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_agent_card"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 14, "A2A Agent Card value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_wire_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_wire_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 8, "A2A wire value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_stream_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_stream_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 18, "A2A stream value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_task_envelopes_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_task_envelopes"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 15, "A2A task envelope set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
                 entry.path
             );
         }
@@ -1087,34 +919,6 @@ fn acp_lease_values_have_language_behavior_evidence() -> TestResult {
         })
         .collect();
     assert_eq!(entries.len(), 5, "ACP lease error value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn jwt_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/jwt_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 9, "JWT value set drifted");
     for entry in entries {
         for (language, mapping) in &entry.languages {
             assert_eq!(
@@ -2543,18 +2347,11 @@ fn canonical_consumer_traits_and_streams_have_executable_routes() -> TestResult 
             "missing workflow stream operation {operation}"
         );
     }
-    let a2a = echo_sdk_protocol::facade::FacadeFamily::A2a.operations();
-    for operation in [
-        "a2a.task.stream.open",
-        "a2a.stream.next",
-        "a2a.stream.cancel",
-        "a2a.stream.close",
-    ] {
-        assert!(
-            a2a.contains(&operation),
-            "missing A2A stream operation {operation}"
-        );
-    }
+    assert!(
+        echo_sdk_protocol::facade::FACADE_FAMILIES
+            .iter()
+            .all(|family| !matches!(family.family.as_str(), "a2a" | "lsp"))
+    );
     Ok(())
 }
 

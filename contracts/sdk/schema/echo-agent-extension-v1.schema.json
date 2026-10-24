@@ -350,24 +350,6 @@
       "error_schema": "#/definitions/EchoSdkError"
     },
     {
-      "name": "_echo_agent/a2a/op",
-      "direction": "request",
-      "capability": "feature_surfaces",
-      "summary": "A2A client/server lifecycle operations (feature: a2a).",
-      "params_schema": "#/definitions/FeatureOperationRequest",
-      "result_schema": "#/definitions/FeatureOperationResponse",
-      "error_schema": "#/definitions/EchoSdkError"
-    },
-    {
-      "name": "_echo_agent/lsp/op",
-      "direction": "request",
-      "capability": "feature_surfaces",
-      "summary": "LSP manager/client operations (feature: lsp).",
-      "params_schema": "#/definitions/FeatureOperationRequest",
-      "result_schema": "#/definitions/FeatureOperationResponse",
-      "error_schema": "#/definitions/EchoSdkError"
-    },
-    {
       "name": "_echo_agent/channels/op",
       "direction": "request",
       "capability": "feature_surfaces",

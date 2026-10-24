@@ -1,8 +1,29 @@
 # SDK A2A/LSP retirement boundary and exact baseline inventory
 
-Status: approved future disposition under [ADR 0042](../../adr/0042-sdk-a2a-lsp-retirement-boundary.md);
-implementation and generated contracts are **still present**. This is a
-source-derived SDK handoff, not a second accepted-contract authority.
+Status: SDK consumer withdrawal under [ADR 0042](../../adr/0042-sdk-a2a-lsp-retirement-boundary.md).
+The original266 inventory below is a historical baseline; current Plan04
+withdraws269. The pinned framework still retains its implementations. This
+document is not a second accepted-contract authority.
+
+## Plan04 explicit extension and consumer withdrawal
+
+The baseline266 inventory below remains its original source cut. Plan04 adds
+only these already-accepted defining-source/kind keys:
+
+- `variant echo_core::plugin::capability::PluginCapability::LspServer`
+- `struct_field echo_agent::plugin::prepared::PluginWiringResult::lsp_discovered`
+- `struct_field echo_core::plugin::registry::ResolvedComponents::lsp_config_file`
+
+The union is269; the retained set is5352 rather than5355. Routes are454 minus
+exactly23 =431, and39 closed operations leave. Additions are zero. ADR0042
+provides269 independent machine-readable sections for the existing full
+`--retire-source` generator. The shared language catalog/digests still use
+`scripts/export-language-sdk-catalog.sh`. The executable exact-delta check is
+`scripts/check-a2a-lsp-retirement.py`, bound to published protected baseline
+`0930eef9f878cf436ed88384030b6bc03d6f6c53`. Its accepted artifacts are byte-identical
+to the task's local S baseline `961da0e0`; the contract CI job explicitly fetches
+and verifies tag `pre-retirement-2026-10-24` before checking. It also checks retained
+entry identity and prohibits unrelated contract drift. No pin upgrade is needed.
 
 ## Snapshot and scope
 
@@ -10,8 +31,9 @@ The enumeration uses SDK baseline `0930eef9f878cf436ed88384030b6bc03d6f6c53`.
 The Host independently pins framework
 `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`; top-level framework baseline
 `51726454985fd6f064b21a7e9c539e22d494c987` is a distinct input from the approved
-cross-repository design. No generator, manifest, pin, lock, code or accepted
-artifact changes occur in this documentation slice.
+cross-repository design. The original documentation-only slice changed no generator, manifest, pin,
+lock, code or accepted artifact; Plan04 now changes the SDK consumer inputs
+as described above while retaining the independent framework pin.
 
 Formal inventory sources are
 [accepted external identities](../../../contracts/sdk/accepted-external-contract.json)
@@ -43,11 +65,14 @@ It does not consult the complete Rust inventory.
 
 ```python
 import json
+import subprocess
 from collections import Counter
-from pathlib import Path
 
-entries = json.loads(Path("contracts/sdk/accepted-external-contract.json").read_text())["entries"]
-catalog = json.loads(Path("contracts/sdk/accepted-facade-operation-catalog.json").read_text())
+def baseline(path):
+    return json.loads(subprocess.check_output(["git", "show", f"0930eef9f878cf436ed88384030b6bc03d6f6c53:{path}"]))
+
+entries = baseline("contracts/sdk/accepted-external-contract.json")["entries"]
+catalog = baseline("contracts/sdk/accepted-facade-operation-catalog.json")
 
 def belongs(entry, family):
     paths = [entry["path"], *entry["source_paths"]]

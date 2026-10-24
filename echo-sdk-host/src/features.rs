@@ -76,8 +76,6 @@ framework_feature_table! {
     ("framework-content-guard", "content-guard"),
     ("framework-project-rules", "project-rules"),
     // Integration leaf features (todo 5).
-    ("framework-a2a", "a2a"),
-    ("framework-lsp", "lsp"),
     ("framework-topology", "topology"),
 }
 
@@ -118,8 +116,6 @@ pub fn compiled_facade_families() -> Vec<&'static str> {
     // Integration families: MCP rides the default framework-mcp feature;
     // the rest follow their passthrough features.
     push_family!("framework-mcp", "mcp");
-    push_family!("framework-a2a", "a2a");
-    push_family!("framework-lsp", "lsp");
     push_family!("framework-topology", "topology");
     push_family!("framework-telemetry", "telemetry");
     // Channel plugins and handlers are reverse-RPC extensions, so the

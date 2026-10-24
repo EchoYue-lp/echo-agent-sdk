@@ -25,7 +25,7 @@ guesses execution semantics from paths. Language clients consume the filtered
 blocking cross-language route contract.
 
 - Every cataloged root facade item resolves to **exactly one** canonical route by its
-  canonical *source identity*; re-export aliases share one route and one
+  canonical _source identity_; re-export aliases share one route and one
   handler (`alias_of` in the parity manifest).
 - Route kinds: `standard:` (stable ACP v1 projection), `core:` (typed
   `_echo_agent/*` handle-lifecycle methods), `family:` (a `<family>/op`
@@ -258,18 +258,18 @@ digest and feature checks as `_echo_agent/memory/op`.
 Each family method is `<family>/op` with an exact closed operation list
 (frozen in the catalog):
 
-| Family | Wire surface | Resource held per session | Required feature |
-|---|---|---|---|
-| memory | `_echo_agent/memory/op` | Session store or explicit InMemory/File/SQLite Store resource | — (`sqlite` for SQLite) |
-| workflow | `_echo_agent/workflow/op` | compiled graphs, shared states, pull streams | — |
-| state | `_echo_agent/state/op` | root state store | — |
-| delivery | `_echo_agent/delivery/op` | delivery ledgers | — |
-| trace | `_echo_agent/trace/op` | run stores (memory/jsonl) | — |
-| eval / improve | `_echo_agent/eval/op`, `_echo_agent/improve/op` | — | `eval` / `improve` |
-| permission | `_echo_agent/permission/op` | Session-owned PermissionService | `human-loop` |
-| mcp / a2a / lsp / topology | `_echo_agent/{mcp,a2a,lsp,topology}/op` | managers / clients / trackers / A2A pull streams | `mcp` / `a2a` / `lsp` / `topology` |
-| telemetry | `_echo_agent/telemetry/op` | process-scoped OTLP/tracing runtime | `telemetry` |
-| web, files, shell, git, database, rag, chart, media, data, statistics, research, content-guard, project-rules | `_echo_agent/<family>/op` | — | root leaf feature of the family |
+| Family                                                                                                        | Wire surface                                    | Resource held per session                                     | Required feature                |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------- | ------------------------------- |
+| memory                                                                                                        | `_echo_agent/memory/op`                         | Session store or explicit InMemory/File/SQLite Store resource | — (`sqlite` for SQLite)         |
+| workflow                                                                                                      | `_echo_agent/workflow/op`                       | compiled graphs, shared states, pull streams                  | —                               |
+| state                                                                                                         | `_echo_agent/state/op`                          | root state store                                              | —                               |
+| delivery                                                                                                      | `_echo_agent/delivery/op`                       | delivery ledgers                                              | —                               |
+| trace                                                                                                         | `_echo_agent/trace/op`                          | run stores (memory/jsonl)                                     | —                               |
+| eval / improve                                                                                                | `_echo_agent/eval/op`, `_echo_agent/improve/op` | —                                                             | `eval` / `improve`              |
+| permission                                                                                                    | `_echo_agent/permission/op`                     | Session-owned PermissionService                               | `human-loop`                    |
+| mcp / topology                                                                                                | `_echo_agent/{mcp,topology}/op`                 | managers / clients / trackers                                 | `mcp` / `topology`              |
+| telemetry                                                                                                     | `_echo_agent/telemetry/op`                      | process-scoped OTLP/tracing runtime                           | `telemetry`                     |
+| web, files, shell, git, database, rag, chart, media, data, statistics, research, content-guard, project-rules | `_echo_agent/<family>/op`                       | —                                                             | root leaf feature of the family |
 
 The canonical source operation
 `echo_orchestration::runtime::turn_driver::TurnOutcome::classify` is also
@@ -307,8 +307,8 @@ execution and subagent dispatch and **wait for their settlement**, await
 `McpManager::close_all` (child processes included), close every resource
 handle and release the remaining maps.
 
-Workflow `run_stream` and A2A `send_task_streaming` are exposed as real pull
-streams. Their `*.stream.open` operation returns a Host-issued `Stream` handle;
+Workflow `run_stream` is exposed as a real pull
+stream. Its `*.stream.open` operation returns a Host-issued `Stream` handle;
 `*.stream.next` returns one typed item or an exactly-once `complete`, `failed`
 or `cancelled` terminal;
 `*.stream.cancel` and `*.stream.close` are idempotent controls. Producers write
@@ -456,14 +456,11 @@ projects that exact address into the existing resource parser, then checks
 kind, generation, owner and issuance in the unified registry. Other typed
 values retain their explicit conversion rules.
 
-LSP response decoding stays in the framework. Hover range and UTF-16 positions
-are preserved; absent Completion kind and Diagnostic severity remain absent.
-Diagnostic codes preserve integer versus text with the closed code value.
-A valid diagnostic notification replaces that URI's previous list; an empty
-list clears it. A malformed list for a valid URI produces an explicit diagnostic
-error until a later valid update. An unaddressable malformed notification closes
-the existing server runtime, rejects pending requests and awaits its process.
-SDK adapters preserve these values and errors without a second diagnostic cache.
+A2A/LSP operation families and adapters are withdrawn from the SDK. The old
+framework definitions remain inventory-only at the independent pin; the Host
+does not advertise or execute them. Old typed LSP plugin values/fields fail
+validation; resolved-component output omits the retired field while retaining
+other components and an explicit diagnostic when LSP metadata is encountered.
 
 Errors carry the stable `ExtensionErrorCode` set and, for facade failures,
 a `FacadeFailureDetail` with the rejected operation/digest/feature identity

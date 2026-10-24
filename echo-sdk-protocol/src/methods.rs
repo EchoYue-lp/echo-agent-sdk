@@ -4774,7 +4774,7 @@ impl ExtensionStreamEvent {
     }
 }
 
-// ── Feature surfaces (memory / mcp / a2a / workflow / ...) ─────────────────
+// ── Feature surfaces (memory / mcp / workflow / ...) ─────────────────
 
 /// Manifest-identified facade operation using the closed `WireValue` algebra.
 /// The operation must match an exact parity-manifest identity and signature.

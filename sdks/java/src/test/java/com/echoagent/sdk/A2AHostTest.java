@@ -1,120 +1,93 @@
 package com.echoagent.sdk;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-/** The shared peer speaks real A2A HTTP/SSE; all operations execute the Host. */
 class A2AHostTest {
-    static final Path FIXTURE = Path.of("../shared/testing/a2a_host_fixture.py").toAbsolutePath().normalize();
-    static <T> T await(CompletionStage<T> stage) throws Exception {
-        return stage.toCompletableFuture().get(15, TimeUnit.SECONDS);
+    static <T> T await(CompletionStage<T> value) throws Exception {
+        return value.toCompletableFuture().get(10, TimeUnit.SECONDS);
     }
-    static JsonNode fixtureResult(Path work, String... arguments) throws Exception {
-        var command = new ArrayList<String>(List.of("python3", FIXTURE.toString(), "--work", work.toString()));
-        command.addAll(List.of(arguments));
-        var process = new ProcessBuilder(command).redirectErrorStream(true).start();
-        try {
-            assertTrue(process.waitFor(20, TimeUnit.SECONDS), "fixture source barrier must finish");
-            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            assertEquals(0, process.exitValue(), output);
-            return JsonSupport.MAPPER.readTree(output);
-        } finally {
-            if (process.isAlive()) process.destroyForcibly();
+    private static String host() {
+        String host = System.getenv("ECHO_AGENT_SDK_HOST");
+        if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertNotNull(host);
+        assumeTrue(host != null && System.getenv("ECHO_AGENT_SDK_CONFIG") != null);
+        return host;
+    }
+    @Test void retiredFeaturesCannotNegotiate() {
+        String host = host();
+        for (String feature : List.of("a2a", "lsp")) {
+            var error = assertThrows(Exception.class, () -> await(EchoAgentClient.spawn(host,
+                    List.of("--config", System.getenv("ECHO_AGENT_SDK_CONFIG")),
+                    Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"), Map.of(), List.of(feature), List.of())));
+            assertNotNull(error.getCause());
+            assertEquals("feature_unavailable", EchoAgentException.from(error, "initialize").code());
         }
     }
-    @Test void acceptedA2AHttpSseOwnerAndErrors() throws Exception { run(false); }
-    @Test void a2aQuotaRejectionReleasesOriginalFacadeSlot() throws Exception { run(true); }
-    void run(boolean quota) throws Exception {
-        String host = System.getenv("ECHO_AGENT_SDK_HOST");
-        if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank());
-        assumeTrue(host != null && !host.isBlank(), "real Host required");
-        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_A2A_ROOT", "../../target/a2a-native")).toAbsolutePath().normalize();
-        Files.createDirectories(root); Path work = Files.createTempDirectory(root, "java-");
-        if (quota) Files.writeString(work.resolve("quota"), "1");
-        var peer = new ProcessBuilder("python3", FIXTURE.toString(), "--work", work.toString())
-                .redirectOutput(ProcessBuilder.Redirect.DISCARD).redirectError(work.resolve("peer.stderr").toFile()).start();
-        EchoAgentClient sdk = null; var rows = JsonSupport.MAPPER.createArrayNode();
-        Map<String,JsonNode> values = new HashMap<>();
-        try {
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
-            while (!Files.exists(work.resolve("ready"))) {
-                assertTrue(peer.isAlive()); assertTrue(System.nanoTime() < deadline); Thread.sleep(5);
-            }
-            sdk = await(EchoAgentClient.spawn(host, List.of("--config", work.resolve("host.json").toString()),
-                    Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"),
-                    Map.of("NO_PROXY", "127.0.0.1,localhost", "no_proxy", "127.0.0.1,localhost")));
+    @Test void oldSourceDigestCannotNegotiate() throws Exception {
+        String host = host();
+        var retired = JsonSupport.MAPPER.readTree(Files.readString(Path.of("../shared/testing/a2a_lsp_retirement_contract.json")));
+        var digests = (com.fasterxml.jackson.databind.node.ObjectNode) JsonSupport.MAPPER.readTree(Files.readString(Path.of("../shared/contract-digests.json")));
+        digests.put("source_contract_digest", retired.path("old_source_contract_digest").asText());
+        var path = Files.createTempDirectory("sdk-retired-digest-").resolve("contract-digests.json");
+        Files.writeString(path, digests.toString());
+        var error = assertThrows(Exception.class, () -> await(EchoAgentClient.spawn(host, List.of("--config", System.getenv("ECHO_AGENT_SDK_CONFIG")), Path.of("../shared/facade-operation-catalog.json"), path, Map.of())));
+        assertEquals("extension_capability_mismatch", EchoAgentException.from(error, "initialize").code());
+    }
+    @Test void oldFamilyOperationsAndSourcesFailAgainstRetainedHost() throws Exception {
+        String host = host();
+        var retired = JsonSupport.MAPPER.readTree(Files.readString(Path.of("../shared/testing/a2a_lsp_retirement_contract.json")));
+        try (var sdk = await(EchoAgentClient.spawn(host, List.of("--config", System.getenv("ECHO_AGENT_SDK_CONFIG")),
+                Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"), Map.of()))) {
             var agent = await(sdk.createAgent());
-            var sessions = Map.of("a", await(agent.createSession(work.toString())), "b", await(agent.createSession(work.toString())));
-            for (var step : JsonSupport.MAPPER.readTree(work.resolve("scenario.json").toFile())) {
-                var row = rows.addObject().put("id", step.path("id").asText());
-                if ("close_session".equals(step.path("action").asText())) {
-                    await(sessions.get("a").closeAsync()); row.put("value", true); continue;
+            var session = await(agent.createSession());
+            int count = 0;
+            for (var family : retired.path("families")) {
+                com.fasterxml.jackson.databind.JsonNode familyRoute = null;
+                for (var route : retired.path("routes")) if (route.path("route").asText().equals("family:" + family.path("family").asText())) familyRoute = route;
+                assertNotNull(familyRoute);
+                for (var operation : family.path("operations")) {
+                    String digest = null;
+                    for (var item : familyRoute.path("operation_signatures")) if (item.path("operation").equals(operation)) digest = item.path("signature_digests").path(0).asText();
+                    assertNotNull(digest);
+                    var request = JsonSupport.MAPPER.createObjectNode().put("operation", operation.asText()).put("signature_digest", digest);
+                    request.set("handle", session.wire().toJson());
+                    request.putArray("arguments");
+                    assertThrows(Exception.class, () -> await(sdk.request(family.path("methods").path(0).asText(), request)));
+                    count++;
                 }
-                if ("await_source_closed".equals(step.path("action").asText())) {
-                    row.put("value", true).set("source", fixtureResult(work, "--await-source", step.path("source").asText()));
-                    Files.writeString(work.resolve("results.json"), rows.toString());
-                    continue;
-                }
-                var args = new ArrayList<Object>();
-                for (var arg : step.path("args")) {
-                    JsonNode value = arg;
-                    if (arg.isObject() && arg.has("ref")) {
-                        value = values.get(arg.path("ref").asText());
-                        if (arg.has("field")) value = value.get(arg.path("field").asText());
-                        if (arg.has("generation_delta")) {
-                            ObjectNode modified = value.deepCopy();
-                            modified.put("generation", new BigInteger(value.path("generation").asText()).add(BigInteger.valueOf(arg.path("generation_delta").asLong())).toString());
-                            value = modified;
-                        }
-                    }
-                    if (value.isObject() && value.has("id") && value.has("generation") && value.has("kind")) args.add(WireHandle.fromJson(value));
-                    else if (value.isTextual()) args.add(value.textValue());
-                    else if (value.isNull()) args.add(null);
-                    else if (value.isIntegralNumber()) args.add(value.longValue());
-                    else throw new IllegalArgumentException("unsupported shared fixture argument: " + value);
-
-                }
-                try {
-                    var result = await(sessions.get(step.path("session").asText("a")).invoke(step.path("op").asText(), args));
-                    assertFalse(step.has("error"), step.path("id").asText() + " unexpectedly succeeded");
-                    row.set("value", result); values.put(step.path("id").asText(), result);
-                } catch (ExecutionException exception) {
-                    assertTrue(step.has("error"), step.path("id").asText()+": "+exception.getCause());
-                    var error = assertInstanceOf(EchoAgentException.class, exception.getCause());
-                    var failure = row.putObject("error").put("code", error.code()).put("message", error.getMessage())
-                            .put("operation", error.operation()).put("retryable", error.retryable());
-                    failure.set("details", error.details()); failure.set("handle", error.handle() == null ? null : error.handle().toJson());
-                    assertEquals(step.path("error").asText(), error.code());
-                }
-                Files.writeString(work.resolve("results.json"), rows.toString());
             }
-            Files.writeString(work.resolve("results.json"), rows.toString());
-            if (quota) {
-                assertTrue(fixtureResult(work, "--verify").path("quota_slot_recovered").asBoolean());
-                await(sessions.get("a").closeAsync());
+            assertEquals(39, count);
+            for (var route : retired.path("routes")) if (!route.path("operation").isNull()) {
+                var request = JsonSupport.MAPPER.createObjectNode().put("operation", route.path("operation").asText()).put("signature_digest", route.path("signature_digests").path(0).asText());
+                request.set("handle", agent.wire().toJson());
+                var argument = JsonSupport.MAPPER.createObjectNode().put("kind", "handle");
+                argument.set("value", session.wire().toJson());
+                request.putArray("arguments").add(argument);
+                assertThrows(Exception.class, () -> await(sdk.request("_echo_agent/facade/invoke", request)));
             }
-            await(sessions.get("b").closeAsync()); await(agent.closeAsync());
-            if (!quota) assertEquals(9, fixtureResult(work, "--verify").path("operations").size());
-            System.out.println("A2A evidence " + work);
-        } finally {
-            Files.writeString(work.resolve("results.json"), rows.toString());
-            if (sdk != null) await(sdk.closeAsync());
-            Files.writeString(work.resolve("stop"), "stop");
-            assertTrue(peer.waitFor(5, TimeUnit.SECONDS), "own A2A peer must exit");
+            for (String json : List.of(
+                    "{\"kind\":\"variant\",\"value\":{\"type_id\":\"echo_core::plugin::capability::PluginCapability\",\"variant\":\"LspServer\",\"fields\":[]}}",
+                    "{\"kind\":\"record\",\"value\":{\"type_id\":\"echo_agent::plugin::prepared::PluginWiringResult\",\"fields\":[{\"name\":\"lsp_discovered\",\"value\":{\"kind\":\"null\"}}]}}",
+                    "{\"kind\":\"record\",\"value\":{\"type_id\":\"echo_core::plugin::registry::ResolvedComponents\",\"fields\":[{\"name\":\"lsp_config_file\",\"value\":{\"kind\":\"null\"}}]}}")) {
+                var request = JsonSupport.MAPPER.createObjectNode().put("operation", "retirement.probe").put("signature_digest", "sha256:" + "0".repeat(64));
+                request.set("handle", agent.wire().toJson());
+                request.putArray("arguments").add(JsonSupport.MAPPER.readTree(json));
+                var error = assertThrows(Exception.class, () -> await(sdk.request("_echo_agent/facade/invoke", request)));
+                var failure = EchoAgentException.from(error, "invoke");
+                assertEquals("invalid_value", failure.code());
+                assertTrue(failure.getMessage().contains("invalid facade argument"));
+            }
+            await(session.closeAsync());
+            var other = await(agent.createSession());
+            await(other.closeAsync());
+            await(agent.closeAsync());
         }
     }
 }

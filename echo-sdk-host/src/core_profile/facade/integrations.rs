@@ -1,4 +1,4 @@
-//! Integration family adapters: MCP, A2A, LSP, topology (plan 07, todo 5).
+//! Integration family adapters: MCP and topology (plan 07, todo 5).
 //!
 //! Each family resource-izes the framework's own client/manager and calls
 //! its real verbs; connection semantics, protocol behavior and failures
@@ -9,16 +9,11 @@
 //! adapter in `facade::telemetry`; it is intentionally not represented by a
 //! manager resource in this module.
 
-#[cfg(feature = "framework-lsp")]
-use echo_agent::lsp::LspClient as _;
 use echo_sdk_protocol::error::{EchoSdkError, ExtensionErrorCode, Retryability};
 use echo_sdk_protocol::handle::WireHandle;
 use echo_sdk_protocol::methods::FeatureOperationRequest;
 use echo_sdk_protocol::scalar::{WirePath, WireU64, WireValue};
-#[cfg(any(
-    feature = "framework-a2a",
-    all(feature = "framework-channels", feature = "sdk-extension-bridge")
-))]
+#[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
 use futures::StreamExt as _;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -32,18 +27,6 @@ const METHOD: &str = "_echo_agent/integration/op";
 /// lock must stay Send across the await (tokio Mutex).
 pub(crate) struct McpManagerRecord {
     pub manager: tokio::sync::Mutex<echo_agent::mcp::McpManager>,
-}
-
-/// One A2A client resource.
-#[cfg(feature = "framework-a2a")]
-pub(crate) struct A2aClientRecord {
-    pub client: echo_agent::a2a::A2AClient,
-}
-
-/// One LSP manager resource; status_all awaits under the lock.
-#[cfg(feature = "framework-lsp")]
-pub(crate) struct LspManagerRecord {
-    pub manager: tokio::sync::Mutex<echo_agent::lsp::LspManager>,
 }
 
 /// One topology tracker resource.
@@ -74,13 +57,6 @@ pub(crate) struct IntegrationResources {
     mcp_client_managers: Mutex<HashMap<String, String>>,
     #[cfg(feature = "framework-mcp")]
     pub mcp_tools: Mutex<HashMap<String, Arc<dyn echo_agent::tools::Tool>>>,
-    #[cfg(feature = "framework-a2a")]
-    pub a2a: Mutex<HashMap<String, Arc<A2aClientRecord>>>,
-    #[cfg(feature = "framework-lsp")]
-    pub lsp: Mutex<HashMap<String, Arc<LspManagerRecord>>>,
-    #[cfg(feature = "framework-lsp")]
-    pub lsp_clients:
-        Mutex<HashMap<String, Arc<tokio::sync::RwLock<echo_agent::lsp::StdioLspClient>>>>,
     #[cfg(feature = "framework-topology")]
     pub topology: Mutex<HashMap<String, Arc<TopologyRecord>>>,
     #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
@@ -102,12 +78,6 @@ impl IntegrationResources {
             mcp_client_managers: Mutex::new(HashMap::new()),
             #[cfg(feature = "framework-mcp")]
             mcp_tools: Mutex::new(HashMap::new()),
-            #[cfg(feature = "framework-a2a")]
-            a2a: Mutex::new(HashMap::new()),
-            #[cfg(feature = "framework-lsp")]
-            lsp: Mutex::new(HashMap::new()),
-            #[cfg(feature = "framework-lsp")]
-            lsp_clients: Mutex::new(HashMap::new()),
             #[cfg(feature = "framework-topology")]
             topology: Mutex::new(HashMap::new()),
             #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
@@ -595,64 +565,6 @@ fn mcp_tool_of(
         .get(&tool.id)
         .cloned()
         .ok_or_else(|| invalid(format!("unknown MCP tool resource {}", tool.id)))
-}
-
-#[cfg(feature = "framework-a2a")]
-/// Owner-checked A2A client lookup.
-fn a2a_of(
-    handles: &HandleRegistry,
-    resources: &IntegrationResources,
-    resource: &WireHandle,
-    owner: &str,
-) -> Result<Arc<A2aClientRecord>, EchoSdkError> {
-    super::owned_resource(handles, resource, owner, METHOD)?;
-    let record = resources
-        .a2a
-        .lock()
-        .unwrap_or_else(|error| error.into_inner())
-        .get(&resource.id)
-        .cloned()
-        .ok_or_else(|| invalid(format!("unknown A2A client {}", resource.id)))?;
-    Ok(record)
-}
-
-#[cfg(feature = "framework-lsp")]
-/// Owner-checked LSP manager lookup.
-fn lsp_of(
-    handles: &HandleRegistry,
-    resources: &IntegrationResources,
-    resource: &WireHandle,
-    owner: &str,
-) -> Result<Arc<LspManagerRecord>, EchoSdkError> {
-    super::owned_resource(handles, resource, owner, METHOD)?;
-    let record = resources
-        .lsp
-        .lock()
-        .unwrap_or_else(|error| error.into_inner())
-        .get(&resource.id)
-        .cloned()
-        .ok_or_else(|| invalid(format!("unknown LSP manager {}", resource.id)))?;
-    Ok(record)
-}
-
-#[cfg(feature = "framework-lsp")]
-fn lsp_client_of(
-    handles: &HandleRegistry,
-    resources: &IntegrationResources,
-    resource: &WireHandle,
-    owner: &str,
-) -> Result<Arc<tokio::sync::RwLock<echo_agent::lsp::StdioLspClient>>, EchoSdkError> {
-    let record = super::owned_resource(handles, resource, owner, METHOD)?;
-    if record.family != "lsp" || record.resource_type != "lsp.client" {
-        return Err(invalid("resource does not address an LSP client"));
-    }
-    resources
-        .lsp_clients
-        .lock()
-        .unwrap_or_else(|error| error.into_inner())
-        .get(&resource.id)
-        .cloned()
-        .ok_or_else(|| invalid(format!("unknown LSP client {}", resource.id)))
 }
 
 #[cfg(feature = "framework-topology")]
@@ -1429,455 +1341,6 @@ pub(crate) async fn dispatch(
                 "unknown mcp operation {other}; the family surface is closed"
             ))),
         },
-        #[cfg(feature = "framework-a2a")]
-        "a2a" => match request.operation.as_str() {
-            "a2a.client.open" => {
-                let (resource, _record) = handles.register_facade_resource(
-                    max_resources,
-                    "a2a",
-                    "a2a.client",
-                    Some(owner),
-                    METHOD,
-                )?;
-                resources
-                    .a2a
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .insert(
-                        resource.id.clone(),
-                        Arc::new(A2aClientRecord {
-                            client: echo_agent::a2a::A2AClient::new(),
-                        }),
-                    );
-                wire(serde_json::json!({"resource": resource}))
-            }
-            "a2a.discover" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an A2A client resource", METHOD)?;
-                let base_url = string_at(&arguments, 1, "a base URL")?;
-                let record = a2a_of(handles, resources, &resource, owner)?;
-                let card = record.client.discover(&base_url).await.map_err(framework)?;
-                wire(serde_json::to_value(&card).unwrap_or_else(|_| serde_json::Value::Null))
-            }
-            "a2a.task.send" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an A2A client resource", METHOD)?;
-                let agent_url = string_at(&arguments, 1, "an agent URL")?;
-                let message = string_at(&arguments, 2, "a message")?;
-                let record = a2a_of(handles, resources, &resource, owner)?;
-                let session_id = match arguments.get(3) {
-                    None | Some(serde_json::Value::Null) => None,
-                    Some(serde_json::Value::String(value)) if !value.trim().is_empty() => {
-                        Some(value.clone())
-                    }
-                    _ => return Err(invalid("A2A task session id must be a string or null")),
-                };
-                let task = record
-                    .client
-                    .send_task_with_session(&agent_url, &message, session_id)
-                    .await
-                    .map_err(framework)?;
-                wire(serde_json::to_value(&task).unwrap_or(serde_json::Value::Null))
-            }
-            "a2a.task.get" | "a2a.task.cancel" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an A2A client resource", METHOD)?;
-                let agent_url = string_at(&arguments, 1, "an agent URL")?;
-                let task_id = string_at(&arguments, 2, "a task id")?;
-                let record = a2a_of(handles, resources, &resource, owner)?;
-                let task = if request.operation == "a2a.task.cancel" {
-                    record
-                        .client
-                        .cancel_task(&agent_url, &task_id)
-                        .await
-                        .map_err(framework)?
-                } else {
-                    record
-                        .client
-                        .get_task(&agent_url, &task_id)
-                        .await
-                        .map_err(framework)?
-                };
-                wire(serde_json::to_value(&task).unwrap_or(serde_json::Value::Null))
-            }
-            "a2a.task.stream.open" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an A2A client resource", METHOD)?;
-                let agent_url = string_at(&arguments, 1, "an agent URL")?;
-                let message = string_at(&arguments, 2, "a message")?;
-                let session_id = match arguments.get(3) {
-                    None | Some(serde_json::Value::Null) => None,
-                    Some(serde_json::Value::String(value)) if !value.trim().is_empty() => {
-                        Some(value.clone())
-                    }
-                    _ => return Err(invalid("A2A stream session id must be a string or null")),
-                };
-                let record = a2a_of(handles, resources, &resource, owner)?;
-                let mut source = record
-                    .client
-                    .send_task_streaming_with_session(&agent_url, &message, session_id)
-                    .await
-                    .map_err(framework)?;
-                let producer = _streams.open(handles, &resource, owner, &request.operation)?;
-                let sender = producer.sender.clone();
-                let cancel = producer.cleanup.clone();
-                let background = tokio::spawn(async move {
-                    loop {
-                        let item = tokio::select! {
-                            () = cancel.cancelled() => break,
-                            item = source.next() => item,
-                        };
-                        let Some(event) = item else { break };
-                        let item = serde_json::to_value(event)
-                            .map_err(|error| {
-                                wire::sdk_error(
-                                    ExtensionErrorCode::FrameworkError,
-                                    format!("A2A stream event serialization failed: {error}"),
-                                    Retryability::Never,
-                                    "a2a.task.stream.open",
-                                )
-                            })
-                            .and_then(|value| {
-                                WireValue::from_json(value).map_err(|error| {
-                                    wire::sdk_error(
-                                        ExtensionErrorCode::FrameworkError,
-                                        format!("A2A stream event projection failed: {error}"),
-                                        Retryability::Never,
-                                        "a2a.task.stream.open",
-                                    )
-                                })
-                            });
-                        tokio::select! {
-                            () = cancel.cancelled() => break,
-                            result = sender.send(item) => {
-                                if result.is_err() {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                });
-                _streams.attach_background(&producer, background);
-                Ok(WireValue::Handle(producer.handle))
-            }
-            other => Err(invalid(format!(
-                "unknown a2a operation {other}; the family surface is closed"
-            ))),
-        },
-        #[cfg(feature = "framework-lsp")]
-        "lsp" => match request.operation.as_str() {
-            "lsp.manager.open" | "lsp.manager.open_exact" => {
-                let (resource, _record) = handles.register_facade_resource(
-                    max_resources,
-                    "lsp",
-                    "lsp.manager",
-                    Some(owner),
-                    METHOD,
-                )?;
-                resources
-                    .lsp
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .insert(
-                        resource.id.clone(),
-                        Arc::new(LspManagerRecord {
-                            manager: tokio::sync::Mutex::new(echo_agent::lsp::LspManager::new()),
-                        }),
-                    );
-                if request.operation == "lsp.manager.open_exact" {
-                    Ok(WireValue::Handle(resource))
-                } else {
-                    wire(serde_json::json!({"resource": resource}))
-                }
-            }
-            "lsp.manager.load_config" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP manager resource", METHOD)?;
-                let config_file: echo_agent::lsp::LspConfigFile = arguments
-                    .get(1)
-                    .cloned()
-                    .ok_or_else(|| invalid("lsp.manager.load_config requires a config"))
-                    .and_then(|value| {
-                        serde_json::from_value(value)
-                            .map_err(|error| invalid(format!("LSP config is malformed: {error}")))
-                    })?;
-                let config = echo_agent::lsp::LspConfig {
-                    servers: config_file.languages,
-                };
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                record
-                    .manager
-                    .lock()
-                    .await
-                    .load_config(&config)
-                    .map_err(framework)?;
-                wire(serde_json::Value::Null)
-            }
-            "lsp.manager.set_project_root" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP manager resource", METHOD)?;
-                let path = arguments
-                    .get(1)
-                    .cloned()
-                    .ok_or_else(|| invalid("lsp.manager.set_project_root requires a path"))
-                    .and_then(|value| {
-                        serde_json::from_value::<WirePath>(value).map_err(|error| {
-                            invalid(format!("LSP project root is invalid: {error}"))
-                        })
-                    })
-                    .and_then(|path| wire::path_from_wire(&path).map_err(invalid))?;
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                record.manager.lock().await.set_project_root(&path);
-                wire(serde_json::Value::Null)
-            }
-            "lsp.manager.start_server"
-            | "lsp.manager.stop_server"
-            | "lsp.manager.restart_server" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP manager resource", METHOD)?;
-                let language = string_at(&arguments, 1, "a language")?;
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                let mut manager = record.manager.lock().await;
-                match request.operation.as_str() {
-                    "lsp.manager.start_server" => manager.start_server(&language).await,
-                    "lsp.manager.stop_server" => manager.stop_server(&language).await,
-                    _ => manager.restart_server(&language).await,
-                }
-                .map_err(framework)?;
-                wire(serde_json::Value::Null)
-            }
-            "lsp.manager.shutdown_all" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP manager resource", METHOD)?;
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                record.manager.lock().await.shutdown_all().await;
-                wire(serde_json::Value::Null)
-            }
-            "lsp.manager.get_client" | "lsp.manager.get_client_for_file" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP manager resource", METHOD)?;
-                let selector = string_at(
-                    &arguments,
-                    1,
-                    if request.operation == "lsp.manager.get_client" {
-                        "a language"
-                    } else {
-                        "a file path"
-                    },
-                )?;
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                let manager = record.manager.lock().await;
-                let selected = if request.operation == "lsp.manager.get_client" {
-                    manager.get_client(&selector).map(|client| (None, client))
-                } else {
-                    manager
-                        .get_client_for_file(&selector)
-                        .await
-                        .map(|(language, client)| (Some(language), client))
-                };
-                let Some((language, client)) = selected else {
-                    return Ok(WireValue::Variant {
-                        type_id: "core::option::Option<LspClient>".to_string(),
-                        variant: "none".to_string(),
-                        fields: Vec::new(),
-                    });
-                };
-                let (client_handle, _) = handles.register_facade_resource(
-                    max_resources,
-                    "lsp",
-                    "lsp.client",
-                    Some(owner),
-                    METHOD,
-                )?;
-                resources
-                    .lsp_clients
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .insert(client_handle.id.clone(), client);
-                let mut fields = vec![echo_sdk_protocol::scalar::WireField {
-                    name: "client".to_string(),
-                    value: WireValue::Handle(client_handle),
-                }];
-                if let Some(language) = language {
-                    fields.push(echo_sdk_protocol::scalar::WireField {
-                        name: "language".to_string(),
-                        value: WireValue::String(language),
-                    });
-                }
-                Ok(WireValue::Variant {
-                    type_id: "core::option::Option<LspClient>".to_string(),
-                    variant: "some".to_string(),
-                    fields,
-                })
-            }
-            "lsp.client.language"
-            | "lsp.client.is_running"
-            | "lsp.client.is_initialized"
-            | "lsp.client.status" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP client resource", METHOD)?;
-                let client = lsp_client_of(handles, resources, &resource, owner)?;
-                let client = client.read().await;
-                match request.operation.as_str() {
-                    "lsp.client.language" => wire(serde_json::json!(client.language())),
-                    "lsp.client.is_running" => wire(serde_json::json!(client.is_running())),
-                    "lsp.client.is_initialized" => wire(serde_json::json!(client.is_initialized())),
-                    _ => wire(serde_json::to_value(client.status()).map_err(framework)?),
-                }
-            }
-            "lsp.client.initialize" | "lsp.client.shutdown" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP client resource", METHOD)?;
-                let client = lsp_client_of(handles, resources, &resource, owner)?;
-                let mut client = client.write().await;
-                if request.operation == "lsp.client.initialize" {
-                    let root_uri = string_at(&arguments, 1, "a root URI")?;
-                    client.initialize(&root_uri).await.map_err(framework)?;
-                } else {
-                    client.shutdown().await.map_err(framework)?;
-                }
-                wire(serde_json::Value::Null)
-            }
-            "lsp.client.diagnostics"
-            | "lsp.client.goto_definition"
-            | "lsp.client.find_references"
-            | "lsp.client.hover"
-            | "lsp.client.completion"
-            | "lsp.client.did_open"
-            | "lsp.client.did_change"
-            | "lsp.client.did_save"
-            | "lsp.client.did_close" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP client resource", METHOD)?;
-                let uri = string_at(&arguments, 1, "a document URI")?;
-                let client = lsp_client_of(handles, resources, &resource, owner)?;
-                let client = client.read().await;
-                let value = match request.operation.as_str() {
-                    "lsp.client.diagnostics" => {
-                        serde_json::to_value(client.diagnostics(&uri).await.map_err(framework)?)
-                    }
-                    "lsp.client.goto_definition" | "lsp.client.find_references" => {
-                        let position: echo_agent::lsp::Position = arguments
-                            .get(2)
-                            .cloned()
-                            .ok_or_else(|| invalid("LSP operation requires a position"))
-                            .and_then(|value| {
-                                serde_json::from_value(value).map_err(|error| {
-                                    invalid(format!("LSP position is malformed: {error}"))
-                                })
-                            })?;
-                        if request.operation == "lsp.client.goto_definition" {
-                            serde_json::to_value(
-                                client
-                                    .goto_definition(&uri, position)
-                                    .await
-                                    .map_err(framework)?,
-                            )
-                        } else {
-                            serde_json::to_value(
-                                client
-                                    .find_references(&uri, position)
-                                    .await
-                                    .map_err(framework)?,
-                            )
-                        }
-                    }
-                    "lsp.client.hover" | "lsp.client.completion" => {
-                        let position: echo_agent::lsp::Position = arguments
-                            .get(2)
-                            .cloned()
-                            .ok_or_else(|| invalid("LSP operation requires a position"))
-                            .and_then(|value| {
-                                serde_json::from_value(value).map_err(|error| {
-                                    invalid(format!("LSP position is malformed: {error}"))
-                                })
-                            })?;
-                        if request.operation == "lsp.client.hover" {
-                            serde_json::to_value(
-                                client.hover(&uri, position).await.map_err(framework)?,
-                            )
-                        } else {
-                            serde_json::to_value(
-                                client.completion(&uri, position).await.map_err(framework)?,
-                            )
-                        }
-                    }
-                    "lsp.client.did_open" => {
-                        let language_id = string_at(&arguments, 2, "a language id")?;
-                        let text = arguments
-                            .get(3)
-                            .and_then(serde_json::Value::as_str)
-                            .ok_or_else(|| invalid("LSP did_open requires document text"))?;
-                        client
-                            .did_open(&uri, &language_id, text)
-                            .await
-                            .map_err(framework)?;
-                        Ok(serde_json::Value::Null)
-                    }
-                    "lsp.client.did_change" => {
-                        let changes: Vec<echo_agent::lsp::TextChange> = arguments
-                            .get(2)
-                            .cloned()
-                            .ok_or_else(|| invalid("LSP did_change requires changes"))
-                            .and_then(|value| {
-                                serde_json::from_value(value).map_err(|error| {
-                                    invalid(format!("LSP changes are malformed: {error}"))
-                                })
-                            })?;
-                        client.did_change(&uri, changes).await.map_err(framework)?;
-                        Ok(serde_json::Value::Null)
-                    }
-                    "lsp.client.did_save" => {
-                        client.did_save(&uri).await.map_err(framework)?;
-                        Ok(serde_json::Value::Null)
-                    }
-                    _ => {
-                        client.did_close(&uri).await.map_err(framework)?;
-                        Ok(serde_json::Value::Null)
-                    }
-                }
-                .map_err(framework)?;
-                wire(value)
-            }
-            "lsp.server.status" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an MCP manager resource", METHOD)?;
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                let manager = record.manager.lock().await;
-                let statuses: Vec<serde_json::Value> = manager
-                    .status_all()
-                    .await
-                    .into_iter()
-                    .map(|status| serde_json::to_value(&status).unwrap_or_default())
-                    .collect();
-                wire(serde_json::json!({"servers": statuses}))
-            }
-            "lsp.language.list" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an MCP manager resource", METHOD)?;
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                let manager = record.manager.lock().await;
-                wire(serde_json::json!({"configured": manager.configured_languages()}))
-            }
-            "lsp.language.configured" | "lsp.server.running" | "lsp.server.status_all" => {
-                let resource =
-                    super::resource_handle_at(&arguments, 0, "an LSP manager resource", METHOD)?;
-                let record = lsp_of(handles, resources, &resource, owner)?;
-                let manager = record.manager.lock().await;
-                let value = match request.operation.as_str() {
-                    "lsp.language.configured" => {
-                        serde_json::to_value(manager.configured_languages())
-                    }
-                    "lsp.server.running" => serde_json::to_value(manager.running_servers()),
-                    _ => serde_json::to_value(manager.status_all().await),
-                }
-                .map_err(framework)?;
-                wire(value)
-            }
-            other => Err(invalid(format!(
-                "unknown lsp operation {other}; the family surface is closed"
-            ))),
-        },
         #[cfg(feature = "framework-topology")]
         "topology" => match request.operation.as_str() {
             "topology.tracker.open" | "topology.tracker.open_exact" => {
@@ -2521,13 +1984,6 @@ fn integration_ids(resources: &IntegrationResources) -> Vec<String> {
         collect_ids!(mcp_clients);
         collect_ids!(mcp_tools);
     }
-    #[cfg(feature = "framework-a2a")]
-    collect_ids!(a2a);
-    #[cfg(feature = "framework-lsp")]
-    {
-        collect_ids!(lsp);
-        collect_ids!(lsp_clients);
-    }
     #[cfg(feature = "framework-topology")]
     collect_ids!(topology);
     #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
@@ -2595,32 +2051,6 @@ pub(crate) async fn close_session_resources(
             .unwrap_or_else(|e| e.into_inner())
             .retain(|id, _| !closed.contains(id));
     }
-    #[cfg(feature = "framework-lsp")]
-    {
-        let managers = resources
-            .lsp
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .iter()
-            .filter(|(id, _)| closed.contains(id))
-            .map(|(id, value)| (id.clone(), value.clone()))
-            .collect::<Vec<_>>();
-        for (id, record) in managers {
-            record.manager.lock().await.shutdown_all().await;
-            resources
-                .lsp
-                .lock()
-                .unwrap_or_else(|e| e.into_inner())
-                .remove(&id);
-        }
-        // Manager shutdown owns transport settlement. Client handles are
-        // aliases to its fenced clients, not independent child owners.
-        resources
-            .lsp_clients
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .retain(|id, _| !closed.contains(id));
-    }
     #[cfg(all(feature = "framework-channels", feature = "sdk-extension-bridge"))]
     {
         let managers = resources
@@ -2648,12 +2078,6 @@ pub(crate) async fn close_session_resources(
             }
         }
     }
-    #[cfg(feature = "framework-a2a")]
-    resources
-        .a2a
-        .lock()
-        .unwrap_or_else(|e| e.into_inner())
-        .retain(|id, _| !closed.contains(id));
     #[cfg(feature = "framework-topology")]
     resources
         .topology

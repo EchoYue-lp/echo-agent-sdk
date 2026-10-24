@@ -52,7 +52,19 @@ scope_counts=$(jq -r '
 printf 'SDK scopes (telemetry only, canonical): external=%s host_or_rust_only=%s language_intrinsic=%s internal_helper=%s deferred=%s\n' \
   ${scope_counts//$'\t'/ }
 
-cargo build -q -p echo-sdk-host --features sdk-facade-all --locked
+# A caller may retain the current batch's freshly built Host outside target
+# before cargo clean. The mandatory digest binds this invocation to that exact
+# executable; all language suites/Host E2E and examples still run below.
+prebuilt_host=${ECHO_AGENT_SDK_PREBUILT_HOST:-}
+if [[ -n "$prebuilt_host" ]]; then
+  [[ "$prebuilt_host" == /* && -x "$prebuilt_host" ]] || { echo "error: prebuilt Host must be an absolute executable" >&2; exit 1; }
+  expected_host_digest=${ECHO_AGENT_SDK_PREBUILT_HOST_SHA256:-}
+  [[ "$expected_host_digest" =~ ^[0-9a-f]{64}$ ]] || { echo "error: exact prebuilt Host SHA256 required" >&2; exit 1; }
+  actual_host_digest=$(shasum -a 256 "$prebuilt_host" | awk '{print $1}')
+  [[ "$actual_host_digest" == "$expected_host_digest" ]] || { echo "error: prebuilt Host digest mismatch" >&2; exit 1; }
+else
+  cargo build -q -p echo-sdk-host --features sdk-facade-all --locked
+fi
 host_state=$(mktemp -d "${TMPDIR:-/tmp}/echo-sdk-language-state.XXXXXX")
 host_config=$(mktemp "${TMPDIR:-/tmp}/echo-sdk-language-config.XXXXXX")
 jq --arg root "$host_state" '.sdk_profile.state_root = $root | .default_agent.agent.enable_memory = true | .default_agent.agent.memory_path = ($root + "/memory.jsonl")' \
@@ -61,11 +73,19 @@ host_target_dir=${CARGO_TARGET_DIR:-$repo_root/target}
 if [[ "$host_target_dir" != /* ]]; then
   host_target_dir="$repo_root/$host_target_dir"
 fi
-export ECHO_AGENT_SDK_HOST="$host_target_dir/debug/echo-agent-sdk-host"
+export ECHO_AGENT_SDK_HOST="${prebuilt_host:-$host_target_dir/debug/echo-agent-sdk-host}"
 export ECHO_AGENT_SDK_CONFIG="$host_config"
 export ECHO_AGENT_SDK_REQUIRE_HOST_E2E=1
 export ECHO_AGENT_SDK_OTLP_COLLECTOR
-ECHO_AGENT_SDK_OTLP_COLLECTOR=$(bash "$repo_root/scripts/build-telemetry-test-collector.sh")
+if [[ -n "$prebuilt_host" ]]; then
+  [[ "${ECHO_AGENT_SDK_OTLP_COLLECTOR:-}" == /* && -x "$ECHO_AGENT_SDK_OTLP_COLLECTOR" ]] || { echo "error: preserved collector must be an absolute executable" >&2; exit 1; }
+  expected_collector_digest=${ECHO_AGENT_SDK_PREBUILT_COLLECTOR_SHA256:-}
+  [[ "$expected_collector_digest" =~ ^[0-9a-f]{64}$ ]] || { echo "error: exact collector SHA256 required" >&2; exit 1; }
+  actual_collector_digest=$(shasum -a 256 "$ECHO_AGENT_SDK_OTLP_COLLECTOR" | awk '{print $1}')
+  [[ "$actual_collector_digest" == "$expected_collector_digest" ]] || { echo "error: preserved collector digest mismatch" >&2; exit 1; }
+else
+  ECHO_AGENT_SDK_OTLP_COLLECTOR=$(bash "$repo_root/scripts/build-telemetry-test-collector.sh")
+fi
 
 (cd "$repo_root/sdks/typescript" && npm ci && npm test && node dist-examples/examples/quickstart.js)
 (cd "$repo_root/sdks/python" && \

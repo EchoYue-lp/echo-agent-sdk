@@ -236,8 +236,6 @@ pub enum FacadeFamily {
     Permission,
     // ── Integration families (plan 07 todo 5) ──────────────────────────
     Mcp,
-    A2a,
-    Lsp,
     Channels,
     Telemetry,
     Topology,
@@ -294,8 +292,6 @@ impl FacadeFamily {
             Self::Improve => "improve",
             Self::Permission => "permission",
             Self::Mcp => "mcp",
-            Self::A2a => "a2a",
-            Self::Lsp => "lsp",
             Self::Channels => "channels",
             Self::Telemetry => "telemetry",
             Self::Topology => "topology",
@@ -496,49 +492,6 @@ impl FacadeFamily {
                 "echo_agent::mcp::McpClient::supports_prompts",
                 "echo_agent::mcp::McpClient::supports_resources",
                 "echo_agent::mcp::McpClient::tools",
-            ],
-            Self::A2a => &[
-                "a2a.client.open",
-                "a2a.discover",
-                "a2a.task.send",
-                "a2a.task.get",
-                "a2a.task.cancel",
-                "a2a.task.stream.open",
-                "a2a.stream.next",
-                "a2a.stream.cancel",
-                "a2a.stream.close",
-            ],
-            Self::Lsp => &[
-                "lsp.manager.open",
-                "lsp.manager.open_exact",
-                "lsp.manager.load_config",
-                "lsp.manager.set_project_root",
-                "lsp.manager.start_server",
-                "lsp.manager.stop_server",
-                "lsp.manager.restart_server",
-                "lsp.manager.shutdown_all",
-                "lsp.manager.get_client",
-                "lsp.manager.get_client_for_file",
-                "lsp.server.status",
-                "lsp.language.list",
-                "lsp.language.configured",
-                "lsp.server.running",
-                "lsp.server.status_all",
-                "lsp.client.language",
-                "lsp.client.is_running",
-                "lsp.client.is_initialized",
-                "lsp.client.initialize",
-                "lsp.client.shutdown",
-                "lsp.client.diagnostics",
-                "lsp.client.goto_definition",
-                "lsp.client.find_references",
-                "lsp.client.hover",
-                "lsp.client.completion",
-                "lsp.client.did_open",
-                "lsp.client.did_change",
-                "lsp.client.did_save",
-                "lsp.client.did_close",
-                "lsp.client.status",
             ],
             Self::Channels => &[
                 "channels.manager.open",
@@ -889,26 +842,6 @@ pub static FACADE_FAMILIES: &[FamilyDescriptor] = &[
         capability: ExtensionCapability::FeatureSurfaces,
         required_feature: Some("mcp"),
         source_prefixes: &["echo_integration::mcp"],
-        validation: FAMILY_VALIDATION,
-    },
-    FamilyDescriptor {
-        family: FacadeFamily::A2a,
-        methods: &["_echo_agent/a2a/op"],
-        capability: ExtensionCapability::FeatureSurfaces,
-        required_feature: Some("a2a"),
-        source_prefixes: &["echo_agent::a2a"],
-        validation: FAMILY_VALIDATION,
-    },
-    FamilyDescriptor {
-        family: FacadeFamily::Lsp,
-        methods: &["_echo_agent/lsp/op"],
-        capability: ExtensionCapability::FeatureSurfaces,
-        required_feature: Some("lsp"),
-        source_prefixes: &[
-            "echo_core::lsp",
-            "echo_integration::lsp",
-            "echo_agent::tools::lsp",
-        ],
         validation: FAMILY_VALIDATION,
     },
     FamilyDescriptor {
@@ -3010,20 +2943,6 @@ fn family_operation_for_source(
         .rsplit_once("::")
         .map(|(_, method)| method)?;
     match family {
-        FacadeFamily::A2a
-            if source_identity.starts_with("echo_agent::a2a::client::A2AClient::") =>
-        {
-            match method {
-                "discover" => Some("a2a.discover"),
-                "send_task" | "send_task_with_session" => Some("a2a.task.send"),
-                "send_task_streaming" | "send_task_streaming_with_session" => {
-                    Some("a2a.task.stream.open")
-                }
-                "get_task" => Some("a2a.task.get"),
-                "cancel_task" => Some("a2a.task.cancel"),
-                _ => None,
-            }
-        }
         FacadeFamily::Workflow
             if source_identity.starts_with("echo_orchestration::workflow::graph::Graph::")
                 || source_identity
@@ -3174,41 +3093,6 @@ fn family_operation_for_source(
                 "to_mermaid" => Some("topology.to_mermaid"),
                 "to_json" => Some("topology.to_json"),
                 "to_dot" => Some("topology.to_dot"),
-                _ => None,
-            }
-        }
-        FacadeFamily::Lsp
-            if source_identity.starts_with("echo_integration::lsp::manager::LspManager::")
-                || source_identity.starts_with("echo_core::lsp::client::LspClient::") =>
-        {
-            match method {
-                "new" => Some("lsp.manager.open_exact"),
-                "load_config" => Some("lsp.manager.load_config"),
-                "set_project_root" => Some("lsp.manager.set_project_root"),
-                "start_server" => Some("lsp.manager.start_server"),
-                "stop_server" => Some("lsp.manager.stop_server"),
-                "restart_server" => Some("lsp.manager.restart_server"),
-                "shutdown_all" => Some("lsp.manager.shutdown_all"),
-                "get_client" => Some("lsp.manager.get_client"),
-                "get_client_for_file" => Some("lsp.manager.get_client_for_file"),
-                "status_all" => Some("lsp.server.status_all"),
-                "configured_languages" => Some("lsp.language.configured"),
-                "running_servers" => Some("lsp.server.running"),
-                "language" => Some("lsp.client.language"),
-                "is_running" => Some("lsp.client.is_running"),
-                "is_initialized" => Some("lsp.client.is_initialized"),
-                "initialize" => Some("lsp.client.initialize"),
-                "shutdown" => Some("lsp.client.shutdown"),
-                "diagnostics" => Some("lsp.client.diagnostics"),
-                "goto_definition" => Some("lsp.client.goto_definition"),
-                "find_references" => Some("lsp.client.find_references"),
-                "hover" => Some("lsp.client.hover"),
-                "completion" => Some("lsp.client.completion"),
-                "did_open" => Some("lsp.client.did_open"),
-                "did_change" => Some("lsp.client.did_change"),
-                "did_save" => Some("lsp.client.did_save"),
-                "did_close" => Some("lsp.client.did_close"),
-                "status" => Some("lsp.client.status"),
                 _ => None,
             }
         }
@@ -3501,6 +3385,25 @@ pub fn canonical_source_identity(entry: &InventoryEntry) -> String {
 /// import/metadata APIs and Rust-owned Team controllers do not become remote
 /// operations merely because rustdoc discovers a public identity.
 pub fn governance_source_disposition(identity: &str) -> Option<&'static str> {
+    // ADR0042/Plan04 withdraw these SDK surfaces while the pinned upstream
+    // Rust definitions remain available as nonblocking inventory telemetry.
+    if [
+        "echo_agent::a2a::",
+        "echo_core::lsp::",
+        "echo_integration::lsp::",
+        "echo_agent::tools::lsp::",
+    ]
+    .iter()
+    .any(|prefix| identity.starts_with(prefix))
+        || matches!(
+            identity,
+            "echo_core::plugin::capability::PluginCapability::LspServer"
+                | "echo_agent::plugin::prepared::PluginWiringResult::lsp_discovered"
+                | "echo_core::plugin::registry::ResolvedComponents::lsp_config_file"
+        )
+    {
+        return Some("process-local-retired-sdk-a2a-lsp");
+    }
     // These getters consume native Task authority in the Host. Retiring the
     // old public fields does not create a new cross-language getter API.
     if matches!(

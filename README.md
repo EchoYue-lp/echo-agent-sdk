@@ -1,5 +1,14 @@
 # echo-agent-sdk
 
+## SDK consumer withdrawal
+
+Plan04 withdraws A2A/LSP consumers:269 accepted source/kind identities,23
+routes and39 operations, retaining5352 identities/431 routes with zero new
+acceptance. Host pin f7bac62e stays independent; framework physical removal
+belongs to a later result. ACP/MCP/Task/Subagent, Host stdio and R2 lifecycle
+remain. See [ADR0042](docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md).
+Historical qualification results below keep their original source-cut scope.
+
 Source-first TypeScript, Python, and Java SDKs for the Rust `echo-agent`
 framework, connected through a source-built ACP Host and the
 `_echo_agent/*` extension contract.
@@ -12,7 +21,7 @@ The source-built Host now pins accepted framework `f7bac62eee04a963f92a3e4308b6e
 [main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)
 completed all seven jobs, followed by an independent remote-only cold source
 check. This upstream acceptance is not a passing SDK Host or consumer result.
-The SDK lock SHA-256 is `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
+The historical pin-switch SDK lock SHA-256 was `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
 upstream vendored Git source identities change from the existing webpki-patched
 SDK lock; all 656 package versions, checksums and dependency edges are unchanged.
 A03 official Cargo update and locked offline metadata each exited 0 using frozen
@@ -24,7 +33,7 @@ and a GitHub-only cold source check using 36 necessary historical refs.
 It records 50 verified behaviors, 75 resolved Findings and one human-accepted
 historical risk; the four non-blocking Rust inventory drift artifacts remain
 telemetry and were not regenerated.
-Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
+At that pre-withdrawal qualification cut, accepted membership remained5,621 identity/kind keys and454 routes. Pin/lock
 provenance does not authorize a 117-artifact update, new public language APIs,
 or automatic closure of the historical managed-exit cause.
 
