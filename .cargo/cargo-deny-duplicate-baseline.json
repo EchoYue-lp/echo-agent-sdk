@@ -2,7 +2,7 @@
   "schema_version": 1,
   "authorization": "ACCEPTED_BY_HUMAN",
   "repository": "EchoYue-lp/echo-agent-sdk",
-  "lock_sha256": "822ee9a6936f25978283d38d4d07e4e8d7e006ec5834bfeaf80542f79e1ed52e",
+  "lock_sha256": "0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f",
   "policy_sha256": "b18307d3e0afa05d0c1ad32004b59cb0a7fe62136e90037bec17738545b3013f",
   "tool_version": "cargo-deny 0.20.2",
   "command": [

@@ -54,7 +54,8 @@ class StateTraceDeliveryHostTest {
      assumeTrue(host != null && !host.isBlank(), "real Host binary required");
      work = Files.createTempDirectory("sdk-java-" + scene + "-");
      System.out.println("State/Trace/Delivery evidence " + scene + ": " + work);
-     Process prep = new ProcessBuilder("python3", Path.of("../shared/testing/state_trace_delivery_fixture.py").toAbsolutePath().toString(), "--work", work.toString(), "prepare").inheritIO().start();
+     Process prep = new ProcessBuilder("python3", Path.of("../shared/testing/state_trace_delivery_fixture.py").toAbsolutePath().toString(), "--work", work.toString(), "prepare")
+             .redirectErrorStream(true).redirectOutput(work.resolve("prepare.log").toFile()).start();
      eq(prep.waitFor(), 0);
      f = J.readTree(work.resolve("fixture.json").toFile());
      ObjectNode proof = switch (scene) { case "state" -> state(); case "trace" -> trace(); default -> delivery(); };

@@ -20,6 +20,7 @@ from acp.stdio import spawn_agent_process
 from pydantic import ValidationError
 from typing_extensions import Self
 
+from ._runtime_terminal import runtime_terminal
 from .catalog import FacadeCatalog
 from .errors import EchoAgentError
 from .wire import MAX_U64, WireHandle, from_wire, to_wire
@@ -3048,14 +3049,7 @@ def _event_observers(
         try:
             if feed.accept_event(params):
                 envelope = params["envelope"]
-                payload = envelope.get("payload")
-                terminal = isinstance(payload, Mapping) and payload.get(
-                    "event_type"
-                ) in {
-                    "final_answer",
-                    "cancelled",
-                    "error",
-                }
+                terminal = runtime_terminal(envelope)
                 await _deliver_stream_item(feed, params, terminal=terminal)
         except EchoAgentError as error:
             feed.queue.fail(error)
@@ -3965,6 +3959,21 @@ class EchoAgentClient:
             session_id, _AsyncQueue(self._update_queue_size)
         ).__aiter__()
 
+    async def _publish_first_event(
+        self, stream: WireHandle, envelope: Mapping[str, Any]
+    ) -> None:
+        feed = self._events.setdefault(
+            stream.id, _EventFeed(_AsyncQueue(self._event_queue_size))
+        )
+        params = {"stream": stream.to_dict(), "envelope": envelope}
+        try:
+            if feed.accept_event(params):
+                await _deliver_stream_item(
+                    feed, params, terminal=runtime_terminal(envelope)
+                )
+        except EchoAgentError as error:
+            feed.queue.fail(error)
+
     def events_for(
         self, stream_id: str, stream: WireHandle | None = None
     ) -> AsyncIterator[Any]:
@@ -4709,6 +4718,9 @@ class SessionHandle:
             run._mark_closed()
         else:
             self._runs.add(run)
+            first = response.get("first_event")
+            if isinstance(first, Mapping):
+                await self.client._publish_first_event(run.stream, first)
         return run
 
     async def invoke(self, operation: str, arguments: Iterable[Any] = ()) -> Any:
@@ -4861,13 +4873,12 @@ class RunHandle:
         end = int(response["next_cursor"]["last_processed_sequence"])
         feed = self.client._events.get(self.stream.id)
         if feed is not None and feed.handle == self.stream:
+            terminal_sequence = None
             for event in response["events"]:
-                if event["payload"]["event_type"] in {
-                    "final_answer",
-                    "cancelled",
-                    "error",
-                }:
-                    feed.replay_terminal_sequence = int(event["sequence"])
+                if runtime_terminal(event):
+                    terminal_sequence = int(event["sequence"])
+            if terminal_sequence is not None:
+                feed.replay_terminal_sequence = terminal_sequence
         ranges = self.client._replay_ranges.setdefault(self.stream, [])
         # No-gap empty pages contain no coverage, not even their requested cursor.
         if not response.get("gap") and base == end:

@@ -28,8 +28,8 @@ class FacadeCatalog:
         resolved = (
             Path(path)
             if path is not None
-            else Path(__file__).resolve().parents[3]
-            / "shared"
+            else Path(__file__).resolve().parent
+            / "contracts"
             / "facade-operation-catalog.json"
         )
         self.document: dict[str, Any] = json.loads(resolved.read_text(encoding="utf-8"))

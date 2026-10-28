@@ -10,7 +10,7 @@ use echo_agent::agent::EventEnvelope;
 use echo_agent::error::{AgentFailure, ReactError};
 #[cfg(feature = "sdk-facade-adapters")]
 use echo_agent::error::{AgentFailureCategory, AgentTerminalKind};
-use echo_agent::llm::types::{FunctionCall, Message, MessageContent, ReasoningBlock, ToolCall};
+use echo_agent::llm::types::{Message, MessageContent};
 use echo_agent::runtime::{TurnDeliveryOutcome, TurnOutcome, TurnReceipt};
 use echo_agent::tools::ToolResult;
 use echo_sdk_protocol::error::{
@@ -577,6 +577,63 @@ pub(crate) fn failure_from_wire(wire: AgentFailureWire) -> Result<AgentFailure, 
     })
 }
 
+#[cfg(feature = "sdk-extension-bridge")]
+pub(crate) fn reasoning_block_wire(
+    block: &echo_agent::llm::types::ReasoningBlock,
+) -> LlmReasoningBlockWire {
+    match block {
+        echo_agent::llm::types::ReasoningBlock::Signed {
+            thinking,
+            signature,
+        } => LlmReasoningBlockWire::Signed {
+            thinking: thinking.clone(),
+            signature: signature.clone(),
+        },
+        echo_agent::llm::types::ReasoningBlock::Redacted { data } => {
+            LlmReasoningBlockWire::Redacted { data: data.clone() }
+        }
+        echo_agent::llm::types::ReasoningBlock::Opaque {
+            provider,
+            id,
+            data,
+            summary,
+        } => LlmReasoningBlockWire::Opaque {
+            provider: provider.clone(),
+            id: id.clone(),
+            data: data.clone(),
+            summary: summary.clone(),
+        },
+    }
+}
+
+pub(crate) fn reasoning_block_from_wire(
+    block: LlmReasoningBlockWire,
+) -> echo_agent::llm::types::ReasoningBlock {
+    match block {
+        LlmReasoningBlockWire::Signed {
+            thinking,
+            signature,
+        } => echo_agent::llm::types::ReasoningBlock::Signed {
+            thinking,
+            signature,
+        },
+        LlmReasoningBlockWire::Redacted { data } => {
+            echo_agent::llm::types::ReasoningBlock::Redacted { data }
+        }
+        LlmReasoningBlockWire::Opaque {
+            provider,
+            id,
+            data,
+            summary,
+        } => echo_agent::llm::types::ReasoningBlock::Opaque {
+            provider,
+            id,
+            data,
+            summary,
+        },
+    }
+}
+
 /// Convert the shared lossless Message wire DTO into the framework Message
 /// used by TurnRequest::from_message. This lives outside the extension bridge
 /// so core source-operation streams can consume the same DTO even when no
@@ -589,46 +646,19 @@ pub(crate) fn message_from_wire(message: LlmMessageWire) -> Result<Message, Stri
         .and_then(|value| {
             serde_json::from_value::<MessageContent>(value).map_err(|error| error.to_string())
         })?;
-    let tool_calls = message.tool_calls.map(|calls| {
-        calls
-            .into_iter()
-            .map(|call| ToolCall {
-                id: call.id,
-                call_type: call.call_type,
-                function: FunctionCall {
-                    name: call.function_name,
-                    arguments: call.arguments,
-                },
-            })
-            .collect::<Vec<_>>()
-    });
-    let reasoning_blocks = message.reasoning_blocks.map(|blocks| {
-        blocks
-            .into_iter()
-            .map(|block| match block {
-                LlmReasoningBlockWire::Signed {
-                    thinking,
-                    signature,
-                } => ReasoningBlock::Signed {
-                    thinking,
-                    signature,
-                },
-                LlmReasoningBlockWire::Redacted { data } => ReasoningBlock::Redacted { data },
-                LlmReasoningBlockWire::Opaque {
-                    provider,
-                    id,
-                    data,
-                    summary,
-                } => ReasoningBlock::Opaque {
-                    provider,
-                    id,
-                    data,
-                    summary,
-                },
-            })
-            .collect::<Vec<_>>()
-    });
-    Ok(Message {
+    let tool_calls = message
+        .tool_calls
+        .map(|calls| {
+            calls
+                .into_iter()
+                .map(super::native_message::tool_call_from_wire)
+                .collect::<Result<Vec<_>, _>>()
+        })
+        .transpose()?;
+    let reasoning_blocks = message
+        .reasoning_blocks
+        .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect());
+    let native = Message {
         role: message.role.as_str().into(),
         content,
         tool_calls,
@@ -636,7 +666,16 @@ pub(crate) fn message_from_wire(message: LlmMessageWire) -> Result<Message, Stri
         tool_call_id: message.tool_call_id,
         reasoning_content: message.reasoning_content,
         reasoning_blocks,
-    })
+        ..Message::default()
+    };
+    super::native_message::with_message_metadata(
+        native,
+        super::native_message::MessageMetadata {
+            assistant_blocks: message.assistant_blocks,
+            approved_assistant_blocks: message.approved_assistant_blocks,
+            execution_status: message.execution_status,
+        },
+    )
 }
 
 /// The single authoritative terminal projected from a framework receipt.

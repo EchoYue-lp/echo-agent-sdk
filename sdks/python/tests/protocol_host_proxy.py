@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import signal
 import subprocess
 import sys
@@ -176,9 +177,23 @@ def main() -> None:
                     frame["result"] = {}
                 write_frame(frame)
     finally:
+        exit_before_cleanup = child.poll()
         child.terminate()
-        child.wait(timeout=5)
+        child_exit = child.wait(timeout=5)
         trace.close()
+        (args.work / "host-process.json").write_text(
+            json.dumps(
+                {
+                    "proxy_pid": os.getpid(),
+                    "host_pid": child.pid,
+                    "host_command": args.host,
+                    "mode": args.mode,
+                    "exit_before_cleanup": exit_before_cleanup,
+                    "observed_host_exit": child_exit,
+                }
+            ),
+            encoding="utf-8",
+        )
 
 
 if __name__ == "__main__":

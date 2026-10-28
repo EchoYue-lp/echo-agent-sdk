@@ -220,6 +220,7 @@ export type LlmReasoningBlock =
   | { readonly kind: "opaque"; readonly data: string; readonly id: string; readonly provider: string; readonly summary: readonly string[] };
 
 export interface LlmToolCall {
+  readonly provider_source?: ProviderOutputSource | null;
   readonly arguments: string;
   readonly call_type: string;
   readonly function_name: string;
@@ -232,8 +233,44 @@ export interface LlmMessage {
   readonly name?: string | null;
   readonly reasoning_blocks?: readonly LlmReasoningBlock[] | null;
   readonly reasoning_content?: string | null;
+  readonly assistant_blocks?: readonly AssistantMessageBlock[] | null;
+  readonly execution_status?: RuntimeExecutionStatus | null;
+  readonly approved_assistant_blocks?: readonly AssistantMessageBlock[] | null;
   readonly tool_call_id?: string | null;
   readonly tool_calls?: readonly LlmToolCall[] | null;
+}
+
+/** Framework原生块的wire投影；complete/final_answer都不授予Run结束资格。 */
+export interface AssistantMessageBlock {
+  readonly provider_source?: ProviderOutputSource | null;
+  readonly block_id: string;
+  readonly request_id: string;
+  readonly sequence: WireU64;
+  readonly phase: "reasoning" | "commentary" | "partial_answer" | "final_answer" | "unknown";
+  readonly delta: string;
+  readonly complete: boolean;
+  readonly provider?: string | null;
+  readonly reasoning?: LlmReasoningBlock | null;
+}
+
+export interface ProviderOutputSource {
+  readonly protocol: "chat_completions" | "responses" | "anthropic";
+  readonly request_id: string;
+  readonly item_id: string;
+  readonly output_index: number;
+  readonly content_index?: number | null;
+  readonly content_kind?: string | null;
+  readonly phase?: string | null;
+}
+
+/** 原运行时的持久化观察；SDK不产生状态或据此判定TaskRun目标完成。 */
+export interface RuntimeExecutionStatus {
+  readonly execution_id: string;
+  readonly request_id?: string | null;
+  readonly sequence: WireU64;
+  readonly phase: "Thinking" | "Acting" | "Terminal";
+  readonly status: "started" | "waiting" | "tool_pending" | "candidate" | "settled" | "cancelled" | "failed";
+  readonly reason?: string | null;
 }
 
 export interface LlmToolDefinition {

@@ -82,8 +82,14 @@ class AckSubmissionTest {
     private static JsonNode replay(WireHandle stream) {
         var value=JsonSupport.MAPPER.createObjectNode().put("requested_after_sequence","0");
         value.putObject("next_cursor").put("last_processed_sequence","10");
-        value.putArray("events").addObject().put("sequence","10").putObject("payload").put("event_type","final_answer");
+        value.putArray("events").addObject().put("sequence","10").set("payload", terminalPayload());
         return value;
+    }
+    private static JsonNode terminalPayload() {
+        var payload = JsonSupport.MAPPER.createObjectNode().put("event_type", "execution_status");
+        payload.set("data", WireValues.value(Map.of("execution_id", "fixture-execution",
+                "sequence", "1", "phase", "Terminal", "status", "settled")));
+        return payload;
     }
     private static CompletableFuture<Void> entered(Transport transport)throws Exception {
         var completion=transport.entered.poll(2,TimeUnit.SECONDS);assertNotNull(completion);return completion;
@@ -201,7 +207,8 @@ class AckSubmissionTest {
         for(int seq=after+1;seq<=end;seq++) {
             var e=events.addObject().put("stream_id",stream.id()).put("sequence",Integer.toString(seq)).put("event_id","event-"+seq).put("turn_id","turn").put("content_hash","sha256:"+"0".repeat(64)).put("schema_version",1);
             e.putObject("timestamp").put("unix_seconds","0").put("nanos",0);
-            e.putObject("payload").put("event_type",terminal&&seq==end?"final_answer":"delta");
+            if (terminal && seq == end) e.set("payload", terminalPayload());
+            else e.putObject("payload").put("event_type", "delta");
         }
         return page;
     }

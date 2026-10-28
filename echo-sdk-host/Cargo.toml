@@ -47,8 +47,6 @@ framework-statistics = ["echo_agent/statistics"]
 framework-research = ["echo_agent/research"]
 framework-content-guard = ["echo_agent/content-guard"]
 framework-project-rules = ["echo_agent/project-rules"]
-framework-a2a = ["echo_agent/a2a"]
-framework-lsp = ["echo_agent/lsp"]
 framework-topology = ["echo_agent/topology"]
 # Negotiated `_echo_agent/*` core profile: explicit state root, handle
 # registry, typed handlers, durable replay and bounded stdio. Isolated from
@@ -115,8 +113,6 @@ sdk-facade-all = [
     "framework-research",
     "framework-content-guard",
     "framework-project-rules",
-    "framework-a2a",
-    "framework-lsp",
     "framework-topology",
 ]
 

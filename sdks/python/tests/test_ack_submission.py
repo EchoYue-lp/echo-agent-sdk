@@ -9,7 +9,7 @@ import asyncio
 import pytest
 from acp.client.connection import ClientSideConnection
 
-from echo_agent_sdk import EchoAgentError, WireHandle
+from echo_agent_sdk import EchoAgentError, WireHandle, to_wire
 from echo_agent_sdk.client import EchoAgentClient, _AsyncQueue, _Callbacks, _EventFeed
 
 
@@ -482,7 +482,25 @@ def ordinary_page(stream, after, end, terminal=False):
                 "stream_id": stream.id,
                 "sequence": str(seq),
                 "payload": {
-                    "event_type": "final_answer" if terminal and seq == end else "delta"
+                    "event_type": "execution_status"
+                    if terminal and seq == end
+                    else "delta",
+                    **(
+                        {
+                            "data": to_wire(
+                                {
+                                    "execution_id": "physical-execution",
+                                    "request_id": None,
+                                    "sequence": seq,
+                                    "phase": "Terminal",
+                                    "status": "settled",
+                                    "reason": None,
+                                }
+                            )
+                        }
+                        if terminal and seq == end
+                        else {}
+                    ),
                 },
             }
             for seq in range(after + 1, end + 1)

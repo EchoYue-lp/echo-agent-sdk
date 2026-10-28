@@ -4,7 +4,7 @@ id: map.sdk-events-recovery
 kind: capability_map
 title: 事件、ACK、replay、持久化
 risk: high
-observed_at: cd5b78467f77ac28919cf9dda6877662bed744f4
+observed_at: source:f51bfb0d8716abba38aca735c79b78ca93680aae607629db88ec49344ec3e353
 boundary_refs:
 - boundary.sdk-events-recovery
 behavior_refs:
@@ -13,6 +13,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-source-consumption-validation
 - evidence.sdk-ack-recovery-verification
 - evidence.sdk-gap-watermark-host-verification
 - evidence.sdk-events-resources-finite-observation
@@ -197,9 +198,44 @@ scenarios:
     review_scope: Actual original69b source audit; unchanged source restored in cd5;
       finite livejournal native errors/isolation/restore added. Known physicalB and
       current mutableA excluded.
+  native-message-and-runtime-terminal:
+    status: mapped
+    source_refs:
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/tests/native_message_contract.rs
+    - echo-sdk-host/src/core_profile/native_message.rs
+    - echo-sdk-host/src/core_profile/wire.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/facade/source_operations.rs
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/src/runtime_terminal.ts
+    - sdks/typescript/test/runtime-terminal.test.js
+    - sdks/typescript/test/native-message-host.test.js
+    - sdks/typescript/test/ack-submission.test.js
+    - sdks/typescript/test/host.test.js
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/src/echo_agent_sdk/_runtime_terminal.py
+    - sdks/python/tests/test_runtime_terminal.py
+    - sdks/python/tests/test_native_message_host.py
+    - sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java
+    - sdks/java/src/main/java/com/echoagent/sdk/RuntimeTerminal.java
+    - sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/NativeMessageHostTest.java
+    - sdks/shared/testing/native_message_host_contract.json
+    - docs/adr/0043-native-message-sdk-adapter.md
+    - docs/sdk/native-messages.md
+    rule_refs:
+    - rule.framework-runtime-authority
+    evidence_refs:
+    - evidence.sdk-source-consumption-validation
+    review_scope: 只映射无损转换、原运行时事实及现有feed消费；mapped不表示正式新pin、安全来源、完整矩阵或整体行为已验收。
 ---
 
 # 事件、ACK、replay、持久化
+
+## 2026-10-28 原生消息消费观察
+
+新增 native-message-and-runtime-terminal 场景复用本边界唯一 Map，未另设执行或结束权威。当前 source 摘要重新定位原有及新增引用；原有状态与历史证据保持各自范围。新的有限消费结果见 evidence.sdk-source-consumption-validation，不能据此重标旧记录或提升完整验收。
 
 ## 能力范围
 

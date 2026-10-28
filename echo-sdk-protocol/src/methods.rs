@@ -1342,11 +1342,19 @@ pub struct LlmMessageWire {
     pub reasoning_content: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning_blocks: Option<Vec<LlmReasoningBlockWire>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub assistant_blocks: Option<Vec<AssistantMessageBlockWire>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub execution_status: Option<ExecutionStatusWire>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub approved_assistant_blocks: Option<Vec<AssistantMessageBlockWire>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct LlmToolCallWire {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_source: Option<ProviderOutputSourceWire>,
     pub id: String,
     pub call_type: String,
     pub function_name: String,
@@ -1433,6 +1441,8 @@ pub struct LlmChatChunkWire {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning_blocks: Option<Vec<LlmReasoningBlockWire>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub assistant_blocks: Option<Vec<AssistantMessageBlockWire>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tool_calls: Option<Vec<LlmDeltaToolCallWire>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub finish_reason: Option<String>,
@@ -1443,6 +1453,8 @@ pub struct LlmChatChunkWire {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct LlmDeltaToolCallWire {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_source: Option<ProviderOutputSourceWire>,
     pub index: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
@@ -3859,6 +3871,8 @@ pub struct LlmStreamChunkWire {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning_blocks: Option<Vec<LlmReasoningBlockWire>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub assistant_blocks: Option<Vec<AssistantMessageBlockWire>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tool_calls: Option<Vec<LlmDeltaToolCallWire>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub usage: Option<LlmUsageWire>,
@@ -3876,11 +3890,129 @@ pub struct LlmStreamCompleteWire {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning_blocks: Option<Vec<LlmReasoningBlockWire>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub assistant_blocks: Option<Vec<AssistantMessageBlockWire>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tool_calls: Option<Vec<LlmDeltaToolCallWire>>,
     #[schemars(length(min = 1, max = 256))]
     pub finish_reason: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub usage: Option<LlmUsageWire>,
+}
+
+/// Framework 原生消息阶段的 wire 投影；缺失阶段保持 Unknown，不从文字推断。
+#[derive(
+    Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema,
+)]
+#[serde(rename_all = "snake_case")]
+pub enum AssistantPhaseWire {
+    Reasoning,
+    Commentary,
+    PartialAnswer,
+    FinalAnswer,
+    #[default]
+    Unknown,
+}
+
+/// 原生坐标及原始phase；保留未知phase文本，不推导呈现或完成资格。
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderOutputSourceWire {
+    pub protocol: LlmApiProtocolWire,
+    pub request_id: String,
+    pub item_id: String,
+    pub output_index: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content_index: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content_kind: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phase: Option<String>,
+}
+
+/// 无损投影一个 Framework assistant block；块结束不授予执行结束资格。
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct AssistantMessageBlockWire {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_source: Option<ProviderOutputSourceWire>,
+    #[schemars(length(min = 1))]
+    pub block_id: String,
+    #[schemars(length(min = 1))]
+    pub request_id: String,
+    pub sequence: WireU64,
+    #[serde(default)]
+    pub phase: AssistantPhaseWire,
+    pub delta: String,
+    pub complete: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reasoning: Option<LlmReasoningBlockWire>,
+}
+
+impl AssistantMessageBlockWire {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.block_id.trim().is_empty() || self.request_id.trim().is_empty() {
+            return Err("assistant block requires block_id and request_id".to_string());
+        }
+        if self.sequence.to_u64().is_none() {
+            return Err("assistant block sequence must be a canonical u64".to_string());
+        }
+        Ok(())
+    }
+}
+
+/// 与Framework AgentPhase的原生serde拼写一致，不从正文推导执行阶段。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+pub enum AgentPhaseWire {
+    Thinking,
+    Acting,
+    Terminal,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum ExecutionStatusKindWire {
+    Started,
+    Waiting,
+    ToolPending,
+    Candidate,
+    Settled,
+    Cancelled,
+    Failed,
+}
+
+/// Framework执行观察的投影；不与TaskRun目标完成合并，也不在SDK产生状态。
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ExecutionStatusWire {
+    #[schemars(length(min = 1))]
+    pub execution_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub request_id: Option<String>,
+    pub sequence: WireU64,
+    pub phase: AgentPhaseWire,
+    pub status: ExecutionStatusKindWire,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+impl ExecutionStatusWire {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.execution_id.trim().is_empty()
+            || self
+                .request_id
+                .as_ref()
+                .is_some_and(|value| value.trim().is_empty())
+            || self.sequence.to_u64().is_none()
+        {
+            return Err(
+                "runtime status requires stable execution/request identity and a u64 sequence"
+                    .to_string(),
+            );
+        }
+        Ok(())
+    }
 }
 
 /// Public typed projection of framework `AgentEvent` for CustomAgent streams.
@@ -3896,6 +4028,10 @@ pub struct LlmStreamCompleteWire {
 )]
 #[allow(clippy::large_enum_variant)]
 pub enum AgentEventWire {
+    ExecutionStatus(ExecutionStatusWire),
+    AssistantMessage {
+        block: AssistantMessageBlockWire,
+    },
     TranscriptProjectionSettlement {
         settlement: TranscriptProjectionSettlementWire,
     },
@@ -4056,7 +4192,9 @@ impl AgentEventWire {
 
         let known_variant = matches!(
             variant.as_str(),
-            "token"
+            "assistant_message"
+                | "execution_status"
+                | "token"
                 | "think_start"
                 | "think_end"
                 | "llm_usage"
@@ -4083,13 +4221,16 @@ impl AgentEventWire {
 
         let mut data = serde_json::Map::new();
         for field in payload_fields(&variant, &fields)? {
-            let value = if is_wire_value_field(&variant, &field.name) {
+            let mut value = if is_wire_value_field(&variant, &field.name) {
                 serde_json::to_value(&field.value).map_err(|error| {
                     format!("event field {} is not serializable: {error}", field.name)
                 })?
             } else {
                 wire_value_to_json(&field.value)?
             };
+            if variant == "assistant_message" && field.name == "block" {
+                normalize_provider_source_indices(&mut value)?;
+            }
             if data.insert(field.name.clone(), value).is_some() {
                 return Err(format!("duplicate AgentEventWire field {}", field.name));
             }
@@ -4099,9 +4240,40 @@ impl AgentEventWire {
         if !data.is_empty() {
             object.insert("data".to_string(), serde_json::Value::Object(data));
         }
-        serde_json::from_value(serde_json::Value::Object(object))
-            .map_err(|error| format!("malformed AgentEventWire payload: {error}"))
+        let event: Self = serde_json::from_value(serde_json::Value::Object(object))
+            .map_err(|error| format!("malformed AgentEventWire payload: {error}"))?;
+        match &event {
+            Self::AssistantMessage { block } => block.validate()?,
+            Self::ExecutionStatus(status) => status.validate()?,
+            _ => {}
+        }
+        Ok(event)
     }
+}
+
+fn normalize_provider_source_indices(block: &mut serde_json::Value) -> Result<(), String> {
+    let Some(source) = block
+        .get_mut("provider_source")
+        .and_then(serde_json::Value::as_object_mut)
+    else {
+        return Ok(());
+    };
+    // WireValue保留所有整数为十进制；原生坐标是u32，按该已声明字段类型恢复JSON数值。
+    for name in ["output_index", "content_index"] {
+        let Some(value) = source.get_mut(name) else {
+            continue;
+        };
+        if let Some(encoded) = value.as_str() {
+            let parsed = encoded
+                .parse::<u32>()
+                .map_err(|_| format!("invalid provider source {name}"))?;
+            if parsed.to_string() != encoded {
+                return Err(format!("noncanonical provider source {name}"));
+            }
+            *value = serde_json::Value::from(parsed);
+        }
+    }
+    Ok(())
 }
 
 fn payload_fields<'a>(variant: &str, fields: &'a [WireField]) -> Result<&'a [WireField], String> {
@@ -4109,6 +4281,15 @@ fn payload_fields<'a>(variant: &str, fields: &'a [WireField]) -> Result<&'a [Wir
     // this helper only rejects fields that cannot belong to the selected
     // variant before any object projection occurs.
     let allowed = match variant {
+        "execution_status" => &[
+            "execution_id",
+            "request_id",
+            "sequence",
+            "phase",
+            "status",
+            "reason",
+        ][..],
+        "assistant_message" => &["block"][..],
         "token" => &["text"][..],
         "think_start" | "tool_batch_end" | "cancelled" => &[][..],
         "think_end" => &["prompt_tokens", "completion_tokens"][..],
@@ -4266,6 +4447,9 @@ fn wire_value_to_json(value: &WireValue) -> Result<serde_json::Value, String> {
 )]
 #[allow(clippy::large_enum_variant)]
 pub enum AgentStreamChunkWire {
+    AssistantMessage {
+        block: AssistantMessageBlockWire,
+    },
     TranscriptProjectionSettlement {
         settlement: TranscriptProjectionSettlementWire,
     },
@@ -4774,7 +4958,7 @@ impl ExtensionStreamEvent {
     }
 }
 
-// ── Feature surfaces (memory / mcp / a2a / workflow / ...) ─────────────────
+// ── Feature surfaces (memory / mcp / workflow / ...) ─────────────────
 
 /// Manifest-identified facade operation using the closed `WireValue` algebra.
 /// The operation must match an exact parity-manifest identity and signature.

@@ -7,7 +7,7 @@ superproject 中的规则文件才能冷启动。
 
 用户指定唯一开发根 `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent`。本仓在该根的 `echo-agent-sdk/` 内维护；源码、工程文档、构建产物、回执与恢复材料均写在主根内，不创建外部 worktree。已有外部工作树只作冻结迁移来源，备份、哈希回读和依赖核对完成后按授权回收。同一主根多会话按文件划分单一写权；验证期间冻结对应源码及依赖。
 
-同机最多两条 focused Rust 批次，jobs 不超过 2，dev/test debuginfo 关闭；完整 Rust/GUI/语言矩阵及正式性能测量按协调窗口串行。使用自有独立 target；每个 Cargo 批次结束先将原始日志、真实退出状态和需保留制品存到 target 外，确认没有活动 cargo/rustc/测试子进程/Host 或其它读取者，再 `cargo clean` 准确自有 target 并记录回执。批次前后检查空间，可用空间低于 5 GiB 停止新构建；不清其它会话缓存或源码/证据。未运行 Cargo 的文档/只读工作不为形式执行清理。
+同机最多五条 focused Rust 批次，jobs 不超过 5，dev/test debuginfo 关闭；完整 Rust/GUI/语言矩阵及正式性能测量按协调窗口串行。使用自有独立 target；每个 Cargo 批次结束先将原始日志、真实退出状态和需保留制品存到 target 外，确认没有活动 cargo/rustc/测试子进程/Host 或其它读取者，再 `cargo clean` 准确自有 target 并记录回执。批次前后检查空间，可用空间低于 5 GiB 停止新构建；不清其它会话缓存或源码/证据。未运行 Cargo 的文档/只读工作不为形式执行清理。
 
 ## 文档语言
 
@@ -155,3 +155,22 @@ SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确�
   [依赖警告政策](docs/sdk/governance/dependency-warning-policy-proposal.md)。
 - 不使用 `--no-verify`，不把预先存在或看似无关的失败作为合并豁免。
 - 推送后核对远端 SHA；superproject gitlink 只能引用已经推送的 commit。
+
+
+## 2026-10-27 Plan04 SDK 消费者退役候选
+
+本主目录在原 `525453fc9b9448358cc8a2f46bbcf401b10943ec` 上采用冻结候选
+`1eac40fbf224e510ab29aea128ce59c20f8b4a52` 的 SDK 去依赖闭包。仅撤销具名 A2A/LSP
+的269项 accepted 身份、23条 route、两 family/method 和39个操作；保留5352身份/431路由，
+新增接受与保留行漂移均为0。框架独立 pin 继续是 `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，
+旧框架仍含两能力；SDK不再请求或广告它们，不以整个Rust inventory决定删除。ACP/MCP、
+Task/Subagent、Host stdio、原父子close/取消/恢复和三个quickstart继续由各自原owner承载。
+
+候选锁 SHA256 `0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f`
+含653包，仅移除jsonwebtoken/pem/simple_asn1，保Tokio1.53.3与原checksum及其它保留身份。
+SDK自己的精确49组duplicate合同仍以`.cargo/cargo-deny-duplicate-baseline.json`为机器边界，
+新锁须真实重新扫描/比对，不继承历史扫描或CLI/framework豁免。
+
+候选原520项Rust、三语言及三个quickstart资格仅属于原外部工作树/1eac切点；本根适用
+生成、工程、依赖、语义与平台验证必须重新取证。上文历史记录原样保留，不因采用源码
+改称当前通过；整体Outcome、native、精确main CI、发布与官网部署仍单列，未经授权不执行。

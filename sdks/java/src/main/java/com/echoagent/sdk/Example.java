@@ -32,11 +32,11 @@ public final class Example {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 3) {
-            throw new IllegalArgumentException("usage: Example <host-command> <host-config> <catalog>");
+        if (args.length < 2) {
+            throw new IllegalArgumentException("usage: Example <host-command> <host-config> [catalog]");
         }
-        Path catalog = Path.of(args[2]);
-        Path digest = catalog.resolveSibling("contract-digests.json");
+        Path catalog = args.length > 2 ? Path.of(args[2]) : null;
+        Path digest = catalog == null ? null : catalog.resolveSibling("contract-digests.json");
         EchoAgentClient client = EchoAgentClient
                 .spawn(args[0], List.of("--config", args[1]), catalog, digest, Map.of())
                 .toCompletableFuture()

@@ -4,7 +4,7 @@ id: map.sdk-product-boundary
 kind: capability_map
 title: 独立 SDK 产品边界
 risk: high
-observed_at: 7f14a1b9c751b0612ceb42224f83f29d09aea46c
+observed_at: source:f51bfb0d8716abba38aca735c79b78ca93680aae607629db88ec49344ec3e353
 boundary_refs:
 - boundary.sdk-product
 behavior_refs:
@@ -12,6 +12,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-source-consumption-validation
 - evidence.sdk-accepted-source-continuity-gate
 - evidence.sdk-source-import
 - evidence.sdk-source-continuity
@@ -131,11 +132,53 @@ scenarios:
     limitations: 新semanticjob尚未执行；SDKcontract13/B12/原task513/Windowsnative/SDKmain另留。
     asset_refs:
     - asset.sdk-historical-proof-location
+  self-contained-source-packages:
+    status: mapped
+    source_refs:
+    - scripts/export-language-sdk-catalog.sh
+    - scripts/check-language-sdks.sh
+    - sdks/typescript/package.json
+    - sdks/typescript/src/catalog.ts
+    - sdks/typescript/contracts/contract-digests.json
+    - sdks/typescript/contracts/facade-operation-catalog.json
+    - sdks/typescript/test/package-resources.test.js
+    - sdks/python/src/echo_agent_sdk/catalog.py
+    - sdks/python/src/echo_agent_sdk/contracts/contract-digests.json
+    - sdks/python/src/echo_agent_sdk/contracts/facade-operation-catalog.json
+    - sdks/python/tests/test_package_resources.py
+    - sdks/java/src/main/java/com/echoagent/sdk/FacadeCatalog.java
+    - sdks/java/src/main/java/com/echoagent/sdk/Example.java
+    - sdks/java/src/main/resources/com/echoagent/sdk/contracts/contract-digests.json
+    - sdks/java/src/main/resources/com/echoagent/sdk/contracts/facade-operation-catalog.json
+    - sdks/java/src/test/java/com/echoagent/sdk/PackageResourcesTest.java
+    - docs/sdk/source-packages.md
+    behavior_refs:
+    - behavior.sdk-repository-ownership
+    evidence_refs:
+    - evidence.sdk-source-consumption-validation
+    review_scope: 唯一producer生成包内资源，默认加载不依赖源码目录；私有及source-only保留，打包验证不代表发布。
+  retained-parquet-data-consumer:
+    status: mapped
+    source_refs:
+    - sdks/shared/testing/parquet_roundtrip_fixture.py
+    - sdks/typescript/test/parquet-roundtrip-host.test.js
+    - sdks/python/tests/test_parquet_roundtrip_host.py
+    - sdks/java/src/test/java/com/echoagent/sdk/ParquetRoundtripHostTest.java
+    - docs/sdk/governance/parquet-consumer-validation.md
+    behavior_refs:
+    - behavior.sdk-family-data
+    evidence_refs:
+    - evidence.sdk-source-consumption-validation
+    review_scope: 原Session.invoke调用与独立输入oracle，证据限旧精确Host及其显式保全合同；不证明当前Frame安全来源或新pin。
 asset_refs:
 - asset.sdk-historical-proof-location
 ---
 
 # 独立 SDK 产品边界
+
+## 2026-10-28 消费与源码包观察
+
+源码包资源和保留 Parquet 消费场景复用本产品边界唯一 Map，关联既有事件与数据能力；不新增运行时、公共承诺或发布权限。当前 source 摘要重新定位原有及新增引用；旧状态、历史证据与完整验收义务不变，新增有限证明见 evidence.sdk-source-consumption-validation。
 
 ## 能力范围
 

@@ -819,11 +819,11 @@ public final class EchoAgentClient implements AutoCloseable {
     }
 
     void observeReplay(WireHandle stream,JsonNode response){
+        java.math.BigInteger terminalSequence = null;
         for(var event:response.path("events")){
-            String kind=event.path("payload").path("event_type").textValue();
-            if("final_answer".equals(kind)||"cancelled".equals(kind)||"error".equals(kind))
-                replayTerminals.put(stream,new java.math.BigInteger(event.path("sequence").textValue()));
+            if (RuntimeTerminal.isTerminal(event)) terminalSequence = new java.math.BigInteger(event.path("sequence").textValue());
         }
+        if (terminalSequence != null) replayTerminals.put(stream, terminalSequence);
         var base=new java.math.BigInteger(response.path("gap").path("snapshot_watermark").asText(response.path("requested_after_sequence").asText()));
         var end=new java.math.BigInteger(response.path("next_cursor").path("last_processed_sequence").asText());
         var ranges=replayRanges.computeIfAbsent(stream,ignored->new java.util.ArrayList<>());
@@ -1328,9 +1328,13 @@ public final class EchoAgentClient implements AutoCloseable {
         return publisher.beforeEventAdmission(stream, sequence).then(Mono.fromRunnable(() -> {
             // Failure of the ACK grants no capacity: the independent event
             // still uses the original overflow/replay policy after the fence.
-            publisher.publishEvent(event, stream.id());
-            String eventType = event.path("envelope").path("payload").path("event_type").asText("");
-            if ("final_answer".equals(eventType) || "cancelled".equals(eventType) || "error".equals(eventType)) publisher.close();
+            try {
+                boolean terminal = RuntimeTerminal.isTerminal(event.path("envelope"));
+                publisher.publishEvent(event, stream.id());
+                if (terminal) publisher.close();
+            } catch (RuntimeException error) {
+                publisher.fail(EchoAgentException.from(error, "_echo_agent/event"));
+            }
         }));
     }
 
@@ -1380,11 +1384,10 @@ public final class EchoAgentClient implements AutoCloseable {
         event.set("envelope", envelope);
         eventPublishers.computeIfAbsent(stream.id(), ignored -> newEventPublisher(stream))
                 .publishEvent(event, stream.id());
-        String eventType = envelope.path("payload").path("event_type").asText("");
-        if ("final_answer".equals(eventType)
-                || "cancelled".equals(eventType)
-                || "error".equals(eventType)) {
-            eventPublishers.get(stream.id()).close();
+        try {
+            if (RuntimeTerminal.isTerminal(envelope)) eventPublishers.get(stream.id()).close();
+        } catch (RuntimeException error) {
+            eventPublishers.get(stream.id()).fail(EchoAgentException.from(error, "_echo_agent/event"));
         }
     }
 

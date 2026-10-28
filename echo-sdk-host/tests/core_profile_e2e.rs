@@ -6499,12 +6499,7 @@ async fn tool_families_execute_framework_tools_with_the_session_cwd()
 
 // ── Integration families (plan 07 todo 5) ───────────────────────────────────
 
-#[cfg(all(
-    feature = "sdk-facade-adapters",
-    feature = "framework-a2a",
-    feature = "framework-lsp",
-    feature = "framework-topology"
-))]
+#[cfg(all(feature = "sdk-facade-adapters", feature = "framework-topology"))]
 #[tokio::test]
 async fn integration_families_use_framework_managers_and_clients()
 -> Result<(), Box<dyn std::error::Error>> {
@@ -6660,109 +6655,6 @@ async fn integration_families_use_framework_managers_and_clients()
                 typed_error(&refused)?.code,
                 ExtensionErrorCode::FrameworkError
             );
-
-            // A2A: discovery against a closed loopback port surfaces the
-            // framework client's real connection failure.
-            let client = decode(
-                connection
-                    .send_request(family_request(
-                        "_echo_agent/a2a/op",
-                        "a2a.client.open",
-                        vec![],
-                    )?)
-                    .block_task()
-                    .await?,
-            )?;
-            let client_id: echo_sdk_protocol::handle::WireHandle =
-                serde_json::from_value(
-                    client.get("resource").cloned().ok_or_else(|| {
-                        agent_client_protocol::Error::internal_error().data("no client resource")
-                    })?,
-                )
-                .map_err(|error| {
-                    agent_client_protocol::Error::internal_error().data(error.to_string())
-                })?;
-            assert_eq!(
-                client_id.kind,
-                echo_sdk_protocol::handle::HandleKind::FacadeResource
-            );
-            let discovery = connection
-                .send_request(family_request(
-                    "_echo_agent/a2a/op",
-                    "a2a.discover",
-                    vec![
-                        serde_json::json!(client_id),
-                        serde_json::json!("http://127.0.0.1:9/.well-known/agent.json"),
-                    ],
-                )?)
-                .block_task()
-                .await
-                .expect_err("a closed port must fail discovery");
-            assert_eq!(
-                typed_error(&discovery)?.code,
-                ExtensionErrorCode::FrameworkError
-            );
-
-            // LSP: a fresh manager reports no running servers.
-            let lsp = decode(
-                connection
-                    .send_request(family_request(
-                        "_echo_agent/lsp/op",
-                        "lsp.manager.open",
-                        vec![],
-                    )?)
-                    .block_task()
-                    .await?,
-            )?;
-            let lsp_id: echo_sdk_protocol::handle::WireHandle =
-                serde_json::from_value(
-                    lsp.get("resource").cloned().ok_or_else(|| {
-                        agent_client_protocol::Error::internal_error()
-                            .data("no lsp manager resource")
-                    })?,
-                )
-                .map_err(|error| {
-                    agent_client_protocol::Error::internal_error().data(error.to_string())
-                })?;
-            assert_eq!(
-                lsp_id.kind,
-                echo_sdk_protocol::handle::HandleKind::FacadeResource
-            );
-            let statuses = decode(
-                connection
-                    .send_request(family_request(
-                        "_echo_agent/lsp/op",
-                        "lsp.server.status",
-                        vec![serde_json::json!(lsp_id)],
-                    )?)
-                    .block_task()
-                    .await?,
-            )?;
-            assert_eq!(
-                statuses
-                    .get("servers")
-                    .and_then(|value| value.as_array())
-                    .map(Vec::len),
-                Some(0)
-            );
-            let lsp_receiver = serde_json::json!({"kind": "handle", "value": lsp_id});
-            for operation in [
-                "echo_integration::lsp::manager::LspManager::configured_languages",
-                "echo_integration::lsp::manager::LspManager::running_servers",
-                "echo_integration::lsp::manager::LspManager::status_all",
-            ] {
-                let value = invoke_facade(
-                    &connection,
-                    operation,
-                    &agent,
-                    vec![session_argument(&session.session), lsp_receiver.clone()],
-                )
-                .await?;
-                assert!(
-                    value.is_array(),
-                    "{operation} must preserve its Rust vector result"
-                );
-            }
 
             // Topology: full round trip through the framework tracker.
             let tracker = decode(
@@ -8822,5 +8714,72 @@ async fn deferred_rust_inventory_invocations_fail_explicitly_without_success_def
         })
     }).await?;
     let _ = host.child.kill().await;
+    Ok(())
+}
+
+/// Exercise raw old addresses, bypassing all three language catalogs. The old
+/// signatures are frozen negative fixtures, not an alternate accepted registry.
+#[cfg(feature = "sdk-facade-adapters")]
+#[tokio::test]
+async fn retired_a2a_lsp_addresses_fail_on_the_real_host() -> Result<(), Box<dyn std::error::Error>>
+{
+    let retired: serde_json::Value = serde_json::from_str(include_str!(
+        "../../sdks/shared/testing/a2a_lsp_retirement_contract.json"
+    ))?;
+    let (endpoint, _seen) = start_model_server("retained").await?;
+    let work = tempfile::tempdir()?;
+    let state_root = tempfile::tempdir()?;
+    let config = write_config(work.path(), &endpoint, state_root.path(), None)?;
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    let result = drive(&mut host, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            let invalid = |message: &str| agent_client_protocol::Error::internal_error().data(message.to_string());
+            let initialized = connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let capability: EchoAgentCapability = serde_json::from_value(initialized.agent_capabilities.meta.as_ref().and_then(|meta| meta.get("echo_agent")).cloned().ok_or_else(|| invalid("advertisement absent"))?).map_err(|error| invalid(&error.to_string()))?;
+            assert!(!capability.features.iter().any(|feature| matches!(feature.as_str(), "a2a" | "lsp")));
+            assert!(capability.declares(ExtensionCapability::FeatureSurfaces));
+            for feature in ["a2a", "lsp"] {
+                let mut hello = client_hello();
+                hello.required_features = vec![feature.to_string()];
+                assert!(!capability.negotiate_hello(&hello).is_empty());
+            }
+            let mut old_hello = client_hello();
+            old_hello.source_contract_digest = retired.get("old_source_contract_digest").and_then(serde_json::Value::as_str).ok_or_else(|| invalid("old digest absent"))?.to_string();
+            assert!(!capability.negotiate_hello(&old_hello).is_empty());
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            let routes = retired.get("routes").and_then(serde_json::Value::as_array).ok_or_else(|| invalid("old routes absent"))?;
+            let families = retired.get("families").and_then(serde_json::Value::as_array).ok_or_else(|| invalid("old families absent"))?;
+            let mut count = 0_usize;
+            for family in families {
+                let name = family.get("family").and_then(serde_json::Value::as_str).ok_or_else(|| invalid("family name absent"))?;
+                let method = family.get("methods").and_then(serde_json::Value::as_array).and_then(|methods| methods.first()).and_then(serde_json::Value::as_str).ok_or_else(|| invalid("method absent"))?;
+                let route_id = format!("family:{name}");
+                let route = routes.iter().find(|route| route.get("route").and_then(serde_json::Value::as_str) == Some(route_id.as_str())).ok_or_else(|| invalid("family route absent"))?;
+                for signature in route.get("operation_signatures").and_then(serde_json::Value::as_array).ok_or_else(|| invalid("old signatures absent"))? {
+                    let request = serde_json::json!({"operation": signature.get("operation"), "signature_digest": signature.get("signature_digests").and_then(serde_json::Value::as_array).and_then(|values| values.first()), "handle": session.session, "arguments": []});
+                    let error = connection.send_request(UntypedMessage::new(method, request)?).block_task().await.err().ok_or_else(|| invalid("retired method returned success"))?;
+                    assert_eq!(error.code, agent_client_protocol::Error::method_not_found().code);
+                    count = count.saturating_add(1);
+                }
+            }
+            assert_eq!(count, 39);
+            for route in routes.iter().filter(|route| route.get("operation").is_some_and(|value| !value.is_null())) {
+                let request = serde_json::json!({"operation": route.get("operation"), "signature_digest": route.get("signature_digests").and_then(serde_json::Value::as_array).and_then(|values| values.first()), "handle": agent, "arguments": [WireValue::Handle(session.session.clone())]});
+                let error = connection.send_request(UntypedMessage::new("_echo_agent/facade/invoke", request)?).block_task().await.err().ok_or_else(|| invalid("retired source returned success"))?;
+                let typed = typed_facade_error(&error).map_err(|error| invalid(&error.to_string()))?;
+                assert_eq!(typed.code, ExtensionErrorCode::InvalidValue);
+                assert!(typed.message.contains("not a canonical route of this contract"));
+            }
+            connection.send_request(SessionCloseRequest { session: session.session }).block_task().await?;
+            let other = connection.send_request(SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            connection.send_request(SessionCloseRequest { session: other.session }).block_task().await?;
+            connection.send_request(AgentCloseRequest { agent }).block_task().await?;
+            Ok(())
+        })
+    }).await;
+    let _ = host.child.kill().await;
+    result?;
     Ok(())
 }

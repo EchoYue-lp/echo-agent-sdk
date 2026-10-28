@@ -1,5 +1,15 @@
 # echo-agent Java SDK (source)
 
+catalog／digest 随 JAR 进入 `com/echoagent/sdk/contracts/`；现有构造的两个路径为 null 时读取包内资源，显式路径仍可覆盖，Example 的第三个 catalog 参数改为可选。[自包含合同与验证](../../docs/sdk/source-packages.md)保留 source-only 定位，不代表已发布。[原生消息候选](../../docs/sdk/native-messages.md)的 block 身份／阶段／顺序和 reasoning 原数据沿现有 JsonNode wire 保留，final phase／空 final 不授予 Run 结束资格；新 Host／精确 pin 和真实执行单独验收。
+
+## A2A/LSP consumer withdrawal
+
+A2A/LSP families, native A2A/JWT values and the three named LSP plugin
+identities are withdrawn from this SDK. Old source/digest/feature/family
+requests fail explicitly. ACP/MCP/Task/Subagent, Host stdio, streams and R2
+parent/child close keep their original owners. The framework pin stays fixed,
+and the existing example stays in the full executable language gate.
+
 This is a source-only Java 17 ACP v1 client built on the official
 `com.agentclientprotocol:acp-core:0.17.0` transport/session runtime. The Host executable is supplied
 explicitly by the caller; this module does not bundle a JDK, Host binary or
@@ -69,18 +79,6 @@ shape.
 Failure categories are closed and preserve Rust recovery actions; ordinary
 JSON objects passed to `successJson`/`withData` are recursively encoded as
 maps, while the `JsonNode` overload remains the explicit pre-encoded path.
-`TaskState` is a Java enum with the same terminal, transition and display
-semantics as the Rust A2A value; it does not add a protocol route.
-`A2AMessage`, `A2ATaskStatus`, `AgentProvider` and `AgentSkill` provide the
-corresponding immutable value constructors and text projections.
-`AgentCard.builder(...)` provides the local immutable card and fluent builder;
-it does not mirror the Host-owned `from_agent` operation.
-`A2AArtifact.newArtifact(...)` and `A2AError.newError(...)` preserve the A2A
-artifact/error wire fields as immutable values.
-`TaskStatusUpdateEvent`, `TaskArtifactUpdateEvent` and `A2AStreamResponse`
-provide the corresponding closed local stream values.
-`A2ATaskParams`, `A2ATaskRequest`, `A2ATask`, and `A2ATaskResponse` provide
-immutable nested task envelope values; task execution remains Host-owned.
 `ThinkingLevel.parse(...)` preserves the Rust reasoning-effort aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` expose the same local lifecycle
 values while the active receipt remains Host-owned.
@@ -117,8 +115,6 @@ event-ledger ownership remain in the Host/Rust runtime.
 shutdown-duration validation without constructing the ACP adapter.
 `AcpValues.ExtensionLeaseError` preserves typed lease failure text while the
 Host retains admission and concurrency authority.
-`JwtConfig` and `JwtClaims` preserve local A2A auth configuration and subject
-projection while JWT verification remains Host/Rust-owned.
 `DependencyKind` and `SkillSource` expose dependency/source values while
 probing and skill loading remain framework-owned.
 `ContextInheritance` exposes sync/fresh/fork/teammate/team defaults while
@@ -357,7 +353,6 @@ values stay textual/BigInteger rather than floating point. Paths and time
 retain their tagged encoding. Unknown tagged values round-trip; malformed
 known values and missing nested discriminators fail. Object keys such as
 `kind` remain domain data unless explicitly inside a wire envelope.
-
 
 ### Channel handler consumption examples
 

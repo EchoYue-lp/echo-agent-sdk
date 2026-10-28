@@ -68,11 +68,11 @@ class SessionParentCloseTest {
         @Override public Mono<Void> closeGracefully() { return Mono.empty(); }
     }
 
-    private record Fixture(EchoAgentClient client, SessionHandle session, Transport transport) implements AutoCloseable {
+    record Fixture(EchoAgentClient client, SessionHandle session, Transport transport) implements AutoCloseable {
         @Override public void close() { client.close(); }
     }
 
-    private static Fixture fixture() throws Exception {
+    static Fixture fixture() throws Exception {
         var transport = new Transport();
         var session = new AcpClientSession(Duration.ofSeconds(2), transport, Map.of(), Map.of(), Function.identity());
         var catalog = new FacadeCatalog(Path.of("../shared/facade-operation-catalog.json"), Path.of("../shared/contract-digests.json"));

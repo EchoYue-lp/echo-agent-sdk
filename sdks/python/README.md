@@ -1,5 +1,15 @@
 # echo-agent Python SDK (source)
 
+默认 catalog／digest 随 wheel／sdist 进入 `echo_agent_sdk/contracts/`，不会回退到仓库相邻 `shared`；显式 `catalog_path` 仍可覆盖。[自包含合同与验证](../../docs/sdk/source-packages.md)保留 source-only 定位，不代表已发布。[原生消息候选](../../docs/sdk/native-messages.md)的 block 身份／阶段／顺序和 reasoning 原数据沿现有 wire 字典保留，final phase／空 final 不授予 Run 结束资格；新 Host／精确 pin 和真实执行单独验收。
+
+## A2A/LSP consumer withdrawal
+
+A2A/LSP families, native A2A/JWT values and the three named LSP plugin
+identities are withdrawn from this SDK. Old source/digest/feature/family
+requests fail explicitly. ACP/MCP/Task/Subagent, Host stdio, streams and R2
+parent/child close keep their original owners. The framework pin stays fixed,
+and the existing example stays in the full executable language gate.
+
 The Python SDK is source-only. It uses the official `agent-client-protocol`
 asyncio client and launches the Host command supplied by the caller. It does
 not install Python, Rust, or a prebuilt Host.
@@ -58,18 +68,6 @@ modifiers; structured payloads use the shared lossless WireValue conversion.
 Failure categories are validated as a closed set with the Rust recovery
 mapping, and ordinary JSON objects are encoded as maps even when they contain
 `kind`/`value` keys.
-`TaskState` is a native string enum with the same terminal, transition and
-display semantics as the Rust A2A value.
-`A2AMessage`, `A2ATaskStatus`, `AgentProvider` and `AgentSkill` are immutable
-native values with the corresponding text/status/provider/skill constructors.
-`AgentCard.builder(...)` provides the same local immutable card and fluent
-builder semantics; Agent-backed card discovery remains a Rust authority.
-`A2AArtifact.new(...)` and `A2AError.new(...)` provide immutable wire DTOs for
-artifact chunks and typed task errors.
-`TaskStatusUpdateEvent`, `TaskArtifactUpdateEvent` and `A2AStreamResponse`
-preserve the local typed stream event union without owning transport.
-`A2ATaskParams`, `A2ATaskRequest`, `A2ATask`, and `A2ATaskResponse` provide
-the corresponding immutable nested task envelopes.
 `ThinkingLevel.parse(...)` preserves the Rust reasoning-effort aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` preserve steering boundaries;
 the live receipt and turn remain Host-owned.
@@ -105,8 +103,6 @@ runtime values without owning the connection or event ledger.
 errors, and the shutdown duration without constructing an ACP adapter.
 `ExtensionLeaseError` preserves typed lease failure text while admission and
 concurrency remain Host-owned.
-`JwtConfig` and `JwtClaims` preserve local A2A auth configuration and subject
-projection; token verification remains Host-owned.
 `DependencyKind` and `SkillSource` preserve dependency/source values without
 probing or loading skills.
 `ContextInheritance` preserves the local inheritance defaults without owning
@@ -363,7 +359,6 @@ Integers retain the full wire range/canonical decimal text, paths retain their
 declared encoding, and Unicode is never byte-truncated. Unknown tagged values
 round-trip; malformed known values or missing nested discriminators fail.
 Map keys such as `kind` remain domain data rather than an implicit wire tag.
-
 
 ### Channel handler consumption examples
 

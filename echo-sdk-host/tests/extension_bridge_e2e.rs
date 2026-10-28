@@ -2026,6 +2026,7 @@ where
                                     if !input.messages.iter().any(|message| message.role == "tool") {
                                         response.message.content = WireValue::String(String::new());
                                         response.message.tool_calls = Some(vec![LlmToolCallWire {
+                                            provider_source: None,
                                             id: "source-live-shell-call".to_string(), call_type: "function".to_string(),
                                             function_name: "shell".to_string(), arguments: r#"{"command":"printf sandbox"}"#.to_string(),
                                         }]);
@@ -3014,6 +3015,9 @@ fn chat_response_wire(text: &str) -> LlmChatResponseWire {
             tool_call_id: None,
             reasoning_content: None,
             reasoning_blocks: None,
+            assistant_blocks: None,
+            execution_status: None,
+            approved_assistant_blocks: None,
         },
         finish_reason: Some("stop".to_string()),
         usage: None,
@@ -3034,6 +3038,7 @@ fn chat_stream_complete_wire(finish_reason: &str) -> LlmStreamCompleteWire {
         content: None,
         reasoning_content: None,
         reasoning_blocks: None,
+        assistant_blocks: None,
         tool_calls: None,
         finish_reason: finish_reason.to_string(),
         usage: None,
@@ -5234,6 +5239,9 @@ fn live_projector_reply() -> Result<AgentComponentCallResultWire, String> {
         tool_call_id: None,
         reasoning_content: None,
         reasoning_blocks: None,
+        assistant_blocks: None,
+        execution_status: None,
+        approved_assistant_blocks: None,
     };
     let projection = live_component_value(serde_json::json!({
         "marker": marker,

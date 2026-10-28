@@ -1,5 +1,17 @@
 # echo-agent-sdk
 
+## SDK消费者解耦
+
+当前SDK源码已撤出A2A/LSP的执行feature、family adapter和对应语言菜单。原Plan04
+精确撤销269项accepted身份、23条路由、39个操作，保留5352项身份／431条路由，新增
+接受为0；该撤销证明不因Framework后继物理删除而重复执行。
+
+标准ACP、独立Host stdio、MCP、Task/Subagent、ProjectRoot/Instruction、合法自定义工具、
+签名、回放、取消与恢复继续保留。Host正式构建来源以其Cargo manifest／锁为准；消费者
+去依赖和共享投影适配不等于正式新Git pin、删后Host、合同生成或运行验收通过。
+详见[ADR0042](docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md)，下方历史验收保原来源与范围。
+
+
 Source-first TypeScript, Python, and Java SDKs for the Rust `echo-agent`
 framework, connected through a source-built ACP Host and the
 `_echo_agent/*` extension contract.
@@ -12,7 +24,7 @@ The source-built Host now pins accepted framework `f7bac62eee04a963f92a3e4308b6e
 [main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)
 completed all seven jobs, followed by an independent remote-only cold source
 check. This upstream acceptance is not a passing SDK Host or consumer result.
-The SDK lock SHA-256 is `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
+The historical pin-switch SDK lock SHA-256 was `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
 upstream vendored Git source identities change from the existing webpki-patched
 SDK lock; all 656 package versions, checksums and dependency edges are unchanged.
 A03 official Cargo update and locked offline metadata each exited 0 using frozen
@@ -24,7 +36,7 @@ and a GitHub-only cold source check using 36 necessary historical refs.
 It records 50 verified behaviors, 75 resolved Findings and one human-accepted
 historical risk; the four non-blocking Rust inventory drift artifacts remain
 telemetry and were not regenerated.
-Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
+At that pre-withdrawal qualification cut, accepted membership remained5,621 identity/kind keys and454 routes. Pin/lock
 provenance does not authorize a 117-artifact update, new public language APIs,
 or automatic closure of the historical managed-exit cause.
 

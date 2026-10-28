@@ -550,6 +550,24 @@ impl WireValue {
             }
             Self::Record { type_id, fields } => {
                 validate_identity(type_id)?;
+                // ADR0042 withdraws these two plugin fields, not the shared
+                // record algebra or the remaining plugin components.
+                if fields.iter().any(|field| {
+                    (matches!(
+                        type_id.as_str(),
+                        "echo_core::plugin::registry::ResolvedComponents"
+                            | "echo_agent::plugin::ResolvedComponents"
+                    ) && field.name == "lsp_config_file")
+                        || (matches!(
+                            type_id.as_str(),
+                            "echo_agent::plugin::prepared::PluginWiringResult"
+                                | "echo_agent::plugin::PluginWiringResult"
+                        ) && field.name == "lsp_discovered")
+                }) {
+                    return Err(ScalarError::ValueLimit(
+                        "retired LSP plugin field is unsupported",
+                    ));
+                }
                 validate_fields(fields, depth)
             }
             Self::Variant {
@@ -559,6 +577,16 @@ impl WireValue {
             } => {
                 validate_identity(type_id)?;
                 validate_identity(variant)?;
+                if matches!(
+                    type_id.as_str(),
+                    "echo_core::plugin::capability::PluginCapability"
+                        | "echo_agent::plugin::PluginCapability"
+                ) && matches!(variant.as_str(), "LspServer" | "lsp_server")
+                {
+                    return Err(ScalarError::ValueLimit(
+                        "retired LSP plugin capability is unsupported",
+                    ));
+                }
                 validate_fields(fields, depth)
             }
             Self::Unknown { type_tag, payload } => {

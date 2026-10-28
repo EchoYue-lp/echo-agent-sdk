@@ -350,24 +350,6 @@
       "error_schema": "#/definitions/EchoSdkError"
     },
     {
-      "name": "_echo_agent/a2a/op",
-      "direction": "request",
-      "capability": "feature_surfaces",
-      "summary": "A2A client/server lifecycle operations (feature: a2a).",
-      "params_schema": "#/definitions/FeatureOperationRequest",
-      "result_schema": "#/definitions/FeatureOperationResponse",
-      "error_schema": "#/definitions/EchoSdkError"
-    },
-    {
-      "name": "_echo_agent/lsp/op",
-      "direction": "request",
-      "capability": "feature_surfaces",
-      "summary": "LSP manager/client operations (feature: lsp).",
-      "params_schema": "#/definitions/FeatureOperationRequest",
-      "result_schema": "#/definitions/FeatureOperationResponse",
-      "error_schema": "#/definitions/EchoSdkError"
-    },
-    {
       "name": "_echo_agent/channels/op",
       "direction": "request",
       "capability": "feature_surfaces",
@@ -2946,6 +2928,141 @@
         "released"
       ]
     },
+    "AgentPhaseWire": {
+      "description": "与Framework AgentPhase的原生serde拼写一致，不从正文推导执行阶段。",
+      "type": "string",
+      "enum": [
+        "Thinking",
+        "Acting",
+        "Terminal"
+      ]
+    },
+    "AssistantMessageBlockWire": {
+      "description": "无损投影一个 Framework assistant block；块结束不授予执行结束资格。",
+      "type": "object",
+      "required": [
+        "block_id",
+        "complete",
+        "delta",
+        "request_id",
+        "sequence"
+      ],
+      "properties": {
+        "block_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "delta": {
+          "type": "string"
+        },
+        "phase": {
+          "default": "unknown",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AssistantPhaseWire"
+            }
+          ]
+        },
+        "provider": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provider_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderOutputSourceWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasoning": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/LlmReasoningBlockWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "$ref": "#/definitions/WireU64"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AssistantPhaseWire": {
+      "description": "Framework 原生消息阶段的 wire 投影；缺失阶段保持 Unknown，不从文字推断。",
+      "type": "string",
+      "enum": [
+        "reasoning",
+        "commentary",
+        "partial_answer",
+        "final_answer",
+        "unknown"
+      ]
+    },
+    "ExecutionStatusKindWire": {
+      "type": "string",
+      "enum": [
+        "started",
+        "waiting",
+        "tool_pending",
+        "candidate",
+        "settled",
+        "cancelled",
+        "failed"
+      ]
+    },
+    "ExecutionStatusWire": {
+      "description": "Framework执行观察的投影；不与TaskRun目标完成合并，也不在SDK产生状态。",
+      "type": "object",
+      "required": [
+        "execution_id",
+        "phase",
+        "sequence",
+        "status"
+      ],
+      "properties": {
+        "execution_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "$ref": "#/definitions/AgentPhaseWire"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "request_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sequence": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "status": {
+          "$ref": "#/definitions/ExecutionStatusKindWire"
+        }
+      },
+      "additionalProperties": false
+    },
     "LlmMessageWire": {
       "type": "object",
       "required": [
@@ -2953,8 +3070,36 @@
         "role"
       ],
       "properties": {
+        "approved_assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
+        "assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
         "content": {
           "$ref": "#/definitions/WireValue"
+        },
+        "execution_status": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ExecutionStatusWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "name": {
           "type": [
@@ -3097,6 +3242,63 @@
           "type": "string"
         },
         "id": {
+          "type": "string"
+        },
+        "provider_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderOutputSourceWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProviderOutputSourceWire": {
+      "description": "原生坐标及原始phase；保留未知phase文本，不推导呈现或完成资格。",
+      "type": "object",
+      "required": [
+        "item_id",
+        "output_index",
+        "protocol",
+        "request_id"
+      ],
+      "properties": {
+        "content_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "content_kind": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "output_index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "phase": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "protocol": {
+          "$ref": "#/definitions/LlmApiProtocolWire"
+        },
+        "request_id": {
           "type": "string"
         }
       },
@@ -14540,6 +14742,34 @@
             "data": {
               "type": "object",
               "required": [
+                "block"
+              ],
+              "properties": {
+                "block": {
+                  "$ref": "#/definitions/AssistantMessageBlockWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "assistant_message"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
                 "settlement"
               ],
               "properties": {
@@ -15423,6 +15653,16 @@
           "type": "integer",
           "format": "uint32",
           "minimum": 0.0
+        },
+        "provider_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderOutputSourceWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -15430,6 +15670,15 @@
     "LlmStreamChunkWire": {
       "type": "object",
       "properties": {
+        "assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
         "content": {
           "type": [
             "string",
@@ -15485,6 +15734,15 @@
         "finish_reason"
       ],
       "properties": {
+        "assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
         "content": {
           "type": [
             "string",
@@ -16090,6 +16348,53 @@
     },
     "AgentEventWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "$ref": "#/definitions/ExecutionStatusWire"
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "execution_status"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "block"
+              ],
+              "properties": {
+                "block": {
+                  "$ref": "#/definitions/AssistantMessageBlockWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "assistant_message"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [

@@ -1,4 +1,3 @@
-export * from "./a2a.js";
 export * from "./thinking.js";
 export * from "./steering_values.js";
 export * from "./subagent_values.js";
@@ -15,7 +14,6 @@ export * from "./command_cell_values.js";
 export * from "./command_cell_status_values.js";
 export * from "./team_strategy_values.js";
 export * from "./acp_values.js";
-export * from "./jwt_values.js";
 export * from "./dependency_values.js";
 export * from "./context_inheritance_values.js";
 export * from "./observed_isolation_values.js";

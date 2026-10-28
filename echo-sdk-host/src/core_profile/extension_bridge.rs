@@ -21,6 +21,9 @@
 //! (ToolManager policy, run terminals, event envelopes, the session
 //! registry) stay untouched.
 
+use super::native_message::delta_tool_call_from_wire;
+use super::wire::{reasoning_block_from_wire, reasoning_block_wire};
+
 use agent_client_protocol::{Client, ConnectionTo};
 #[cfg(feature = "framework-channels")]
 use async_trait::async_trait;
@@ -43,6 +46,8 @@ use tokio::sync::{Notify, mpsc};
 
 use echo_sdk_protocol::error::{EchoSdkError, ExtensionErrorCode, Retryability};
 use echo_sdk_protocol::handle::{HandleKind, WireHandle};
+#[cfg(test)]
+use echo_sdk_protocol::methods::LlmUsageWire;
 use echo_sdk_protocol::methods::{
     ActivateSkillWire, AgentComponentCallInputWire, AgentComponentCallResultWire,
     AgentComponentCallWire, AgentComponentCapabilitiesWire, AgentComponentKindWire,
@@ -57,9 +62,9 @@ use echo_sdk_protocol::methods::{
     ExtensionOperation, ExtensionResult, ExtensionStreamChunkValue, ExtensionStreamCompleteValue,
     ExtensionStreamEvent, ExtensionUnit, HookResultWire, HookRunInput, HumanLoopKindWire,
     HumanLoopRequestWire, HumanLoopResponseWire, HumanRiskLevelWire, InterventionResultWire,
-    LlmChatChunkWire, LlmChatRequestWire, LlmChatResponseWire, LlmDeltaToolCallWire,
-    LlmMessageWire, LlmReasoningBlockWire, LlmStreamChunkWire, LlmStreamCompleteWire,
-    LlmToolCallWire, LlmToolDefinitionWire, PermissionDecisionWire, SandboxOutputChannelWire,
+    LlmChatChunkWire, LlmChatRequestWire, LlmChatResponseWire, LlmDeltaFunctionWire,
+    LlmDeltaToolCallWire, LlmMessageWire, LlmStreamChunkWire, LlmStreamCompleteWire,
+    LlmToolDefinitionWire, PermissionDecisionWire, SandboxOutputChannelWire,
     SandboxStreamChunkWire, SandboxStreamCompleteWire, SandboxStreamFailureWire,
     SkillDescriptorPolicyWire, StepTypeWire, StoreItemWire, StoreKeyInput,
     StoreListNamespacesInput, StoreNamespaceInput, StorePutInput, StoreSearchInput,
@@ -73,8 +78,6 @@ use echo_sdk_protocol::methods::{
     ChannelOutboundMessageWire, ChannelPluginDescriptorWire, ChannelReplyInput, ChannelSendInput,
     ChannelStartInput,
 };
-#[cfg(test)]
-use echo_sdk_protocol::methods::{LlmDeltaFunctionWire, LlmUsageWire};
 use echo_sdk_protocol::scalar::{WireI64, WirePath, WireU64, WireValue};
 
 use super::state::CoreProfileState;
@@ -2729,6 +2732,38 @@ fn tool_react_error(error: EchoSdkError) -> ReactError {
     }
 }
 
+#[cfg(feature = "framework-web")]
+fn search_provider_error(error: EchoSdkError) -> ReactError {
+    if let Some(observation) = super::wire::observation_from_sdk_error(&error) {
+        return observation;
+    }
+    if !matches!(
+        error.retryable,
+        Retryability::Always | Retryability::AfterDelay
+    ) {
+        return react_error(error);
+    }
+    let category = match error.code {
+        ExtensionErrorCode::ExtensionFailed => echo_agent::tools::ToolFailureCategory::Transient,
+        ExtensionErrorCode::ExtensionTimeout => echo_agent::tools::ToolFailureCategory::Timeout,
+        _ => return react_error(error),
+    };
+    // 仅此只读SearchProvider边界能确认无副作用；其它组件不继承该承诺。
+    // SDK的AfterDelay没有时长字段，延迟与预算继续归框架中央重试配置所有。
+    let failure = echo_agent::tools::ToolFailure::new(category).retryable();
+    echo_agent::error::ToolError::RemoteFailure {
+        tool: "web_search".to_string(),
+        message: format!(
+            "extension bridge failure {}: {}",
+            error.code.as_str(),
+            error.message
+        ),
+        http_status: None,
+        failure: Box::new(failure),
+    }
+    .into()
+}
+
 // ToolManager accepts Complete results as-is. Preserve the framework's typed
 // failure policy here; descriptor risk tells it whether effects may have begun.
 fn tool_stream_failure(error: EchoSdkError, may_have_side_effects: bool) -> ToolResult {
@@ -3189,12 +3224,18 @@ fn agent_event_wire_from_framework(
         },
         AgentEvent::FinalAnswer(text) => AgentEventWire::FinalAnswer { text: text.clone() },
         AgentEvent::Cancelled => AgentEventWire::Cancelled,
-        _ => return Err("unsupported framework AgentEvent variant".to_string()),
+        _ => return super::native_message::from_framework(event),
     })
 }
 
 fn agent_event_from_wire(wire: AgentEventWire) -> std::result::Result<AgentEvent, String> {
     Ok(match wire {
+        AgentEventWire::ExecutionStatus(status) => {
+            return super::native_message::status_to_framework(status);
+        }
+        AgentEventWire::AssistantMessage { block } => {
+            return super::native_message::to_framework(block);
+        }
         AgentEventWire::Token { text } => AgentEvent::Token(text),
         AgentEventWire::ThinkStart => AgentEvent::ThinkStart,
         AgentEventWire::ThinkEnd {
@@ -3788,77 +3829,23 @@ fn provider_capabilities(
     }
 }
 
-fn reasoning_block_wire(block: &echo_agent::llm::types::ReasoningBlock) -> LlmReasoningBlockWire {
-    match block {
-        echo_agent::llm::types::ReasoningBlock::Signed {
-            thinking,
-            signature,
-        } => LlmReasoningBlockWire::Signed {
-            thinking: thinking.clone(),
-            signature: signature.clone(),
-        },
-        echo_agent::llm::types::ReasoningBlock::Redacted { data } => {
-            LlmReasoningBlockWire::Redacted { data: data.clone() }
-        }
-        echo_agent::llm::types::ReasoningBlock::Opaque {
-            provider,
-            id,
-            data,
-            summary,
-        } => LlmReasoningBlockWire::Opaque {
-            provider: provider.clone(),
-            id: id.clone(),
-            data: data.clone(),
-            summary: summary.clone(),
-        },
-    }
-}
-
-fn reasoning_block_from_wire(
-    block: LlmReasoningBlockWire,
-) -> echo_agent::llm::types::ReasoningBlock {
-    match block {
-        LlmReasoningBlockWire::Signed {
-            thinking,
-            signature,
-        } => echo_agent::llm::types::ReasoningBlock::Signed {
-            thinking,
-            signature,
-        },
-        LlmReasoningBlockWire::Redacted { data } => {
-            echo_agent::llm::types::ReasoningBlock::Redacted { data }
-        }
-        LlmReasoningBlockWire::Opaque {
-            provider,
-            id,
-            data,
-            summary,
-        } => echo_agent::llm::types::ReasoningBlock::Opaque {
-            provider,
-            id,
-            data,
-            summary,
-        },
-    }
-}
-
 fn message_wire(
     message: &echo_agent::llm::types::Message,
 ) -> std::result::Result<LlmMessageWire, String> {
+    let metadata = super::native_message::message_metadata(message)?;
     Ok(LlmMessageWire {
         role: message.role.as_str().to_string(),
         content: to_wire(&message.content)?,
-        tool_calls: message.tool_calls.as_ref().map(|calls| {
-            calls
-                .iter()
-                .map(|call| LlmToolCallWire {
-                    id: call.id.clone(),
-                    call_type: call.call_type.clone(),
-                    function_name: call.function.name.clone(),
-                    arguments: call.function.arguments.clone(),
-                })
-                .collect()
-        }),
+        tool_calls: message
+            .tool_calls
+            .as_ref()
+            .map(|calls| {
+                calls
+                    .iter()
+                    .map(super::native_message::tool_call_wire)
+                    .collect::<Result<Vec<_>, _>>()
+            })
+            .transpose()?,
         name: message.name.clone(),
         tool_call_id: message.tool_call_id.clone(),
         reasoning_content: message.reasoning_content.clone(),
@@ -3866,40 +3853,22 @@ fn message_wire(
             .reasoning_blocks
             .as_ref()
             .map(|blocks| blocks.iter().map(reasoning_block_wire).collect()),
+        assistant_blocks: metadata.assistant_blocks,
+        approved_assistant_blocks: metadata.approved_assistant_blocks,
+        execution_status: metadata.execution_status,
     })
 }
 
 fn message_from_wire(
     message: LlmMessageWire,
 ) -> std::result::Result<echo_agent::llm::types::Message, String> {
-    Ok(echo_agent::llm::types::Message {
-        role: message.role.as_str().into(),
-        content: from_wire(message.content)?,
-        tool_calls: message.tool_calls.map(|calls| {
-            calls
-                .into_iter()
-                .map(|call| echo_agent::llm::types::ToolCall {
-                    id: call.id,
-                    call_type: call.call_type,
-                    function: echo_agent::llm::types::FunctionCall {
-                        name: call.function_name,
-                        arguments: call.arguments,
-                    },
-                })
-                .collect()
-        }),
-        name: message.name,
-        tool_call_id: message.tool_call_id,
-        reasoning_content: message.reasoning_content,
-        reasoning_blocks: message
-            .reasoning_blocks
-            .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect()),
-    })
+    super::wire::message_from_wire(message)
 }
 
 #[cfg(test)]
 fn delta_tool_call_wire(delta: &echo_agent::llm::types::DeltaToolCall) -> LlmDeltaToolCallWire {
     LlmDeltaToolCallWire {
+        provider_source: None,
         index: delta.index,
         id: delta.id.clone(),
         call_type: delta.call_type.clone(),
@@ -3909,20 +3878,6 @@ fn delta_tool_call_wire(delta: &echo_agent::llm::types::DeltaToolCall) -> LlmDel
             .map(|function| LlmDeltaFunctionWire {
                 name: function.name.clone(),
                 arguments: function.arguments.clone(),
-            }),
-    }
-}
-
-fn delta_tool_call_from_wire(wire: LlmDeltaToolCallWire) -> echo_agent::llm::types::DeltaToolCall {
-    echo_agent::llm::types::DeltaToolCall {
-        index: wire.index,
-        id: wire.id,
-        call_type: wire.call_type,
-        function: wire
-            .function
-            .map(|function| echo_agent::llm::types::DeltaFunctionCall {
-                name: function.name,
-                arguments: function.arguments,
             }),
     }
 }
@@ -3940,6 +3895,7 @@ fn chat_chunk_wire(
             .reasoning_blocks
             .as_ref()
             .map(|blocks| blocks.iter().map(reasoning_block_wire).collect()),
+        assistant_blocks: None,
         tool_calls: chunk
             .delta
             .tool_calls
@@ -3966,8 +3922,16 @@ fn chat_chunk_from_wire(
             .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect()),
         tool_calls: wire
             .tool_calls
-            .map(|calls| calls.into_iter().map(delta_tool_call_from_wire).collect()),
+            .map(|calls| {
+                calls
+                    .into_iter()
+                    .map(delta_tool_call_from_wire)
+                    .collect::<Result<Vec<_>, _>>()
+            })
+            .transpose()?,
+        ..Default::default()
     };
+    let delta = super::native_message::with_delta_blocks(delta, wire.assistant_blocks)?;
     Ok(echo_agent::llm::ChatChunk {
         delta,
         finish_reason: wire.finish_reason,
@@ -3983,6 +3947,7 @@ fn chat_chunk_from_stream_chunk(
         content: wire.content,
         reasoning_content: wire.reasoning_content,
         reasoning_blocks: wire.reasoning_blocks,
+        assistant_blocks: wire.assistant_blocks,
         tool_calls: wire.tool_calls,
         finish_reason: None,
         usage: wire.usage,
@@ -3997,6 +3962,7 @@ fn chat_chunk_from_stream_complete(
         content: wire.content,
         reasoning_content: wire.reasoning_content,
         reasoning_blocks: wire.reasoning_blocks,
+        assistant_blocks: wire.assistant_blocks,
         tool_calls: wire.tool_calls,
         finish_reason: Some(wire.finish_reason),
         usage: wire.usage,
@@ -4017,6 +3983,14 @@ fn chat_response_from_wire(
 fn chat_response_into_chunk(
     response: echo_agent::llm::ChatResponse,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
+    let metadata = super::native_message::message_metadata(&response.message)?;
+    if metadata.execution_status.is_some() || metadata.approved_assistant_blocks.is_some() {
+        return Err(
+            "runtime/approved confirmation cannot be silently converted into a provider delta"
+                .to_string(),
+        );
+    }
+    let assistant_blocks = metadata.assistant_blocks;
     let finish_reason = response
         .finish_reason
         .filter(|reason| !reason.trim().is_empty() && reason.chars().count() <= 256)
@@ -4032,14 +4006,16 @@ fn chat_response_into_chunk(
                 .into_iter()
                 .enumerate()
                 .map(|(index, call)| {
-                    Ok(echo_agent::llm::types::DeltaToolCall {
+                    let call = super::native_message::tool_call_wire(&call)?;
+                    delta_tool_call_from_wire(LlmDeltaToolCallWire {
+                        provider_source: call.provider_source,
                         index: u32::try_from(index)
                             .map_err(|_| "LLM response has too many tool calls".to_string())?,
                         id: Some(call.id),
                         call_type: Some(call.call_type),
-                        function: Some(echo_agent::llm::types::DeltaFunctionCall {
-                            name: Some(call.function.name),
-                            arguments: Some(call.function.arguments),
+                        function: Some(LlmDeltaFunctionWire {
+                            name: Some(call.function_name),
+                            arguments: Some(call.arguments),
                         }),
                     })
                 })
@@ -4047,13 +4023,17 @@ fn chat_response_into_chunk(
         })
         .transpose()?;
     Ok(echo_agent::llm::ChatChunk {
-        delta: echo_agent::llm::types::DeltaMessage {
-            role: Some(response.message.role.as_str().to_string()),
-            content: response.message.content.as_text(),
-            reasoning_content: response.message.reasoning_content,
-            reasoning_blocks: response.message.reasoning_blocks,
-            tool_calls,
-        },
+        delta: super::native_message::with_delta_blocks(
+            echo_agent::llm::types::DeltaMessage {
+                role: Some(response.message.role.as_str().to_string()),
+                content: response.message.content.as_text(),
+                reasoning_content: response.message.reasoning_content,
+                reasoning_blocks: response.message.reasoning_blocks,
+                tool_calls,
+                ..Default::default()
+            },
+            assistant_blocks,
+        )?,
         finish_reason: Some(finish_reason),
         usage: response.usage,
     })
@@ -4659,6 +4639,10 @@ impl ExtensionAgentComponentProxy {
                 if managed {
                     managed_persistence_error(error, self.component)
                 } else {
+                    #[cfg(feature = "framework-web")]
+                    if operation == AgentComponentOperationWire::SearchProviderSearch {
+                        return search_provider_error(error);
+                    }
                     react_error(error)
                 }
             })?;
@@ -13664,6 +13648,87 @@ callback_owner_init
         Ok(())
     }
 
+    #[cfg(feature = "framework-web")]
+    #[test]
+    fn readonly_search_preserves_explicit_retryability_without_reclassifying_other_components() {
+        use echo_agent::tools::{
+            ToolFailure, ToolFailureCategory, ToolRecoveryAction, ToolSideEffect,
+        };
+
+        for retryable in [Retryability::Always, Retryability::AfterDelay] {
+            for (code, category) in [
+                (
+                    ExtensionErrorCode::ExtensionFailed,
+                    ToolFailureCategory::Transient,
+                ),
+                (
+                    ExtensionErrorCode::ExtensionTimeout,
+                    ToolFailureCategory::Timeout,
+                ),
+            ] {
+                let error = sdk_error(
+                    code,
+                    "original provider failure 中文🙂",
+                    retryable,
+                    "extension/invoke",
+                );
+                let failure = ToolFailure::from_error(&search_provider_error(error), false);
+                assert_eq!(failure.category, category);
+                assert_eq!(failure.recovery, ToolRecoveryAction::Retry);
+                assert_eq!(failure.side_effect, ToolSideEffect::None);
+            }
+            let error = sdk_error(
+                ExtensionErrorCode::ExtensionFailed,
+                "ordinary component failure",
+                retryable,
+                "extension/invoke",
+            );
+            let failure = ToolFailure::from_error(&react_error(error), false);
+            assert_eq!(failure.category, ToolFailureCategory::Permanent);
+            assert_eq!(failure.recovery, ToolRecoveryAction::Stop);
+            for (code, category) in [
+                (
+                    ExtensionErrorCode::Cancelled,
+                    ToolFailureCategory::Cancelled,
+                ),
+                (
+                    ExtensionErrorCode::InvalidValue,
+                    ToolFailureCategory::Permanent,
+                ),
+            ] {
+                let error = sdk_error(
+                    code,
+                    "original cancellation or unclassified failure",
+                    retryable,
+                    "extension/invoke",
+                );
+                let failure = ToolFailure::from_error(&search_provider_error(error), false);
+                assert_eq!(failure.category, category);
+                assert_eq!(failure.recovery, ToolRecoveryAction::Stop);
+            }
+        }
+        for (code, category) in [
+            (
+                ExtensionErrorCode::ExtensionFailed,
+                ToolFailureCategory::Permanent,
+            ),
+            (
+                ExtensionErrorCode::Cancelled,
+                ToolFailureCategory::Cancelled,
+            ),
+        ] {
+            let error = sdk_error(
+                code,
+                "original nonretryable failure",
+                Retryability::Never,
+                "extension/invoke",
+            );
+            let failure = ToolFailure::from_error(&search_provider_error(error), false);
+            assert_eq!(failure.category, category);
+            assert_eq!(failure.recovery, ToolRecoveryAction::Stop);
+        }
+    }
+
     // The original ToolManager consumes Complete directly. Exercise registered
     // proxies over actual ACP without cancelling the caller token locally.
     async fn remote_stream_terminal_case(
@@ -13900,6 +13965,7 @@ callback_owner_init
                 reasoning_content: None,
                 reasoning_blocks: None,
                 tool_calls: None,
+                ..Default::default()
             },
             finish_reason: Some("stop".to_string()),
             usage: None,

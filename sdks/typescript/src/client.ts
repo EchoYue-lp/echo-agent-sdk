@@ -10,6 +10,7 @@ import {
 } from "@agentclientprotocol/sdk";
 import { FacadeCatalog } from "./catalog.js";
 import { EchoAgentError } from "./errors.js";
+import { runtimeTerminal } from "./runtime_terminal.js";
 import type {
   EchoAgentCapability,
   EventGap,
@@ -440,8 +441,11 @@ export class EchoAgentClient {
       feed.lastEventSequence = sequence;
       feed.lastLiveSequence = sequence;
       recordLiveSequence(feed, sequence);
-      await deliverStreamItem(feed, event, false,
-        ["final_answer", "cancelled", "error"].includes(event.envelope.payload.event_type));
+      try {
+        await deliverStreamItem(feed, event, false, runtimeTerminal(event.envelope));
+      } catch (error) {
+        feed.queue.fail(EchoAgentError.fromUnknown(error, "_echo_agent/event"));
+      }
     });
     customApp.onNotification("_echo_agent/gap", (params) => params, async ({ params }) => {
       let gap: FacadeGap;
@@ -973,7 +977,6 @@ export class EchoAgentClient {
   }
 
   publishFirstEvent(stream: WireHandle, envelope: WireEventEnvelope): void {
-    const event = decodeEvent({ stream, envelope });
     let feed = this.events.get(stream.id);
     if (!feed) {
       feed = { queue: new AsyncQueue<FacadeStreamItem>(this.queueCapacity), handle: { ...stream }, lastEventSequence: 0n };
@@ -983,13 +986,18 @@ export class EchoAgentClient {
       feed.queue.fail(new EchoAgentError("handle_mismatch", "event stream handle changed generation"));
       return;
     }
-    const sequence = parsePositiveSequence(event.envelope.sequence);
-    if (sequence <= feed.lastEventSequence) return;
-    feed.handle = { ...stream };
-    feed.lastEventSequence = sequence;
-    feed.lastLiveSequence = sequence;
-    recordLiveSequence(feed, sequence);
-    void deliverStreamItem(feed, event);
+    try {
+      const event = decodeEvent({ stream, envelope });
+      const sequence = parsePositiveSequence(event.envelope.sequence);
+      if (sequence <= feed.lastEventSequence) return;
+      feed.handle = { ...stream };
+      feed.lastEventSequence = sequence;
+      feed.lastLiveSequence = sequence;
+      recordLiveSequence(feed, sequence);
+      void deliverStreamItem(feed, event, false, runtimeTerminal(event.envelope));
+    } catch (error) {
+      feed.queue.fail(EchoAgentError.fromUnknown(error, "_echo_agent/event"));
+    }
   }
 
   endEvents(streamId: string): void {
@@ -1055,9 +1063,9 @@ export class EchoAgentClient {
     if (!feed?.handle || !sameHandle(feed.handle, stream)) return;
     const base = BigInt(result.gap?.gap.snapshot_watermark ?? result.requested_after_sequence);
     const end = BigInt(result.next_cursor.last_processed_sequence);
-    for(const event of result.events){
-      if(["final_answer","cancelled","error"].includes(event.envelope.payload.event_type))feed.replayTerminalSequence=BigInt(event.envelope.sequence);
-    }
+    let terminalSequence: bigint | undefined;
+    for (const event of result.events) if (runtimeTerminal(event.envelope)) terminalSequence = BigInt(event.envelope.sequence);
+    if (terminalSequence !== undefined) feed.replayTerminalSequence = terminalSequence;
     const ranges = feed.replayRanges ??= [];
     // Empty pages have no event coverage and must not intercept a later chain.
     if (!result.gap && base === end) return;
@@ -1328,12 +1336,15 @@ export class SessionHandle {
       session: this.wire,
       input: input.mode === "execute" ? { kind: "execute", task: input.text } : { kind: "chat", text: input.text },
     });
-    if (response.first_event) this.client.publishFirstEvent(response.stream, response.first_event);
     const run = new RunHandle(this.client, response.run, response.stream);
     // An accepted start reply can arrive after the parent close reply. It
     // still belongs to that disposed scope and must not reopen a local feed.
     if (this.closed) run[closeRunScope]();
-    else this.runs.add(run);
+    else {
+      // The accepted child remains owned even when its first observation is malformed.
+      this.runs.add(run);
+      if (response.first_event) this.client.publishFirstEvent(response.stream, response.first_event);
+    }
     return run;
   }
 

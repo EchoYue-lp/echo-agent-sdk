@@ -212,8 +212,7 @@ pub(crate) struct SessionFacadeRuntime {
     /// session drops both its in-memory index and embedder client.
     #[cfg(feature = "framework-rag")]
     rag_tools: std::sync::Mutex<std::collections::HashMap<String, Arc<tools::RagToolSet>>>,
-    // Integration family resources (todo 5): MCP managers, A2A clients,
-    // LSP managers and topology trackers, owner-checked per session.
+    // Integration family resources (todo 5): MCP managers and topology trackers, owner-checked per session.
     pub integrations: integrations::IntegrationResources,
 }
 
@@ -1501,8 +1500,6 @@ async fn facade_admission(
                 | "trace"
                 | "permission"
                 | "mcp"
-                | "a2a"
-                | "lsp"
                 | "channels"
                 | "topology"
                 | "project_rules"
@@ -1711,7 +1708,7 @@ async fn facade_admission(
                         .map(WireValue::Bool),
                 )
             }
-            "workflow" | "a2a" | "shell"
+            "workflow" | "shell"
                 if request.operation.ends_with(".stream.next")
                     || request.operation.ends_with(".stream.cancel")
                     || request.operation.ends_with(".stream.close") =>
@@ -1985,7 +1982,7 @@ async fn facade_admission(
                     &request,
                 ))
             }
-            "mcp" | "a2a" | "lsp" | "topology" => {
+            "mcp" | "topology" => {
                 let (_authorities, owner) = session.ok_or_else(missing_session)?;
                 response(
                     integrations::dispatch(
@@ -2428,7 +2425,7 @@ mod tests {
         };
         let value = echo_sdk_protocol::scalar::WireValue::Handle(handle.clone());
         let arguments = [family_argument_json(&value).map_err(|error| error.to_string())?];
-        let restored = resource_handle_at(&arguments, 0, "a resource", "_echo_agent/lsp/op")
+        let restored = resource_handle_at(&arguments, 0, "a resource", "_echo_agent/mcp/op")
             .map_err(|error| error.message)?;
         assert_eq!(restored, handle);
         Ok(())

@@ -69,11 +69,9 @@ export class FacadeCatalog {
   private readonly familyList: readonly CatalogFamily[];
 
   constructor(path?: string) {
-    const resolved = path ?? fileURLToPath(new URL("../../shared/facade-operation-catalog.json", import.meta.url));
+    const resolved = path ?? fileURLToPath(new URL("../contracts/facade-operation-catalog.json", import.meta.url));
     this.document = JSON.parse(readFileSync(resolved, "utf8")) as CatalogDocument;
-    const digestPath = path
-      ? join(dirname(resolved), "contract-digests.json")
-      : fileURLToPath(new URL("../../shared/contract-digests.json", import.meta.url));
+    const digestPath = join(dirname(resolved), "contract-digests.json");
     const digests = JSON.parse(readFileSync(digestPath, "utf8")) as {
       contract_digest: string;
       source_contract_digest: string;

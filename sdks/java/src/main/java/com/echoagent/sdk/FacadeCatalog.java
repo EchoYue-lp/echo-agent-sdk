@@ -39,7 +39,7 @@ public final class FacadeCatalog {
     private final String sourceContractDigest;
 
     public FacadeCatalog(Path catalogPath, Path digestPath) throws IOException {
-        JsonNode catalog = JsonSupport.MAPPER.readTree(Files.readString(catalogPath));
+        JsonNode catalog = readDocument(catalogPath, "facade-operation-catalog.json");
         if (!catalog.isObject() || !catalog.path("routes").isArray()) {
             throw new IllegalArgumentException("canonical catalog routes must be an array");
         }
@@ -105,9 +105,18 @@ public final class FacadeCatalog {
         parsedFamilies.sort(Comparator.comparing(CatalogFamily::family));
         families = List.copyOf(parsedFamilies);
 
-        JsonNode digests = JsonSupport.MAPPER.readTree(Files.readString(digestPath));
+        JsonNode digests = readDocument(digestPath, "contract-digests.json");
         contractDigest = digests.path("contract_digest").asText();
         sourceContractDigest = digests.path("source_contract_digest").asText();
+    }
+
+    /** null 使用随 JAR 分发的同源合同；显式路径仍完整保留调用者选择。 */
+    private static JsonNode readDocument(Path path, String name) throws IOException {
+        if (path != null) return JsonSupport.MAPPER.readTree(Files.readString(path));
+        try (var stream = FacadeCatalog.class.getResourceAsStream("contracts/" + name)) {
+            if (stream == null) throw new IOException("SDK package is missing contracts/" + name);
+            return JsonSupport.MAPPER.readTree(stream);
+        }
     }
 
     private static String requiredText(JsonNode object, String field, String context) {

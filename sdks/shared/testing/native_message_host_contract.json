@@ -1,0 +1,77 @@
+{
+  "responses": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": {
+          "kind": "string",
+          "value": "检查当前源🙂"
+        },
+        "assistant_blocks": [
+          {
+            "provider_source": {
+              "protocol": "chat_completions",
+              "request_id": "provider-request-1",
+              "item_id": "provider-item-1",
+              "output_index": 1,
+              "content_index": 0,
+              "content_kind": "text",
+              "phase": "commentary"
+            },
+            "block_id": "block-1",
+            "request_id": "request-1",
+            "sequence": "0",
+            "phase": "commentary",
+            "delta": "检查当前源🙂",
+            "complete": true,
+            "provider": "sdk-fixture",
+            "reasoning": null
+          }
+        ]
+      },
+      "finish_reason": "stop",
+      "raw": {
+        "kind": "map",
+        "value": []
+      }
+    },
+    {
+      "message": {
+        "role": "assistant",
+        "content": {
+          "kind": "string",
+          "value": "完成当前源原生验证🧪"
+        },
+        "assistant_blocks": [
+          {
+            "provider_source": {
+              "protocol": "chat_completions",
+              "request_id": "provider-request-2",
+              "item_id": "provider-item-2",
+              "output_index": 2,
+              "content_index": 0,
+              "content_kind": "text",
+              "phase": "final_answer"
+            },
+            "block_id": "block-2",
+            "request_id": "request-2",
+            "sequence": "1",
+            "phase": "final_answer",
+            "delta": "完成当前源原生验证🧪",
+            "complete": true,
+            "provider": "sdk-fixture",
+            "reasoning": null
+          }
+        ]
+      },
+      "finish_reason": "stop",
+      "raw": {
+        "kind": "map",
+        "value": []
+      }
+    }
+  ],
+  "final_answer": "完成当前源原生验证🧪",
+  "qualification": "controlled model fixture only, not live provider",
+  "expected_model_calls": 2
+}

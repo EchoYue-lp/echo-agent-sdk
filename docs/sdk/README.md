@@ -1,5 +1,24 @@
 # echo-agent SDK (standard ACP Host available)
 
+本轮原生消息候选与来源边界见[原生消息](native-messages.md)和[ADR0043](../adr/0043-native-message-sdk-adapter.md)；三语言合同随包携带，独立打包／加载方法见[源码包自包含](source-packages.md)。[Parquet 真实消费者验证](governance/parquet-consumer-validation.md)仍按具名旧 Host、旧合同快照单独取证，不代表新 pin、安全或整体交付通过。
+
+## Current SDK consumer withdrawal
+
+Plan04 withdraws exactly269 accepted source/kind identities,23 routes and39
+family operations, leaving5352 identities/431 routes with no new acceptance.
+The full generator consumes the original266 plus the three explicitly named
+LSP plugin identities. See [ADR0042](../adr/0042-sdk-a2a-lsp-retirement-boundary.md)
+and [exact disposition](governance/a2a-lsp-retirement-boundary.md).
+
+Old source/digest/feature/family requests fail explicitly. Retired plugin
+fields are absent, not empty placeholders; LspServer values are rejected.
+ACP/MCP/Task/Subagent, Host stdio, streams/cancellation/recovery and R2 parent/
+child close retain their original owners, tests and executable examples.
+The framework remains pinned to f7bac62e and still contains its old Rust
+definitions as nonblocking inventory. Historical5,621/454 pin and qualification
+results below keep their original snapshot scope; they do not verify this
+withdrawal candidate or indicate a release.
+
 This is the single external entry point for the echo-agent multilingual SDK
 program. The SDK preserves the behavior of **explicitly accepted cross-language
 contracts** in TypeScript, Python and Java, while the Rust framework owns
@@ -28,7 +47,7 @@ gates do not close that audit; unresolved scopes remain explicit there.
 > integration and tool families over the framework's own authorities
 > ([facade-feature-adapters.md](facade-feature-adapters.md)). Plan 08 closes
 > the Rust Host's canonical source-operation, consumer-trait and public-stream
-> routing, including real Workflow/A2A pull streams. Source-built TypeScript,
+> routing, including real Workflow pull streams. Source-built TypeScript,
 > Python and Java clients resolve the accepted source/family operations
 > through the shared catalog and preserve the declared WireValue shapes. The
 > executable route baseline passed against its recorded source-built Host;
@@ -92,20 +111,20 @@ explicit until their language-native behavior is delivered.
 
 ## Contract artifacts
 
-| Artifact | Purpose |
-|---|---|
-| `contracts/sdk/acp-baseline.json` | Pinned official ACP wire version (1), crate and schema artifact versions; tests assert the lockfile matches. |
-| `contracts/sdk/toolchain.json` | The exact nightly toolchain used for rustdoc-JSON inventory generation. Contributors only; normal builds never need it. |
-| `contracts/sdk/public-api.txt` | Complete deterministic root-facade snapshot used for Rust inventory telemetry; it is not a runtime compatibility gate. |
-| `contracts/sdk/parity-manifest.schema.json` | Machine schema for the complete inventory telemetry manifest. |
-| `contracts/sdk/parity-manifest.json` | Complete facade inventory classified by consumer-facing `sdk_scope`, semantic rule, ACP relationship, feature condition, adapter operation and per-language mapping/test status. |
-| `contracts/sdk/accepted-external-contract.json` | Generated blocking contract containing only canonical identities explicitly classified as `external_contract`; aliases remain in telemetry and inherit their canonical scope. |
-| `contracts/sdk/accepted-external-contract.schema.json` | Machine schema for the blocking external contract artifact. |
-| `contracts/sdk/accepted-facade-operation-catalog.json` | Language-facing catalog filtered to accepted non-intrinsic routes. |
-| `contracts/sdk/inventory-telemetry.json` | Compact non-blocking report with framework provenance, full inventory digest and scope counts. |
-| `contracts/sdk/schema/echo-agent-extension-v1.schema.json` | Generated JSON Schema of the `_echo_agent/*` extension DTOs and method catalog. |
-| `contracts/sdk/fixtures/extension/v1/` | Golden fixtures: valid samples must round-trip losslessly, invalid samples must be rejected deterministically. |
-| `contracts/sdk/source-contract.json` | Small generated digest over the accepted external contract and accepted facade catalog, embedded by the Host and matched by the Client hello. |
+| Artifact                                                   | Purpose                                                                                                                                                                          |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `contracts/sdk/acp-baseline.json`                          | Pinned official ACP wire version (1), crate and schema artifact versions; tests assert the lockfile matches.                                                                     |
+| `contracts/sdk/toolchain.json`                             | The exact nightly toolchain used for rustdoc-JSON inventory generation. Contributors only; normal builds never need it.                                                          |
+| `contracts/sdk/public-api.txt`                             | Complete deterministic root-facade snapshot used for Rust inventory telemetry; it is not a runtime compatibility gate.                                                           |
+| `contracts/sdk/parity-manifest.schema.json`                | Machine schema for the complete inventory telemetry manifest.                                                                                                                    |
+| `contracts/sdk/parity-manifest.json`                       | Complete facade inventory classified by consumer-facing `sdk_scope`, semantic rule, ACP relationship, feature condition, adapter operation and per-language mapping/test status. |
+| `contracts/sdk/accepted-external-contract.json`            | Generated blocking contract containing only canonical identities explicitly classified as `external_contract`; aliases remain in telemetry and inherit their canonical scope.    |
+| `contracts/sdk/accepted-external-contract.schema.json`     | Machine schema for the blocking external contract artifact.                                                                                                                      |
+| `contracts/sdk/accepted-facade-operation-catalog.json`     | Language-facing catalog filtered to accepted non-intrinsic routes.                                                                                                               |
+| `contracts/sdk/inventory-telemetry.json`                   | Compact non-blocking report with framework provenance, full inventory digest and scope counts.                                                                                   |
+| `contracts/sdk/schema/echo-agent-extension-v1.schema.json` | Generated JSON Schema of the `_echo_agent/*` extension DTOs and method catalog.                                                                                                  |
+| `contracts/sdk/fixtures/extension/v1/`                     | Golden fixtures: valid samples must round-trip losslessly, invalid samples must be rejected deterministically.                                                                   |
+| `contracts/sdk/source-contract.json`                       | Small generated digest over the accepted external contract and accepted facade catalog, embedded by the Host and matched by the Client hello.                                    |
 
 The generating code lives in the workspace member crate
 [`echo-sdk-protocol`](../../echo-sdk-protocol/) (`publish = false`). All
@@ -142,17 +161,17 @@ and final accepted-contract delivery. The entries below distinguish historical
 source/seed results from current governance acceptance; catalog mapping counts
 alone are not behavioral evidence.
 
-| Status | Meaning | Reached |
-|---|---|---|
-| **Design** | The design document is agreed | ✅ |
-| **Contract** | Accepted source/catalog continuity and blocking artifacts match the accepted contract | Full 28-profile read-only check passed: 113 blocking artifacts current; four non-blocking Rust inventory drift artifacts retained without a 117-artifact update |
-| **ACP conformant** | A standard ACP v1 client passes the supported profile against a real source-built Host | ✅ |
-| **Core extension profile** | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery | ✅ (Rust Host only) |
-| **Host facade routing** | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary | Accepted capability/failure obligations settled at eb223986; historical Plan 08 evidence keeps its original execution cut |
-| **Runnable** | A real Host plus each language's declared external SDK path executes end-to-end | Original full three-language entry and three quickstarts passed at eb223986; Linux Temurin 17 and three named native Windows consumers have separate actual evidence |
-| **External contract complete** | Accepted capability behavior, lifecycle and failures have contract, matched-source evidence and explicit residual decisions | Accepted 5,621 identities / 454 routes: 50 behaviors verified, 75 Findings resolved and one historical risk accepted by the human; 97 Audits remain bounded examined observations |
-| **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,534 deferred identities, with no automatic acceptance |
-| **Published** | Registry/binary publication — **explicitly out of scope**; this design ships source only | never (by design) |
+| Status                           | Meaning                                                                                                                     | Reached                                                                                                                                                                                                        |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Design**                       | The design document is agreed                                                                                               | ✅                                                                                                                                                                                                             |
+| **Contract**                     | Accepted source/catalog continuity and blocking artifacts match the accepted contract                                       | Full 28-profile read-only check passed: 113 blocking artifacts current; four non-blocking Rust inventory drift artifacts retained without a 117-artifact update                                                |
+| **ACP conformant**               | A standard ACP v1 client passes the supported profile against a real source-built Host                                      | ✅                                                                                                                                                                                                             |
+| **Core extension profile**       | The negotiated `_echo_agent/*` core families run against a real Host with typed lifecycle, events, replay and recovery      | ✅ (Rust Host only)                                                                                                                                                                                            |
+| **Host facade routing**          | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary                 | Accepted capability/failure obligations settled at eb223986; historical Plan 08 evidence keeps its original execution cut                                                                                      |
+| **Runnable**                     | A real Host plus each language's declared external SDK path executes end-to-end                                             | Original full three-language entry and three quickstarts passed at eb223986; Linux Temurin 17 and three named native Windows consumers have separate actual evidence                                           |
+| **External contract complete**   | Accepted capability behavior, lifecycle and failures have contract, matched-source evidence and explicit residual decisions | Historical pre-withdrawal acceptance: 5,621 identities / 454 routes, 50 behaviors verified, 75 Findings resolved and one historical risk accepted by the human; 97 Audits remain bounded examined observations |
+| **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance                                                            | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,507 deferred identities, with no automatic acceptance                                              |
+| **Published**                    | Registry/binary publication — **explicitly out of scope**; this design ships source only                                    | never (by design)                                                                                                                                                                                              |
 
 ### Identity inventory scope
 
@@ -162,7 +181,7 @@ The source-built Host now pins accepted framework `f7bac62eee04a963f92a3e4308b6e
 [main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)
 completed all seven jobs, followed by an independent remote-only cold source
 check. This upstream acceptance is not a passing SDK Host or consumer result.
-The SDK lock SHA-256 is `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
+The historical pin-switch SDK lock SHA-256 was `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
 upstream vendored Git source identities change from the existing webpki-patched
 SDK lock; all 656 package versions, checksums and dependency edges are unchanged.
 A03 official Cargo update and locked offline metadata each exited 0 using frozen
@@ -174,7 +193,7 @@ and a GitHub-only cold source check using 36 necessary historical refs.
 It records 50 verified behaviors, 75 resolved Findings and one human-accepted
 historical risk; the four non-blocking Rust inventory drift artifacts remain
 telemetry and were not regenerated.
-Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
+At that historical qualification cut, membership remained 5,621 identity/kind keys and 454 routes. Pin/lock
 provenance does not authorize a 117-artifact update, new public language APIs,
 or automatic closure of the historical managed-exit cause.
 
@@ -183,9 +202,10 @@ The inventory figures below remain the earlier generated cut.
 The previously generated Host pin was published framework
 `3560812caede84998a1f6f26d7bf3fa81ea0486c` from framework PR193.
 The original full 28-profile/117-artifact generation and contract gate completed
-against that pin. The current committed manifest has 10,973 canonical identities,
-with 5,621 accepted external identity/kind keys and 454 accepted routes; current
-scope counts are in the table below. See [source continuity](../../MIGRATION-SOURCE.md)
+against that pin. That historical manifest recorded 10,973 canonical identities,
+5,621 accepted keys and 454 routes. The current generator records 10,974
+canonical identities and5,352 accepted keys/431 routes; current scope counts
+are in the table below. See [source continuity](../../MIGRATION-SOURCE.md)
 and [current acceptance](governance/capability-review-remaining.md) for exact cuts.
 SDK208a/Host0bbc and the successor SDK9ef/Hosta17 retain distinct evidence cuts.
 The successor original Rust14 and the one whole language entry plus all three
@@ -212,13 +232,13 @@ lifecycle, Finding, and Evidence coverage. See
 Manifest schema v2 adds an identity-level `sdk_scope` that is independent from
 the adapter route and per-language status:
 
-| `sdk_scope` | Canonical items | Current meaning |
-|---|---:|---|
-| `external_contract` | 5,621 | Frozen accepted canonical membership and language mapping; capability behavior requires separate evidence. |
-| `host_or_rust_only` | 1,908 | Process-local or Host-owned runtime authority. |
-| `language_intrinsic` | 819 | Rust syntax, trait implementations and callback types represented idiomatically. |
-| `internal_helper` | 91 | Rust testing support, not an SDK product surface. |
-| `deferred` | 2,534 | Potential capabilities awaiting capability-level contract review. |
+| `sdk_scope`          | Canonical items | Current meaning                                                                                            |
+| -------------------- | --------------: | ---------------------------------------------------------------------------------------------------------- |
+| `external_contract`  |           5,352 | Frozen accepted canonical membership and language mapping; capability behavior requires separate evidence. |
+| `host_or_rust_only`  |           2,217 | Process-local or Host-owned runtime authority.                                                             |
+| `language_intrinsic` |             807 | Rust syntax, trait implementations and callback types represented idiomatically.                           |
+| `internal_helper`    |              91 | Rust testing support, not an SDK product surface.                                                          |
+| `deferred`           |           2,507 | Potential capabilities awaiting capability-level contract review.                                          |
 
 The scope is generated, aliases inherit their canonical identity, and no row
 is manually promoted. An intrinsic route becomes a blocking external contract
@@ -235,19 +255,6 @@ language-intrinsic, helper and deferred identities remain explicit inventory
 dispositions. The first intrinsic value slice (`ToolCallParams` and
 `ToolResult`) is implemented and tested in all three languages; the remaining
 deferred set is reviewed only in externally useful capability groups.
-The closed A2A `TaskState` transition/display slice is also implemented in all
-three languages, without changing the wire surface.
-The related A2A Message, TaskStatus, Provider and Skill value constructors are
-covered by the same native-only intrinsic boundary.
-The Agent Card and fluent local builder are also available in all three
-languages; `from_agent` remains open because it requires the Rust Agent
-authority.
-The immutable A2A Artifact and Error DTOs preserve their wire fields in all
-three languages as well.
-The A2A status/artifact stream event and JSON-RPC response DTOs are also
-available as local immutable values; stream transport remains Host-owned.
-Task request/params/response and task history envelopes are available as
-immutable nested DTOs; execution remains a Host operation.
 The local `ThinkingLevel` enum and parser preserve Rust reasoning-effort names
 and aliases in all three language SDKs.
 Steering lifecycle state and terminal outcome values are also available as
@@ -285,8 +292,6 @@ ownership remain Host/Rust-owned.
 constructing or running the ACP adapter remains a Host/Rust responsibility.
 Typed ACP lease errors preserve the Rust display text while lease admission and
 concurrency decisions remain Host/Rust-owned.
-A2A `JwtConfig` and `JwtClaims` are available as local immutable projections;
-JWT verification, key handling, and A2A server ownership remain Host/Rust-owned.
 Skill dependency kinds and skill sources are also local values; probing,
 loading, and source policy remain framework/Host-owned.
 Subagent context inheritance defaults are available as immutable local values;
@@ -399,9 +404,22 @@ without owning live-control registry state.
 - Official ACP documentation: <https://agentclientprotocol.com/>
 - Official Rust SDK: <https://github.com/agentclientprotocol/rust-sdk>
 
-
 Channel MessageHandler forward calls, cooperative stream close and executable
 three-language callback examples are documented in
 [Channel consumption](channel-handler-consumption.md). Full Rust inventory and
 intrinsic membership remain non-blocking telemetry; these examples exercise the
 six explicitly accepted Channel family operations.
+
+### Running languages after cleaning the Rust batch
+
+The ordinary `scripts/check-language-sdks.sh` still builds the current Host and
+test collector. When a Rust qualification batch has just built and verified
+them, preserve both executable files and their source/lock/command evidence
+outside target before cleaning. The same language entry can then use the
+absolute `ECHO_AGENT_SDK_PREBUILT_HOST`, mandatory
+`ECHO_AGENT_SDK_PREBUILT_HOST_SHA256`, absolute `ECHO_AGENT_SDK_OTLP_COLLECTOR`
+and mandatory `ECHO_AGENT_SDK_PREBUILT_COLLECTOR_SHA256`. It verifies both
+executable digests and runs the complete original three-language/real-Host/
+example chain without another Cargo build. This mode requires evidence that
+the artifacts came from the current source batch; a digest alone is not proof
+of current-source behavior or a replacement for those fresh consumer tests.

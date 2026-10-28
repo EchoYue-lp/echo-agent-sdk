@@ -389,6 +389,32 @@ result directly. LLM remote cancellation likewise remains the framework's
 Agent cancellation domain. Opaque SDK error details have no corresponding Rust
 failure field and are not invented as another DTO or inferred from messages.
 
+## 只读 SearchProvider 的失败与重试
+
+`SearchProvider` 回调抛出的普通异常没有声明暂态性质，按框架原有
+`Permanent / Stop / None` 合同只执行一次。错误文字、HTTP 状态文字及旧夹具
+固定次数均不能把永久失败改成可重试；成功与永久失败仍须分别经真实 Agent
+调用，并把结果完整带回下一次模型请求。
+
+SDK Host 的候选修复仅在 `SearchProviderSearch` 这一只读边界保留已公开的
+`retryable`：明确标记 `always` 或 `after_delay` 的 `extension_failed` 映射为
+框架现成 `ToolError::RemoteFailure` 的 `Transient / Retry / None`，
+`extension_timeout` 保留 `Timeout` 分类并声明安全重试。取消、`never`、其它
+错误码和其它 Agent component 继续沿原映射；不从诊断文字猜分类，也不为
+可能有副作用的其它组件扩大重试权限。
+
+SDK 的 `after_delay` 标签没有时长字段，因此不新增 hint 或第二套策略。
+重试预算、延迟、退避、取消及物理结算继续由框架唯一 ToolManager 执行。
+2026-10-28 的受控 epoch08 完整 Host 已完成真实 RED→GREEN：默认控制保留
+永久失败与 Timeout/Never 各单次停止，显式 Timeout/AfterDelay、
+Failed/AfterDelay、Failed/Always 由原中央机制跨过两个故障窗口后恢复。
+实际 HTTP 帧证明模型只发起一次 web_search，后续请求消费同一个 call_id；
+并非模型重发或 SDK 独立调用。默认 Rust 回归另覆盖取消、未知错误和其它组件。
+原完整语言、shared fixtures、collector 与示例入口亦已通过。
+这只证明该受控路径与默认预算，不证明任意 SDK RetryPolicy 接入，亦不替代
+正式 Git pin、source402、完整生成与发布验收；精确记录见
+[MASTER-PLAN](../MASTER-PLAN.md)。
+
 ## Verification
 
 - `echo-sdk-protocol` contract tests: typed descriptors, operation

@@ -468,6 +468,9 @@ fn plugin_install_source(
 fn resolved_plugin_components_value(
     value: echo_agent::plugin::ResolvedComponents,
 ) -> Result<WireValue, EchoSdkError> {
+    // 旧声明的发现和诊断由Framework原resolver/prepare拥有；SDK只投影原事实。
+    // 不再读已退役专属字段，也不重复追加或从路径猜LSP来源。
+    let diagnostics = value.diagnostics;
     let paths = |items: Vec<PathBuf>| {
         items
             .into_iter()
@@ -515,18 +518,8 @@ fn resolved_plugin_components_value(
                 value: optional_path(value.mcp_config_file)?,
             },
             echo_sdk_protocol::scalar::WireField {
-                name: "lsp_config_file".to_string(),
-                value: optional_path(value.lsp_config_file)?,
-            },
-            echo_sdk_protocol::scalar::WireField {
                 name: "diagnostics".to_string(),
-                value: WireValue::List(
-                    value
-                        .diagnostics
-                        .into_iter()
-                        .map(WireValue::String)
-                        .collect(),
-                ),
+                value: WireValue::List(diagnostics.into_iter().map(WireValue::String).collect()),
             },
         ],
     })
@@ -729,6 +722,11 @@ fn turn_outcome_classify(request: &FeatureOperationRequest) -> Result<WireValue,
     let wire = AgentEventWire::from_wire_value(value)
         .map_err(|error| invalid(format!("AgentEventWire payload is invalid: {error}")))?;
     let event = match wire {
+        AgentEventWire::ExecutionStatus(status) => Some(
+            super::super::native_message::status_to_framework(status).map_err(|error| {
+                invalid(format!("native runtime status is unsupported: {error}"))
+            })?,
+        ),
         AgentEventWire::FinalAnswer { text } => {
             Some(echo_agent::agent::AgentEvent::FinalAnswer(text))
         }
@@ -3408,6 +3406,8 @@ async fn dispatch_non_git_source(
                 timeout,
                 source,
                 sandbox,
+                // 此API只构造独立资源，尚无活跃调用；取消与资源默认值由原框架提供。
+                ..Default::default()
             };
             let resource =
                 register_source_resource(state, &owner, "skills", "skills.prompt_context")?;
@@ -8287,6 +8287,58 @@ fn dispatch_analysis_source<'a>(
 #[cfg(test)]
 mod classify_tests {
     use super::*;
+
+    #[test]
+    fn resolved_plugin_projection_preserves_components_and_source_diagnostics()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut components = echo_agent::plugin::ResolvedComponents::default();
+        components.skill_dirs.push(std::env::current_dir()?);
+        components.diagnostics.extend([
+            "original diagnostic".to_string(),
+            "retired component diagnostic from Framework".to_string(),
+        ]);
+        let value = resolved_plugin_components_value(components).map_err(|error| error.message)?;
+        let WireValue::Record { fields, .. } = value else {
+            return Err("expected resolved component record".into());
+        };
+        assert!(!fields.iter().any(|field| field.name == "lsp_config_file"));
+        assert!(fields.iter().any(|field| field.name == "skill_dirs"
+            && matches!(&field.value, WireValue::List(paths) if paths.len() == 1)));
+        let diagnostics = fields
+            .iter()
+            .find(|field| field.name == "diagnostics")
+            .ok_or("diagnostics absent")?;
+        let WireValue::List(messages) = &diagnostics.value else {
+            return Err("diagnostics are not a list".into());
+        };
+        assert_eq!(messages.len(), 2);
+        assert!(
+            matches!(messages.first(), Some(WireValue::String(message)) if message == "original diagnostic")
+        );
+        assert!(
+            matches!(messages.get(1), Some(WireValue::String(message)) if message == "retired component diagnostic from Framework")
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn resolved_plugin_projection_does_not_invent_empty_source_diagnostics()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let value =
+            resolved_plugin_components_value(echo_agent::plugin::ResolvedComponents::default())
+                .map_err(|error| error.message)?;
+        let WireValue::Record { fields, .. } = value else {
+            return Err("expected component record".into());
+        };
+        assert!(!fields.iter().any(|field| field.name == "lsp_config_file"));
+        let diagnostics = fields
+            .iter()
+            .find(|field| field.name == "diagnostics")
+            .ok_or("diagnostics absent")?;
+        assert!(matches!(&diagnostics.value, WireValue::List(messages) if messages.is_empty()));
+        Ok(())
+    }
+
     use echo_sdk_protocol::scalar::{WireField, WireMapEntry};
 
     const CLASSIFY: &str = "echo_orchestration::runtime::turn_driver::TurnOutcome::classify";

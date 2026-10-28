@@ -1,0 +1,1255 @@
+{
+  "schema_version": 1,
+  "kind": "pending_engineering_preservation",
+  "saved_at": "2026-10-28T17:59:53.492232+08:00",
+  "owner_session_id": "01a17d6c-e195-7f90-a8a4-8da3dc80a009",
+  "root_owns_stage_commit": true,
+  "repository_head": "525453fc9b9448358cc8a2f46bbcf401b10943ec",
+  "formal_pin": "f7bac62eee04a963f92a3e4308b6ea2336e91cc0",
+  "formal_lock_sha256": "0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f",
+  "original_product_dirty_path_count": 155,
+  "original_product_dirty_paths": [
+    {
+      "status": " M",
+      "path": ".cargo/cargo-deny-duplicate-baseline.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.cargo/cargo-deny-duplicate-baseline.json",
+      "sha256": "7f0a99879fec978a79990544dd6e0b6bef65c33cf4ab3cce7a91a5beeef0049e",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": ".echo-semantic/maps/map.sdk-events-recovery.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/maps/map.sdk-events-recovery.md",
+      "sha256": "daa8bdf6569226553d1edda338fd28bd22a7081bd06d686c12cd0cae000987b0",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": ".echo-semantic/maps/map.sdk-product-boundary.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/maps/map.sdk-product-boundary.md",
+      "sha256": "af04765ea85f362cf6a487d066d11e5c2daa93f718a2b94f87c4175a632e7082",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": ".github/workflows/rust-ci.yml",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.github/workflows/rust-ci.yml",
+      "sha256": "1fbbdefa77e6eac3e5cc372a9eefb68cc6afaf2b0511e260ab942e64c9d5537f",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "AGENTS.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/AGENTS.md",
+      "sha256": "a456de924d9b5346c6e51ccaf7618e69b2734c3f8cb949f56dbefb51c51d7702",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "Cargo.lock",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/Cargo.lock",
+      "sha256": "0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "README.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/README.md",
+      "sha256": "bc8f76156112d15ff99fdd63807e7a5422b59b9513291dc31455850c9b588a4a",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "README.zh.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/README.zh.md",
+      "sha256": "1f20c35662ac3a0e4629223e3c3cf02eff809cefa58c210bf638ca2e517a2d79",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/accepted-external-contract.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/accepted-external-contract.json",
+      "sha256": "56179f0c504eb57bba77374a98a41b4d8f7c094d7ebc0e4a0d2cb650736d4841",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/accepted-facade-operation-catalog.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/accepted-facade-operation-catalog.json",
+      "sha256": "c8ebea7c65e36902d336fd738d84764d2459910471623ffac8c0824e0e62cf3f",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/facade-operation-catalog.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/facade-operation-catalog.json",
+      "sha256": "149e9863e8009f9fd0244b820c9029605b46d8845a63622de630cdf755206bf4",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/inventory-telemetry.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/inventory-telemetry.json",
+      "sha256": "a7662c4811116ee7447b3879a08cf237429ffe9e36cc619bbe80a609e2ab2da7",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/parity-manifest.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/parity-manifest.json",
+      "sha256": "13c20ae1194d7b903ff1aa05302c7d4b4f4760867171e64f7216d2e2b3558f41",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/public-api.txt",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/public-api.txt",
+      "sha256": "ae4be5e65c129c0391c0633fe29072a35ebd7ec1f50f45683cede6efc8f1266a",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/schema/echo-agent-extension-v1.schema.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/schema/echo-agent-extension-v1.schema.json",
+      "sha256": "277056590395b06476b44068b0e8d7dd792d67e6d12e23fab6e8d7909a7160dc",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "contracts/sdk/source-contract.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/contracts/sdk/source-contract.json",
+      "sha256": "2a89024b19f994781c02e0f6bee2c9e78531d5adea2ddc560b5dc1f16a148ddb",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "docs/MASTER-PLAN.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/MASTER-PLAN.md",
+      "sha256": "89ed80bc5bcac1251f12ae0dde8b8a1ab84a5741d98dda0744dae117cb0828c7",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "docs/sdk/README.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/README.md",
+      "sha256": "c301deb337e8860a6e8d20229351a4fa9aac9da5e4a9e79583a51a97c8bd9611",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "docs/sdk/facade-feature-adapters.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/facade-feature-adapters.md",
+      "sha256": "52c296f7b6ec2b3fbdd3b7d94e0cfb87e701d640e1be2d5f7c1ccb823fedc32f",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "docs/sdk/governance/dependency-warning-policy-proposal.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/governance/dependency-warning-policy-proposal.md",
+      "sha256": "1fab06d45943d2b6ff4af14fd0f7f2e16ced275ba5f95e06609ab684890bc2d3",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "docs/sdk/protocol.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/protocol.md",
+      "sha256": "ea6f6bcd1a0a54e7616b723531a98db8113d5def672620c9341d84d0253e5529",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "docs/sdk/sdk-extension-bridge.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/sdk-extension-bridge.md",
+      "sha256": "7b83acc1240fb9a153d05ca9bbf8570efe39fac9d3cf91d98519d60b11fbb965",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/Cargo.toml",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/Cargo.toml",
+      "sha256": "89ca5ec5d721561e78768e904ce87245fbf280d21a800c256220e5ff1cc89fb4",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/src/core_profile/extension_bridge.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/core_profile/extension_bridge.rs",
+      "sha256": "3cfcd52658ba49651d42f6fa1d2791b4cbac431c5666de1cb6d04a37ce07a31d",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/src/core_profile/facade/integrations.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/core_profile/facade/integrations.rs",
+      "sha256": "44dbbd14861cde1e302d0f7436a1169af400624e7f24b723292f0eb85e229afb",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/src/core_profile/facade/mod.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/core_profile/facade/mod.rs",
+      "sha256": "1fbc8825a0e585b2db9a778ce84c69871c624cbffa1cf760e43308058c3a6517",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/core_profile/facade/source_operations.rs",
+      "sha256": "8c1a456d6045d5e2104aa321db62df83b71e1dcd36393c41d2858938c0cf14a9",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/src/core_profile/mod.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/core_profile/mod.rs",
+      "sha256": "a80ef35024c7245a6201c5e37b1a6ca3e6c245bc4cba6f1109a196c0d1ff7d4a",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/src/core_profile/wire.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/core_profile/wire.rs",
+      "sha256": "543476d203f91c0367955a90bb32a4b9e9711839721a5458327a7b9c95c12cce",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/src/features.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/features.rs",
+      "sha256": "6aa96fafddafc5dfa38b2af4764fcd285ff4110089e64318cb99392e49fb17a5",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/tests/core_profile_e2e.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/tests/core_profile_e2e.rs",
+      "sha256": "69e6c82560cdf1bd80b18c1dc45b583e0471ff665b98cec81065e3f8e2cfee8f",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/tests/extension_bridge_e2e.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/tests/extension_bridge_e2e.rs",
+      "sha256": "2254cb2d37cb81bb9a65f0e9f0c3c493679301f5a0ee5348b1fa01b1562ac3c2",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-host/tests/facade_feature_adapters_e2e.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/tests/facade_feature_adapters_e2e.rs",
+      "sha256": "afeb177cdfa4f46bd02126724b9ae7b85edca7185aa79f3beb27d3310bd94799",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-protocol/src/catalog.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/src/catalog.rs",
+      "sha256": "6e3339f00d0661e08a4de1e304998549dea36dfb6034cb6c92cade5af09f2ba1",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-protocol/src/facade.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/src/facade.rs",
+      "sha256": "61b65edf4057e904df2e6b4579205452d7ad7ca2b69c38337072737c69434fcc",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-protocol/src/inventory.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/src/inventory.rs",
+      "sha256": "2d983ac5df2a976cc50130be41c61d11fe6da0f74d1b001797a5503c798bf70e",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-protocol/src/methods.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/src/methods.rs",
+      "sha256": "d4f02ede74f5f1e1c0dbbda59648af5a3f1d373e1ecc874c8bd36fec742f622e",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-protocol/src/scalar.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/src/scalar.rs",
+      "sha256": "fd6339a4446edc4c37992a936f13e3743b99c4739ed7a552062b78c692acdb34",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-protocol/tests/core_rpc_contract.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/tests/core_rpc_contract.rs",
+      "sha256": "2cb50295d5fb9fcefa0de002104df06e04a3284f3fd566c31c865f32e3057c20",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "echo-sdk-protocol/tests/facade_inventory.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/tests/facade_inventory.rs",
+      "sha256": "3f2a07664ba97267e2437908d247be4c0c133816922c900839bbb91d40612226",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "scripts/check-language-sdks.sh",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/scripts/check-language-sdks.sh",
+      "sha256": "0d33e0991b1647b5905dc4676da5de398566c11708f3bf82216bea259c6df6e9",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "scripts/check-sdk-contracts.sh",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/scripts/check-sdk-contracts.sh",
+      "sha256": "b5b79727b7ca71872208dadc3b6d79537cb7807afc3bcafb5a85ce56c6584c7c",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "scripts/export-language-sdk-catalog.sh",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/scripts/export-language-sdk-catalog.sh",
+      "sha256": "1dbcdfbe9c6c7e62cd34f5330a8135aa3c3b8a4a14e1affeceb140320b4ca3ea",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/README.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/README.md",
+      "sha256": "c3473161c1c69eb94f1d0fd68ebc8b85d105e79f0c89f3be2d0c84e06cf5f61c",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2AArtifact.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2AArtifact.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2AError.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2AError.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2AMessage.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2AMessage.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2AStreamEvent.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2AStreamEvent.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2AStreamResponse.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2AStreamResponse.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2ATask.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2ATask.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2ATaskParams.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2ATaskParams.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2ATaskRequest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2ATaskRequest.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2ATaskResponse.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2ATaskResponse.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/A2ATaskStatus.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/A2ATaskStatus.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentAuthentication.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/AgentAuthentication.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentCapabilities.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/AgentCapabilities.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentCard.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/AgentCard.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentCardBuilder.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/AgentCardBuilder.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentProvider.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/AgentProvider.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AgentSkill.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/AgentSkill.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/AuthenticationScheme.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/AuthenticationScheme.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+      "sha256": "1f1d97b5e90ab404df74c2372c6f2614cf3b9237901092c486cdc3f4a2527122",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/Example.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/Example.java",
+      "sha256": "ef1245474a130c3815911713b9331a3eadd7f76624e7f9679e8129b4d3bb33f1",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/FacadeCatalog.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/FacadeCatalog.java",
+      "sha256": "bb86da92d5ffc95c2020b4e4cef5f4c597cbec0e9f259cb4e08f83d3d32cf0f8",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/JwtClaims.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/JwtClaims.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/JwtConfig.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/JwtConfig.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/TaskArtifactUpdateEvent.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/TaskArtifactUpdateEvent.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/TaskState.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/TaskState.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/TaskStatusUpdateEvent.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/TaskStatusUpdateEvent.java",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/A2AHostTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/A2AHostTest.java",
+      "sha256": "7babb9cafe9cbc7b561da0b8331a7e183275b26c2bcf0c15ba74e96ebce327e3",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/A2ATaskStateTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/A2ATaskStateTest.java",
+      "sha256": "3947d65c1fa81c94bae189b4bea5ea6bd2d85fab7ea0ed61f7c24a05c134bda5",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/A2AValueTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/A2AValueTest.java",
+      "sha256": "43ad5f2d8fbdfa7015b7d582085c8adbbf5718b886a00037c023d6e639be372c",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/AckSubmissionTest.java",
+      "sha256": "ce3c4d154a72f6e6c31c2e8ddd9717b4ec9efd1f1e792f408ad17a067cfe8729",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/LspDiagnosticsHostTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/LspDiagnosticsHostTest.java",
+      "sha256": "a5f714ac02c3f55a3fae7f6442c2ed8aae1bebe997a00943a3265082df6919dd",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/LspHostTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/LspHostTest.java",
+      "sha256": "4ebfeab2e1c01da8db43467a894950c6dc5c61b00cd742f8fc705f018234735b",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/ParallelSessionHostTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/ParallelSessionHostTest.java",
+      "sha256": "6a4fb77c9ad35c429ae0962cbc75878cedf4a3e6d4e8d75361d89e863c1f718d",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseTest.java",
+      "sha256": "22387690c24916183525016ef9348334b6fa306bc32c0d8ac6ca1f7c571e12c9",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/StateTraceDeliveryHostTest.java",
+      "sha256": "b6a808a31d0bbb0b22e1b84e2ffb6833184e27d645e33510fc4878d7ba087a19",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/README.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/README.md",
+      "sha256": "b61bef2dde411da57f93b6e90eb6f22f05e1c5f84ccbfd57cf9a76b23d2f1598",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/src/echo_agent_sdk/__init__.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/__init__.py",
+      "sha256": "ed93fcffd8d2e886f99114f7d3a3d49a34fe4ba58fcba503a32578a3415e7657",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/python/src/echo_agent_sdk/a2a.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/a2a.py",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/src/echo_agent_sdk/catalog.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/catalog.py",
+      "sha256": "d44af55a92f5323db6018287593e05bac830162abeba7dca0ee770546c98a987",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/src/echo_agent_sdk/client.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/client.py",
+      "sha256": "c4f9384d50be7603364bc273c37b9540d4d1a45d81ff044d1d8f71f828dbf969",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/python/src/echo_agent_sdk/jwt_values.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/jwt_values.py",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/protocol_host_proxy.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/protocol_host_proxy.py",
+      "sha256": "b4fa136f0807f74dbeae4b73c662ae1583084507f564975f7b94132149c1f3d3",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_a2a_host.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_a2a_host.py",
+      "sha256": "93362748b5595ce15556000a6ee81d5cc32e8392f2df1df6ff5d8404a4c598b7",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_a2a_task_state.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_a2a_task_state.py",
+      "sha256": "bd1a3d4e83745aaf8a5a7666788c8aa9090e9d8c18d4f404d008635392a6f14c",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_ack_submission.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_ack_submission.py",
+      "sha256": "f4bc01e8bbe3a48cf4635624a540067c106ec40be2f343cd0684f27a3e028d7e",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_jwt_values.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_jwt_values.py",
+      "sha256": "17c9043e5fc25b526845f60e4cea092cc3ec2318932a8c27e995abd7581cc3d1",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_lsp_diagnostics_host.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_lsp_diagnostics_host.py",
+      "sha256": "753f27a541e2f43a5f61609f2436f2b89de3da5a783a5d04ff9c41a96a926452",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_lsp_host.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_lsp_host.py",
+      "sha256": "b4af951c6ac20bf3b03fa8cd2f8da9303c7a3da1fd74e94420a0624844792e05",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_parallel_sessions_host.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_parallel_sessions_host.py",
+      "sha256": "2e3c913d20fba6ebb84497bab4ddd3f9d94fe04cd43c210c563a5a3f455b6429",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/python/tests/test_tool_value_effect_host.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_tool_value_effect_host.py",
+      "sha256": "5485e710fac3b7640804b8143c931ba2c01c11b56a847592db48b393931c49d7",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/shared/contract-digests.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/contract-digests.json",
+      "sha256": "2878f5e440ded6cf5d7a863345ec5db5fedb1d8195a0c5e191249e511cff25e2",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/shared/facade-operation-catalog.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/facade-operation-catalog.json",
+      "sha256": "793fb68de319ba521d8198a0b4f6177711e886c91ecb9a87fedbcf43b66416e6",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/shared/testing/a2a_host_fixture.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/a2a_host_fixture.py",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/shared/testing/lsp_diagnostic_server.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/lsp_diagnostic_server.py",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/shared/testing/lsp_fault_server.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/lsp_fault_server.py",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/shared/testing/tool_value_effect_fixture.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/tool_value_effect_fixture.py",
+      "sha256": "3da3506dcc1cf558c84eab3fc12eb4425483c330b48d5831956ffb16c07166c2",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/README.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/README.md",
+      "sha256": "392b2c107fcb381342b6d38d5128e866444ac180bfee8a8879c6f7503fc8daec",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/package.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/package.json",
+      "sha256": "538e2255401309be92849e2d46300d63af0f521c77f242f96b169ff81c97f60c",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/typescript/src/a2a.ts",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/src/a2a.ts",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/src/catalog.ts",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/src/catalog.ts",
+      "sha256": "652f42a989cff9bf83bab00c6aac8c99533cfd92293a73051ea92506a402bd58",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/src/client.ts",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/src/client.ts",
+      "sha256": "7ee05e5d4cde801b2717e64ed2b2c2ba034a5ae4df293c008e6add8da8c27625",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/src/index.ts",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/src/index.ts",
+      "sha256": "ad39c08f407afefc455131326e62cc7dde5b991321ed1af4982e8d77a6b0950b",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " D",
+      "path": "sdks/typescript/src/jwt_values.ts",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/src/jwt_values.ts",
+      "sha256": null,
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/src/types.ts",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/src/types.ts",
+      "sha256": "c0ddb90915003bf9e28c808a412bd411110c27ab538080c9b393350abb88a3ae",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/test/a2a-host.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/a2a-host.test.js",
+      "sha256": "5c71815c59358903d835e5cd2c42b80a38efe580c7ed725052dddf8e924ecaf4",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/test/a2a-task-state.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/a2a-task-state.test.js",
+      "sha256": "8788830cba8780051c416764eb4019f4c1ee063ec2201c3000aa8452dcb55276",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/test/ack-submission.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/ack-submission.test.js",
+      "sha256": "079ba9b41fe125cd0679c5d1493eb3254b0a49bafa3b87fadd19d78a8ac07136",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/test/host.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/host.test.js",
+      "sha256": "0b62b036b39aff3eb5eb054801bfdff1258e66f3f2f4f930222bf460bb0fce03",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/test/jwt-values.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/jwt-values.test.js",
+      "sha256": "fffc6401575eb9f1c0f295a57f56d06529b7cedd8cdf63743b10ffc7eacac575",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/test/lsp-diagnostics-host.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/lsp-diagnostics-host.test.js",
+      "sha256": "921291ba9eb0f88ea2694229125fad3a26719a1cb04a28016b69bcb796411035",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": " M",
+      "path": "sdks/typescript/test/lsp-host.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/lsp-host.test.js",
+      "sha256": "6872bb12e507d7ec5d56589e7241cff11df9a1f4f4d59d728545719778a99de6",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": ".echo-semantic/assets/asset.sdk-retired-a2a-lsp-consumer-sources.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/assets/asset.sdk-retired-a2a-lsp-consumer-sources.md",
+      "sha256": "ef84de7f147fab59cac81233de1fa10857bc8b3263c08dde1006d50e90d69faa",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": ".echo-semantic/audits/audit.sdk-a2a-lsp-consumer-retirement.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/audits/audit.sdk-a2a-lsp-consumer-retirement.md",
+      "sha256": "ea2006d68ab347065955f9949757bfc207ce825dd5fdfd57c3589c18cbcd5329",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": ".echo-semantic/evidence/evidence.sdk-a2a-lsp-consumer-retirement.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/evidence/evidence.sdk-a2a-lsp-consumer-retirement.md",
+      "sha256": "45cb1e851378a143462321908cf2c13ed6a4cca86dde893a8b92ebd6b60d5267",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": ".echo-semantic/evidence/evidence.sdk-source-consumption-validation.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/evidence/evidence.sdk-source-consumption-validation.md",
+      "sha256": "b4c6796d9ab879c42857d3437e4124bbccd8c4158d4f5121abb4a085c1ef6c40",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": ".echo-semantic/findings/finding.sdk-a2a-lsp-consumer-retirement.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/findings/finding.sdk-a2a-lsp-consumer-retirement.md",
+      "sha256": "9e9fe74f7a50b81ba21cc48f698824460e1518c20fdf71758ad714c47d22992e",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md",
+      "sha256": "77ad477a0b3d58005d252cc8afb598acc9e6a4102c17f4d0eb0b3e5031e17ea7",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "docs/adr/0043-native-message-sdk-adapter.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/adr/0043-native-message-sdk-adapter.md",
+      "sha256": "dbbbdc83320ddea8eaaf3598af512869fd093e63f9ae1fd8532795c0b7822842",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "docs/sdk/governance/a2a-lsp-retirement-boundary.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/governance/a2a-lsp-retirement-boundary.md",
+      "sha256": "e6a6c854551401c2f5fc781ecb8eb8d865368a9bb8fdd43de50ce021bafae80f",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "docs/sdk/governance/parquet-consumer-validation.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/governance/parquet-consumer-validation.md",
+      "sha256": "177cd2b1823d4f0cc859dc13d5ed1bcf2a13d62b198770f1303c379c0c3f0386",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "docs/sdk/native-messages.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/native-messages.md",
+      "sha256": "6c412c3c54052a126b17c3860013a0f74d45b6987e040b86761cbd49b950819c",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "docs/sdk/source-packages.md",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/docs/sdk/source-packages.md",
+      "sha256": "ec8973ef78e4c1cf5250c1dd14606ce039284dbf245a60f98fe6cacaa3fba707",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "echo-sdk-host/src/core_profile/native_message.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-host/src/core_profile/native_message.rs",
+      "sha256": "4460479b7193f8790875602226fe84b671a58836655be150d97ae6023ce67aae",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "echo-sdk-protocol/tests/a2a_lsp_retirement.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/tests/a2a_lsp_retirement.rs",
+      "sha256": "186c72f1e619e6be60b3ba5da20fd0cbd8e46f10887a57d83c1eb2a353ff749d",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "echo-sdk-protocol/tests/native_message_contract.rs",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/echo-sdk-protocol/tests/native_message_contract.rs",
+      "sha256": "2e7fdd4f9149d0c5879c8f2a55b6f9a47b5e708abe8f13a5c1ce096c69a4be5e",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "scripts/check-a2a-lsp-retirement.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/scripts/check-a2a-lsp-retirement.py",
+      "sha256": "07e2b82868b4d64433c132e1c142be4d9ab30af81d5442b0dc64ec36584d3821",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/RuntimeTerminal.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/java/com/echoagent/sdk/RuntimeTerminal.java",
+      "sha256": "f0faf21df13cf7b942eb461e4f913dd11aaa8c3b49ff3e720d59ffcde1f9df22",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/java/src/main/resources/com/echoagent/sdk/contracts/contract-digests.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/resources/com/echoagent/sdk/contracts/contract-digests.json",
+      "sha256": "2878f5e440ded6cf5d7a863345ec5db5fedb1d8195a0c5e191249e511cff25e2",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/java/src/main/resources/com/echoagent/sdk/contracts/facade-operation-catalog.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/main/resources/com/echoagent/sdk/contracts/facade-operation-catalog.json",
+      "sha256": "793fb68de319ba521d8198a0b4f6177711e886c91ecb9a87fedbcf43b66416e6",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/NativeMessageHostTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/NativeMessageHostTest.java",
+      "sha256": "eb7ad191da17ce9592de7395128de401d0fcd7826f08490d8b77b10dbcf51df9",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/PackageResourcesTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/PackageResourcesTest.java",
+      "sha256": "aa0e77265db2044b120ea6d2faebf706e2fe67ba032d640e6954c373fb9b56cd",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/ParquetRoundtripHostTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/ParquetRoundtripHostTest.java",
+      "sha256": "10887920e3c19876bebd98ec7e4a7341a380109ad8b39eed8b7024477924cd11",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java",
+      "sha256": "e9ef6adf02f1e66f703ff3c4c4037eb65c6e805f6874999298a79e805aa2cb9c",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/python/src/echo_agent_sdk/_runtime_terminal.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/_runtime_terminal.py",
+      "sha256": "f1c9ac61b2ab3abc451cdb2e3468181c4c4c333861b9be4f63a7f8eeda2bc6dc",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/python/src/echo_agent_sdk/contracts/contract-digests.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/contracts/contract-digests.json",
+      "sha256": "2878f5e440ded6cf5d7a863345ec5db5fedb1d8195a0c5e191249e511cff25e2",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/python/src/echo_agent_sdk/contracts/facade-operation-catalog.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/src/echo_agent_sdk/contracts/facade-operation-catalog.json",
+      "sha256": "793fb68de319ba521d8198a0b4f6177711e886c91ecb9a87fedbcf43b66416e6",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/python/tests/test_native_message_host.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_native_message_host.py",
+      "sha256": "ff08755b1e95568e3a682f8e6d8365d511ce130ccc3d171fbe40dbd96fdf1852",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/python/tests/test_package_resources.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_package_resources.py",
+      "sha256": "2a1ad36acf4d067403414ef04863a7e383f510695e55d72fe0fc8004babee23a",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/python/tests/test_parquet_roundtrip_host.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_parquet_roundtrip_host.py",
+      "sha256": "0aa58f08ebb35c5a1d6b3dcfd544a7948d691644daded97c81d5c07aa1df3213",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/python/tests/test_runtime_terminal.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/tests/test_runtime_terminal.py",
+      "sha256": "1e0d9600b79c5cef2ab4f4ef2ebe9880f863f13cda31e41345daf3f1b81f6d83",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/shared/testing/a2a_lsp_retirement_contract.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/a2a_lsp_retirement_contract.json",
+      "sha256": "2cb32f9dc58e1a7ef47e09c82b2374b5b3484f5850cf2f1006e5b9be876c88e0",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/shared/testing/native_message_host_contract.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/native_message_host_contract.json",
+      "sha256": "d8bd87ab66d9236875f3547e9ed598c7c8eec98ee94793b9ccbc8291542e4573",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/shared/testing/parquet_roundtrip_fixture.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/parquet_roundtrip_fixture.py",
+      "sha256": "af0ef512866dbfc21b9cca02e1643f5e8e1b36111cf7055cc5ee5c4720d28e9d",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/shared/testing/retirement_plugin_fixture.py",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/shared/testing/retirement_plugin_fixture.py",
+      "sha256": "c5f0525824a6a985a26a87cbaf07358dc9aa5c5749828948ba5ada13331092bc",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/contracts/contract-digests.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/contracts/contract-digests.json",
+      "sha256": "2878f5e440ded6cf5d7a863345ec5db5fedb1d8195a0c5e191249e511cff25e2",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/contracts/facade-operation-catalog.json",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/contracts/facade-operation-catalog.json",
+      "sha256": "793fb68de319ba521d8198a0b4f6177711e886c91ecb9a87fedbcf43b66416e6",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/src/runtime_terminal.ts",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/src/runtime_terminal.ts",
+      "sha256": "4c7a40795a09d098d3908a8911342f5a432077e3cdef9fada5ec69a3b031ec31",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/test/native-message-host.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/native-message-host.test.js",
+      "sha256": "8be12eff0e02bbf1172949eb743fb6d777ab6254acf522340941ecf354797c80",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/test/package-resources.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/package-resources.test.js",
+      "sha256": "9ee7835c3172fc545f69ab4ca21bc83b27664df0ab8dea2a2364650cb46bb153",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/test/parquet-roundtrip-host.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/parquet-roundtrip-host.test.js",
+      "sha256": "18a0d57cbf16a037963876176747405321b01959650823966c592a6c37fc6ff0",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/test/runtime-terminal.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/runtime-terminal.test.js",
+      "sha256": "9b03ab77900ff53db83497dadfe914a319d22fcf12c7e77afc09d30cd9f17073",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    },
+    {
+      "status": "??",
+      "path": "sdks/typescript/test/search-provider-retry-host.test.js",
+      "absolute_path": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/typescript/test/search-provider-retry-host.test.js",
+      "sha256": "2e7c7848a46391ddb406d739c7a6030578509c0e8acbd7674a61fa41852c5cac",
+      "owner": "SDK sole writer / explicitly adopted original WIP; Root owns stage/commit"
+    }
+  ],
+  "pending_patch": "rich-message-overrides.pending.patch",
+  "pending_patch_sha256": "d20d9f3ebab5f68f3083bcc98181a4ed3ae6d23523d521ef2510b5adcf2139db",
+  "candidate_revision": "v2",
+  "candidate_files": [
+    {
+      "path": "docs/adr/0043-native-message-sdk-adapter.md",
+      "base_sha256": "dbbbdc83320ddea8eaaf3598af512869fd093e63f9ae1fd8532795c0b7822842",
+      "candidate_sha256": "8abdf5e35bc8c99638416302828bca4d0ded9b0c40a9cfa811700dd4dcafd0f8",
+      "operation": "modify"
+    },
+    {
+      "path": "docs/sdk/sdk-extension-bridge.md",
+      "base_sha256": "7b83acc1240fb9a153d05ca9bbf8570efe39fac9d3cf91d98519d60b11fbb965",
+      "candidate_sha256": "6c79aace1913cc6627ae9b2dd2750dae024b3d8defb32c95233590627b257e95",
+      "operation": "modify"
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/extension_bridge.rs",
+      "base_sha256": "3cfcd52658ba49651d42f6fa1d2791b4cbac431c5666de1cb6d04a37ce07a31d",
+      "candidate_sha256": "fbb71af75c16e0e6ab933ad10190b9a3b156d32262204efd751cc0264a43238c",
+      "operation": "modify"
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/extension_bridge_message_tests.rs",
+      "base_sha256": null,
+      "candidate_sha256": "f623a555904135addff016255e5f1cc4f1a1b38010834e76358991262bade0f2",
+      "operation": "add"
+    },
+    {
+      "path": "echo-sdk-host/src/core_profile/wire.rs",
+      "base_sha256": "543476d203f91c0367955a90bb32a4b9e9711839721a5458327a7b9c95c12cce",
+      "candidate_sha256": "47fb9d258739922f1f90e62e9102b486d4460ebb7da45a611240d7dd59ad4632",
+      "operation": "modify"
+    },
+    {
+      "path": "echo-sdk-host/tests/core_profile_e2e.rs",
+      "base_sha256": "69e6c82560cdf1bd80b18c1dc45b583e0471ff665b98cec81065e3f8e2cfee8f",
+      "candidate_sha256": "74ce0f144f1b0c88ecb39b0e4584b8cb8c854a321380ce4c58dd48b9dceefb33",
+      "operation": "modify"
+    },
+    {
+      "path": "echo-sdk-protocol/src/methods.rs",
+      "base_sha256": "d4f02ede74f5f1e1c0dbbda59648af5a3f1d373e1ecc874c8bd36fec742f622e",
+      "candidate_sha256": "edd1cdf427ef5c2d3bed6f6cd457caee52293dd78b2707f5cbd88a3a08dde733",
+      "operation": "modify"
+    },
+    {
+      "path": "echo-sdk-protocol/tests/extension_contract.rs",
+      "base_sha256": "8853a9f0041b448d4ba23de1a0a47ae2b131974925c7a817594e853bc6bb227f",
+      "candidate_sha256": "4049e2ef5df7561fcb413266ea32af70086376ce8e0b2ce0a249cc24c4058fa1",
+      "operation": "modify"
+    },
+    {
+      "path": "echo-sdk-protocol/tests/native_message_contract.rs",
+      "base_sha256": "2e7fdd4f9149d0c5879c8f2a55b6f9a47b5e708abe8f13a5c1ce096c69a4be5e",
+      "candidate_sha256": "bcb041f17f8d5dc35f516b2efa398e2d3a198007809fc247a57880e5030dd0eb",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java",
+      "base_sha256": null,
+      "candidate_sha256": "90b37fc8474422c1ea0e5d1b88bc9d5ad9a5084e60f35fe2caf1c532509fed86",
+      "operation": "add"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/EvalImproveTopologyHostTest.java",
+      "base_sha256": "a12a785f80302f0104e47eaeadb7e31919a0f228023ec64ed7b142d173e37a69",
+      "candidate_sha256": "81212438eadce49d4929f995c5067c15902a5f3a1726dbff3708c0e6d50e4eaa",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/StreamCancellationRoutesTest.java",
+      "base_sha256": "2e8bf29c16d9b766e9200df9cd94d96cc16263456425be7a0e576758c6f14907",
+      "candidate_sha256": "c22d2d5f91bc9958188b04200fd91872c1beb1ebdf08433ffa18601b046d930c",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java",
+      "base_sha256": "108b633d12912a2e65492ca20a00f4d2bc4b29c38a9470b8feb9a21894efd3d5",
+      "candidate_sha256": "5d1c0e1272c0c78639d0c4706e26768c36d46d81258e3ed77d85998170ec3f5e",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/python/examples/custom_agent_message.py",
+      "base_sha256": null,
+      "candidate_sha256": "0413672b6718c104cc94b2b58032924ebdd6c59d4853e41d24a036a03957050d",
+      "operation": "add"
+    },
+    {
+      "path": "sdks/python/tests/test_custom_agent_message_example.py",
+      "base_sha256": null,
+      "candidate_sha256": "e6dbbaae6a21fd617e2b6b57d69437a3752d0bc6a9ee0001ac6e28827b077cc2",
+      "operation": "add"
+    },
+    {
+      "path": "sdks/python/tests/test_eval_improve_topology_host.py",
+      "base_sha256": "25a1986bb3f5e5d02b143c9f32980e4d87879b866b4a9a6f2598ee25dc3788e6",
+      "candidate_sha256": "a38761d40aa313faa9be628bfb4ee0918d2eec32318b82ad9e73eb8d172a0192",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/python/tests/test_protocol_integrity.py",
+      "base_sha256": "4eb56d98ea896df31232b369f3c5fa442802e5aaf4f2f5b8586c8eba1a84b525",
+      "candidate_sha256": "de4e06fabb024244b7a3d08d47ed8fe1e5f24a33c6ce97100c72bf4bf43a9767",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/python/tests/test_stream_cancellation_routes.py",
+      "base_sha256": "ec2ce8d327a7ac3a1948b385b4e004541ac5297a65fc7a2f0fc3c7129562c444",
+      "candidate_sha256": "4e053ed79d7e07349af606b7993becc95f7c27a179f7570f26d26cef8282eb16",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/python/tests/test_task_subagent_host.py",
+      "base_sha256": "09802d2f18cb789718e9d2ab33089d20ebb767711400d285f51a917f96963c3c",
+      "candidate_sha256": "9f83756b9c5624ec267cc392962718079ea14f54794ef558a8df508bdd11f8fb",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/typescript/examples/custom-agent-message.ts",
+      "base_sha256": null,
+      "candidate_sha256": "a3b51ddf6f0f4f6fd6cf7eda9d164be07cd2d6c6a3fe0dcd69b0bb74835a646a",
+      "operation": "add"
+    },
+    {
+      "path": "sdks/typescript/src/types.ts",
+      "base_sha256": "c0ddb90915003bf9e28c808a412bd411110c27ab538080c9b393350abb88a3ae",
+      "candidate_sha256": "b445002c7d3f470c229596db8a3882b826eff8dd8d78d0ec1a0f4358d849f183",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/typescript/test/custom-agent-message-example.test.js",
+      "base_sha256": null,
+      "candidate_sha256": "3074bd1bae39e1a9d81850d3b54ddc9a99fd6e7527e7245acdc5fb0c0c70c067",
+      "operation": "add"
+    },
+    {
+      "path": "sdks/typescript/test/eval-improve-topology-host.test.js",
+      "base_sha256": "fd3ccfe4e623f1b0d349e82dfb1618fd95225c2d58cb5002b5d78f9289a96790",
+      "candidate_sha256": "fc4c27a356aab7622ce7d14ba0d1dfe06e6b708acdaca37cd9dc60eacf84a5b2",
+      "operation": "modify"
+    },
+    {
+      "path": "sdks/typescript/test/task-subagent-host.test.js",
+      "base_sha256": "17187fc98b80acb40528da8eff9937d4cd3ff131e1124ee28f9fbd34ddb4b27f",
+      "candidate_sha256": "1fe9c4ea4377b1c38a71de639956e7f83620b44eaebe106ca1a224d9fed3984b",
+      "operation": "modify"
+    }
+  ],
+  "candidate_whole_review": "incomplete after human maintenance pause; two original Important fixes confirmed",
+  "Rust_Host_compilation_or_runtime_qualified": false,
+  "formal_adoption": false,
+  "new_source_pin_qualified": false,
+  "no_compat_pending_inventory_sha256": "2f81191d889905a966390fa74cb72f1fdb4ffd07ef17386bc76103a1341511e8",
+  "no_compat_FinalAnswer_compat_only_classification": "withdrawn; runtime safety output/callback/validation/cleanup preserved",
+  "raw_log_or_binary_in_package": false,
+  "whole_goal_complete": false
+}

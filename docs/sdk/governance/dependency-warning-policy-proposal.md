@@ -71,7 +71,6 @@ fresh audit及三vendor来源视图audit均exit0/无warning；deny exit0但保49
 
 ## 裁决前已确认的冲突（历史）
 
-
 裁决前 SDK AGENTS.md 第72–73行的原要求为：
 
 > 开发提交执行 focused 验证；合并前执行全部适用 Rust、contract、Host E2E、三语言、cross-platform、dependency 和文档门禁，所有命令必须零失败、零警告、零格式差异。
@@ -90,58 +89,58 @@ fresh audit及三vendor来源视图audit均exit0/无warning；deny exit0但保49
 
 50组中10组跨数字 major，40组数字 major 都是0但跨0.x minor兼容线，没有同一兼容线内的纯补丁重复组。这里“同 major”仅是版本号分类，不表示可以安全互换；0.x minor变化通常属于不同兼容线，具体升级还需按原消费者约束验证。
 
-| crate | 本次检查实际版本 | 分类 |
-| --- | --- | --- |
-| block-buffer | 0.10.4, 0.12.1 | 同 major（跨 0.x minor 兼容线） |
-| const-oid | 0.9.6, 0.10.2 | 同 major（跨 0.x minor 兼容线） |
-| core-foundation | 0.9.4, 0.10.1 | 同 major（跨 0.x minor 兼容线） |
-| cpufeatures | 0.2.17, 0.3.0 | 同 major（跨 0.x minor 兼容线） |
-| crypto-common | 0.1.7, 0.2.2 | 同 major（跨 0.x minor 兼容线） |
-| digest | 0.10.7, 0.11.3 | 同 major（跨 0.x minor 兼容线） |
-| foldhash | 0.1.5, 0.2.0 | 同 major（跨 0.x minor 兼容线） |
-| getrandom | 0.2.17, 0.3.4, 0.4.3 | 同 major（跨 0.x minor 兼容线） |
-| hashbrown | 0.12.3, 0.14.5, 0.15.5, 0.16.1, 0.17.1 | 同 major（跨 0.x minor 兼容线） |
-| hashlink | 0.9.1, 0.10.0 | 同 major（跨 0.x minor 兼容线） |
-| html5ever | 0.31.0, 0.39.0 | 同 major（跨 0.x minor 兼容线） |
-| indexmap | 1.9.3, 2.14.0 | 跨 major |
-| markup5ever | 0.16.2, 0.39.0 | 同 major（跨 0.x minor 兼容线） |
-| md-5 | 0.10.6, 0.11.0 | 同 major（跨 0.x minor 兼容线） |
-| nom | 7.1.3, 8.0.0 | 跨 major |
-| phf | 0.11.3, 0.12.1, 0.13.1 | 同 major（跨 0.x minor 兼容线） |
-| phf_codegen | 0.11.3, 0.13.1 | 同 major（跨 0.x minor 兼容线） |
-| phf_generator | 0.11.3, 0.13.1 | 同 major（跨 0.x minor 兼容线） |
-| phf_shared | 0.11.3, 0.12.1, 0.13.1 | 同 major（跨 0.x minor 兼容线） |
-| quick-xml | 0.39.4, 0.41.0 | 同 major（跨 0.x minor 兼容线） |
-| r-efi | 5.3.0, 6.0.0 | 跨 major |
-| rand | 0.8.7, 0.9.5, 0.10.2 | 同 major（跨 0.x minor 兼容线） |
-| rand_chacha | 0.3.1, 0.9.0 | 同 major（跨 0.x minor 兼容线） |
-| rand_core | 0.6.4, 0.9.5, 0.10.1 | 同 major（跨 0.x minor 兼容线） |
-| redox_syscall | 0.5.18, 0.7.5 | 同 major（跨 0.x minor 兼容线） |
-| schemars | 0.8.22, 1.2.2 | 跨 major |
-| schemars_derive | 0.8.22, 1.2.2 | 跨 major |
-| serde_derive_internals | 0.29.1, 0.30.0 | 同 major（跨 0.x minor 兼容线） |
-| sha2 | 0.10.9, 0.11.0 | 同 major（跨 0.x minor 兼容线） |
-| shlex | 1.3.0, 2.0.1 | 跨 major |
-| socket2 | 0.5.10, 0.6.5 | 同 major（跨 0.x minor 兼容线） |
-| string_cache | 0.8.9, 0.9.0 | 同 major（跨 0.x minor 兼容线） |
-| string_cache_codegen | 0.5.4, 0.6.1 | 同 major（跨 0.x minor 兼容线） |
-| syn | 2.0.119, 3.0.3 | 跨 major |
-| tendril | 0.4.3, 0.5.1 | 同 major（跨 0.x minor 兼容线） |
-| thiserror | 1.0.69, 2.0.20 | 跨 major |
-| thiserror-impl | 1.0.69, 2.0.20 | 跨 major |
-| tower | 0.4.13, 0.5.3 | 同 major（跨 0.x minor 兼容线） |
-| web_atoms | 0.1.3, 0.2.6 | 同 major（跨 0.x minor 兼容线） |
-| weezl | 0.1.12, 0.2.1 | 同 major（跨 0.x minor 兼容线） |
-| windows-sys | 0.48.0, 0.52.0, 0.61.2 | 同 major（跨 0.x minor 兼容线） |
-| windows-targets | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| windows_aarch64_gnullvm | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| windows_aarch64_msvc | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| windows_i686_gnu | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| windows_i686_msvc | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| windows_x86_64_gnu | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| windows_x86_64_gnullvm | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| windows_x86_64_msvc | 0.48.5, 0.52.6 | 同 major（跨 0.x minor 兼容线） |
-| zip | 2.4.2, 8.6.0 | 跨 major |
+| crate                   | 本次检查实际版本                       | 分类                            |
+| ----------------------- | -------------------------------------- | ------------------------------- |
+| block-buffer            | 0.10.4, 0.12.1                         | 同 major（跨 0.x minor 兼容线） |
+| const-oid               | 0.9.6, 0.10.2                          | 同 major（跨 0.x minor 兼容线） |
+| core-foundation         | 0.9.4, 0.10.1                          | 同 major（跨 0.x minor 兼容线） |
+| cpufeatures             | 0.2.17, 0.3.0                          | 同 major（跨 0.x minor 兼容线） |
+| crypto-common           | 0.1.7, 0.2.2                           | 同 major（跨 0.x minor 兼容线） |
+| digest                  | 0.10.7, 0.11.3                         | 同 major（跨 0.x minor 兼容线） |
+| foldhash                | 0.1.5, 0.2.0                           | 同 major（跨 0.x minor 兼容线） |
+| getrandom               | 0.2.17, 0.3.4, 0.4.3                   | 同 major（跨 0.x minor 兼容线） |
+| hashbrown               | 0.12.3, 0.14.5, 0.15.5, 0.16.1, 0.17.1 | 同 major（跨 0.x minor 兼容线） |
+| hashlink                | 0.9.1, 0.10.0                          | 同 major（跨 0.x minor 兼容线） |
+| html5ever               | 0.31.0, 0.39.0                         | 同 major（跨 0.x minor 兼容线） |
+| indexmap                | 1.9.3, 2.14.0                          | 跨 major                        |
+| markup5ever             | 0.16.2, 0.39.0                         | 同 major（跨 0.x minor 兼容线） |
+| md-5                    | 0.10.6, 0.11.0                         | 同 major（跨 0.x minor 兼容线） |
+| nom                     | 7.1.3, 8.0.0                           | 跨 major                        |
+| phf                     | 0.11.3, 0.12.1, 0.13.1                 | 同 major（跨 0.x minor 兼容线） |
+| phf_codegen             | 0.11.3, 0.13.1                         | 同 major（跨 0.x minor 兼容线） |
+| phf_generator           | 0.11.3, 0.13.1                         | 同 major（跨 0.x minor 兼容线） |
+| phf_shared              | 0.11.3, 0.12.1, 0.13.1                 | 同 major（跨 0.x minor 兼容线） |
+| quick-xml               | 0.39.4, 0.41.0                         | 同 major（跨 0.x minor 兼容线） |
+| r-efi                   | 5.3.0, 6.0.0                           | 跨 major                        |
+| rand                    | 0.8.7, 0.9.5, 0.10.2                   | 同 major（跨 0.x minor 兼容线） |
+| rand_chacha             | 0.3.1, 0.9.0                           | 同 major（跨 0.x minor 兼容线） |
+| rand_core               | 0.6.4, 0.9.5, 0.10.1                   | 同 major（跨 0.x minor 兼容线） |
+| redox_syscall           | 0.5.18, 0.7.5                          | 同 major（跨 0.x minor 兼容线） |
+| schemars                | 0.8.22, 1.2.2                          | 跨 major                        |
+| schemars_derive         | 0.8.22, 1.2.2                          | 跨 major                        |
+| serde_derive_internals  | 0.29.1, 0.30.0                         | 同 major（跨 0.x minor 兼容线） |
+| sha2                    | 0.10.9, 0.11.0                         | 同 major（跨 0.x minor 兼容线） |
+| shlex                   | 1.3.0, 2.0.1                           | 跨 major                        |
+| socket2                 | 0.5.10, 0.6.5                          | 同 major（跨 0.x minor 兼容线） |
+| string_cache            | 0.8.9, 0.9.0                           | 同 major（跨 0.x minor 兼容线） |
+| string_cache_codegen    | 0.5.4, 0.6.1                           | 同 major（跨 0.x minor 兼容线） |
+| syn                     | 2.0.119, 3.0.3                         | 跨 major                        |
+| tendril                 | 0.4.3, 0.5.1                           | 同 major（跨 0.x minor 兼容线） |
+| thiserror               | 1.0.69, 2.0.20                         | 跨 major                        |
+| thiserror-impl          | 1.0.69, 2.0.20                         | 跨 major                        |
+| tower                   | 0.4.13, 0.5.3                          | 同 major（跨 0.x minor 兼容线） |
+| web_atoms               | 0.1.3, 0.2.6                           | 同 major（跨 0.x minor 兼容线） |
+| weezl                   | 0.1.12, 0.2.1                          | 同 major（跨 0.x minor 兼容线） |
+| windows-sys             | 0.48.0, 0.52.0, 0.61.2                 | 同 major（跨 0.x minor 兼容线） |
+| windows-targets         | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| windows_aarch64_gnullvm | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| windows_aarch64_msvc    | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| windows_i686_gnu        | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| windows_i686_msvc       | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| windows_x86_64_gnu      | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| windows_x86_64_gnullvm  | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| windows_x86_64_msvc     | 0.48.5, 0.52.6                         | 同 major（跨 0.x minor 兼容线） |
+| zip                     | 2.4.2, 8.6.0                           | 跨 major                        |
 
 ## 已接受选择：仅允许明确受控的 cargo-deny duplicate 提示
 
@@ -172,3 +171,22 @@ fresh audit及三vendor来源视图audit均exit0/无warning；deny exit0但保49
 ## 裁决与实施边界
 
 用户已选择有界提示例外，严格零警告方案仅保留为历史比较。原20文件依赖证据包及其摘要未修改；接受本政策不会自动关闭Finding或替代源码、测试、合同和仓库门禁。实施仅限所选规则文本、必要规范同步及原命令验证，不额外改锁图、生成合同、ignore或bans阈值。未来新framework revision、锁图、manifest/检查范围变化要重新取得fresh audit/deny结果，并独立复审组身份与版本集合；任何增量不在此次首次50组授权内。框架新revision及SDK最终main验收仍需各自精确快照证据，npm/PyPI/Maven发布继续在本项目交付范围之外。
+
+## Plan04 lock-graph contraction
+
+Removing the SDK A2A/LSP feature requests on the unchanged f7bac62e pin prunes
+only jsonwebtoken9.3.1, pem3.0.6 and simple_asn10.6.4, plus the echo_agent
+axum/jsonwebtoken edges. No package is added or version/checksum changed. The
+49 accepted duplicate identity groups, scanner version, command, authorization
+and deny policy remain byte-for-byte equivalent; only the machine baseline
+lock digest is rebound to the actual smaller lock. Fresh scanner output must
+still match those exact49 groups with no other warnings/errors. This does not
+expand the existing exception or reclassify older failed evidence.
+
+The Plan04 lock SHA256 is
+`0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f`.
+Fresh `cargo audit --deny warnings` loaded1352 advisories and exited0.
+The original workspace/all-features/locked cargo-deny0.20.2 scanner and exact
+baseline gate exited0; all49 accepted duplicate groups remain unchanged, with
+no other diagnostic category. Raw output and its natural exit are retained in
+the task-local receipt; this scan does not substitute for Host/language tests.
