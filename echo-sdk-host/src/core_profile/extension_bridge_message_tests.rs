@@ -2,7 +2,7 @@
 use super::*;
 use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
 use echo_agent::agent::AgentInvocationContext;
-use echo_agent::llm::types::{ContentPart, LinkedResource, Message, MessageContent};
+use echo_agent::llm::types::{ContentPart, LinkedResource, Message, MessageContent, Role};
 use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
 
 fn rich_message(meta: Option<bool>) -> Result<Message, String> {
@@ -50,6 +50,9 @@ fn text_tool_message() -> Message {
 #[test]
 fn custom_agent_message_roundtrip_preserves_parts_roles_tool_identity_and_empty_values()
 -> Result<(), String> {
+    let custom_role = "provider-specific-角色🧪";
+    let mut custom_message = Message::user("自定义角色原文".into());
+    custom_message.role = Role::Custom(custom_role.into());
     for message in [
         Message::default(),
         Message::user("便利文本🧪".into()),
@@ -57,6 +60,7 @@ fn custom_agent_message_roundtrip_preserves_parts_roles_tool_identity_and_empty_
         rich_message(Some(false))?,
         rich_message(Some(true))?,
         rich_message(None)?,
+        custom_message.clone(),
     ] {
         let expected = serde_json::to_value(&message).map_err(|error| error.to_string())?;
         let wire = message_wire(&message)?;
@@ -66,12 +70,31 @@ fn custom_agent_message_roundtrip_preserves_parts_roles_tool_identity_and_empty_
             expected
         );
     }
-    let mut wire = message_wire(&Message::user("invalid role".into()))?;
-    wire.role = "not-a-native-role".into();
-    assert!(
-        message_from_wire(wire).is_err(),
-        "未知 role 不能降级为 user"
-    );
+    // Custom是框架当前公开能力；未知provider角色必须原样保留，不能降成User或拒绝。
+    let wire = message_wire(&custom_message)?;
+    let restored = message_from_wire(wire.clone())?;
+    assert_eq!(restored.role, Role::Custom(custom_role.into()));
+    assert_ne!(restored.role, Role::User);
+
+    let valid_wire = serde_json::to_value(wire).map_err(|error| error.to_string())?;
+    for invalid_role in [
+        serde_json::Value::Null,
+        serde_json::json!(7),
+        serde_json::json!({ "custom": custom_role }),
+    ] {
+        let mut invalid_wire = valid_wire.clone();
+        invalid_wire
+            .as_object_mut()
+            .ok_or_else(|| "Message wire must be an object".to_string())?
+            .insert("role".into(), invalid_role);
+        assert!(serde_json::from_value::<LlmMessageWire>(invalid_wire).is_err());
+    }
+    let mut missing_role = valid_wire;
+    missing_role
+        .as_object_mut()
+        .ok_or_else(|| "Message wire must be an object".to_string())?
+        .remove("role");
+    assert!(serde_json::from_value::<LlmMessageWire>(missing_role).is_err());
     Ok(())
 }
 
@@ -119,20 +142,43 @@ async fn custom_agent_real_message_overrides_preserve_payload_and_original_invoc
             async move |call: ExtensionInvokeCall,
                         responder: Responder<ExtensionInvokeOutcome>,
                         connection: ConnectionTo<AcpAgent>| {
-                let record = sdk_state
-                    .handles
-                    .extension(&call.extension)
-                    .map_err(|error| RpcError::internal_error().data(error.message))?;
-                let owner = record
-                    .callback_owners
-                    .lock()
-                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?
-                    .iter()
-                    .find(|owner| !owner.finished.is_cancelled())
-                    .cloned()
-                    .ok_or_else(|| {
-                        RpcError::internal_error().data("original callback owner missing")
+                // callback_owners只保留Unknown，正常请求必须沿原Host签发stream找同一个owner。
+                let owner = {
+                    let stream = call.stream.as_ref().ok_or_else(|| {
+                        RpcError::internal_error().data("original stream missing")
                     })?;
+                    let sink = sdk_state
+                        .extension_shared
+                        .stream_sink(&stream.id)
+                        .ok_or_else(|| {
+                            RpcError::internal_error().data("original stream sink missing")
+                        })?;
+                    let owner = sink
+                        .owner
+                        .lock()
+                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?
+                        .upgrade()
+                        .ok_or_else(|| {
+                            RpcError::internal_error().data("original stream owner missing")
+                        })?;
+                    let record = sdk_state
+                        .handles
+                        .extension(&call.extension)
+                        .map_err(|error| RpcError::internal_error().data(error.message))?;
+                    let original_record = owner
+                        .registration
+                        .lock()
+                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?
+                        .upgrade()
+                        .ok_or_else(|| {
+                            RpcError::internal_error().data("original owner registration missing")
+                        })?;
+                    assert!(
+                        Arc::ptr_eq(&record, &original_record),
+                        "stream owner must be the original invocation registration"
+                    );
+                    owner
+                };
                 let invocation = owner
                     ._agent_invocation
                     .lock()
