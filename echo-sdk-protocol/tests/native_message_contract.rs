@@ -8,6 +8,86 @@ use echo_sdk_protocol::scalar::{WireField, WireU64, WireValue};
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 #[test]
+fn custom_agent_inputs_keep_the_shared_message_and_reject_old_string_payloads() -> TestResult {
+    use echo_sdk_protocol::methods::{AgentMessageInput, AgentTaskInput, ExtensionInvocation};
+    let message = LlmMessageWire {
+        role: "tool".into(),
+        content: WireValue::from_json(serde_json::json!([
+            {"type":"text","text":"完整输入🧪"},
+            {"type":"resource_link","resource":{"uri":"resource://fixture/附件","name":"资料.txt","_meta":{"binding":{"none":null,"empty":{},"values":[]}}}}
+        ]))?,
+        name: Some("shell".into()),
+        tool_call_id: Some("call-原身份🧪".into()),
+        tool_calls: Some(Vec::new()),
+        reasoning_content: Some(String::new()),
+        reasoning_blocks: Some(Vec::new()),
+        assistant_blocks: Some(Vec::new()),
+        approved_assistant_blocks: Some(Vec::new()),
+        execution_status: None,
+    };
+    for invocation in [
+        ExtensionInvocation::AgentExecute(AgentTaskInput {
+            task: message.clone(),
+            history: Some(Vec::new()),
+        }),
+        ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+            task: message.clone(),
+            history: None,
+        }),
+        ExtensionInvocation::AgentChat(AgentMessageInput {
+            message: message.clone(),
+            history: Some(vec![message.clone()]),
+        }),
+        ExtensionInvocation::AgentChatStream(AgentMessageInput {
+            message: message.clone(),
+            history: None,
+        }),
+    ] {
+        let encoded = serde_json::to_value(&invocation)?;
+        let restored: ExtensionInvocation = serde_json::from_value(encoded)?;
+        assert_eq!(restored, invocation);
+    }
+    for (operation, key) in [
+        ("agent_execute", "task"),
+        ("agent_execute_stream", "task"),
+        ("agent_chat", "message"),
+        ("agent_chat_stream", "message"),
+    ] {
+        let mut input = serde_json::Map::new();
+        input.insert(
+            key.into(),
+            serde_json::Value::String("old text payload".into()),
+        );
+        assert!(
+            serde_json::from_value::<ExtensionInvocation>(
+                serde_json::json!({"operation":operation,"input":input})
+            )
+            .is_err()
+        );
+        input.insert(
+            key.into(),
+            serde_json::json!({"content":{"kind":"string","value":"missing role"}}),
+        );
+        assert!(
+            serde_json::from_value::<ExtensionInvocation>(
+                serde_json::json!({"operation":operation,"input":input})
+            )
+            .is_err()
+        );
+        let other_key = if key == "task" { "message" } else { "task" };
+        let mut wrong = serde_json::Map::new();
+        wrong.insert(other_key.into(), serde_json::to_value(&message)?);
+        assert!(
+            serde_json::from_value::<ExtensionInvocation>(
+                serde_json::json!({"operation":operation,"input":wrong})
+            )
+            .is_err()
+        );
+    }
+    Ok(())
+}
+
+#[test]
 fn native_message_provider_coordinates_and_unknown_original_phase_are_lossless() -> TestResult {
     use echo_sdk_protocol::methods::{LlmApiProtocolWire, ProviderOutputSourceWire};
     let mut expected = block(AssistantPhaseWire::Unknown);

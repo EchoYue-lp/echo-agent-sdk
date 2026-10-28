@@ -4,7 +4,7 @@ id: map.sdk-extension-bridge
 kind: capability_map
 title: 扩展桥
 risk: high
-observed_at: 5bcbad2437e5c19f61101883044c4f67944cb97c
+observed_at: source:42415136ecd37de6bd39f3320bfe90663a7601f9e667238225568b220502a931
 boundary_refs:
 - boundary.sdk-extension-bridge
 behavior_refs:
@@ -48,6 +48,31 @@ audit_refs:
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
+  custom-agent-full-message-input:
+    status: needs_review
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/extension_bridge_message_tests.rs
+    - echo-sdk-host/src/core_profile/wire.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/schema.rs
+    - echo-sdk-protocol/tests/native_message_contract.rs
+    - echo-sdk-protocol/tests/extension_contract.rs
+    - sdks/typescript/src/types.ts
+    - sdks/typescript/examples/custom-agent-message.ts
+    - sdks/typescript/test/custom-agent-message-example.test.js
+    - sdks/python/examples/custom_agent_message.py
+    - sdks/python/tests/test_custom_agent_message_example.py
+    - sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java
+    - docs/adr/0043-native-message-sdk-adapter.md
+    - docs/sdk/sdk-extension-bridge.md
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    unknown: 当前完整Message/history源码与语言mock已验证具名范围；Rust typed override回归、原schema生成、同源Host和真实factory外层消费者尚待执行，不能继承旧234或三语言资格。
+    next_step: Root开放精确纯Protocol批次后运行原测试与唯一schema/语言资源生成入口，再于合格新Framework同源窗口验证Host及真实消费者；不手改生成JSON或占位pin。
+    review_scope: 输入复用原LlmMessageWire和run_stream_scoped；Text/Parts/ResourceLink、role/name、工具身份、原生元数据和history保全。运行时FinalAnswer/Guard安全正文/回调及原owner保留，不把候选正文当结算。
   behavior-lifecycle-failure:
     status: mapped
     source_refs:
@@ -327,3 +352,16 @@ sharedEvidence/8Audit对应真实5bcb与原runtime69b；原failurecause两个rem
 ## Managed restart被动Host退出的具体未决
 
 新增 finding.sdk-managed-restart-passive-host-exit-timeout 只定位原0ebe第一Host child.wait10s Elapsed，restart与后续receipt断言未达。入口本已在此Map场景sourceRefs中；场景mapped不代表该失败已修。原scenes/status/观察不改，新诊断未提交不假afterGit、不推数据丢失或B5秒policy。
+
+
+## 2026-10-28：完整Message输入的当前依据与待验
+
+新增场景只关联本次CustomAgent完整输入源码、三语言示例与mock消费者，使用原Framework
+runtime权威和SDK薄转换。现有LlmMessageWire、message_wire/from_wire与run_stream_scoped
+承担同一输入；role/name、Parts/ResourceLink meta、工具身份、原生块/批准投影/状态和
+invocation.history不降为裸字符串，默认/显式invocation路径保持原owner和取消信号。
+
+当前具名语言mock TS44/Python40/Java8通过、源码静态独审通过；Rust、schema/package生成、
+同源Host/真实FactoryAdapter外层仍未验，故新增场景保持needs_review。原观察5bcb与旧场景
+及历史Evidence可由WIP6cb恢复；本source观察更新只定位当前新增依据，不提升它们的旧
+验证状态或将raw旧票改称当前。runtime FinalAnswer/回调/Guard安全正文/校验收尾均保留。

@@ -658,8 +658,11 @@ pub(crate) fn message_from_wire(message: LlmMessageWire) -> Result<Message, Stri
     let reasoning_blocks = message
         .reasoning_blocks
         .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect());
+    // 复用原生 Role 的封闭 serde 合同；未知 role 不降级为 user。
+    let role = serde_json::from_value(serde_json::Value::String(message.role))
+        .map_err(|error| format!("invalid Message role: {error}"))?;
     let native = Message {
-        role: message.role.as_str().into(),
+        role,
         content,
         tool_calls,
         name: message.name,

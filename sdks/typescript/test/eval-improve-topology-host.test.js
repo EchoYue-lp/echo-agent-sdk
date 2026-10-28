@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, readdirSync, renameSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { EchoAgentClient, wireUtf8Path } from "../dist/index.js";
+import { EchoAgentClient, fromWireValue, wireUtf8Path } from "../dist/index.js";
 const host=process.env.ECHO_AGENT_SDK_HOST;
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==="1"&&!host)throw Error("required analysis Host missing");
 const fixture=fileURLToPath(new URL("../../shared/testing/eval_improve_topology_fixture.py",import.meta.url));
@@ -21,7 +21,7 @@ for(const group of ["eval","improve","topology"])test(`native ${group} accepted 
    assert.deepEqual(call.factory_origin,factory.wire);const identity=call.extension.id;assert.ok(instances.has(identity));
    if(op==="agent_close"){facts.closed.push(identity);instances.delete(identity);return outcome(op);}
    facts.executed.push(identity);
-   try{const task=call.invocation.input.task??call.invocation.input.message??"";
+   try{const message=op.startsWith("agent_execute")?call.invocation.input.task:call.invocation.input.message;const task=fromWireValue(message.content);assert.equal(message.role,"user");assert.equal(typeof task,"string");
     if(task==="hang"){await new Promise(resolve=>signal.aborted?resolve():signal.addEventListener("abort",resolve,{once:true}));facts.cancel_observed+=Number(signal.aborted);noticeDeadline();await deadlineRelease;return outcome(op,"cancelled");}
     const answer=task==="bad"?"wrong response":spec.factory_answer;
     if(op.endsWith("_stream")){await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:answer}}});return {outcome:"stream",stream:call.stream};}return outcome(op,answer);

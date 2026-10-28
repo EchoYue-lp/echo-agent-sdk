@@ -1,5 +1,61 @@
 # SDK 全能力语义治理进度
 
+## 2026-10-28：Protocol114、候选6份资源同步与后继源码切片
+
+Root已独立核验并关闭两批独立窗口：纯Protocol原4条命令全部自然0，实际
+lib42／native8／extension42／core RPC22共114项通过、零编译warning；原target准确
+clean0后不存在。随后只复用保全原producer，不运行Cargo，原candidate生成、语言
+export／check及精确退役checker四条命令全部自然0。允许119产物中仅schema1、有效
+factory fixture1、shared及三包digest4发生字节变化，其余113不变。
+
+新schema为 `b68bf43ace8f269f4500e873a2dc24a1aef9799f1146d63bd184603b4992dd01`。
+accepted5352身份／431routes、全部catalog／签名与source-contract无漂移；三语言源码
+资源逐字节parity，未重新构建tgz／wheel／JAR。normal Task33实际0且globalClosure仍
+not_checked；1260份源回读无漂移。生成切点raw index3d6b与审查后8f的不同保留原观测，
+逐entry mode／blob／stage与HEAD相等，不声称raw index始终字节不变。
+
+后继源码由原SID正常preflight开启。本轮先修Java callback旧七字段视图拒绝当前native
+消息的问题：复用原严格codec和现有Message wire合同，补全native块／执行观察／批准
+块与工具provider来源，保留空与缺失区别及通知unit语义。原失败反例先取证；修复后
+CallbackAndEffects6／RuntimeTerminal5／TypedExtension8／StreamCancellationRoutes8共27项
+实际通过、零失败／零跳过；原Maven编译同时覆盖main中的Java示例。不运行Cargo，
+不改Rust／协议／pin／生成物或原Evidence，27项Java结果不能代替当前Host验收。
+
+CustomAgent canonical输出调用链和8项共享要求已具名交Root转Runtime／F；Runtime只做
+ignored候选，F solewriter正式合。SDK不新增stream owner／executor，也不从String、
+runtimeFinal或普通EOF补成功。当前String／用户函数／rich Message／callback能力保留。
+按真实producer核验，缺receipt.delivery和空恢复fingerprint为可收紧候选；运行中与
+Interrupted的None terminal／receipt、显式not_attempted、delivery_error的合法None及
+Unmanaged CAS联合保持。receipt／fingerprint迁移须完整联动producer、读取、合同和
+正负控，不能只改夹具或按名字删除；后继精确验证窗口单列，不冒当前已完成。
+
+所属ADR与extension bridge说明同步本批114和6份资源实际事实，原示例仍进入编译链。
+本次不新增产品承诺，官网正式发布说明仍待最终clean来源／完整资格；不跨写网站。
+当前Host／Framework消费、正式新pin、full producer、依赖／平台／native和精mainCI
+仍未完成；不套维护WIP保存例外提交。原命令／回执位于本仓任务目录
+`protocol-focused-6cb12d3-20261028/`、`wire-generation-6cb12d3-20261028/`，本轮源码／Java
+验证位于 `source-successor-20261028/`，调用链见 `custom-agent-canonical-source-trace-20261028/`。
+
+## 2026-10-28：维护后从6cb12d3恢复完整Message输入
+
+Root确认原完整Goal active后，SDK从干净WIP `6cb12d3af1649edb8dda1f6d19fe017e06bb8004`
+按原SID正常续接并归档旧blocked preflight，不把维护WIP保存例外当后续提交门禁豁免。
+原24路径rich Message补丁逐base/after核验后增量采用，范围为原CustomAgent四操作的完整
+Message/history载荷、两Message override、原文本消费者夹具、三语言示例/契约及所属ADR。
+Text便利入口构造user Message；Parts/ResourceLink、role/name、工具身份、原生元数据与
+history沿原转换值传，None与空列表区别保留。取消、scope、原callback/physical owner未另造。
+
+runtime FinalAnswer/on_final_answer、Guard安全正文、校验与收尾继续保留，不把通知当执行
+成功、不重复拼接最终正文。本次不改Framework v04 helper或事件shape，不跨写EKO。
+原accepted 5352/431、f7 pin/0dac锁、历史Evidence after/matched/unknown保持；新增Rust
+inventory或顶层gitlink不能代替SDK逐项accepted及精来源验收。
+
+该源码采用切点的Rust/Host批次尚未开放；随后纯Protocol与候选资源同步资格见顶部后继，不能
+手改JSON或用旧234/完整语言票标新输入通过。精确命令提案和当前静态/mock结果保存在
+本仓ignored `rich-message-resume-6cb12d3-20261028/`。当前项目Evidence仅收口source观察+
+open资格缺口提案，原门禁失败保真，不伪造等价证明。最终source、依赖、完整生成、平台、
+native与mainCI资格仍分别结算；本轮未stage/commit/push。
+
 ## 2026-10-28：epoch18 SDK1 正式源码合流，删后验证待发布
 
 Root 核验旧 reader／target 全部交回并开放后继写窗后，SDK 唯一 writer 使用原 SID

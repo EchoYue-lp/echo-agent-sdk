@@ -1,5 +1,37 @@
 # SDK extension bridge (bidirectional)
 
+## CustomAgent 完整输入（2026-10-28 协议与源码资源已验，Host待验）
+
+源码沿现有四个 operation 传完整 `LlmMessageWire`：execute/execute_stream 的 `input.task`、
+chat/chat_stream 的 `input.message` 均为消息对象。它包含 role、原 WireValue content、
+tool_calls/name/tool_call_id、reasoning 和原生消息元数据；Text 便利接口也转换成 user
+Message，不再传裸字符串。ResourceLink 的 meta 与 None/空值区别随内容保留；实现方应把
+整个 Message 交给其处理函数，不能只取 content.value 作为通用多模态处理。
+原 invocation 的 history 同时放在 input.history，缺失与空列表区分；例子把完整 history
+交给实现方，不能靠当前输入重新构造历史。Java 示例向 consume 交完整 invocation JSON。
+
+三个可编译示例：
+
+- TypeScript：[custom-agent-message.ts](../../sdks/typescript/examples/custom-agent-message.ts)，随原 tsconfig.examples 编译。
+- Python：[custom_agent_message.py](../../sdks/python/examples/custom_agent_message.py)，随原 examples 检查入口验证。
+- Java：[RichMessageAgentExample.java](../../sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java)，随原主源码编译。
+
+示例复用原登记、取消信号和 streamWriter。callback 返回原 CustomAgent result，不在语言端
+发布 Run 执行成功或重建 owner；流与物理 callback 的结算仍由原权威负责。
+原 raw handler 的非流式 result 和 agent_close 必须返回 outcome/result 外层，不能直接
+返回裸 operation/value。stream 分支继续回显 Host 签发的原 stream handle。
+Root 恢复 active Goal 后已从 `6cb12d3` 采用源码。纯Protocol定向114项实际通过，
+原candidate生成与语言资源同步四条原命令自然退出0；实际只改变schema、一个有效
+factory fixture和shared／三包的4份digest。5352身份／431routes、catalog／签名与
+source-contract没有漂移，三语言源码资源与shared逐字节一致。
+这是当前磁盘合同资格；正式新pin、full producer、重新构建的包与当前真实Host消费
+仍待受控窗口，不能用旧Host、旧语言全票或EKO验收代替。
+
+Java typed AgentCallback继续沿同一个完整消息合同保留assistant_blocks、execution_status、
+approved_assistant_blocks及工具调用provider_source。已批准块缺失与空列表不合并；原始
+provider phase、位置和reasoning签名／密文值传。未知字段及非法坐标仍被原严格codec
+拒绝，callback成功返回unit只确认通知处理，不替代原Run receipt或物理结束。
+
 The extension bridge lets a host language implement public `echo_agent`
 framework traits and have the Rust Agent call them back over the same ACP
 connection — with Rust semantics preserved under timeout, cancellation,

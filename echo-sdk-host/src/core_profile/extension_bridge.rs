@@ -8678,7 +8678,9 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let result = match self
                 .run_once(ExtensionInvocation::AgentExecute(AgentTaskInput {
-                    task: task.to_string(),
+                    task: message_wire(&echo_agent::llm::types::Message::user(task.to_string()))
+                        .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -8704,7 +8706,9 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let stream = match self
                 .run_stream(ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
-                    task: task.to_string(),
+                    task: message_wire(&echo_agent::llm::types::Message::user(task.to_string()))
+                        .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -8750,7 +8754,21 @@ impl Agent for ExtensionCustomAgentProxy {
             let stream = match self
                 .run_stream_scoped(
                     ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
-                        task: task.to_string(),
+                        task: message_wire(&echo_agent::llm::types::Message::user(
+                            task.to_string(),
+                        ))
+                        .map_err(ReactError::Other)?,
+                        history: invocation
+                            .history
+                            .as_ref()
+                            .map(|history| {
+                                history
+                                    .iter()
+                                    .map(message_wire)
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                            .transpose()
+                            .map_err(ReactError::Other)?,
                     }),
                     cancel,
                     Some(invocation),
@@ -8781,7 +8799,11 @@ impl Agent for ExtensionCustomAgentProxy {
             let stream = match self
                 .run_stream_scoped(
                     ExtensionInvocation::AgentChatStream(AgentMessageInput {
-                        message: message.to_string(),
+                        message: message_wire(&echo_agent::llm::types::Message::user(
+                            message.to_string(),
+                        ))
+                        .map_err(ReactError::Other)?,
+                        history: None,
                     }),
                     cancel,
                     None,
@@ -8827,13 +8849,25 @@ impl Agent for ExtensionCustomAgentProxy {
         >,
     > {
         Box::pin(async move {
-            let text = match message.content {
-                echo_agent::llm::types::MessageContent::Text(text) => text,
-                _ => return Err(ReactError::Other("custom Agent accepted task wire supports text only; multimodal input is unsupported".to_string())),
-            };
+            // role、Parts/ResourceLink、meta、工具身份与原生消息字段共用原转换。
+            // cancellation、invocation 和原 callback owner 继续沿 run_stream_scoped。
+            let message = message_wire(&message).map_err(ReactError::Other)?;
             let stream = match self
                 .run_stream_scoped(
-                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput { task: text }),
+                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+                        task: message,
+                        history: invocation
+                            .history
+                            .as_ref()
+                            .map(|history| {
+                                history
+                                    .iter()
+                                    .map(message_wire)
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                            .transpose()
+                            .map_err(ReactError::Other)?,
+                    }),
                     cancel,
                     Some(invocation),
                 )
@@ -8878,13 +8912,25 @@ impl Agent for ExtensionCustomAgentProxy {
         >,
     > {
         Box::pin(async move {
-            let text = match message.content {
-                echo_agent::llm::types::MessageContent::Text(text) => text,
-                _ => return Err(ReactError::Other("custom Agent accepted message wire supports text only; multimodal input is unsupported".to_string())),
-            };
+            // role、Parts/ResourceLink、meta、工具身份与原生消息字段共用原转换。
+            // cancellation、invocation 和原 callback owner 继续沿 run_stream_scoped。
+            let message = message_wire(&message).map_err(ReactError::Other)?;
             let stream = match self
                 .run_stream_scoped(
-                    ExtensionInvocation::AgentChatStream(AgentMessageInput { message: text }),
+                    ExtensionInvocation::AgentChatStream(AgentMessageInput {
+                        message,
+                        history: invocation
+                            .history
+                            .as_ref()
+                            .map(|history| {
+                                history
+                                    .iter()
+                                    .map(message_wire)
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                            .transpose()
+                            .map_err(ReactError::Other)?,
+                    }),
                     cancel,
                     Some(invocation),
                 )
@@ -8907,7 +8953,11 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let result = match self
                 .run_once(ExtensionInvocation::AgentChat(AgentMessageInput {
-                    message: message.to_string(),
+                    message: message_wire(&echo_agent::llm::types::Message::user(
+                        message.to_string(),
+                    ))
+                    .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -8933,7 +8983,11 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let stream = match self
                 .run_stream(ExtensionInvocation::AgentChatStream(AgentMessageInput {
-                    message: message.to_string(),
+                    message: message_wire(&echo_agent::llm::types::Message::user(
+                        message.to_string(),
+                    ))
+                    .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -9877,7 +9931,11 @@ mod tests {
                     }
                     let invocation = if custom_late_ack {
                         ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
-                            task: "late-setup".to_string(),
+                            task: message_wire(&echo_agent::llm::types::Message::user(
+                                "late-setup".to_string(),
+                            ))
+                            .map_err(|error| RpcError::internal_error().data(error))?,
+                            history: None,
                         })
                     } else if streaming {
                         ExtensionInvocation::ChannelHandleStream(ChannelHandleInput {
@@ -12117,7 +12175,7 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                 let invocation=echo_agent::agent::AgentInvocationContext {runtime:Some(echo_agent::tools::ExternalRunContext {
                     run_id:context.run_id.clone(),execution_id:context.execution_id.clone(),..Default::default()
                 }),resource_guards:context.resource_guards.clone(),..Default::default()};
-                proxy.run_stream_scoped(ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:"original held work".to_string()}),CancellationToken::new(),Some(invocation)).await
+                proxy.run_stream_scoped(ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:message_wire(&echo_agent::llm::types::Message::user("original held work".to_string())).map_err(|error| RpcError::internal_error().data(error))?, history: None }),CancellationToken::new(),Some(invocation)).await
                     .map_err(|error| RpcError::internal_error().data(format!("direct-setup phase: {error}")))?.map(|item| item.map(|_| ())).boxed()
             } else {
                 let proxy=tool_proxy.as_ref().ok_or_else(|| RpcError::internal_error().data("missing direct Tool"))?;
@@ -12928,7 +12986,7 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                     let entered=Arc::new(AtomicBool::new(false));let drops=Arc::new(std::sync::atomic::AtomicUsize::new(0));
                     let descriptor=CustomAgentDescriptorWire{name:"release-child".to_string(),model_name:"fixture".to_string(),system_prompt:String::new(),tool_names:Vec::new()};
                     bridge.register_factory_instance(&factory,&child,&descriptor).map_err(|error| RpcError::internal_error().data(error.message))?;
-                    let invocation=ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:"controlled original release".to_string()});
+                    let invocation=ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:message_wire(&echo_agent::llm::types::Message::user("controlled original release".to_string())).map_err(|error| RpcError::internal_error().data(error))?, history: None });
                     let (lease,_,authority)=bridge.prepare(&child,invocation.operation(),&invocation,CancellationToken::new()).map_err(|error| RpcError::internal_error().data(error.message))?;
                     let original_context=ExtensionInvocationContext {session_id:Some("original-session".to_string()),run_id:Some("original-release-run".to_string()),execution_id:Some("original-release-execution".to_string()),stream_id:None,turn_id:None,message_id:None,call_id:None};
                     let invocation_id=lease.identity().to_string();let stream=test_stream_handle("controlled-release-stream");
@@ -14303,3 +14361,7 @@ mod channel_forward_conversion_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "extension_bridge_message_tests.rs"]
+mod message_input_tests;

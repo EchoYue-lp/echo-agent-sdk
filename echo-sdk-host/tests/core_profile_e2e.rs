@@ -7652,6 +7652,13 @@ where
                             ));
                         }
                     };
+                    // 此夹具处理文本任务；传输仍是完整Message，不能按旧String wire消费。
+                    let content = task.content.into_json().map_err(|error| {
+                        agent_client_protocol::Error::internal_error().data(error.to_string())
+                    })?;
+                    let task = content.as_str().ok_or_else(|| {
+                        agent_client_protocol::Error::internal_error().data("text fixture received non-text Message")
+                    })?.to_string();
                     let parked = *hang.lock().map_err(|_| {
                         agent_client_protocol::Error::internal_error().data("hang lock poisoned")
                     })?;

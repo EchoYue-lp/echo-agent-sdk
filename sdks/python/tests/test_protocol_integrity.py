@@ -4,7 +4,6 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
-
 from echo_agent_sdk import EchoAgentError, WireHandle, from_wire
 from echo_agent_sdk.client import EchoAgentClient, ExtensionRegistration
 
@@ -82,7 +81,12 @@ async def test_factory_origin_routes_only_valid_owned_child():
         "extension": child.to_dict(),
         "factory_origin": factory.to_dict(),
         "invocation_id": "i",
-        "invocation": {"operation": "agent_execute", "input": {"task": "任务"}},
+        "invocation": {
+            "operation": "agent_execute",
+            "input": {
+                "task": {"role": "user", "content": {"kind": "string", "value": "任务"}}
+            },
+        },
     }
     result = await callbacks.ext_method("echo_agent/extension/invoke", payload)
     assert result["outcome"] == "result"
@@ -135,7 +139,15 @@ async def test_factory_children_keep_independent_identity_and_close_one_only():
                 "extension": child.to_dict(),
                 "factory_origin": factory.to_dict(),
                 "invocation_id": child.id,
-                "invocation": {"operation": "agent_chat", "input": {"message": "任务"}},
+                "invocation": {
+                    "operation": "agent_chat",
+                    "input": {
+                        "message": {
+                            "role": "user",
+                            "content": {"kind": "string", "value": "任务"},
+                        }
+                    },
+                },
             },
         )
         assert result["outcome"] == "result"

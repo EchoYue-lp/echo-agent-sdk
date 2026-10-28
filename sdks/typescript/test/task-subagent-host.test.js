@@ -31,8 +31,8 @@ async function scenario(action){
     if(operation==="agent_close")return{outcome:"result",result:{operation,value:null}};
     assert.equal(operation,"agent_execute_stream");
     assert.equal(call.context?.run_id,canonicalTaskRunScope,"Task callback must retain its active canonical TaskRun scope");
-    const attempt=++counts[lane];prompts[`${lane}/${attempt}`]=call.invocation.input.task;
-    await http("/agent",{lane,attempt,task:call.invocation.input.task,extension:call.extension});
+    const attempt=++counts[lane];prompts[`${lane}/${attempt}`]=fromWireValue(call.invocation.input.task.content);
+    await http("/agent",{lane,attempt,task:fromWireValue(call.invocation.input.task.content),extension:call.extension});
     if(action==='observation'&&lane==='a'){
      const binding=await http('/physical/admit',call);assert.deepEqual(binding.context,call.context);assert.equal(binding.factory_origin,null);
      const error={code:'framework_error',retryable:'never',message:'same Task attempt remains physically held 中文🙂',operation:'_echo_agent/extension/invoke',details:{fields:[{key:'observation',value:'not_settled'},{key:'run_id',value:binding.run_id},{key:'execution_id',value:binding.execution_id}]}};
@@ -148,7 +148,7 @@ async function singleScenario(kind){
   registrations.push(await sdk.registerExtension("custom_agent","await-target",{kind:"custom_agent",descriptor_version:1,name:"await-target",model_name:"fixture",system_prompt:"fixture",tool_names:[]},async(call,signal)=>{
    const operation=call.invocation.operation;if(operation==="agent_close")return{outcome:"result",result:{operation,value:null}};
    assert.ok(["agent_execute","agent_execute_stream"].includes(operation),operation);invocations++;rawCall=call;
-   await http("/agent",{lane:"await",attempt:1,task:call.invocation.input.task,context:call.context??null,extension:call.extension});
+   await http("/agent",{lane:"await",attempt:1,task:fromWireValue(call.invocation.input.task.content),context:call.context??null,extension:call.extension});
    if(operation.endsWith("_stream")){
     const job=Promise.resolve().then(async()=>{await http("/gate",{lane:"await",attempt:1});await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:"full retained result 中文🧪"}}});});job.catch(()=>{});callbackJobs.push(job);
     return{outcome:"stream",stream:call.stream};
@@ -170,7 +170,7 @@ async function singleScenario(kind){
    await assert.rejects(sdk.request("_echo_agent/subagent/dispatch",{...payload,request:toWireValue({agent_name:"await-target",task:"conflicting payload"})}),error=>error.code==="invalid_value");
    await http("/release",{lane:"await",attempt:1});
    const full=await sdk.request("_echo_agent/subagent/await",{subagent:one.subagent}),repeat=await sdk.request("_echo_agent/subagent/await",{subagent:one.subagent});assert.deepEqual(full,repeat);assert.equal(full.settled,true);
-   const result=fromWireValue(full.result);assert.equal(result.output,"full retained result 中文🧪");assert.ok(rawCall.invocation.input.task.includes("constraint retained 🧪"));
+   const result=fromWireValue(full.result);assert.equal(result.output,"full retained result 中文🧪");assert.ok(fromWireValue(rawCall.invocation.input.task.content).includes("constraint retained 🧪"));
    assert.equal((await sdk.request("_echo_agent/subagent/control",{subagent:one.subagent,action:"guidance",payload:"late"})).accepted,false);assert.equal(invocations,1);
    writeFileSync(join(work,"observed.json"),JSON.stringify({kind,invocations,short,full,rawCall}));
   }

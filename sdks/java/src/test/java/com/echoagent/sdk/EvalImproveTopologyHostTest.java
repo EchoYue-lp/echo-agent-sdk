@@ -54,7 +54,7 @@ class EvalImproveTopologyHostTest {
                 if ("agent_close".equals(operation)) { closed.add(id); instances.remove(id); return outcome(operation, null); }
                 executed.add(id);
                 try {
-                    var input = call.path("invocation").path("input"); String task = input.has("task") ? input.path("task").textValue() : input.path("message").textValue();
+                    var input = call.path("invocation").path("input"); var message = input.path(operation.startsWith("agent_execute") ? "task" : "message"); assertEquals("user", message.path("role").asText()); String task = JsonSupport.fromWire(message.path("content")).textValue();
                     if ("hang".equals(task)) { long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15); while (!cancel.isCancelled() && System.nanoTime() < deadline) java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1)); if (!cancel.isCancelled()) throw new IllegalStateException("native factory callback never received cancellation"); cancellations.incrementAndGet(); deadlineCancelled.complete(null); deadlineRelease.get(10, TimeUnit.SECONDS); return outcome(operation, JsonSupport.MAPPER.getNodeFactory().textNode("cancelled")); }
                     String answer = "bad".equals(task) ? "wrong response" : spec.path("factory_answer").textValue();
                     if (operation.endsWith("_stream")) { var stream = WireHandle.fromJson(call.path("stream")); var terminal = obj().put("kind", "agent").set("value", obj().put("event", "final_answer").set("data", obj().put("text", answer))); await(sdk.streamWriter(stream).complete(terminal)); return ExtensionOutcome.stream(stream).toJson(); }

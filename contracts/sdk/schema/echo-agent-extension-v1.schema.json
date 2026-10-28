@@ -7338,20 +7338,40 @@
         "message"
       ],
       "properties": {
+        "history": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LlmMessageWire"
+          }
+        },
         "message": {
-          "type": "string"
+          "$ref": "#/definitions/LlmMessageWire"
         }
       },
       "additionalProperties": false
     },
     "AgentTaskInput": {
+      "description": "CustomAgent 执行输入复用完整 Message；文本便利入口先构造 Message::user。 operation 保留执行/聊天模式，不能以内容类型选择另一个执行器。",
       "type": "object",
       "required": [
         "task"
       ],
       "properties": {
+        "history": {
+          "description": "原invocation中的模型历史；None与Some(empty)保持区别。",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LlmMessageWire"
+          }
+        },
         "task": {
-          "type": "string"
+          "$ref": "#/definitions/LlmMessageWire"
         }
       },
       "additionalProperties": false

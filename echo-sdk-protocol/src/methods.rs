@@ -1753,15 +1753,22 @@ pub struct CustomAgentDescriptorWire {
     pub system_prompt: String,
     pub tool_names: Vec<String>,
 }
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+/// CustomAgent 执行输入复用完整 Message；文本便利入口先构造 Message::user。
+/// operation 保留执行/聊天模式，不能以内容类型选择另一个执行器。
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AgentTaskInput {
-    pub task: String,
+    pub task: LlmMessageWire,
+    /// 原invocation中的模型历史；None与Some(empty)保持区别。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub history: Option<Vec<LlmMessageWire>>,
 }
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AgentMessageInput {
-    pub message: String,
+    pub message: LlmMessageWire,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub history: Option<Vec<LlmMessageWire>>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema, Default)]
 #[serde(deny_unknown_fields)]

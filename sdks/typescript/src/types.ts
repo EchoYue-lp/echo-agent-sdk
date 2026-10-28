@@ -670,7 +670,13 @@ export type ContextCompressorInvocation = {
   readonly input: CompressionInput;
 };
 
-export type ExtensionInvocation = AgentCallbackInvocation | ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
+/** CustomAgent 输入沿同一完整 Message 合同；文本调用也携带 user Message。 */
+export type CustomAgentInvocation =
+  | { readonly operation: "agent_execute" | "agent_execute_stream"; readonly input: { readonly task: LlmMessage; readonly history?: readonly LlmMessage[] | null } }
+  | { readonly operation: "agent_chat" | "agent_chat_stream"; readonly input: { readonly message: LlmMessage; readonly history?: readonly LlmMessage[] | null } }
+  | { readonly operation: "agent_close"; readonly input: null };
+
+export type ExtensionInvocation = CustomAgentInvocation | AgentCallbackInvocation | ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
 
 export interface ExtensionInvocationContext {
   readonly call_id?: string | null;

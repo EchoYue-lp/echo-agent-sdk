@@ -1141,7 +1141,7 @@ fn factory_origin_requires_distinct_same_generation_agent_target() -> Result<(),
     let original = serde_json::json!({
         "extension":{"id":"child","generation":"7","kind":"extension"},
         "factory_origin":{"id":"factory","generation":"7","kind":"extension"},
-        "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":"任务"}},
+        "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":{"role":"user","content":{"kind":"string","value":"任务"}}}},
         "deadline":{"seconds":"20","nanos":0}
     });
     let parsed: ExtensionInvokeCall =

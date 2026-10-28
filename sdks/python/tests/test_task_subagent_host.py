@@ -9,7 +9,6 @@ import urllib.request
 from pathlib import Path
 
 import pytest
-
 from echo_agent_sdk import (
     EchoAgentClient,
     EchoAgentError,
@@ -223,7 +222,9 @@ async def test_exact_task_control(action):
                 assert call["context"]["run_id"] == canonical_task_run_scope
                 counts[lane] += 1
                 attempt = counts[lane]
-                prompts[f"{lane}/{attempt}"] = call["invocation"]["input"]["task"]
+                prompts[f"{lane}/{attempt}"] = from_wire(
+                    call["invocation"]["input"]["task"]["content"]
+                )
                 await http(
                     "/agent",
                     {
@@ -696,7 +697,7 @@ async def test_subagent_receipt_and_crud_admission(kind):
                 {
                     "lane": "await",
                     "attempt": 1,
-                    "task": call["invocation"]["input"]["task"],
+                    "task": from_wire(call["invocation"]["input"]["task"]["content"]),
                     "context": call.get("context"),
                     "extension": call["extension"],
                 },
@@ -844,7 +845,9 @@ async def test_subagent_receipt_and_crud_admission(kind):
             )
             assert full == repeat and full["settled"]
             assert from_wire(full["result"])["output"] == "full retained result 中文🧪"
-            assert "constraint retained 🧪" in raw_call["invocation"]["input"]["task"]
+            assert "constraint retained 🧪" in from_wire(
+                raw_call["invocation"]["input"]["task"]["content"]
+            )
             assert (
                 await sdk.request(
                     "_echo_agent/subagent/control",

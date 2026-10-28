@@ -18,7 +18,13 @@
     "invocation": {
       "operation": "agent_execute",
       "input": {
-        "task": "任务"
+        "task": {
+          "role": "user",
+          "content": {
+            "kind": "string",
+            "value": "任务"
+          }
+        }
       }
     },
     "deadline": {

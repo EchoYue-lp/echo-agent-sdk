@@ -1747,12 +1747,18 @@ fn push_governance_fixtures(fixtures: &mut Vec<Fixture>) {
         serde_json::json!({"event":"transcript_projection_settlement","data":{"settlement":{
             "status":"deferred","operation_id":"projection-1","conversation_id":"会话","generation_id":"generation-1",
             "attempt":2,"error_class":"outcome_unknown","detail":"receipt lookup required"}}}), None));
-    fixtures.push(fixture("extension-factory-instance-origin-valid", FixtureKind::Valid,
-        "ExtensionInvokeCall", "A returned Agent instance retains its own handle and exact original factory.",
+    fixtures.push(fixture(
+        "extension-factory-instance-origin-valid",
+        FixtureKind::Valid,
+        "ExtensionInvokeCall",
+        "A returned Agent instance retains its own handle and exact original factory.",
         serde_json::json!({"extension":{"id":"child","generation":"7","kind":"extension"},
             "factory_origin":{"id":"factory","generation":"7","kind":"extension"},
-            "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":"任务"}},
-            "deadline":{"seconds":"20","nanos":0}}), None));
+            "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":{
+                "role":"user","content":{"kind":"string","value":"任务"}}}},
+            "deadline":{"seconds":"20","nanos":0}}),
+        None,
+    ));
     fixtures.push(fixture("extension-callback-interrupted-canonical-id-valid", FixtureKind::Valid,
         "ExtensionInvocation", "Interruption preserves admitted input and canonical tool identity without fabricating a start.",
         serde_json::json!({"operation":"callback_on_tool_interrupted","input":{"agent":"智能体","call_id":"call-1",

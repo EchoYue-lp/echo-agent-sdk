@@ -9,8 +9,13 @@ import tempfile
 from pathlib import Path
 
 import pytest
-
-from echo_agent_sdk import EchoAgentClient, EchoAgentError, WireHandle, wire_utf8_path
+from echo_agent_sdk import (
+    EchoAgentClient,
+    EchoAgentError,
+    WireHandle,
+    from_wire,
+    wire_utf8_path,
+)
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
@@ -107,9 +112,13 @@ async def test_eval_improve_topology_native(group):
                 return outcome(op)
             facts["executed"].append(identity)
             try:
-                task = call["invocation"]["input"].get(
-                    "task", call["invocation"]["input"].get("message", "")
-                )
+                payload = call["invocation"]["input"]
+                message = payload[
+                    "task" if op.startswith("agent_execute") else "message"
+                ]
+                assert message["role"] == "user"
+                task = from_wire(message["content"])
+                assert isinstance(task, str)
                 if task == "hang":
                     await asyncio.wait_for(cancel.wait(), 10)
                     facts["cancel_observed"] += int(cancel.is_set())
