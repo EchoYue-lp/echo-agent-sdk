@@ -1,0 +1,63 @@
+{
+  "name": "provider-response-unknown-usage-valid",
+  "kind": "valid",
+  "target": "ProviderResponseMetadataWire",
+  "description": "未知字符串、嵌套usage和大整数沿原Scalar保值，不相加或猜测。",
+  "payload": {
+    "protocol": "responses",
+    "provider": "fixture-provider",
+    "stop_reason": {
+      "kind": "string",
+      "value": "provider-future-stop"
+    },
+    "status": {
+      "kind": "string",
+      "value": "provider-future-status"
+    },
+    "usage": {
+      "kind": "map",
+      "value": [
+        {
+          "key": {
+            "kind": "string",
+            "value": "tokens"
+          },
+          "value": {
+            "kind": "u64",
+            "value": "18446744073709551615"
+          }
+        },
+        {
+          "key": {
+            "kind": "string",
+            "value": "nested"
+          },
+          "value": {
+            "kind": "map",
+            "value": [
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "raw_text"
+                },
+                "value": {
+                  "kind": "string",
+                  "value": "00123"
+                }
+              },
+              {
+                "key": {
+                  "kind": "string",
+                  "value": "missing"
+                },
+                "value": {
+                  "kind": "null"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

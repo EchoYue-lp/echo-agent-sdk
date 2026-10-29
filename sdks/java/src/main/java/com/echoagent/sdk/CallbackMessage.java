@@ -18,6 +18,8 @@ public record CallbackMessage(String role, JsonNode content,
         @JsonInclude(JsonInclude.Include.NON_NULL) List<ToolCallValue> toolCalls,
         @JsonInclude(JsonInclude.Include.NON_NULL) String name,
         @JsonInclude(JsonInclude.Include.NON_NULL) String toolCallId,
+        @JsonInclude(JsonInclude.Include.NON_NULL) Boolean toolResultIsError,
+        @JsonInclude(JsonInclude.Include.NON_NULL) ProviderResponseMetadata providerResponse,
         @JsonInclude(JsonInclude.Include.NON_NULL) String reasoningContent,
         @JsonInclude(JsonInclude.Include.NON_NULL) List<ReasoningBlock> reasoningBlocks,
         @JsonInclude(JsonInclude.Include.NON_NULL) List<AssistantBlock> assistantBlocks,
@@ -34,6 +36,38 @@ public record CallbackMessage(String role, JsonNode content,
         if (approvedAssistantBlocks != null) approvedAssistantBlocks = List.copyOf(approvedAssistantBlocks);
     }
     @Override public JsonNode content() { return content.deepCopy(); }
+    /** 固定九字段观察，六个WireValue属性区分缺失与显式Null，不拥有完成/重试权威。 */
+    public record ProviderResponseMetadata(String protocol, String provider,
+            @JsonInclude(JsonInclude.Include.NON_NULL) String requestId,
+            @JsonInclude(JsonInclude.Include.NON_NULL) JsonNode model,
+            @JsonInclude(JsonInclude.Include.NON_NULL) JsonNode stopReason,
+            @JsonInclude(JsonInclude.Include.NON_NULL) JsonNode stopSequence,
+            @JsonInclude(JsonInclude.Include.NON_NULL) JsonNode status,
+            @JsonInclude(JsonInclude.Include.NON_NULL) JsonNode incompleteDetails,
+            @JsonInclude(JsonInclude.Include.NON_NULL) JsonNode usage) {
+        public ProviderResponseMetadata {
+            require(protocol, "protocol"); require(provider, "provider");
+            if (Arrays.stream(LlmApiProtocol.values()).noneMatch(value -> value.asStr().equals(protocol)))
+                throw new IllegalArgumentException("unknown provider protocol");
+            model = observation(model, false); stopReason = observation(stopReason, false);
+            stopSequence = observation(stopSequence, false); status = observation(status, false);
+            incompleteDetails = observation(incompleteDetails, true); usage = observation(usage, true);
+        }
+        @Override public JsonNode model() { return copy(model); }
+        @Override public JsonNode stopReason() { return copy(stopReason); }
+        @Override public JsonNode stopSequence() { return copy(stopSequence); }
+        @Override public JsonNode status() { return copy(status); }
+        @Override public JsonNode incompleteDetails() { return copy(incompleteDetails); }
+        @Override public JsonNode usage() { return copy(usage); }
+        private static JsonNode copy(JsonNode value) { return value == null ? null : value.deepCopy(); }
+        private static JsonNode observation(JsonNode value, boolean object) {
+            if (value == null) return null;
+            String kind = value.path("kind").asText();
+            if (!"null".equals(kind) && !(object ? "map".equals(kind) : "string".equals(kind)))
+                throw new IllegalArgumentException("provider observation requires explicit wire string/map or Null");
+            return JsonSupport.validateWire(value);
+        }
+    }
     public record ToolCallValue(String id, String callType, String functionName, String arguments,
             @JsonInclude(JsonInclude.Include.NON_NULL) ProviderOutputSource providerSource) {
         public ToolCallValue { require(id, "id"); require(callType, "call_type"); require(functionName, "function_name"); require(arguments, "arguments"); }

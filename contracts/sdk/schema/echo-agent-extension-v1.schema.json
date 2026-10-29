@@ -3064,6 +3064,8 @@
       "additionalProperties": false
     },
     "LlmMessageWire": {
+      "additionalProperties": false,
+      "title": "LlmMessageWire",
       "type": "object",
       "required": [
         "content",
@@ -3107,6 +3109,16 @@
             "null"
           ]
         },
+        "provider_response": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderResponseMetadataWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "reasoning_blocks": {
           "type": [
             "array",
@@ -3139,9 +3151,14 @@
           "items": {
             "$ref": "#/definitions/LlmToolCallWire"
           }
+        },
+        "tool_result_is_error": {
+          "type": [
+            "boolean",
+            "null"
+          ]
         }
-      },
-      "additionalProperties": false
+      }
     },
     "LlmReasoningBlockWire": {
       "oneOf": [
@@ -3303,6 +3320,132 @@
         }
       },
       "additionalProperties": false
+    },
+    "ProviderResponseMetadataWire": {
+      "additionalProperties": false,
+      "title": "ProviderResponseMetadataWire",
+      "description": "原供应商响应观察的固定字段投影；可选WireValue保缺失与显式Null，整数沿既有Scalar。 这不是执行状态，也不计算usage或决定重试/正文批准。",
+      "type": "object",
+      "required": [
+        "protocol",
+        "provider"
+      ],
+      "properties": {
+        "incomplete_details": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "map",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "model": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "protocol": {
+          "$ref": "#/definitions/LlmApiProtocolWire"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "stop_reason": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "stop_sequence": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "usage": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "map",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "RunInput": {
       "oneOf": [
@@ -8887,6 +9030,8 @@
       ]
     },
     "LlmChatRequestWire": {
+      "additionalProperties": false,
+      "title": "LlmChatRequestWire",
       "type": "object",
       "required": [
         "messages"
@@ -8954,9 +9099,13 @@
           ]
         },
         "tool_choice": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/LlmToolChoiceWire"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "tools": {
@@ -8974,8 +9123,61 @@
             "null"
           ]
         }
+      }
+    },
+    "LlmNamedFunctionWire": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "[^\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]"
+        }
       },
       "additionalProperties": false
+    },
+    "LlmNamedToolChoiceWire": {
+      "type": "object",
+      "required": [
+        "function",
+        "type"
+      ],
+      "properties": {
+        "function": {
+          "$ref": "#/definitions/LlmNamedFunctionWire"
+        },
+        "type": {
+          "$ref": "#/definitions/LlmToolChoiceFunctionKindWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LlmToolChoiceFunctionKindWire": {
+      "type": "string",
+      "enum": [
+        "function"
+      ]
+    },
+    "LlmToolChoiceModeWire": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "none",
+        "required"
+      ]
+    },
+    "LlmToolChoiceWire": {
+      "description": "既有ChatRequest字段的固定形状投影；Core serde仍是语义权威，不新增accepted API身份。",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/LlmToolChoiceModeWire"
+        },
+        {
+          "$ref": "#/definitions/LlmNamedToolChoiceWire"
+        }
+      ]
     },
     "LlmToolDefinitionWire": {
       "type": "object",
@@ -15852,6 +16054,16 @@
             "null"
           ]
         },
+        "provider_response": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderResponseMetadataWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "reasoning_blocks": {
           "type": [
             "array",
@@ -15920,6 +16132,16 @@
           "type": "string",
           "maxLength": 256,
           "minLength": 1
+        },
+        "provider_response": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderResponseMetadataWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "reasoning_blocks": {
           "type": [

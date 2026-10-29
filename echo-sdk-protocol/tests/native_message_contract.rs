@@ -66,6 +66,8 @@ fn custom_agent_inputs_keep_the_shared_message_and_reject_old_string_payloads() 
         ]))?,
         name: Some("shell".into()),
         tool_call_id: Some("call-原身份🧪".into()),
+        tool_result_is_error: None,
+        provider_response: None,
         tool_calls: Some(Vec::new()),
         reasoning_content: Some(String::new()),
         reasoning_blocks: Some(Vec::new()),
@@ -358,6 +360,8 @@ fn native_message_history_survives_message_and_stream_dtos() -> TestResult {
         tool_calls: None,
         name: None,
         tool_call_id: None,
+        tool_result_is_error: None,
+        provider_response: None,
         reasoning_content: None,
         reasoning_blocks: None,
         assistant_blocks: Some(vec![value.clone()]),
@@ -382,6 +386,7 @@ fn native_message_history_survives_message_and_stream_dtos() -> TestResult {
     let restored: LlmChatChunkWire = serde_json::from_value(serde_json::to_value(chunk)?)?;
     assert_eq!(restored.assistant_blocks, Some(vec![value.clone()]));
     let complete = LlmStreamCompleteWire {
+        provider_response: None,
         role: None,
         content: None,
         reasoning_content: None,

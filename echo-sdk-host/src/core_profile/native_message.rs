@@ -10,16 +10,79 @@ use echo_agent::llm::types::ToolCall;
 use echo_agent::llm::types::{Message, ReasoningBlock};
 #[cfg(feature = "sdk-extension-bridge")]
 use echo_sdk_protocol::methods::AgentEventWire;
+use echo_sdk_protocol::methods::ProviderResponseMetadataWire;
 use echo_sdk_protocol::methods::{AgentPhaseWire, ExecutionStatusKindWire, ExecutionStatusWire};
 use echo_sdk_protocol::methods::{AssistantMessageBlockWire, AssistantPhaseWire};
 use echo_sdk_protocol::methods::{LlmToolCallWire, ProviderOutputSourceWire};
 #[cfg(feature = "sdk-extension-bridge")]
 use echo_sdk_protocol::scalar::WireU64;
+use echo_sdk_protocol::scalar::WireValue;
 use serde::{Deserialize, Serialize};
 
 use super::wire::reasoning_block_from_wire;
 #[cfg(feature = "sdk-extension-bridge")]
 use super::wire::reasoning_block_wire;
+
+/// 固定九字段在原JSON域与既有WireValue之间转换；不合并usage、不判断provider状态。
+#[cfg(feature = "sdk-extension-bridge")]
+pub(super) fn provider_response_wire(
+    value: &echo_agent::llm::types::ProviderResponseMetadata,
+) -> Result<ProviderResponseMetadataWire, String> {
+    // 原类型同时校验程序构造的观察；不让坏字段绕过其serde合同。
+    serde_json::to_value(value).map_err(|error| error.to_string())?;
+    let field = |value: &Option<serde_json::Value>| {
+        value
+            .as_ref()
+            .map(|value| WireValue::from_json(value.clone()).map_err(|error| error.to_string()))
+            .transpose()
+    };
+    Ok(ProviderResponseMetadataWire {
+        protocol: serde_json::from_value(
+            serde_json::to_value(value.protocol).map_err(|error| error.to_string())?,
+        )
+        .map_err(|error| error.to_string())?,
+        provider: value.provider.clone(),
+        request_id: value.request_id.clone(),
+        model: field(&value.model)?,
+        stop_reason: field(&value.stop_reason)?,
+        stop_sequence: field(&value.stop_sequence)?,
+        status: field(&value.status)?,
+        incomplete_details: field(&value.incomplete_details)?,
+        usage: field(&value.usage)?,
+    })
+}
+
+pub(super) fn provider_response_from_wire(
+    value: ProviderResponseMetadataWire,
+) -> Result<echo_agent::llm::types::ProviderResponseMetadata, String> {
+    // Wire字段的自有序列化检查字符串/对象/Null形状；整数不从文本猜测。
+    serde_json::to_value(&value).map_err(|error| error.to_string())?;
+    let mut fields = serde_json::Map::new();
+    fields.insert(
+        "protocol".into(),
+        serde_json::to_value(value.protocol).map_err(|error| error.to_string())?,
+    );
+    fields.insert("provider".into(), serde_json::Value::String(value.provider));
+    if let Some(request) = value.request_id {
+        fields.insert("request_id".into(), serde_json::Value::String(request));
+    }
+    for (name, value) in [
+        ("model", value.model),
+        ("stop_reason", value.stop_reason),
+        ("stop_sequence", value.stop_sequence),
+        ("status", value.status),
+        ("incomplete_details", value.incomplete_details),
+        ("usage", value.usage),
+    ] {
+        if let Some(value) = value {
+            fields.insert(
+                name.into(),
+                value.into_json().map_err(|error| error.to_string())?,
+            );
+        }
+    }
+    serde_json::from_value(serde_json::Value::Object(fields)).map_err(|error| error.to_string())
+}
 
 #[cfg(test)]
 pub(super) fn test_commentary_event(text: &str) -> Result<echo_agent::agent::AgentEvent, String> {
@@ -299,6 +362,7 @@ pub(super) fn with_delta_blocks(
     restored.reasoning_content = delta.reasoning_content;
     restored.reasoning_blocks = delta.reasoning_blocks;
     restored.tool_calls = delta.tool_calls;
+    restored.provider_response = delta.provider_response;
     Ok(restored)
 }
 

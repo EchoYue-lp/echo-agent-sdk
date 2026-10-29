@@ -30,7 +30,14 @@ test("raw CustomAgent example keeps full Message/history and returns raw outcome
     async registerCustomAgent(_id, _descriptor, selected) { handler = selected; return "registered"; },
     streamWriter(stream) { return { async complete(value) { completed.push({ stream, value }); } }; },
   };
-  const message = { role: "tool", name: "shell", tool_call_id: "call-🧪", content: { kind: "map", value: [] }, approved_assistant_blocks: [] };
+  const message = { role: "tool", name: "shell", tool_call_id: "call-🧪", tool_result_is_error: false,
+    content: { kind: "map", value: [] }, approved_assistant_blocks: [],
+    provider_response: {protocol:"responses",provider:"fixture",model:{kind:"null"},
+      stop_reason:{kind:"string",value:"future-stop"},usage:{kind:"map",value:[
+        {key:{kind:"string",value:"tokens"},value:{kind:"u64",value:"18446744073709551615"}},
+        {key:{kind:"string",value:"string"},value:{kind:"string",value:"00123"}},
+      ]}},
+  };
   const seen = [];
   await registerMessageAgent(sdk, async (value, history, signal) => {
     assert.equal(value, message);

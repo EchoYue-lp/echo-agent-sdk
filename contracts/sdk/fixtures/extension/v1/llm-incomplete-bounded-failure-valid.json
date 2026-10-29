@@ -1,0 +1,14 @@
+{
+  "name": "llm-incomplete-bounded-failure-valid",
+  "kind": "valid",
+  "target": "AgentFailureWire",
+  "description": "D2跨边界仅原六字段，不自动带raw/partial或HTTP状态。",
+  "payload": {
+    "category": "llm",
+    "terminal_kind": "failed",
+    "retryable": false,
+    "code": "llm_incomplete_response",
+    "http_status": null,
+    "message": "Incomplete response from LLM"
+  }
+}

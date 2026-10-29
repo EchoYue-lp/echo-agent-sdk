@@ -1,5 +1,20 @@
 # SDK extension bridge (bidirectional)
 
+## 响应观察值传（2026-10-29，第二切片）
+
+原完整Message及展开Delta DTO增加provider_response固定九字段，Message另保留
+tool_result_is_error的缺失/false/true。六个可空观察沿WireValue区分缺失与显式Null，
+usage使用原Scalar保留嵌套整数和数字样字符串；SDK不累计usage或解释供应商终态。
+metadata-only消息保持canonical Empty，过滤权威继续属于Framework。三语言示例接收的
+完整Message保留这些字段，不另建回调或执行接口。D2仍走原有界失败，未观察到native ID
+的partial工具来源不升级成成功回放，raw partial不自动暴露到跨语言错误合同。
+当前资格及冻结来源见ADR0043；正式pin、完整生成与完整消费者验收分别取证。
+
+原LlmClient请求的tool_choice现沿Core支持auto/none/required或具名Function对象
+`{type:"function",function:{name:"原始工具"}}`，保留原名。三语typed request bridge
+拒绝未知标签、额外字段与空白名，缺失/null沿原可选值处理。这是既有accepted字段的
+合法值形状演进，不新增独立ToolChoice API族；Host双向转换仍复用Core唯一serde。
+
 ## 原生输出后继（2026-10-29，受控v03有限消费）
 
 原四个完整Message入口保留history、Role::Custom、附件meta与原invocation owner。

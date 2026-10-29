@@ -1327,6 +1327,178 @@ pub enum ToolStreamEventWire {
     },
 }
 
+/// 原供应商响应观察的固定字段投影；可选WireValue保缺失与显式Null，整数沿既有Scalar。
+/// 这不是执行状态，也不计算usage或决定重试/正文批准。
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderResponseMetadataWire {
+    pub protocol: LlmApiProtocolWire,
+    pub provider: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request_id: Option<String>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "response_text_wire",
+        serialize_with = "serialize_response_text_wire"
+    )]
+    #[schemars(schema_with = "response_text_wire_schema")]
+    pub model: Option<WireValue>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "response_text_wire",
+        serialize_with = "serialize_response_text_wire"
+    )]
+    #[schemars(schema_with = "response_text_wire_schema")]
+    pub stop_reason: Option<WireValue>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "response_text_wire",
+        serialize_with = "serialize_response_text_wire"
+    )]
+    #[schemars(schema_with = "response_text_wire_schema")]
+    pub stop_sequence: Option<WireValue>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "response_text_wire",
+        serialize_with = "serialize_response_text_wire"
+    )]
+    #[schemars(schema_with = "response_text_wire_schema")]
+    pub status: Option<WireValue>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "response_object_wire",
+        serialize_with = "serialize_response_object_wire"
+    )]
+    #[schemars(schema_with = "response_object_wire_schema")]
+    pub incomplete_details: Option<WireValue>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "response_object_wire",
+        serialize_with = "serialize_response_object_wire"
+    )]
+    #[schemars(schema_with = "response_object_wire_schema")]
+    pub usage: Option<WireValue>,
+}
+
+fn response_wire_shape(value: &WireValue, object: bool) -> bool {
+    matches!(value, WireValue::Null)
+        || if object {
+            matches!(value, WireValue::Map(_))
+        } else {
+            matches!(value, WireValue::String(_))
+        }
+}
+
+fn response_text_wire<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<WireValue>, D::Error> {
+    let value = WireValue::deserialize(deserializer)?;
+    if response_wire_shape(&value, false) {
+        Ok(Some(value))
+    } else {
+        Err(serde::de::Error::custom(
+            "provider response field requires wire string or Null",
+        ))
+    }
+}
+
+fn response_object_wire<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<WireValue>, D::Error> {
+    let value = WireValue::deserialize(deserializer)?;
+    if response_wire_shape(&value, true) {
+        Ok(Some(value))
+    } else {
+        Err(serde::de::Error::custom(
+            "provider response field requires wire map or Null",
+        ))
+    }
+}
+
+fn serialize_response_text_wire<S: serde::Serializer>(
+    value: &Option<WireValue>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    if value
+        .as_ref()
+        .is_some_and(|value| !response_wire_shape(value, false))
+    {
+        return Err(serde::ser::Error::custom(
+            "provider response field requires wire string or Null",
+        ));
+    }
+    value.serialize(serializer)
+}
+
+fn serialize_response_object_wire<S: serde::Serializer>(
+    value: &Option<WireValue>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    if value
+        .as_ref()
+        .is_some_and(|value| !response_wire_shape(value, true))
+    {
+        return Err(serde::ser::Error::custom(
+            "provider response field requires wire map or Null",
+        ));
+    }
+    value.serialize(serializer)
+}
+
+fn response_text_wire_schema(
+    generator: &mut schemars::r#gen::SchemaGenerator,
+) -> schemars::schema::Schema {
+    response_observation_wire_schema(generator, &["string", "null"])
+}
+
+fn response_object_wire_schema(
+    generator: &mut schemars::r#gen::SchemaGenerator,
+) -> schemars::schema::Schema {
+    response_observation_wire_schema(generator, &["map", "null"])
+}
+
+fn response_observation_wire_schema(
+    generator: &mut schemars::r#gen::SchemaGenerator,
+    kinds: &[&str],
+) -> schemars::schema::Schema {
+    use schemars::schema::{ObjectValidation, Schema, SchemaObject, SubschemaValidation};
+    let mut properties = schemars::Map::new();
+    properties.insert(
+        "kind".into(),
+        Schema::Object(SchemaObject {
+            enum_values: Some(
+                kinds
+                    .iter()
+                    .map(|value| serde_json::Value::String((*value).into()))
+                    .collect(),
+            ),
+            ..Default::default()
+        }),
+    );
+    Schema::Object(SchemaObject {
+        subschemas: Some(Box::new(SubschemaValidation {
+            all_of: Some(vec![
+                generator.subschema_for::<WireValue>(),
+                Schema::Object(SchemaObject {
+                    object: Some(Box::new(ObjectValidation {
+                        properties,
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                }),
+            ]),
+            ..Default::default()
+        })),
+        ..Default::default()
+    })
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct LlmMessageWire {
@@ -1338,6 +1510,10 @@ pub struct LlmMessageWire {
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tool_call_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_result_is_error: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_response: Option<ProviderResponseMetadataWire>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning_content: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1390,6 +1566,72 @@ pub struct LlmToolDefinitionWire {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
+pub struct LlmNamedFunctionWire {
+    #[serde(
+        deserialize_with = "read_tool_function_name",
+        serialize_with = "write_tool_function_name"
+    )]
+    #[schemars(regex(
+        pattern = r"[^\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]"
+    ))]
+    pub name: String,
+}
+
+fn read_tool_function_name<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<String, D::Error> {
+    let name = String::deserialize(deserializer)?;
+    if name.trim().is_empty() {
+        return Err(serde::de::Error::custom(
+            "selected function name must not be empty",
+        ));
+    }
+    Ok(name)
+}
+
+fn write_tool_function_name<S: serde::Serializer>(
+    name: &str,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    if name.trim().is_empty() {
+        return Err(serde::ser::Error::custom(
+            "selected function name must not be empty",
+        ));
+    }
+    serializer.serialize_str(name)
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum LlmToolChoiceModeWire {
+    Auto,
+    None,
+    Required,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+pub enum LlmToolChoiceFunctionKindWire {
+    #[serde(rename = "function")]
+    Function,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct LlmNamedToolChoiceWire {
+    pub r#type: LlmToolChoiceFunctionKindWire,
+    pub function: LlmNamedFunctionWire,
+}
+
+/// 既有ChatRequest字段的固定形状投影；Core serde仍是语义权威，不新增accepted API身份。
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(untagged)]
+pub enum LlmToolChoiceWire {
+    Mode(LlmToolChoiceModeWire),
+    Function(LlmNamedToolChoiceWire),
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct LlmChatRequestWire {
     pub messages: Vec<LlmMessageWire>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1399,7 +1641,7 @@ pub struct LlmChatRequestWire {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tools: Option<Vec<LlmToolDefinitionWire>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_choice: Option<String>,
+    pub tool_choice: Option<LlmToolChoiceWire>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1432,6 +1674,9 @@ pub struct LlmChatResponseWire {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema, Default)]
 #[serde(deny_unknown_fields)]
 pub struct LlmChatChunkWire {
+    /// 当前wire类型投影原DeltaMessage；不在原ChatChunk上重复放观察。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_response: Option<ProviderResponseMetadataWire>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -3870,6 +4115,8 @@ pub enum ToolStreamChunkWire {
 #[serde(deny_unknown_fields)]
 pub struct LlmStreamChunkWire {
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_response: Option<ProviderResponseMetadataWire>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<String>,
@@ -3888,6 +4135,8 @@ pub struct LlmStreamChunkWire {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct LlmStreamCompleteWire {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_response: Option<ProviderResponseMetadataWire>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

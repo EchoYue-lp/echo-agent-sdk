@@ -48,6 +48,176 @@ fn text_tool_message() -> Message {
 }
 
 #[test]
+fn llm_request_tool_choice_field_round_trips_current_core_values() -> Result<(), String> {
+    use echo_agent::llm::{ChatRequest, ToolChoice};
+    for choice in [
+        None,
+        Some(ToolChoice::Auto),
+        Some(ToolChoice::None),
+        Some(ToolChoice::Required),
+        Some(ToolChoice::function(" 原始工具🧪 ")),
+        Some(ToolChoice::function("\u{feff}")),
+    ] {
+        let mut request = ChatRequest::new(Vec::new());
+        request.tool_choice = choice.clone();
+        let wire = ExtensionLlmClientProxy::request_wire(&request)?;
+        let restored: Option<ToolChoice> = from_wire(to_wire(&wire.tool_choice)?)?;
+        assert_eq!(
+            restored, choice,
+            "Core → request bridge → Core不能丢具名工具或改写原名"
+        );
+        assert_eq!(
+            serde_json::to_value(&wire.tool_choice).map_err(|e| e.to_string())?,
+            serde_json::to_value(choice).map_err(|e| e.to_string())?
+        );
+    }
+    for value in [
+        serde_json::json!("unknown"),
+        serde_json::json!({"type":"tool","name":"x"}),
+        serde_json::json!({"type":"function","function":{"name":""}}),
+        serde_json::json!({"type":"function","function":{"name":"\u{00a0}"}}),
+        serde_json::json!({"type":"function","function":{"name":"x","extra":true}}),
+    ] {
+        assert!(
+            from_wire::<ToolChoice>(
+                WireValue::from_json(value.clone()).map_err(|e| e.to_string())?
+            )
+            .is_err()
+        );
+        assert!(
+            serde_json::from_value::<echo_sdk_protocol::methods::LlmChatRequestWire>(
+                serde_json::json!({"messages":[],"tool_choice":value})
+            )
+            .is_err()
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn provider_response_message_values_and_observation_only_empty_round_trip() -> Result<(), String> {
+    let observations = [
+        serde_json::json!({"protocol":"responses","provider":"fixture"}),
+        serde_json::json!({"protocol":"responses","provider":"fixture","model":null,"stop_reason":null,
+            "stop_sequence":null,"status":null,"incomplete_details":null,"usage":null}),
+        serde_json::json!({"protocol":"anthropic","provider":"fixture","request_id":"original-request",
+            "model":"future-model","stop_reason":"unknown-provider-stop","stop_sequence":"00123","status":"future-status",
+            "incomplete_details":{"nested":{"none":null,"values":[]}},
+            "usage":{"input":u64::MAX,"nested":{"cache":12,"text":"00123","null":null}}}),
+    ];
+    for observation in observations {
+        for flag in [None, Some(false), Some(true)] {
+            let mut message = rich_message(Some(true))?;
+            message.role = Role::Custom("provider-specific-角色🧪".into());
+            message.tool_result_is_error = flag;
+            message.provider_response = Some(
+                serde_json::from_value(observation.clone()).map_err(|error| error.to_string())?,
+            );
+            let expected = serde_json::to_value(&message).map_err(|error| error.to_string())?;
+            let restored = message_from_wire(message_wire(&message)?)?;
+            assert_eq!(
+                serde_json::to_value(restored).map_err(|error| error.to_string())?,
+                expected
+            );
+        }
+        let metadata = serde_json::from_value(observation).map_err(|error| error.to_string())?;
+        let message = Message::provider_response_observation(metadata);
+        assert!(message.is_provider_response_observation_only());
+        let wire = message_wire(&message)?;
+        assert_eq!(wire.content, WireValue::Null);
+        let restored = message_from_wire(wire)?;
+        assert!(matches!(restored.content, MessageContent::Empty));
+        assert!(
+            restored.is_provider_response_observation_only(),
+            "wire roundtrip cannot turn metadata-only observation into a model-visible text message"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn provider_response_delta_snapshots_keep_null_usage_and_request_isolation() -> Result<(), String> {
+    for request in ["request-A", "request-B"] {
+        let expected = serde_json::json!({"protocol":"responses","provider":"fixture","request_id":request,
+            "status":null,"stop_reason":"future-stop","usage":{"tokens":u64::MAX,"nested":{"text":"00123"}}});
+        let metadata =
+            serde_json::from_value(expected.clone()).map_err(|error| error.to_string())?;
+        let wire = super::super::native_message::provider_response_wire(&metadata)?;
+        for _ in 0..2 {
+            let value = chat_chunk_from_wire(LlmChatChunkWire {
+                provider_response: Some(wire.clone()),
+                assistant_blocks: Some(Vec::new()),
+                ..Default::default()
+            })?;
+            let observed = value
+                .delta
+                .provider_response
+                .as_ref()
+                .ok_or("delta lost observation")?;
+            assert_eq!(
+                serde_json::to_value(observed).map_err(|error| error.to_string())?,
+                expected,
+                "same request snapshot is transported, never summed or inherited from prior request"
+            );
+            assert_eq!(value.delta.assistant_blocks.as_ref().map(Vec::len), Some(0));
+            assert_eq!(
+                chat_chunk_wire(&value)?.provider_response,
+                Some(wire.clone())
+            );
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn partial_tool_sources_keep_unknown_or_late_native_id_and_sparse_original_positions()
+-> Result<(), String> {
+    for request in ["", "real-native-A", "real-native-B"] {
+        let mut message = Message::assistant("partial source text".into());
+        message.tool_calls = Some([5_u32, 9].into_iter().map(|index| {
+            super::super::native_message::tool_call_from_wire(echo_sdk_protocol::methods::LlmToolCallWire {
+                id: format!("original-call-{index}"), call_type:"function".into(), function_name:"original_tool".into(), arguments:"{\"original\":true}".into(),
+                provider_source:Some(echo_sdk_protocol::methods::ProviderOutputSourceWire {
+                    protocol:echo_sdk_protocol::methods::LlmApiProtocolWire::ChatCompletions,
+                    request_id:request.into(), item_id:format!("original-call-{index}"), output_index:index,
+                    content_index:None, content_kind:Some("tool_call".into()), phase:None,
+                }),
+            })
+        }).collect::<Result<Vec<_>,String>>()?);
+        // 未观察到的原生 request ID 只属于 D2 partial，不构造成功重放或 SDK owner。
+        let error = echo_agent::error::LlmError::IncompleteResponse {
+            partial: Box::new(message),
+        };
+        let echo_agent::error::LlmError::IncompleteResponse { partial } = error else {
+            return Err("fixture lost the framework incomplete-response boundary".into());
+        };
+        let expected = serde_json::to_value(&partial).map_err(|error| error.to_string())?;
+        let wire = message_wire(&partial)?;
+        let calls = wire.tool_calls.as_ref().ok_or("missing partial tools")?;
+        assert_eq!(
+            calls
+                .iter()
+                .filter_map(|call| call
+                    .provider_source
+                    .as_ref()
+                    .map(|source| source.output_index))
+                .collect::<Vec<_>>(),
+            vec![5, 9]
+        );
+        assert!(calls.iter().all(|call| {
+            call.provider_source
+                .as_ref()
+                .is_some_and(|source| source.request_id == request)
+        }));
+        assert_eq!(
+            serde_json::to_value(message_from_wire(wire)?).map_err(|error| error.to_string())?,
+            expected
+        );
+    }
+    Ok(())
+}
+
+#[test]
 fn custom_agent_message_roundtrip_preserves_parts_roles_tool_identity_and_empty_values()
 -> Result<(), String> {
     let custom_role = "provider-specific-角色🧪";

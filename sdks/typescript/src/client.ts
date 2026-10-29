@@ -2213,6 +2213,19 @@ export function decodeExtensionInvokeCall<K extends "tool" | "llm_client" | "sto
       "_echo_agent/extension/invoke",
     );
   }
+  if (expectedKind === "llm_client") {
+    const input = invocation.input;
+    const choice = isRecord(input) ? input.tool_choice : undefined;
+    // 与Core serde的Unicode White_Space判定一致，不trim合法原名。
+    const validChoice = choice == null || choice === "auto" || choice === "none" || choice === "required"
+      || (isRecord(choice) && hasNoUnknownFields(choice, ["type", "function"])
+        && choice.type === "function" && isRecord(choice.function)
+        && hasNoUnknownFields(choice.function, ["name"])
+        && typeof choice.function.name === "string" && !/^\p{White_Space}*$/u.test(choice.function.name));
+    if (!isRecord(input) || !Array.isArray(input.messages) || !validChoice) {
+      throw new EchoAgentError("serialization_violation", "LlmClient request messages/tool_choice shape is malformed");
+    }
+  }
   if (expectedKind === "critic") {
     const input = invocation.input;
     if (!isRecord(input)

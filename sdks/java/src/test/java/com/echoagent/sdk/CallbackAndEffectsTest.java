@@ -7,6 +7,29 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CallbackAndEffectsTest {
+    @Test void llmRequestBridgeKeepsNamedChoiceAndRejectsBadShapes() throws Exception {
+        for (var choice : List.of("null", "\"auto\"", "\"none\"", "\"required\"",
+                "{\"type\":\"function\",\"function\":{\"name\":\" 原始工具🧪 \"}}",
+                "{\"type\":\"function\",\"function\":{\"name\":\"\uFEFF\"}}")) {
+            for (var operation : List.of("llm_chat", "llm_chat_stream")) {
+                var input = JsonSupport.MAPPER.createObjectNode(); input.putArray("messages");
+                var expected = json(choice); input.set("tool_choice", expected);
+                var call = LlmChatCall.from(envelope(operation, input));
+                assertEquals(expected, call.toolChoice());
+                assertEquals(input, call.input());
+            }
+        }
+        assertTrue(LlmChatCall.from(envelope("llm_chat", json("{\"messages\":[]}"))).toolChoice().isMissingNode());
+        for (var bad : List.of("\"future\"", "true", "[]", "{\"type\":\"tool\",\"function\":{\"name\":\"x\"}}",
+                "{\"type\":\"function\",\"function\":{\"name\":\"\"}}",
+                "{\"type\":\"function\",\"function\":{\"name\":\"\u00A0\"}}",
+                "{\"type\":\"function\",\"function\":{\"name\":2}}",
+                "{\"type\":\"function\",\"function\":{\"name\":\"x\",\"extra\":true}}",
+                "{\"type\":\"function\",\"function\":{\"name\":\"x\"},\"extra\":true}")) {
+            var input = JsonSupport.MAPPER.createObjectNode(); input.putArray("messages"); input.set("tool_choice", json(bad));
+            assertThrows(IllegalArgumentException.class, () -> LlmChatCall.from(envelope("llm_chat", input)));
+        }
+    }
     private static JsonNode json(String value) throws Exception { return JsonSupport.MAPPER.readTree(value); }
     private static JsonNode envelope(String operation, JsonNode input) {
         var invocation = JsonSupport.MAPPER.createObjectNode().put("operation", operation); invocation.set("input", input);
@@ -82,6 +105,29 @@ class CallbackAndEffectsTest {
         assertEquals(input, json(CallbackCall.from(envelope("callback_on_think_start", input)).input().toString()));
         assertFalse(CallbackCall.from(envelope("callback_on_think_start", input)).input()
                 .path("messages").path(0).has("approved_assistant_blocks"));
+    }
+    @Test void providerObservationKeepsMissingNullUnknownAndNestedWireValues() throws Exception {
+        for (String observation : java.util.List.of(
+                "{\"protocol\":\"responses\",\"provider\":\"fixture\"}",
+                "{\"protocol\":\"responses\",\"provider\":\"fixture\",\"model\":{\"kind\":\"null\"},\"status\":{\"kind\":\"string\",\"value\":\"future-status\"},\"usage\":{\"kind\":\"map\",\"value\":[{\"key\":{\"kind\":\"string\",\"value\":\"tokens\"},\"value\":{\"kind\":\"u64\",\"value\":\"18446744073709551615\"}},{\"key\":{\"kind\":\"string\",\"value\":\"text\"},\"value\":{\"kind\":\"string\",\"value\":\"00123\"}}]}}")) {
+            var input = nativeCallbackInput();
+            var value = (com.fasterxml.jackson.databind.node.ObjectNode) input.path("messages").path(0);
+            value.put("role", "provider-specific-角色🧪").put("tool_result_is_error", false);
+            value.set("provider_response", json(observation));
+            var call = CallbackCall.from(envelope("callback_on_think_start", input));
+            assertEquals(input, json(call.input().toString()));
+            var decoded = ((CallbackCall.ThinkStart) call.request()).messages().get(0);
+            assertEquals(Boolean.FALSE, decoded.toolResultIsError());
+            assertNotNull(decoded.providerResponse());
+            if (decoded.providerResponse().model() != null) {
+                var copy = (com.fasterxml.jackson.databind.node.ObjectNode) decoded.providerResponse().model();
+                copy.put("kind", "bool").put("value", true);
+                assertEquals("null", decoded.providerResponse().model().path("kind").textValue());
+            }
+            value.putObject("provider_response").put("protocol", "responses").put("provider", "fixture")
+                    .putObject("model").put("kind", "bool").put("value", true);
+            assertThrows(IllegalArgumentException.class, () -> CallbackCall.from(envelope("callback_on_think_start", input)));
+        }
     }
     @Test void callbackNativeOptionalFieldsRetainTheirCurrentSemantics() throws Exception {
         var input = nativeCallbackInput();

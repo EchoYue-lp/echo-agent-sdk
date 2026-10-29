@@ -3823,7 +3823,14 @@ fn message_wire(
     let metadata = super::native_message::message_metadata(message)?;
     Ok(LlmMessageWire {
         role: message.role.as_str().to_string(),
-        content: to_wire(&message.content)?,
+        content: if matches!(
+            message.content,
+            echo_agent::llm::types::MessageContent::Empty
+        ) {
+            WireValue::Null
+        } else {
+            to_wire(&message.content)?
+        },
         tool_calls: message
             .tool_calls
             .as_ref()
@@ -3836,6 +3843,12 @@ fn message_wire(
             .transpose()?,
         name: message.name.clone(),
         tool_call_id: message.tool_call_id.clone(),
+        tool_result_is_error: message.tool_result_is_error,
+        provider_response: message
+            .provider_response
+            .as_ref()
+            .map(super::native_message::provider_response_wire)
+            .transpose()?,
         reasoning_content: message.reasoning_content.clone(),
         reasoning_blocks: message
             .reasoning_blocks
@@ -3875,6 +3888,12 @@ fn chat_chunk_wire(
     chunk: &echo_agent::llm::ChatChunk,
 ) -> std::result::Result<LlmChatChunkWire, String> {
     Ok(LlmChatChunkWire {
+        provider_response: chunk
+            .delta
+            .provider_response
+            .as_ref()
+            .map(super::native_message::provider_response_wire)
+            .transpose()?,
         role: chunk.delta.role.clone(),
         content: chunk.delta.content.clone(),
         reasoning_content: chunk.delta.reasoning_content.clone(),
@@ -3883,7 +3902,12 @@ fn chat_chunk_wire(
             .reasoning_blocks
             .as_ref()
             .map(|blocks| blocks.iter().map(reasoning_block_wire).collect()),
-        assistant_blocks: None,
+        assistant_blocks: {
+            // 仅借既有Message值转换保全部分块；不为DeltaMessage新增Serialize或执行owner。
+            let mut message = echo_agent::llm::types::Message::default();
+            message.assistant_blocks = chunk.delta.assistant_blocks.clone();
+            super::native_message::message_metadata(&message)?.assistant_blocks
+        },
         tool_calls: chunk
             .delta
             .tool_calls
@@ -3902,6 +3926,10 @@ fn chat_chunk_from_wire(
     wire: LlmChatChunkWire,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
     let delta = echo_agent::llm::types::DeltaMessage {
+        provider_response: wire
+            .provider_response
+            .map(super::native_message::provider_response_from_wire)
+            .transpose()?,
         role: wire.role,
         content: wire.content,
         reasoning_content: wire.reasoning_content,
@@ -3931,6 +3959,7 @@ fn chat_chunk_from_stream_chunk(
     wire: LlmStreamChunkWire,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
     chat_chunk_from_wire(LlmChatChunkWire {
+        provider_response: wire.provider_response,
         role: wire.role,
         content: wire.content,
         reasoning_content: wire.reasoning_content,
@@ -3946,6 +3975,7 @@ fn chat_chunk_from_stream_complete(
     wire: LlmStreamCompleteWire,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
     chat_chunk_from_wire(LlmChatChunkWire {
+        provider_response: wire.provider_response,
         role: wire.role,
         content: wire.content,
         reasoning_content: wire.reasoning_content,
@@ -3977,6 +4007,12 @@ fn chat_response_into_chunk(
             "runtime/approved confirmation cannot be silently converted into a provider delta"
                 .to_string(),
         );
+    }
+    if response.message.name.is_some()
+        || response.message.tool_call_id.is_some()
+        || response.message.tool_result_is_error.is_some()
+    {
+        return Err("Message participant/tool-result identity cannot be silently converted into a provider delta".into());
     }
     let assistant_blocks = metadata.assistant_blocks;
     let finish_reason = response
@@ -4013,6 +4049,7 @@ fn chat_response_into_chunk(
     Ok(echo_agent::llm::ChatChunk {
         delta: super::native_message::with_delta_blocks(
             echo_agent::llm::types::DeltaMessage {
+                provider_response: response.message.provider_response,
                 role: Some(response.message.role.as_str().to_string()),
                 content: response.message.content.as_text(),
                 reasoning_content: response.message.reasoning_content,
@@ -4093,7 +4130,18 @@ impl ExtensionLlmClientProxy {
                         .collect::<std::result::Result<Vec<_>, String>>()
                 })
                 .transpose()?,
-            tool_choice: request.tool_choice.clone(),
+            // 既有accepted字段跟随Core唯一serde，保字符串或具名对象，不新增provider规则。
+            tool_choice: request
+                .tool_choice
+                .as_ref()
+                .map(|choice| {
+                    serde_json::to_value(choice)
+                        .and_then(
+                            serde_json::from_value::<echo_sdk_protocol::methods::LlmToolChoiceWire>,
+                        )
+                        .map_err(|error| error.to_string())
+                })
+                .transpose()?,
             user_id: request.user_id.clone(),
             response_format: request.response_format.as_ref().map(to_wire).transpose()?,
             thinking: request.thinking.as_ref().map(to_wire).transpose()?,

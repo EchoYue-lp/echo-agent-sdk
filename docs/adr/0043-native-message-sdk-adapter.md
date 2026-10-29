@@ -1,5 +1,86 @@
 # ADR0043：SDK 无损消费 Framework 原生消息
 
+## 2026-10-29：第二切片——响应观察与工具错误保值
+
+首切片53路径已单独提交为`b0c597bd17de6428694658257ef8ac530b3756a3`。
+本切片从该新基底实施，不重标首片的Fv03/工具链/Host票。上游输入只认冻结API-r01
+八文件索引`ae7ae47e5b7d5965aa8fe630fe7f0d20c70f821f80f4cfbdeac683afdfc9b985`与
+首个完整2818文件图`91bdd2eb11ad2976aeda5b51e249a5b0a7abfe06a9cb7cb4605fe103fb4836ae`。
+该图实际Host消费在Anthropic构造点缺provider_response时编译101、运行0项，原件保留。
+后继使用正式WIP复制的2823文件r02图，索引
+`fc29176b3bb53f802fa01265badb91ac9479e7748a49a527ff2e13d86de3e379`全部成员SHA/权限
+已逐项核验；Anthropic修复来自Framework正式实现，不在SDK补shadow默认字段。
+这些输入不代表协议producer B、完整SDK或正式新Git来源通过。
+
+Root核验既有`ChatRequest::tool_choice`本身是external_contract/wire_value/
+serializable-value，三语为generated_or_lossless_value，`LlmClient.chat/chat_stream`亦为
+既有bridge。因此当前Core的合法字段值必须无损承接：三种字符串模式与canonical
+`{type:"function",function:{name}}`对象；不能因未单独接受ToolChoice枚举就削去字段值。
+本次沿Core唯一Serialize/Deserialize更新既有字段聚合形状，不新增enum/构造器/variant
+独立accepted身份。原String-only临时反控与通过票保为历史，不是最终限制。
+
+Protocol以闭合DTO表示原字段；三语request bridge拒绝未知模式、标签、额外字段、错误
+name类型与Unicode White_Space空名，保原名、不trim、不JSON字符串化。None/null沿原
+Option语义；Host借Core原serde双向值传，不新增provider选择或请求状态权威。
+源码聚合签名后继须由正式新pin下原完整producer列出，不手改accepted或source-contract。
+
+### 边界、数据形状与复用
+
+Framework拥有`ProviderResponseMetadata`、同请求快照、模型历史过滤与
+`LlmError::IncompleteResponse`分类；SDK只使用既有Message/Delta/ACP/Codec运输值，
+不加事件总线、executor、store、重试器或完成判断。`ProviderResponseMetadataWire`
+固定九字段：protocol/provider/request_id，以及model、stop_reason、stop_sequence、status、
+incomplete_details、usage。六个可空观察使用既有WireValue：字段缺失与显式`kind:null`
+分别保留；前四个仅string/Null，后两个仅map/Null，读写错形均拒绝。嵌套usage保持原
+Scalar整数、null、数组和数字样字符串，不从文本猜整数、不相加快照、不跨request合并。
+
+观察仅附原Message与DeltaMessage；SDK已有flattenedDelta wire DTO保留该单一投影，
+不在原ChatResponse/ChatChunk顶层重复挂。Message的`tool_result_is_error`保留
+None/false/true。canonical Empty在wire中使用Null，不能变成普通空文本而绕过Root唯一
+metadata-only历史过滤；必要signed/redacted/opaque reasoning与Role::Custom仍完整保值。
+SDK运输合同不等于供应商HTTP请求；实际模型协议序列化仍由Framework剥除观察和运行
+批准字段，不在SDK复制第二套过滤/归并规则。
+
+当前Delta没有Serialize；SDK不新增该trait，原`with_delta_blocks`继续保其所有现行值，
+包括provider_response。非流式响应转Delta时，若有Delta不能表达的name/tool_call_id/
+tool_result_is_error或运行时批准字段，明确拒绝，不压平为同名字段或丢弃以造成功。
+Java原严格CallbackMessage codec增固定观察，WireValue JsonNode防御复制；Python沿原
+Mapping增TypedDict说明，TS沿原LlmMessage增明确类型。三语不生成执行状态或partial工具。
+
+### 不完整响应、身份与风险边界
+
+D2 raw partial只供原直接LlmClient内部调用方检查。SDK的AgentFailure保原六字段，
+仅保`llm_incomplete_response`、category=llm、failed、retry=false、http=None及有界说明；
+不得自动增加raw/partial字段、伪HTTP或发布为成功chunk。错误Display不输出部分正文。
+ReAct如何保存metadata-only、避免partial工具回填与Stop/Guard继续由Framework验收，
+基础serde或SDK值往返不替代这些生产链路资格。
+
+仅IncompleteResponse.partial中的ToolCall Source允许request_id空字符串表示未观察到
+native ID，output_index按真实稀疏5/9保值；D1.request_id仍None。它不是canonical/runtime
+身份或成功回放凭据。SDK不生成、回填或跨请求复用ID，不套用AssistantBlock/ExecutionStatus
+的非空身份规则；Responses对空native ID的既有拒绝属于上游协议，不能在SDK降级。
+
+### 验收与实际来源
+
+原独立反例已真实0pass/2fail，分别证明旧wire不承载provider_response与tool error观察；
+固定record/nullable/嵌套大整数/未知字符串及读写错形定向修复后3项通过；随后补入既有
+ToolChoice字段合法Function的原反例0pass/1fail。最终生成后Protocol三组56项、原候选
+producer130产物、语言资源export/check与退役checker自然0；TS29/Python13/Java18含
+request桥与包资源检查全部通过。原r02适配器ScalarError错误类型及ToolChoice类型
+编译101保留，修复只在SDK。旧SDKr03的7+1 Host通过票仍只支持原String-only临时形状。
+
+最终Host使用SDK1280源r04及Framework2831成员冻结索引
+`f327f63e34b7b4fea30d1c34f8559431fd2228172a2d427d8f1eac5912ee75c4`，全部SHA/权限
+已核验；相对r02的10改/8增不改变Core公开字段或唯一serde。Root隔离Rust1.99.1下，
+字段、Source/Empty与D2的资格以该精确组合具名原命令为准，不继承旧Host票；Framework
+最小生产check、metadata runtime、两adapter EOF后继与完整消费者均分别验收。
+冷恢复和正式新pin仍按各自精确来源取证。
+候选方案采用既有WireValue和原serde薄转换；拒绝新顶层extra map、把观察当状态、
+复制供应商completion/retry规则或扩SDK有界错误。Root已据固定官方Anthropic/OpenAI
+response/delta/usage源裁决D1/D2；本切片只实现该已确认合同，不扩大accepted范围。
+正式f7/0dac、5352身份/431routes、完整Rust遥测与外部source402保持独立，精确新pin仍待
+实际已审Git来源；本片不因carrier可编译便宣称完整SDK/Parquet/main CI或发布完成。
+
 ## 2026-10-29：Reverse 原生输出与原 source EOF 收尾
 
 本节在 SDK `fa153f93892cde1de950977e731f30196297ceef` 上实施已批准输出迁移。

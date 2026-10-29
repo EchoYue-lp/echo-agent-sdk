@@ -3013,6 +3013,8 @@ fn chat_response_wire(text: &str) -> LlmChatResponseWire {
             tool_calls: None,
             name: None,
             tool_call_id: None,
+            tool_result_is_error: None,
+            provider_response: None,
             reasoning_content: None,
             reasoning_blocks: None,
             assistant_blocks: None,
@@ -3021,7 +3023,7 @@ fn chat_response_wire(text: &str) -> LlmChatResponseWire {
         },
         finish_reason: Some("stop".to_string()),
         usage: None,
-        raw: WireValue::from_json(serde_json::json!({})).expect("empty raw response"),
+        raw: WireValue::Map(Vec::new()),
     }
 }
 
@@ -3034,6 +3036,7 @@ fn chat_stream_chunk_wire(text: &str) -> LlmStreamChunkWire {
 
 fn chat_stream_complete_wire(finish_reason: &str) -> LlmStreamCompleteWire {
     LlmStreamCompleteWire {
+        provider_response: None,
         role: None,
         content: None,
         reasoning_content: None,
@@ -5237,6 +5240,8 @@ fn live_projector_reply() -> Result<AgentComponentCallResultWire, String> {
         tool_calls: None,
         name: None,
         tool_call_id: None,
+        tool_result_is_error: None,
+        provider_response: None,
         reasoning_content: None,
         reasoning_blocks: None,
         assistant_blocks: None,

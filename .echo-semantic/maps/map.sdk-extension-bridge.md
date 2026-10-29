@@ -48,6 +48,53 @@ audit_refs:
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
+  provider-response-observation-transport:
+    status: needs_review
+    source_refs:
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/schema.rs
+    - echo-sdk-protocol/tests/provider_response_transport.rs
+    - echo-sdk-protocol/tests/native_message_contract.rs
+    - echo-sdk-host/src/core_profile/native_message.rs
+    - echo-sdk-host/src/core_profile/wire.rs
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/extension_bridge_message_tests.rs
+    - echo-sdk-host/tests/extension_bridge_e2e.rs
+    - contracts/sdk/schema/echo-agent-extension-v1.schema.json
+    - contracts/sdk/fixtures/extension/v1/provider-response-minimal-valid.json
+    - contracts/sdk/fixtures/extension/v1/provider-response-null-fields-valid.json
+    - contracts/sdk/fixtures/extension/v1/provider-response-unknown-usage-valid.json
+    - contracts/sdk/fixtures/extension/v1/provider-response-model-shape-invalid.json
+    - contracts/sdk/fixtures/extension/v1/provider-response-usage-shape-invalid.json
+    - contracts/sdk/fixtures/extension/v1/provider-response-extra-field-invalid.json
+    - contracts/sdk/fixtures/extension/v1/message-provider-observation-valid.json
+    - contracts/sdk/fixtures/extension/v1/llm-incomplete-bounded-failure-valid.json
+    - sdks/typescript/src/types.ts
+    - sdks/typescript/src/client.ts
+    - sdks/typescript/test/typed-bridge.test.js
+    - sdks/typescript/test/custom-agent-message-example.test.js
+    - sdks/python/src/echo_agent_sdk/client.py
+    - sdks/python/src/echo_agent_sdk/__init__.py
+    - sdks/python/tests/test_custom_agent_message_example.py
+    - sdks/java/src/main/java/com/echoagent/sdk/CallbackMessage.java
+    - sdks/java/src/main/java/com/echoagent/sdk/LlmChatCall.java
+    - sdks/java/src/test/java/com/echoagent/sdk/CallbackAndEffectsTest.java
+    - docs/adr/0043-native-message-sdk-adapter.md
+    - docs/sdk/native-messages.md
+    - docs/sdk/sdk-extension-bridge.md
+    - contracts/sdk/fixtures/extension/v1/request-tool-choice-function-valid.json
+    - contracts/sdk/fixtures/extension/v1/request-tool-choice-null-valid.json
+    - contracts/sdk/fixtures/extension/v1/request-tool-choice-mode-valid.json
+    - contracts/sdk/fixtures/extension/v1/request-tool-choice-unknown-mode-invalid.json
+    - contracts/sdk/fixtures/extension/v1/request-tool-choice-extra-invalid.json
+    - contracts/sdk/fixtures/extension/v1/request-tool-choice-blank-name-invalid.json
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    unknown: Protocol56与三语request/资源TS29/PY13/Java18已通过；旧String-only Host8项只保原切点，当前Host绑定f327/2831与SDK1280源r04另取证。原编译失败保留，完整producer、正式新pin、冷恢复与完整SDK仍独立待验。
+    next_step: 保留精确源与本片有限结果，待已审Git来源后由原完整producer列aggregate delta并完成完整消费者；不自动扩大accepted或重标历史Evidence。
+    review_scope: 固定九观察、缺失/Null、嵌套Scalar、工具错误三值和canonical Empty无损转换；既有tool_choice字段按Core唯一serde保三模式与具名Function对象，不增独立accepted身份。SDK不解释终态、不创建身份、不暴露raw partial、不另建运行时权威。
   custom-agent-native-reverse-output:
     status: needs_review
     source_refs:

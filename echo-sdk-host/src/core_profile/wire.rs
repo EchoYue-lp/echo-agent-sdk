@@ -639,13 +639,17 @@ pub(crate) fn reasoning_block_from_wire(
 /// so core source-operation streams can consume the same DTO even when no
 /// reverse extension feature is enabled.
 pub(crate) fn message_from_wire(message: LlmMessageWire) -> Result<Message, String> {
-    let content = message
-        .content
-        .into_json()
-        .map_err(|error| error.to_string())
-        .and_then(|value| {
-            serde_json::from_value::<MessageContent>(value).map_err(|error| error.to_string())
-        })?;
+    let content = if matches!(message.content, WireValue::Null) {
+        MessageContent::Empty
+    } else {
+        message
+            .content
+            .into_json()
+            .map_err(|error| error.to_string())
+            .and_then(|value| {
+                serde_json::from_value::<MessageContent>(value).map_err(|error| error.to_string())
+            })?
+    };
     let tool_calls = message
         .tool_calls
         .map(|calls| {
@@ -667,6 +671,11 @@ pub(crate) fn message_from_wire(message: LlmMessageWire) -> Result<Message, Stri
         tool_calls,
         name: message.name,
         tool_call_id: message.tool_call_id,
+        tool_result_is_error: message.tool_result_is_error,
+        provider_response: message
+            .provider_response
+            .map(super::native_message::provider_response_from_wire)
+            .transpose()?,
         reasoning_content: message.reasoning_content,
         reasoning_blocks,
         ..Message::default()
@@ -1158,6 +1167,49 @@ mod tests {
                 expected.http_status.map(|status| status.to_string())
             );
         }
+        Ok(())
+    }
+
+    #[test]
+    fn incomplete_response_keeps_bounded_failure_without_partial_or_http_fabrication()
+    -> Result<(), String> {
+        let partial = Message::assistant("未批准正文与工具片段🧪".into());
+        let error = ReactError::from(echo_agent::error::LlmError::IncompleteResponse {
+            partial: Box::new(partial),
+        });
+        let expected = AgentFailure::try_from(&error).map_err(|error| error.to_string())?;
+        assert_eq!(expected.category, AgentFailureCategory::Llm);
+        assert_eq!(expected.terminal_kind, AgentTerminalKind::Failed);
+        assert_eq!(expected.code, "llm_incomplete_response");
+        assert!(!expected.retryable);
+        assert_eq!(expected.http_status, None);
+        let bounded = failure_wire(&expected);
+        assert_eq!(failure_from_wire(bounded)?, expected);
+        let reply = framework_error(&error, "_echo_agent/llm/chat");
+        assert_eq!(reply.retryable, Retryability::Never);
+        let value = serde_json::to_value(reply).map_err(|error| error.to_string())?;
+        let encoded = value.to_string();
+        assert!(!encoded.contains("未批准正文与工具片段"));
+        assert!(value.get("partial").is_none());
+        let fields = value
+            .get("details")
+            .and_then(|value| value.get("fields"))
+            .and_then(serde_json::Value::as_array)
+            .ok_or("missing bounded failure fields")?;
+        assert!(
+            fields
+                .iter()
+                .any(|value| value.get("key").and_then(serde_json::Value::as_str)
+                    == Some("framework_failure_code")
+                    && value.get("value").and_then(serde_json::Value::as_str)
+                        == Some("llm_incomplete_response"))
+        );
+        assert!(
+            !fields
+                .iter()
+                .any(|value| value.get("key").and_then(serde_json::Value::as_str)
+                    == Some("framework_http_status"))
+        );
         Ok(())
     }
     use echo_agent::agent::EventIdentity;

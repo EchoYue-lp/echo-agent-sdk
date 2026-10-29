@@ -1,5 +1,36 @@
 # SDK 全能力语义治理进度
 
+## 2026-10-29：响应观察与既有ToolChoice字段的受控消费
+
+从首切片提交`b0c597bd17de6428694658257ef8ac530b3756a3`继续，沿原Message/Delta
+运输固定九字段provider_response、工具错误三值与canonical Empty；D2保持原有界失败，
+不暴露raw partial、不建立usage归并或执行终态权威。正式说明与取舍见ADR0043。
+
+Root核验ChatRequest::tool_choice本身的accepted字段合同后，确认须跟随Core合法值
+承接auto/none/required与canonical具名Function对象。当前闭合DTO、Host原生serde双向
+值传及三语typed request bridge均已实施；保None/null与原名、拒未知shape，不JSON
+字符串化。该判定只更新既有字段聚合形状，不新增ToolChoice枚举族独立accepted身份。
+
+原metadata反例0pass/2fail和Function对象反例0pass/1fail保留。原候选producer实际生成
+130产物、language export/check及退役checker全部自然0，生成后Protocol56项全过；
+TS29/Python13/Java18（含typed request桥和包资源检查）全部通过，零失败/零跳过。
+三个完整Message示例继续由原编译/mock入口验证，不增接口。官网发布内容不随局部
+源码资格更新，不跨写网站。源码增量独审无Critical/Important/Minor finding。
+
+最后受控消费绑定Framework精确冻结索引
+`f327f63e34b7b4fea30d1c34f8559431fd2228172a2d427d8f1eac5912ee75c4`，2831成员
+SHA/权限全部核验；相对r02是10改/8增，Core公开字段与唯一serde同字节。SDK1280源
+r04冻结后仍使用原controller和658包seed锁4a99、Root隔离Rust1.99.1。最终Host选定
+Message/Delta/Source/Empty/ToolChoice与D2控制以该组合的具名原命令和日志为准；旧r02/
+SDKr03的8项String-only临时票不代表最终字段资格，也不称214项lib全库通过。
+
+r01上游构造点E0063与r02 SDK E0277/E0308编译101原件保留。f327的Framework最小生产
+check资格独立；其metadata runtime及两adapter metadata-only EOF后继不能被SDK值传
+结果替代。f7/0dac、accepted5352/431与source-contract未改；正式新Git pin、完整producer/
+aggregate delta、完整SDK/平台、native和精mainCI仍独立待验，外部source402与历史whole
+状态不重标。输入索引、命令与自然退出值保存在本仓任务目录
+`metadata-transport-next-slice-20261029/`。
+
 ## 2026-10-28：Protocol114、候选6份资源同步与后继源码切片
 
 Root已独立核验并关闭两批独立窗口：纯Protocol原4条命令全部自然0，实际

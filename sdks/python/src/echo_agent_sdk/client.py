@@ -5,6 +5,7 @@ import contextlib
 import inspect
 import math
 import os
+import re
 from collections import deque
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterable, Mapping
 from copy import deepcopy
@@ -18,7 +19,7 @@ from acp.connection import StreamDirection, StreamEvent
 from acp.schema import ClientCapabilities, Implementation
 from acp.stdio import spawn_agent_process
 from pydantic import ValidationError
-from typing_extensions import Self
+from typing_extensions import NotRequired, Self
 
 from ._runtime_terminal import runtime_terminal, validate_reverse_agent_value
 from .catalog import FacadeCatalog
@@ -644,6 +645,47 @@ class ToolCall:
         )
 
 
+class ProviderResponseMetadata(TypedDict):
+    """原供应商固定观察；可选WireValue属性保缺失/Null，不相加usage或推断执行终态。"""
+
+    protocol: Literal["chat_completions", "responses", "anthropic"]
+    provider: str
+    request_id: NotRequired[str | None]
+    model: NotRequired[Mapping[str, Any]]
+    stop_reason: NotRequired[Mapping[str, Any]]
+    stop_sequence: NotRequired[Mapping[str, Any]]
+    status: NotRequired[Mapping[str, Any]]
+    incomplete_details: NotRequired[Mapping[str, Any]]
+    usage: NotRequired[Mapping[str, Any]]
+
+
+class LlmNamedFunction(TypedDict):
+    name: str
+
+
+class LlmNamedToolChoice(TypedDict):
+    type: Literal["function"]
+    function: LlmNamedFunction
+
+
+LlmToolChoice = Literal["auto", "none", "required"] | LlmNamedToolChoice
+
+
+def _validate_llm_tool_choice(value: object) -> None:
+    if value is None or (isinstance(value, str) and value in {"auto", "none", "required"}):
+        return
+    if isinstance(value, Mapping) and set(value) == {"type", "function"} and value.get("type") == "function":
+        function = value.get("function")
+        if isinstance(function, Mapping) and set(function) == {"name"}:
+            name = function.get("name")
+            # Core使用Unicode White_Space；Python str.strip还包含额外控制符，不能据其收窄原名。
+            if isinstance(name, str) and re.fullmatch(
+                r"[\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*", name
+            ) is None:
+                return
+    raise ValueError("LlmClient tool_choice must be a canonical mode or named function")
+
+
 @dataclass(frozen=True, slots=True)
 class LlmChatCall:
     """Decoded LlmClient invocation with an additive request mapping."""
@@ -654,6 +696,10 @@ class LlmChatCall:
     invocation_id: str | None = None
     deadline: Mapping[str, Any] | None = None
     stream: WireHandle | None = None
+
+    @property
+    def tool_choice(self) -> LlmToolChoice | None:
+        return cast(LlmToolChoice | None, self.request.get("tool_choice"))
 
     @property
     def messages(self) -> tuple[Any, ...]:
@@ -674,6 +720,7 @@ class LlmChatCall:
         ):
             raise TypeError("LlmClient invocation input must contain messages")
         request = dict(raw_input)
+        _validate_llm_tool_choice(request.get("tool_choice"))
         return cls(
             request=request,
             operation=cast(Literal["llm_chat", "llm_chat_stream"], operation),

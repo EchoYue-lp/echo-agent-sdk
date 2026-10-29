@@ -1,5 +1,18 @@
 # 原生消息与 SDK 执行事实
 
+## 响应观察后继（独立于已保存的 reverse-status 首切片）
+
+当前候选在Message/Delta上无损携带`provider_response`固定九字段。model/stop/status
+等观察的字段缺失与WireValue Null分开；usage沿原WireValue map及Scalar保嵌套值，
+不叠加快照或猜测`"00123"`这类文本。`tool_result_is_error`的未提供、false、true分别保留。
+示例：`{"protocol":"responses","provider":"fixture","stop_reason":{"kind":"null"}}`
+表示明确观察到null；省略stop_reason表示没有观察。均不表示执行成功或重试许可。
+
+Empty消息保持canonical Null/Empty身份；SDK不把metadata-only观察变成模型可见空文本。
+实际模型序列化的观察过滤由Framework负责，必要原生reasoning回放继续保留。D2错误
+跨SDK仅原有界六字段；raw partial不自动进入AgentFailure、事件、工具执行或批准正文。
+准确冻结carrier来源、Source空ID与稀疏坐标边界、实际有限验证及正式pin缺口见ADR0043。
+
 Reverse CustomAgent 流沿原 `ExtensionStreamWriter` 发送：`chunk` 可以承载完整
 assistant_message、非终态 execution_status 和 FinalAnswer/错误/取消通知；原生
 `complete` 只接受原 phase=Terminal 的 settled/failed/cancelled 状态。FinalAnswer

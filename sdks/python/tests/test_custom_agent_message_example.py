@@ -7,6 +7,28 @@ import pytest
 from echo_agent_sdk.client import _normalize_outcome
 
 
+def test_llm_request_bridge_preserves_named_choice_and_rejects_bad_shapes():
+    from echo_agent_sdk import LlmChatCall
+
+    def payload(choice, operation="llm_chat"):
+        return {"invocation": {"operation": operation, "input": {"messages": [], "tool_choice": choice}}}
+
+    for choice in [None, "auto", "none", "required", {"type": "function", "function": {"name": " 原始工具🧪 "}},
+                   {"type": "function", "function": {"name": "\ufeff"}}]:
+        for operation in ["llm_chat", "llm_chat_stream"]:
+            call = LlmChatCall.from_payload(payload(choice, operation))
+            assert call.tool_choice == choice
+            assert call.request["tool_choice"] == choice
+    absent = LlmChatCall.from_payload({"invocation": {"operation": "llm_chat", "input": {"messages": []}}})
+    assert "tool_choice" not in absent.request
+    for choice in ["future", True, [], {"type": "tool", "function": {"name": "x"}},
+                   {"type": "function", "function": {"name": ""}}, {"type": "function", "function": {"name": "\u00a0"}},
+                   {"type": "function", "function": {"name": 2}}, {"type": "function", "function": {"name": "x", "extra": True}},
+                   {"type": "function", "function": {"name": "x"}, "extra": True}]:
+        with pytest.raises(ValueError, match="tool_choice"):
+            LlmChatCall.from_payload(payload(choice))
+
+
 @pytest.mark.asyncio
 async def test_native_forwarding_waits_for_source_eof_and_never_mints_status():
     forward = runpy.run_path(
@@ -74,6 +96,26 @@ async def test_raw_custom_agent_example_preserves_message_history_and_outcome():
     seen = []
     message = {
         "role": "tool",
+        "tool_result_is_error": False,
+        "provider_response": {
+            "protocol": "responses",
+            "provider": "fixture",
+            "model": {"kind": "null"},
+            "stop_reason": {"kind": "string", "value": "future-stop"},
+            "usage": {
+                "kind": "map",
+                "value": [
+                    {
+                        "key": {"kind": "string", "value": "tokens"},
+                        "value": {"kind": "u64", "value": "18446744073709551615"},
+                    },
+                    {
+                        "key": {"kind": "string", "value": "text"},
+                        "value": {"kind": "string", "value": "00123"},
+                    },
+                ],
+            },
+        },
         "name": "shell",
         "tool_call_id": "call-🧪",
         "content": {"kind": "map", "value": []},
