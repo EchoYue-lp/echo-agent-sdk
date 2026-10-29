@@ -3,6 +3,29 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
+prepare_consumer_root() {
+  local selected=${ECHO_AGENT_SDK_CONSUMER_ROOT:-}
+  if [[ -z "$selected" ]]; then
+    local parent="$repo_root/.echo-semantic/local/language-consumer-runs"
+    mkdir -p "$parent" || return
+    selected=$(mktemp -d "$parent/run.XXXXXX") || return
+  fi
+  # 本地验收仍需保证夹具和恢复材料写在工作根内；不修改调用者提供的有效目录。
+  python3 -B - "$repo_root" "$selected" <<'PY'
+from pathlib import Path
+import sys
+workspace = Path(sys.argv[1]).resolve().parent
+selected = Path(sys.argv[2])
+if not selected.is_absolute():
+    raise SystemExit("error: consumer runtime root must be absolute")
+selected = selected.resolve()
+if selected == workspace or not selected.is_relative_to(workspace):
+    raise SystemExit("error: consumer runtime root must be inside the workspace")
+selected.mkdir(parents=True, exist_ok=True)
+print(selected)
+PY
+}
+
 command -v node >/dev/null || { echo "error: node is required for the TypeScript SDK" >&2; exit 1; }
 command -v npm >/dev/null || { echo "error: npm is required for the TypeScript SDK" >&2; exit 1; }
 command -v uv >/dev/null || { echo "error: uv is required for the Python SDK" >&2; exit 1; }
@@ -30,6 +53,9 @@ java_major=${java_version%%.*}
 }
 
 scripts/export-language-sdk-catalog.sh --check
+
+sdk_consumer_root=$(prepare_consumer_root)
+export ECHO_AGENT_SDK_CONSUMER_ROOT="$sdk_consumer_root"
 
 external_incomplete=$(jq -r '
   [.entries[] | .languages | to_entries[] | select(.value.status != "done")] | length

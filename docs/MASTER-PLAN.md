@@ -1,5 +1,58 @@
 # SDK 全能力语义治理进度
 
+## 2026-10-29：完整SDK剩余工作的消费者与工程前置
+
+Root已正常保存第二43路径为`a2da104fe94d32fa620d95be6338ccd002f91d2c`，index回空并
+释放冻结；SDK继续整个剩余目标。当前只采用原作者唯一14路径后继`384f12f1…`，14个
+before均匹配当前owner；不重复叠旧包，TypeScript省去候选中已有字段的重复声明。
+修复既有工具定义strict的None/false/true丢失，并加入原LlmClient.chat/chat_stream真实
+ACP桥接、保留消息/usage与原确认字段拒绝控制，未增加独立accepted枚举身份。
+
+原消费者Protocol测试在旧DTO实际3通过/2失败，失败源码与二进制均保留；采用最小
+strict修复后，当前纯Protocol原lib/tests入口227项通过、零失败/忽略。原candidate
+producer130产物、语言资源export/check与退役checker自然0；完整producer尚未运行。
+Frame r02与SDK1290冻源的Host六控制已实际6通过、零失败/忽略/编译warning；214项
+filtered不冒全库。TypeScript源码/示例编译与新JS语法、Java所有test-compile均自然0。
+随后同target最小增量构建真正stdio Host，bridge-only的`d84ce91b…`票与libtest分列；
+因whole-loop实际使用read_file，Root准许仅追加framework-files，原locked图381节点/
+1082边、4a99锁字节不变。新Host `14ec5f9a92a156ce822332d9135d3d71e1026a122d8858994ac5aa0b01191287`
+下，三语nonstream/stream六组合实际TS6/PY6/Java1方法内6场景通过；实际provider HTTP
+三协议×四模式（success/StopContinue/cancel/EOF）TS12加关闭失败控制1、PY12、Java1方法
+内12场景也全部通过、零skip。它们不代表完整语言、quickstarts、data/Parquet或full facade。
+新增控制进入原CI与完整语言自动发现链，示例仍走原编译入口。
+
+独审发现旧三语夹具缺LLM外层、TS HTTP close失败跳过自有子进程收尾、原完整caller
+没有consumer root，原3项Important与原错误夹具完整保存。修后只补既有kind=llm外层，
+嵌套finally记录原子进程实际exit且保close错误；真Node子进程故障控制通过。caller默认
+分配主根内独立目录，保外部合法输入并拒相对/越根，四控制实际0/0/1/1，未改skip。
+真实live/replay仅WireValue map关联顺序不同，复用原canonical_replay完整entry多重集
+比较，事件/其它数组、全部字段、重复entry和原字符串保持。HTTP失败工具按Core原error
+回填判断；Python仅对真正带data的四类事件解码，所有原envelope仍完整记录。原notfound、
+各运行失败与收集错误均保留，不改Framework或放宽decoder来制造成功。
+HTTP还逐call_id核对原ToolResult事件的success/output/error与两物理效应各1：模型收到
+error文本不等于丢失raw output。旧token collector专用分支随已批准退役移除，不改变LLM
+delta类型；未选为公开正文的unit事件仍完整保留在原live/replay。
+
+原完整Python Ruff check/format各实际1：导出排序、四份测试import分组及两文件格式。
+原工具修复后七路径AST等价（仅原__all__成员顺序规范化）；新14中Python夹具另按
+原Ruff处理import/格式及Python>=3.10的socket.timeout同义别名，不改超时语义或deadline。
+完整Ruff入口已自然0；原失败保真，不新增ignore或放宽规则。
+
+只读full-facade preview绑定Frame r02索引`127d233ec0566bb3462267b39b7f334cd8168c53c95ba9cd5cd0dc4e89c813be`
+的2831成员，当前实际locked图658节点/2354边，643 registry身份仅相对其4a99 seed不漂。
+它与正式0dac并非source-only：已列registry+95/-92身份差，正式最小锁后继须以0dac为seed，
+经官方Cargo对真实新F Git源做最小必要resolve并独立复核风险，不能沿用F/CLI例外。
+旧4a已追至f1489原自然0的generate-lockfile --offline整锁生成，再由f1490原样复用；
+这不能证明所有升级为新F必需，逐身份必要性由真实新Git的官方最小resolve定案。
+未复制vendor，未改变正式f7/0dac/5352/431或source-contract。
+
+Root已准备精确私有nightly-2026-08-06/JSON61；当前source动态24leaf加default/full为
+26profiles，历史28不恢复已批准退役的A2A/LSP。真实新F本地commit后可按Root批准做
+file-Git preview，先证明commit/tree/fetch/metadata，再由原producer更新独立输出；它不
+等于正式远端pin。fullRust/Parquet/完整语言/producer重型窗口由Root独占排期，当前命令、
+target、空间估算与来源约束位于本仓任务目录
+`.echo-semantic/local/sdk-native-consumer-20261027/sdk-complete-consumer-resume-a2da104-20261029/exclusive-preparation.md`，不冒已执行。
+
 ## 2026-10-29：响应观察与既有ToolChoice字段的受控消费
 
 从首切片提交`b0c597bd17de6428694658257ef8ac530b3756a3`继续，沿原Message/Delta

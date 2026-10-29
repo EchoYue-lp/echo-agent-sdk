@@ -9197,6 +9197,12 @@
         "parameters": {
           "$ref": "#/definitions/WireValue"
         },
+        "strict": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "tool_type": {
           "type": "string"
         }

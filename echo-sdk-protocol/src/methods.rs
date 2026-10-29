@@ -1558,6 +1558,8 @@ pub enum LlmReasoningBlockWire {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct LlmToolDefinitionWire {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub strict: Option<bool>,
     pub tool_type: String,
     pub name: String,
     pub description: String,

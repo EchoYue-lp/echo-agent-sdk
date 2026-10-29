@@ -289,6 +289,7 @@ export interface RuntimeExecutionStatus {
 }
 
 export interface LlmToolDefinition {
+  readonly strict?: boolean | null;
   readonly description: string;
   readonly name: string;
   readonly parameters: WireValue;

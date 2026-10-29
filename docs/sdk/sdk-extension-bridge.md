@@ -1,5 +1,12 @@
 # SDK extension bridge (bidirectional)
 
+## 工具定义strict与保留消费者
+
+LlmClient请求的tools中，每个定义沿原可选strict字段保留缺失、false与true；它与
+parameters并列，不把strict塞进参数schema。final schema自己的strict另行保留。
+完整Message仍保Parts、工具错误与响应观察；LlmClient非流式回填stream时不能把
+runtime/approved确认字段当作成功响应，原拒绝规则继续生效。
+
 ## 响应观察值传（2026-10-29，第二切片）
 
 原完整Message及展开Delta DTO增加provider_response固定九字段，Message另保留

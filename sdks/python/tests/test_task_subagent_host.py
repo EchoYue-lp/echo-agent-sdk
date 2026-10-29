@@ -9,6 +9,7 @@ import urllib.request
 from pathlib import Path
 
 import pytest
+
 from echo_agent_sdk import (
     EchoAgentClient,
     EchoAgentError,

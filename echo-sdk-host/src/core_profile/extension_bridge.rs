@@ -4125,6 +4125,7 @@ impl ExtensionLlmClientProxy {
                                 name: tool.function.name.clone(),
                                 description: tool.function.description.clone(),
                                 parameters: to_wire(&tool.function.parameters)?,
+                                strict: tool.function.strict,
                             })
                         })
                         .collect::<std::result::Result<Vec<_>, String>>()
@@ -14334,3 +14335,7 @@ mod channel_forward_conversion_tests {
 #[cfg(test)]
 #[path = "extension_bridge_message_tests.rs"]
 mod message_input_tests;
+
+#[cfg(test)]
+#[path = "consumer_compatibility_tests.rs"]
+mod consumer_compatibility_tests;

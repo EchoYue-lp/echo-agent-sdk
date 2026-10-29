@@ -72,6 +72,11 @@ jobs:
       - name: 原生 reverse stream 与真实 EOF 收尾
         if: matrix.group == 'sdk-host'
         run: cargo test -p echo-sdk-host --no-default-features --features sdk-extension-bridge --lib physical_closed_decision_waits_for_real_guard_drop_before_factory_terminal_close --locked
+      - name: 保留消费者字段与真实 ACP 请求桥接
+        if: matrix.group == 'sdk-host'
+        env:
+          ECHO_AGENT_SDK_CONSUMER_ROOT: ${{ github.workspace }}/.echo-semantic/local/ci-consumer-compatibility
+        run: cargo test -p echo-sdk-host --no-default-features --features sdk-extension-bridge --lib consumer_compatibility_tests:: --locked
       - name: Test extension bridge E2E (sdk-host group only)
         if: matrix.group == 'sdk-host'
         run: |

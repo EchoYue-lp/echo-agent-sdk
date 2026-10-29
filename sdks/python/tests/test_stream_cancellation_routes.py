@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 from acp.client.connection import ClientSideConnection
+
 from echo_agent_sdk import EchoAgentError, WireHandle
 from echo_agent_sdk.client import EchoAgentClient, ExtensionStreamWriter, _Callbacks
 

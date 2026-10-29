@@ -1,5 +1,40 @@
 # ADR0043：SDK 无损消费 Framework 原生消息
 
+## 2026-10-29：保留消费者的strict与真实请求桥接
+
+Root保存第二切片为`a2da104fe94d32fa620d95be6338ccd002f91d2c`并释放后，SDK唯一
+writer只接入消费者后继`384f12f1433f123796fb1535c140da083f5dacc78e58e9b410813588b593a3da`
+的14路径差分；不叠旧compat/contract/metadata包。14个before均与当前owner匹配，
+TypeScript沿用现有tool_result_is_error声明，省去候选的重复项；格式化另按原工程入口。
+
+已有Core工具定义的`strict: Option<bool>`此前在Host请求转换中遗漏，且旧DTO拒绝该
+字段。原Protocol消费者反例实际3通过/2失败，修复只把strict作为既有工具定义的
+独立可选字段无损运输，保None/false/true，不混入parameters，也不影响final schema的
+strict。未新增provider policy、ToolChoice独立accepted身份或执行/重试权威。
+
+新增Host控制直接调用原ExtensionLlmClientProxy.chat/chat_stream并经过真实ACP reverse
+callback；六种Core值覆盖两方法，非法空名不得触发额外callback。其余控制分别覆盖
+Parts、工具错误三值、reasoning usage、非流式转stream与原运行时确认字段拒绝。三语
+真实Host/HTTP测试沿原完整入口自动发现，Root排期前源码/编译不能冒成运行资格。
+
+新成功夹具不再伪造runtime/approved确认；新增两个负控先经过真实DTO转换，再必须命中
+原拒绝原因。外部供应商同名字段的伪造负控和正式guard保持，不能删除保护来制造成功。
+新控制进入原Linux SDK Host CI与本地focused/full执行链；示例沿原三语编译/mock链验证。
+官网没有新增独立能力，发布说明仍等正式来源统一核对。
+
+首次独审的三项Important只改夹具与原caller：三语补原LLM stream外层，TS HTTP在
+sdk.close异常时仍收口其自建Python进程并保存exit，完整语言caller设置主根内独立
+consumer root。实际read_file缺口由Root准许同target追加framework-files解决，不改
+成功/失败预期、不mock文件能力。原WireValue map是关联多重集，复用已有canonical_replay
+比较完整live/replay；不排序事件/blocks/toolcalls或丢重复entry。HTTP模型回填遵循Core
+已有error分支，Python collector不对无data的unit事件解码，所有原envelope仍保存。
+
+最终三语与共享夹具实际绑定`14ec5f9a…` stdio Host（bridge+files，无data/full facade）：
+whole-loop各六组合全部通过，HTTP各十二组合全部通过，Java分别为一个JUnit方法内
+六/十二场景；TS另有真实子进程关闭失败控制。此为具名有限运行票，完整语言、quickstarts、
+Parquet、正式新pin和完整producer仍独立。取消故障运行中的既有network/retry日志保真，
+零编译警告不改称零运行期日志。
+
 ## 2026-10-29：第二切片——响应观察与工具错误保值
 
 首切片53路径已单独提交为`b0c597bd17de6428694658257ef8ac530b3756a3`。

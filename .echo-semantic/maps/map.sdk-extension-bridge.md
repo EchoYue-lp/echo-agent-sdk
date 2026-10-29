@@ -48,6 +48,35 @@ audit_refs:
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
+  retained-consumer-values-and-acp-request:
+    status: needs_review
+    source_refs:
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/consumer_compatibility_tests.rs
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/tests/consumer_compatibility_contract.rs
+    - echo-sdk-protocol/tests/native_message_contract.rs
+    - contracts/sdk/schema/echo-agent-extension-v1.schema.json
+    - sdks/typescript/src/types.ts
+    - sdks/typescript/test/consumer-compatibility-host.test.js
+    - sdks/typescript/test/consumer-provider-http.test.js
+    - sdks/python/tests/test_consumer_compatibility_host.py
+    - sdks/python/tests/test_consumer_provider_http.py
+    - sdks/java/src/test/java/com/echoagent/sdk/ConsumerCompatibilityHostTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/ConsumerProviderHttpTest.java
+    - sdks/shared/testing/consumer_compatibility_host.json
+    - sdks/shared/testing/consumer_provider_http.py
+    - scripts/check-language-sdks.sh
+    - .github/workflows/rust-ci.yml
+    - docs/adr/0043-native-message-sdk-adapter.md
+    - docs/sdk/sdk-extension-bridge.md
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    unknown: Protocol原strict反例3通过/2失败保留；修后原Protocol227及Frame127d/SDK1290源的Host六控制通过。同14ec stdio Host的三语六whole-loop及十二HTTP组合已通过，Java为单方法内组合；完整语言/quickstarts/Parquet/fullfacade仍独立，正式pin与accepted不自动扩。
+    next_step: 使用准确SDK冻结源与Root准许Framework组合，运行新ACP控制及原完整消费者；重型full facade/Parquet/producer只在Root独占窗口。
+    review_scope: 沿Core唯一serde保既有ToolChoice合法值、strict独立可选字段和原生消息；真实chat/chat_stream原ACP路径不能以手工DTO往返替代，原确认字段拒绝guard保持。
   provider-response-observation-transport:
     status: needs_review
     source_refs:

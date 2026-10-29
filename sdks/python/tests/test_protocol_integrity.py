@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+
 from echo_agent_sdk import EchoAgentError, WireHandle, from_wire
 from echo_agent_sdk.client import EchoAgentClient, ExtensionRegistration
 

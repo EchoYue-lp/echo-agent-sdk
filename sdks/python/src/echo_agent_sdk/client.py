@@ -672,16 +672,27 @@ LlmToolChoice = Literal["auto", "none", "required"] | LlmNamedToolChoice
 
 
 def _validate_llm_tool_choice(value: object) -> None:
-    if value is None or (isinstance(value, str) and value in {"auto", "none", "required"}):
+    if value is None or (
+        isinstance(value, str) and value in {"auto", "none", "required"}
+    ):
         return
-    if isinstance(value, Mapping) and set(value) == {"type", "function"} and value.get("type") == "function":
+    if (
+        isinstance(value, Mapping)
+        and set(value) == {"type", "function"}
+        and value.get("type") == "function"
+    ):
         function = value.get("function")
         if isinstance(function, Mapping) and set(function) == {"name"}:
             name = function.get("name")
             # Core使用Unicode White_Space；Python str.strip还包含额外控制符，不能据其收窄原名。
-            if isinstance(name, str) and re.fullmatch(
-                r"[\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*", name
-            ) is None:
+            if (
+                isinstance(name, str)
+                and re.fullmatch(
+                    r"[\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*",
+                    name,
+                )
+                is None
+            ):
                 return
     raise ValueError("LlmClient tool_choice must be a canonical mode or named function")
 

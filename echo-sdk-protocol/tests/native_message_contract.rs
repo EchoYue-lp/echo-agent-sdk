@@ -517,3 +517,29 @@ fn native_message_wire_record_keeps_signed_redacted_and_opaque_fields() -> TestR
     }
     Ok(())
 }
+
+#[test]
+fn tool_error_and_strict_survive_protocol_transport_without_truthiness_defaults() -> TestResult {
+    use echo_sdk_protocol::methods::{LlmChatRequestWire, LlmToolDefinitionWire};
+    for observation in [None, Some(false), Some(true)] {
+        let mut value = serde_json::json!({"role":"tool", "content":serde_json::to_value(WireValue::String("工具观察🙂".into()))?, "name":"inspect", "tool_call_id":"call-1"});
+        if let Some(is_error) = observation {
+            value
+                .as_object_mut()
+                .ok_or("expected object")?
+                .insert("tool_result_is_error".into(), is_error.into());
+        }
+        let message: LlmMessageWire = serde_json::from_value(value.clone())?;
+        assert_eq!(serde_json::to_value(message)?, value);
+    }
+    for strict in [false, true] {
+        let value = serde_json::json!({"tool_type":"function", "name":"inspect", "description":"检查🙂", "parameters":serde_json::to_value(WireValue::from_json(serde_json::json!({"type":"object"}))?)?, "strict":strict});
+        let tool: LlmToolDefinitionWire = serde_json::from_value(value.clone())?;
+        assert_eq!(serde_json::to_value(tool)?, value);
+    }
+    let choice = serde_json::json!({"type":"function","function":{"name":"inspect"}});
+    let value = serde_json::json!({"messages":[], "tool_choice":choice});
+    let request: LlmChatRequestWire = serde_json::from_value(value.clone())?;
+    assert_eq!(serde_json::to_value(request)?, value);
+    Ok(())
+}
