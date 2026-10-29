@@ -133,6 +133,24 @@ impl echo_agent::agent::Agent for FailedEvalAgent {
             Ok(futures::stream::once(async { Err(self.take_error()) }).boxed())
         })
     }
+
+    fn execute_stream_message_with_invocation_context<'a>(
+        &'a self,
+        _message: echo_agent::llm::types::Message,
+        _cancel: tokio_util::sync::CancellationToken,
+        _invocation: echo_agent::agent::AgentInvocationContext,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<
+                'a,
+                echo_agent::error::Result<echo_agent::agent::AgentEvent>,
+            >,
+        >,
+    > {
+        // 构造失败在canonical输入准入前拒绝；转交原错误，不造source或运行终态。
+        Box::pin(async { Err(self.take_error()) })
+    }
 }
 
 #[cfg(feature = "framework-content-guard")]
@@ -8368,8 +8386,14 @@ mod classify_tests {
     #[test]
     fn classify_projects_completed_cancelled_and_non_terminal() -> Result<(), String> {
         let completed = match turn_outcome_classify(&request(event(
-            "final_answer",
-            vec![string_field("text", "done")],
+            "execution_status",
+            vec![
+                string_field("execution_id", "original-classify-execution"),
+                string_field("request_id", "original-classify-request"),
+                string_field("sequence", "1"),
+                string_field("phase", "Terminal"),
+                string_field("status", "settled"),
+            ],
         ))) {
             Ok(value) => value,
             Err(error) => return Err(format!("final answer classification failed: {error:?}")),
@@ -8379,6 +8403,13 @@ mod classify_tests {
             WireValue::Variant { variant, fields, .. }
                 if variant == "completed" && fields.is_empty()
         ));
+
+        let final_notice = turn_outcome_classify(&request(event(
+            "final_answer",
+            vec![string_field("text", "done")],
+        )))
+        .map_err(|error| format!("final notice classification failed: {error:?}"))?;
+        assert_eq!(final_notice, WireValue::Null);
 
         let cancelled = match turn_outcome_classify(&request(event("cancelled", Vec::new()))) {
             Ok(value) => value,

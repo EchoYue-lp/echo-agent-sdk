@@ -61,7 +61,7 @@ class LlmWorkflowStreamHostTest {
         var setup = setup("llm"); var rows = JsonSupport.MAPPER.createArrayNode();
         try (var sdk = setup.sdk()) {
             var spec = setup.spec();
-            for (String mode : List.of("nonstream", "stream", "missing_finish", "error", "cancel")) {
+            for (String mode : List.of("nonstream", "stream", "participant_name", "missing_finish", "error", "cancel")) {
                 var row = rows.addObject().put("mode", mode).put("finally", 0).put("cancel_observed", false);
                 var calls = row.putArray("calls"); var sent = row.putArray("sent");
                 var started = new CompletableFuture<Void>(); var producers = new CopyOnWriteArrayList<CompletableFuture<Void>>();
@@ -89,10 +89,13 @@ class LlmWorkflowStreamHostTest {
                                 }));
                                 return LlmOutcome.stream(stream);
                             }
-                            var response = spec.path("response");
+                            ObjectNode response = spec.path("response").deepCopy();
+                            if ("participant_name".equals(mode)) ((ObjectNode) response.path("message")).put("name", spec.path("participant_name").textValue());
                             var builder = LlmChatResponse.builder().message(response.path("message")).usage(response.path("usage")).raw(response.path("raw"));
                             if (!"missing_finish".equals(mode)) builder.finishReason(response.path("finish_reason").textValue());
-                            return LlmOutcome.result(builder.build());
+                            var result = builder.build();
+                            assertEquals(response.path("message"), result.toJson().path("message"));
+                            return LlmOutcome.result(result);
                         } finally { row.put("finally", row.path("finally").intValue() + 1); }
                     });
                 }));

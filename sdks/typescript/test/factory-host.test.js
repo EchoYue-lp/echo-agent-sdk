@@ -5,6 +5,7 @@ import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {fileURLToPath} from "node:url";
 import {EchoAgentClient,wireUtf8Path} from "../dist/index.js";
+import {nativeProducerFixture} from "./native-producer-fixture.js";
 const host=process.env.ECHO_AGENT_SDK_HOST;
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==="1"&&!host)throw new Error("required Factory Host E2E binary missing");
 test("factory preallocated children preserve two distinct constructed objects through Host evaluation",{skip:!host},async()=>{
@@ -35,9 +36,11 @@ test("factory preallocated children preserve two distinct constructed objects th
    assert.ok(["agent_execute","agent_chat","agent_execute_stream","agent_chat_stream"].includes(operation));executed.push(instance.id);
    if(operation.endsWith("_stream")) {
     const state=instances.get(instance.id);
+    const producer=nativeProducerFixture(sdk,call);
     setImmediate(()=>{void (async()=>{
+      await producer.start();
       if(created[3]?.id===instance.id){await concurrentClose;assert.ok(instances.has(instance.id));}
-      await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:state}}});
+      await producer.finish(state);
     })();});
     return {outcome:"stream",stream:call.stream};
    }

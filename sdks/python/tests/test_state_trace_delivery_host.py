@@ -76,6 +76,24 @@ async def state_scene(host, work, fixture):
     client, _agent, session = await start(host, work)
     proof = {"errors": [], "checkpoints": {}}
     try:
+        # 旧数组格式继续拒绝；失败前后沿同一scope核对无持久化副作用。
+        before = await session.invoke("state.runtime.list", [fixture["scope_a"]])
+        for payload in ('[{"role":"user","content":"保留所有字段🧭"}]', "[]"):
+            malformed = {**fixture["checkpoint_a"], "messages_json": payload}
+            error = await must_error(
+                session.invoke(
+                    "state.checkpoint.save", [fixture["scope_a"], malformed]
+                ),
+                "state.checkpoint.save",
+            )
+            assert (
+                "Failed to deserialize current checkpoint payload" in error["message"]
+            )
+            proof.setdefault("invalid_payload_errors", []).append(error)
+            assert (
+                await session.invoke("state.runtime.list", [fixture["scope_a"]])
+                == before
+            )
         for label in ("a", "b"):
             scope, checkpoint = (
                 fixture["scope_" + label],

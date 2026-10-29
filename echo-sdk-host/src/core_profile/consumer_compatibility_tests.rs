@@ -271,9 +271,9 @@ fn consumer_compatibility_nonstream_response_to_stream_keeps_native_fields() -> 
                 "item_id":"reasoning-1","output_index":0,"content_index":0,
                 "content_kind":"reasoning","phase":"opaque-original"}});
         let response: LlmChatResponseWire = serde_json::from_value(json!({
-            "message":{"role":"assistant", "content":to_wire(&"body")?,
+            "message":{"role":"assistant", "content":to_wire("body")?,
                 "assistant_blocks":[block.clone()]},
-            "finish_reason":"stop", "raw":to_wire(&json!({}))?
+            "finish_reason":"stop", "raw":to_wire(json!({}))?
         }))
         .map_err(|error| error.to_string())?;
         let native = chat_response_from_wire(response)?;
@@ -309,8 +309,8 @@ fn consumer_compatibility_nonstream_response_to_stream_keeps_native_fields() -> 
 fn consumer_compatibility_usage_keeps_reasoning_detail_through_host_and_nonstream_fallback()
 -> Result<(), String> {
     let response: LlmChatResponseWire = serde_json::from_value(json!({
-        "message":{"role":"assistant","content":to_wire(&"body")?},"finish_reason":"stop",
-        "raw":to_wire(&json!({}))?,"usage":{"value":to_wire(&json!({
+        "message":{"role":"assistant","content":to_wire("body")?},"finish_reason":"stop",
+        "raw":to_wire(json!({}))?,"usage":{"value":to_wire(json!({
             "prompt_tokens":11,"completion_tokens":7,"total_tokens":18,
             "output_tokens_details":{"reasoning_tokens":5}}))?}
     }))
@@ -338,13 +338,13 @@ fn consumer_compatibility_reverse_llm_fallback_rejects_runtime_authority() -> Re
         ("approved_assistant_blocks", json!([])),
     ] {
         let mut message =
-            json!({"role":"assistant","content":to_wire(&"unapproved reverse answer")?});
+            json!({"role":"assistant","content":to_wire("unapproved reverse answer")?});
         message
             .as_object_mut()
             .ok_or("fixture message must be object")?
             .insert(field.into(), forged);
         let response: LlmChatResponseWire = serde_json::from_value(json!({
-            "message":message,"finish_reason":"stop","raw":to_wire(&json!({}))?
+            "message":message,"finish_reason":"stop","raw":to_wire(json!({}))?
         }))
         .map_err(|error| error.to_string())?;
         let native = chat_response_from_wire(response)?;

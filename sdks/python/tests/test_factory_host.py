@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from native_producer_fixture import NativeProducerFixture
 
 from echo_agent_sdk import EchoAgentClient, wire_utf8_path
 
@@ -82,24 +83,15 @@ async def test_factory_children_keep_exact_constructed_objects_through_host_eval
                 if operation.endswith("_stream"):
                     import asyncio
 
-                    from echo_agent_sdk import WireHandle
+                    producer = NativeProducerFixture(sdk, call)
 
                     async def complete():
                         await asyncio.sleep(0)
+                        await producer.start()
                         if len(created) > 3 and created[3]["id"] == instance["id"]:
                             await concurrent_closed.wait()
                             assert instance["id"] in instances
-                        await sdk.stream_writer(
-                            WireHandle.from_dict(call["stream"])
-                        ).complete(
-                            {
-                                "kind": "agent",
-                                "value": {
-                                    "event": "final_answer",
-                                    "data": {"text": instances[instance["id"]]},
-                                },
-                            }
-                        )
+                        await producer.finish(instances[instance["id"]])
 
                     asyncio.create_task(complete())
                     return {"outcome": "stream", "stream": call["stream"]}

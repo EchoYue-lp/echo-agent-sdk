@@ -152,6 +152,43 @@ fn extension_outcome_and_stream_are_tagged() {
 }
 
 #[test]
+fn indirect_llm_result_preserves_wire_value_and_committed_schema() -> Result<(), String> {
+    use echo_sdk_protocol::methods::{ExtensionResult, LlmChatResponseWire};
+
+    let payload = serde_json::json!({
+        "message": {
+            "role": "assistant",
+            "content": {"kind": "string", "value": "完整回复中文🧪"},
+            "reasoning_content": "保留原推理🙂"
+        },
+        "finish_reason": "stop",
+        "usage": {"value": {"kind": "u64", "value": u64::MAX.to_string()}},
+        "raw": {"kind": "map", "value": [
+            {"key": {"kind": "string", "value": "retained"}, "value": {"kind": "bool", "value": false}},
+            {"key": {"kind": "string", "value": "missing"}, "value": {"kind": "null"}}
+        ]}
+    });
+    let response: LlmChatResponseWire =
+        serde_json::from_value(payload.clone()).map_err(|error| error.to_string())?;
+    let result = ExtensionResult::LlmChat(Box::new(response));
+    let expected = serde_json::json!({"operation": "llm_chat", "value": payload});
+    assert_eq!(
+        serde_json::to_value(&result).map_err(|error| error.to_string())?,
+        expected
+    );
+    assert_eq!(
+        serde_json::from_value::<ExtensionResult>(expected).map_err(|error| error.to_string())?,
+        result
+    );
+    let committed: serde_json::Value = serde_json::from_str(include_str!(
+        "../../contracts/sdk/schema/echo-agent-extension-v1.schema.json"
+    ))
+    .map_err(|error| error.to_string())?;
+    assert_eq!(build_extension_schema_doc(), committed);
+    Ok(())
+}
+
+#[test]
 fn agent_component_stream_rejects_inner_terminal_confusion() {
     let stream = serde_json::json!({
         "id": "stream-1",

@@ -3877,7 +3877,8 @@ impl ExtensionInvocation {
 pub enum ExtensionResult {
     ToolExecute(ToolResultWire),
     ToolValidateParameters(Option<String>),
-    LlmChat(LlmChatResponseWire),
+    // 原生消息使回复载荷增大；Box只改变Rust布局，Serde/JsonSchema仍使用原值形状。
+    LlmChat(Box<LlmChatResponseWire>),
     StorePut(ExtensionUnit),
     StoreGet(Option<StoreItemWire>),
     StoreSearch(Vec<StoreItemWire>),

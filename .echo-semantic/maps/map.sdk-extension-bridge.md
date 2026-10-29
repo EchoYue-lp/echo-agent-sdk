@@ -144,12 +144,15 @@ scenarios:
     - sdks/typescript/src/runtime_terminal.ts
     - sdks/typescript/examples/custom-agent-message.ts
     - sdks/typescript/test/runtime-terminal.test.js
+    - sdks/typescript/test/native-producer-fixture.js
     - sdks/python/src/echo_agent_sdk/_runtime_terminal.py
     - sdks/python/examples/custom_agent_message.py
     - sdks/python/tests/test_runtime_terminal.py
+    - sdks/python/tests/native_producer_fixture.py
     - sdks/java/src/main/java/com/echoagent/sdk/RuntimeTerminal.java
     - sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java
     - sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java
+    - sdks/java/src/test/java/com/echoagent/sdk/NativeProducerFixture.java
     - docs/adr/0043-native-message-sdk-adapter.md
     - docs/sdk/native-messages.md
     behavior_refs:

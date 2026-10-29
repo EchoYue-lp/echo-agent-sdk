@@ -73,8 +73,8 @@ public final class Example {
                     "echo_sdk_protocol::methods::AgentEventWire",
                     "final_answer",
                     Map.of("text", "classified"))).toCompletableFuture().get();
-            if (!"variant".equals(classified.path("kind").asText())
-                    || !"completed".equals(classified.path("value").path("variant").asText())) {
+            // FinalAnswer只是通知；完成正例由后续真实Run的原结算与receipt检查提供。
+            if (!classified.isNull()) {
                 throw new IllegalStateException("unexpected TurnOutcome classification: " + classified);
             }
             var prompt = session.prompt("hello").toCompletableFuture().get();

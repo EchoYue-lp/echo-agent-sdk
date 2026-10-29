@@ -3904,8 +3904,10 @@ fn chat_chunk_wire(
             .map(|blocks| blocks.iter().map(reasoning_block_wire).collect()),
         assistant_blocks: {
             // 仅借既有Message值转换保全部分块；不为DeltaMessage新增Serialize或执行owner。
-            let mut message = echo_agent::llm::types::Message::default();
-            message.assistant_blocks = chunk.delta.assistant_blocks.clone();
+            let message = echo_agent::llm::types::Message {
+                assistant_blocks: chunk.delta.assistant_blocks.clone(),
+                ..Default::default()
+            };
             super::native_message::message_metadata(&message)?.assistant_blocks
         },
         tool_calls: chunk
@@ -4182,7 +4184,7 @@ impl echo_agent::llm::LlmClient for ExtensionLlmClientProxy {
                     "llm extension returned the wrong result variant".to_string(),
                 ));
             };
-            chat_response_from_wire(response).map_err(ReactError::Other)
+            chat_response_from_wire(*response).map_err(ReactError::Other)
         })
     }
 

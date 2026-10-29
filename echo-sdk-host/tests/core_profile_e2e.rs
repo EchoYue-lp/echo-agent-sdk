@@ -4878,11 +4878,14 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
                     "kind": "variant",
                     "value": {
                         "type_id": "echo_sdk_protocol::methods::AgentEventWire",
-                        "variant": "final_answer",
-                        "fields": [{
-                            "name": "text",
-                            "value": {"kind": "string", "value": "done"}
-                        }]
+                        "variant": "execution_status",
+                        "fields": [
+                            {"name":"execution_id","value":{"kind":"string","value":"original-classify-execution"}},
+                            {"name":"request_id","value":{"kind":"string","value":"original-classify-request"}},
+                            {"name":"sequence","value":{"kind":"u64","value":"1"}},
+                            {"name":"phase","value":{"kind":"string","value":"Terminal"}},
+                            {"name":"status","value":{"kind":"string","value":"settled"}}
+                        ]
                     }
                 })],
             )
@@ -4893,6 +4896,17 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
                     ref variant, ref fields, ..
                 } if variant == "completed" && fields.is_empty()
             ));
+            let final_notice = invoke_facade_without_handle_wire(
+                &connection,
+                classify_operation,
+                vec![serde_json::json!({"kind":"variant","value":{
+                    "type_id":"echo_sdk_protocol::methods::AgentEventWire",
+                    "variant":"final_answer","fields":[{
+                        "name":"text","value":{"kind":"string","value":"done"}
+                    }]
+                }})],
+            ).await?;
+            assert_eq!(final_notice, echo_sdk_protocol::scalar::WireValue::Null);
             let pending_outcome = invoke_facade_without_handle_wire(
                 &connection,
                 classify_operation,
@@ -5647,11 +5661,23 @@ async fn state_delivery_and_trace_families_use_framework_services()
             // a checkpoint, observe the runtime id, read it back, clear it.
             let checkpoint = serde_json::json!({
                 "conversation_id": "scope-e2e",
-                "messages_json": "[]",
+                "messages_json": echo_agent::state::AgentCheckpoint::serialize_payload(Vec::new(), None)
+                    .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?,
                 "active_skills": [],
                 "blocked_reason": null,
                 "timestamp": "2026-09-08T00:00:00Z",
             });
+            let mut invalid_checkpoint = checkpoint.clone();
+            invalid_checkpoint.as_object_mut().ok_or_else(|| {
+                agent_client_protocol::Error::internal_error().data("checkpoint fixture must be an object")
+            })?.insert("messages_json".into(), serde_json::json!("[]"));
+            let rejected = connection.send_request(family_request(
+                "_echo_agent/state/op", "state.checkpoint.save",
+                vec![serde_json::json!("scope-e2e"), invalid_checkpoint],
+            )?).block_task().await.err().ok_or_else(|| {
+                agent_client_protocol::Error::internal_error().data("bare history array must remain invalid checkpoint input")
+            })?;
+            assert!(rejected.to_string().contains("Failed to deserialize current checkpoint payload"));
             let saved = decode(
                 connection
                     .send_request(family_request(
@@ -7600,9 +7626,11 @@ where
 {
     use agent_client_protocol::Responder;
     use echo_sdk_protocol::methods::{
-        AgentStreamChunkWire, AgentStreamTerminalWire, ExtensionCancelNotice, ExtensionInvocation,
-        ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult, ExtensionStreamChunkValue,
-        ExtensionStreamCompleteValue, ExtensionStreamEvent, ExtensionUnit,
+        AgentPhaseWire, AgentStreamChunkWire, AgentStreamTerminalWire, AssistantMessageBlockWire,
+        AssistantPhaseWire, ExecutionStatusKindWire, ExecutionStatusWire, ExtensionCancelNotice,
+        ExtensionInvocation, ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult,
+        ExtensionStreamChunkValue, ExtensionStreamCompleteValue, ExtensionStreamEvent,
+        ExtensionUnit,
     };
     let _process_lock = acquire_e2e_process_lock();
     let transport = host_transport(&mut host.child);
@@ -7626,6 +7654,12 @@ where
                 let gate = gate.clone();
                 let cancellations = callback_cancellations.clone();
                 async move {
+                    let native_execution_id = call.context.as_ref()
+                        .and_then(|context| context.execution_id.clone())
+                        .unwrap_or_else(|| call.invocation_id.clone());
+                    let native_request_id = call.context.as_ref()
+                        .and_then(|context| context.message_id.clone())
+                        .unwrap_or_else(|| call.invocation_id.clone());
                     let (task, stream) = match call.invocation {
                         ExtensionInvocation::AgentExecute(input) => (input.task, None),
                         ExtensionInvocation::AgentExecuteStream(input) => {
@@ -7685,6 +7719,17 @@ where
                             } else {
                                 Some(responder)
                             };
+                            if let Some(stream) = &stream {
+                                // 原callback producer已启动；状态不越过其原取消/释放门。
+                                connection.send_notification(ExtensionStreamEvent::Chunk {
+                                    stream: stream.clone(), sequence: nonzero(1),
+                                    value: ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::ExecutionStatus(ExecutionStatusWire {
+                                        execution_id: native_execution_id.clone(), request_id: Some(native_request_id.clone()),
+                                        sequence: echo_sdk_protocol::scalar::WireU64::from_u64(0),
+                                        phase: AgentPhaseWire::Thinking, status: ExecutionStatusKindWire::Started, reason: None,
+                                    })),
+                                })?;
+                            }
                             if let Some(gate) = gate {
                                 gate.prompts.lock().unwrap_or_else(|error| error.into_inner()).push(task);
                                 let released = gate.release.notified();
@@ -7706,24 +7751,36 @@ where
                                 if !cancelled {
                                     connection.send_notification(ExtensionStreamEvent::Chunk {
                                         stream: stream.clone(),
-                                        sequence: nonzero(1),
+                                        sequence: nonzero(2),
                                         value: ExtensionStreamChunkValue::Agent(
-                                            AgentStreamChunkWire::Token {
-                                                text: "SDK subagent executed".to_string(),
+                                            AgentStreamChunkWire::AssistantMessage {
+                                                block: AssistantMessageBlockWire {
+                                                    provider_source: None,
+                                                    block_id: format!("{native_execution_id}-block"),
+                                                    request_id: native_request_id.clone(),
+                                                    sequence: echo_sdk_protocol::scalar::WireU64::from_u64(0),
+                                                    phase: AssistantPhaseWire::Unknown,
+                                                    delta: "SDK subagent executed".to_string(), complete: true,
+                                                    provider: None, reasoning: None,
+                                                },
                                             },
                                         ),
+                                    })?;
+                                    connection.send_notification(ExtensionStreamEvent::Chunk {
+                                        stream: stream.clone(), sequence: nonzero(3),
+                                        value: ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::FinalAnswer {
+                                            text: "SDK subagent executed".to_string(),
+                                        }),
                                     })?;
                                 }
                                 connection.send_notification(ExtensionStreamEvent::Complete {
                                     stream,
-                                    sequence: nonzero(if cancelled { 1 } else { 2 }),
-                                    value: ExtensionStreamCompleteValue::Agent(if cancelled {
-                                        AgentStreamTerminalWire::Cancelled
-                                    } else {
-                                        AgentStreamTerminalWire::FinalAnswer {
-                                            text: "SDK subagent executed".to_string(),
-                                        }
-                                    }),
+                                    sequence: nonzero(if cancelled { 2 } else { 4 }),
+                                    value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::ExecutionStatus(ExecutionStatusWire {
+                                        execution_id: native_execution_id, request_id: Some(native_request_id),
+                                        sequence: echo_sdk_protocol::scalar::WireU64::from_u64(1), phase: AgentPhaseWire::Terminal,
+                                        status: if cancelled { ExecutionStatusKindWire::Cancelled } else { ExecutionStatusKindWire::Settled }, reason: None,
+                                    })),
                                 })?;
                             } else if let Some(responder) = responder {
                                 responder.respond(if cancelled {

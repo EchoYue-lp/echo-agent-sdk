@@ -123,7 +123,8 @@ struct NativeAssistantBlock {
     deny_unknown_fields
 )]
 enum NativeEvent {
-    AssistantMessage { block: NativeAssistantBlock },
+    // 只缩小私有事件布局；Serde仍转发原闭合block，不改变消息或终态判断。
+    AssistantMessage { block: Box<NativeAssistantBlock> },
     ExecutionStatus(NativeExecutionStatus),
 }
 
@@ -210,7 +211,7 @@ pub(super) fn from_framework(event: &AgentEvent) -> Result<AgentEventWire, Strin
         .map_err(|error| format!("unsupported framework AgentEvent variant: {error}"))?;
     Ok(match native {
         NativeEvent::AssistantMessage { block } => AgentEventWire::AssistantMessage {
-            block: block.into_wire()?,
+            block: (*block).into_wire()?,
         },
         NativeEvent::ExecutionStatus(status) => {
             AgentEventWire::ExecutionStatus(status.into_wire()?)
@@ -229,7 +230,7 @@ pub(super) fn status_to_framework(status: ExecutionStatusWire) -> Result<AgentEv
 #[cfg(feature = "sdk-extension-bridge")]
 pub(super) fn to_framework(block: AssistantMessageBlockWire) -> Result<AgentEvent, String> {
     let native = NativeEvent::AssistantMessage {
-        block: NativeAssistantBlock::from_wire(block)?,
+        block: Box::new(NativeAssistantBlock::from_wire(block)?),
     };
     let serialized = serde_json::to_value(native).map_err(|error| error.to_string())?;
     serde_json::from_value(serialized).map_err(|error| {

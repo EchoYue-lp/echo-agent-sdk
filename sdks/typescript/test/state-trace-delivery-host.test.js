@@ -22,6 +22,10 @@ const fault=a=>execFileSync('python3',[fixture,'--work',work,a]);
 let setup=await start();let {sdk,session}=setup;const proof={errors:[],timestamp_observations:timestampObservations,host_timezone:process.env.TZ??null};
 try{
  if(scene==='state'){
+  const beforeInvalid=await session.invoke('state.runtime.list',[f.scope_a]);proof.invalid_payload_errors=[];
+  for(const messages_json of ['[{"role":"user","content":"保留所有字段🧭"}]','[]']){
+   const error=await err(session.invoke('state.checkpoint.save',[f.scope_a,{...f.checkpoint_a,messages_json}]));assert.match(error.message,/Failed to deserialize current checkpoint payload/u);proof.invalid_payload_errors.push(error);assert.deepEqual(await session.invoke('state.runtime.list',[f.scope_a]),beforeInvalid);
+  }
   for(const label of ['a','b']){const cp=f['checkpoint_'+label];assert.deepEqual(await session.invoke('state.checkpoint.save',[f['scope_'+label],cp]),{ok:true});sameTime((await session.invoke('state.checkpoint.get',[cp.conversation_id])).checkpoint,cp,['timestamp']);assert.deepEqual((await session.invoke('state.runtime.list',[f['scope_'+label]])).runtime_state_ids,[cp.conversation_id]);}
   const dir=join(work,'state/runtime_state/_runtime_owners');const files=readdirSync(dir).filter(x=>x.endsWith('.json'));const before=Object.fromEntries(files.map(x=>[x,readFileSync(join(dir,x),'utf8')]));
   fault('block-owners');try{proof.errors.push(await err(session.invoke('state.checkpoint.save',[f.scope_a,f.checkpoint_a])));}finally{fault('unblock');}

@@ -1,5 +1,88 @@
 # ADR0043：SDK 无损消费 Framework 原生消息
 
+## 2026-10-30：三语言原失败夹具接入当前合同
+
+原完整语言入口在 TypeScript 396通过、14失败、1平台跳过处自然退出1；同一 Host 与
+collector 的独立原 Python 为473通过、11失败、1跳过，Java为324通过、10失败、2错误、
+1跳过。三个 quickstart 均未到达，原失败和未执行范围保持，不追标为通过。
+
+三语言的 CustomAgent/Factory 测试 producer 复用现有 stream writer，在自身 callback
+起点报告 Started；正文仍走原 FinalAnswer 通知，在原工作、取消清理或 physical join
+结束处报告原生终态。测试辅助函数不进入语言 SDK API、LLM delta 或 Host，不依据文本、
+ACK 或普通 complete 推断成功。原身份、factory child、Task claim/CAS、独立 B/C、保留结果、
+deadline、准入和关闭断言均保留。分类正例为 Settled，FinalAnswer 继续返回 null。
+Started、原 failed observation 与最终通知/complete 共用各回调同一个 stream writer，
+不通过重建 writer 重置 transport sequence；physical join 仍是原观察分支的结算前提。
+
+Checkpoint 正向测试数据由当前冻结 Framework 的公开 `AgentCheckpoint::serialize_payload`
+真实生成，保原用户正文、空历史及其余 checkpoint 字段；三语言分别验证旧裸用户数组与
+`[]` 被明确拒绝，且同 scope 的 runtime list 无写入变化。不复制私有 schema，不新增
+accepted SDK operation。已退役 unmanaged DELETE 明确断言 FeatureUnavailable、Never、
+原 operation 和退役原因，继续核对后端调用及持久状态不变；managed CLEAR、原身份、CAS、
+重试、重启和回放的既有断言不改。
+
+非流式 LLM 正向回包不含 Delta 无法表示的 participant name；原 name 值移入独立拒绝
+负控，必须命中原明确错误。缺 finish reason 独立命中 bounded finish reason 错误。
+原完整 Message 的 name/工具身份 codec 与示例保真测试保留，LLM chunks 不加入运行状态。
+首次修后原完整入口中三套测试通过，最后 Java quickstart 在旧 FinalAnswer→Completed
+假设处自然失败。Java `Example` 仅将该通知验证为 null；完成正例保留后续真实 Run 的
+waitForSettlement、status、receipt 和 outcomeStatus 原断言，不为示例手造运行终态。
+本增量不改 Rust、Host、Protocol、正式 pin/锁、accepted 或风险合同；以精确新语言快照、
+同一实际 Host/collector 的 focused 与原完整三语言/三个 quickstart 验收。语言示例仍由
+原入口编译运行；官网未新增产品能力，无需同步文案。正式来源及整体治理仍独立验收。
+
+## 2026-10-29：完整运行消费者的 typed 入口与原 producer
+
+当前 Framework 的执行、chat、Eval 和 TaskRun 都进入完整 Message 与 invocation 的
+canonical producer。SDK 的 `FailedEvalAgent` 沿该既有 typed 入口在准入前拒绝原始
+factory 错误；原 `ReactError` 只转交一次，不从 Display 重构 cancel、timeout 或 429，
+不创建替代执行、状态或成功流。
+
+Task 上下文与关闭测试的旧 String override 不能证明该入口已运行。其夹具改由真实的
+typed producer 接收输入和上下文，并持有到同一 source EOF；原 claim、run lineage、
+delegation、依赖结果、取消门、cleanup 门、receipt 和时间预算均保持。关闭夹具只在
+原 cleanup 完成后报告其自身原生 Cancelled，Host 的关闭和重试策略不改。
+
+reverse fixture 在自己的真实回调里报告 Started、原始正文/FinalAnswer 通知，以及释放门
+之后的原生 Settled/Cancelled；不让 SDK 生产 adapter 为普通 complete 补造终态。
+未知正文继续标为 Unknown。分类正例使用真实 Settled，FinalAnswer 保持非终态负控。
+checkpoint 正例复用 Framework 的公开 `serialize_payload`，裸数组继续作为拒绝负例，
+不复制私有 payload schema 或放松恢复解析。
+
+组件消费者测试实际进行了两次 ACP Prompt 和一次显式恢复。RunStore 按完整 input
+逐项区分两条 Prompt trace 和 `[resume checkpoint]` trace：全部仍须可 load、Completed、
+有结束时间和事件；两条 Prompt 保原输出，恢复要求无 final_output 且有同 scope 的
+CheckpointResumed。模型调用数、原组件身份与 decoy 排除断言保持，不能只改总数。
+
+原07的 Host 237通过/12失败、后续15个原 bin 的独立309通过/8失败及缺少消费者目录的
+setup 失败均保留其原始范围。消费者目录仅由本次进程环境指向主根隔离路径，不增加生产
+fallback。修复后的 focused 与原完整 Rust、同源 Host、collector、三语言和 quickstart
+仍须实际验证；旧结果不追标新源，正式 pin、accepted、风险与 producer 继续单独验收。
+
+## 2026-10-29：LLM reverse 回包的 Rust 布局
+
+完整 SDK Clippy 在 `ExtensionResult` 发现 `LlmChatResponseWire` 达到 1032B，
+而次大 `ToolResultWire` 为 568B。原生消息仍须完整运输，不能压缩字段或降低 warning 门禁。
+Root 已批准复用标准 `Box`：只将 `ExtensionResult::LlmChat` 的 Rust 载荷签名改为
+`Box<LlmChatResponseWire>`，构造时使用 `Box::new(response)`，Host 消费时完整移出原值。
+这是 SDK Protocol 的 Rust 表示及 Host 薄适配，不改变 Framework 或增加第二套 DTO。
+
+保持原内联载荷会继续触发该诊断；增加 allow 或拆成另一种 wire DTO 均不采用。
+选择 Box 保留现有 Serde/JsonSchema 的值形状：`operation: llm_chat`、所有回复字段、
+可空值、usage 和原始值均保持，JSON schema 及三语言构造和读取方式不变。
+Rust 直接构造者需要适配新的载荷类型；这项公开 Rust 签名变化与 wire 等价分别验收，
+不能因 wire 等价便称 Rust 签名未变，也不自动接受新的 API 身份或能力族。
+
+同批 Host 私有 `NativeEvent` 的 block 载荷为 320B，另一 variant 为 88B；只对该私有
+block 使用 Box，并在原转换点完整移入移出。它继续使用原闭合字段与 Serde 标签，
+不改变消息、状态、错误、EOF 或终态判断。Message 的默认值和 assistant_blocks 改为
+同一初始化表达式；测试夹具仅移除 `to_wire` 的多余借用，原值和全部断言保持。
+
+Protocol 回归使用原完整已提交 schema，并检查 Unicode、u64 最大值、false 和 null 的
+原值往返；Host 继续复用 `chat_response_from_wire`。完整三语言、Parquet、生命周期和
+quickstart 仍由修后同源 Host 的原完整入口验收。语言示例和官网不直接构造此 Rust 枚举，
+无需修改其内容；原 c9 Host、失败日志与源码冻结件保留，不追标为修后通过。
+
 ## 2026-10-29：保留消费者的strict与真实请求桥接
 
 Root保存第二切片为`a2da104fe94d32fa620d95be6338ccd002f91d2c`并释放后，SDK唯一

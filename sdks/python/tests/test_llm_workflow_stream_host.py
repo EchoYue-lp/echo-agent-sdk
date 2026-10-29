@@ -276,7 +276,14 @@ async def test_llm_real_registered_provider_full_requests_usage_failure_and_canc
     work, spec, sdk = await setup("llm")
     rows = []
     try:
-        for mode in ("nonstream", "stream", "missing_finish", "error", "cancel"):
+        for mode in (
+            "nonstream",
+            "stream",
+            "participant_name",
+            "missing_finish",
+            "error",
+            "cancel",
+        ):
             row = {
                 "mode": mode,
                 "calls": [],
@@ -341,6 +348,8 @@ async def test_llm_real_registered_provider_full_requests_usage_failure_and_canc
                     response = copy.deepcopy(spec["response"])
                     if mode == "missing_finish":
                         response.pop("finish_reason")
+                    if mode == "participant_name":
+                        response["message"]["name"] = spec["participant_name"]
                     return response
                 finally:
                     row["finally"] += 1

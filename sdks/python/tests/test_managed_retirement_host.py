@@ -89,13 +89,9 @@ async def test_accepted_exact_clear_retains_scope_projection_and_retirement_proo
             with pytest.raises(EchoAgentError) as rejected:
                 await session.invoke(DELETE, [scope_id])
             error = rejected.value
-            assert error.code == "framework_error" and error.operation == DELETE
-            assert "managed conversation deletion requires" in str(error)
-            assert any(
-                item["key"] == "framework_failure_code"
-                and item["value"] == "runtime_state"
-                for item in error.details["fields"]
-            )
+            assert error.code == "feature_unavailable" and error.operation == DELETE
+            assert error.retryable == "never"
+            assert "unmanaged conversation deletion is retired" in str(error)
             proof["errors"].append(failure(error))
             after_delete = await asyncio.to_thread(http_json, url, "/inspect")
             assert durable(after_delete) == durable(before)

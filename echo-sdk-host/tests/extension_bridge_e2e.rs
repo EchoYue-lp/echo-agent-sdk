@@ -2032,14 +2032,14 @@ where
                                         }]);
                                         response.finish_reason = Some("tool_calls".to_string());
                                     }
-                                    return responder.respond(ExtensionInvokeOutcome::Result { result: ExtensionResult::LlmChat(response) });
+                                    return responder.respond(ExtensionInvokeOutcome::Result { result: ExtensionResult::LlmChat(Box::new(response)) });
                                 }
                                 let mut response = chat_response_wire("fixture chat answer");
                                 if missing_finish_reason.load(Ordering::Acquire) {
                                     response.finish_reason = None;
                                 }
                                 responder.respond(ExtensionInvokeOutcome::Result {
-                                    result: ExtensionResult::LlmChat(response),
+                                    result: ExtensionResult::LlmChat(Box::new(response)),
                                 })
                             }
                             ExtensionInvocation::CompressorCompress(input) => {
@@ -2885,26 +2885,55 @@ where
                                 responder.respond(ExtensionInvokeOutcome::Stream {
                                     stream: stream.clone(),
                                 })?;
+                                let native_execution_id = original_call.context.as_ref()
+                                    .and_then(|context| context.execution_id.clone())
+                                    .unwrap_or_else(|| original_call.invocation_id.clone());
+                                let native_request_id = original_call.context.as_ref()
+                                    .and_then(|context| context.message_id.clone())
+                                    .unwrap_or_else(|| original_call.invocation_id.clone());
                                 tokio::spawn(async move {
+                                    let status = |kind, sequence, phase| ExecutionStatusWire {
+                                        execution_id: native_execution_id.clone(), request_id: Some(native_request_id.clone()),
+                                        sequence: WireU64::from_u64(sequence), phase, status: kind, reason: None,
+                                    };
+                                    let _ = connection.send_notification(ExtensionStreamEvent::Chunk {
+                                        stream: stream.clone(), sequence: nonzero(1),
+                                        value: ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::ExecutionStatus(
+                                            status(ExecutionStatusKindWire::Started, 0, AgentPhaseWire::Thinking)
+                                        )),
+                                    });
                                     let _ =
                                         connection.send_notification(ExtensionStreamEvent::Chunk {
                                             stream: stream.clone(),
-                                            sequence: nonzero(1),
+                                            sequence: nonzero(2),
                                             value: ExtensionStreamChunkValue::Agent(
-                                                AgentStreamChunkWire::Token {
-                                                    text: "SDK custom event".to_string(),
+                                                AgentStreamChunkWire::AssistantMessage {
+                                                    block: AssistantMessageBlockWire {
+                                                        provider_source: None,
+                                                        block_id: format!("{native_execution_id}-block"),
+                                                        request_id: native_request_id.clone(), sequence: WireU64::from_u64(0),
+                                                        phase: AssistantPhaseWire::Unknown,
+                                                        delta: "SDK custom event".to_string(), complete: true,
+                                                        provider: None, reasoning: None,
+                                                    },
                                                 },
                                             ),
                                         });
                                     if omit_stream_terminal.load(Ordering::Acquire) { return; }
+                                    let _ = connection.send_notification(ExtensionStreamEvent::Chunk {
+                                        stream: stream.clone(), sequence: nonzero(3),
+                                        value: ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::FinalAnswer {
+                                            text: "SDK custom answer".to_string(),
+                                        }),
+                                    });
                                     let _ = connection.send_notification(
                                         ExtensionStreamEvent::Complete {
                                             stream,
-                                            sequence: nonzero(2),
+                                            sequence: nonzero(4),
                                             value: ExtensionStreamCompleteValue::Agent(
-                                                AgentStreamTerminalWire::FinalAnswer {
-                                                    text: "SDK custom answer".to_string(),
-                                                },
+                                                AgentStreamTerminalWire::ExecutionStatus(
+                                                    status(ExecutionStatusKindWire::Settled, 1, AgentPhaseWire::Terminal)
+                                                ),
                                             ),
                                         },
                                     );
@@ -5757,7 +5786,7 @@ async fn live_session_component_setters_drive_original_consumers()
     }));
     use echo_agent::trace::RunStore as _;
     let runs = dispatch.live_run_store.list_all(16).await?;
-    assert_eq!(runs.len(), 2);
+    let mut inputs = std::collections::BTreeSet::new();
     for summary in runs {
         let run = dispatch
             .live_run_store
@@ -5765,12 +5794,37 @@ async fn live_session_component_setters_drive_original_consumers()
             .await?
             .ok_or("original RunStore lost its saved run")?;
         assert_eq!(run.status, echo_agent::trace::RunStatus::Completed);
-        assert_eq!(
-            run.final_output.as_deref(),
-            Some("live service finalanswer 中文🙂")
-        );
         assert!(run.finished_at.is_some() && !run.events.is_empty());
+        assert!(
+            inputs.insert(run.input.clone()),
+            "duplicate original trace input"
+        );
+        match run.input.as_str() {
+            "source service user input 中文🙂" | "after live service compression 保留🌊" => {
+                assert_eq!(
+                    run.final_output.as_deref(),
+                    Some("live service finalanswer 中文🙂")
+                );
+            }
+            "[resume checkpoint]" => {
+                assert!(run.final_output.is_none());
+                assert!(run.events.iter().any(|event| matches!(
+                    event,
+                    echo_agent::trace::RunEvent::CheckpointResumed { conversation_id, .. }
+                        if conversation_id == &run.session_id
+                )));
+            }
+            other => return Err(format!("unexpected RunStore execution input: {other}").into()),
+        }
     }
+    assert_eq!(
+        inputs,
+        std::collections::BTreeSet::from([
+            "source service user input 中文🙂".to_string(),
+            "after live service compression 保留🌊".to_string(),
+            "[resume checkpoint]".to_string(),
+        ])
+    );
     let batches = dispatch
         .managed
         .live_projection_batches

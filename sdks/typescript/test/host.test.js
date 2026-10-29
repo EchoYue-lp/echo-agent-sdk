@@ -54,12 +54,27 @@ test("source SDK reaches a real Host when configured", { skip: !process.env.ECHO
     assert.equal(stored.value, "ok");
     const telemetry = await sdk.call("telemetry.status", undefined);
     assert.equal(typeof telemetry.initialized, "boolean");
-    const classifiedOutcome = await sdk.classifyTurnOutcome({
+    const finalNoticeOutcome = await sdk.classifyTurnOutcome({
       kind: "variant",
       value: {
         type_id: "echo_sdk_protocol::methods::AgentEventWire",
         variant: "final_answer",
         fields: [{ name: "text", value: { kind: "string", value: "classified" } }],
+      },
+    });
+    assert.equal(finalNoticeOutcome, null);
+    const classifiedOutcome = await sdk.classifyTurnOutcome({
+      kind: "variant",
+      value: {
+        type_id: "echo_sdk_protocol::methods::AgentEventWire",
+        variant: "execution_status",
+        fields: [
+          { name: "execution_id", value: { kind: "string", value: "original-classify-execution" } },
+          { name: "request_id", value: { kind: "string", value: "original-classify-request" } },
+          { name: "sequence", value: { kind: "u64", value: "1" } },
+          { name: "phase", value: { kind: "string", value: "Terminal" } },
+          { name: "status", value: { kind: "string", value: "settled" } },
+        ],
       },
     });
     assert.deepEqual(classifiedOutcome, {

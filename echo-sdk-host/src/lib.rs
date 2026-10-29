@@ -603,24 +603,68 @@ mod ownership_tests {
         > {
             Box::pin(async { Ok(futures::stream::empty().boxed()) })
         }
-        fn chat_stream_with_cancel<'a>(
+        fn chat_stream_message_with_invocation_context<'a>(
             &'a self,
-            _: &'a str,
+            message: echo_agent::llm::types::Message,
             cancel: tokio_util::sync::CancellationToken,
+            invocation: echo_agent::agent::AgentInvocationContext,
         ) -> BoxFuture<
             'a,
             echo_agent::error::Result<BoxStream<'a, echo_agent::error::Result<AgentEvent>>>,
         > {
             Box::pin(async move {
-                Ok(futures::stream::once(async move {
+                let identity = echo_agent::agent::EventIdentity::from_invocation(&invocation)?;
+                let execution_id = identity
+                    .execution_id
+                    .as_ref()
+                    .map(|value| value.as_str())
+                    .unwrap_or(identity.turn_id.as_str())
+                    .to_string();
+                let request_id = identity
+                    .message_id
+                    .as_ref()
+                    .map(|value| value.as_str())
+                    .unwrap_or(identity.turn_id.as_str())
+                    .to_string();
+                let status = |kind, sequence, phase| {
+                    AgentEvent::ExecutionStatus(echo_agent::agent::ExecutionStatus {
+                        adapter_generated: false,
+                        execution_id: execution_id.clone(),
+                        request_id: Some(request_id.clone()),
+                        sequence,
+                        phase,
+                        status: kind,
+                        reason: None,
+                    })
+                };
+                let started = status(
+                    echo_agent::agent::ExecutionStatusKind::Started,
+                    0,
+                    echo_agent::agent::AgentPhase::Thinking,
+                );
+                let cancelled = status(
+                    echo_agent::agent::ExecutionStatusKind::Cancelled,
+                    1,
+                    echo_agent::agent::AgentPhase::Terminal,
+                );
+                let retained = (message, invocation);
+                let cleanup = futures::stream::once(async move {
                     self.0.started.notify_one();
                     cancel.cancelled().await;
                     self.0.cancel_started.notify_one();
                     self.0.release_cleanup.notified().await;
                     self.0.cleanup_done.store(true, Ordering::Release);
-                    Ok(AgentEvent::Cancelled)
+                    [Ok(AgentEvent::Cancelled), Ok(cancelled)]
                 })
-                .boxed())
+                .flat_map(futures::stream::iter);
+                // 原source自己报告Started及cleanup后的Cancelled，保原门与实际EOF。
+                Ok(futures::stream::iter([Ok(started)])
+                    .chain(cleanup)
+                    .map(move |event| {
+                        let _retained = &retained;
+                        event
+                    })
+                    .boxed())
             })
         }
         fn close(&self) -> BoxFuture<'_, echo_agent::error::Result<()>> {

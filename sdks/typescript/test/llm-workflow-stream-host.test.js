@@ -22,7 +22,7 @@ function finish(work, group, facts) { writeFileSync(join(work, "observed.json"),
 test("registered LLM requests usage terminal error and cancellation", { skip: !host, timeout: 60000 }, async () => {
   const { work, spec, sdk } = await setup("llm"), rows = [];
   try {
-    for (const mode of ["nonstream", "stream", "missing_finish", "error", "cancel"]) {
+    for (const mode of ["nonstream", "stream", "participant_name", "missing_finish", "error", "cancel"]) {
       const row = { mode, calls: [], finally: 0, cancel_observed: false, sent: [] }; rows.push(row);
       const started = gate(), producers = [];
       const registration = await sdk.registerLlmClient("proof-" + mode, { kind: "llm_client", descriptor_version: 1, model_name: "fixture-model", supports_streaming: mode === "stream" }, async (call, signal) => {
@@ -36,6 +36,7 @@ test("registered LLM requests usage terminal error and cancellation", { skip: !h
             return { outcome: "stream", stream: call.stream };
           }
           const value = structuredClone(spec.response); if (mode === "missing_finish") delete value.finish_reason;
+          if (mode === "participant_name") value.message.name = spec.participant_name;
           return { operation: "llm_chat", value };
         } finally { row.finally++; }
       });
