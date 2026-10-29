@@ -3087,17 +3087,6 @@ fn agent_event_wire_from_framework(
     event: &AgentEvent,
 ) -> std::result::Result<AgentEventWire, String> {
     Ok(match event {
-        AgentEvent::Token(text) => AgentEventWire::Token { text: text.clone() },
-        AgentEvent::ThinkStart => AgentEventWire::ThinkStart,
-        AgentEvent::ThinkEnd {
-            prompt_tokens,
-            completion_tokens,
-        } => AgentEventWire::ThinkEnd {
-            prompt_tokens: WireU64::from_u64(u64::try_from(*prompt_tokens).unwrap_or(u64::MAX)),
-            completion_tokens: WireU64::from_u64(
-                u64::try_from(*completion_tokens).unwrap_or(u64::MAX),
-            ),
-        },
         AgentEvent::LlmUsage {
             model,
             prompt_tokens,
@@ -3236,15 +3225,14 @@ fn agent_event_from_wire(wire: AgentEventWire) -> std::result::Result<AgentEvent
         AgentEventWire::AssistantMessage { block } => {
             return super::native_message::to_framework(block);
         }
-        AgentEventWire::Token { text } => AgentEvent::Token(text),
-        AgentEventWire::ThinkStart => AgentEvent::ThinkStart,
-        AgentEventWire::ThinkEnd {
-            prompt_tokens,
-            completion_tokens,
-        } => AgentEvent::ThinkEnd {
-            prompt_tokens: wire_usize(prompt_tokens, "prompt token count")?,
-            completion_tokens: wire_usize(completion_tokens, "completion token count")?,
-        },
+        AgentEventWire::Token { .. }
+        | AgentEventWire::ThinkStart
+        | AgentEventWire::ThinkEnd { .. } => {
+            return Err(
+                "retired token/think event; use native assistant_message with its original phase"
+                    .into(),
+            );
+        }
         AgentEventWire::LlmUsage {
             model,
             prompt_tokens,
@@ -7678,54 +7666,6 @@ impl echo_agent::agent::AgentCallback for ExtensionAgentCallbackProxy {
         )
     }
 
-    fn on_tool_start<'a>(
-        &'a self,
-        agent: &'a str,
-        tool: &'a str,
-        args: &'a serde_json::Value,
-    ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe(to_wire(args).map(|args| {
-            ExtensionInvocation::CallbackOnToolStart(CallbackToolStartInput {
-                agent: agent.to_string(),
-                call_id: None,
-                tool: tool.to_string(),
-                args,
-            })
-        }))
-    }
-
-    fn on_tool_end<'a>(
-        &'a self,
-        agent: &'a str,
-        tool: &'a str,
-        result: &'a str,
-    ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolEnd(
-            CallbackToolEndInput {
-                agent: agent.to_string(),
-                call_id: None,
-                tool: tool.to_string(),
-                result: result.to_string(),
-            },
-        )))
-    }
-
-    fn on_tool_error<'a>(
-        &'a self,
-        agent: &'a str,
-        tool: &'a str,
-        error: &'a ReactError,
-    ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolError(
-            CallbackToolErrorInput {
-                agent: agent.to_string(),
-                call_id: None,
-                tool: tool.to_string(),
-                error: error.to_string(),
-            },
-        )))
-    }
-
     fn on_tool_start_with_id<'a>(
         &'a self,
         agent: &'a str,
@@ -8558,23 +8498,8 @@ fn close_factory_stream(
         |(mut stream, mut lease)| async move {
             match stream.next().await {
                 Some(item) => {
-                    let observation =
-                        matches!(item.as_ref(), Err(ReactError::ExecutionNotSettled { .. }));
-                    // The callback owner, not this delayed wrapper, decides
-                    // whether that invocation is still physically unknown.
-                    let terminal = (!observation && item.as_ref().is_err())
-                        || matches!(
-                            item.as_ref(),
-                            Ok(AgentEvent::FinalAnswer(_)
-                                | AgentEvent::Error { .. }
-                                | AgentEvent::Cancelled)
-                        );
-                    if terminal
-                        && let Some(owner) = lease.take()
-                        && let Err(close_error) = owner.close().await
-                    {
-                        return Some((Err(close_error), (stream, lease)));
-                    }
+                    // FinalAnswer、失败和取消都是当前 source 的观察。继续读取同一 source，
+                    // 由原 callback/physical owner 完成 drain；只有真实 EOF 才关闭原 factory。
                     Some((item, (stream, lease)))
                 }
                 None => {
@@ -13032,6 +12957,7 @@ callback_owner_init
                     assert!(callback.finished.is_cancelled());assert_eq!(drops.load(Ordering::Acquire),1);
                     let event=source.next().await.ok_or_else(|| RpcError::internal_error().data("original final value became EOF"))?.map_err(|error| RpcError::internal_error().data(format!("original final value replaced by premature close error: {error}")))?;
                     assert!(matches!(event,AgentEvent::FinalAnswer(text) if text=="release-boundary-final"));
+                    assert_eq!(calls.load(Ordering::Acquire),0,"FinalAnswer cannot close the factory before the original stream EOF");
                     assert!(source.next().await.is_none());drop(source);
                     assert!(owner.close().await.is_ok());assert_eq!(calls.load(Ordering::Acquire),1);
                     assert!(state.handles.is_closed(&child));assert_eq!(authority.in_flight(),0);
@@ -14142,12 +14068,7 @@ callback_owner_init
     #[test]
     fn every_public_agent_event_variant_round_trips() -> Result<(), String> {
         let events = vec![
-            AgentEvent::Token("token".to_string()),
-            AgentEvent::ThinkStart,
-            AgentEvent::ThinkEnd {
-                prompt_tokens: 2,
-                completion_tokens: 3,
-            },
+            super::super::native_message::test_commentary_event("native commentary")?,
             AgentEvent::LlmUsage {
                 model: "fixture-model".to_string(),
                 prompt_tokens: 2,

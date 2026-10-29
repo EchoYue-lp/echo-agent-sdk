@@ -1163,18 +1163,61 @@ fn push_bridge_fixtures(fixtures: &mut Vec<Fixture>) {
         Some("invalid_value"),
     ));
     fixtures.push(fixture(
-        "extension-stream-agent-final-chunk-invalid",
-        FixtureKind::Invalid,
+        "extension-stream-agent-final-chunk-valid",
+        FixtureKind::Valid,
         "ExtensionStreamEvent",
-        "A CustomAgent final answer must use the outer complete terminal.",
+        "FinalAnswer 是原确认通知，消费者继续读取原执行状态和 EOF。",
         serde_json::json!({
             "event": "chunk",
             "stream": {"id": "stream-9", "generation": "2", "kind": "stream"},
             "sequence": "2",
             "value": {"kind": "agent", "value": {"event": "final_answer", "data": {"text": "done"}}}
         }),
-        Some("invalid_value"),
+        None,
     ));
+    for (name, outer, kind, phase, valid) in [
+        (
+            "status-started-chunk-valid",
+            "chunk",
+            "started",
+            "Thinking",
+            true,
+        ),
+        (
+            "status-settled-complete-valid",
+            "complete",
+            "settled",
+            "Terminal",
+            true,
+        ),
+        ("final-chunk-invalid", "chunk", "settled", "Terminal", false),
+        (
+            "status-candidate-complete-invalid",
+            "complete",
+            "candidate",
+            "Thinking",
+            false,
+        ),
+        (
+            "status-wrong-phase-invalid",
+            "complete",
+            "settled",
+            "Thinking",
+            false,
+        ),
+    ] {
+        fixtures.push(fixture(
+            &format!("extension-stream-agent-{name}"),
+            if valid { FixtureKind::Valid } else { FixtureKind::Invalid },
+            "ExtensionStreamEvent",
+            "原生 execution status 沿原 identity/sequence 转运；运输结束不能补造运行成功。",
+            serde_json::json!({"event":outer,"stream":{"id":"stream-9","generation":"2","kind":"stream"},
+                "sequence":"2","value":{"kind":"agent","value":{"event":"execution_status","data":{
+                    "execution_id":"original-execution","request_id":"original-request","sequence":u64::MAX.to_string(),
+                    "phase":phase,"status":kind}}}}),
+            if valid { None } else { Some("invalid_value") },
+        ));
+    }
     fixtures.push(fixture(
         "extension-stream-llm-empty-finish-invalid",
         FixtureKind::Invalid,

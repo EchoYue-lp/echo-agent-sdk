@@ -1,6 +1,27 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { registerMessageAgent } from "../dist-examples/examples/custom-agent-message.js";
+import { registerMessageAgent, forwardNativeOutput } from "../dist-examples/examples/custom-agent-message.js";
+
+test("native forwarding waits for real source EOF and never mints a terminal", async () => {
+  const sent = [];
+  let sourceEnded = false;
+  const writer = {async chunk(value) { sent.push(value); }, async complete(value) {
+    assert.equal(sourceEnded, true); sent.push(value);
+  }};
+  const native = {event:"execution_status",data:{execution_id:"original-execution",sequence:"18446744073709551615",phase:"Terminal",status:"settled"}};
+  async function* source() {
+    yield {event:"final_answer",data:{text:"原确认🙂"}};
+    assert.equal(sent.length, 1);
+    yield native;
+    assert.equal(sent.length, 1, "runtime terminal waits for producer EOF");
+    sourceEnded = true;
+  }
+  await forwardNativeOutput(writer, source());
+  assert.deepEqual(sent.at(-1), {kind:"agent",value:native});
+  await assert.rejects(forwardNativeOutput(writer, (async function*() {
+    yield {event:"final_answer",data:{text:"only notification"}};
+  })()), /without its runtime terminal/);
+});
 
 test("raw CustomAgent example keeps full Message/history and returns raw outcomes", async () => {
   let handler;

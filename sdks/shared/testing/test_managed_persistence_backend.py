@@ -33,7 +33,6 @@ def checkpoint(pending=None):
         "messages_json": json.dumps(
             {"pending_transcript_projection": pending}, ensure_ascii=False
         ),
-        "current_plan": None,
         "active_skills": [],
         "blocked_reason": None,
         "working_dir": {"encoding": "unix", "bytes_base64": "L3RtcC//"},

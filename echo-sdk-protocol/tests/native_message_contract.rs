@@ -8,6 +8,54 @@ use echo_sdk_protocol::scalar::{WireField, WireU64, WireValue};
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 #[test]
+fn reverse_native_stream_keeps_final_notice_before_actual_runtime_terminal() -> TestResult {
+    use echo_sdk_protocol::methods::ExtensionStreamEvent;
+    let event = |outer: &str, sequence: &str, value: serde_json::Value| {
+        serde_json::json!({"event":outer,"stream":{"id":"original-stream","generation":"1","kind":"stream"},
+            "sequence":sequence,"value":{"kind":"agent","value":value}})
+    };
+    let status = |kind: &str, phase: &str| {
+        serde_json::json!({"event":"execution_status","data":{
+        "execution_id":"原执行🧪","request_id":"original-request","sequence":u64::MAX.to_string(),
+        "phase":phase,"status":kind,"reason":"原始原因"}})
+    };
+    for kind in ["started", "waiting", "tool_pending", "candidate"] {
+        let wire: ExtensionStreamEvent =
+            serde_json::from_value(event("chunk", "1", status(kind, "Thinking")))?;
+        wire.validate()?;
+        assert!(!wire.is_terminal());
+    }
+    let final_notice: ExtensionStreamEvent = serde_json::from_value(event(
+        "chunk",
+        "2",
+        serde_json::json!({"event":"final_answer","data":{"text":"通知后仍读原流"}}),
+    ))?;
+    final_notice.validate()?;
+    assert!(!final_notice.is_terminal());
+    for kind in ["settled", "failed", "cancelled"] {
+        let wire: ExtensionStreamEvent =
+            serde_json::from_value(event("complete", "3", status(kind, "Terminal")))?;
+        wire.validate()?;
+        assert!(wire.is_terminal());
+        let restored: ExtensionStreamEvent = serde_json::from_value(serde_json::to_value(&wire)?)?;
+        assert_eq!(wire, restored);
+        let misplaced: ExtensionStreamEvent =
+            serde_json::from_value(event("chunk", "3", status(kind, "Terminal")))?;
+        assert!(misplaced.validate().is_err());
+    }
+    for (kind, phase) in [
+        ("started", "Thinking"),
+        ("candidate", "Terminal"),
+        ("settled", "Thinking"),
+    ] {
+        let malformed: ExtensionStreamEvent =
+            serde_json::from_value(event("complete", "3", status(kind, phase)))?;
+        assert!(malformed.validate().is_err());
+    }
+    Ok(())
+}
+
+#[test]
 fn custom_agent_inputs_keep_the_shared_message_and_reject_old_string_payloads() -> TestResult {
     use echo_sdk_protocol::methods::{AgentMessageInput, AgentTaskInput, ExtensionInvocation};
     let message = LlmMessageWire {

@@ -566,7 +566,6 @@ public final class ManagedPersistence {
 
     public record AgentCheckpoint(String conversationId,
             String messagesJson,
-            String currentPlan,
             List<String> activeSkills,
             String blockedReason,
             CheckpointPath workingDir,

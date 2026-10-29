@@ -101,6 +101,76 @@ fn custom_agent_message_roundtrip_preserves_parts_roles_tool_identity_and_empty_
 #[tokio::test]
 async fn custom_agent_real_message_overrides_preserve_payload_and_original_invocation()
 -> Result<(), String> {
+    custom_agent_message_and_output_case(false).await
+}
+
+#[tokio::test]
+async fn custom_agent_native_output_keeps_original_status_reasoning_and_final_notice_through_eof()
+-> Result<(), String> {
+    custom_agent_message_and_output_case(true).await
+}
+
+fn native_output_fixture() -> Vec<AgentEventWire> {
+    use echo_sdk_protocol::methods::{
+        AgentPhaseWire, AssistantMessageBlockWire, AssistantPhaseWire, ExecutionStatusKindWire,
+        ExecutionStatusWire, LlmReasoningBlockWire,
+    };
+    let status = |sequence, kind, phase| {
+        AgentEventWire::ExecutionStatus(ExecutionStatusWire {
+            execution_id: "native-original-execution".into(),
+            request_id: Some("native-original-request".into()),
+            sequence: WireU64::from_u64(sequence),
+            phase,
+            status: kind,
+            reason: Some("原生原因🧪".into()),
+        })
+    };
+    vec![
+        status(
+            0,
+            ExecutionStatusKindWire::Started,
+            AgentPhaseWire::Thinking,
+        ),
+        AgentEventWire::AssistantMessage {
+            block: AssistantMessageBlockWire {
+                block_id: "原块🧪".into(),
+                request_id: "native-original-request".into(),
+                sequence: WireU64::from_u64(u64::MAX),
+                phase: AssistantPhaseWire::Reasoning,
+                delta: String::new(),
+                complete: true,
+                provider: Some("responses".into()),
+                provider_source: None,
+                reasoning: Some(LlmReasoningBlockWire::Opaque {
+                    provider: "responses".into(),
+                    id: "original-item".into(),
+                    data: "encrypted-original==".into(),
+                    summary: vec!["原摘要".into()],
+                }),
+            },
+        },
+        status(
+            1,
+            ExecutionStatusKindWire::Waiting,
+            AgentPhaseWire::Thinking,
+        ),
+        status(
+            2,
+            ExecutionStatusKindWire::Candidate,
+            AgentPhaseWire::Thinking,
+        ),
+        AgentEventWire::FinalAnswer {
+            text: "callback original result".into(),
+        },
+        status(
+            u64::MAX,
+            ExecutionStatusKindWire::Settled,
+            AgentPhaseWire::Terminal,
+        ),
+    ]
+}
+
+async fn custom_agent_message_and_output_case(native_output: bool) -> Result<(), String> {
     let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
     let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
         "schema_version":1,"default_agent":{
@@ -194,6 +264,47 @@ async fn custom_agent_real_message_overrides_preserve_payload_and_original_invoc
                 responder.respond(ExtensionInvokeOutcome::Stream {
                     stream: stream.clone(),
                 })?;
+                if native_output {
+                    let original = native_output_fixture();
+                    let count = original.len();
+                    for (index, event) in original.into_iter().enumerate() {
+                        let sequence = u64::try_from(index)
+                            .map_err(|error| RpcError::internal_error().data(error.to_string()))?
+                            .checked_add(1)
+                            .ok_or_else(|| {
+                                RpcError::internal_error().data("fixture sequence overflow")
+                            })?;
+                        let sequence = echo_sdk_protocol::scalar::WireNonZeroU64::try_from(
+                            sequence.to_string(),
+                        )
+                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                        let wire = serde_json::to_value(event)
+                            .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+                        let event = if index.checked_add(1) == Some(count) {
+                            ExtensionStreamEvent::Complete {
+                                stream: stream.clone(),
+                                sequence,
+                                value: ExtensionStreamCompleteValue::Agent(
+                                    serde_json::from_value(wire).map_err(|error| {
+                                        RpcError::internal_error().data(error.to_string())
+                                    })?,
+                                ),
+                            }
+                        } else {
+                            ExtensionStreamEvent::Chunk {
+                                stream: stream.clone(),
+                                sequence,
+                                value: ExtensionStreamChunkValue::Agent(
+                                    serde_json::from_value(wire).map_err(|error| {
+                                        RpcError::internal_error().data(error.to_string())
+                                    })?,
+                                ),
+                            }
+                        };
+                        connection.send_notification(event)?;
+                    }
+                    return Ok(());
+                }
                 connection.send_notification(ExtensionStreamEvent::Complete {
                     stream,
                     sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
@@ -254,8 +365,16 @@ async fn custom_agent_real_message_overrides_preserve_payload_and_original_invoc
                         (true, true) => proxy.as_ref().chat_stream_message_with_invocation_context(message.clone(), cancel, invocation).await,
                     }.map_err(|error| RpcError::internal_error().data(error.to_string()))?;
                     let events = stream.collect::<Vec<_>>().await;
-                    assert_eq!(events.len(), 1);
-                    assert!(matches!(events.first(), Some(Ok(AgentEvent::FinalAnswer(value))) if value == "callback original result"));
+                    if native_output {
+                        let actual = events.iter().map(|event| {
+                            let event = event.as_ref().map_err(|error| error.to_string())?;
+                            agent_event_wire_from_framework(event)
+                        }).collect::<Result<Vec<_>, String>>().map_err(|error| RpcError::internal_error().data(error))?;
+                        assert_eq!(actual, native_output_fixture(), "FinalAnswer cannot hide original status, EOF, identity, u64 or encrypted reasoning");
+                    } else {
+                        assert_eq!(events.len(), 1);
+                        assert!(matches!(events.first(), Some(Ok(AgentEvent::FinalAnswer(value))) if value == "callback original result"));
+                    }
                     let (call, retained) = captures.lock().map_err(|error| RpcError::internal_error().data(error.to_string()))?
                         .last().cloned().ok_or_else(|| RpcError::internal_error().data("callback was bypassed by a text/default entry"))?;
                     let (delivered, delivered_history) = match (chat, call.invocation) {

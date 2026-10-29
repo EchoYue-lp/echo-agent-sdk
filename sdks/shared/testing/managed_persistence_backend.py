@@ -160,7 +160,6 @@ def validate_checkpoint(value):
         (
             "conversation_id",
             "messages_json",
-            "current_plan",
             "active_skills",
             "blocked_reason",
             "working_dir",
@@ -169,7 +168,7 @@ def validate_checkpoint(value):
     )
     text(value["conversation_id"])
     text(value["messages_json"])
-    for name in ("current_plan", "blocked_reason"):
+    for name in ("blocked_reason",):
         if value[name] is not None:
             text(value[name])
     if not isinstance(value["active_skills"], list):

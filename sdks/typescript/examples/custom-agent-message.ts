@@ -1,6 +1,26 @@
-import type { CustomAgentInvocation, EchoAgentClient, ExtensionInvokeCall, LlmMessage } from "../src/index.js";
+import type { CustomAgentInvocation, EchoAgentClient, ExtensionInvokeCall, ExtensionStreamWriter, LlmMessage } from "../src/index.js";
 
-/** 示例：实现方接收完整 Message，不能先取文本而丢掉附件、meta 或工具身份。 */
+/** 转运真实 Framework producer 的完整输出；消费到原 EOF 后才提交原生末尾。 */
+export async function forwardNativeOutput(
+  writer: ExtensionStreamWriter,
+  source: AsyncIterable<{ readonly event: string; readonly data?: unknown }>,
+): Promise<void> {
+  let terminal: unknown;
+  for await (const event of source) {
+    if (terminal !== undefined) throw new Error("native producer emitted data after its runtime terminal");
+    const status = event.data as { status?: string } | undefined;
+    if (event.event === "execution_status" && ["settled", "failed", "cancelled"].includes(status?.status ?? "")) {
+      // 保存原始载体，绝不从 String、FinalAnswer 或 EOF 创建一个 Settled。
+      terminal = structuredClone(event);
+    } else {
+      await writer.chunk({ kind: "agent", value: event });
+    }
+  }
+  if (terminal === undefined) throw new Error("native producer EOF without its runtime terminal");
+  await writer.complete({ kind: "agent", value: terminal });
+}
+
+/** 普通 String 实现示例；其运输结果不冒充原生执行结算。原生实现使用上面的原 source 转运。 */
 export async function registerMessageAgent(
   sdk: EchoAgentClient,
   consume: (message: LlmMessage, history: readonly LlmMessage[] | null | undefined, signal: AbortSignal) => Promise<string>,

@@ -21,6 +21,17 @@ use super::wire::reasoning_block_from_wire;
 #[cfg(feature = "sdk-extension-bridge")]
 use super::wire::reasoning_block_wire;
 
+#[cfg(test)]
+pub(super) fn test_commentary_event(text: &str) -> Result<echo_agent::agent::AgentEvent, String> {
+    serde_json::from_value(
+        serde_json::json!({"type":"assistant_message","data":{"block":{
+            "block_id":"fixture-block","request_id":"fixture-request","sequence":0,
+            "phase":"commentary","delta":text,"complete":false,"provider":null,"reasoning":null
+        }}}),
+    )
+    .map_err(|error| error.to_string())
+}
+
 /// 仅转换原生 u64 与 wire 十进制、reasoning 的 type/kind 标签。
 /// 显式闭合的 DTO 允许旧 build pin 明确拒绝新事件，同时在后继来源中逐字段解码；
 /// 不把任意 JSON 或未知字段默认为已支持的 Framework 事件。
@@ -610,7 +621,7 @@ mod tests {
         let mut invalid = block;
         invalid.block_id = " ".into();
         assert!(to_framework(invalid).is_err());
-        assert!(from_framework(&AgentEvent::Token("legacy-token".into())).is_err());
+        assert!(from_framework(&AgentEvent::FinalAnswer("ordinary notification".into())).is_err());
         assert!(
             serde_json::from_value::<NativeEvent>(serde_json::json!({
                 "type": "unknown_native_event", "data": {}

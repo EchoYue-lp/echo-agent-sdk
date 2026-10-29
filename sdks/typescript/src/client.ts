@@ -10,7 +10,7 @@ import {
 } from "@agentclientprotocol/sdk";
 import { FacadeCatalog } from "./catalog.js";
 import { EchoAgentError } from "./errors.js";
-import { runtimeTerminal } from "./runtime_terminal.js";
+import { runtimeTerminal, validateReverseAgentValue } from "./runtime_terminal.js";
 import type {
   EchoAgentCapability,
   EventGap,
@@ -1269,6 +1269,7 @@ export class ExtensionStreamWriter {
     return this.sequence.toString();
   }
   async chunk(value: unknown): Promise<void> {
+    validateReverseAgentValue(value, false);
     await this.client.notify("_echo_agent/extension/stream", {
       event: "chunk", stream: this.stream, sequence: this.next(), value,
     });
@@ -1277,6 +1278,7 @@ export class ExtensionStreamWriter {
     await this.chunk({ kind: "agent_component", value });
   }
   async complete(value: unknown): Promise<void> {
+    validateReverseAgentValue(value, true);
     await this.client.notify("_echo_agent/extension/stream", {
       event: "complete", stream: this.stream, sequence: this.next(), value,
     });

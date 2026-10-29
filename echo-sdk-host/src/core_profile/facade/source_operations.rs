@@ -3995,44 +3995,13 @@ async fn dispatch_non_git_source(
                     }),
                 )
             } else {
-                if request.arguments.len() != 2 {
-                    return Err(invalid(
-                        "delete_persisted_conversation accepts [Session, conversation_id]",
-                    ));
-                }
-                let receipt = authorities
-                    .agent_handle
-                    .read_async(move |agent| {
-                        let conversation_store = agent.conversation_store().clone();
-                        let runtime_state_store = agent.state_store().clone();
-                        Box::pin(async move {
-                            let conversation_store = conversation_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no ConversationStore".to_string(),
-                                )
-                            })?;
-                            let runtime_state_store = runtime_state_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no RuntimeStateStore".to_string(),
-                                )
-                            })?;
-                            echo_agent::state::delete_persisted_conversation(
-                                conversation_store.as_ref(),
-                                runtime_state_store.as_ref(),
-                                &scope_id,
-                            )
-                            .await
-                        })
-                    })
-                    .await
-                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
-                snapshot_value(
-                    request,
-                    serde_json::json!({
-                        "conversation_id": receipt.conversation_id,
-                        "runtime_state_ids": receipt.runtime_state_ids,
-                    }),
-                )
+                // v03只接受调用方保留的ManagedConversationDelete身份，不能在此补造重试ID。
+                Err(wire::sdk_error(
+                    ExtensionErrorCode::FeatureUnavailable,
+                    "unmanaged conversation deletion is retired; use delete_persisted_conversation_managed with the original request identity",
+                    Retryability::Never,
+                    "_echo_agent/facade/invoke",
+                ).with_operation(request.operation.clone()))
             }
         }
         "echo_core::utils::fs::create_dir_all_durable" => {

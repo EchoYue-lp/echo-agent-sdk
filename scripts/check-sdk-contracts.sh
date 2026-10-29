@@ -43,6 +43,7 @@ expected_framework_source="git+https://github.com/EchoYue-lp/echo-agent.git?rev=
 }
 
 cargo test -q -p echo-sdk-protocol \
+  --test native_message_contract \
   --test facade_inventory \
   --test acp_baseline \
   --test extension_contract \

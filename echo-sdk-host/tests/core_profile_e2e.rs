@@ -5648,7 +5648,6 @@ async fn state_delivery_and_trace_families_use_framework_services()
             let checkpoint = serde_json::json!({
                 "conversation_id": "scope-e2e",
                 "messages_json": "[]",
-                "current_plan": null,
                 "active_skills": [],
                 "blocked_reason": null,
                 "timestamp": "2026-09-08T00:00:00Z",

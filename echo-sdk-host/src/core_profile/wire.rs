@@ -1008,6 +1008,7 @@ pub(crate) fn framework_from_wire(
         max_tokens: config.model.max_tokens,
         temperature,
         context_window,
+        ..ModelConfig::default()
     };
     let agent = AgentSettings {
         name: config.agent.name.clone(),
@@ -1159,7 +1160,7 @@ mod tests {
         }
         Ok(())
     }
-    use echo_agent::agent::{AgentEvent, EventIdentity};
+    use echo_agent::agent::EventIdentity;
 
     #[test]
     fn terminal_projects_cancelled() -> Result<(), ReactError> {
@@ -1180,11 +1181,13 @@ mod tests {
     #[tokio::test]
     async fn wire_envelope_preserves_identity() -> Result<(), ReactError> {
         let identity = EventIdentity::new("stream-wire", "turn-wire")?;
-        let envelope = EventEnvelope::new(&identity, 1, None, AgentEvent::Token("你好".into()))?;
+        let event = super::super::native_message::test_commentary_event("你好")
+            .map_err(ReactError::Other)?;
+        let envelope = EventEnvelope::new(&identity, 1, None, event)?;
         let wire = wire_envelope(&envelope).map_err(|error| ReactError::Other(error.message))?;
         assert_eq!(wire.sequence.to_u64(), Some(1));
         assert_eq!(wire.stream_id, "stream-wire");
-        assert_eq!(wire.payload.event_type, "token");
+        assert_eq!(wire.payload.event_type, "assistant_message");
         Ok(())
     }
 
@@ -1208,12 +1211,24 @@ mod tests {
         let mut checkpoint = echo_agent::state::AgentCheckpoint::new("中文🙂-generation");
         checkpoint.messages_json =
             r#"{"schema_version":2,"messages":[],"transcript_projection":null}"#.to_string();
-        checkpoint.current_plan = Some("artifact-only".to_string());
         checkpoint.active_skills = vec!["技能".to_string()];
         checkpoint.blocked_reason = Some("pending receipt".to_string());
         checkpoint.timestamp =
             chrono::DateTime::from_timestamp(-1, 123_456_789).ok_or("invalid fixture timestamp")?;
         let wire = checkpoint.clone().project()?;
+        let mut legacy = serde_json::to_value(&wire).map_err(|error| error.to_string())?;
+        assert!(legacy.get("current_plan").is_none());
+        legacy
+            .as_object_mut()
+            .ok_or("checkpoint wire must be an object")?
+            .insert(
+                "current_plan".into(),
+                serde_json::json!("retired runtime plan"),
+            );
+        assert!(
+            serde_json::from_value::<echo_sdk_protocol::managed::AgentCheckpointWire>(legacy)
+                .is_err()
+        );
         assert_eq!(wire.timestamp.unix_seconds.to_i64(), Some(-1));
         assert_eq!(wire.timestamp.nanos, 123_456_789);
         let restored = echo_agent::state::AgentCheckpoint::restore(wire)?;
@@ -1723,17 +1738,28 @@ pub(crate) mod managed {
         retention_floor_epoch,
         status
     );
-    structure!(
-        state::AgentCheckpoint,
-        AgentCheckpointWire,
-        conversation_id,
-        messages_json,
-        current_plan,
-        active_skills,
-        blocked_reason,
-        working_dir,
-        timestamp
-    );
+    impl Projection for state::AgentCheckpoint {
+        type Wire = AgentCheckpointWire;
+        fn project(self) -> Result<Self::Wire, String> {
+            Ok(AgentCheckpointWire {
+                conversation_id: self.conversation_id,
+                messages_json: self.messages_json,
+                active_skills: self.active_skills,
+                blocked_reason: self.blocked_reason,
+                working_dir: self.working_dir.project()?,
+                timestamp: self.timestamp.project()?,
+            })
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            let mut checkpoint = Self::new(wire.conversation_id);
+            checkpoint.messages_json = wire.messages_json;
+            checkpoint.active_skills = wire.active_skills;
+            checkpoint.blocked_reason = wire.blocked_reason;
+            checkpoint.working_dir = Projection::restore(wire.working_dir)?;
+            checkpoint.timestamp = Projection::restore(wire.timestamp)?;
+            Ok(checkpoint)
+        }
+    }
     enumeration!(
         memory::ConversationProjectionLifecycle,
         ConversationProjectionLifecycleWire,

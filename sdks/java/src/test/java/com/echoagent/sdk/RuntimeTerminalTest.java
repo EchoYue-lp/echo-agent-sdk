@@ -11,6 +11,91 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** SDK真实feed/ACP适配的合成输入，不能冒充真实Framework/Host运行验收。 */
 class RuntimeTerminalTest {
+    @Test void nativeForwardingRetainsPendingSendWhenSourceFails() throws Exception {
+        for (boolean sourceThrows : List.of(false, true)) {
+            for (boolean sendFails : List.of(false, true)) {
+                var transport = new StreamCancellationRoutesTest.Transport();
+                var sdk = StreamCancellationRoutesTest.client(transport);
+                CompletableFuture<Void> held = null;
+                try {
+                    var reads = new java.util.concurrent.atomic.AtomicInteger();
+                    var notice = JsonSupport.MAPPER.readTree("{\"event\":\"final_answer\",\"data\":{\"text\":\"original notice\"}}");
+                    var terminal = JsonSupport.MAPPER.readTree("{\"event\":\"execution_status\",\"data\":{\"execution_id\":\"original\",\"sequence\":\"2\",\"phase\":\"Terminal\",\"status\":\"settled\"}}");
+                    Iterable<JsonNode> source = () -> new java.util.Iterator<>() {
+                        int position;
+                        @Override public boolean hasNext() { return position < 3; }
+                        @Override public JsonNode next() {
+                            reads.incrementAndGet();
+                            if (position++ == 0) return notice;
+                            if (sourceThrows) throw new IllegalArgumentException("original source iterator failed");
+                            return position == 2 ? terminal : notice;
+                        }
+                    };
+                    var result = RichMessageAgentExample.forwardNativeOutput(
+                            sdk.streamWriter(new WireHandle("held-native", "1", "stream")), source).toCompletableFuture();
+                    held = StreamCancellationRoutesTest.send(transport);
+                    assertEquals(1, reads.get(), "held original send must apply backpressure to the source");
+                    assertFalse(result.isDone(), "source failure cannot detach the original pending send");
+                    if (sendFails) held.completeExceptionally(new IllegalStateException("original notify failed"));
+                    else held.complete(null);
+                    var failure = assertThrows(java.util.concurrent.ExecutionException.class,
+                            () -> result.get(2, TimeUnit.SECONDS));
+                    Throwable cause = failure;
+                    while (cause.getCause() != null) cause = cause.getCause();
+                    assertTrue(cause.getMessage().contains(sendFails ? "original notify failed"
+                            : sourceThrows ? "original source iterator failed" : "after its runtime terminal"));
+                    assertTrue(transport.entered.isEmpty(), "failed source must not submit runtime completion");
+                } finally {
+                    if (held != null) held.complete(null);
+                    sdk.closeAsync().toCompletableFuture().get(2, TimeUnit.SECONDS);
+                }
+            }
+        }
+    }
+
+    @Test void reverseNativeStatusRequiresOriginalTextAndCorrectTransportPosition() throws Exception {
+        for (String kind : List.of("started", "waiting", "tool_pending", "candidate", "settled", "failed", "cancelled")) {
+            boolean terminal = List.of("settled", "failed", "cancelled").contains(kind);
+            var data = JsonSupport.MAPPER.createObjectNode().put("execution_id", "原执行🧪")
+                    .put("sequence", "18446744073709551615").put("phase", terminal ? "Terminal" : "Thinking").put("status", kind);
+            var value = JsonSupport.MAPPER.createObjectNode().put("event", "execution_status"); value.set("data", data);
+            var payload = JsonSupport.MAPPER.createObjectNode().put("kind", "agent"); payload.set("value", value);
+            RuntimeTerminal.validateReverseAgentValue(payload, terminal);
+            assertThrows(EchoAgentException.class, () -> RuntimeTerminal.validateReverseAgentValue(payload, !terminal));
+            data.put("sequence", 1);
+            assertThrows(EchoAgentException.class, () -> RuntimeTerminal.validateReverseAgentValue(payload, terminal));
+            data.put("sequence", "18446744073709551615").put("adapter_generated", true);
+            assertThrows(EchoAgentException.class, () -> RuntimeTerminal.validateReverseAgentValue(payload, terminal));
+        }
+    }
+
+    @Test void nativeForwardingPreservesOriginalSourceEofAndNeverMintsSuccess() throws Exception {
+        var transport = new StreamCancellationRoutesTest.Transport();
+        var sdk = StreamCancellationRoutesTest.client(transport);
+        try {
+            var writer = sdk.streamWriter(new WireHandle("native-forward", "1", "stream"));
+            var notice = JsonSupport.MAPPER.readTree("{\"event\":\"final_answer\",\"data\":{\"text\":\"原确认🙂\"}}");
+            var terminal = JsonSupport.MAPPER.readTree("{\"event\":\"execution_status\",\"data\":{\"execution_id\":\"original\",\"sequence\":\"18446744073709551615\",\"phase\":\"Terminal\",\"status\":\"settled\"}}");
+            var ended = new java.util.concurrent.atomic.AtomicBoolean(false);
+            Iterable<JsonNode> source = () -> new java.util.Iterator<>() {
+                final java.util.Iterator<JsonNode> items = List.of(notice, terminal).iterator();
+                @Override public boolean hasNext() { boolean next = items.hasNext(); if (!next) ended.set(true); return next; }
+                @Override public JsonNode next() { return items.next(); }
+            };
+            var forwarded = RichMessageAgentExample.forwardNativeOutput(writer, source);
+            assertFalse(ended.get(), "source iteration waits for the original first send");
+            StreamCancellationRoutesTest.send(transport).complete(null);
+            assertTrue(ended.get(), "the terminal submission follows the original source EOF");
+            StreamCancellationRoutesTest.send(transport).complete(null);
+            forwarded.toCompletableFuture().get(2, TimeUnit.SECONDS);
+            assertThrows(IllegalStateException.class, () -> writer.chunk(JsonSupport.MAPPER.nullNode()));
+            var incomplete = sdk.streamWriter(new WireHandle("incomplete-native", "1", "stream"));
+            var missing = RichMessageAgentExample.forwardNativeOutput(incomplete, List.of(notice));
+            StreamCancellationRoutesTest.send(transport).complete(null);
+            assertThrows(java.util.concurrent.ExecutionException.class, () -> missing.toCompletableFuture().get(2, TimeUnit.SECONDS));
+        } finally { sdk.closeAsync().toCompletableFuture().get(2, TimeUnit.SECONDS); }
+    }
+
     private static final WireHandle STREAM = new WireHandle("stream", "1", "stream");
     private static JsonNode status(String kind) {
         var value = JsonSupport.MAPPER.createObjectNode().put("execution_id", "physical-execution")

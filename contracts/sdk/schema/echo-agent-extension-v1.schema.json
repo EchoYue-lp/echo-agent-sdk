@@ -5075,12 +5075,6 @@
         "conversation_id": {
           "type": "string"
         },
-        "current_plan": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "messages_json": {
           "type": "string"
         },
@@ -14760,6 +14754,120 @@
           ],
           "properties": {
             "data": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ExecutionStatusWire"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "started",
+                        "waiting",
+                        "tool_pending",
+                        "candidate"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "execution_status"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "final_answer"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "failure",
+                "message",
+                "source"
+              ],
+              "properties": {
+                "failure": {
+                  "$ref": "#/definitions/WireValue"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "error"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "event"
+          ],
+          "properties": {
+            "event": {
+              "type": "string",
+              "enum": [
+                "cancelled"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
               "type": "object",
               "required": [
                 "block"
@@ -15336,10 +15444,49 @@
         }
       ],
       "title": "AgentStreamChunkWire",
-      "description": "Non-terminal CustomAgent stream event. Terminal variants intentionally do not appear here, so generated SDKs cannot emit a framework terminal as an ordinary chunk."
+      "description": "CustomAgent 原生输出观察；FinalAnswer 是确认通知，仍须读取原执行终态与物理 EOF。 ExecutionStatus 的 chunk/complete 分类由原 stream validate 统一检查。"
     },
     "AgentStreamTerminalWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ExecutionStatusWire"
+                },
+                {
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "Terminal"
+                      ]
+                    },
+                    "status": {
+                      "enum": [
+                        "settled",
+                        "failed",
+                        "cancelled"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "execution_status"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [
@@ -15421,7 +15568,7 @@
         }
       ],
       "title": "AgentStreamTerminalWire",
-      "description": "Terminal CustomAgent stream event. The outer stream `complete` variant accepts only these framework terminal facts."
+      "description": "原 producer 已结束后的运输末尾。原生状态必须为 Terminal/settled、failed 或 cancelled； 既有普通结果不升级为原生执行结算事实。"
     },
     "ExtensionStreamChunkValue": {
       "oneOf": [

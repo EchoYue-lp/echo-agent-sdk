@@ -20,7 +20,7 @@ from acp.stdio import spawn_agent_process
 from pydantic import ValidationError
 from typing_extensions import Self
 
-from ._runtime_terminal import runtime_terminal
+from ._runtime_terminal import runtime_terminal, validate_reverse_agent_value
 from .catalog import FacadeCatalog
 from .errors import EchoAgentError
 from .wire import MAX_U64, WireHandle, from_wire, to_wire
@@ -4594,6 +4594,7 @@ class ExtensionStreamWriter:
         return str(self._sequence)
 
     async def chunk(self, value: Any) -> None:
+        validate_reverse_agent_value(value, False)
         await self.client.notify(
             "echo_agent/extension/stream",
             {
@@ -4609,6 +4610,7 @@ class ExtensionStreamWriter:
         await self.chunk({"kind": "agent_component", "value": dict(value)})
 
     async def complete(self, value: Any) -> None:
+        validate_reverse_agent_value(value, True)
         await self.client.notify(
             "echo_agent/extension/stream",
             {

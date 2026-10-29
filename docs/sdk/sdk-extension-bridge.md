@@ -1,5 +1,17 @@
 # SDK extension bridge (bidirectional)
 
+## 原生输出后继（2026-10-29，受控v03有限消费）
+
+原四个完整Message入口保留history、Role::Custom、附件meta与原invocation owner。
+Reverse chunk另承载原ExecutionStatus非终态和FinalAnswer/错误/取消通知；原生complete
+只提交原phase=Terminal的settled/failed/cancelled。实现方继续读到原source EOF，
+Factory也在同一EOF后关闭；String、ACK和断流不产生执行成功或第二个owner。
+
+三语言Message示例提供原source转运函数；Java沿现有Reactor按demand串行发送，
+保正在传输的future和背压，不创建线程或执行器。Checkpoint同步v03现行六字段，
+不保旧current_plan；工具回调使用原with_id路径。正式f7/0dac和accepted仍独立冻结，
+本切片新Host有限结果不代表正式来源或完整SDK通过，详见ADR0043及原生消息文档。
+
 ## CustomAgent 完整输入（2026-10-28 协议与源码资源已验，Host待验）
 
 源码沿现有四个 operation 传完整 `LlmMessageWire`：execute/execute_stream 的 `input.task`、

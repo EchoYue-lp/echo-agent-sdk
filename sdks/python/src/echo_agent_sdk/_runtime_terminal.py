@@ -22,6 +22,11 @@ def runtime_terminal(envelope: Mapping[str, Any]) -> bool:
             f"malformed runtime execution status: {error}",
             operation="_echo_agent/event",
         ) from error
+    return _runtime_status_terminal(value)
+
+
+def _runtime_status_terminal(value: Any) -> bool:
+    """复用原状态校验；不改变身份、顺序、原因或执行权威。"""
     invalid = EchoAgentError(
         "serialization_violation",
         "malformed runtime execution status",
@@ -66,3 +71,27 @@ def runtime_terminal(envelope: Mapping[str, Any]) -> bool:
         "cancelled",
         "failed",
     }
+
+
+def validate_reverse_agent_value(value: Any, complete: bool) -> None:
+    if not isinstance(value, Mapping) or value.get("kind") != "agent":
+        return
+    event = value.get("value")
+    if not isinstance(event, Mapping) or event.get("event") != "execution_status":
+        return
+    data = event.get("data")
+    if (
+        not isinstance(data, dict)
+        or not isinstance(data.get("sequence"), str)
+        or set(data)
+        - {"execution_id", "request_id", "sequence", "phase", "status", "reason"}
+    ):
+        raise ValueError(
+            "reverse execution status requires closed native wire fields and u64 text"
+        )
+    terminal = _runtime_status_terminal(data)
+    terminal_kind = data.get("status") in {"settled", "failed", "cancelled"}
+    if terminal_kind != complete or (terminal_kind and not terminal):
+        raise ValueError(
+            "reverse execution status must match chunk or terminal completion"
+        )

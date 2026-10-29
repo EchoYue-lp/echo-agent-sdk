@@ -2,7 +2,7 @@
   "name": "extension-stream-agent-final-chunk-invalid",
   "kind": "invalid",
   "target": "ExtensionStreamEvent",
-  "description": "A CustomAgent final answer must use the outer complete terminal.",
+  "description": "原生 execution status 沿原 identity/sequence 转运；运输结束不能补造运行成功。",
   "payload": {
     "event": "chunk",
     "stream": {
@@ -14,9 +14,13 @@
     "value": {
       "kind": "agent",
       "value": {
-        "event": "final_answer",
+        "event": "execution_status",
         "data": {
-          "text": "done"
+          "execution_id": "original-execution",
+          "request_id": "original-request",
+          "sequence": "18446744073709551615",
+          "phase": "Terminal",
+          "status": "settled"
         }
       }
     }

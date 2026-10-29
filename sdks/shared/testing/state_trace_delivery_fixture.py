@@ -21,7 +21,6 @@ def prepare(work):
     checkpoint = {
         "conversation_id": "runtime-A-中文🙂",
         "messages_json": '[{"role":"user","content":"保留所有字段🧭"}]',
-        "current_plan": "legacy artifact-only text",
         "active_skills": ["技能A", "skill-🙂"],
         "blocked_reason": "等待输入中文",
         "working_dir": str(work.resolve()),
@@ -30,7 +29,6 @@ def prepare(work):
     second = dict(
         checkpoint,
         conversation_id="runtime-B-🙂",
-        current_plan=None,
         blocked_reason=None,
         active_skills=[],
         messages_json="[]",

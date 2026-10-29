@@ -730,3 +730,21 @@ Framework终态publish最终174Task/169Subagent全绿零警告，onlyprivatewrit
 TS/PY迟消费两个窗口各2trueHost绿，Java同2窗口与21断言绿，独立复审源码暂无新阻断，
 完整三语言匹配Host结果仍缺（最新failure均包含Rust栈问题、其他fixture业务已分派），不声称language通过。
 所有正式仓库仍未提交/PR/merge；inventory与behavior closure保持open。
+## 2026-10-29 SDK 原生 reverse 输出增量
+
+在 fa153f93 干净基线恢复唯一 SDK writer。已实际取得 Protocol 定向 RED：原 reverse
+chunk 无法承载 execution_status，0pass/1fail/0ignore，自然101；独立 SDK target 命令
+已终态。用户明确恢复后，复用原target实际完成原selector转绿、native9/extension42、
+原生成器及语言资源同步；全程保正式f7/0dac及accepted5352/431。
+实现与边界见 ADR0043 的 2026-10-29 后继：原 status/FinalAnswer 通知无损转运、同 source
+EOF 后 factory close、三语示例只在原 EOF 后提交真实原终态，不产生成功或新 owner。
+
+冻结v03真实消费首编译101/20错后已按真实API完成SDK必要适配，移除Checkpoint旧plan字段，
+保现行六字段与history；保with_id callback，旧无稳定managed身份删除明确拒绝，不补造ID。
+原native输出ACP控制及八个保留方法全过；同保全f81d98a6 Host三语原生stdio各1/0/0，
+现行值/示例组合TS30、PY33加18subtests、Java29通过；当前库仅绑定Rust1.99.0 epoch。
+全局stable切换时原channels控制spawn rustc失败101，保原件，1.99.1原命令另证。
+当前尚待：该channels控制与最终检查收口、新合格Git来源/精确pin、完整生成及accepted
+签名/具名退役逐项处置、完整SDK/平台/main CI。D1/D2不并入本slice。
+旧五项各 profile 结果保持原959+B53资格，正式f7/0dac/accepted5352与431routes未变，
+source115与source402仍真实未通过。无stage/commit/push/merge/clean。

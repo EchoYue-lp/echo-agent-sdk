@@ -3,7 +3,52 @@ import runpy
 from pathlib import Path
 
 import pytest
+
 from echo_agent_sdk.client import _normalize_outcome
+
+
+@pytest.mark.asyncio
+async def test_native_forwarding_waits_for_source_eof_and_never_mints_status():
+    forward = runpy.run_path(
+        str(Path(__file__).resolve().parents[1] / "examples/custom_agent_message.py")
+    )["forward_native_output"]
+    sent = []
+    ended = False
+
+    class Writer:
+        async def chunk(self, value):
+            sent.append(value)
+
+        async def complete(self, value):
+            assert ended
+            sent.append(value)
+
+    native = {
+        "event": "execution_status",
+        "data": {
+            "execution_id": "original-execution",
+            "sequence": "18446744073709551615",
+            "phase": "Terminal",
+            "status": "settled",
+        },
+    }
+
+    async def source():
+        nonlocal ended
+        yield {"event": "final_answer", "data": {"text": "原确认🙂"}}
+        assert len(sent) == 1
+        yield native
+        assert len(sent) == 1
+        ended = True
+
+    await forward(Writer(), source())
+    assert sent[-1] == {"kind": "agent", "value": native}
+
+    async def incomplete():
+        yield {"event": "final_answer", "data": {"text": "only notification"}}
+
+    with pytest.raises(ValueError, match="without its runtime terminal"):
+        await forward(Writer(), incomplete())
 
 
 @pytest.mark.asyncio

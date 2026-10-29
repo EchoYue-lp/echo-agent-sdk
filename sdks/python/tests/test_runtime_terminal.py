@@ -6,7 +6,12 @@ from types import SimpleNamespace
 import pytest
 
 from echo_agent_sdk import EchoAgentError, WireHandle, to_wire
-from echo_agent_sdk.client import EchoAgentClient, RunHandle
+from echo_agent_sdk.client import (
+    EchoAgentClient,
+    ExtensionStreamWriter,
+    RunHandle,
+    _Callbacks,
+)
 
 STREAM = WireHandle("stream", "1", "stream")
 
@@ -48,8 +53,65 @@ def fixture():
     client._event_cursors = {}
     client._replay_ranges = {}
     client._closed = False
+    client._callbacks = _Callbacks({}, 32)
     client.connection = SimpleNamespace(ext_notification=notify)
     return client, writes
+
+
+@pytest.mark.asyncio
+async def test_reverse_writer_keeps_native_status_and_does_not_close_on_final_notice():
+    client, writes = fixture()
+    writer = ExtensionStreamWriter(client, STREAM)
+
+    def native(kind, phase="Thinking"):
+        return {
+            "kind": "agent",
+            "value": {
+                "event": "execution_status",
+                "data": {
+                    **status(kind),
+                    "phase": phase,
+                    "sequence": "18446744073709551615",
+                },
+            },
+        }
+
+    for invalid in (
+        native("settled", "Terminal"),
+        {
+            "kind": "agent",
+            "value": {
+                "event": "execution_status",
+                "data": {**status("started"), "sequence": 1},
+            },
+        },
+        {
+            "kind": "agent",
+            "value": {
+                "event": "execution_status",
+                "data": {
+                    **native("started")["value"]["data"],
+                    "adapter_generated": True,
+                },
+            },
+        },
+    ):
+        with pytest.raises((TypeError, ValueError)):
+            await writer.chunk(invalid)
+    await writer.chunk(native("started"))
+    await writer.chunk(
+        {
+            "kind": "agent",
+            "value": {"event": "final_answer", "data": {"text": "通知后继续"}},
+        }
+    )
+    for invalid in (native("candidate"), native("settled", "Thinking")):
+        with pytest.raises(ValueError):
+            await writer.complete(invalid)
+    await writer.chunk(native("waiting"))
+    await writer.complete(native("settled", "Terminal"))
+    assert [row[1]["sequence"] for row in writes] == ["1", "2", "3", "4"]
+    assert writes[-1][1]["value"] == native("settled", "Terminal")
 
 
 @pytest.mark.asyncio

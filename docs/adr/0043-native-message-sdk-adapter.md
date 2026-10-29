@@ -1,5 +1,109 @@
 # ADR0043：SDK 无损消费 Framework 原生消息
 
+## 2026-10-29：Reverse 原生输出与原 source EOF 收尾
+
+本节在 SDK `fa153f93892cde1de950977e731f30196297ceef` 上实施已批准输出迁移。
+正式 Framework pin `f7bac62`、锁 `0dacbb87` 不变；旧 959+B53 上的五项定向证据保持
+原 profile/二进制资格，不能当作本次修复后验证。本节源码完成后仍须新消费窗口验证，
+source115 工具闭包失败和正式 source402 不由本实现刷绿。
+
+### 源码事实与唯一权威
+
+| 真实事实 | 既有权威与适配点 | 本次改动 |
+| --- | --- | --- |
+| block/request/provider 身份、phase、顺序和 signed/redacted/opaque reasoning | Framework `AssistantMessageBlock`；Host `native_message::{from_framework,to_framework}`；Protocol `AssistantMessageBlockWire` | 沿原 DTO/转换器逐字段传递，不推测 phase，不拼接密文 |
+| Started/Waiting/ToolPending/Candidate 与原终态 | Framework `ExecutionStatus`；Host `status_to_framework`；现有 `ExecutionStatusWire` | reverse chunk 增加非终态 status，complete 接受 phase=Terminal 的 settled/failed/cancelled；生成 schema 与 DTO validate 同步 |
+| 兼容 FinalAnswer/错误/取消通知 | 原 `AgentEventWire` | 可作为普通 chunk 传递，继续读取原生状态；保留既有 generic transport complete，但不将其升级为 nativeSettled |
+| 原 callback 回复、physical guard 和租约释放 | `invoke_owned_producer_stream`、`owned_callback_event_stream` | ACK/EOF/普通 String 不补造状态；沿原 RPC/remote terminal/guard 结算，不增 owner |
+| Factory 子实例关闭 | 原 `FactoryInstanceLease`、`close_factory_stream` | 仅同一原 source 真正 EOF 后 close；通知、取消、错误或 observation 不提前关闭 factory |
+| Run 事件、ACK/replay 和 history | 原 events mux、三语言 runtime-terminal 消费者、`LlmMessageWire` | FinalAnswer 不停读；输入 history/Role::Custom 与批准空块语义继续保留 |
+
+Framework 提供跨产品的执行、取消、Stop 继续和输出事实；SDK 拥有纯 wire、Host 薄适配
+和语言运输；EKO 的目标完成、UI、worktree 等策略不进入 SDK。本次复用现有枚举、
+WireU64/I64、ACP 和资源 owner，没有第二套 executor、store、状态机或任务 API。
+Framework 的 canonical 输出归并由既有 `echo-core/src/agent/output_projection.rs` 拥有；
+SDK 不复制其 Started/identity/确认/终态归并算法，也不通过改正式 pin 假装已消费新来源。
+
+### 三语言与生产者边界
+
+三语言原 stream writer 没有读取 producer 的职责，只有 outer complete 成功后清运输
+route。它们复用原 runtime status 校验，对 reverse wire 要求原十进制 u64 字符串、
+闭合字段和 chunk/complete 位置，保留原数据，不接受 JSON number 或 adapter_generated。
+Java 继续 deepCopy 原 JsonNode；不能用默认 mapper 把 BigInteger 变成 JSON number。
+
+三个 Message 示例新增原生 source 转运函数：普通通知逐项发送，原 terminal status
+暂存到原 source EOF 后发送；源异常、缺终态或终态后新数据均不能提交成功。
+已有返回 String 的示例保持普通运输语义，不能自行产生 execution_id/Started/Settled。
+签名、密文、provider 原坐标和缺失/空 history 均沿原输入值传。
+
+### 候选与取舍依据
+
+采用“复用原生状态 DTO + 原流末尾传递”，拒绝从 FinalAnswer、String、ACK 或 EOF
+推测成功，拒绝复制 Framework canonical 状态机。Anthropic 官方 SDK 分别定义
+[content_block_stop](https://github.com/anthropics/anthropic-sdk-python/blob/main/src/anthropic/types/raw_content_block_stop_event.py)
+和 [message_stop](https://github.com/anthropics/anthropic-sdk-python/blob/main/src/anthropic/types/raw_message_stop_event.py)，
+区分内容块结束与消息结束；[MCP transports](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
+也区分连接断开与请求取消。EKO 本地模型下仍需这种区分，以防框架 bug 造成提前释放原资源。
+这些来源不授予 SDK 生成 Framework 的执行终态。
+
+### 合同增量与验收
+
+现有 accepted5352 身份/431 routes 保持原字节：`AgentEvent` 的既有聚合签名
+`5f0bd791…`、`FinalAnswer` 的 `99e73f3c…`、`Agent::execute_stream` 的 `b5e614a3…`
+与 `chat_stream` 的 `95b9f71f…` 原记录均不手改。四条原 route 继续是标准 session/update
+或 `_echo_agent/facade/invoke`；本次不新增方法名或 source operation。
+ExecutionStatus/AssistantMessageBlock/AgentOutputProjection 在当前 accepted 中具名命中为0；
+完整 Rust inventory 仍是遥测，新正式来源下聚合签名必须由唯一 producer 实列，不能预报为零。
+
+本次 wire delta 是原 reverse chunk 新增 execution_status/final_answer/error/cancelled，
+原 complete 新增 execution_status；没有新增公开 Rust accepted 身份或扩 accepted 范围。
+schema、正负 fixtures 和三语 digest 只能由原 `export_schema --wire-candidate-update`
+及 `scripts/export-language-sdk-catalog.sh` 生成，不手改生成 JSON。本轮原 producer、
+语言 export/check 均实际0；schema、原负 fixture 和四份 digest 更新，新增五个正负 fixture。
+accepted/source-contract、正式 pin/锁和完整 inventory 原字节保持不变。
+
+验收覆盖完整原身份/phase/reasoning/最大 u64、通知后继续读、原生状态运输位置、
+未知 owner/ACK/EOF 不补成功、取消与 Stop 继续、真实 guard Drop 与 source EOF 后 factory
+关闭。Protocol 原定向 RED 已实际复现 execution_status 不可表示；原 selector 修复后
+1/0/0、原生合同9项和extension合同42项实际通过。后继Checkpoint源码增量另列验证，
+不以此前结果冒称全部新源或正式来源通过。
+
+### 冻结 v03 的真实消费与必要适配
+
+Host 消费明确使用 `green-source-v03-envelope-trajectory` 的2809文件冻结源：
+source manifest `dea107fa74dae82731462484bb30d8fb2dfe34e1e2b272889e028ae7d00a25e4`，
+完整文件索引 `f923106eec59c9afd52f2216f4acff92d03f84d58f361e336782486117fbc20d`。
+它不读取正在合流 Provider/D1/D2 的正式 Framework，也不伪装成新的 Git pin。
+
+首次真实编译101/20错后，SDK按实际v03接口做以下必要适配，不复活已退役执行路径：
+
+- 原 Token/Think 事件不再转换为 Framework 事件；原生 AssistantMessage 保留明确 phase。
+  旧 wire 事件在 Host 明确拒绝，保留的 thinking/final callback 不受该拒绝影响。
+- 工具 callback 只用原 with_id 入口，无 call-id 的三个旧 trait override 移除。
+- Checkpoint 的 current_plan 随上游退役；Protocol、三语及原 public corpus 同步现行
+  六字段，history 原字节、active_skills、blocked_reason、working_dir、timestamp 均保留。
+  原 Native Checkpoint 构造器负责恢复，不增加 store 或旧字段兼容分支。
+- ModelConfig 未提供的新 facts 使用原类型的 Default，不覆盖已有 wire 配置。
+- 旧 unmanaged delete 已无上游函数，Host明确 FeatureUnavailable；不为旧参数补造
+  ManagedConversationDelete 身份。既有 managed 删除路径保留。该旧 accepted route
+  的最终处置仍须在正式来源下逐项核准，不能声称5352项行为已全量通过。
+
+首次重拍SDK快照时Cargo复用了记录原绝对源码路径的Protocol缓存，r2编译101及两条
+unused import warning均保原。保全旧rlib/dep-info、移除失效import后，在无reader时
+明确切换原consumer的源链接到新冻结快照；未清缓存、补Tag、改编译flag或伪造mtime。
+真实重编后，新增ACP原生输出及八个保留方法各1/0/0、零warning；同一保全Host
+`f81d98a6a5fdff92468b4bcb01744b91932da7aece4b815916bdaf41eaad3b2f`
+下TS/PY/Java原生stdio各1项通过、零skip，覆盖live/replay、history/provider坐标和
+FinalAnswer后唯一执行终态。相关现行值/示例组合TS30、PY33加18个subtests、Java29通过。
+它们属于已记录的Rust1.99.0消费epoch；后继全局stable切换时原channels控制遭遇
+rustc进程spawn ENOENT/101，原件保留，Rust1.99.1下的原selector重跑另取证。
+
+源码115原错误的逐项核对为42 audit、47 finding、26 behavior：现有owner/behavior反向
+归属均存在，局部forward closure未带入七个owner map。此诊断不代表全仓所有引用、
+文档事实和source摘要已正确；本仓真实错误应正常修，外部收集合同与source402仍分列。
+正式新pin、完整生成/accepted聚合与具名退役、完整SDK/平台/main CI均未因此闭合。
+本切片不并入D1 provider_response或D2 IncompleteResponse，待新接口冻结后另接。
+
 ## 2026-10-28：CustomAgent 完整 Message 输入候选
 
 本增量遵从用户开发阶段不保旧版本兼容的最新 Goal。Root 恢复 active Goal 后，已从

@@ -48,6 +48,41 @@ audit_refs:
 related_map_refs:
 - map.sdk-product-boundary
 scenarios:
+  custom-agent-native-reverse-output:
+    status: needs_review
+    source_refs:
+    - echo-sdk-protocol/src/methods.rs
+    - echo-sdk-protocol/src/schema.rs
+    - echo-sdk-protocol/tests/native_message_contract.rs
+    - echo-sdk-protocol/tests/extension_contract.rs
+    - contracts/sdk/schema/echo-agent-extension-v1.schema.json
+    - contracts/sdk/fixtures/extension/v1/extension-stream-agent-final-chunk-invalid.json
+    - contracts/sdk/fixtures/extension/v1/extension-stream-agent-final-chunk-valid.json
+    - contracts/sdk/fixtures/extension/v1/extension-stream-agent-status-candidate-complete-invalid.json
+    - contracts/sdk/fixtures/extension/v1/extension-stream-agent-status-settled-complete-valid.json
+    - contracts/sdk/fixtures/extension/v1/extension-stream-agent-status-started-chunk-valid.json
+    - contracts/sdk/fixtures/extension/v1/extension-stream-agent-status-wrong-phase-invalid.json
+    - echo-sdk-host/src/core_profile/extension_bridge.rs
+    - echo-sdk-host/src/core_profile/extension_bridge_message_tests.rs
+    - echo-sdk-host/src/core_profile/native_message.rs
+    - sdks/typescript/src/runtime_terminal.ts
+    - sdks/typescript/examples/custom-agent-message.ts
+    - sdks/typescript/test/runtime-terminal.test.js
+    - sdks/python/src/echo_agent_sdk/_runtime_terminal.py
+    - sdks/python/examples/custom_agent_message.py
+    - sdks/python/tests/test_runtime_terminal.py
+    - sdks/java/src/main/java/com/echoagent/sdk/RuntimeTerminal.java
+    - sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java
+    - sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java
+    - docs/adr/0043-native-message-sdk-adapter.md
+    - docs/sdk/native-messages.md
+    behavior_refs:
+    - behavior.sdk-extension-bridge
+    rule_refs:
+    - rule.framework-runtime-authority
+    unknown: 有限冻结v03的ACP输出和同源Host三语消费已验证具名范围；正式Git pin、accepted聚合/退役实际差异、完整SDK/平台/外层Task与D1/D2尚未闭合，不能由生成fixture或局部绿色代替。
+    next_step: 保留各工具epoch与原失败，用准确后继Framework来源完成正式producer和完整消费者验收；不把ACK、String、FinalAnswer或source EOF补为原生成功。
+    review_scope: 六个fixture由唯一producer生成；FinalAnswer普通通知与原execution_status运输位置分列，原identity/phase/u64/reasoning值传。Java按demand等待原send，factory仅在原source真实EOF后close，不另建executor、store或状态权威。
   custom-agent-full-message-input:
     status: needs_review
     source_refs:

@@ -4442,9 +4442,8 @@ fn wire_value_to_json(value: &WireValue) -> Result<serde_json::Value, String> {
     }
 }
 
-/// Non-terminal CustomAgent stream event. Terminal variants intentionally do
-/// not appear here, so generated SDKs cannot emit a framework terminal as an
-/// ordinary chunk.
+/// CustomAgent 原生输出观察；FinalAnswer 是确认通知，仍须读取原执行终态与物理 EOF。
+/// ExecutionStatus 的 chunk/complete 分类由原 stream validate 统一检查。
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(
     tag = "event",
@@ -4454,6 +4453,16 @@ fn wire_value_to_json(value: &WireValue) -> Result<serde_json::Value, String> {
 )]
 #[allow(clippy::large_enum_variant)]
 pub enum AgentStreamChunkWire {
+    ExecutionStatus(#[schemars(schema_with = "native_status_chunk_schema")] ExecutionStatusWire),
+    FinalAnswer {
+        text: String,
+    },
+    Error {
+        source: String,
+        message: String,
+        failure: WireValue,
+    },
+    Cancelled,
     AssistantMessage {
         block: AssistantMessageBlockWire,
     },
@@ -4532,8 +4541,8 @@ pub enum AgentStreamChunkWire {
     },
 }
 
-/// Terminal CustomAgent stream event. The outer stream `complete` variant
-/// accepts only these framework terminal facts.
+/// 原 producer 已结束后的运输末尾。原生状态必须为 Terminal/settled、failed 或 cancelled；
+/// 既有普通结果不升级为原生执行结算事实。
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(
     tag = "event",
@@ -4542,6 +4551,7 @@ pub enum AgentStreamChunkWire {
     deny_unknown_fields
 )]
 pub enum AgentStreamTerminalWire {
+    ExecutionStatus(#[schemars(schema_with = "native_status_terminal_schema")] ExecutionStatusWire),
     Error {
         source: String,
         message: String,
@@ -4551,6 +4561,69 @@ pub enum AgentStreamTerminalWire {
         text: String,
     },
     Cancelled,
+}
+
+// 同一原状态 DTO 的运输位置限制也进入生成 schema，避免语言端 schema 与 validate 漂移。
+fn native_status_chunk_schema(
+    generator: &mut schemars::r#gen::SchemaGenerator,
+) -> schemars::schema::Schema {
+    native_status_transport_schema(generator, false)
+}
+
+fn native_status_terminal_schema(
+    generator: &mut schemars::r#gen::SchemaGenerator,
+) -> schemars::schema::Schema {
+    native_status_transport_schema(generator, true)
+}
+
+fn native_status_transport_schema(
+    generator: &mut schemars::r#gen::SchemaGenerator,
+    terminal: bool,
+) -> schemars::schema::Schema {
+    use schemars::schema::{ObjectValidation, Schema, SchemaObject, SubschemaValidation};
+    let kinds: &[&str] = if terminal {
+        &["settled", "failed", "cancelled"]
+    } else {
+        &["started", "waiting", "tool_pending", "candidate"]
+    };
+    let mut properties = schemars::Map::new();
+    properties.insert(
+        "status".into(),
+        Schema::Object(SchemaObject {
+            enum_values: Some(
+                kinds
+                    .iter()
+                    .map(|value| serde_json::Value::String((*value).into()))
+                    .collect(),
+            ),
+            ..Default::default()
+        }),
+    );
+    if terminal {
+        properties.insert(
+            "phase".into(),
+            Schema::Object(SchemaObject {
+                enum_values: Some(vec![serde_json::Value::String("Terminal".into())]),
+                ..Default::default()
+            }),
+        );
+    }
+    Schema::Object(SchemaObject {
+        subschemas: Some(Box::new(SubschemaValidation {
+            all_of: Some(vec![
+                generator.subschema_for::<ExecutionStatusWire>(),
+                Schema::Object(SchemaObject {
+                    object: Some(Box::new(ObjectValidation {
+                        properties,
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                }),
+            ]),
+            ..Default::default()
+        })),
+        ..Default::default()
+    })
 }
 
 /// Session/run context attached to a reverse invocation, so a language SDK
@@ -4932,6 +5005,22 @@ impl ExtensionStreamEvent {
         let (stream, sequence) = (self.stream().clone(), self.sequence());
         match self {
             Self::Chunk { value, .. } => {
+                if let ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::ExecutionStatus(
+                    status,
+                )) = value
+                {
+                    status
+                        .validate()
+                        .map_err(|_| "invalid native execution status")?;
+                    if matches!(
+                        status.status,
+                        ExecutionStatusKindWire::Settled
+                            | ExecutionStatusKindWire::Failed
+                            | ExecutionStatusKindWire::Cancelled
+                    ) {
+                        return Err("native runtime terminal requires stream complete");
+                    }
+                }
                 let encoded =
                     serde_json::to_vec(value).map_err(|_| "stream value is not encodable")?;
                 if encoded.len() > MAX_EXTENSION_STREAM_CHUNK_BYTES {
@@ -4939,6 +5028,26 @@ impl ExtensionStreamEvent {
                 }
             }
             Self::Complete { value, .. } => {
+                if let ExtensionStreamCompleteValue::Agent(
+                    AgentStreamTerminalWire::ExecutionStatus(status),
+                ) = value
+                {
+                    status
+                        .validate()
+                        .map_err(|_| "invalid native execution status")?;
+                    if status.phase != AgentPhaseWire::Terminal
+                        || !matches!(
+                            status.status,
+                            ExecutionStatusKindWire::Settled
+                                | ExecutionStatusKindWire::Failed
+                                | ExecutionStatusKindWire::Cancelled
+                        )
+                    {
+                        return Err(
+                            "native stream complete requires its original runtime terminal",
+                        );
+                    }
+                }
                 if let ExtensionStreamCompleteValue::Llm(value) = value
                     && (value.finish_reason.trim().is_empty()
                         || value.finish_reason.chars().count() > 256)

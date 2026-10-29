@@ -1,0 +1,24 @@
+{
+  "name": "extension-stream-agent-final-chunk-valid",
+  "kind": "valid",
+  "target": "ExtensionStreamEvent",
+  "description": "FinalAnswer 是原确认通知，消费者继续读取原执行状态和 EOF。",
+  "payload": {
+    "event": "chunk",
+    "stream": {
+      "id": "stream-9",
+      "generation": "2",
+      "kind": "stream"
+    },
+    "sequence": "2",
+    "value": {
+      "kind": "agent",
+      "value": {
+        "event": "final_answer",
+        "data": {
+          "text": "done"
+        }
+      }
+    }
+  }
+}

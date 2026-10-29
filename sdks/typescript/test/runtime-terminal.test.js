@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { EchoAgentClient, SessionHandle } from "../dist/client.js";
+import { EchoAgentClient, SessionHandle, ExtensionStreamWriter } from "../dist/client.js";
 import { toWireValue } from "../dist/wire.js";
 
 const stream = { id: "stream", generation: "1", kind: "stream" };
@@ -21,6 +21,27 @@ function fixture() {
     notify: async (method, value) => { writes.push({ method, value }); } });
   return { sdk, writes };
 }
+
+test("reverse writer preserves native status text and keeps final notices open", async () => {
+  const { sdk, writes } = fixture();
+  const writer = new ExtensionStreamWriter(sdk, stream);
+  const native = (kind, phase = "Thinking") => ({kind: "agent", value: {event: "execution_status", data: {
+    ...status(kind), phase, sequence: "18446744073709551615",
+  }}});
+  for (const invalid of [native("settled", "Terminal"),
+    {kind:"agent",value:{event:"execution_status",data:{...status("started"),sequence: 1}}},
+    {kind:"agent",value:{event:"execution_status",data:{...native("started").value.data,adapter_generated:true}}}]) {
+    await assert.rejects(writer.chunk(invalid));
+  }
+  await writer.chunk(native("started"));
+  await writer.chunk({kind:"agent",value:{event:"final_answer",data:{text:"通知后继续"}}});
+  await assert.rejects(writer.complete(native("candidate")));
+  await assert.rejects(writer.complete(native("settled", "Thinking")));
+  await writer.chunk(native("waiting"));
+  await writer.complete(native("settled", "Terminal"));
+  assert.deepEqual(writes.map(row => row.value.sequence), ["1", "2", "3", "4"]);
+  assert.deepEqual(writes.at(-1).value.value, native("settled", "Terminal"));
+});
 
 for (const kind of ["settled", "cancelled", "failed"]) {
   test(`only native ${kind} finishes the feed after final body and ACK`, { timeout: 1000 }, async () => {
