@@ -16,7 +16,8 @@ fn retired_source_scope_and_routes_are_absent() -> TestResult {
         .get("entries")
         .and_then(serde_json::Value::as_array)
         .ok_or("entries absent")?;
-    assert_eq!(entries.len(), 5352);
+    // 原 Plan04 之上，具名 11 退役 + 3 with_id 接入；依据 P3 严格 caller 与生成原件。
+    assert_eq!(entries.len(), 5344);
     for entry in entries {
         let text = entry
             .get("source_paths")
@@ -32,7 +33,8 @@ fn retired_source_scope_and_routes_are_absent() -> TestResult {
         .get("routes")
         .and_then(serde_json::Value::as_array)
         .ok_or("routes absent")?;
-    assert_eq!(routes.len(), 431);
+    // 依据 P3 严格 caller 与生成原件，精确退出一条 source route，原 431 条保留为 430。
+    assert_eq!(routes.len(), 430);
     for route in routes {
         assert!(!matches!(
             route.get("family").and_then(serde_json::Value::as_str),

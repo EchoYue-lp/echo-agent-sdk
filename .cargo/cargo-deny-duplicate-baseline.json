@@ -2,7 +2,7 @@
   "schema_version": 1,
   "authorization": "ACCEPTED_BY_HUMAN",
   "repository": "EchoYue-lp/echo-agent-sdk",
-  "lock_sha256": "0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f",
+  "lock_sha256": "c4488065aa4a94a8a073e427aeddfefe7670d93b709b82555b39f2431954e1c7",
   "policy_sha256": "b18307d3e0afa05d0c1ad32004b59cb0a7fe62136e90037bec17738545b3013f",
   "tool_version": "cargo-deny 0.20.2",
   "command": [
@@ -692,6 +692,6 @@
       ]
     }
   ],
-  "current_lock_validation": "TOKIO_IO_SAFETY_20261023_PATCH_1_53_3; exact old49groups107registry identities retained; fresh cargo-audit deny-warnings actual0 with1351advisories84d943a6; cargo-deny0.20.2 four-check scanner natural0 and exact49group identity comparison0; HTTPS fetch failures retained, fresh same-official-repository SSH transport successor0; all655 other package blocks and Tokio dependency edges unchanged; full locked metadata0; runtime gates/new Host/full languages pending at this metadata write",
-  "framework_pin": "f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+  "current_lock_validation": "HTTPS340/c448 2026-10-31精复核：原SDK 49组107 registry duplicate身份逐项未变；官方cargo-audit 0.22.2 fresh1395-advisory DB2295466c实际0，cargo-deny 0.20.2四检查实际0/raw721a86e0/698424B，工具/normalized原命令/policy b183及原人类有界接受未变。原policy14测试实际0。0dac→c448均653包：637完整块同、13共同块Source/checksum/dependency变化（11Git pin f7→340、2Polars registry→Git，echo_tools增httpdate、echo_integration增matchit），另zstd0.13.3→0.14.3/zstd-safe7.2.4→8.2.0/zstd-sys2.0.16→2.1.2版本与checksum替换；绝非source-only。原4ignore所涉包版本/来源及84d943a6→2295466c advisory范围未变。仅478→c448是13SourceID替换。原7f0a baseline未改verifier对c448真实1保原；本候选锁/pin准确绑定待Root/独审及同一原raw/receipt复用校准，不冒候选gate已0、完整SDK/新Host/source-final/mainCI已过。",
+  "framework_pin": "340993201cc937fc8e4783b66be399ef9f14e3d5"
 }

@@ -39,6 +39,15 @@ blocking cross-language route contract.
   `source:` identity reaches a concrete source-operation adapter; the contract
   test rejects any return to the former generic "no Host authority adapter"
   fallback.
+- Facade 外层请求先解码为 `FeatureOperationRequest`；例如 `arguments` 应为数组却收到字符串，
+  DTO 尚未成立，返回 typed `invalid_request`。DTO 解码成功后的 `validate()`、具体参数值和
+  unknown operation 校验仍返回 `invalid_value`。两者均沿既有 `EchoSdkError` envelope，
+  JSON-RPC 错误码为 `-32050`，具体分类由 `error.data.code` 保留。
+  `WireValue` 使用 `kind`/`value` 标签：`arguments: [null]` 的成员无法解码，仍属于
+  `invalid_request`；`arguments: [{"kind":"null"}]` 能形成合法 DTO，但传给无参
+  accessor 时属于 `invalid_value`。完整且结构合法的 Agent handle 用于要求 Run 的
+  accessor 时，也保持 receiver 类型错误的 `invalid_value`。结构负控制、参数数量
+  负控制和 receiver 负控制分别验收，不能互相替代。
 - A Rust source identity that reuses a family handler keeps its own source
   signature and carries an explicit `handler_operation`. Mapping is scoped to
   the exact authority type; same-named builder, server and transport methods

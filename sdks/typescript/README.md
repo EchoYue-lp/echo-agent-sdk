@@ -76,7 +76,7 @@ owning guard execution.
 `TaskTerminalStatus` preserves stable task terminal values without owning tasks.
 `RuleSource` preserves permission source priority values and accepted aliases.
 `RuleBehavior` preserves allow/deny/ask payloads and `toDecision` conversion.
-`PermissionMode` preserves mode aliases and write/interaction/classifier helpers.
+`PermissionMode` 仅解析八个精确 canonical ID，不接受旧别名、大小写变化或首尾空白；write/interaction/classifier helper 与 wire 输出保持原义。
 `RuleMatcher` preserves tool/pattern/permission/all matching semantics.
 `CommandCellPhase` preserves stable phases and terminal classification.
 Command-cell terminal causes and artifact statuses preserve stable values too.
@@ -315,3 +315,11 @@ wrong-generation or failed terminal sends and failed close retain the route
 for retry on the same stream. Neither ACK nor notification delivery lets the
 SDK infer physical cleanup. Full inventory and intrinsic membership remain
 non-blocking telemetry.
+
+## 当前 Sandbox 命令与退役删除边界
+
+Sandbox命令继续传递六字段值：`kind`、`minimum_isolation`、`working_dir`、`env`、`timeout`、`stdin`，保持原Shell/Program/Code、可选缺省/Null与Duration表示。Host拒绝未知顶层字段和本机`resource_guards`/`cancel`注入；这两个字段只由原Rust物理调用owner持有，不能通过JSON构造。裸SandboxCommand没有新增可调用handle。
+
+旧`echo_agent::state::delete_persisted_conversation`已退出可执行catalog；精确调用返回`feature_unavailable`、`never`、原operation与退役说明。本地拒绝不提交RPC或生成managed身份；managed删除必须保留原请求身份。相近名字、大小写、未知操作与关闭句柄继续原语言合同。
+
+本地已关闭Session继续优先返回`closed_handle`，早于退役或未知操作查找。

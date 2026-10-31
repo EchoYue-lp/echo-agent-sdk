@@ -15,8 +15,7 @@ use echo_sdk_protocol::methods::{AgentPhaseWire, ExecutionStatusKindWire, Execut
 use echo_sdk_protocol::methods::{AssistantMessageBlockWire, AssistantPhaseWire};
 use echo_sdk_protocol::methods::{LlmToolCallWire, ProviderOutputSourceWire};
 #[cfg(feature = "sdk-extension-bridge")]
-use echo_sdk_protocol::scalar::WireU64;
-use echo_sdk_protocol::scalar::WireValue;
+use echo_sdk_protocol::scalar::{WireU64, WireValue};
 use serde::{Deserialize, Serialize};
 
 use super::wire::reasoning_block_from_wire;

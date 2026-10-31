@@ -5,6 +5,19 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .errors import EchoAgentError
+
+
+def _reject_retired_delete(operation: str) -> None:
+    # 仅拒绝精确退役身份；不恢复catalog路由、不分配请求或managed身份。
+    if operation == "echo_agent::state::delete_persisted_conversation":
+        raise EchoAgentError(
+            "feature_unavailable",
+            "unmanaged conversation deletion is retired; use delete_persisted_conversation_managed with the original request identity",
+            "never",
+            operation,
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class ResolvedOperation:
@@ -178,6 +191,7 @@ class FacadeCatalog:
         return self._family_entries
 
     def signature(self, operation: str) -> str:
+        _reject_retired_delete(operation)
         route = self._operations.get(operation)
         digests = route.get("signature_digests", []) if route else []
         if not digests:
@@ -194,6 +208,7 @@ class FacadeCatalog:
         )
 
     def resolve(self, operation: str) -> ResolvedOperation:
+        _reject_retired_delete(operation)
         direct = self._operations.get(operation)
         if direct and direct.get("method") and direct.get("signature_digests"):
             return ResolvedOperation(

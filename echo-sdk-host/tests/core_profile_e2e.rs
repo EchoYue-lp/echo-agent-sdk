@@ -4970,14 +4970,37 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
                     .is_some_and(serde_json::Value::is_null)
             );
 
-            let invalid_arguments = invoke_facade(
+            // 裸 JSON null 不属于带 kind 标签的 WireValue，先验证请求结构错误。
+            let malformed_arguments = invoke_facade(
                 &connection,
                 status_operation,
                 &started.run,
                 vec![serde_json::json!(null)],
             )
             .await
-            .expect_err("TurnReceipt accessors must reject arguments");
+            .err()
+            .ok_or_else(|| {
+                agent_client_protocol::Error::internal_error()
+                    .data("raw null must fail facade request decoding")
+            })?;
+            let malformed_arguments = typed_facade_error(&malformed_arguments).map_err(|error| {
+                agent_client_protocol::Error::internal_error().data(error.to_string())
+            })?;
+            assert_eq!(malformed_arguments.code, ExtensionErrorCode::InvalidRequest);
+
+            // 合法 DTO 中仍不能向无参 accessor 传值，保持独立的参数语义负控制。
+            let invalid_arguments = invoke_facade_wire(
+                &connection,
+                status_operation,
+                &started.run,
+                vec![WireValue::Null],
+            )
+            .await
+            .err()
+            .ok_or_else(|| {
+                agent_client_protocol::Error::internal_error()
+                    .data("TurnReceipt accessors must reject arguments")
+            })?;
             let invalid_arguments = typed_facade_error(&invalid_arguments).map_err(|error| {
                 agent_client_protocol::Error::internal_error().data(error.to_string())
             })?;
@@ -4985,7 +5008,11 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
 
             let invalid_receiver = invoke_facade(&connection, status_operation, &agent, vec![])
                 .await
-                .expect_err("TurnReceipt receiver must be a Run handle");
+                .err()
+                .ok_or_else(|| {
+                    agent_client_protocol::Error::internal_error()
+                        .data("TurnReceipt receiver must be a Run handle")
+                })?;
             let invalid_receiver = typed_facade_error(&invalid_receiver).map_err(|error| {
                 agent_client_protocol::Error::internal_error().data(error.to_string())
             })?;

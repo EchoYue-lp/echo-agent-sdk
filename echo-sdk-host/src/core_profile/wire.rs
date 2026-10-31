@@ -8,7 +8,7 @@
 
 use echo_agent::agent::EventEnvelope;
 use echo_agent::error::{AgentFailure, ReactError};
-#[cfg(feature = "sdk-facade-adapters")]
+#[cfg(any(feature = "sdk-facade-adapters", test))]
 use echo_agent::error::{AgentFailureCategory, AgentTerminalKind};
 use echo_agent::llm::types::{Message, MessageContent};
 use echo_agent::runtime::{TurnDeliveryOutcome, TurnOutcome, TurnReceipt};
@@ -535,7 +535,8 @@ pub(crate) fn failure_wire(failure: &AgentFailure) -> AgentFailureWire {
 
 /// Restore a framework failure from the closed wire value without flattening
 /// category, terminal kind, retryability, code, status, or message.
-#[cfg(feature = "sdk-facade-adapters")]
+// 生产仍只由 facade 消费；core 的现有失败投影回归也需复用这一个往返 codec。
+#[cfg(any(feature = "sdk-facade-adapters", test))]
 pub(crate) fn failure_from_wire(wire: AgentFailureWire) -> Result<AgentFailure, String> {
     let category = match wire.category.as_str() {
         "llm" => AgentFailureCategory::Llm,

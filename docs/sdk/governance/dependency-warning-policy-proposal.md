@@ -2,6 +2,19 @@
 
 Status: accepted
 
+
+## 2026-10-31：SDK HTTPS340 组合锁的精确绑定复核
+
+本段提案只更新机器基线的锁摘要为c448、Framework pin为340及本轮验证来源；原7f0a／0dac／f7字节与旧verify自然1完整保留。49组107条registry identity数组、原人类有界duplicate接受、tool0.20.2、原normalized命令及policy／audit／allow／ignore全部原样，不继承Framework或CLI例外。
+
+原官方audit0.22.2实际0，fresh RustSec DB为2295466c／1395条；原官方deny0.20.2四检查实际0，完整raw698424B／SHA721a86e0，严格原解析器只见原49组107身份、零新/少/变组与其它诊断。原policy14实际0；本提案不重扫、不称候选接受gate已通过。
+
+0dac→c448不能称source-only：653包中637个完整块相同、13个共同块有Source／checksum／dependency变化，另有zstd0.13.3→0.14.3、zstd-safe7.2.4→8.2.0、zstd-sys2.0.16→2.1.2替换。13个来源变化包括11个Git pin与2个Polars registry→同Git源（Git锁块不保registry checksum）；echo_tools新增httpdate边、echo_integration新增matchit边。registry URL未增加。四项原ignore所涉包版本/来源保持，旧DB84d943a6与fresh2295466c的同ID package／versions范围也相同。仅FileGit478→HTTPS c448那一步才是13SourceID替换。
+
+是否在原49／107风险例外不扩张的已批准SDK pin切换范围内作准确绑定，由Root据完整差异和独审裁定。三registry版本替换与两条边均是具体复核输入，不以duplicate组相同抹去，也不凭这几处差异预设必须重新问人类。任何新增/减少/变更duplicate身份、registry来源、漏洞或其它诊断继续另列真实新取舍，不能自动扩大例外。
+
+候选仅在C外供审；后继精校准复用同一原raw／实际receipt调用原未改verifier与policy14，不使用capture重扫。完整SDK新版本工程、正常source/final和精mainCI仍各自验收，扫描器0不作运行绿。
+
 ## 2026-10-23 Tokio I/O safety 定向补丁
 
 当前锁 SHA256 为

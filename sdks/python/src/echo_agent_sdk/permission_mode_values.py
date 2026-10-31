@@ -17,30 +17,10 @@ class PermissionMode(str, Enum):
     def parse(cls, value: str) -> PermissionMode:
         if not isinstance(value, str):
             raise TypeError("permission mode must be text")
-        aliases = {
-            "default": cls.DEFAULT,
-            "ask": cls.DEFAULT,
-            "plan": cls.PLAN,
-            "auto-edit": cls.ACCEPT_EDITS,
-            "autoedit": cls.ACCEPT_EDITS,
-            "accept-edits": cls.ACCEPT_EDITS,
-            "acceptedits": cls.ACCEPT_EDITS,
-            "full-auto": cls.BYPASS_PERMISSIONS,
-            "fullauto": cls.BYPASS_PERMISSIONS,
-            "bypass": cls.BYPASS_PERMISSIONS,
-            "bypass-permissions": cls.BYPASS_PERMISSIONS,
-            "bypasspermissions": cls.BYPASS_PERMISSIONS,
-            "auto": cls.AUTO,
-            "bubble": cls.BUBBLE,
-            "dont-ask": cls.DONT_ASK,
-            "dontask": cls.DONT_ASK,
-            "strict": cls.STRICT_CONFIRM,
-            "strict-confirm": cls.STRICT_CONFIRM,
-            "strict-confirmation": cls.STRICT_CONFIRM,
-        }
+        # 使用枚举原canonical值，不以strip/lower重新接纳退出的拼写。
         try:
-            return aliases[value.strip().lower()]
-        except KeyError as error:
+            return cls(value)
+        except ValueError as error:
             raise ValueError(f"invalid permission mode '{value}'") from error
 
     def allows_write(self) -> bool:

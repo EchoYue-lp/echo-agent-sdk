@@ -2,22 +2,28 @@
 
 本轮原生消息候选与来源边界见[原生消息](native-messages.md)和[ADR0043](../adr/0043-native-message-sdk-adapter.md)；三语言合同随包携带，独立打包／加载方法见[源码包自包含](source-packages.md)。[Parquet 真实消费者验证](governance/parquet-consumer-validation.md)仍按具名旧 Host、旧合同快照单独取证，不代表新 pin、安全或整体交付通过。
 
-## Current SDK consumer withdrawal
+## 当前来源与消费者退役边界
 
-Plan04 withdraws exactly269 accepted source/kind identities,23 routes and39
-family operations, leaving5352 identities/431 routes with no new acceptance.
-The full generator consumes the original266 plus the three explicitly named
-LSP plugin identities. See [ADR0042](../adr/0042-sdk-a2a-lsp-retirement-boundary.md)
-and [exact disposition](governance/a2a-lsp-retirement-boundary.md).
+Plan04 消费者撤出阶段精确退役269项 accepted source/kind 身份、23条路由和39个
+family 操作，当时保留5352项身份／431条路由，新增接受为零。原生成器消费266项
+及三个具名 LSP plugin 身份；该历史证明见[ADR0042](../adr/0042-sdk-a2a-lsp-retirement-boundary.md)
+和[精确处置](governance/a2a-lsp-retirement-boundary.md)。
+
+当前正式 Host 通过 HTTPS 精确依赖 framework `340993201cc937fc8e4783b66be399ef9f14e3d5`
+（tree `e6c28f37a881f41bb549452614313557b7c91c68`），SDK 锁 SHA-256 为
+`c4488065aa4a94a8a073e427aeddfefe7670d93b709b82555b39f2431954e1c7`。
+本次具名处置从5352项退役11项、接受3项 with_id 方法，得到5344项身份／430条路由；
+native 新增 Rust source 身份为零，没有超出具名批准范围的接受项。
+后续差异见[ADR0044](../adr/0044-sdk-source-disposition-native-callback.md)。本地18项
+验证保留各自真实源码切点和完整语言入口资格，正式采用另以完整内容身份桥接；
+它们不替代精确 SDK main CI、平台原生验收或发布。
 
 Old source/digest/feature/family requests fail explicitly. Retired plugin
 fields are absent, not empty placeholders; LspServer values are rejected.
 ACP/MCP/Task/Subagent, Host stdio, streams/cancellation/recovery and R2 parent/
 child close retain their original owners, tests and executable examples.
-The framework remains pinned to f7bac62e and still contains its old Rust
-definitions as nonblocking inventory. Historical5,621/454 pin and qualification
-results below keep their original snapshot scope; they do not verify this
-withdrawal candidate or indicate a release.
+旧 `f7bac62e` pin 及下文历史5,621／454资格保持原快照范围，不作为当前来源、
+消费者或发布验收。完整 Rust inventory 继续只是非阻断遥测。
 
 This is the single external entry point for the echo-agent multilingual SDK
 program. The SDK preserves the behavior of **explicitly accepted cross-language
@@ -170,12 +176,14 @@ alone are not behavioral evidence.
 | **Host facade routing**          | Accepted source operations/consumer traits/streams have a concrete Host route or an explicit local boundary                 | Accepted capability/failure obligations settled at eb223986; historical Plan 08 evidence keeps its original execution cut                                                                                      |
 | **Runnable**                     | A real Host plus each language's declared external SDK path executes end-to-end                                             | Original full three-language entry and three quickstarts passed at eb223986; Linux Temurin 17 and three named native Windows consumers have separate actual evidence                                           |
 | **External contract complete**   | Accepted capability behavior, lifecycle and failures have contract, matched-source evidence and explicit residual decisions | Historical pre-withdrawal acceptance: 5,621 identities / 454 routes, 50 behaviors verified, 75 Findings resolved and one historical risk accepted by the human; 97 Audits remain bounded examined observations |
-| **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance                                                            | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); current generated inventory has 2,507 deferred identities, with no automatic acceptance                                              |
+| **Deferred capability grouping** | Existing inventory is grouped without adding external acceptance                                                            | [Bounded Rust/Host/deferred groups](governance/deferred-capabilities.md); 当前生成清单有2,890项 deferred 身份，不自动接受。                                              |
 | **Published**                    | Registry/binary publication — **explicitly out of scope**; this design ships source only                                    | never (by design)                                                                                                                                                                                              |
 
 ### Identity inventory scope
 
-The source-built Host now pins accepted framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
+下段记录旧 pin 的上游接受切点，所有 SHA、CI 链接及锁统计均保留历史范围。
+
+当时 source-built Host 采用已接受 framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
 (tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`), from
 [PR #197](https://github.com/EchoYue-lp/echo-agent/pull/197). Its original
 [main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)
@@ -197,15 +205,15 @@ At that historical qualification cut, membership remained 5,621 identity/kind ke
 provenance does not authorize a 117-artifact update, new public language APIs,
 or automatic closure of the historical managed-exit cause.
 
-The inventory figures below remain the earlier generated cut.
+下面先保留早期生成切点的来源记录；当前统计另列于表格。
 
 The previously generated Host pin was published framework
 `3560812caede84998a1f6f26d7bf3fa81ea0486c` from framework PR193.
 The original full 28-profile/117-artifact generation and contract gate completed
 against that pin. That historical manifest recorded 10,973 canonical identities,
-5,621 accepted keys and 454 routes. The current generator records 10,974
-canonical identities and5,352 accepted keys/431 routes; current scope counts
-are in the table below. See [source continuity](../../MIGRATION-SOURCE.md)
+5,621 accepted keys and 454 routes. 当前生成清单记录11,113项 canonical 身份、
+5,344项 accepted keys／430条路由；下表按实际 `canonical: true` 和 `sdk_scope`
+统计。See [source continuity](../../MIGRATION-SOURCE.md)
 and [current acceptance](governance/capability-review-remaining.md) for exact cuts.
 SDK208a/Host0bbc and the successor SDK9ef/Hosta17 retain distinct evidence cuts.
 The successor original Rust14 and the one whole language entry plus all three
@@ -234,11 +242,11 @@ the adapter route and per-language status:
 
 | `sdk_scope`          | Canonical items | Current meaning                                                                                            |
 | -------------------- | --------------: | ---------------------------------------------------------------------------------------------------------- |
-| `external_contract`  |           5,352 | Frozen accepted canonical membership and language mapping; capability behavior requires separate evidence. |
-| `host_or_rust_only`  |           2,217 | Process-local or Host-owned runtime authority.                                                             |
-| `language_intrinsic` |             807 | Rust syntax, trait implementations and callback types represented idiomatically.                           |
-| `internal_helper`    |              91 | Rust testing support, not an SDK product surface.                                                          |
-| `deferred`           |           2,507 | Potential capabilities awaiting capability-level contract review.                                          |
+| `external_contract`  |           5,344 | Frozen accepted canonical membership and language mapping; capability behavior requires separate evidence. |
+| `host_or_rust_only`  |           1,951 | Process-local or Host-owned runtime authority.                                                             |
+| `language_intrinsic` |             833 | Rust syntax, trait implementations and callback types represented idiomatically.                           |
+| `internal_helper`    |              95 | Rust testing support, not an SDK product surface.                                                          |
+| `deferred`           |           2,890 | Potential capabilities awaiting capability-level contract review.                                          |
 
 The scope is generated, aliases inherit their canonical identity, and no row
 is manually promoted. An intrinsic route becomes a blocking external contract
@@ -275,8 +283,9 @@ Permission rule source values are local projections; rule evaluation and
 priority authority remain in Rust/Host.
 Permission rule behaviors are also local projections with decision conversion;
 evaluation and RuleRegistry authority remain in Rust/Host.
-Permission modes expose their canonical IDs, aliases, and policy predicates;
-mode evaluation remains framework-owned.
+PermissionMode 只接受精确的 `default`、`plan`、`auto-edit`、`full-auto`、`auto`、`bubble`、
+`dont-ask`、`strict`；旧别名、大小写和首尾空白不再归一。八模式的 write/interaction/classifier
+helper、默认值及 canonical wire 输出保持，权限求值仍归 Framework。见 [ADR0045](../adr/0045-sdk-permission-mode-canonical-inputs.md)。
 Permission rule matchers expose pure parse/display/matching helpers; registry
 and evaluation authority remain in Rust/Host.
 Command-cell phases are local values; command process/sandbox execution remains
@@ -423,3 +432,11 @@ executable digests and runs the complete original three-language/real-Host/
 example chain without another Cargo build. This mode requires evidence that
 the artifacts came from the current source batch; a digest alone is not proof
 of current-source behavior or a replacement for those fresh consumer tests.
+
+## 当前 Sandbox 命令与退役删除边界
+
+Sandbox命令继续传递六字段值：`kind`、`minimum_isolation`、`working_dir`、`env`、`timeout`、`stdin`，保持原Shell/Program/Code、可选缺省/Null与Duration表示。Host拒绝未知顶层字段和本机`resource_guards`/`cancel`注入；这两个字段只由原Rust物理调用owner持有，不能通过JSON构造。裸SandboxCommand没有新增可调用handle。
+
+旧`echo_agent::state::delete_persisted_conversation`已退出可执行catalog；精确调用返回`feature_unavailable`、`never`、原operation与退役说明。本地拒绝不提交RPC或生成managed身份；managed删除必须保留原请求身份。相近名字、大小写、未知操作与关闭句柄继续原语言合同。
+
+命令guard由既有CallbackInvocationOwner保留到真实物理结算；取消信号、stream setup ACK和观察者drop都不是停止凭证。token选择为显式参数、command.cancel、原run/connection；连接关闭继续取消原lease。

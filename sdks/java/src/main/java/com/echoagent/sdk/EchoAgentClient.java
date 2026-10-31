@@ -956,7 +956,17 @@ public final class EchoAgentClient implements AutoCloseable {
         return result.thenApply(ignored -> null);
     }
 
+    static final String RETIRED_UNMANAGED_DELETE = "echo_agent::state::delete_persisted_conversation";
+
+    private CompletionStage<JsonNode> retiredDeleteRefusal(String operation) {
+        // 保留连接关闭优先级；拒绝通过原异步API交付且不分配RPC身份。
+        return CompletableFuture.failedFuture(closed || closing
+                ? new EchoAgentException("host_exited", "ACP connection is closed", "never", "_echo_agent/facade/invoke", null)
+                : new EchoAgentException("feature_unavailable", "unmanaged conversation deletion is retired; use delete_persisted_conversation_managed with the original request identity", "never", operation, null));
+    }
+
     public CompletionStage<JsonNode> invoke(String operation, WireHandle handle, List<?> arguments) {
+        if (RETIRED_UNMANAGED_DELETE.equals(operation)) return retiredDeleteRefusal(operation);
         ObjectNode params = JsonSupport.MAPPER.createObjectNode();
         params.put("operation", operation);
         params.put("signature_digest", catalog.signature(operation));
@@ -983,6 +993,7 @@ public final class EchoAgentClient implements AutoCloseable {
     }
 
     public CompletionStage<JsonNode> call(String operation, WireHandle handle, List<?> arguments) {
+        if (RETIRED_UNMANAGED_DELETE.equals(operation)) return retiredDeleteRefusal(operation);
         var resolved = catalog.resolve(operation);
         if ("_echo_agent/facade/invoke".equals(resolved.method())) {
             return invoke(operation, handle, arguments);

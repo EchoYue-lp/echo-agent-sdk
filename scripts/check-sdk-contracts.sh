@@ -32,13 +32,26 @@ if printf '%s\n' "$protocol_tree" | grep -Eq '(^|[[:space:]])echo_(agent|core|ex
   exit 1
 fi
 
-framework_source=$(cargo metadata --format-version 1 --locked | jq -r '
+framework_metadata=$(cargo metadata --format-version 1 --all-features --locked)
+framework_source=$(printf '%s\n' "$framework_metadata" | jq -r '
   .packages[] | select(.name == "echo_agent") | .source // empty
 ')
-expected_framework_source="git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+expected_framework_source="git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
+expected_git_packages='[["calamine","0.36.1"],["docx-rs","0.4.22"],["echo_agent","0.2.0"],["echo_core","0.2.0"],["echo_execution","0.2.0"],["echo_integration","0.2.0"],["echo_macros","0.2.0"],["echo_orchestration","0.2.0"],["echo_state","0.2.0"],["echo_tools","0.2.0"],["polars-arrow","0.55.2"],["polars-parquet","0.55.2"],["rust_xlsxwriter","0.82.0"]]'
 [[ "$framework_source" == "$expected_framework_source" ]] || {
   echo "error: echo_agent provenance is not pinned to the SDK governance target revision" >&2
   printf 'expected: %s\nactual: %s\n' "$expected_framework_source" "$framework_source" >&2
+  exit 1
+}
+# 八个Framework与五个vendor须同属精HTTPS340；不只检查echo_agent一个包。
+printf '%s\n' "$framework_metadata" | jq -e \
+  --arg source "$expected_framework_source" --argjson expected "$expected_git_packages" '
+  [.packages[] | select((.source // "") | startswith("git+"))] as $git
+  | ($git | length) == 13
+    and ([$git[] | [.name, .version]] | sort) == ($expected | sort)
+    and all($git[]; .source == $source)
+' >/dev/null || {
+  echo "error: exact 13-package HTTPS framework source set drifted" >&2
   exit 1
 }
 

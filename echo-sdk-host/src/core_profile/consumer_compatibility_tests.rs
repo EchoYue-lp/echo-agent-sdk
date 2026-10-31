@@ -2,6 +2,9 @@
 use super::*;
 use serde_json::json;
 
+#[path = "sandbox_command_owner_tests.rs"]
+mod sandbox_command_owner_tests;
+
 /// 直接调用真实LlmClient代理并经过原ACP reverse callback；不以手工DTO往返代替bridge。
 #[tokio::test]
 async fn consumer_compatibility_named_choice_uses_actual_llm_chat_and_stream_bridge()

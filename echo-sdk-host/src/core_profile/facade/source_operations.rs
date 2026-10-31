@@ -2165,8 +2165,16 @@ pub(crate) fn run_start_request(
     {
         return Err(facade_capability_error());
     }
-    let request: FeatureOperationRequest = serde_json::from_value(params.clone())
-        .map_err(|error| invalid(format!("facade request payload is malformed: {error}")))?;
+    // 外层请求 DTO 尚未解码成功；后续参数/业务值校验仍沿用 InvalidValue。
+    let request: FeatureOperationRequest =
+        serde_json::from_value(params.clone()).map_err(|error| {
+            wire::sdk_error(
+                ExtensionErrorCode::InvalidRequest,
+                format!("facade request payload is malformed: {error}"),
+                Retryability::Never,
+                METHOD,
+            )
+        })?;
     enum SourceInputKind {
         Text { execute: bool },
         Message { execute: bool },
@@ -2296,8 +2304,16 @@ pub(crate) fn run_steer_request(
     {
         return Err(facade_capability_error());
     }
-    let request: FeatureOperationRequest = serde_json::from_value(params.clone())
-        .map_err(|error| invalid(format!("facade request payload is malformed: {error}")))?;
+    // 外层请求 DTO 尚未解码成功；后续参数/业务值校验仍沿用 InvalidValue。
+    let request: FeatureOperationRequest =
+        serde_json::from_value(params.clone()).map_err(|error| {
+            wire::sdk_error(
+                ExtensionErrorCode::InvalidRequest,
+                format!("facade request payload is malformed: {error}"),
+                Retryability::Never,
+                METHOD,
+            )
+        })?;
     match request.operation.as_str() {
         "echo_core::agent::Agent::steer_input"
         | "echo_core::agent::Agent::steer_input_tracked"
@@ -2380,8 +2396,16 @@ pub(crate) fn agent_close_request(
     {
         return Err(facade_capability_error());
     }
-    let request: FeatureOperationRequest = serde_json::from_value(params.clone())
-        .map_err(|error| invalid(format!("facade request payload is malformed: {error}")))?;
+    // 外层请求 DTO 尚未解码成功；后续参数/业务值校验仍沿用 InvalidValue。
+    let request: FeatureOperationRequest =
+        serde_json::from_value(params.clone()).map_err(|error| {
+            wire::sdk_error(
+                ExtensionErrorCode::InvalidRequest,
+                format!("facade request payload is malformed: {error}"),
+                Retryability::Never,
+                METHOD,
+            )
+        })?;
     if request.operation != "echo_core::agent::Agent::close" {
         return Ok(None);
     }
@@ -3568,8 +3592,12 @@ async fn dispatch_non_git_source(
                 ));
             }
             let policy = sandbox_policy_argument(request, 1)?;
+            let command_value = json_argument(request, 2, "sandbox command")?;
+            echo_sdk_protocol::facade::SANDBOX_COMMAND_PROJECTION
+                .validate_json(&command_value)
+                .map_err(invalid)?;
             let command: echo_agent::sandbox::SandboxCommand =
-                serde_json::from_value(json_argument(request, 2, "sandbox command")?)
+                serde_json::from_value(command_value)
                     .map_err(|error| invalid(format!("sandbox command is invalid: {error}")))?;
             let level = if expected == 4 {
                 let limits: Option<echo_agent::sandbox::ResourceLimits> =
@@ -3963,64 +3991,50 @@ async fn dispatch_non_git_source(
                 }
             }
         }
-        "echo_agent::state::clear_persisted_runtime_incarnation"
-        | "echo_agent::state::delete_persisted_conversation" => {
+        "echo_agent::state::clear_persisted_runtime_incarnation" => {
             let authorities = session_authorities(state, request).await?;
             let scope_id = string_argument(request, 1, "conversation scope id")?;
-            if request
-                .operation
-                .ends_with("clear_persisted_runtime_incarnation")
-            {
-                if request.arguments.len() != 3 {
-                    return Err(invalid(
-                        "clear_persisted_runtime_incarnation accepts [Session, scope_id, runtime_state_id]",
-                    ));
-                }
-                let runtime_state_id = string_argument(request, 2, "runtime state id")?;
-                let receipt = authorities
-                    .agent_handle
-                    .read_async(move |agent| {
-                        let conversation_store = agent.conversation_store().clone();
-                        let runtime_state_store = agent.state_store().clone();
-                        Box::pin(async move {
-                            let conversation_store = conversation_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no ConversationStore".to_string(),
-                                )
-                            })?;
-                            let runtime_state_store = runtime_state_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no RuntimeStateStore".to_string(),
-                                )
-                            })?;
-                            echo_agent::state::clear_persisted_runtime_incarnation(
-                                conversation_store.as_ref(),
-                                runtime_state_store.as_ref(),
-                                &scope_id,
-                                &runtime_state_id,
-                            )
-                            .await
-                        })
-                    })
-                    .await
-                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
-                snapshot_value(
-                    request,
-                    serde_json::json!({
-                        "scope_id": receipt.scope_id,
-                        "runtime_state_id": receipt.runtime_state_id,
-                        "checkpoint_removed": receipt.checkpoint_removed,
-                    }),
-                )
-            } else {
-                // v03只接受调用方保留的ManagedConversationDelete身份，不能在此补造重试ID。
-                Err(wire::sdk_error(
-                    ExtensionErrorCode::FeatureUnavailable,
-                    "unmanaged conversation deletion is retired; use delete_persisted_conversation_managed with the original request identity",
-                    Retryability::Never,
-                    "_echo_agent/facade/invoke",
-                ).with_operation(request.operation.clone()))
+            if request.arguments.len() != 3 {
+                return Err(invalid(
+                    "clear_persisted_runtime_incarnation accepts [Session, scope_id, runtime_state_id]",
+                ));
             }
+            let runtime_state_id = string_argument(request, 2, "runtime state id")?;
+            let receipt = authorities
+                .agent_handle
+                .read_async(move |agent| {
+                    let conversation_store = agent.conversation_store().clone();
+                    let runtime_state_store = agent.state_store().clone();
+                    Box::pin(async move {
+                        let conversation_store = conversation_store.ok_or_else(|| {
+                            echo_agent::error::ReactError::Other(
+                                "Session Agent has no ConversationStore".to_string(),
+                            )
+                        })?;
+                        let runtime_state_store = runtime_state_store.ok_or_else(|| {
+                            echo_agent::error::ReactError::Other(
+                                "Session Agent has no RuntimeStateStore".to_string(),
+                            )
+                        })?;
+                        echo_agent::state::clear_persisted_runtime_incarnation(
+                            conversation_store.as_ref(),
+                            runtime_state_store.as_ref(),
+                            &scope_id,
+                            &runtime_state_id,
+                        )
+                        .await
+                    })
+                })
+                .await
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
+            snapshot_value(
+                request,
+                serde_json::json!({
+                    "scope_id": receipt.scope_id,
+                    "runtime_state_id": receipt.runtime_state_id,
+                    "checkpoint_removed": receipt.checkpoint_removed,
+                }),
+            )
         }
         "echo_core::utils::fs::create_dir_all_durable" => {
             let _owner = source_session_owner(state, request).await?;
@@ -7253,7 +7267,8 @@ fn dispatch_agent_context_source<'a>(
                     authorities
                         .agent_handle
                         .write(|agent| agent.set_store(Arc::new(proxy)))
-                        .await;
+                        .await
+                        .map_err(|error| wire::framework_error(&error, &request.operation))?;
                     snapshot_value(request, serde_json::Value::Null)
                 }
                 #[cfg(not(feature = "sdk-extension-bridge"))]

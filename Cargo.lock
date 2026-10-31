@@ -591,7 +591,7 @@ dependencies = [
 [[package]]
 name = "calamine"
 version = "0.36.1"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "atoi_simd",
  "byteorder",
@@ -1135,7 +1135,7 @@ dependencies = [
 [[package]]
 name = "docx-rs"
 version = "0.4.22"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "base64",
  "crc32fast",
@@ -1227,7 +1227,7 @@ dependencies = [
 [[package]]
 name = "echo_agent"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "agent-client-protocol",
  "async-stream",
@@ -1272,7 +1272,7 @@ dependencies = [
 [[package]]
 name = "echo_core"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "async-stream",
  "chrono",
@@ -1301,7 +1301,7 @@ dependencies = [
 [[package]]
 name = "echo_execution"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "dashmap",
  "dirs",
@@ -1326,7 +1326,7 @@ dependencies = [
 [[package]]
 name = "echo_integration"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1338,6 +1338,7 @@ dependencies = [
  "echo_core",
  "futures",
  "hmac",
+ "matchit",
  "prost",
  "rand 0.9.5",
  "reqwest",
@@ -1357,7 +1358,7 @@ dependencies = [
 [[package]]
 name = "echo_macros"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -1368,7 +1369,7 @@ dependencies = [
 [[package]]
 name = "echo_orchestration"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1396,7 +1397,7 @@ dependencies = [
 [[package]]
 name = "echo_state"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "chrono",
  "echo_core",
@@ -1414,7 +1415,7 @@ dependencies = [
 [[package]]
 name = "echo_tools"
 version = "0.2.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "async-trait",
  "base64",
@@ -1426,6 +1427,7 @@ dependencies = [
  "encoding_rs",
  "futures",
  "html2text",
+ "httpdate",
  "libc",
  "lopdf",
  "polars",
@@ -3552,8 +3554,7 @@ dependencies = [
 [[package]]
 name = "polars-arrow"
 version = "0.55.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c5ab55460ca2553d1a2bbaf2046998cfbbb685bc18d1e168b4367b63301eb271"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "atoi_simd",
  "bitflags 2.13.1",
@@ -3941,8 +3942,7 @@ dependencies = [
 [[package]]
 name = "polars-parquet"
 version = "0.55.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d33a17979d2afa0309437478662cf996361a6e1768bf467db82bd4f4a9443064"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "async-stream",
  "base64",
@@ -4760,7 +4760,7 @@ dependencies = [
 [[package]]
 name = "rust_xlsxwriter"
 version = "0.82.0"
-source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+source = "git+https://github.com/EchoYue-lp/echo-agent.git?rev=340993201cc937fc8e4783b66be399ef9f14e3d5#340993201cc937fc8e4783b66be399ef9f14e3d5"
 dependencies = [
  "zip",
 ]
@@ -7153,27 +7153,27 @@ dependencies = [
 
 [[package]]
 name = "zstd"
-version = "0.13.3"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e91ee311a569c327171651566e07972200e76fcfe2242a4fa446149a3881c08a"
+checksum = "db3ae9bf90af6e40197bef767eeefc46ad6397420fe873830bd85e5fbbfb3c70"
 dependencies = [
  "zstd-safe",
 ]
 
 [[package]]
 name = "zstd-safe"
-version = "7.2.4"
+version = "8.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f49c4d5f0abb602a93fb8736af2a4f4dd9512e36f7f570d66e65ff867ed3b9d"
+checksum = "ded520f16b29e1a9b771c722221b2b0a0398c2316d9bb3c42b458a5414d7434b"
 dependencies = [
  "zstd-sys",
 ]
 
 [[package]]
 name = "zstd-sys"
-version = "2.0.16+zstd.1.5.7"
+version = "2.1.2+zstd.1.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91e19ebc2adc8f83e43039e79776e3fda8ca919132d68a1fed6a5faca2683748"
+checksum = "481ada9c543b2323cbb7bbdbb5249177fbf0188ed959ed2c15e4b22421c84ed3"
 dependencies = [
  "cc",
  "pkg-config",

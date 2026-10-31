@@ -35,7 +35,9 @@ use echo_agent::channels::{
     InboundMessage, MessageAttachment, MessageHandler, OutboundMessage,
 };
 use echo_agent::error::ReactError;
-use echo_agent::tools::{ToolContext, ToolParameters, ToolResult, ToolStreamEvent};
+use echo_agent::tools::{
+    InvocationResourceGuard, ToolContext, ToolParameters, ToolResult, ToolStreamEvent,
+};
 use futures::StreamExt as _;
 use std::collections::{HashMap, VecDeque};
 use std::pin::Pin;
@@ -97,6 +99,9 @@ const MCP_NOTIFICATION_QUEUE_CAPACITY: usize = 64;
 
 // ── Shared bridge state ─────────────────────────────────────────────────────
 
+#[cfg(test)]
+type ResponseRegistrationTestHook = Box<dyn FnOnce(Weak<CallbackInvocationOwner>) + Send>;
+
 /// Connection-captured state shared by every proxy of one connection.
 pub(crate) struct ExtensionBridgeShared {
     /// The official transport handle, captured from the first extension
@@ -114,6 +119,9 @@ pub(crate) struct ExtensionBridgeShared {
     /// them before releasing the corresponding extension handles.
     factory_cleanup_tasks: Mutex<Vec<tokio::task::JoinHandle<()>>>,
     cleanup_closed: AtomicBool,
+    /// 故障测试只在原send尝试和响应注册之间暂停调用者；不增加生产owner或协议。
+    #[cfg(test)]
+    before_response_registration_test_hook: Mutex<Option<ResponseRegistrationTestHook>>,
 }
 
 impl ExtensionBridgeShared {
@@ -124,6 +132,8 @@ impl ExtensionBridgeShared {
             active_session_callbacks: Mutex::new(HashMap::new()),
             factory_cleanup_tasks: Mutex::new(Vec::new()),
             cleanup_closed: AtomicBool::new(false),
+            #[cfg(test)]
+            before_response_registration_test_hook: Mutex::new(None),
         }
     }
 
@@ -651,6 +661,7 @@ struct ReverseInvocationScope<'a> {
     cancellation: CancellationToken,
     resolve_run_cancellation: bool,
     submitted: Option<&'a AtomicBool>,
+    command_resources: Vec<InvocationResourceGuard>,
 }
 
 /// Kinds whose callbacks mutate the implementation exclusively: a second
@@ -974,6 +985,7 @@ impl ExtensionBridge {
                 cancellation: framework_cancellation,
                 resolve_run_cancellation: true,
                 submitted: None,
+                command_resources: Vec::new(),
             },
         )
         .await
@@ -993,6 +1005,7 @@ impl ExtensionBridge {
                 cancellation: self.connection_cancellation(),
                 resolve_run_cancellation: false,
                 submitted: None,
+                command_resources: Vec::new(),
             },
         )
         .await
@@ -1074,6 +1087,7 @@ impl ExtensionBridge {
         if owns_physical_execution(&call.invocation) {
             let owner = Arc::new({
                 let mut callback_owner_init = CallbackInvocationOwner::default();
+                callback_owner_init.command_resources = Mutex::new(scope.command_resources);
                 callback_owner_init._session_callback = self.shared.enter_session_callback(
                     call.context
                         .as_ref()
@@ -1089,11 +1103,8 @@ impl ExtensionBridge {
                 cancellation,
                 CallbackStreamPolicy::CustomAgent,
                 owner.clone(),
-                None,
+                (None, scope.submitted),
             )?;
-            if let Some(submitted) = scope.submitted {
-                submitted.store(true, Ordering::Release);
-            }
             let mut drop_notice = InvocationDropNotice::new(self.clone(), &invocation_id);
             let response = owner.wait_original_response(completion).await;
             drop_notice.disarm();
@@ -1218,11 +1229,12 @@ impl ExtensionBridge {
         call_cancellation: CancellationToken,
         policy: CallbackStreamPolicy,
         owner: Arc<CallbackInvocationOwner>,
-        sink: Option<Arc<ExtensionStreamSink>>,
+        stream_and_submission: (Option<Arc<ExtensionStreamSink>>, Option<&AtomicBool>),
     ) -> std::result::Result<
         tokio::sync::oneshot::Receiver<std::result::Result<Option<ExtensionResult>, EchoSdkError>>,
         EchoSdkError,
     > {
+        let (sink, submitted) = stream_and_submission;
         owner.bind_invocation(self, &call);
         if call.invocation.operation() == ExtensionOperation::AgentClose
             && let Some(factory) = owner
@@ -1367,200 +1379,217 @@ impl ExtensionBridge {
         if let Some(observer) = &owner.facade_observer {
             observer.bind_original_callback();
         }
-        connection
-            .send_request(call)
-            .on_receiving_result(async move |answer| {
-                let actual_peer_response =
-                    CallbackInvocationOwner::has_original_peer_response(&answer);
-                // A Stream declaration, including a malformed ACK, is never a
-                // final callback return. Synthetic transport errors prove no
-                // peer response and cannot release the original physical owner.
-                let actual_final_response = match &answer {
-                    Ok(ExtensionInvokeOutcome::Result { .. }) => true,
-                    Ok(ExtensionInvokeOutcome::Error { error }) => {
-                        !super::wire::has_observation_hint(error)
-                    }
-                    Ok(ExtensionInvokeOutcome::Stream { .. }) => false,
-                    Err(error) => {
-                        actual_peer_response && !raw_observation_hint(error.data.as_ref())
-                    }
+        let sent = connection.send_request(call);
+        // send_request同步尝试发送；SentRequest不保证关闭/发送失败分支已成功入队。
+        // 此标记只表明不能再视作未尝试，不是入队或物理执行receipt。
+        if let Some(submitted) = submitted {
+            submitted.store(true, Ordering::Release);
+        }
+        #[cfg(test)]
+        {
+            let hook = self
+                .shared
+                .before_response_registration_test_hook
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .take();
+            if let Some(hook) = hook {
+                // 仅测试故障闸可能同步等待；让原runtime继续驱动真实transport/task actors。
+                tokio::task::block_in_place(|| hook(Arc::downgrade(&owner)));
+            }
+        }
+        sent.on_receiving_result(async move |answer| {
+            let actual_peer_response = CallbackInvocationOwner::has_original_peer_response(&answer);
+            // A Stream declaration, including a malformed ACK, is never a
+            // final callback return. Synthetic transport errors prove no
+            // peer response and cannot release the original physical owner.
+            let actual_final_response = match &answer {
+                Ok(ExtensionInvokeOutcome::Result { .. }) => true,
+                Ok(ExtensionInvokeOutcome::Error { error }) => {
+                    !super::wire::has_observation_hint(error)
+                }
+                Ok(ExtensionInvokeOutcome::Stream { .. }) => false,
+                Err(error) => actual_peer_response && !raw_observation_hint(error.data.as_ref()),
+            };
+            let Some(mut lease) = response_owner
+                .retained_lease
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .take()
+            else {
+                let error =
+                    invalid_observation("original callback response lost its retained lease");
+                response_owner.retain_unknown(error.clone());
+                let _ = sender.send(Err(error));
+                return Ok(());
+            };
+            let source_observation = match &answer {
+                Ok(ExtensionInvokeOutcome::Error { error })
+                    if super::wire::has_observation_hint(error) =>
+                {
+                    Some(error.clone())
+                }
+                Err(error) if raw_observation_hint(error.data.as_ref()) => {
+                    Some(transport_error(error))
+                }
+                Err(error)
+                    if response_policy == CallbackStreamPolicy::CustomAgent
+                        && agent_client_protocol::is_incoming_transport_closed(error) =>
+                {
+                    Some(invalid_observation(
+                        "original producer transport closed without physical settlement proof",
+                    ))
+                }
+                _ => None,
+            };
+            let actual_setup_ack = response_policy == CallbackStreamPolicy::CustomAgent
+                && matches!(&answer, Ok(ExtensionInvokeOutcome::Stream { stream })
+                        if expected_stream.as_ref() == Some(stream) && stream.validate().is_ok());
+            let acknowledged_factory_close = match &answer {
+                Ok(
+                    outcome @ ExtensionInvokeOutcome::Result {
+                        result: result @ ExtensionResult::AgentClose(_),
+                    },
+                ) if operation == ExtensionOperation::AgentClose
+                    && !response_owner.observed()
+                    && outcome.validate().is_ok()
+                    && bridge.ensure_payload_bound(result, false).is_ok() =>
+                {
+                    Some(result.clone())
+                }
+                _ => None,
+            };
+            let interruption = response_interrupted
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .clone()
+                .or_else(|| {
+                    response_cancellation.is_cancelled().then(|| {
+                        sdk_error(
+                            ExtensionErrorCode::Cancelled,
+                            "channel callback was cancelled",
+                            Retryability::Never,
+                            "_echo_agent/extension/invoke",
+                        )
+                    })
+                });
+            let result = if let Some(error) = source_observation {
+                Err(error)
+            } else if let Some(error) = interruption {
+                let settlement = if error.code == ExtensionErrorCode::ExtensionTimeout {
+                    echo_agent::acp::ExtensionSettlement::TimedOut
+                } else {
+                    echo_agent::acp::ExtensionSettlement::Cancelled
                 };
-                let Some(mut lease) = response_owner
+                lease.settle(settlement);
+                if actual_setup_ack {
+                    *response_owner
+                        .pending_failure
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner()) = Some(error);
+                    Ok(None)
+                } else {
+                    Err(error)
+                }
+            } else {
+                match answer {
+                    Ok(outcome) => bridge.settle_outcome(
+                        &mut lease,
+                        outcome,
+                        operation,
+                        expected_stream.as_ref(),
+                    ),
+                    Err(error) => {
+                        let typed = transport_error(&error);
+                        lease.settle(if typed.code == ExtensionErrorCode::ExtensionDisconnected {
+                            echo_agent::acp::ExtensionSettlement::Disconnected
+                        } else {
+                            echo_agent::acp::ExtensionSettlement::Answered
+                        });
+                        Err(typed)
+                    }
+                }
+            };
+            // A response is a callback-return fact. The lease and session guard
+            // must be released before the framework driver observes that fact.
+            // Prior stream notifications are routed inline by the ACP
+            // dispatch loop before this ordered response callback. At this
+            // point callback return without a terminal is an invalid flow,
+            // not permission to wait forever for user-detached work.
+            if response_policy == CallbackStreamPolicy::Channel
+                && matches!(&result, Ok(None))
+                && let Some(sink) = response_sink.as_ref()
+            {
+                sink.terminate(|sequence| ExtensionStreamEvent::Failed {
+                    stream: sink.stream_handle().clone(),
+                    sequence,
+                    error: sdk_error(
+                        ExtensionErrorCode::SerializationViolation,
+                        "channel callback returned without a stream terminal",
+                        Retryability::Never,
+                        "_echo_agent/extension/stream",
+                    ),
+                });
+            }
+            let result = match result {
+                Err(error) if super::wire::has_observation_hint(&error) => {
+                    let refusal = response_owner.retain_unknown(error.clone());
+                    Err(refusal.unwrap_or(error))
+                }
+                result => result,
+            };
+            let result = if response_policy == CallbackStreamPolicy::CustomAgent
+                && !actual_setup_ack
+                && !actual_final_response
+                && !matches!(&result, Err(error) if super::wire::has_observation_hint(error))
+            {
+                let diagnostic = invalid_observation(
+                    "original producer has no final peer response or matching stream ACK",
+                );
+                // The consumer must observe this same uncertainty, even
+                // without a legal framework identity. An ordinary decoder
+                // or ACK error would otherwise end the still-owned source.
+                Err(response_owner
+                    .retain_unknown(diagnostic.clone())
+                    .unwrap_or(diagnostic))
+            } else {
+                result
+            };
+            if response_policy == CallbackStreamPolicy::CustomAgent || response_owner.observed() {
+                // The existing CustomAgent protocol permits a setup answer
+                // before its producer sends terminal. Retain this same lease
+                // until both the real answer and declared terminal exist.
+                *response_owner
                     .retained_lease
                     .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .take()
-                else {
-                    let error =
-                        invalid_observation("original callback response lost its retained lease");
-                    response_owner.retain_unknown(error.clone());
-                    let _ = sender.send(Err(error));
-                    return Ok(());
-                };
-                let source_observation = match &answer {
-                    Ok(ExtensionInvokeOutcome::Error { error })
-                        if super::wire::has_observation_hint(error) =>
-                    {
-                        Some(error.clone())
-                    }
-                    Err(error) if raw_observation_hint(error.data.as_ref()) => {
-                        Some(transport_error(error))
-                    }
-                    Err(error)
-                        if response_policy == CallbackStreamPolicy::CustomAgent
-                            && agent_client_protocol::is_incoming_transport_closed(error) =>
-                    {
-                        Some(invalid_observation(
-                            "original producer transport closed without physical settlement proof",
-                        ))
-                    }
-                    _ => None,
-                };
-                let actual_setup_ack = response_policy == CallbackStreamPolicy::CustomAgent
-                    && matches!(&answer, Ok(ExtensionInvokeOutcome::Stream { stream })
-                        if expected_stream.as_ref() == Some(stream) && stream.validate().is_ok());
-                let acknowledged_factory_close = match &answer {
-                    Ok(
-                        outcome @ ExtensionInvokeOutcome::Result {
-                            result: result @ ExtensionResult::AgentClose(_),
-                        },
-                    ) if operation == ExtensionOperation::AgentClose
-                        && !response_owner.observed()
-                        && outcome.validate().is_ok()
-                        && bridge.ensure_payload_bound(result, false).is_ok() =>
-                    {
-                        Some(result.clone())
-                    }
-                    _ => None,
-                };
-                let interruption = response_interrupted
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .clone()
-                    .or_else(|| {
-                        response_cancellation.is_cancelled().then(|| {
-                            sdk_error(
-                                ExtensionErrorCode::Cancelled,
-                                "channel callback was cancelled",
-                                Retryability::Never,
-                                "_echo_agent/extension/invoke",
-                            )
-                        })
-                    });
-                let result = if let Some(error) = source_observation {
-                    Err(error)
-                } else if let Some(error) = interruption {
-                    let settlement = if error.code == ExtensionErrorCode::ExtensionTimeout {
-                        echo_agent::acp::ExtensionSettlement::TimedOut
-                    } else {
-                        echo_agent::acp::ExtensionSettlement::Cancelled
-                    };
-                    lease.settle(settlement);
-                    if actual_setup_ack {
-                        *response_owner
-                            .pending_failure
-                            .lock()
-                            .unwrap_or_else(|error| error.into_inner()) = Some(error);
-                        Ok(None)
-                    } else {
-                        Err(error)
-                    }
-                } else {
-                    match answer {
-                        Ok(outcome) => bridge.settle_outcome(
-                            &mut lease,
-                            outcome,
-                            operation,
-                            expected_stream.as_ref(),
-                        ),
-                        Err(error) => {
-                            let typed = transport_error(&error);
-                            lease.settle(
-                                if typed.code == ExtensionErrorCode::ExtensionDisconnected {
-                                    echo_agent::acp::ExtensionSettlement::Disconnected
-                                } else {
-                                    echo_agent::acp::ExtensionSettlement::Answered
-                                },
-                            );
-                            Err(typed)
-                        }
-                    }
-                };
-                // A response is a callback-return fact. The lease and session guard
-                // must be released before the framework driver observes that fact.
-                // Prior stream notifications are routed inline by the ACP
-                // dispatch loop before this ordered response callback. At this
-                // point callback return without a terminal is an invalid flow,
-                // not permission to wait forever for user-detached work.
-                if response_policy == CallbackStreamPolicy::Channel
-                    && matches!(&result, Ok(None))
-                    && let Some(sink) = response_sink.as_ref()
-                {
-                    sink.terminate(|sequence| ExtensionStreamEvent::Failed {
-                        stream: sink.stream_handle().clone(),
-                        sequence,
-                        error: sdk_error(
-                            ExtensionErrorCode::SerializationViolation,
-                            "channel callback returned without a stream terminal",
-                            Retryability::Never,
-                            "_echo_agent/extension/stream",
-                        ),
-                    });
-                }
-                let result = match result {
-                    Err(error) if super::wire::has_observation_hint(&error) => {
-                        let refusal = response_owner.retain_unknown(error.clone());
-                        Err(refusal.unwrap_or(error))
-                    }
-                    result => result,
-                };
-                let result = if response_policy == CallbackStreamPolicy::CustomAgent
-                    && !actual_setup_ack
-                    && !actual_final_response
-                    && !matches!(&result, Err(error) if super::wire::has_observation_hint(error))
-                {
-                    let diagnostic = invalid_observation(
-                        "original producer has no final peer response or matching stream ACK",
-                    );
-                    // The consumer must observe this same uncertainty, even
-                    // without a legal framework identity. An ordinary decoder
-                    // or ACK error would otherwise end the still-owned source.
-                    Err(response_owner
-                        .retain_unknown(diagnostic.clone())
-                        .unwrap_or(diagnostic))
-                } else {
-                    result
-                };
-                if response_policy == CallbackStreamPolicy::CustomAgent || response_owner.observed()
-                {
-                    // The existing CustomAgent protocol permits a setup answer
-                    // before its producer sends terminal. Retain this same lease
-                    // until both the real answer and declared terminal exist.
-                    *response_owner
-                        .retained_lease
-                        .lock()
-                        .unwrap_or_else(|error| error.into_inner()) = Some(lease);
-                } else {
-                    response_owner.finished.cancel();
-                    drop(lease);
-                }
-                response_owner.record_original_peer_response(actual_peer_response);
-                if response_policy == CallbackStreamPolicy::CustomAgent
-                    && actual_final_response
-                    && !response_owner.observed()
-                {
-                    // Return the same owner's guards and lease before either
-                    // the facade or consumer can observe this final response.
-                    response_owner
-                        .finish_original_physical_closure_with_reply(acknowledged_factory_close);
-                } else if let Some(sink) = response_sink.as_ref() {
-                    response_owner.finish_if_original_physical_facts(sink);
-                }
-                drop(response_owner);
-                let _ = sender.send(result);
-                Ok(())
-            })
-            .map_err(|error| transport_error(&error))?;
+                    .unwrap_or_else(|error| error.into_inner()) = Some(lease);
+            } else {
+                response_owner.finished.cancel();
+                drop(lease);
+            }
+            response_owner.record_original_peer_response(actual_peer_response);
+            if response_policy == CallbackStreamPolicy::CustomAgent
+                && actual_final_response
+                && !response_owner.observed()
+            {
+                // Return the same owner's guards and lease before either
+                // the facade or consumer can observe this final response.
+                response_owner
+                    .finish_original_physical_closure_with_reply(acknowledged_factory_close);
+            } else if let Some(sink) = response_sink.as_ref() {
+                response_owner.finish_if_original_physical_facts(sink);
+            }
+            drop(response_owner);
+            let _ = sender.send(result);
+            Ok(())
+        })
+        .map_err(|error| {
+            let error = transport_error(&error);
+            // 已越过send尝试，注册失败与driver退出均不提供原物理关闭证明。
+            // 用同一注册记录强持原owner；保持原transport错误映射，不补造执行身份。
+            let _ = owner.retain_unknown(error.clone());
+            error
+        })?;
         Ok(receiver)
     }
 
@@ -1609,7 +1638,7 @@ impl ExtensionBridge {
             cancellation,
             CallbackStreamPolicy::Channel,
             owner,
-            None,
+            (None, None),
         )?;
         response
             .await
@@ -1690,7 +1719,7 @@ impl ExtensionBridge {
             cancellation,
             CallbackStreamPolicy::Channel,
             owner.clone(),
-            Some(sink.clone()),
+            (Some(sink.clone()), None),
         )?;
         // Setup does not wait for the RPC response. Native callbacks may await
         // their entire producer/finally before returning that response.
@@ -1724,9 +1753,39 @@ impl ExtensionBridge {
         >,
         EchoSdkError,
     > {
+        self.invoke_owned_producer_stream_with_resources(
+            extension,
+            contexts,
+            invocation,
+            cancellation,
+            facade_observer,
+            (tool_context, Vec::new()),
+        )
+        .await
+    }
+
+    async fn invoke_owned_producer_stream_with_resources(
+        &self,
+        extension: &WireHandle,
+        contexts: (
+            ExtensionInvocationContext,
+            Option<echo_agent::agent::AgentInvocationContext>,
+        ),
+        invocation: ExtensionInvocation,
+        cancellation: CancellationToken,
+        facade_observer: Option<super::facade::stream::FacadeStreamProducer>,
+        resources: (Option<ToolContext>, Vec<InvocationResourceGuard>),
+    ) -> std::result::Result<
+        futures::stream::BoxStream<
+            'static,
+            std::result::Result<ExtensionStreamEvent, EchoSdkError>,
+        >,
+        EchoSdkError,
+    > {
         // Keep the original wire scope and retained framework context paired;
         // neither is rebuilt from the other or assigned a replacement owner.
         let (context, agent_invocation) = contexts;
+        let (tool_context, command_resources) = resources;
         let operation = invocation.operation();
         let (lease, record, _authority) =
             self.prepare(extension, operation, &invocation, cancellation.clone())?;
@@ -1745,6 +1804,7 @@ impl ExtensionBridge {
             callback_owner_init._agent_invocation = Mutex::new(agent_invocation);
             callback_owner_init.facade_observer = facade_observer;
             callback_owner_init.tool_context = Mutex::new(tool_context);
+            callback_owner_init.command_resources = Mutex::new(command_resources);
             callback_owner_init.retained_lease = Arc::new(Mutex::new(None));
             callback_owner_init.response_completed = CancellationToken::new();
             callback_owner_init.pending_failure = Mutex::new(None);
@@ -1789,7 +1849,7 @@ impl ExtensionBridge {
             cancellation,
             CallbackStreamPolicy::CustomAgent,
             owner.clone(),
-            Some(sink.clone()),
+            (Some(sink.clone()), None),
         )?;
         Ok(owned_callback_event_stream(
             owner,
@@ -2018,6 +2078,8 @@ pub(crate) struct CallbackInvocationOwner {
     context: Mutex<Option<ExtensionInvocationContext>>,
     factory_context: Mutex<Option<Arc<FactoryInstanceLease>>>,
     tool_context: Mutex<Option<ToolContext>>,
+    // 本机命令资源只交给此原owner；setup/观察者取消都不能替代物理闭合。
+    command_resources: Mutex<Vec<InvocationResourceGuard>>,
     observation: Mutex<Option<EchoSdkError>>,
     refusal: Mutex<Option<EchoSdkError>>,
     observation_changed: Notify,
@@ -2319,7 +2381,7 @@ impl CallbackInvocationOwner {
     }
 
     fn finish_original_physical_closure_with_reply(&self, original_reply: Option<ExtensionResult>) {
-        let (lease, tool_context, agent_invocation, factory_context, record) = {
+        let (lease, tool_context, command_resources, agent_invocation, factory_context, record) = {
             let _state = self
                 .state_gate
                 .lock()
@@ -2337,6 +2399,12 @@ impl CallbackInvocationOwner {
                 .lock()
                 .unwrap_or_else(|error| error.into_inner())
                 .take();
+            let command_resources = std::mem::take(
+                &mut *self
+                    .command_resources
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner()),
+            );
             let agent_invocation = self
                 ._agent_invocation
                 .lock()
@@ -2355,6 +2423,7 @@ impl CallbackInvocationOwner {
             (
                 lease,
                 tool_context,
+                command_resources,
                 agent_invocation,
                 factory_context,
                 record,
@@ -2367,6 +2436,7 @@ impl CallbackInvocationOwner {
             factory.clear_after_original_physical_closure();
         }
         drop(tool_context);
+        drop(command_resources);
         drop(agent_invocation);
         drop(lease);
         if let Some(factory) = factory_context.as_ref()
@@ -4671,6 +4741,7 @@ impl ExtensionAgentComponentProxy {
                     cancellation: self.bridge.connection_cancellation(),
                     resolve_run_cancellation,
                     submitted: None,
+                    command_resources: Vec::new(),
                 },
             )
             .await
@@ -4698,12 +4769,53 @@ impl ExtensionAgentComponentProxy {
         Ok(result.result)
     }
 
+    async fn sandbox_invocation_scope<'scope>(
+        &self,
+        command: &mut echo_agent::sandbox::SandboxCommand,
+        explicit: Option<Arc<CancellationToken>>,
+    ) -> ReverseInvocationScope<'scope> {
+        let selected = explicit.or_else(|| command.cancel.take());
+        let cancellation = match selected.as_deref() {
+            Some(selected) => selected.clone(),
+            None => {
+                self.bridge
+                    .cancellation_for_context(
+                        Some(&session_invocation_context(&self.session_id)),
+                        self.bridge.connection_cancellation(),
+                    )
+                    .await
+            }
+        };
+        ReverseInvocationScope {
+            // 外层cleanup和原lease观察同一选择；后续不能再换成另一个active Run。
+            resolve_run_cancellation: false,
+            cancellation,
+            submitted: None,
+            command_resources: std::mem::take(&mut command.resource_guards),
+        }
+    }
+
     async fn invoke_with_cancellation(
         &self,
         call: AgentComponentCallInputWire,
-        cancellation: CancellationToken,
+        scope: ReverseInvocationScope<'_>,
     ) -> echo_agent::error::Result<AgentComponentCallResultWire> {
         let operation = call.operation();
+        // 普通execute/limits保持原Agent错误映射，带cancel入口保持原Sandbox错误映射。
+        let map_error: fn(EchoSdkError) -> ReactError =
+            if operation == AgentComponentOperationWire::SandboxExecuteWithLimitsAndCancel {
+                sandbox_react_error
+            } else {
+                react_error
+            };
+        if scope.cancellation.is_cancelled() {
+            return Err(map_error(sdk_error(
+                ExtensionErrorCode::Cancelled,
+                "sandbox command was cancelled before submission",
+                Retryability::Never,
+                "_echo_agent/extension/invoke",
+            )));
+        }
         if operation.component() != self.component {
             return Err(ReactError::Other(
                 "agent component operation does not match its descriptor".to_string(),
@@ -4711,17 +4823,17 @@ impl ExtensionAgentComponentProxy {
         }
         let result = self
             .bridge
-            .invoke_once(
+            .invoke_once_with_scope(
                 &self.extension,
                 Some(session_invocation_context(&self.session_id)),
                 ExtensionInvocation::AgentComponentCall(AgentComponentCallWire {
                     component: self.component,
                     call,
                 }),
-                cancellation,
+                scope,
             )
             .await
-            .map_err(sandbox_react_error)?;
+            .map_err(map_error)?;
         let ExtensionResult::AgentComponentCall(result) = result else {
             return Err(ReactError::Other(
                 "agent component extension returned the wrong result variant".to_string(),
@@ -6370,7 +6482,7 @@ impl echo_agent::tasks::RevisionedTaskStore for ExtensionAgentComponentProxy {
 impl ExtensionAgentComponentProxy {
     pub(crate) fn execute_stream_with_cancel<'a>(
         &'a self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
         cancellation: CancellationToken,
         facade_observer: Option<super::facade::stream::FacadeStreamProducer>,
     ) -> futures::future::BoxFuture<
@@ -6384,22 +6496,35 @@ impl ExtensionAgentComponentProxy {
         >,
     > {
         Box::pin(async move {
+            let command_value = component_value(&command)?;
+            let scope = self
+                .sandbox_invocation_scope(&mut command, Some(Arc::new(cancellation)))
+                .await;
+            let cancellation = scope.cancellation;
+            if cancellation.is_cancelled() {
+                return Err(react_error(sdk_error(
+                    ExtensionErrorCode::Cancelled,
+                    "sandbox command was cancelled before submission",
+                    Retryability::Never,
+                    "_echo_agent/extension/invoke",
+                )));
+            }
             let invocation =
                 ExtensionInvocation::AgentComponentCallStream(AgentComponentCallWire {
                     component: self.component,
                     call: AgentComponentCallInputWire::SandboxExecuteStream {
-                        command: component_value(command)?,
+                        command: command_value,
                     },
                 });
             let source = self
                 .bridge
-                .invoke_owned_producer_stream(
+                .invoke_owned_producer_stream_with_resources(
                     &self.extension,
                     (session_invocation_context(&self.session_id), None),
                     invocation,
                     cancellation.clone(),
                     facade_observer,
-                    None,
+                    (None, scope.command_resources),
                 )
                 .await
                 .map_err(react_error)?;
@@ -6488,16 +6613,21 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
 
     fn execute(
         &self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
     ) -> futures::future::BoxFuture<
         '_,
         echo_agent::error::Result<echo_agent::sandbox::ExecutionResult>,
     > {
         Box::pin(async move {
+            let command_value = component_value(&command)?;
+            let scope = self.sandbox_invocation_scope(&mut command, None).await;
             let result = self
-                .invoke(AgentComponentCallInputWire::SandboxExecute {
-                    command: component_value(command)?,
-                })
+                .invoke_with_cancellation(
+                    AgentComponentCallInputWire::SandboxExecute {
+                        command: command_value,
+                    },
+                    scope,
+                )
                 .await?;
             match result {
                 AgentComponentCallResultWire::SandboxExecute { result } => component_decode(result),
@@ -6529,25 +6659,41 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
                 }))
                     as Pin<Box<dyn futures::Stream<Item = _> + Send + 'a>>);
             }
-            self.execute_stream_with_cancel(command, self.bridge.connection_cancellation(), None)
+            let cancellation = match command.cancel.as_deref() {
+                Some(cancellation) => cancellation.clone(),
+                None => {
+                    self.bridge
+                        .cancellation_for_context(
+                            Some(&session_invocation_context(&self.session_id)),
+                            self.bridge.connection_cancellation(),
+                        )
+                        .await
+                }
+            };
+            self.execute_stream_with_cancel(command, cancellation, None)
                 .await
         })
     }
 
     fn execute_with_limits(
         &self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
         limits: echo_agent::sandbox::ResourceLimits,
     ) -> futures::future::BoxFuture<
         '_,
         echo_agent::error::Result<echo_agent::sandbox::ExecutionResult>,
     > {
         Box::pin(async move {
+            let command_value = component_value(&command)?;
+            let scope = self.sandbox_invocation_scope(&mut command, None).await;
             let result = self
-                .invoke(AgentComponentCallInputWire::SandboxExecuteWithLimits {
-                    command: component_value(command)?,
-                    limits: component_value(limits)?,
-                })
+                .invoke_with_cancellation(
+                    AgentComponentCallInputWire::SandboxExecuteWithLimits {
+                        command: command_value,
+                        limits: component_value(limits)?,
+                    },
+                    scope,
+                )
                 .await?;
             match result {
                 AgentComponentCallResultWire::SandboxExecuteWithLimits { result } => {
@@ -6562,7 +6708,7 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
 
     fn execute_with_limits_and_cancel(
         &self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
         limits: echo_agent::sandbox::ResourceLimits,
         cancel: Option<Arc<CancellationToken>>,
     ) -> futures::future::BoxFuture<
@@ -6570,20 +6716,21 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
         echo_agent::error::Result<echo_agent::sandbox::ExecutionResult>,
     > {
         Box::pin(async move {
-            let cancellation = cancel
-                .as_deref()
-                .cloned()
-                .unwrap_or_else(|| self.bridge.connection_cancellation());
+            let command_value = component_value(&command)?;
+            let submitted = AtomicBool::new(false);
+            let mut scope = self.sandbox_invocation_scope(&mut command, cancel).await;
+            scope.submitted = Some(&submitted);
+            let cancellation = scope.cancellation.clone();
             let result = self
                 .invoke_with_cancellation(
                     AgentComponentCallInputWire::SandboxExecuteWithLimitsAndCancel {
-                        command: component_value(command)?,
+                        command: command_value,
                         limits: component_value(limits)?,
                     },
-                    cancellation.clone(),
+                    scope,
                 )
                 .await;
-            if cancellation.is_cancelled() {
+            if cancellation.is_cancelled() && submitted.load(Ordering::Acquire) {
                 // Cleanup settles local resources after Run cancellation;
                 // inheriting that already-cancelled token would drop its
                 // response before the SDK acknowledges the actual cleanup.
@@ -7648,6 +7795,7 @@ impl ExtensionAgentCallbackProxy {
                         cancellation: bridge.connection_cancellation(),
                         resolve_run_cancellation,
                         submitted: None,
+                        command_resources: Vec::new(),
                     },
                 )
                 .await
@@ -8064,6 +8212,7 @@ impl echo_agent::agent::subagent::AgentFactory for SubagentFactoryAdapter {
                         cancellation: bridge.connection_cancellation(),
                         resolve_run_cancellation: true,
                         submitted: Some(&factory_lease.construction_submitted),
+                        command_resources: Vec::new(),
                     },
                 )
                 .await
@@ -9962,7 +10111,7 @@ mod tests {
                                     CallbackStreamPolicy::Channel
                                 },
                                 owner.clone(),
-                                streaming.then(|| sink.clone()),
+                                (streaming.then(|| sink.clone()), None),
                             )
                             .map_err(|error| RpcError::internal_error().data(error.message))?,
                     );
@@ -10089,7 +10238,7 @@ mod tests {
                             CancellationToken::new(),
                             CallbackStreamPolicy::Channel,
                             independent_owner,
-                            None,
+                            (None, None),
                         )
                         .map_err(|error| RpcError::internal_error().data(error.message))?;
                     assert!(matches!(

@@ -4,7 +4,20 @@ Status: SDK consumer withdrawal under [ADR 0042](../../adr/0042-sdk-a2a-lsp-reti
 The original266 inventory below is a historical baseline; current Plan04
 withdraws269. 消费者撤出、Framework物理删除及SDK正式采用删后源分别验收；原固定pin不反向证明新源已采用。This document is not a second accepted-contract authority.
 
-## 2026-10-28：Framework 删除后的薄投影接缝准备
+## 2026-10-31：正式采用删后来源
+
+当前正式 Host 通过 HTTPS 精确采用 framework `340993201cc937fc8e4783b66be399ef9f14e3d5`
+（tree `e6c28f37a881f41bb549452614313557b7c91c68`），SDK 锁 SHA-256 为
+`c4488065aa4a94a8a073e427aeddfefe7670d93b709b82555b39f2431954e1c7`。
+当前 accepted 集合从5352项退役11项、接受3项 with_id 方法后为5344项身份／430条路由；
+native 新增 Rust source 身份为零，没有超出具名批准范围的接受项。后续具名来源处置见
+[ADR0044](../../adr/0044-sdk-source-disposition-native-callback.md)。本地验证保留原18项
+各自源码与运行资格，正式采用通过完整内容身份桥接，不替代精确 main CI、平台原生或发布验收。
+
+下文2026-10-28准备、Plan04撤出及原基线表均为历史切点。原269身份／23路由／39操作、
+5352／431、旧 pin 和锁统计保持原值；当前430条路由不重写为原 LSP 多退役一条。
+
+## 2026-10-28：Framework 删除后的薄投影接缝准备（历史）
 
 SDK Host 的 `resolved_plugin_components_value` 已按治理 SDK1 补丁解除对
 `ResolvedComponents::lsp_config_file` 的编译依赖。旧声明的发现与诊断继续由
@@ -551,3 +564,12 @@ Feature: `lsp`; Host passthrough: `framework-lsp`; family method: `_echo_agent/l
 绑定真实删除提交、正式manifest/lock、同源Host及原合同门禁；受控path只提供其明确范围。
 当前5352/431保留合同与269/23/39原撤销证明各自保持，不从完整inventory遥测推接受范围，
 不以共享投影文案更新冒编译或正式Git资格。旧固定基线表及历史失败回执不重标新结果。
+
+
+## 2026-10-31：Framework 340 组合的精确后继
+
+原 Plan04 的固定 rollback 基线、266 项家族身份＋3 项具名补充、23 条路由、39 个操作和 ADR0042 的269项对账继续逐项检查。当前组合在该基线上仅增加已批准的11项具名退休与3个带原生调用ID的回调接入，最终 accepted 为5344、可执行路由为430。
+
+13条保留记录按完整前后记录摘要精确承接，其余 retained 记录继续逐项相等；摘要不跳过签名、route、语言映射或其它字段。旧rollback到当前的7条保留route变化也逐条固定前后摘要；其中包含原Plan04已产生的value聚合变化，不能与formal3f到当前的6条变化混用。除原23条A2A/LSP路由外，只新增退出精确旧DELETE source route，家族和操作集合不扩张。
+
+正式caller的完整生成检查、语言导出检查、Protocol无Framework依赖图、五组Protocol原测试保持。来源metadata在all-features下完整解析，八个Framework与五个vendor的名字、版本、source须组成精确13包HTTPS340集合。来源pin接续不等于依赖风险接受；SDK deny基线仍按其独立真实scanner与精组复核另行裁决，不自动续期。

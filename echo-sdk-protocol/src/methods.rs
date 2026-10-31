@@ -5067,6 +5067,21 @@ impl ExtensionInvokeCall {
             context.validate()?;
         }
         let operation = self.invocation.operation();
+        if let ExtensionInvocation::AgentComponentCall(component)
+        | ExtensionInvocation::AgentComponentCallStream(component) = &self.invocation
+        {
+            match &component.call {
+                AgentComponentCallInputWire::SandboxExecute { command }
+                | AgentComponentCallInputWire::SandboxExecuteStream { command }
+                | AgentComponentCallInputWire::SandboxExecuteWithLimits { command, .. }
+                | AgentComponentCallInputWire::SandboxExecuteWithLimitsAndCancel {
+                    command, ..
+                } => {
+                    crate::facade::validate_sandbox_command_value(command)?;
+                }
+                _ => {}
+            }
+        }
         if let ExtensionInvocation::FactoryCreateAgent(config) = &self.invocation {
             config
                 .instance

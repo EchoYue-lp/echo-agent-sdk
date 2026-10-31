@@ -1,5 +1,35 @@
 # ADR0043：SDK 无损消费 Framework 原生消息
 
+## 2026-10-30：Store authority 的 fallible setter 与 SDK 来源组合（待采用）
+
+Framework已批准保持四个pub setter和原工具注册语义，仅把set_store/install_store返回值改为
+既有Result<()>；同一private Arc fence在不同MemoryLayerManager Store时拒绝，且在busy或
+冲突时不提前发布Store、promoter或工具变化。无manager A→B和同Arc继续合法。
+
+SDK只沿原accepted set_store source route消费Result：Err经现有wire::framework_error保原
+operation与failure字段，Ok仍回Null；不把raw setter改调会注册recall/search工具的safe安装器。
+Host自动set_memory_store原Result路径保持，三语言generic call和原Store/error DTO不新增协议。
+
+受控49d源码上，明确工程before以局部let _丢弃新Err，实际04RPC返回Null而失败；after仅换为
+原mapper消费，04真实error.data/ownership/source tuple及A-manager状态全部通过。before/after
+都NoRun0/W0，新的H/P编译freshfalse/实际源码绑定；新同源stdioHost及原Host memory两控制、
+TS32/PY2/Java2最小消费者通过，保无manager A→B、权限效果和错误DTO。原n01工程W1只保历史。
+
+这些结果不证明正式f7组合可编译：f7两低层setter仍返回unit，不能单独将map_err落入仍pin f7
+的正式Host。Root已正常保存本地Framework340993201cc937fc8e4783b66be399ef9f14e3d5，
+其2261非semantic工程成员逐Git blob SHA/权限与受控49d匹配；它仍未发布、远端可取性未验。
+正常正式采用必须把SDK三源码路径、build来源/pin/官方锁解析、原完整producer真实签名和
+适用消费者作为同一组合审查；本段仍为ignored草稿，不改变正式合同或授予published来源资格。
+
+set_store已在accepted中，unit→Result是既有接受身份的签名变化，不是新增接受操作，也非仅
+Rust遥测。install_store单独仍host_or_rust_only。原producer按精确身份/kind保范围、列真实
+签名/聚合/退役变化，不手写accepted/catalog/source-contract，不根据父ReactAgent或done扩面。
+新增身份或缺失/退役需具体裁决；官方风险扫描、fullSDK/Parquet、包/平台/main/native验收仍独立。
+
+示例与官网：本组合没有新增语言API或产品能力，不改示例/官网文案；原示例与完整消费义务仍
+在正式来源后验证，不用本片最小集合替代。格式化在正常采用前用原工具检查，并对纯格式后继
+按非语义diff复核；当前测试票只绑定具名实际源字节。
+
 ## 2026-10-30：三语言原失败夹具接入当前合同
 
 原完整语言入口在 TypeScript 396通过、14失败、1平台跳过处自然退出1；同一 Host 与
@@ -399,11 +429,22 @@ ExecutionStatus 只逐字段投影原执行身份、请求、序号、阶段、�
 
 ## 来源与 accepted 范围
 
-当前正式 manifest 继续 pin `f7bac62`，新 canonical 类型的工作树定义不被伪装为公开合格 revision。协议和 adapter 可先形成可审候选；旧 pin 收到无法支持的新事件时明确拒绝，后继精确来源、Host 消费和正式生成须独立验证。
+候选形成时，正式 manifest 仍 pin `f7bac62`；当时新 canonical 类型的工作树定义不被伪装为公开合格 revision。协议和 adapter 先形成可审候选；旧 pin 收到无法支持的新事件时明确拒绝，后继精确来源、Host 消费和正式生成分别验证。
 
-本切片不自动新增或撤销 Rust accepted 身份。现有 5352 accepted 身份／431 routes 中 ThinkTool、FinalAnswerTool 的精确命中为零；它们目前只见完整 Rust inventory 遥测。原 A2A/LSP 的 269 身份／23 routes／39 operations 撤销证明保留。后继新增 canonical 类型或字段的 accepted delta 必须由实际生成器及明确具名依据列出，不能把 inventory 当成承诺全集。
+本切片不自动新增或撤销 Rust accepted 身份。候选形成时的 5352 accepted 身份／431 routes 中 ThinkTool、FinalAnswerTool 的精确命中为零；它们当时只见完整 Rust inventory 遥测。原 A2A/LSP 的 269 身份／23 routes／39 operations 撤销证明保留。后继新增 canonical 类型或字段的 accepted delta 必须由实际生成器及明确具名依据列出，不能把 inventory 当成承诺全集。
 
 后继具名旧 COT 控制撤销同样逐项检索：当前 accepted 中 enable_cot／disable_cot／is_cot_enabled／COT_INSTRUCTION 命中亦为零，故具名 source/kind 撤销数为零，不修改旧 A2A/LSP 269 项证明。聚合 AgentConfig／Message 等的实际签名 delta 仍须在正式来源下生成后核准；不能因具名撤销为零便声称聚合签名无变化。只移除 SDK 私有旧 ThinkTool 构造分类行，不扩删原生 thinking、opaque、公共回调或其它合理 API。
+
+### 2026-10-31 实现状态
+
+正式 Host 已通过 HTTPS 精确采用 framework `340993201cc937fc8e4783b66be399ef9f14e3d5`
+（tree `e6c28f37a881f41bb549452614313557b7c91c68`），SDK 锁 SHA-256 为
+`c4488065aa4a94a8a073e427aeddfefe7670d93b709b82555b39f2431954e1c7`。
+唯一生成器及[ADR0044](0044-sdk-source-disposition-native-callback.md)的具名处置后，
+accepted 集合从5352项退役11项、接受3项 with_id 方法后为5344项身份／430条路由；
+native 新增 Rust source 身份为零，没有超出具名批准范围的接受项。完整本地18项验证保留各自真实
+源码切点，末次完整语言入口及报告校验继任已经执行；正式采用通过完整内容身份桥接，
+不重标旧失败或旧来源，不替代精确 SDK main CI、平台原生及发布验收。
 
 ## 验证与影响
 

@@ -98,8 +98,7 @@ remains framework-owned.
 rule evaluation remains framework-owned.
 `RuleBehavior` exposes allow/deny/ask payloads and decision conversion while
 rule evaluation remains framework-owned.
-`PermissionMode` exposes aliases and policy helpers while mode evaluation
-remains framework-owned.
+`PermissionMode` 只解析八个精确 canonical ID，拒绝旧别名、大小写变化及首尾空白；策略 helper 与 wire 输出保持，权限求值仍归 Framework。
 `RuleMatcher` exposes pure tool/pattern/permission/all matching semantics while
 registry evaluation remains framework-owned.
 `CommandCellPhase` exposes stable phases and terminal classification while
@@ -373,3 +372,11 @@ SDK infer physical cleanup. Full inventory and intrinsic membership remain
 non-blocking telemetry.
 
 The source verification suite and standalone quickstart use a test-scoped `slf4j-nop` provider matching `slf4j-api` 2.0.18. This explicitly preserves SLF4J’s default no-operation behavior without missing-provider warnings. The SDK library’s compile/runtime dependencies do not include this provider; applications choose their own logging provider.
+
+## 当前 Sandbox 命令与退役删除边界
+
+Sandbox命令继续传递六字段值：`kind`、`minimum_isolation`、`working_dir`、`env`、`timeout`、`stdin`，保持原Shell/Program/Code、可选缺省/Null与Duration表示。Host拒绝未知顶层字段和本机`resource_guards`/`cancel`注入；这两个字段只由原Rust物理调用owner持有，不能通过JSON构造。裸SandboxCommand没有新增可调用handle。
+
+旧`echo_agent::state::delete_persisted_conversation`已退出可执行catalog；精确调用返回`feature_unavailable`、`never`、原operation与退役说明。本地拒绝不提交RPC或生成managed身份；managed删除必须保留原请求身份。相近名字、大小写、未知操作与关闭句柄继续原语言合同。
+
+Java的`invoke`、`call`和`SessionHandle.invoke`通过失败CompletionStage交付精确退役拒绝；已关闭Session优先`stale_handle`，已开始关闭的Client对精确旧DELETE优先`host_exited`。普通未知操作和FacadeCatalog元数据查询保持原同步查找异常。

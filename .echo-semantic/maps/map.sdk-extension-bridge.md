@@ -13,6 +13,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-sandbox-and-canonical-input-consumption
 - evidence.sdk-channel-message-handler-consumer-audit
 - evidence.sdk-managed-retirement
 - evidence.sdk-managed-supporting-operation-boundary

@@ -1,6 +1,14 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { EchoAgentError } from "./errors.js";
+
+// 退役拒绝不产生可执行路由或请求身份；相近名字仍走原catalog查找错误。
+function rejectRetiredDelete(operation: string): void {
+  if (operation === "echo_agent::state::delete_persisted_conversation") {
+    throw new EchoAgentError("feature_unavailable", "unmanaged conversation deletion is retired; use delete_persisted_conversation_managed with the original request identity", "never", operation);
+  }
+}
 
 export interface CatalogRoute {
   readonly family: string;
@@ -132,6 +140,7 @@ export class FacadeCatalog {
   }
 
   signature(operation: string): string {
+    rejectRetiredDelete(operation);
     const digests = this.operationRoutes.get(operation)?.signature_digests;
     const digest = digests?.[0];
     if (!digest) throw new Error(`operation is absent from the canonical catalog: ${operation}`);
@@ -148,6 +157,7 @@ export class FacadeCatalog {
   }
 
   resolve(operation: string): ResolvedOperation {
+    rejectRetiredDelete(operation);
     const direct = this.operationRoutes.get(operation);
     if (direct?.method && direct.signature_digests?.[0]) {
       return {

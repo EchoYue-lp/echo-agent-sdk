@@ -2935,7 +2935,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:fb9752c3f79c33f69eab8cb3d7207bab8203ef562ad04f51d8e9713988cab69f"
+          "digest": "sha256:6f9ff234cefcc1e989d012e63861279e468cc38ca8da2a7a9e190a3445b7d6c8"
         }
       ],
       "classification": "operation",
@@ -2954,7 +2954,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:fb9752c3f79c33f69eab8cb3d7207bab8203ef562ad04f51d8e9713988cab69f"
+            "digest": "sha256:6f9ff234cefcc1e989d012e63861279e468cc38ca8da2a7a9e190a3445b7d6c8"
           }
         ],
         "mapping": "echo_extension via callable-operation; Rust remains authoritative",
@@ -2993,7 +2993,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:b5e614a34602a2e9d2ab5ec4d01c60eb8b101d491a5b9bce96193d0e10192c39"
+          "digest": "sha256:95b9f71f60df371737ca22a1989f3b12469fe249219f750fd13befc9e60c5069"
         }
       ],
       "classification": "stream",
@@ -3012,7 +3012,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:b5e614a34602a2e9d2ab5ec4d01c60eb8b101d491a5b9bce96193d0e10192c39"
+            "digest": "sha256:95b9f71f60df371737ca22a1989f3b12469fe249219f750fd13befc9e60c5069"
           }
         ],
         "mapping": "echo_extension via async-stream-signature; Rust remains authoritative",
@@ -4440,17 +4440,17 @@
       }
     },
     {
-      "path": "echo_agent::agent::AgentCallback::on_tool_end",
+      "path": "echo_agent::agent::AgentCallback::on_tool_end_with_id",
       "kind": "method",
       "source_paths": [
-        "echo_core::agent::AgentCallback::on_tool_end"
+        "echo_core::agent::AgentCallback::on_tool_end_with_id"
       ],
       "features": [],
       "full_only": false,
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:e0ea9b0333b916fee4f1130bfaa104b8d29d4688c2e3a410a78b722481da40ee"
+          "digest": "sha256:b7b209541d175e7f5b2e086b335e6d841f8a2930acee164806718bf1f3399934"
         }
       ],
       "classification": "operation",
@@ -4469,7 +4469,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:e0ea9b0333b916fee4f1130bfaa104b8d29d4688c2e3a410a78b722481da40ee"
+            "digest": "sha256:b7b209541d175e7f5b2e086b335e6d841f8a2930acee164806718bf1f3399934"
           }
         ],
         "mapping": "echo_extension via callable-operation; Rust remains authoritative",
@@ -4499,17 +4499,17 @@
       }
     },
     {
-      "path": "echo_agent::agent::AgentCallback::on_tool_error",
+      "path": "echo_agent::agent::AgentCallback::on_tool_error_with_id",
       "kind": "method",
       "source_paths": [
-        "echo_core::agent::AgentCallback::on_tool_error"
+        "echo_core::agent::AgentCallback::on_tool_error_with_id"
       ],
       "features": [],
       "full_only": false,
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:8612522b1c16b29cfad5ec8247b4ffbdd8ef6efdd351c018d100cf5f88bf319e"
+          "digest": "sha256:df81d8e543c3d420ad5878f5e570eb2b1de5e9a9c86fa4419a54a3afaed66b67"
         }
       ],
       "classification": "operation",
@@ -4528,7 +4528,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:8612522b1c16b29cfad5ec8247b4ffbdd8ef6efdd351c018d100cf5f88bf319e"
+            "digest": "sha256:df81d8e543c3d420ad5878f5e570eb2b1de5e9a9c86fa4419a54a3afaed66b67"
           }
         ],
         "mapping": "echo_extension via callable-operation; Rust remains authoritative",
@@ -4558,17 +4558,17 @@
       }
     },
     {
-      "path": "echo_agent::agent::AgentCallback::on_tool_start",
+      "path": "echo_agent::agent::AgentCallback::on_tool_start_with_id",
       "kind": "method",
       "source_paths": [
-        "echo_core::agent::AgentCallback::on_tool_start"
+        "echo_core::agent::AgentCallback::on_tool_start_with_id"
       ],
       "features": [],
       "full_only": false,
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:e10e47ed1ba1c49d39036a67414b83f75863dcc4a138d27c71b9a63d21f9f272"
+          "digest": "sha256:ed9e3f2eafc14adf62b50f1f6346b5be07ef5f881361fe237b95c63de4c612ef"
         }
       ],
       "classification": "operation",
@@ -4587,7 +4587,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:e10e47ed1ba1c49d39036a67414b83f75863dcc4a138d27c71b9a63d21f9f272"
+            "digest": "sha256:ed9e3f2eafc14adf62b50f1f6346b5be07ef5f881361fe237b95c63de4c612ef"
           }
         ],
         "mapping": "echo_extension via callable-operation; Rust remains authoritative",
@@ -7163,360 +7163,6 @@
       "kind": "struct_field",
       "source_paths": [
         "echo_core::agent::AgentEvent::SafetyNotice::risk"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:663bff8c5efb04915b7670f724966d73226af541ef75f73dfc90a5a40f4a24e8"
-        }
-      ],
-      "classification": "wire_value",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "standard_projection",
-      "semantic_rule": "serializable-value",
-      "derived_traits": [],
-      "route": {
-        "route": "standard:session/update",
-        "surface": "standard",
-        "family": "standard",
-        "method": "session/update",
-        "operation": null,
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:663bff8c5efb04915b7670f724966d73226af541ef75f73dfc90a5a40f4a24e8"
-          }
-        ],
-        "mapping": "standard_projection via serializable-value; Rust remains authoritative",
-        "validation": [
-          "tests/acp_agent_adapter.rs",
-          "echo-sdk-protocol/tests/acp_baseline.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/java/wire_value"
-        },
-        "python": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/python/wire_value"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/typescript/wire_value"
-        }
-      }
-    },
-    {
-      "path": "echo_agent::agent::AgentEvent::ThinkEnd",
-      "kind": "variant",
-      "source_paths": [
-        "echo_core::agent::AgentEvent::ThinkEnd"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:98db4be186081987da9b804c5a801e0cd56f9e16fa5e400566ad1f449cbf3941"
-        }
-      ],
-      "classification": "wire_value",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "standard_projection",
-      "semantic_rule": "serializable-value",
-      "derived_traits": [],
-      "route": {
-        "route": "standard:session/update",
-        "surface": "standard",
-        "family": "standard",
-        "method": "session/update",
-        "operation": null,
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:98db4be186081987da9b804c5a801e0cd56f9e16fa5e400566ad1f449cbf3941"
-          }
-        ],
-        "mapping": "standard_projection via serializable-value; Rust remains authoritative",
-        "validation": [
-          "tests/acp_agent_adapter.rs",
-          "echo-sdk-protocol/tests/acp_baseline.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/java/wire_value"
-        },
-        "python": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/python/wire_value"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/typescript/wire_value"
-        }
-      }
-    },
-    {
-      "path": "echo_agent::agent::AgentEvent::ThinkEnd::completion_tokens",
-      "kind": "struct_field",
-      "source_paths": [
-        "echo_core::agent::AgentEvent::ThinkEnd::completion_tokens"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:e4efab38d0b78d3bf96add176929e36fed5926aad906f99a3d9708b496a6a357"
-        }
-      ],
-      "classification": "wire_value",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "standard_projection",
-      "semantic_rule": "serializable-value",
-      "derived_traits": [],
-      "route": {
-        "route": "standard:session/update",
-        "surface": "standard",
-        "family": "standard",
-        "method": "session/update",
-        "operation": null,
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:e4efab38d0b78d3bf96add176929e36fed5926aad906f99a3d9708b496a6a357"
-          }
-        ],
-        "mapping": "standard_projection via serializable-value; Rust remains authoritative",
-        "validation": [
-          "tests/acp_agent_adapter.rs",
-          "echo-sdk-protocol/tests/acp_baseline.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/java/wire_value"
-        },
-        "python": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/python/wire_value"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/typescript/wire_value"
-        }
-      }
-    },
-    {
-      "path": "echo_agent::agent::AgentEvent::ThinkEnd::prompt_tokens",
-      "kind": "struct_field",
-      "source_paths": [
-        "echo_core::agent::AgentEvent::ThinkEnd::prompt_tokens"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:e4efab38d0b78d3bf96add176929e36fed5926aad906f99a3d9708b496a6a357"
-        }
-      ],
-      "classification": "wire_value",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "standard_projection",
-      "semantic_rule": "serializable-value",
-      "derived_traits": [],
-      "route": {
-        "route": "standard:session/update",
-        "surface": "standard",
-        "family": "standard",
-        "method": "session/update",
-        "operation": null,
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:e4efab38d0b78d3bf96add176929e36fed5926aad906f99a3d9708b496a6a357"
-          }
-        ],
-        "mapping": "standard_projection via serializable-value; Rust remains authoritative",
-        "validation": [
-          "tests/acp_agent_adapter.rs",
-          "echo-sdk-protocol/tests/acp_baseline.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/java/wire_value"
-        },
-        "python": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/python/wire_value"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/typescript/wire_value"
-        }
-      }
-    },
-    {
-      "path": "echo_agent::agent::AgentEvent::ThinkStart",
-      "kind": "variant",
-      "source_paths": [
-        "echo_core::agent::AgentEvent::ThinkStart"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:b3abc2b6cece45275b402cb585f421767cb4e1ceee7b19c0304d351454313029"
-        }
-      ],
-      "classification": "wire_value",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "standard_projection",
-      "semantic_rule": "serializable-value",
-      "derived_traits": [],
-      "route": {
-        "route": "standard:session/update",
-        "surface": "standard",
-        "family": "standard",
-        "method": "session/update",
-        "operation": null,
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:b3abc2b6cece45275b402cb585f421767cb4e1ceee7b19c0304d351454313029"
-          }
-        ],
-        "mapping": "standard_projection via serializable-value; Rust remains authoritative",
-        "validation": [
-          "tests/acp_agent_adapter.rs",
-          "echo-sdk-protocol/tests/acp_baseline.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/java/wire_value"
-        },
-        "python": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/python/wire_value"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/typescript/wire_value"
-        }
-      }
-    },
-    {
-      "path": "echo_agent::agent::AgentEvent::Token",
-      "kind": "variant",
-      "source_paths": [
-        "echo_core::agent::AgentEvent::Token"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:99e73f3c8df81a316619b4b9cdbc68eb59478177d03a1cf78112173255f905a9"
-        }
-      ],
-      "classification": "wire_value",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "standard_projection",
-      "semantic_rule": "serializable-value",
-      "derived_traits": [],
-      "route": {
-        "route": "standard:session/update",
-        "surface": "standard",
-        "family": "standard",
-        "method": "session/update",
-        "operation": null,
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:99e73f3c8df81a316619b4b9cdbc68eb59478177d03a1cf78112173255f905a9"
-          }
-        ],
-        "mapping": "standard_projection via serializable-value; Rust remains authoritative",
-        "validation": [
-          "tests/acp_agent_adapter.rs",
-          "echo-sdk-protocol/tests/acp_baseline.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/java/wire_value"
-        },
-        "python": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/python/wire_value"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/typescript/wire_value"
-        }
-      }
-    },
-    {
-      "path": "echo_agent::agent::AgentEvent::Token::0",
-      "kind": "struct_field",
-      "source_paths": [
-        "echo_core::agent::AgentEvent::Token::0"
       ],
       "features": [],
       "full_only": false,
@@ -21323,7 +20969,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:8ae495416fbcd403420f614f6bea9d51058fdf1834aa1e2d9f47cd8497f2b82a"
+          "digest": "sha256:788faaaca980ceda61ce7bc12d2a971630c8cc53024af6ca5f57ba30efdaaf50"
         }
       ],
       "classification": "operation",
@@ -21342,7 +20988,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:8ae495416fbcd403420f614f6bea9d51058fdf1834aa1e2d9f47cd8497f2b82a"
+            "digest": "sha256:788faaaca980ceda61ce7bc12d2a971630c8cc53024af6ca5f57ba30efdaaf50"
           }
         ],
         "mapping": "echo_extension via callable-operation; Rust remains authoritative",
@@ -154871,7 +154517,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:dd575c360b47057f194993d51bbf9684c383318bca9291de57ea37ed5a8a3ae4"
+          "digest": "sha256:0f5f51a8d932cdf822189dee5daa26fb794c8870a88dabe71617214d264c6436"
         }
       ],
       "classification": "wire_value",
@@ -154890,7 +154536,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:dd575c360b47057f194993d51bbf9684c383318bca9291de57ea37ed5a8a3ae4"
+            "digest": "sha256:0f5f51a8d932cdf822189dee5daa26fb794c8870a88dabe71617214d264c6436"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -168384,7 +168030,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:cd84813c52cedab461063c5a46562f60dddfd574c4b4d515e9867bd8adf0d42f"
+          "digest": "sha256:c187a7c86483c14bf61edf55f3b5a34a6eb70b2e8e67f9b1f5643936fd6374a8"
         }
       ],
       "classification": "wire_value",
@@ -168403,7 +168049,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:cd84813c52cedab461063c5a46562f60dddfd574c4b4d515e9867bd8adf0d42f"
+            "digest": "sha256:c187a7c86483c14bf61edf55f3b5a34a6eb70b2e8e67f9b1f5643936fd6374a8"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -175020,7 +174666,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:b9320fadeb024ad7bb88e4dfcf9eb53670bf52645f8749b0cb9f99c26b757cca"
+          "digest": "sha256:f19bae52aed519437d17207c75e88d48bfc809c723bc78331aa0768c821ad1e9"
         }
       ],
       "classification": "wire_value",
@@ -175039,7 +174685,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:b9320fadeb024ad7bb88e4dfcf9eb53670bf52645f8749b0cb9f99c26b757cca"
+            "digest": "sha256:f19bae52aed519437d17207c75e88d48bfc809c723bc78331aa0768c821ad1e9"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -212243,7 +211889,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:ba053834187c8098222bfa64b9fa7072d7152bff98c14fa2880d82f69ad236a3"
+          "digest": "sha256:5022c07b654ef3e6d3ff114365f8c7ee3aabc46a1b036f9e8c2eb9250a6cbdb2"
         }
       ],
       "classification": "wire_value",
@@ -212262,7 +211908,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:ba053834187c8098222bfa64b9fa7072d7152bff98c14fa2880d82f69ad236a3"
+            "digest": "sha256:5022c07b654ef3e6d3ff114365f8c7ee3aabc46a1b036f9e8c2eb9250a6cbdb2"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -218337,13 +217983,12 @@
           "digest": "sha256:9fa1495989668b459ed5c87278f18fed8ce63ce5939624de09bc125e5127d3e3"
         }
       ],
-      "classification": "wire_value",
+      "classification": "handle",
       "sdk_scope": "external_contract",
       "acp_relationship": "echo_extension",
-      "semantic_rule": "verified-value-shape",
+      "semantic_rule": "contains-process-local-state",
       "derived_traits": [
         "Clone",
-        "Debug",
         "Deserialize",
         "Serialize"
       ],
@@ -218361,7 +218006,7 @@
             "digest": "sha256:9fa1495989668b459ed5c87278f18fed8ce63ce5939624de09bc125e5127d3e3"
           }
         ],
-        "mapping": "echo_extension via verified-value-shape; Rust remains authoritative",
+        "mapping": "echo_extension via contains-process-local-state; Rust remains authoritative",
         "validation": [
           "echo-sdk-protocol/tests/facade_inventory.rs"
         ]
@@ -231807,65 +231452,6 @@
       }
     },
     {
-      "path": "echo_agent::state::AgentCheckpoint::current_plan",
-      "kind": "struct_field",
-      "source_paths": [
-        "echo_agent::state::AgentCheckpoint::current_plan"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:dd575c360b47057f194993d51bbf9684c383318bca9291de57ea37ed5a8a3ae4"
-        }
-      ],
-      "classification": "wire_value",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "echo_extension",
-      "semantic_rule": "serializable-value",
-      "derived_traits": [],
-      "route": {
-        "route": "value:state",
-        "surface": "value",
-        "family": "state",
-        "method": null,
-        "operation": null,
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:dd575c360b47057f194993d51bbf9684c383318bca9291de57ea37ed5a8a3ae4"
-          }
-        ],
-        "mapping": "echo_extension via serializable-value; Rust remains authoritative",
-        "validation": [
-          "echo-sdk-protocol/tests/facade_inventory.rs",
-          "echo-sdk-protocol/tests/core_rpc_contract.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/java/wire_value"
-        },
-        "python": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/python/wire_value"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "generated_or_lossless_value",
-          "contract_test": "sdk-parity/typescript/wire_value"
-        }
-      }
-    },
-    {
       "path": "echo_agent::state::AgentCheckpoint::messages_json",
       "kind": "struct_field",
       "source_paths": [
@@ -233765,64 +233351,6 @@
         "signatures": [
           {
             "digest": "sha256:0127b13faf40f7183e804283f2b0074e3a5bd9b925adbda6de08358472ad1b3f"
-          }
-        ],
-        "mapping": "echo_extension via callable-operation; Rust remains authoritative",
-        "validation": [
-          "echo-sdk-protocol/tests/facade_inventory.rs"
-        ]
-      },
-      "canonical": true,
-      "alias_of": null,
-      "languages": {
-        "java": {
-          "status": "done",
-          "target": "idiomatic_method",
-          "contract_test": "sdk-parity/java/facade_operation"
-        },
-        "python": {
-          "status": "done",
-          "target": "idiomatic_method",
-          "contract_test": "sdk-parity/python/facade_operation"
-        },
-        "typescript": {
-          "status": "done",
-          "target": "idiomatic_method",
-          "contract_test": "sdk-parity/typescript/facade_operation"
-        }
-      }
-    },
-    {
-      "path": "echo_agent::state::delete_persisted_conversation",
-      "kind": "function",
-      "source_paths": [
-        "echo_agent::state::delete_persisted_conversation"
-      ],
-      "features": [],
-      "full_only": false,
-      "feature_semantics": "default",
-      "signatures": [
-        {
-          "digest": "sha256:97b7ff491c492fa6e3b26e6130c5f51285ff1f1608ae64d447de744152c501e2"
-        }
-      ],
-      "classification": "operation",
-      "sdk_scope": "external_contract",
-      "acp_relationship": "echo_extension",
-      "semantic_rule": "callable-operation",
-      "derived_traits": [],
-      "route": {
-        "route": "source:echo_agent::state::delete_persisted_conversation",
-        "surface": "invoke",
-        "family": "source_operation",
-        "method": "_echo_agent/facade/invoke",
-        "operation": "echo_agent::state::delete_persisted_conversation",
-        "required_feature": null,
-        "required_features": [],
-        "feature_semantics": "default",
-        "signatures": [
-          {
-            "digest": "sha256:97b7ff491c492fa6e3b26e6130c5f51285ff1f1608ae64d447de744152c501e2"
           }
         ],
         "mapping": "echo_extension via callable-operation; Rust remains authoritative",
@@ -261807,7 +261335,7 @@
       "feature_semantics": "any_of",
       "signatures": [
         {
-          "digest": "sha256:2fa0422e1f9ae90ae832925097db2f6e7f8b990ec372fe758ca7fd58d733721c"
+          "digest": "sha256:475408e573e0c75990ae677a5d16ebeba9461d0b04e30a196fdafb56f0f6b36e"
         }
       ],
       "classification": "wire_value",
@@ -261828,7 +261356,7 @@
         "feature_semantics": "any_of",
         "signatures": [
           {
-            "digest": "sha256:2fa0422e1f9ae90ae832925097db2f6e7f8b990ec372fe758ca7fd58d733721c"
+            "digest": "sha256:475408e573e0c75990ae677a5d16ebeba9461d0b04e30a196fdafb56f0f6b36e"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -287379,7 +286907,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:fa91da12fd3f7dc311c7271bdbfaed4919ee813e1a68b3ef6f64526f6b321a14"
+          "digest": "sha256:699d6d3bbf3f5a7dc5bd06f44d95cab02275a6737eff17ef077a4f88ab0d5023"
         }
       ],
       "classification": "wire_value",
@@ -287398,7 +286926,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:fa91da12fd3f7dc311c7271bdbfaed4919ee813e1a68b3ef6f64526f6b321a14"
+            "digest": "sha256:699d6d3bbf3f5a7dc5bd06f44d95cab02275a6737eff17ef077a4f88ab0d5023"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -287553,7 +287081,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:6e1bb5cc9ade78bac059b3fc262ddef781f17167a6d4d1a02da5242be23840c6"
+          "digest": "sha256:c6db0dfe1fe90d9690677f1b9ef3fb2579acbe8b3b4073ad290b2d2da9af9d5e"
         }
       ],
       "classification": "wire_value",
@@ -287572,7 +287100,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:6e1bb5cc9ade78bac059b3fc262ddef781f17167a6d4d1a02da5242be23840c6"
+            "digest": "sha256:c6db0dfe1fe90d9690677f1b9ef3fb2579acbe8b3b4073ad290b2d2da9af9d5e"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -287669,7 +287197,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:1c73c34fbd522264633c249aa0e562c4f21c76277ebaf4673edd2bdbea059cd9"
+          "digest": "sha256:ea25d0bc321542df63430161f4e9c7f24bc1f35b9d3c1315cd5cb460cd961d35"
         }
       ],
       "classification": "wire_value",
@@ -287688,7 +287216,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:1c73c34fbd522264633c249aa0e562c4f21c76277ebaf4673edd2bdbea059cd9"
+            "digest": "sha256:ea25d0bc321542df63430161f4e9c7f24bc1f35b9d3c1315cd5cb460cd961d35"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",
@@ -287785,7 +287313,7 @@
       "feature_semantics": "default",
       "signatures": [
         {
-          "digest": "sha256:620ccda8fa52844ac4e0ddee70d7b16bf53932c6b753e756a7b417bfada6b2e8"
+          "digest": "sha256:d2411104a1d5c0e0d378202e50b3ccfe11e5a728f8b0c9d35fdb1bec61ba1f53"
         }
       ],
       "classification": "wire_value",
@@ -287804,7 +287332,7 @@
         "feature_semantics": "default",
         "signatures": [
           {
-            "digest": "sha256:620ccda8fa52844ac4e0ddee70d7b16bf53932c6b753e756a7b417bfada6b2e8"
+            "digest": "sha256:d2411104a1d5c0e0d378202e50b3ccfe11e5a728f8b0c9d35fdb1bec61ba1f53"
           }
         ],
         "mapping": "echo_extension via serializable-value; Rust remains authoritative",

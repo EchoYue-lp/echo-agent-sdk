@@ -14,28 +14,8 @@ export type PermissionMode = (typeof PermissionMode)[keyof typeof PermissionMode
 
 export function permissionModeParse(value: string): PermissionMode {
   if (typeof value !== "string") throw new TypeError("permission mode must be text");
-  const aliases: Readonly<Record<string, PermissionMode>> = {
-    default: PermissionMode.Default,
-    ask: PermissionMode.Default,
-    plan: PermissionMode.Plan,
-    "auto-edit": PermissionMode.AcceptEdits,
-    autoedit: PermissionMode.AcceptEdits,
-    "accept-edits": PermissionMode.AcceptEdits,
-    acceptedits: PermissionMode.AcceptEdits,
-    "full-auto": PermissionMode.BypassPermissions,
-    fullauto: PermissionMode.BypassPermissions,
-    bypass: PermissionMode.BypassPermissions,
-    "bypass-permissions": PermissionMode.BypassPermissions,
-    bypasspermissions: PermissionMode.BypassPermissions,
-    auto: PermissionMode.Auto,
-    bubble: PermissionMode.Bubble,
-    "dont-ask": PermissionMode.DontAsk,
-    dontask: PermissionMode.DontAsk,
-    strict: PermissionMode.StrictConfirm,
-    "strict-confirm": PermissionMode.StrictConfirm,
-    "strict-confirmation": PermissionMode.StrictConfirm,
-  };
-  const mode = aliases[value.trim().toLowerCase()];
+  // 与Framework当前id()一致：输入不归一，避免恢复已经退出的旧模式拼写。
+  const mode = Object.values(PermissionMode).find(mode => mode === value);
   if (mode === undefined) throw new Error(`invalid permission mode '${value}'`);
   return mode;
 }
