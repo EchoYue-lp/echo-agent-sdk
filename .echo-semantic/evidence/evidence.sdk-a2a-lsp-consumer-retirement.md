@@ -25,7 +25,18 @@
     "sdks/shared/testing/parquet_roundtrip_fixture.py",
     "sdks/shared/testing/retirement_plugin_fixture.py",
     "sdks/typescript/test/jwt-values.test.js",
-    "sdks/typescript/test/parquet-roundtrip-host.test.js"
+    "sdks/typescript/test/parquet-roundtrip-host.test.js",
+    "contracts/sdk/facade-operation-catalog.json",
+    "contracts/sdk/inventory-telemetry.json",
+    "contracts/sdk/parity-manifest.json",
+    "contracts/sdk/public-api.txt",
+    "contracts/sdk/schema/echo-agent-extension-v1.schema.json",
+    "contracts/sdk/source-contract.json",
+    "echo-sdk-protocol/src/catalog.rs",
+    "echo-sdk-protocol/tests/core_rpc_contract.rs",
+    "sdks/python/tests/test_a2a_host.py",
+    "sdks/python/tests/test_lsp_diagnostics_host.py",
+    "sdks/python/tests/test_lsp_host.py"
   ],
   "supports": [
     "finding.sdk-a2a-lsp-consumer-retirement"
@@ -35,7 +46,7 @@
     "当前Source33、预检参数错误及原r11/r12/ruff/聚合/network失败全部保原；本四metadata独审与Source/Final另验。",
     "原r13 language caller0；原outer1为471对453错误，新判读0/负控1由Root接受，三语言原平台skip照实保留。",
     "当前S仅localGit pin008/e151/13SourceID输入；不授HTTPS、coldCargo、mainCI、native或整个Goal资格。",
-    "after_revision只取同任务官方validator报告；字段绑定不等于Source通过。"
+    "after_revision现以固定canonical原source_digest实际得到的source:e1864cc87ff524845908f5de781baa189dfed513a9b78551b23d5c59a0e2726b定位同一StageA业务源码；原task:e765与c152、Source18/Final19任务回执保留为历史，不因此授仓库级strict或exact-main CI通过。"
   ],
   "evidence_type": "behavior_equivalence",
   "before_revision": "0930eef9f878cf436ed88384030b6bc03d6f6c53",
@@ -138,7 +149,7 @@
       "raw_sha256": "d3793115f72811f6f70a31b441fcdbf50817b2d8c54357b2d3b0f8651dc5e925"
     }
   ],
-  "after_revision": "task:e765c4549f9b989409b94194267faed09f9103ec2eb6d03138c1a545b9746cdd"
+  "after_revision": "source:e1864cc87ff524845908f5de781baa189dfed513a9b78551b23d5c59a0e2726b"
 }
 ---
 
@@ -146,7 +157,7 @@
 
 ## 来源与范围
 
-只承接当前0930到StageA。observed_at由官方source_digest读取，after_revision将由同任务官方validate_task报告绑定，不猜签名；字段绑定不等于Source/Final通过。
+只承接当前0930到StageA。observed_at保持原source:e186不变；便携候选的after_revision使用固定canonical原source_digest已实际算出的同一source:e186。执行期原after_revision曾由同任务validate_task报告绑定为task:e765，历史任务证明原样保留。源码身份字段不授本次Source/Final或仓库级CI通过。
 
 ## 支持的结论
 
@@ -175,3 +186,60 @@ Root新r03观察器实际0核471=453+18与453=452+1；原caller失败、cwd错�
 本轮只读从真实0930 Git blob读取contracts/sdk/accepted-external-contract.json，与当前文件按source_paths[0]+kind取共同5352；完整entry字典漂移0。431共同route的身份/operation/signature投影相等，value.items差异单独保留。before运行没有重新观察；此静态合同保持是唯一matched场景，不能代before运行证据。具体源SHA已写入scenario的before_observation/after_observation，原始只读对照位置在本任务local的retained-before-after-static-comparison-r02.json，后者是调查原件不是source_refs或新validator。
 
 原本把退役/拒绝及after-only运行混入behavior_equivalence/matched的r01资料与其Source0完整保留，Root独审I1已记录；不挪旧内容digest给本次内容。
+
+
+## StageA 自有资料便携校准与原任务历史
+
+本候选仅修正本 Evidence 的当前业务源码身份与同次路径依据，以及 baseline 的摘要；不改变 before_revision、已有 matched 场景、其静态比较范围、command_results、Finding 状态或任何业务实现。observed_at仍为原source:e186；after_revision从任务身份改为同一真实业务源码的source:e186。固定原函数的已完成Phase3最小检查为1/1/12，不是一次完整仓库Source gate。
+
+原Source18和Final19两份原caller自然0、scope=task、globalClosure=not_checked，sourceSnapshot为task:e765c4549f9b989409b94194267faed09f9103ec2eb6d03138c1a545b9746cdd，contentDigest为c152f4e81e8729b0389035abd6ad4c4c81ba1799fcaaf973debdf9af1198e809。原任务回执及其判断不改写、不升格。PR14原semantic job的14项失败也不因候选文稿变成已修复；同一canonical action仍有删除预检运行态接口缺口。
+
+下列各项补充同次变更的真实事实和验收边界，不新增等价matched场景。代码与生成物身份取原0930 Git blob和已冻结StageA文件，运行事实复用原具名caller；不将源审查改称新执行，不用只有文件名的一行充当验证。
+
+### contracts/sdk/facade-operation-catalog.json：完整目录与 accepted 目录分开
+
+该文件是原export_schema生成的完整facade目录，StageA直接文件读取为39个family、772条route，0930为41个family、798条route；完整目录的total_items为26719。它与accepted-facade-operation-catalog的431条已接受route不是同一个集合，不可混写计数。A2A/LSP消费退出及具名source disposition来自ADR0042和当前inventory/facade实现；原完整check-sdk-contracts.sh（r11第15项）自然0提供阻断生成物的当前一致性事实，不证明全部framework公共库存退役，也不证明每条route的动态调用。
+
+### contracts/sdk/inventory-telemetry.json：原遥测漂移保留
+
+该文件自标rust_public_inventory_telemetry、blocking_scope=external_contract，明确把完整Rust库存及framework revision排除于runtime negotiation。当前提交内容仍记录f7bac62e来源和5352个external_contract项；这只是该遥测文件保存的身份，不能冒当前StageA localGit008精来源证明。原第15项完整日志第77行明确TELEMETRY DRIFT，第187行报告116 blocking artifacts current、1 telemetry artifact drifted；这份非阻断漂移继续保留，不宣称全Rust inventory漂移0，不新增ignore或更改classification。telemetry内容如何另行刷新仍pending，本候选不修改它。
+
+### contracts/sdk/parity-manifest.json：完整Rust inventory不是外部承诺
+
+当前原文件entries为26719条，0930为26716条；这些是完整inventory entries，不等于5352条accepted external contract。该文件由原唯一export_schema生成链维护，approved retirement只对已具名消费/accepted范围退出，不以SDK不消费为理由删除合理框架API。原第15项完整producer/check自然0是其生成与阻断边界的证据；本候选没有重跑28 profiles或对全部inventory项给新的动态等价结论，原1项telemetry漂移不在这里被抹除。
+
+### contracts/sdk/public-api.txt：完整公开库存仍是独立记录
+
+当前文件SHA256为ae4be5e65c129c0391c0633fe29072a35ebd7ec1f50f45683cede6efc8f1266a，来自已冻结StageA，保留原全量公开Rust库存记录。它随原producer输入变化，不能当作每条类型/函数都由三语言执行的证明，也不扩accepted外部合同。具名保留静态合同相等仍只限前述共同5352 entry字典及431条route身份/操作/签名投影；原第15项check日志的阻断通过和telemetry漂移分列，不新增所有历史profile可恢复或全库存0漂移声明。
+
+### contracts/sdk/schema/echo-agent-extension-v1.schema.json：仅退出两个旧wire方法
+
+0930到当前的直接JSON对照显示method_catalog从58到56，删除_echo_agent/a2a/op和_echo_agent/lsp/op；259个definitions对象直接比较相同。该变更与catalog.rs退役的两个family入口相互对应，不把它描述为全部ACP或所有DTO退出。原第15项完整check中的extension_contract、acp_baseline及a2a_lsp_retirement等原测试提供当时验收事实；这不是本次重新生成或外部provider回放。
+
+### contracts/sdk/source-contract.json：协商摘要仍只绑定 accepted 两输入
+
+当前文件使用sha256-length-prefixed-v1，精输入为accepted-external-contract.json（10141243B，SHA56179f0c504eb57bba77374a98a41b4d8f7c094d7ebc0e4a0d2cb650736d4841）和accepted-facade-operation-catalog.json（612298B，SHAc8ebea7c65e36902d336fd738d84764d2459910471623ffac8c0824e0e62cf3f），aggregate_digest为sha256:6c7bdc12662a5f0941a3e57cf0139f079ae2a96c72bff498af3f4ee386a0e44d。原第15项check核该生成合同；它不以完整inventory/telemetry或Cargo.lock充当协商摘要，更不证明本地Git取得等于HTTPS发布或mainCI通过。
+
+### echo-sdk-protocol/src/catalog.rs：消费wire入口实际退出
+
+与0930的精diff显示MethodDescriptor的参数/结果匹配及METHOD_CATALOG移除_echo_agent/a2a/op、_echo_agent/lsp/op，其余family入口继续保留。这个变更执行ADR0042的SDK消费退役，不是删除框架所有合理公共API。原第06项protocol-default与第15项完整合同测试提供原运行事实，具体拒绝还由现有a2a_lsp_retirement及语言catalog断言覆盖；本候选不新增或放松wire validator。
+
+### echo-sdk-protocol/tests/core_rpc_contract.rs：保留family的绑定断言
+
+原family_methods_are_bound_to_the_facade_route_table只从预期family集合移除FacadeFamily::A2a、FacadeFamily::Lsp，其余绑定断言沿原实现。原第06项protocol-default日志第98行实际记录该测试ok；这证明当时保留family映射断言执行，不证明被批准退出的旧family还可运行，也不自动扩成所有operation动态等价。
+
+### sdks/python/tests/test_a2a_host.py：从旧Host场景转为目录拒绝
+
+原HTTP/SSE peer、owner和错误场景随已批准A2A消费退役退出；当前test_retired_a2a_operations_are_not_catalog_entries对a2a.client.open、a2a.discover、a2a.task.stream.open调用FacadeCatalog.resolve并要求KeyError且消息包含absent。它是当前客户端catalog拒绝断言，不是旧真实Host场景仍运行、更不是before/after行为等价。该文件属于原r13完整Python suite的当时来源，原语言caller0与完整Python452P/1skip+18subtests按已接受范围保留；没有该单测试独立行级运行票，不据聚合结果补造独立caller或逐项新运行。
+
+### sdks/python/tests/test_lsp_diagnostics_host.py：diagnostics不再解析为operation
+
+当前test_lsp_diagnostics_is_not_a_catalog_operation断言FacadeCatalog.resolve(lsp.client.diagnostics)抛KeyError(absent)，替代退役的诊断通知/替换/故障/runtime settlement旧Host场景。它只证明所写的目录拒绝目标，不能继续宣称本轮观察了旧LSP服务进程清退。原r13完整suite及修正observer的资格如上保留；单项独立运行/旧before运行没有新证据，保持未知，不置matched。
+
+### sdks/python/tests/test_lsp_host.py：剩余旧LSP family调用也被拒绝
+
+当前test_lsp_family_is_retired_from_catalog枚举lsp.manager.open、lsp.client.hover、lsp.client.goto_definition并逐个要求FacadeCatalog.resolve抛KeyError(absent)。原通用值、错误、manager关闭与不可复活Host场景已随SDK消费表面退出；这里没有把拒绝当作旧成功轨迹相等。原r13聚合运行范围及缺独立单项票的边界保持，不因文件名仍带host就声称真实LSP Host已被本轮重放。
+
+## 固定canonical删除预检接口仍未闭合
+
+当前resolved Finding/retire决策、22项delete_paths、canonical/replacement资产和原Evidence链继续保留。固定c0bc action仍读取Final已消耗且禁止Git跟踪的本地preflight；它没有在本次允许范围内消费这些正式删除授权的便携入口。本两文件候选不生成preflight，不改schema/root，不改workflow、工具、exclusion、risk或失败原票，不问用户扩大外部工具范围。13项自有资料即使后续正式修正，仍须保留该接口缺口和其后尚未穷尽检查的限制。
