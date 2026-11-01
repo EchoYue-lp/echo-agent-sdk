@@ -93,7 +93,7 @@ class TelemetryHostTest {
         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank());
         assumeTrue(host != null && !host.isBlank(), "real Host required");
         for (boolean console : List.of(false, true)) {
-            Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", "../../target/telemetry-host")).toAbsolutePath().normalize();
+            Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-telemetry-host").toString())).toAbsolutePath().normalize();
             Files.createDirectories(root);
             Path work = Files.createTempDirectory(root, "java-");
             helper(work, console ? new String[]{"--console"} : new String[]{});
@@ -155,7 +155,7 @@ class TelemetryHostTest {
         String host = System.getenv("ECHO_AGENT_SDK_HOST");
         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank());
         assumeTrue(host != null && !host.isBlank(), "real Host required");
-        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", "../../target/telemetry-host")).toAbsolutePath().normalize();
+        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-telemetry-host").toString())).toAbsolutePath().normalize();
         Files.createDirectories(root); Path work = Files.createTempDirectory(root, "java-public-close-");
         helper(work);
         try (var owned = new FixtureOwner(work)) {
@@ -230,7 +230,7 @@ class TelemetryHostTest {
 
     @Test void setupAndCleanupFaultsReapOriginalFixtureAndCollector() throws Exception {
         assumeTrue(System.getenv("ECHO_AGENT_SDK_OTLP_COLLECTOR") != null, "real collector required");
-        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", "../../target/telemetry-host")).toAbsolutePath().normalize();
+        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_TELEMETRY_ROOT", Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-telemetry-host").toString())).toAbsolutePath().normalize();
         Files.createDirectories(root);
         Path work = Files.createTempDirectory(root, "java-cleanup-fault-");
         helper(work);

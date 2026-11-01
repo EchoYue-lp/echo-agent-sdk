@@ -37,7 +37,7 @@ test("workflow routing/checkpoint/claims/branch/owner and shape boundary",{skip:
 
 
 test("protected Workflow claim keeps bound Store and original LLM physical owner", {skip:!host, timeout:120000}, async()=>{
- const root=fileURLToPath(new URL("../../../target/workflow-protected-claims/",import.meta.url));mkdirSync(root,{recursive:true});
+ const root=join(tmpdir(), "echo-sdk-workflow-protected-claims");mkdirSync(root,{recursive:true});
  const work=mkdtempSync(join(root,"typescript-")),rows=[],results={},flights=new Map();
  const backend=spawn("python3",[fixture,"--work",work,"--serve-protected"]);
  const exited=new Promise((resolve,reject)=>{backend.once("error",reject);backend.once("exit",(code,signal)=>resolve({code,signal}));});

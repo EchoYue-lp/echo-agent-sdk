@@ -1,16 +1,17 @@
+import { tmpdir } from "node:os";
 import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn,execFileSync} from 'node:child_process';
 import {mkdtempSync,mkdirSync,existsSync,readFileSync,writeFileSync,renameSync} from 'node:fs';
-import {join,dirname} from 'node:path';
+import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {EchoAgentClient,EchoAgentError,toWireValue,fromWireValue} from '../dist/index.js';
 const host=process.env.ECHO_AGENT_SDK_HOST?.trim();
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==='1'&&!host)throw new Error('required Tool value/effect Host missing');
 const fixture=fileURLToPath(new URL('../../shared/testing/tool_value_effect_fixture.py',import.meta.url));
-const root=process.env.ECHO_AGENT_SDK_TOOL_EFFECT_ROOT??join(dirname(fixture),'../../../target/tool-value-effects');
+const root=process.env.ECHO_AGENT_SDK_TOOL_EFFECT_ROOT??join(tmpdir(), 'echo-sdk-tool-value-effects');
 const unrecord=value=>value?.kind==='record'?Object.fromEntries(value.value.fields.map(f=>[f.name,f.value.value??null])):value;
 function resolve(value,results){if(Array.isArray(value))return value.map(v=>resolve(v,results));if(value&&typeof value==='object'){if(value.$artifact)return results[value.$artifact].result;const key=value.$ref?'$ref':value.$jsonref?'$jsonref':null;if(key){const [name,...path]=value[key].split('.');let v=results[name].result;if(key==='$jsonref')v=decode(v.data);v=unrecord(v);for(const p of path)v=v[p];return v;}return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,resolve(v,results)]));}return value;}
 function decode(v){if(v.kind==='null')return null;if(v.kind==='list')return v.value.map(decode);if(v.kind==='map')return Object.fromEntries(v.value.map(e=>[decode(e.key),decode(e.value)]));return v.value;}

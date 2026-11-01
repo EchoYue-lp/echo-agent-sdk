@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==='1'&&!host)throw Error('require
 const fixture=fileURLToPath(new URL('../../shared/testing/git_tool_host_fixture.py',import.meta.url));
 function resolved(value,results){if(Array.isArray(value))return value.map(v=>resolved(v,results));if(value&&typeof value==='object'){if(value.$ref)return results[value.$ref];return Object.fromEntries(Object.entries(value).map(([key,v])=>[key,resolved(v,results)]));}return value;}
 test('accepted Git tools and worktree source operations preserve exact local effects',{skip:!host,timeout:120000},async()=>{
- const root=resolve(process.env.ECHO_AGENT_SDK_GIT_ROOT??'../../target/git-native');mkdirSync(root,{recursive:true});const work=mkdtempSync(join(root,'typescript-'));
+ const root=resolve(process.env.ECHO_AGENT_SDK_GIT_ROOT??join(tmpdir(), 'echo-sdk-git-native'));mkdirSync(root,{recursive:true});const work=mkdtempSync(join(root,'typescript-'));
  const oracle=(...args)=>execFileSync('python3',[fixture,'--work',work,...args],{encoding:'utf8'});
  oracle('--prepare');const scenario=JSON.parse(readFileSync(join(work,'scenario.json'),'utf8')),rows=[],results={};let sdk;
  try{

@@ -33,7 +33,7 @@ FIXTURE = (
 ROOT = Path(
     os.environ.get(
         "ECHO_AGENT_SDK_LLM_WORKFLOW_ROOT",
-        str(Path(__file__).resolve().parents[3] / "target/llm-workflow-stream"),
+        str(Path(tempfile.gettempdir()) / "echo-sdk-llm-workflow-stream"),
     )
 )
 pytestmark = [

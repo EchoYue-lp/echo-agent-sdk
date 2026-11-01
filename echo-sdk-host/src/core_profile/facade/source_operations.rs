@@ -468,6 +468,8 @@ fn plugin_install_source(
 fn resolved_plugin_components_value(
     value: echo_agent::plugin::ResolvedComponents,
 ) -> Result<WireValue, EchoSdkError> {
+    // Framework owns retired discovery fields; SDK projects retained facts only.
+    let diagnostics = value.diagnostics;
     let paths = |items: Vec<PathBuf>| {
         items
             .into_iter()
@@ -515,18 +517,8 @@ fn resolved_plugin_components_value(
                 value: optional_path(value.mcp_config_file)?,
             },
             echo_sdk_protocol::scalar::WireField {
-                name: "lsp_config_file".to_string(),
-                value: optional_path(value.lsp_config_file)?,
-            },
-            echo_sdk_protocol::scalar::WireField {
                 name: "diagnostics".to_string(),
-                value: WireValue::List(
-                    value
-                        .diagnostics
-                        .into_iter()
-                        .map(WireValue::String)
-                        .collect(),
-                ),
+                value: WireValue::List(diagnostics.into_iter().map(WireValue::String).collect()),
             },
         ],
     })

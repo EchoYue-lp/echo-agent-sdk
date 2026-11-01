@@ -124,7 +124,7 @@ public class TaskSubagentHostTest {
   var response=HTTP.send(request.build(),HttpResponse.BodyHandlers.ofString());check(response.statusCode()==200,"physical fixture HTTP failed");return JSON.readTree(response.body());
  }
  static void observationScenario(String carrier)throws Exception {
-  Path root=SDK.normalize().getParent().resolve("target/cancellation-observation");Files.createDirectories(root);
+  Path root=Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-cancellation-observation");Files.createDirectories(root);
   Path work=Files.createTempDirectory(root,"java-"+carrier+"-");System.out.println("B observation evidence "+work);
   Process backend=new ProcessBuilder("python3",SDK.resolve("shared/testing/task_subagent_fixture.py").toString(),"--work",work.toString(),"--observation").inheritIO().start();
   var producers=Executors.newFixedThreadPool(2);EchoAgentClient sdk=null;String url=null;Process originalHost=null;Object originalTransport=null;

@@ -17,7 +17,7 @@ FIXTURE = (
 ROOT = Path(
     os.environ.get(
         "ECHO_AGENT_SDK_RAG_RULES_ROOT",
-        str(Path(__file__).resolve().parents[3] / "target/rag-project-rules"),
+        str(Path(tempfile.gettempdir()) / "echo-sdk-rag-project-rules"),
     )
 )
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared/testing"))

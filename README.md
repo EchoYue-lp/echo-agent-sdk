@@ -4,9 +4,25 @@ Source-first TypeScript, Python, and Java SDKs for the Rust `echo-agent`
 framework, connected through a source-built ACP Host and the
 `_echo_agent/*` extension contract.
 
-## Migration Status
+## 当前私有来源候选
 
-The source-built Host now pins accepted framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
+当前 Stage-A 的 Host 与根两条 Polars patch 统一选择 canonical HTTPS URL 的精确
+`0087353fd78eb73ffaa68b255cf4ef807ca96d4a`。对象通过本进程限定的本地 Git 传输由
+Cargo 正常取得，不能据此宣称该修订已在 HTTPS 发布或冷恢复通过。当前锁为
+`e151fb4587c99463e90c82dbe9d1d4f7e76747be1c7f6241d21b74a0e9976a62`：
+653 包中仅 13 个 Git 来源从前一混源切点统一到 008，版本、checksum 和依赖边不变。
+完整metadata、locked-offline及原五源审计投影已各自自然0；随后本SDK自身fresh真实锁／
+五源视图audit、deny四检查、原capture／独立49／107 caller均自然0，原policy14项通过。
+Root现只采用基线的lock/pin/验证说明三字段，原49组107身份、policy和4项ignore不变。
+新源producer、Host、三语言及完整工程门禁仍未运行，风险结果不代签这些资格。
+
+5352 项 accepted 身份／431 条路由和现有生成物保留原字节。来源检查仍要求精确
+修订、根 patch、13 包同源及真实 checkout；来源装配不授予新合同条目或消费者资格。
+详见[当前来源与退役边界](docs/sdk/governance/a2a-lsp-retirement-boundary.md)。
+
+### 历史 f7 验收切点
+
+下列历史切点的 source-built Host 固定 framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
 (tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`), from
 [PR #197](https://github.com/EchoYue-lp/echo-agent/pull/197). Its original
 [main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)

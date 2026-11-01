@@ -887,8 +887,6 @@ fn family_methods_are_bound_to_the_facade_route_table() {
         FacadeFamily::Eval,
         FacadeFamily::Improve,
         FacadeFamily::Mcp,
-        FacadeFamily::A2a,
-        FacadeFamily::Lsp,
         FacadeFamily::Channels,
         FacadeFamily::Telemetry,
         FacadeFamily::Topology,

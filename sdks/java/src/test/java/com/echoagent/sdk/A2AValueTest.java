@@ -11,173 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class A2AValueTest {
     @Test
-    void messageStatusProviderAndSkillValuesPreserveRustSemantics() {
-        var message = A2AMessage.userText("hello");
-        assertEquals("user", message.role());
-        assertEquals("hello", message.textContent());
-        assertEquals("agent", A2AMessage.agentText("answer").role());
-
-        var status = A2ATaskStatus.withMessage(TaskState.WORKING, message);
-        assertEquals(TaskState.WORKING, status.state());
-        assertEquals("hello", status.message().textContent());
-        assertTrue(status.timestamp().contains("T"));
-
-        var provider = AgentProvider.newProvider("Echo").withUrl("https://example.test");
-        assertEquals("Echo", provider.organization());
-        assertEquals("https://example.test", provider.url());
-
-        var skill = AgentSkill.newSkill("search", "Search docs")
-                .withExamples(List.of("rust"))
-                .withTags(List.of("docs"));
-        assertEquals("search", skill.id());
-        assertEquals(List.of("rust"), skill.examples());
-        assertEquals(List.of("docs"), skill.tags());
-        assertThrows(IllegalArgumentException.class, () -> A2AMessage.userText(null));
-    }
-
-    @Test
-    void valueIdentityMappingsAreReady() throws Exception {
-        var manifest = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(
-                java.nio.file.Path.of("../..", "contracts/sdk/parity-manifest.json")));
-        int count = 0;
-        for (var entry : manifest.path("entries")) {
-            if (entry.path("canonical").asBoolean()
-                    && entry.path("languages").path("java").path("contract_test")
-                    .asText().endsWith("/a2a_values")) {
-                count += 1;
-                assertEquals("done", entry.path("languages").path("java").path("status").asText());
-            }
-        }
-        assertEquals(14, count);
-    }
-
-    @Test
-    void agentCardBuilderPreservesLocalValueSemantics() {
-        var skill = AgentSkill.newSkill("search", "Search docs");
-        var card = AgentCard.builder("eko", "https://example.test")
-                .description("Local agent")
-                .version("1.0.0")
-                .provider(AgentProvider.newProvider("Echo"))
-                .skill(skill)
-                .inputModes(List.of("text/plain"))
-                .outputModes(List.of("text/plain", "application/json"))
-                .streaming()
-                .pushNotifications()
-                .build();
-        assertEquals("eko", card.name());
-        assertEquals("Local agent", card.description());
-        assertEquals(List.of(skill), card.skills());
-        assertEquals(List.of("text/plain", "application/json"), card.defaultOutputModes());
-        assertTrue(card.capabilities().streaming());
-        assertTrue(card.capabilities().pushNotifications());
-    }
-
-    @Test
-    void agentCardIdentityMappingsAreReady() throws Exception {
-        var manifest = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(
-                java.nio.file.Path.of("../..", "contracts/sdk/parity-manifest.json")));
-        int count = 0;
-        for (var entry : manifest.path("entries")) {
-            if (entry.path("canonical").asBoolean()
-                    && entry.path("languages").path("java").path("contract_test")
-                    .asText().endsWith("/a2a_agent_card")) {
-                count += 1;
-                assertEquals("done", entry.path("languages").path("java").path("status").asText());
-            }
-        }
-        assertEquals(14, count);
-    }
-
-    @Test
-    void artifactAndErrorValuesPreserveWireFields() {
-        var part = JsonSupport.MAPPER.createObjectNode().put("type", "text").put("text", "chunk");
-        var artifact = A2AArtifact.newArtifact(List.of(part), "answer", BigInteger.valueOf(2), true);
-        assertEquals("answer", artifact.name());
-        assertEquals(BigInteger.valueOf(2), artifact.index());
-        assertTrue(artifact.append());
-        assertEquals("chunk", artifact.parts().get(0).path("text").asText());
-        assertThrows(IllegalArgumentException.class, () -> A2AArtifact.newArtifact(
-                List.of(JsonSupport.MAPPER.createObjectNode().put("type", "unknown")), null, null, false));
-        var error = A2AError.newError(-32001, "missing");
-        assertEquals(-32001, error.code());
-        assertEquals("missing", error.message());
-    }
-
-    @Test
-    void wireValueMappingsAreReady() throws Exception {
-        var manifest = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(
-                java.nio.file.Path.of("../..", "contracts/sdk/parity-manifest.json")));
-        int count = 0;
-        for (var entry : manifest.path("entries")) {
-            if (entry.path("canonical").asBoolean()
-                    && entry.path("languages").path("java").path("contract_test")
-                    .asText().endsWith("/a2a_wire_values")) {
-                count += 1;
-                assertEquals("done", entry.path("languages").path("java").path("status").asText());
-            }
-        }
-        assertEquals(8, count);
-    }
-
-    @Test
-    void streamValuesPreserveEventAndResponseSemantics() {
-        var status = new TaskStatusUpdateEvent("task-1", A2ATaskStatus.newStatus(TaskState.WORKING), false);
-        var artifact = new TaskArtifactUpdateEvent("task-1", A2AArtifact.newArtifact(
-                List.of(JsonSupport.MAPPER.createObjectNode().put("type", "text").put("text", "chunk")),
-                null, null, false), true);
-        var response = A2AStreamResponse.newResponse("1", new A2AStreamEvent.StatusUpdate(status), null);
-        assertEquals("task-1", status.taskId());
-        assertTrue(artifact.isFinal());
-        assertEquals("2.0", response.jsonrpc());
-        assertTrue(response.result() instanceof A2AStreamEvent.StatusUpdate);
-    }
-
-    @Test
-    void streamValueMappingsAreReady() throws Exception {
-        var manifest = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(
-                java.nio.file.Path.of("../..", "contracts/sdk/parity-manifest.json")));
-        int count = 0;
-        for (var entry : manifest.path("entries")) {
-            if (entry.path("canonical").asBoolean()
-                    && entry.path("languages").path("java").path("contract_test")
-                    .asText().endsWith("/a2a_stream_values")) {
-                count += 1;
-                assertEquals("done", entry.path("languages").path("java").path("status").asText());
-            }
-        }
-        assertEquals(18, count);
-    }
-
-    @Test
-    void taskEnvelopesPreserveNestedValueSemantics() {
-        var message = A2AMessage.userText("hello");
-        var params = A2ATaskParams.newParams(message, "task-1", "session-1");
-        var request = A2ATaskRequest.newRequest("request-1", "tasks/send", params);
-        var task = A2ATask.newTask("task-1", A2ATaskStatus.newStatus(TaskState.WORKING),
-                "session-1", List.of(message), List.of());
-        var response = A2ATaskResponse.newResponse("request-1", task, null);
-        assertEquals("2.0", request.jsonrpc());
-        assertEquals("hello", request.params().message().textContent());
-        assertEquals("task-1", response.result().id());
-    }
-
-    @Test
-    void taskEnvelopeMappingsAreReady() throws Exception {
-        var manifest = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(
-                java.nio.file.Path.of("../..", "contracts/sdk/parity-manifest.json")));
-        int count = 0;
-        for (var entry : manifest.path("entries")) {
-            if (entry.path("canonical").asBoolean()
-                    && entry.path("languages").path("java").path("contract_test")
-                    .asText().endsWith("/a2a_task_envelopes")) {
-                count += 1;
-                assertEquals("done", entry.path("languages").path("java").path("status").asText());
-            }
-        }
-        assertEquals(15, count);
-    }
-
-    @Test
     void thinkingLevelParsesRustAliases() {
         assertEquals(ThinkingLevel.NONE, ThinkingLevel.parse(" OFF "));
         assertEquals(ThinkingLevel.MEDIUM, ThinkingLevel.parse("normal"));
@@ -644,19 +477,43 @@ class A2AValueTest {
     }
 
     @Test
-    void jwtMappingsAreReady() throws Exception {
-        var manifest = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(
-                java.nio.file.Path.of("../..", "contracts/sdk/parity-manifest.json")));
-        int count = 0;
-        for (var entry : manifest.path("entries")) {
-            if (entry.path("canonical").asBoolean()
-                    && entry.path("languages").path("java").path("contract_test")
-                    .asText().endsWith("/jwt_values")) {
-                count += 1;
-                assertEquals("done", entry.path("languages").path("java").path("status").asText());
+    void retiredA2AJwtMappingsStayOutsideExternalContract() throws Exception {
+        var root = java.nio.file.Path.of("../..");
+        var manifest = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(root.resolve("contracts/sdk/parity-manifest.json")));
+        var accepted = JsonSupport.MAPPER.readTree(java.nio.file.Files.readString(root.resolve("contracts/sdk/accepted-external-contract.json")));
+        var adr = java.nio.file.Files.readString(root.resolve("docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md"));
+        // ADR0042只撤销这九项语言义务；通用JWT本地值正控保持。
+        var retired = java.util.Map.ofEntries(
+                java.util.Map.entry("echo_agent::a2a::auth::JwtClaims::subject", "method"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig", "struct"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig::disabled", "method"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig::hs256", "method"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig::impl<Debug>", "trait_impl"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig::is_enabled", "method"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig::rs256", "method"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig::with_audience", "method"),
+                java.util.Map.entry("echo_agent::a2a::auth::JwtConfig::with_issuer", "method")
+        );
+        assertEquals(9, retired.size());
+        for (var identity : retired.entrySet()) {
+            var source = identity.getKey();
+            var kind = identity.getValue();
+            assertTrue(adr.contains("- Kind: " + kind + "\n- Source: " + source + "\n"), source);
+            for (var entry : accepted.path("entries")) {
+                for (var value : entry.path("source_paths")) {
+                    assertTrue(!entry.path("kind").asText().equals(kind) || !value.asText().equals(source), source);
+                }
+            }
+            for (var entry : manifest.path("entries")) {
+                if (!entry.path("kind").asText().equals(kind)) continue;
+                boolean matches = false;
+                for (var value : entry.path("source_paths")) matches |= value.asText().equals(source);
+                if (!matches) continue;
+                assertEquals("host_or_rust_only", entry.path("sdk_scope").asText(), entry.path("path").asText());
+                assertEquals("not_implemented", entry.path("languages").path("java").path("status").asText());
+                assertEquals("sdk-parity/java/retired_a2a_lsp", entry.path("languages").path("java").path("contract_test").asText());
             }
         }
-        assertEquals(9, count);
     }
 
     @Test

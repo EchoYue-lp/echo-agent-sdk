@@ -2,6 +2,37 @@
 
 Status: accepted
 
+## 2026-11-01 Stage-A 008／e151 同一SDK合同的精确绑定
+
+当前私有Stage-A机器基线固定锁
+`e151fb4587c99463e90c82dbe9d1d4f7e76747be1c7f6241d21b74a0e9976a62`及
+Framework `0087353fd78eb73ffaa68b255cf4ef807ca96d4a`。Root采用的是原SDK风险合同的
+三字段机械维护，不是新的用户风险接受；authorization、49组107个crate/version/source
+身份、policy SHA b18307d3…、tool0.20.2和原command逐对象不变，原4项ignore不增删。
+
+本SDK独立fresh结果为：真实锁cargo-audit0.22.2自然0、原008五源视图audit自然0、
+cargo-deny0.20.2四检查scanner自然0、原capture／独立caller各0、原policy14项通过。
+完整698963B deny raw SHA为
+`e9b2664927608a4b5e4875a1c05f47ea12ad6e67fd3ef95182187d904919f872`，
+原严格parser消费全输出，恰原49组107身份，其它diagnostic0；不把duplicate提示称零warning。
+官方RustSec实际HEAD为2295466c4e9df26647fd67d8fa1c705ac2fc7f81，tree为
+a95b9514c0f6e6af352c9c7845720fe73a964d1e。两audit和deny各自默认fresh获取及新FETCH_HEAD
+时间均保原；同SDK库预热只减少重复冷拉，不替代fresh网络取件，也不借F／CLI风险结果。
+
+三字段采用提案SHA78c7d3e…与Root独立数据对照、原件独审C0/I0/M0已具；
+当前基线据此绑定，原scanner/caller退出及历史822／0dac／013失败不重写。
+“机械”仅指基线字段：822→e151另含已批准JWT三包退出、zstd三版本升级、Polars来源及
+checksum变化和相关依赖边，不能称整个锁source-only。013→e151才恰13个source替换。
+
+原件位于主根本地ignored `echo-agent-sdk/.echo-semantic/local/` 下
+`pre-main-consumer-retirement-20261101-r08/locked-after-proposal-r04/heavy-producer-r01-prep/`
+`sdk-e151-fresh-risk-r01/`，结果索引SHA为
+`cb29048185e4815ea40520c78f96c1da1c314d78b108c58a3cdf9aa173fd845b`。
+这是可审本地运行原件，不冒正式Git归档、HTTPS发布、完整17或mainCI资格；当前Source/final
+仍须最终真实diff和正常入口。本次无新公开调用方式，examples和官网无需功能同步。
+
+## 下列为原裁决与历史验收（原话／失败／纪元保留）
+
 ## 2026-10-23 Tokio I/O safety 定向补丁
 
 当前锁 SHA256 为
