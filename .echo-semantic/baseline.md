@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "449934d22f3ab69b867f02cfb64565e073c8660e",
-    "content_digest": "56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c"
+    "content_digest": "e1864cc87ff524845908f5de781baa189dfed513a9b78551b23d5c59a0e2726b"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "closed",
@@ -941,3 +941,10 @@ HTTPS抓取网络失败、offline缺新crate和主动磁盘中断的原件各保
 本次 source_snapshot.base_revision 续接该真实祖先；非.echo 源码摘要仍为 `56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c`，与已完成16项本地执行的候选源码一致。
 `evidence.sdk-tokio-io-safety-current` 的 observed_at 同步续为该公开 Git 提交，避免将当前树 source: 锚永久保留。
 只是来源观察归档；不重写原执行 HEAD、时间、失败或平台限制，不扩大任何行为／审计／风险接受。最后的纯元数据提交须另行核验精确 main CI。
+
+
+## 2026-11-01 StageA 源码摘要的便携校准候选
+
+本次只校准 source_snapshot.content_digest。固定 canonical action c0bc306bd36d2b1b76def2b6c7308a07dda4f54b 的原 source_digest 对 StageA 业务源码实际得到 e1864cc87ff524845908f5de781baa189dfed513a9b78551b23d5c59a0e2726b，与 PR14 main 6cd2e1b6191aa2ed932dd50b2c22065405eb25f7 的原 semantic job 报告 actual 一致。该算法排除 .echo-semantic 材料；本候选不改变业务源码，也不修改原 base_revision 或既有 closure 字段。上文具名历史日期的旧摘要及执行结论保留。
+
+原本地任务 Source18 / Final19 自然0仅为 scope=task、globalClosure=not_checked，原 task:e765c4549f9b989409b94194267faed09f9103ec2eb6d03138c1a545b9746cdd 与 contentDigest c152f4e81e8729b0389035abd6ad4c4c81ba1799fcaaf973debdf9af1198e809 继续作为当时任务证明；不能用本次摘要校准将其改签为全仓库验证。原 CI run41317513674 semantic job124880592010 的14项失败仍保留。本候选尚未正式应用或取得后继 exact main CI 结果；删除预检的固定 canonical 消费接口缺口仍未闭合，不补造 preflight，不关闭检查，不修改外部工具合同。
