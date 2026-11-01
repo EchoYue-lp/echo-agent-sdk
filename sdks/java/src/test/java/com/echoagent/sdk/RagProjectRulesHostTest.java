@@ -49,7 +49,7 @@ class RagProjectRulesHostTest {
         String host = System.getenv("ECHO_AGENT_SDK_HOST");
         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank(), "required RAG/project-rules Host missing");
         assumeTrue(host != null && !host.isBlank(), "real Host required");
-        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_RAG_RULES_ROOT", "../../target/rag-project-rules")).toAbsolutePath().normalize();
+        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_RAG_RULES_ROOT", Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-rag-project-rules").toString())).toAbsolutePath().normalize();
         Files.createDirectories(root);
         Path work = Files.createTempDirectory(root, "java-");
         helper(work);

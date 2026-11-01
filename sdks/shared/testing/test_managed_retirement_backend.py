@@ -48,7 +48,7 @@ def durable(state):
 
 class RetirementBackendTest(unittest.TestCase):
     def setUp(self):
-        root = Path(__file__).resolve().parents[3] / "target/managed-retirement-unit"
+        root = Path(tempfile.gettempdir()) / "echo-sdk-managed-retirement-unit"
         root.mkdir(parents=True, exist_ok=True)
         self.directory = tempfile.TemporaryDirectory(dir=root)
         self.addCleanup(self.directory.cleanup)

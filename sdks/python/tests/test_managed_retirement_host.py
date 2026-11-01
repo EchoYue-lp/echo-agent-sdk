@@ -46,7 +46,7 @@ async def test_accepted_exact_clear_retains_scope_projection_and_retirement_proo
     root = Path(
         os.environ.get(
             "ECHO_AGENT_SDK_RETIREMENT_RUNTIME_ROOT",
-            str(Path(__file__).resolve().parents[3] / "target/managed-retirement"),
+            str(Path(tempfile.gettempdir()) / "echo-sdk-managed-retirement"),
         )
     )
     root.mkdir(parents=True, exist_ok=True)

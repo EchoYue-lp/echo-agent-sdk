@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,existsSync,readFileSync,writeFileSync,openSync,closeSync} from 'node:fs';
@@ -17,7 +18,7 @@ fs.writeFileSync(path.join(work,'pid'),String(process.pid));if(mode==='ignore-si
 process.stdin.setEncoding('utf8');process.stdin.on('data',chunk=>{input+=chunk;let n;while((n=input.indexOf('\n'))>=0){const row=JSON.parse(input.slice(0,n));input=input.slice(n+1);if(row.method==='initialize'){const hello=row.params.clientCapabilities._meta.echo_agent;process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:row.id,result:{protocolVersion:1,agentCapabilities:{_meta:{echo_agent:{extension_protocol_version:1,contract_digest:hello.contract_digest,source_contract_digest:hello.source_contract_digest,features:[],capabilities:mode.startsWith('init-fail-')?[]:[{capability:'agent_lifecycle',required:false}],limits}}}}})+'\n');}}});
 process.stdin.on('end',()=>{fs.writeFileSync(path.join(work,'eof'),'observed');if(mode==='exit'){process.exit(0);}const timer=setInterval(()=>{if(fs.existsSync(path.join(work,'release'))){clearInterval(timer);process.exit(0);}},10);});
 `;
-const ROOT=fileURLToPath(new URL('../../../target/typescript-stdio-close/',import.meta.url));
+const ROOT=join(tmpdir(), 'echo-sdk-typescript-stdio-close');
 async function setup(mode){mkdirSync(ROOT,{recursive:true});const work=mkdtempSync(join(ROOT,mode+'-'));const sdk=await EchoAgentClient.spawn({hostCommand:process.execPath,args:['-e',CHILD,work,mode]});const child=sdk.process;return {work,sdk,child};}
 async function until(predicate,ms=1500){const end=performance.now()+ms;while(!predicate()){assert.ok(performance.now()<end,'original child condition did not occur');await new Promise(resolve=>setTimeout(resolve,10));}}
 const exited=child=>child.exitCode!==null||child.signalCode!==null;

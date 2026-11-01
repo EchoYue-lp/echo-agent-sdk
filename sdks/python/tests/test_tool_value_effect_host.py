@@ -21,7 +21,7 @@ HOST = os.environ.get("ECHO_AGENT_SDK_HOST", "").strip()
 ROOT = Path(
     os.environ.get(
         "ECHO_AGENT_SDK_TOOL_EFFECT_ROOT",
-        str(Path(__file__).resolve().parents[3] / "target/tool-value-effects"),
+        str(Path(tempfile.gettempdir()) / "echo-sdk-tool-value-effects"),
     )
 )
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:

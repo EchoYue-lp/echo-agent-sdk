@@ -23,7 +23,7 @@ if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
 ROOT = Path(
     os.environ.get(
         "ECHO_AGENT_SDK_TELEMETRY_ROOT",
-        str(Path(__file__).resolve().parents[3] / "target/telemetry-host"),
+        str(Path(tempfile.gettempdir()) / "echo-sdk-telemetry-host"),
     )
 )
 FIXTURE = (

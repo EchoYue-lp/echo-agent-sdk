@@ -181,7 +181,7 @@ async function singleScenario(kind){
 for(const kind of ["subagent-await","crud-only"])test(`real Task/Subagent ${kind}`,{timeout:60000,skip:!host},()=>singleScenario(kind));
 
 async function observationScenario(carrier){
- const root=fileURLToPath(new URL('../../../target/cancellation-observation/',import.meta.url));mkdirSync(root,{recursive:true});
+ const root=join(tmpdir(), 'echo-sdk-cancellation-observation');mkdirSync(root,{recursive:true});
  const work=mkdtempSync(join(root,`typescript-${carrier}-`));console.log('B observation evidence',work);
  const backend=spawn('python3',[fixture,'--work',work,'--observation']);const exited=new Promise(resolve=>backend.once('exit',(code,signal)=>resolve({code,signal})));
  let sdk,http;const jobs=[],facts={carrier,source_kind:carrier==='stream'?'issued_stream_with_late_terminal':'issued_stream_without_successor_terminal',actual_complete_sent:false,callbacks:[],closes:[]};

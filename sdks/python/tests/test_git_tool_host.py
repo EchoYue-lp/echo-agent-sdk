@@ -36,7 +36,10 @@ def resolve(value, results):
 @pytest.mark.skipif(not HOST, reason="real Host required")
 async def test_git_tools_and_worktree_source_exact_local_effects():
     root = Path(
-        os.environ.get("ECHO_AGENT_SDK_GIT_ROOT", "../../target/git-native")
+        os.environ.get(
+            "ECHO_AGENT_SDK_GIT_ROOT",
+            str(Path(tempfile.gettempdir()) / "echo-sdk-git-native"),
+        )
     ).resolve()
     root.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="python-", dir=root))

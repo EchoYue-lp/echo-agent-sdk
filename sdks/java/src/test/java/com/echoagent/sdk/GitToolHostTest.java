@@ -52,7 +52,7 @@ class GitToolHostTest {
     @org.junit.jupiter.api.Test void acceptedGitToolsAndWorktreeSourcesPreserveExactLocalEffects() throws Exception {
         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertNotNull(HOST, "required Git Host missing");
         assumeTrue(HOST != null && !HOST.isBlank(), "real Host required");
-        var root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_GIT_ROOT", "../../target/git-native")).toAbsolutePath().normalize(); Files.createDirectories(root);
+        var root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_GIT_ROOT", Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-git-native").toString())).toAbsolutePath().normalize(); Files.createDirectories(root);
         var work = Files.createTempDirectory(root, "java-");
         oracle(work, "--prepare"); var scenario = JsonSupport.MAPPER.readTree(Files.readString(work.resolve("scenario.json")));
         var rows = JsonSupport.MAPPER.createArrayNode(); var results = new HashMap<String, JsonNode>();

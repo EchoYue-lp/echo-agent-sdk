@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, createWriteStream } from 'node:fs';
 import { join } from 'node:path';
@@ -9,7 +10,7 @@ import assert from 'node:assert/strict';
 import { EchoAgentClient } from '../dist/client.js';
 
 const fixture = fileURLToPath(new URL('../../shared/testing/rag_project_rules_fixture.py', import.meta.url));
-const root = process.env.ECHO_AGENT_SDK_RAG_RULES_ROOT ?? fileURLToPath(new URL('../../../target/rag-project-rules', import.meta.url));
+const root = process.env.ECHO_AGENT_SDK_RAG_RULES_ROOT ?? join(tmpdir(), 'echo-sdk-rag-project-rules');
 const host = process.env.ECHO_AGENT_SDK_HOST?.trim();
 if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === '1' && !host) throw new Error('required RAG/project-rules Host missing');
 function helper(work, ...args) { return execFileSync('python3', [fixture, '--work', work, ...args], { encoding: 'utf8' }); }

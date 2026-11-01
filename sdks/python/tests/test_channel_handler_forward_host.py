@@ -77,7 +77,7 @@ def evidence():
     root = Path(
         os.environ.get(
             "ECHO_AGENT_SDK_CHANNEL_FORWARD_ROOT",
-            str(Path(__file__).resolve().parents[3] / "target/channel-forward"),
+            str(Path(tempfile.gettempdir()) / "echo-sdk-channel-forward"),
         )
     )
     root.mkdir(parents=True, exist_ok=True)

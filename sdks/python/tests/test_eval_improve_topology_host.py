@@ -56,7 +56,7 @@ async def test_eval_improve_topology_native(group):
     root = Path(
         os.environ.get(
             "ECHO_AGENT_SDK_ANALYSIS_ROOT",
-            str(Path(__file__).resolve().parents[3] / "target/analysis-native"),
+            str(Path(tempfile.gettempdir()) / "echo-sdk-analysis-native"),
         )
     )
     root.mkdir(parents=True, exist_ok=True)

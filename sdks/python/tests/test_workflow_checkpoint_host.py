@@ -118,7 +118,7 @@ async def test_workflow_checkpoint_branch_owner_and_shape_boundary():
 async def test_protected_workflow_claim_keeps_bound_store_and_original_llm_owner():
     from echo_agent_sdk import AgentComponentDescriptor, LlmClientDescriptor
 
-    root = Path(__file__).resolve().parents[3] / "target/workflow-protected-claims"
+    root = Path(tempfile.gettempdir()) / "echo-sdk-workflow-protected-claims"
     root.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="python-", dir=root))
     backend = await asyncio.create_subprocess_exec(
