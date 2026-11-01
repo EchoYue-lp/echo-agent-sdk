@@ -32,7 +32,7 @@ class SessionRulesPromptHostTest {
         String host = System.getenv("ECHO_AGENT_SDK_HOST");
         if ("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E"))) assertTrue(host != null && !host.isBlank(), "required Session rules Host missing");
         assumeTrue(host != null && !host.isBlank(), "real Host required");
-        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_SESSION_RULES_ROOT", "../../target/session-rules-prompt")).toAbsolutePath().normalize();
+        Path root = Path.of(System.getenv().getOrDefault("ECHO_AGENT_SDK_SESSION_RULES_ROOT", Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-session-rules-prompt").toString())).toAbsolutePath().normalize();
         Files.createDirectories(root);
         Path work = Files.createTempDirectory(root, "java-");
         helper(work);

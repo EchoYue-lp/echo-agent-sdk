@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -9,7 +10,7 @@ import { EchoAgentClient, fromWireValue, wireU64 } from "../dist/index.js";
 const host = process.env.ECHO_AGENT_SDK_HOST;
 if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === "1" && !host) throw Error("required LLM/Workflow Host missing");
 const fixture = fileURLToPath(new URL("../../shared/testing/llm_workflow_stream_fixture.py", import.meta.url));
-const root = process.env.ECHO_AGENT_SDK_LLM_WORKFLOW_ROOT ?? fileURLToPath(new URL("../../../target/llm-workflow-stream", import.meta.url));
+const root = process.env.ECHO_AGENT_SDK_LLM_WORKFLOW_ROOT ?? join(tmpdir(), "echo-sdk-llm-workflow-stream");
 const sleep = () => new Promise(resolve => setTimeout(resolve, 0));
 function gate() { let release; const promise = new Promise(resolve => { release = resolve; }); return { promise, release }; }
 function helper(work, ...args) { const result = spawnSync("python3", [fixture, "--work", work, ...args], { encoding: "utf8" }); assert.equal(result.status, 0, result.stderr); return result.stdout; }

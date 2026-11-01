@@ -60,7 +60,7 @@ class ManagedRetirementHostTest {
         final CopyOnWriteArrayList<JsonNode> returnedReceipts = new CopyOnWriteArrayList<>();
         Backend(boolean enabled) throws Exception {
             String configured = System.getenv("ECHO_AGENT_SDK_RETIREMENT_RUNTIME_ROOT");
-            Path root = (configured == null ? Path.of("../../target/managed-retirement") : Path.of(configured)).toAbsolutePath().normalize();
+            Path root = (configured == null ? Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-managed-retirement") : Path.of(configured)).toAbsolutePath().normalize();
             Files.createDirectories(root);
             work = Files.createTempDirectory(root, "java-retirement-" + enabled + "-");
             var command = new ArrayList<>(List.of("python3", Path.of("../shared/testing/managed_persistence_backend.py").toAbsolutePath().toString(), "--work", work.toString()));

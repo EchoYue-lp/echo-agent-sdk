@@ -30,7 +30,7 @@ class LlmWorkflowStreamHostTest {
     private record Setup(Path work, JsonNode spec, EchoAgentClient sdk) {}
     private static Setup setup(String group) throws Exception {
         String configured = System.getenv("ECHO_AGENT_SDK_LLM_WORKFLOW_ROOT");
-        Path root = (configured == null ? Path.of("../../target/llm-workflow-stream") : Path.of(configured)).toAbsolutePath().normalize();
+        Path root = (configured == null ? Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-llm-workflow-stream") : Path.of(configured)).toAbsolutePath().normalize();
         Files.createDirectories(root); Path work = Files.createTempDirectory(root, "java-" + group + "-");
         helper(work, "--prepare"); var spec = JsonSupport.MAPPER.readTree(work.resolve("scenario.json").toFile());
         var sdk = await(EchoAgentClient.spawn(System.getenv("ECHO_AGENT_SDK_HOST"), List.of("--config", work.resolve("host.json").toString()),

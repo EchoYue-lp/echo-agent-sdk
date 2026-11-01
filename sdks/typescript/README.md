@@ -51,18 +51,10 @@ Failure categories are closed and preserve Rust recovery (`restore_then_retry`
 for unavailable, `verify_then_retry` for timeout/partial side effects,
 `retry` for transient and `stop` otherwise); ordinary JSON objects are always
 encoded as maps even when they contain `kind`/`value` keys.
-The A2A `TaskState` union and `taskStateCanTransitionTo` helper preserve the
-closed terminal and transition table without adding a wire route.
-`A2AMessage`, `A2ATaskStatus`, `AgentProvider` and `AgentSkill` provide the
-same immutable text/status/provider/skill value constructors.
-`AgentCard.builder(...)` provides the immutable card value and fluent local
-builder; it does not synthesize a card from a Host-owned Agent.
-`A2AArtifact.new(...)` and `A2AError.new(...)` preserve the corresponding
-wire fields without adding a network route.
-`TaskStatusUpdateEvent`, `TaskArtifactUpdateEvent` and `A2AStreamResponse`
-preserve the typed stream event union locally.
-`A2ATaskParams`, `A2ATaskRequest`, `A2ATask`, and `A2ATaskResponse` preserve
-the nested task envelope values without executing a task.
+本 SDK 当前候选已撤出 A2A 的 TypeScript value、card、task envelope 和 typed stream
+公开入口；旧名称仅保留在退役负控与历史说明中，不再作为当前 API 或协议路由。
+普通 client、callback、stream、Task/Subagent 和 Host-owned 生命周期继续保留。
+JWT 配置与 claims 仍按独立本地值合同保留，待唯一生成器与后续合同检查核对。
 `ThinkingLevel` and `thinkingLevelParse(...)` preserve Rust reasoning aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` preserve accepted/drained/settled
 values without owning the active Agent turn.
@@ -87,7 +79,7 @@ runtime values without owning the connection or event ledger.
 lossless shutdown duration without constructing an ACP adapter.
 `ExtensionLeaseError` preserves the typed lease failure display text without
 owning admission or concurrency decisions.
-`JwtConfig` and `JwtClaims` preserve local A2A auth configuration and subject
+`JwtConfig` and `JwtClaims` preserve local JWT auth configuration and subject
 projection; JWT verification remains Host-owned.
 `DependencyKind` and `SkillSource` preserve dependency/source values without
 probing or loading skills.

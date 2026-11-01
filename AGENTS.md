@@ -17,6 +17,27 @@ superproject 中的规则文件才能冷启动。
 
 ## 当前迁移门禁
 
+### 2026-11-01 Stage-A 当前独立来源与风险绑定
+
+本私有 Stage-A 的 Host 与根两个 Polars patch 固定 canonical HTTPS URL 的精确
+`0087353fd78eb73ffaa68b255cf4ef807ca96d4a`，13 个 Git 包同源；对象仅由已授权本地 Git
+传输取得，不宣称该修订已 HTTPS 发布。当前 Cargo.lock SHA256 为
+`e151fb4587c99463e90c82dbe9d1d4f7e76747be1c7f6241d21b74a0e9976a62`。
+SDK 自身 fresh 实际锁 audit、原五源视图 audit、cargo-deny0.20.2 四检查、原 capture
+与独立精确 caller 均自然0，原14项policy控制通过；deny完整保留原49组107身份提示，
+其它diagnostic为0。原4项ignore及policy/authorization/groups/tool/command不变。
+
+Root已接受独立原件复核与三字段提案，本Stage-A机器基线只维护lock_sha256、
+framework_pin、current_lock_validation；不新增风险接受，不继承Framework或CLI裁决。
+原822／0dac／013和全部历史失败按原epoch保留。accepted5352／shared431及生成物不变，
+完整17、Host／三语言／collector／当前task Source/final仍独立待验，Source按最终真实diff
+和正常preflight执行；不能把历史115／402默认签成当前Stage-A阻塞。
+
+本次只采用风险来源绑定与中文记录，不stage/compile或改正式SDK、顶层AGENTS及Root入口。
+后继正式main交付再统一真实版本；旧Rootr08与b714等旧源票不得执行采用后的新Source。
+
+### 历史 f7／Tokio 风险验收切点（原文与纪元保留）
+
 当前Host pin为已接受framework精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`/tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`，
 PR197/原mainCI39605663648七项SUCCESS及remote-only cold已由主协调者独审接受。
 2026-10-23 Tokio I/O safety 后继将锁内 tokio 1.53.1 定向升级为 1.53.3，当前精锁SHA256为

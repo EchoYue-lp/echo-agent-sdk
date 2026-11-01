@@ -8,3 +8,7 @@ default-members = [
     "echo-sdk-host",
 ]
 resolver = "3"
+
+[patch.crates-io]
+polars-arrow = { git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "0087353fd78eb73ffaa68b255cf4ef807ca96d4a" }
+polars-parquet = { git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "0087353fd78eb73ffaa68b255cf4ef807ca96d4a" }

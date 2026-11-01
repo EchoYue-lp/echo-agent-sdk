@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import assert from "node:assert/strict";
 import { spawn, execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
@@ -11,7 +12,7 @@ if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === "1" && !host) throw new Erro
 const fixture = fileURLToPath(new URL("../../shared/testing/session_rules_prompt_fixture.py", import.meta.url));
 
 test("Session cwd rules reach actual model and isolate new Session reload", { skip: !host, timeout: 30000 }, async () => {
-  const root = resolve(process.env.ECHO_AGENT_SDK_SESSION_RULES_ROOT ?? "../../target/session-rules-prompt");
+  const root = resolve(process.env.ECHO_AGENT_SDK_SESSION_RULES_ROOT ?? join(tmpdir(), "echo-sdk-session-rules-prompt"));
   mkdirSync(root, { recursive: true });
   const work = mkdtempSync(join(root, "typescript-"));
   const helper = (...args) => execFileSync("python3", [fixture, "--work", work, ...args], { encoding: "utf8" });

@@ -6499,12 +6499,7 @@ async fn tool_families_execute_framework_tools_with_the_session_cwd()
 
 // ── Integration families (plan 07 todo 5) ───────────────────────────────────
 
-#[cfg(all(
-    feature = "sdk-facade-adapters",
-    feature = "framework-a2a",
-    feature = "framework-lsp",
-    feature = "framework-topology"
-))]
+#[cfg(all(feature = "sdk-facade-adapters", feature = "framework-topology"))]
 #[tokio::test]
 async fn integration_families_use_framework_managers_and_clients()
 -> Result<(), Box<dyn std::error::Error>> {
@@ -6660,109 +6655,6 @@ async fn integration_families_use_framework_managers_and_clients()
                 typed_error(&refused)?.code,
                 ExtensionErrorCode::FrameworkError
             );
-
-            // A2A: discovery against a closed loopback port surfaces the
-            // framework client's real connection failure.
-            let client = decode(
-                connection
-                    .send_request(family_request(
-                        "_echo_agent/a2a/op",
-                        "a2a.client.open",
-                        vec![],
-                    )?)
-                    .block_task()
-                    .await?,
-            )?;
-            let client_id: echo_sdk_protocol::handle::WireHandle =
-                serde_json::from_value(
-                    client.get("resource").cloned().ok_or_else(|| {
-                        agent_client_protocol::Error::internal_error().data("no client resource")
-                    })?,
-                )
-                .map_err(|error| {
-                    agent_client_protocol::Error::internal_error().data(error.to_string())
-                })?;
-            assert_eq!(
-                client_id.kind,
-                echo_sdk_protocol::handle::HandleKind::FacadeResource
-            );
-            let discovery = connection
-                .send_request(family_request(
-                    "_echo_agent/a2a/op",
-                    "a2a.discover",
-                    vec![
-                        serde_json::json!(client_id),
-                        serde_json::json!("http://127.0.0.1:9/.well-known/agent.json"),
-                    ],
-                )?)
-                .block_task()
-                .await
-                .expect_err("a closed port must fail discovery");
-            assert_eq!(
-                typed_error(&discovery)?.code,
-                ExtensionErrorCode::FrameworkError
-            );
-
-            // LSP: a fresh manager reports no running servers.
-            let lsp = decode(
-                connection
-                    .send_request(family_request(
-                        "_echo_agent/lsp/op",
-                        "lsp.manager.open",
-                        vec![],
-                    )?)
-                    .block_task()
-                    .await?,
-            )?;
-            let lsp_id: echo_sdk_protocol::handle::WireHandle =
-                serde_json::from_value(
-                    lsp.get("resource").cloned().ok_or_else(|| {
-                        agent_client_protocol::Error::internal_error()
-                            .data("no lsp manager resource")
-                    })?,
-                )
-                .map_err(|error| {
-                    agent_client_protocol::Error::internal_error().data(error.to_string())
-                })?;
-            assert_eq!(
-                lsp_id.kind,
-                echo_sdk_protocol::handle::HandleKind::FacadeResource
-            );
-            let statuses = decode(
-                connection
-                    .send_request(family_request(
-                        "_echo_agent/lsp/op",
-                        "lsp.server.status",
-                        vec![serde_json::json!(lsp_id)],
-                    )?)
-                    .block_task()
-                    .await?,
-            )?;
-            assert_eq!(
-                statuses
-                    .get("servers")
-                    .and_then(|value| value.as_array())
-                    .map(Vec::len),
-                Some(0)
-            );
-            let lsp_receiver = serde_json::json!({"kind": "handle", "value": lsp_id});
-            for operation in [
-                "echo_integration::lsp::manager::LspManager::configured_languages",
-                "echo_integration::lsp::manager::LspManager::running_servers",
-                "echo_integration::lsp::manager::LspManager::status_all",
-            ] {
-                let value = invoke_facade(
-                    &connection,
-                    operation,
-                    &agent,
-                    vec![session_argument(&session.session), lsp_receiver.clone()],
-                )
-                .await?;
-                assert!(
-                    value.is_array(),
-                    "{operation} must preserve its Rust vector result"
-                );
-            }
 
             // Topology: full round trip through the framework tracker.
             let tracker = decode(
@@ -6979,16 +6871,14 @@ async fn integration_families_use_framework_managers_and_clients()
 async fn remaining_tool_families_execute_framework_tools_locally()
 -> Result<(), Box<dyn std::error::Error>> {
     let (endpoint, _request_seen) = start_model_server("unused").await?;
-    // Fixtures live under the workspace `target/` tree so the Host child
-    // process (which may run under a stricter file sandbox than the test)
-    // sees exactly what the test creates.
-    std::fs::create_dir_all("../target").map_err(|error| format!("target dir: {error}"))?;
+    // 使用测试与 Host 子进程共同继承的 TMPDIR，避免在冻结源码下留下 target 目录。
+    // 独立夹具和状态根仍由 TempDir 持有，测试退出时自动清理。
     let work = tempfile::Builder::new()
         .prefix("facade-tools-e2e-")
-        .tempdir_in("../target")?;
+        .tempdir()?;
     let state_root = tempfile::Builder::new()
         .prefix("facade-tools-state-")
-        .tempdir_in("../target")?;
+        .tempdir()?;
     // Canonicalize so the fixture path handed to the Host carries no `..`
     // component (the git family rejects traversal patterns).
     let work_root = std::fs::canonicalize(work.path())?;

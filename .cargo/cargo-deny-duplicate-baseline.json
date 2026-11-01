@@ -2,7 +2,7 @@
   "schema_version": 1,
   "authorization": "ACCEPTED_BY_HUMAN",
   "repository": "EchoYue-lp/echo-agent-sdk",
-  "lock_sha256": "822ee9a6936f25978283d38d4d07e4e8d7e006ec5834bfeaf80542f79e1ed52e",
+  "lock_sha256": "e151fb4587c99463e90c82dbe9d1d4f7e76747be1c7f6241d21b74a0e9976a62",
   "policy_sha256": "b18307d3e0afa05d0c1ad32004b59cb0a7fe62136e90037bec17738545b3013f",
   "tool_version": "cargo-deny 0.20.2",
   "command": [
@@ -692,6 +692,6 @@
       ]
     }
   ],
-  "current_lock_validation": "TOKIO_IO_SAFETY_20261023_PATCH_1_53_3; exact old49groups107registry identities retained; fresh cargo-audit deny-warnings actual0 with1351advisories84d943a6; cargo-deny0.20.2 four-check scanner natural0 and exact49group identity comparison0; HTTPS fetch failures retained, fresh same-official-repository SSH transport successor0; all655 other package blocks and Tokio dependency edges unchanged; full locked metadata0; runtime gates/new Host/full languages pending at this metadata write",
-  "framework_pin": "f7bac62eee04a963f92a3e4308b6ea2336e91cc0"
+  "current_lock_validation": "2026-11-01 SDK独立e151/008限定复核：真实锁与原008五源视图cargo-audit0.22.2均默认fresh获取并自然0；原cargo-deny0.20.2四项scanner自然0，原SDK未改caller对外置候选独立verify0，恰原49组107registry身份、其它diagnostic0；14项原policy控制0。官方RustSec实际HEAD2295466c4e9df26647fd67d8fa1c705ac2fc7f81/treea95b9514c0f6e6af352c9c7845720fe73a964d1e。deny raw SHA e9b2664927608a4b5e4875a1c05f47ea12ad6e67fd3ef95182187d904919f872。仅精确lock/pin机械绑定，policy/groups/authorization/tool/command不变，无新风险接受。008仅已授权localGit传输，不冒HTTPS发布；完整17与当前task Source/final仍各自待验。",
+  "framework_pin": "0087353fd78eb73ffaa68b255cf4ef807ca96d4a"
 }

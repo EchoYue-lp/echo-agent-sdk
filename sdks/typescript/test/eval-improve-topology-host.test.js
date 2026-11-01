@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -11,7 +12,7 @@ const fixture=fileURLToPath(new URL("../../shared/testing/eval_improve_topology_
 function helper(work,...args){const output=spawnSync("python3",[fixture,"--work",work,...args],{encoding:"utf8"});assert.equal(output.status,0,output.stderr);return output.stdout;}
 const outcome=(operation,value=null)=>({outcome:"result",result:{operation,value}});
 for(const group of ["eval","improve","topology"])test(`native ${group} accepted consumers`,{skip:!host,timeout:60000},async()=>{
- const root=process.env.ECHO_AGENT_SDK_ANALYSIS_ROOT??fileURLToPath(new URL("../../../target/analysis-native",import.meta.url));mkdirSync(root,{recursive:true});const work=mkdtempSync(join(root,`typescript-${group}-`));helper(work,"--prepare",group);const spec=JSON.parse(readFileSync(join(work,"scenario.json"),"utf8"));
+ const root=process.env.ECHO_AGENT_SDK_ANALYSIS_ROOT??join(tmpdir(), "echo-sdk-analysis-native");mkdirSync(root,{recursive:true});const work=mkdtempSync(join(root,`typescript-${group}-`));helper(work,"--prepare",group);const spec=JSON.parse(readFileSync(join(work,"scenario.json"),"utf8"));
  const facts={language:"typescript",group,created:[],closed:[],executed:[],callbacks:[],factory_finally:0,cancel_observed:0,rows:[]},instances=new Map(),values={};let mode="plain",factory, releaseDeadline, noticeDeadline; const deadlineRelease=new Promise(resolve=>{releaseDeadline=resolve;}); const deadlineCancelled=new Promise(resolve=>{noticeDeadline=resolve;});
  const sdk=await EchoAgentClient.spawn({hostCommand:host,args:["--config",join(work,"host.json")],env:{...process.env,TMPDIR:join(work,"runtime-temp")}});
  try{

@@ -98,8 +98,6 @@ impl MethodDescriptor {
             | "_echo_agent/improve/op"
             | "_echo_agent/permission/op"
             | "_echo_agent/mcp/op"
-            | "_echo_agent/a2a/op"
-            | "_echo_agent/lsp/op"
             | "_echo_agent/channels/op"
             | "_echo_agent/telemetry/op"
             | "_echo_agent/topology/op"
@@ -158,8 +156,6 @@ impl MethodDescriptor {
             | "_echo_agent/improve/op"
             | "_echo_agent/permission/op"
             | "_echo_agent/mcp/op"
-            | "_echo_agent/a2a/op"
-            | "_echo_agent/lsp/op"
             | "_echo_agent/channels/op"
             | "_echo_agent/telemetry/op"
             | "_echo_agent/topology/op"
@@ -474,18 +470,6 @@ pub const METHOD_CATALOG: &[MethodDescriptor] = &[
         direction: Direction::Request,
         capability: ExtensionCapability::FeatureSurfaces,
         summary: "MCP manager lifecycle/request operations (feature: mcp).",
-    },
-    MethodDescriptor {
-        name: "_echo_agent/a2a/op",
-        direction: Direction::Request,
-        capability: ExtensionCapability::FeatureSurfaces,
-        summary: "A2A client/server lifecycle operations (feature: a2a).",
-    },
-    MethodDescriptor {
-        name: "_echo_agent/lsp/op",
-        direction: Direction::Request,
-        capability: ExtensionCapability::FeatureSurfaces,
-        summary: "LSP manager/client operations (feature: lsp).",
     },
     MethodDescriptor {
         name: "_echo_agent/channels/op",

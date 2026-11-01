@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn, execFileSync } from "node:child_process";
@@ -8,7 +9,7 @@ import { EchoAgentClient } from "../dist/index.js";
 import { fileSha256 } from "../../shared/testing/file-sha256.mjs";
 const host = process.env.ECHO_AGENT_SDK_HOST;
 if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === "1" && !host) throw Error("required telemetry Host missing");
-const root = process.env.ECHO_AGENT_SDK_TELEMETRY_ROOT ?? fileURLToPath(new URL("../../../target/telemetry-host", import.meta.url));
+const root = process.env.ECHO_AGENT_SDK_TELEMETRY_ROOT ?? join(tmpdir(), "echo-sdk-telemetry-host");
 const fixture = fileURLToPath(new URL("../../shared/testing/telemetry_host_fixture.py", import.meta.url));
 
 async function bounded(action, label) {

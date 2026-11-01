@@ -550,6 +550,12 @@ impl WireValue {
             }
             Self::Record { type_id, fields } => {
                 validate_identity(type_id)?;
+                if fields
+                    .iter()
+                    .any(|field| retired_sdk_record_field(type_id, &field.name))
+                {
+                    return Err(ScalarError::ValueLimit("retired SDK field"));
+                }
                 validate_fields(fields, depth)
             }
             Self::Variant {
@@ -559,6 +565,9 @@ impl WireValue {
             } => {
                 validate_identity(type_id)?;
                 validate_identity(variant)?;
+                if retired_sdk_variant(type_id, variant) {
+                    return Err(ScalarError::ValueLimit("retired SDK variant"));
+                }
                 validate_fields(fields, depth)
             }
             Self::Unknown { type_tag, payload } => {
@@ -649,6 +658,24 @@ impl WireValue {
     }
 }
 
+fn retired_sdk_record_field(type_id: &str, field: &str) -> bool {
+    matches!(
+        (type_id, field),
+        (
+            "echo_core::plugin::registry::ResolvedComponents",
+            "lsp_config_file"
+        ) | (
+            "echo_agent::plugin::prepared::PluginWiringResult",
+            "lsp_discovered"
+        )
+    )
+}
+
+fn retired_sdk_variant(type_id: &str, variant: &str) -> bool {
+    type_id == "echo_core::plugin::capability::PluginCapability"
+        && matches!(variant, "LspServer" | "lsp_server")
+}
+
 fn validate_fields(fields: &[WireField], depth: usize) -> Result<(), ScalarError> {
     validate_collection_len(fields.len())?;
     let mut names = std::collections::BTreeSet::new();
@@ -724,5 +751,42 @@ mod tests {
             .validate()
             .is_err()
         );
+    }
+
+    #[test]
+    fn retired_sdk_identities_are_rejected_without_string_wide_filtering() {
+        let retired_field = WireValue::Record {
+            type_id: "echo_core::plugin::registry::ResolvedComponents".to_string(),
+            fields: vec![WireField {
+                name: "lsp_config_file".to_string(),
+                value: WireValue::Null,
+            }],
+        };
+        assert!(retired_field.validate().is_err());
+
+        let custom_field = WireValue::Record {
+            type_id: "user::custom::Record".to_string(),
+            fields: vec![WireField {
+                name: "lsp_config_file".to_string(),
+                value: WireValue::String("retained".to_string()),
+            }],
+        };
+        assert!(custom_field.validate().is_ok());
+
+        let retired_variant = WireValue::Variant {
+            type_id: "echo_core::plugin::capability::PluginCapability".to_string(),
+            variant: "LspServer".to_string(),
+            fields: vec![],
+        };
+        assert!(retired_variant.validate().is_err());
+
+        for variant in ["LspServer", "lsp_server"] {
+            let custom_variant = WireValue::Variant {
+                type_id: "user::custom::Capability".to_string(),
+                variant: variant.to_string(),
+                fields: vec![],
+            };
+            assert!(custom_variant.validate().is_ok());
+        }
     }
 }

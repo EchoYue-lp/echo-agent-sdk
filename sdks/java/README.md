@@ -69,18 +69,10 @@ shape.
 Failure categories are closed and preserve Rust recovery actions; ordinary
 JSON objects passed to `successJson`/`withData` are recursively encoded as
 maps, while the `JsonNode` overload remains the explicit pre-encoded path.
-`TaskState` is a Java enum with the same terminal, transition and display
-semantics as the Rust A2A value; it does not add a protocol route.
-`A2AMessage`, `A2ATaskStatus`, `AgentProvider` and `AgentSkill` provide the
-corresponding immutable value constructors and text projections.
-`AgentCard.builder(...)` provides the local immutable card and fluent builder;
-it does not mirror the Host-owned `from_agent` operation.
-`A2AArtifact.newArtifact(...)` and `A2AError.newError(...)` preserve the A2A
-artifact/error wire fields as immutable values.
-`TaskStatusUpdateEvent`, `TaskArtifactUpdateEvent` and `A2AStreamResponse`
-provide the corresponding closed local stream values.
-`A2ATaskParams`, `A2ATaskRequest`, `A2ATask`, and `A2ATaskResponse` provide
-immutable nested task envelope values; task execution remains Host-owned.
+本 SDK 当前候选已撤出 A2A 的 Java value、card、task envelope 和 typed stream
+公开入口；对应旧类与方法只保留在历史来源说明中，不再作为当前 API 或协议路由。
+普通 `EchoAgentClient`、callback、stream、Task/Subagent 和 Host-owned 生命周期继续保留。
+JWT 配置与 claims 仍按独立本地值合同保留，待唯一生成器与后续合同检查核对。
 `ThinkingLevel.parse(...)` preserves the Rust reasoning-effort aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` expose the same local lifecycle
 values while the active receipt remains Host-owned.
@@ -117,7 +109,7 @@ event-ledger ownership remain in the Host/Rust runtime.
 shutdown-duration validation without constructing the ACP adapter.
 `AcpValues.ExtensionLeaseError` preserves typed lease failure text while the
 Host retains admission and concurrency authority.
-`JwtConfig` and `JwtClaims` preserve local A2A auth configuration and subject
+`JwtConfig` and `JwtClaims` preserve local JWT auth configuration and subject
 projection while JWT verification remains Host/Rust-owned.
 `DependencyKind` and `SkillSource` expose dependency/source values while
 probing and skill loading remain framework-owned.

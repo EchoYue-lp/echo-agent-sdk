@@ -22,7 +22,7 @@ class ChannelHandlerForwardHostTest {
         assumeTrue(host != null && !host.isBlank(), "new-contract real Host required");
         spec = JsonSupport.MAPPER.readTree(SHARED.resolve("channel_forward_scenarios.json").toFile());
         String configured = System.getenv("ECHO_AGENT_SDK_CHANNEL_FORWARD_ROOT");
-        Path root = (configured == null ? Path.of("../../target/channel-forward") : Path.of(configured)).toAbsolutePath().normalize();
+        Path root = (configured == null ? Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-channel-forward") : Path.of(configured)).toAbsolutePath().normalize();
         Files.createDirectories(root); evidenceRoot = Files.createTempDirectory(root, "java-channel-forward-");
     }
     static String sha(Path path) throws Exception { return FileSha256.sha256(path); }

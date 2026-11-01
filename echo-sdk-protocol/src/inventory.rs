@@ -2006,6 +2006,14 @@ fn language_status_for(
     classification: SemanticClass,
     route: &RouteObligation,
 ) -> (LanguageImplementationStatus, &'static str) {
+    if crate::facade::governance_source_disposition(identity)
+        == Some("process-local-retired-sdk-a2a-lsp")
+    {
+        return (
+            LanguageImplementationStatus::NotImplemented,
+            "retired_a2a_lsp",
+        );
+    }
     const LOCAL_TOOL_VALUE_IDENTITIES: &[&str] = &[
         "echo_core::tools::ToolCallParams",
         "echo_core::tools::ToolCallParams::from_params",

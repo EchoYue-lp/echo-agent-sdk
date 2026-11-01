@@ -139,7 +139,7 @@ fn sdk_scope_is_complete_deterministic_and_alias_safe() -> TestResult {
         ("echo_agent::testing::MockAgent", SdkScope::InternalHelper),
         ("echo_agent::Tool", SdkScope::LanguageIntrinsic),
         ("echo_agent::a2a::A2AServer", SdkScope::HostOrRustOnly),
-        ("echo_agent::a2a::A2AClient::new", SdkScope::Deferred),
+        ("echo_agent::a2a::A2AClient::new", SdkScope::HostOrRustOnly),
     ] {
         if let Some(entry) = manifest.entries.iter().find(|entry| entry.path == path) {
             assert_eq!(entry.sdk_scope, scope, "scope classification: {path}");
@@ -427,170 +427,114 @@ fn local_tool_value_intrinsics_have_language_behavior_evidence() -> TestResult {
     Ok(())
 }
 
+// 只读取 ADR0042 已批准的精确 source/kind 输入；分类和接受仍由原 inventory 实现负责。
+fn approved_retired_sources()
+-> TestResult<BTreeSet<(String, echo_sdk_protocol::inventory::ItemKind)>> {
+    let adr = read("docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md")?;
+    let mut sources = BTreeSet::new();
+    for section in adr.split("\n### Retire ").skip(1) {
+        let kind = section
+            .lines()
+            .find_map(|line| line.strip_prefix("- Kind: "))
+            .ok_or("retirement kind missing")?;
+        let source = section
+            .lines()
+            .find_map(|line| line.strip_prefix("- Source: "))
+            .ok_or("retirement source missing")?;
+        let kind = serde_json::from_value(serde_json::Value::String(kind.to_owned()))?;
+        assert!(
+            sources.insert((source.to_owned(), kind)),
+            "duplicate retirement: {source}"
+        );
+    }
+    assert_eq!(sources.len(), 269, "ADR0042 retirement inputs drifted");
+    Ok(sources)
+}
+
 #[test]
-fn a2a_task_state_intrinsics_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_task_state"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 10, "A2A TaskState intrinsic set drifted");
-    for entry in entries {
+fn retired_sources_leave_language_contract_without_removing_native_telemetry() -> TestResult {
+    use echo_sdk_protocol::inventory::LanguageImplementationStatus;
+    let retired = approved_retired_sources()?;
+    let full = manifest()?;
+    let accepted = accepted_seed()?;
+    assert!(
+        accepted
+            .entries
+            .iter()
+            .all(|entry| !retired.contains(&source_key(entry)))
+    );
+    for entry in &full.entries {
+        if !retired.contains(&source_key(entry)) {
+            continue;
+        }
+        assert_eq!(entry.sdk_scope, SdkScope::HostOrRustOnly, "{}", entry.path);
+        assert_eq!(entry.languages.len(), 3, "{}", entry.path);
         for (language, mapping) in &entry.languages {
             assert_eq!(
                 mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
+                LanguageImplementationStatus::NotImplemented,
+                "{language}: {}",
+                entry.path
+            );
+            assert_eq!(
+                mapping.contract_test,
+                format!("sdk-parity/{language}/retired_a2a_lsp"),
                 "{language}: {}",
                 entry.path
             );
         }
     }
+    // 原生定义可以继续存在或被上游物理删除；两者都不能改变其它 accepted 合同与签名。
+    let expected = compatibility_document(&full);
+    let mut without_native = full.clone();
+    without_native
+        .entries
+        .retain(|entry| !retired.contains(&source_key(entry)));
+    assert_eq!(compatibility_document(&without_native), expected);
     Ok(())
 }
 
 #[test]
-fn a2a_value_intrinsics_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 14, "A2A value intrinsic set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_agent_card_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_agent_card"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 14, "A2A Agent Card value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_wire_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_wire_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 8, "A2A wire value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_stream_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_stream_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 18, "A2A stream value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn a2a_task_envelopes_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/a2a_task_envelopes"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 15, "A2A task envelope set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
+fn retired_sources_cannot_be_reaccepted_as_language_contract() -> TestResult {
+    use echo_sdk_protocol::inventory::apply_accepted_source_scope;
+    let retired = approved_retired_sources()?;
+    let full = manifest()?;
+    let seed = accepted_seed()?;
+    // 正控走同一权威：保留的全部 accepted source/kind 仍被接受，而非以全局拒绝蒙混。
+    let mut retained = full.clone();
+    apply_accepted_source_scope(&mut retained, &seed, &BTreeSet::new(), &BTreeSet::new())?;
+    assert_eq!(
+        compatibility_document(&retained),
+        compatibility_document(&full)
+    );
+    let mut empty_seed = seed;
+    empty_seed.entries.clear();
+    let mut candidate = full.clone();
+    candidate.entries.clear();
+    for key in retired {
+        // 每个精确输入独立尝试，避免第一个失败掩盖其余退役项；不要求原生遥测永久存在。
+        candidate.entries = full
+            .entries
+            .iter()
+            .find(|entry| entry.canonical && source_key(entry) == key)
+            .cloned()
+            .into_iter()
+            .collect();
+        let before = candidate.clone();
+        let error = apply_accepted_source_scope(
+            &mut candidate,
+            &empty_seed,
+            &BTreeSet::from([key.clone()]),
+            &BTreeSet::new(),
+        )
+        .err()
+        .ok_or_else(|| format!("retired source reaccepted: {}", key.0))?;
+        assert!(error.contains(&key.0), "wrong rejected source: {error}");
+        assert_eq!(
+            candidate, before,
+            "failed acceptance mutated inventory: {}",
+            key.0
+        );
     }
     Ok(())
 }
@@ -1087,34 +1031,6 @@ fn acp_lease_values_have_language_behavior_evidence() -> TestResult {
         })
         .collect();
     assert_eq!(entries.len(), 5, "ACP lease error value set drifted");
-    for entry in entries {
-        for (language, mapping) in &entry.languages {
-            assert_eq!(
-                mapping.status,
-                echo_sdk_protocol::inventory::LanguageImplementationStatus::Done,
-                "{language}: {}",
-                entry.path
-            );
-        }
-    }
-    Ok(())
-}
-
-#[test]
-fn jwt_values_have_language_behavior_evidence() -> TestResult {
-    let manifest = manifest()?;
-    let entries: Vec<_> = manifest
-        .entries
-        .iter()
-        .filter(|entry| {
-            entry.canonical
-                && entry
-                    .languages
-                    .values()
-                    .all(|mapping| mapping.contract_test.ends_with("/jwt_values"))
-        })
-        .collect();
-    assert_eq!(entries.len(), 9, "JWT value set drifted");
     for entry in entries {
         for (language, mapping) in &entry.languages {
             assert_eq!(
@@ -2541,18 +2457,6 @@ fn canonical_consumer_traits_and_streams_have_executable_routes() -> TestResult 
         assert!(
             workflow.contains(&operation),
             "missing workflow stream operation {operation}"
-        );
-    }
-    let a2a = echo_sdk_protocol::facade::FacadeFamily::A2a.operations();
-    for operation in [
-        "a2a.task.stream.open",
-        "a2a.stream.next",
-        "a2a.stream.cancel",
-        "a2a.stream.close",
-    ] {
-        assert!(
-            a2a.contains(&operation),
-            "missing A2A stream operation {operation}"
         );
     }
     Ok(())

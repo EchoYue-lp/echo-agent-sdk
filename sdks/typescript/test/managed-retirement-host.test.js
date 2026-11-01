@@ -1,3 +1,4 @@
+import { tmpdir } from "node:os";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -11,7 +12,7 @@ if (process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E === "1" && !host) throw Error("r
 const CLEAR = "echo_agent::state::clear_persisted_runtime_incarnation";
 const DELETE = "echo_agent::state::delete_persisted_conversation";
 const RETIRE = "runtime_retire_generation_with_context";
-const root = process.env.ECHO_AGENT_SDK_RETIREMENT_RUNTIME_ROOT ?? fileURLToPath(new URL("../../../target/managed-retirement", import.meta.url));
+const root = process.env.ECHO_AGENT_SDK_RETIREMENT_RUNTIME_ROOT ?? join(tmpdir(), "echo-sdk-managed-retirement");
 const durable = ({ observations, supported_operations, calls, ...state }) => state;
 async function http(url, path, payload) {
   const response = await fetch(url + path, { method: payload === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json" }, ...(payload === undefined ? {} : { body: JSON.stringify(payload) }) });

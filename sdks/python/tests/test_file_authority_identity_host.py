@@ -25,7 +25,7 @@ pytestmark = [
 
 
 async def test_same_length_replacement_rejects_stale_guard_without_writing():
-    root = Path(__file__).resolve().parents[3] / "target/file-authority-identity"
+    root = Path(tempfile.gettempdir()) / "echo-sdk-file-authority-identity"
     root.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="python-", dir=root))
     fixture.prepare(work)

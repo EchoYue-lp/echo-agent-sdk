@@ -884,7 +884,7 @@ async def test_subagent_receipt_and_crud_admission(kind):
 @pytest.mark.parametrize("carrier", ["setup", "stream"])
 async def test_observation_preserves_real_run_and_same_physical_producer(carrier):
     """The callback admits the owned process; neither transport nor EOF stops it."""
-    root = Path(__file__).resolve().parents[3] / "target/cancellation-observation"
+    root = Path(tempfile.gettempdir()) / "echo-sdk-cancellation-observation"
     root.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix=f"python-{carrier}-", dir=root))
     print("B observation evidence", work)

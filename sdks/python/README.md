@@ -58,18 +58,10 @@ modifiers; structured payloads use the shared lossless WireValue conversion.
 Failure categories are validated as a closed set with the Rust recovery
 mapping, and ordinary JSON objects are encoded as maps even when they contain
 `kind`/`value` keys.
-`TaskState` is a native string enum with the same terminal, transition and
-display semantics as the Rust A2A value.
-`A2AMessage`, `A2ATaskStatus`, `AgentProvider` and `AgentSkill` are immutable
-native values with the corresponding text/status/provider/skill constructors.
-`AgentCard.builder(...)` provides the same local immutable card and fluent
-builder semantics; Agent-backed card discovery remains a Rust authority.
-`A2AArtifact.new(...)` and `A2AError.new(...)` provide immutable wire DTOs for
-artifact chunks and typed task errors.
-`TaskStatusUpdateEvent`, `TaskArtifactUpdateEvent` and `A2AStreamResponse`
-preserve the local typed stream event union without owning transport.
-`A2ATaskParams`, `A2ATaskRequest`, `A2ATask`, and `A2ATaskResponse` provide
-the corresponding immutable nested task envelopes.
+本 SDK 当前候选已撤出 A2A 的 Python value、card、task envelope 和 typed stream
+公开入口；旧名称仅保留在退役负控与历史说明中，不再作为当前 API 或协议路由。
+普通 client、callback、stream、Task/Subagent 和 Host-owned 生命周期继续保留。
+JWT 配置与 claims 仍按独立本地值合同保留，待唯一生成器与后续合同检查核对。
 `ThinkingLevel.parse(...)` preserves the Rust reasoning-effort aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` preserve steering boundaries;
 the live receipt and turn remain Host-owned.
@@ -105,7 +97,7 @@ runtime values without owning the connection or event ledger.
 errors, and the shutdown duration without constructing an ACP adapter.
 `ExtensionLeaseError` preserves typed lease failure text while admission and
 concurrency remain Host-owned.
-`JwtConfig` and `JwtClaims` preserve local A2A auth configuration and subject
+`JwtConfig` and `JwtClaims` preserve local JWT auth configuration and subject
 projection; token verification remains Host-owned.
 `DependencyKind` and `SkillSource` preserve dependency/source values without
 probing or loading skills.

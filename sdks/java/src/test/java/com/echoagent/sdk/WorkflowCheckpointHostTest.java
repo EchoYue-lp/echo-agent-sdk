@@ -148,7 +148,7 @@ public class WorkflowCheckpointHostTest {
  @Test public void protectedWorkflowClaimKeepsBoundStoreAndOriginalLlmOwner()throws Exception{
   var host=System.getenv("ECHO_AGENT_SDK_HOST");if("1".equals(System.getenv("ECHO_AGENT_SDK_REQUIRE_HOST_E2E")))assertTrue(host!=null&&!host.isBlank());assumeTrue(host!=null&&!host.isBlank());
   var fixture=Path.of("../shared/testing/workflow_checkpoint_fixture.py").toAbsolutePath();
-  var root=Path.of("../../target/workflow-protected-claims").toAbsolutePath().normalize();Files.createDirectories(root);var work=Files.createTempDirectory(root,"java-");
+  var root=Path.of(System.getenv().getOrDefault("TMPDIR", System.getProperty("java.io.tmpdir")), "echo-sdk-workflow-protected-claims").toAbsolutePath().normalize();Files.createDirectories(root);var work=Files.createTempDirectory(root,"java-");
   var backend=new ProcessBuilder("python3",fixture.toString(),"--work",work.toString(),"--serve-protected").redirectError(work.resolve("backend-stderr.txt").toFile()).redirectOutput(work.resolve("backend-stdout.txt").toFile()).start();
   EchoAgentClient sdk=null;String url=null;var http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
   var flights=new HashMap<String,CompletionStage<JsonNode>>();var rows=JsonSupport.MAPPER.createArrayNode();var results=JsonSupport.MAPPER.createObjectNode();
