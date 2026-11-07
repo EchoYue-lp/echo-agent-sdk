@@ -4,6 +4,20 @@ Status: SDK consumer withdrawal under [ADR 0042](../../adr/0042-sdk-a2a-lsp-reti
 The original266 inventory below is a historical baseline; current Plan04
 withdraws269. 消费者撤出、Framework物理删除及SDK正式采用删后源分别验收；原固定pin不反向证明新源已采用。This document is not a second accepted-contract authority.
 
+## 2026-11-04：接收退役边界回归测试
+
+当前 SDK 在 `83ae59e` 基础上接收候选的四份既有测试增量，共新增154行。
+Rust `scalar` 测试检查退役字段／变体被拒绝，同时允许用户自定义类型使用同名值；
+Java、Python 和 TypeScript 测试逐项核对 ADR0042 的九项 JWT 退役身份不进入
+accepted 合同，也不恢复退役语言义务。生产实现、Host pin、锁和生成合同不变。
+
+`echo-sdk-host/tests/core_profile_e2e.rs` 保留 HEAD 在仓库 `target/` 下创建夹具的
+沙箱可见性修复，不采用候选中的系统临时目录版本。此处测试接收不代表候选的
+历史验证已自动覆盖当前工作区；实际工程结果与剩余 Source／Final、风险及平台门禁分别结算。
+
+本次未新增 API、调用方式或产品行为，已有 examples 和官网说明无需调整；
+四份回归测试进入各仓原有 Cargo／三语言测试入口，不新增平行合同或测试执行器。
+
 ## 2026-10-31：正式采用删后来源
 
 当前正式 Host 通过 HTTPS 精确采用 framework `340993201cc937fc8e4783b66be399ef9f14e3d5`

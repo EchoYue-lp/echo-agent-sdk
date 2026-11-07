@@ -753,4 +753,42 @@ mod tests {
             .is_err()
         );
     }
+
+    // 承接StageA具名退出与用户自定义同名值保留的定向回归；生产校验仍为83原实现。
+    #[test]
+    fn retired_sdk_identities_are_rejected_without_string_wide_filtering() {
+        let retired_field = WireValue::Record {
+            type_id: "echo_core::plugin::registry::ResolvedComponents".to_string(),
+            fields: vec![WireField {
+                name: "lsp_config_file".to_string(),
+                value: WireValue::Null,
+            }],
+        };
+        assert!(retired_field.validate().is_err());
+
+        let custom_field = WireValue::Record {
+            type_id: "user::custom::Record".to_string(),
+            fields: vec![WireField {
+                name: "lsp_config_file".to_string(),
+                value: WireValue::String("retained".to_string()),
+            }],
+        };
+        assert!(custom_field.validate().is_ok());
+
+        let retired_variant = WireValue::Variant {
+            type_id: "echo_core::plugin::capability::PluginCapability".to_string(),
+            variant: "LspServer".to_string(),
+            fields: vec![],
+        };
+        assert!(retired_variant.validate().is_err());
+
+        for variant in ["LspServer", "lsp_server"] {
+            let custom_variant = WireValue::Variant {
+                type_id: "user::custom::Capability".to_string(),
+                variant: variant.to_string(),
+                fields: vec![],
+            };
+            assert!(custom_variant.validate().is_ok());
+        }
+    }
 }
