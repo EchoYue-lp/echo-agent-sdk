@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "449934d22f3ab69b867f02cfb64565e073c8660e",
-    "content_digest": "56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c"
+    "content_digest": "72b0eaf85279c30d8c46ffbe7e2c5fadf6f48a602ea8e2c9dda67eab2c195be8"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "closed",
@@ -941,3 +941,34 @@ HTTPS抓取网络失败、offline缺新crate和主动磁盘中断的原件各保
 本次 source_snapshot.base_revision 续接该真实祖先；非.echo 源码摘要仍为 `56b1a7e62931cc9edb5c58e3a7be71bd34baf408d9860101da82f8def8e6da9c`，与已完成16项本地执行的候选源码一致。
 `evidence.sdk-tokio-io-safety-current` 的 observed_at 同步续为该公开 Git 提交，避免将当前树 source: 锚永久保留。
 只是来源观察归档；不重写原执行 HEAD、时间、失败或平台限制，不扩大任何行为／审计／风险接受。最后的纯元数据提交须另行核验精确 main CI。
+
+
+## 2026-11-04：正式83工作树的本轮来源
+
+当前HEAD仍为 `83ae59e407313d7130811478a74646865d9e8bd3`，分支仍为 `chore/Echoyue/root-workspace-convergence`，
+本轮仅接收四测试154行及一份SDK说明。933个业务文件的原版校验器摘要为
+`source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`；installed0.5和固定c0bc原算法两读一致。候选7978仍属原接收根，
+不冒当前摘要。原base_revision、closure字段及旧执行资格不变，不宣main747合并或发行完成。
+当前Rust589及三语言定向各2的原件见本仓local的 `sdk-candidate-landing-20261104-r01/settlement.json`。
+
+
+## 2026-11-08：综合分支的主线语义移植来源
+
+本轮在 `0025d84e1a5a08634c9596092c46ca37eed0304c` 的综合分支工作树上，保留已有十份语义 WIP，
+只移植 main `6cd2e1b` 的生成前实际来源预检，以及 `747be937` 的来源便携校准意图。
+顶层 content_digest 改为固定 canonical c0bc 原 `source_digest` 函数实际得到的 `72b0eaf85279c30d8c46ffbe7e2c5fadf6f48a602ea8e2c9dda67eab2c195be8`，
+业务路径数为 934；该算法排除 `.echo-semantic`，包括本次正式检查脚本及新的静态回归测试。
+原 `base_revision`、inventory/behavior closure、Map 清单和全部历史段落保持，旧 `0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`、
+`56b1a7e6…` 与 main StageA 的 `e1864cc8…` 均只代表各自旧来源，不能重签当前组合源码。
+
+当前 SDK 继续使用 Framework `340993201cc937fc8e4783b66be399ef9f14e3d5`、锁 `c4488065…`、
+accepted 5344 项及 430 条 route，原 49 组／107 身份 duplicate 合同未变。
+生成前预检复用当前精确 13 包 name/version/source，增加实际 checkout HEAD、跟踪源码 clean 与所有
+manifest 同 checkout 验证；原 native_message_contract 和退役检查保留，不回退 main 的 008/e151。
+
+本轮只运行无模型命令替身的六项预检回归及脚本语法检查，未执行真实 Cargo、rustdoc、生成器、
+三语言、Host 或 fresh scanner。固定 canonical c0bc 工具原件已由 Root 从原 Git 对象恢复到主根，SHA256 为
+`950a606e3b8225c802d61f1b0a6ce4b71ed0949d7b12ad73aec1cf76dbfd9c66`。本轮只执行其原
+source_digest/git_file_paths/run_git 三函数和原常量的 AST，算法未改，结果与 installed 0.5 原函数相同。
+完整 validator 的相对模块尚未恢复，旧删除预检接口缺口与原失败继续保留，完整 Source/Final 为 not_reached；
+来源摘要不代表全 SDK semantic 通过、main 已合流、精确 main CI 或发布完成。

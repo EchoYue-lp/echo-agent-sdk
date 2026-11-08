@@ -39,7 +39,17 @@
     "sdks/java/src/test/java/com/echoagent/sdk/ManagedRetirementHostTest.java",
     "sdks/typescript/examples/quickstart.ts",
     "sdks/python/examples/quickstart.py",
-    "sdks/java/src/main/java/com/echoagent/sdk/Example.java"
+    "sdks/java/src/main/java/com/echoagent/sdk/Example.java",
+    "contracts/sdk/facade-operation-catalog.json",
+    "contracts/sdk/inventory-telemetry.json",
+    "contracts/sdk/parity-manifest.json",
+    "contracts/sdk/public-api.txt",
+    "contracts/sdk/schema/echo-agent-extension-v1.schema.json",
+    "contracts/sdk/source-contract.json",
+    "echo-sdk-protocol/src/catalog.rs",
+    "echo-sdk-protocol/tests/core_rpc_contract.rs",
+    "sdks/python/tests/test_lsp_diagnostics_host.py",
+    "sdks/python/tests/test_lsp_host.py"
   ],
   "supports": [
     "finding.sdk-a2a-lsp-consumer-retirement"
@@ -1575,3 +1585,59 @@ The actual resource command was `cargo clean --target-dir /Users/ls/MyWork/code/
 本轮fresh官方RustSec数据库HEAD `a78282a1414d6c28cc228c4eae3570451affb0dc`、1378条advisories、653deps上，`cargo audit --deny warnings --json`真实自然1：zstd0.13.3、zstd-safe7.2.4、zstd-sys2.0.16存在四项漏洞与十项unsound，尚未修复。原四项ignore与49组duplicate接受边界不扩，不接受新风险，不用旧SDK扫描或其它仓例外替代。由于原Polars父要求不能直接接安全major/minor，该修复交单一Framework/上游owner后由SDK精确继承；本候选不复制SDKvendor或改pin。
 
 原件索引均在本仓ignored `.echo-semantic/local/sdk-consumer-root-integration-20261027/`：`adoption-scope.json`、`focused-protocol-results.json`、`02-host-full-prepare-command.json`、`fresh-dependency-blockers.json`、`framework-single-owner-security-readiness.json`、`post-clean-receipt.json`。这些位置只是工程原件定位，不加入正式source_refs。当前TaskSemantic检查只证明具名范围/引用/来源合法，不能解除上述真实依赖失败、证明完整保留行为，或冒native、Windows、精确main CI、整个Outcome、发布/部署合格。
+
+
+## 2026-11-04：候选差异的正式处置
+
+本对象原before/after/observed_at、matched场景、命令、删除清单和全部历史正文保持原字节。
+候选的StageA重组没有直接覆盖本对象，避免用另一阶段的22删除/e186资料替换现有29路径历史。
+当前正式四测试及589P的after-only资格由既有 `evidence.sdk-sandbox-and-canonical-input-consumption`
+记录；本历史task after不是当前源码摘要。main747接收和其两外部Source合同仍分别开放。
+
+
+## 2026-11-08：main747 便携来源意图的当前适配
+
+本对象的 `observed_at=1eac40fbf224e510ab29aea128ce59c20f8b4a52`、`before_revision=525453fc9b9448358cc8a2f46bbcf401b10943ec`、
+`after_revision=task:f5f9b54aa6cee5048cba29f516c2aaae5279a28ea4edd59d89de930e9c52fb01` 及全部原 matched/command_results、失败和 WIP 正文原样保留。
+这些字段及上文 5352/431、520/589 等运行数量各有历史切点，不改绑为本轮来源或新运行。
+main747 把 StageA `task:e765…` 校准到真实 `source:e186…` 的目的，是让来源可定位而不扩大资格；
+当前已经是 340/native 组合，不能复制该旧摘要。这里补齐其十项仍适用的 source_refs，并单独标注本轮
+原函数实际算出的 `source:72b0eaf85279c30d8c46ffbe7e2c5fadf6f48a602ea8e2c9dda67eab2c195be8`（934 业务路径）；原历史 task:f5f9 不是当前业务摘要。
+
+本节仅说明当前路径、静态内容及与旧 StageA 的区别，不新增 behavior_equivalence/matched 场景，
+不把本轮脚本替身验证写入旧 command_results，也不声称这些语言／Host 用例已在当前分支重跑。
+
+| source_refs 补充路径 | 当前静态事实 | 历史／验证边界 |
+| --- | --- | --- |
+| `contracts/sdk/facade-operation-catalog.json` | 完整目录为 39 families、855 routes，total_items=27561；accepted 目录另为 430 routes | 不复制旧 StageA 772／431 数量，也不把完整目录当全部跨语言动态承诺；未重跑唯一生成入口 |
+| `contracts/sdk/inventory-telemetry.json` | kind=rust_public_inventory_telemetry，26 profiles、canonical_items=11113，external_contract=5344；保存的来源仍为 localGit 340 | blocking_scope 仍仅 external_contract，文件中的 localGit 观察不是新的 HTTPS／冷构建或完整生成证明；旧 telemetry 漂移按旧回执保留 |
+| `contracts/sdk/parity-manifest.json` | 当前完整 inventory entries=27561，不是 accepted 5344 | 不用旧 26719 或保留 API 数量推断动态等价，不修改任何生成记录 |
+| `contracts/sdk/public-api.txt` | 当前 SHA256 为 `b00b0cccd6228c5e0ae73b708f084e3dece7adfcd9c6a122db544ba1278e9b23` | 这是完整公开 Rust 库存文件身份，不是每项都由三语言执行或本轮生成通过；accepted 边界保持 |
+| `contracts/sdk/schema/echo-agent-extension-v1.schema.json` | 当前 56 个 method、271 definitions，包含 native 后继；A2A/LSP method 不恢复 | 旧 StageA 259 definitions 不能套回当前 271；不改 wire schema，不重复删除现有 native 合同 |
+| `contracts/sdk/source-contract.json` | 仍用 sha256-length-prefixed-v1，仅绑定两个 accepted 输入；记录的 bytes/SHA 与实际输入一致，aggregate 为 `sha256:254f76cc9f700592b7e94aa826a0434424d45932d684f152fb1cdc4b3dfd89a8` | 上述输入自洽是静态核对，不代表重新生成、runtime negotiation 或旧 StageA 6c7b 摘要适用于当前 |
+| `echo-sdk-protocol/src/catalog.rs` | 当前 METHOD_CATALOG 保留 A2A/LSP 方法退役及现有 native 消费边界 | main6cd 的退役实现已被 current 覆盖；本轮不修改 catalog，不以 SDK 不用为由删除通用框架公开 API |
+| `echo-sdk-protocol/tests/core_rpc_contract.rs` | family_methods_are_bound_to_the_facade_route_table 仍检查 retained family 的规范 route／method 绑定，集合不含已退役 A2A/LSP | 原 runtime 结果按原切点保存；本轮未执行该 Rust 测试，不把目录断言当全部 operation 动态等价 |
+| `sdks/python/tests/test_lsp_diagnostics_host.py` | 当前 test_lsp_diagnostics_is_not_a_product_operation 要求 lsp.client.diagnostics 在目录解析时抛 KeyError(absent) | 是退役目录负控，不是旧 LSP 进程收尾／before-after 等价，也不是本轮真实 Host 运行 |
+| `sdks/python/tests/test_lsp_host.py` | 当前 test_lsp_methods_are_retired_from_the_language_catalog 对 manager.open、client.hover、client.goto_definition 保持拒绝 | 原历史测试结果和 skips 不变，本轮未执行 Python suite；文件名带 host 不等于实际服务已运行 |
+
+main747 另引用的 `sdks/python/tests/test_a2a_host.py` 在原 source_refs 已存在，当前是更完整的真实 Host
+layered refusal、retained Plugin 与 family 控制，不能回退成旧 StageA 的单纯目录测试；本轮未运行它。
+当前 5344 accepted 身份、430 accepted routes、340 pin/c448 锁及 native/id-aware callback 后继保持；
+本轮没有重新接受新 source/kind、三语言合同或依赖风险，也不继承 Framework／CLI 的风险接受。
+
+### 本轮来源预检增量与尚未到达的门禁
+
+`scripts/check-sdk-contracts.sh` 把精确来源检查放到 export_schema／rustdoc 之前；当前 13 包的
+name/version/source 集合不变，并核实际 checkout HEAD、跟踪源码与每个 manifest 归属。新增
+`scripts/tests/test_sdk_contract_preflight.py` 使用本地命令替身覆盖顺序、错误 HEAD、dirty、异根／缺失
+manifest 和错误包集合，修复前失败、修复后六测试（含集合负控子场景）通过，实际 Cargo／生成器均未运行。
+该替身证明准入逻辑与先后关系，不是一次真实 registry checkout、HTTPS 来源恢复或完整合同验收。
+
+固定 canonical c0bc 原件已由 Root 从同一 Git commit 恢复到主根，SHA256 为
+`950a606e3b8225c802d61f1b0a6ce4b71ed0949d7b12ad73aec1cf76dbfd9c66`。顶层导入因缺少原
+governance_contract 相对模块实际失败，原件保留；本轮只原样执行其中 source_digest、git_file_paths、
+run_git 三个 FunctionDef 及原常量的 AST，未重写算法、伪造模块或修改工具。canonical 的实际摘要与
+installed 0.5 原函数一致，函数字节身份、调用路径和结果保存在本轮工程回执。完整 validator 及删除
+预检消费接口未运行，Source/Final 仍为 not_reached；不以局部来源计算替代 canonical 全仓校验，
+不生成伪 preflight 或忽略失败。Root 后续合流／门禁／精确 main CI 另行完成，本轮不操作
+merge、index、commit 或发布。
