@@ -54,3 +54,11 @@ Toolcommands passed but mergeacceptance blocked by ruleconflict；No useroverrid
 本对象只观察原receipt/人选择/当前政策或接受门禁文稿。依赖用户只明确接受原4c940的50groupduplicate边界，不批准12source/B5或外部CLI-W；28profile12missing correctfail/fullgen未通过，oldcounts/deferred14仍旧27c库存，不autoacceptRustAPI。
 
 原supports/limitations保留，观察不提升41family/8lens、Finding闭合或accepted成员。运行型证据仍原569/17cf/bb4f/b909，不借newcut冒freshSDK代码执行；仅当时原强cases及已完成新scope可用。
+
+
+## 2026-11-04：当前风险与候选历史段的边界
+
+原header、supports/limitations及上方历史扫描结果不改；候选新增的008/e151 StageA风险段保在候选
+原文，未用它签当前正式来源。当前Host pin340、锁c448及SDK独立49组/107身份基线沿原机器合同；
+当前fresh风险门禁仍未取得，不把历史50组、StageA旧扫描或Rust589P代作当前fresh审计。
+不修改policy/ignore/fetch/URL，也不扩大风险接受或向Framework/CLI继承。

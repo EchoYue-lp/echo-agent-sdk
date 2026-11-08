@@ -1,32 +1,115 @@
 ---
-schema_version: 1
-id: evidence.sdk-sandbox-and-canonical-input-consumption
-kind: evidence
-observed_at: source:32f6f4ffd5e636129f9e2d8ace391a4af9b1012a5744b44816e896d0f44db333
-source_refs:
-- echo-sdk-protocol/tests/sandbox_command_projection.rs
-- echo-sdk-host/src/core_profile/sandbox_command_owner_tests.rs
-- echo-sdk-protocol/src/facade.rs
-- echo-sdk-protocol/src/inventory.rs
-- echo-sdk-host/src/core_profile/extension_bridge.rs
-- echo-sdk-host/src/core_profile/facade/source_operations.rs
-- sdks/python/src/echo_agent_sdk/permission_mode_values.py
-- sdks/python/tests/test_permission_mode_values.py
-- sdks/python/tests/test_retired_delete_boundary_host.py
-- docs/adr/0044-sdk-source-disposition-native-callback.md
-- docs/adr/0045-sdk-permission-mode-canonical-inputs.md
-code_refs:
-- echo-sdk-protocol/tests/sandbox_command_projection.rs
-- sdks/python/tests/test_permission_mode_values.py
-- sdks/python/tests/test_retired_delete_boundary_host.py
-supports:
-- behavior.sdk-extension-bridge
-- behavior.sdk-language-clients
-- rule.framework-runtime-authority
-limitations:
-- 仅记录具名 Sandbox 值投影、原物理 owner、精确八模式输入及退役 DELETE 的消费证据，不提升整体能力或场景状态。
-- d683、035、75a 的执行资格分别保留；正式源通过内容桥承接，不把旧阶段重标为新源重新执行。
-- 本地原件只在当前工作区可用；当前精确 SDK main CI、平台新原生、全局未知及发布仍独立验收。
+{
+  "schema_version": 1,
+  "id": "evidence.sdk-sandbox-and-canonical-input-consumption",
+  "kind": "evidence",
+  "observed_at": "source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b",
+  "source_refs": [
+    "echo-sdk-protocol/tests/sandbox_command_projection.rs",
+    "echo-sdk-host/src/core_profile/sandbox_command_owner_tests.rs",
+    "echo-sdk-protocol/src/facade.rs",
+    "echo-sdk-protocol/src/inventory.rs",
+    "echo-sdk-host/src/core_profile/extension_bridge.rs",
+    "echo-sdk-host/src/core_profile/facade/source_operations.rs",
+    "sdks/python/src/echo_agent_sdk/permission_mode_values.py",
+    "sdks/python/tests/test_permission_mode_values.py",
+    "sdks/python/tests/test_retired_delete_boundary_host.py",
+    "docs/adr/0044-sdk-source-disposition-native-callback.md",
+    "docs/adr/0045-sdk-permission-mode-canonical-inputs.md",
+    "echo-sdk-protocol/src/scalar.rs",
+    "echo-sdk-host/tests/core_profile_e2e.rs",
+    "sdks/java/src/test/java/com/echoagent/sdk/A2AValueTest.java",
+    "sdks/python/tests/test_jwt_values.py",
+    "sdks/typescript/test/jwt-values.test.js",
+    "docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md",
+    "contracts/sdk/accepted-external-contract.json",
+    "contracts/sdk/accepted-facade-operation-catalog.json"
+  ],
+  "code_refs": [
+    "echo-sdk-protocol/tests/sandbox_command_projection.rs",
+    "sdks/python/tests/test_permission_mode_values.py",
+    "sdks/python/tests/test_retired_delete_boundary_host.py"
+  ],
+  "supports": [
+    "behavior.sdk-extension-bridge",
+    "behavior.sdk-language-clients",
+    "rule.framework-runtime-authority",
+    "finding.sdk-a2a-lsp-consumer-retirement"
+  ],
+  "limitations": [
+    "仅记录具名 Sandbox 值投影、原物理 owner、精确八模式输入及退役 DELETE 的消费证据，不提升整体能力或场景状态。",
+    "d683、035、75a 的执行资格分别保留；正式源通过内容桥承接，不把旧阶段重标为新源重新执行。",
+    "本地原件只在当前工作区可用；当前精确 SDK main CI、平台新原生、全局未知及发布仍独立验收。",
+    "本轮source0e84只绑定正式83工作树的当前代码观察与after-only工程结果；候选7978、旧source32f和原d683/035/75a各守其原纪元。",
+    "Rust完整589与三语言各2定向并非完整三语言重跑；没有before轨迹对照，不新增behavior_equivalence或matched场景。",
+    "本轮独立strict相对83只检当前增量，不替代main747接收的normal Source/Final、canonical删除预检、fresh风险、公开来源、平台或GUI验收。"
+  ],
+  "command_results": [
+    {
+      "command": "/Users/ls/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo fmt --all",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/format-write.raw.log",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "/Users/ls/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo fmt --all -- --check",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/format-check.raw.log",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "/Users/ls/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo check --workspace --lib --no-default-features --locked --offline",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/featureless-library.raw.log",
+      "raw_sha256": "78e23a9de04bb4d9a52f3c5273228236d056f2448835ca41275a909a8b49108a"
+    },
+    {
+      "command": "/Users/ls/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo clippy --workspace --all-targets --all-features --locked --offline -- -D warnings",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/strict-clippy.raw.log",
+      "raw_sha256": "0c98c517cc2d9a68b5f48eb5df79f939655cc15b6fa543df6b732debfe7497da"
+    },
+    {
+      "command": "/Users/ls/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --workspace --all-targets --all-features --locked --offline -- --test-threads=1",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/workspace-all-targets-all-features-r02.raw.log",
+      "raw_sha256": "c7d0707134105becf63df480985acb2532de6fc63e8873f272954d4756a29546"
+    },
+    {
+      "command": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/sdks/python/.venv/bin/python -B -m pytest -q -p no:cacheprovider tests/test_jwt_values.py",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/python-jwt.raw.log",
+      "raw_sha256": "3251a439eaf420074405113236df804a09ae5c0383b2a37edb3f1466f72d4bbc"
+    },
+    {
+      "command": "/Users/ls/.nvm/versions/node/v22.19.0/bin/npm run build",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/typescript-build.raw.log",
+      "raw_sha256": "ecaabe720cdb6e456b6ea808f53ecdcf6b96fa864c581db00d35c2ce4fe6ee46"
+    },
+    {
+      "command": "/Users/ls/.nvm/versions/node/v22.19.0/bin/node --test test/jwt-values.test.js",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/typescript-jwt.raw.log",
+      "raw_sha256": "777ca02e806cdac8628d74c7ebe56b5e33dbc3aa2a8bb58fcd797d207c187b99"
+    },
+    {
+      "command": "/Users/ls/MyWork/kits/apache-maven-3.9.0/bin/mvn -o -Dtest=A2AValueTest test",
+      "exit_code": 0,
+      "scope": "本机正式83当前工作树的after-only结果，不是before重放或完整SDK交付",
+      "raw_log": "/Users/ls/MyWork/code/ylp_agent_learn/lp-agent/echo-agent-sdk/.echo-semantic/local/sdk-candidate-landing-20261104-r01/java-jwt.raw.log",
+      "raw_sha256": "c33712918e4ed83b3a539cb7073ada3b868e905f2edfbc0b63260187a950145e"
+    }
+  ]
+}
 ---
 
 # Sandbox 与 canonical 输入的实际消费者证据
@@ -102,3 +185,19 @@ SHA256 为 `eef63709f45815394212e3a7f1362d02ca9f8db312ac42d8b65abb20bfe4c471`。
 本 Evidence 不宣称这些工具缺陷已修复，不消费或关闭旧未知。查询返回的五项
 needs_review／unknown、平台新原生、精确 SDK main CI、冷来源和发布仍是独立验收边界；
 task Source/final 即使通过也只表示当前任务确定性合同成立，`globalClosure: not_checked`。
+
+
+## 2026-11-04：当前正式工作树的实际验证
+
+本节源码观察为 `source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`；原 `observed_at=source:32f6f4ffd5e636129f9e2d8ace391a4af9b1012a5744b44816e896d0f44db333` 的历史
+正文及d683/035/75a原运行不改。HEAD为83加四测试154行与一份SDK说明；保留
+`core_profile_e2e.rs` 的HEAD沙箱夹具修复，生产、pin340、锁c448及生成合同不变。
+
+五条原工程命令自然0，完整Rust18组589P/0F/0I；scalar定向4P已包含在全套中，不重复相加。
+三语言本轮仅JWT退役合同各2P，TS先重新build。Rust真实剩余工具族E2E在全套中实际通过；
+新旧运行前后等价未测，不新增matched声明。完整三语言、包资源和quickstart只保上方各原纪元资格。
+
+首轮249P/18F/101是本轮运行器漏传既有 `ECHO_AGENT_SDK_CONSUMER_ROOT`；同程序同selector
+缺目录101/补目录0验证后，只纠正环境，原完整argv重跑自然0。原101与诊断原件保留，未改测试、
+断言或预算。原件在 `local/sdk-candidate-landing-20261104-r01/`，相对本仓 `.echo-semantic/`。
+20程序及原FP/dep-info/build输出已保全，准确自有target官方clean0；不从构建、归档推导GUI或发行资格。

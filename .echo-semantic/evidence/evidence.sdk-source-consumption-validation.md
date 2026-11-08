@@ -1,76 +1,81 @@
 ---
-schema_version: 1
-id: evidence.sdk-source-consumption-validation
-kind: evidence
-observed_at: source:f51bfb0d8716abba38aca735c79b78ca93680aae607629db88ec49344ec3e353
-source_refs:
-- sdks/shared/testing/retirement_plugin_fixture.py
-- sdks/typescript/test/a2a-host.test.js
-- sdks/python/tests/test_a2a_host.py
-- sdks/java/src/test/java/com/echoagent/sdk/A2AHostTest.java
-- scripts/check-a2a-lsp-retirement.py
-- scripts/check-sdk-contracts.sh
-- echo-sdk-protocol/src/bin/export_schema.rs#framework_dependency_source
-- echo-sdk-host/src/core_profile/handler.rs#request_publication
-- echo-sdk-host/src/core_profile/handler.rs#close_session_owned
-- echo-sdk-host/src/core_profile/handles.rs
-- echo-sdk-host/src/core_profile/state.rs
-- sdks/typescript/test/session-parent-close.test.js
-- sdks/typescript/test/client-stdio-close.test.js
-- sdks/typescript/test/session-parent-close-host.test.js
-- sdks/typescript/test/protocol-host.test.js
-- sdks/typescript/test/managed-retirement-host.test.js
-- sdks/typescript/test/session-run-idempotency-host.test.js
-- sdks/python/tests/test_session_parent_close.py
-- sdks/python/tests/test_client_close_callbacks.py
-- sdks/python/tests/test_session_parent_close_host.py
-- sdks/python/tests/test_protocol_host.py
-- sdks/python/tests/test_managed_retirement_host.py
-- sdks/python/tests/test_session_run_idempotency_host.py
-- sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseTest.java
-- sdks/java/src/test/java/com/echoagent/sdk/JavaClientCloseLifecycleTest.java
-- sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseHostTest.java
-- sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java
-- sdks/java/src/test/java/com/echoagent/sdk/CallbackHostTest.java
-- sdks/java/src/test/java/com/echoagent/sdk/ManagedRetirementHostTest.java
-- sdks/java/src/test/java/com/echoagent/sdk/SessionRunIdempotencyHostTest.java
-- sdks/python/tests/protocol_host_proxy.py
-- sdks/shared/testing/session_run_idempotency_fixture.py
-- sdks/shared/testing/managed_persistence_backend.py
-- docs/adr/0043-native-message-sdk-adapter.md
-- docs/sdk/native-messages.md
-- docs/sdk/source-packages.md
-- docs/sdk/governance/parquet-consumer-validation.md
-- echo-sdk-protocol/tests/native_message_contract.rs
-- echo-sdk-host/src/core_profile/native_message.rs
-- sdks/shared/testing/native_message_host_contract.json
-- sdks/typescript/test/native-message-host.test.js
-- sdks/python/tests/test_native_message_host.py
-- sdks/java/src/test/java/com/echoagent/sdk/NativeMessageHostTest.java
-- sdks/typescript/test/runtime-terminal.test.js
-- sdks/python/tests/test_runtime_terminal.py
-- sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java
-- sdks/typescript/test/host.test.js
-- sdks/typescript/test/package-resources.test.js
-- sdks/python/tests/test_package_resources.py
-- sdks/java/src/test/java/com/echoagent/sdk/PackageResourcesTest.java
-- sdks/shared/testing/parquet_roundtrip_fixture.py
-- sdks/typescript/test/parquet-roundtrip-host.test.js
-- sdks/python/tests/test_parquet_roundtrip_host.py
-- sdks/java/src/test/java/com/echoagent/sdk/ParquetRoundtripHostTest.java
-supports:
-- behavior.sdk-resources-streams
-- behavior.sdk-language-clients
-- behavior.sdk-agent-session-run
-- behavior.sdk-events-recovery
-- behavior.sdk-repository-ownership
-- behavior.sdk-family-data
-limitations:
-- 原生正控使用受控模型及本根冻结dirty Framework源码构建的Host，正式f7bac pin与0dac锁不变；不是正式新pin或真实provider资格。
-- 旧pin拒绝测试与新受控Host正向使用同一adapter；最终正式来源后的重建及适用全量门禁必须另验。
-- 原生Stop继续、完整流与非流、三语言取消恢复矩阵、安全来源、fresh扫描、精确mainCI及发布均未完成。
-- supports只支持正文列出的有限场景，不提升关联Behavior或全项目closure状态。
-- 完整日志和源码指纹仅在本工作区local目录可用，失去原件后不可仅凭本摘要重建运行证据。
+{
+  "schema_version": 1,
+  "id": "evidence.sdk-source-consumption-validation",
+  "kind": "evidence",
+  "observed_at": "83ae59e407313d7130811478a74646865d9e8bd3",
+  "source_refs": [
+    "sdks/shared/testing/retirement_plugin_fixture.py",
+    "sdks/typescript/test/a2a-host.test.js",
+    "sdks/python/tests/test_a2a_host.py",
+    "sdks/java/src/test/java/com/echoagent/sdk/A2AHostTest.java",
+    "scripts/check-a2a-lsp-retirement.py",
+    "scripts/check-sdk-contracts.sh",
+    "echo-sdk-protocol/src/bin/export_schema.rs#framework_dependency_source",
+    "echo-sdk-host/src/core_profile/handler.rs#request_publication",
+    "echo-sdk-host/src/core_profile/handler.rs#close_session_owned",
+    "echo-sdk-host/src/core_profile/handles.rs",
+    "echo-sdk-host/src/core_profile/state.rs",
+    "sdks/typescript/test/session-parent-close.test.js",
+    "sdks/typescript/test/client-stdio-close.test.js",
+    "sdks/typescript/test/session-parent-close-host.test.js",
+    "sdks/typescript/test/protocol-host.test.js",
+    "sdks/typescript/test/managed-retirement-host.test.js",
+    "sdks/typescript/test/session-run-idempotency-host.test.js",
+    "sdks/python/tests/test_session_parent_close.py",
+    "sdks/python/tests/test_client_close_callbacks.py",
+    "sdks/python/tests/test_session_parent_close_host.py",
+    "sdks/python/tests/test_protocol_host.py",
+    "sdks/python/tests/test_managed_retirement_host.py",
+    "sdks/python/tests/test_session_run_idempotency_host.py",
+    "sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseTest.java",
+    "sdks/java/src/test/java/com/echoagent/sdk/JavaClientCloseLifecycleTest.java",
+    "sdks/java/src/test/java/com/echoagent/sdk/SessionParentCloseHostTest.java",
+    "sdks/java/src/test/java/com/echoagent/sdk/ProtocolHostTest.java",
+    "sdks/java/src/test/java/com/echoagent/sdk/CallbackHostTest.java",
+    "sdks/java/src/test/java/com/echoagent/sdk/ManagedRetirementHostTest.java",
+    "sdks/java/src/test/java/com/echoagent/sdk/SessionRunIdempotencyHostTest.java",
+    "sdks/python/tests/protocol_host_proxy.py",
+    "sdks/shared/testing/session_run_idempotency_fixture.py",
+    "sdks/shared/testing/managed_persistence_backend.py",
+    "docs/adr/0043-native-message-sdk-adapter.md",
+    "docs/sdk/native-messages.md",
+    "docs/sdk/source-packages.md",
+    "docs/sdk/governance/parquet-consumer-validation.md",
+    "echo-sdk-protocol/tests/native_message_contract.rs",
+    "echo-sdk-host/src/core_profile/native_message.rs",
+    "sdks/shared/testing/native_message_host_contract.json",
+    "sdks/typescript/test/native-message-host.test.js",
+    "sdks/python/tests/test_native_message_host.py",
+    "sdks/java/src/test/java/com/echoagent/sdk/NativeMessageHostTest.java",
+    "sdks/typescript/test/runtime-terminal.test.js",
+    "sdks/python/tests/test_runtime_terminal.py",
+    "sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java",
+    "sdks/typescript/test/host.test.js",
+    "sdks/typescript/test/package-resources.test.js",
+    "sdks/python/tests/test_package_resources.py",
+    "sdks/java/src/test/java/com/echoagent/sdk/PackageResourcesTest.java",
+    "sdks/shared/testing/parquet_roundtrip_fixture.py",
+    "sdks/typescript/test/parquet-roundtrip-host.test.js",
+    "sdks/python/tests/test_parquet_roundtrip_host.py",
+    "sdks/java/src/test/java/com/echoagent/sdk/ParquetRoundtripHostTest.java"
+  ],
+  "supports": [
+    "behavior.sdk-resources-streams",
+    "behavior.sdk-language-clients",
+    "behavior.sdk-agent-session-run",
+    "behavior.sdk-events-recovery",
+    "behavior.sdk-repository-ownership",
+    "behavior.sdk-family-data"
+  ],
+  "limitations": [
+    "原生正控使用受控模型及本根冻结dirty Framework源码构建的Host，正式f7bac pin与0dac锁不变；不是正式新pin或真实provider资格。",
+    "旧pin拒绝测试与新受控Host正向使用同一adapter；最终正式来源后的重建及适用全量门禁必须另验。",
+    "原生Stop继续、完整流与非流、三语言取消恢复矩阵、安全来源、fresh扫描、精确mainCI及发布均未完成。",
+    "supports只支持正文列出的有限场景，不提升关联Behavior或全项目closure状态。",
+    "完整日志和源码指纹仅在本工作区local目录可用，失去原件后不可仅凭本摘要重建运行证据。"
+  ]
+}
 ---
 
 # SDK 消费接入的有限验证
@@ -155,3 +160,11 @@ Root 释放 SDK 的 F 源码 reader 后，另行授权仅使用保全32d full Ho
 这使原五场景中的caller撤除、typed插件拒绝和退役地址拒绝获得当前受控路径的动态补证；close-owner行为已有published1489九Rust＋158语言补证，三个例子已有当前0。但旧“六owner同字节”和完整三语言入口不被续用：对原observed1eac的当前核对为三份client源码已变、三份仍同字节，字节不是行为验收。完整producer／source-kind／聚合签名、正式Git pin、原完整language脚本和collector仍未闭合。
 
 当前producer的framework_dependency_source要求metadata中的Git source，standard checker精确绑定f7，退役静态checker还要求保留行与旧基线逐字节相等及f7 manifest；受控path source=null不是该合同支持的正式after。局部Semantic的source/task摘要只绑定SDK快照，并不替代上述依赖来源资格；保持上次实际门禁1／未通过，不更改旧Evidence的after_revision／matched或producer／checker／accepted行求绿。
+
+
+## 2026-11-04：历史源码引用的可恢复定位
+
+原观察标签 `source:f51bfb0d8716abba38aca735c79b78ca93680aae607629db88ec49344ec3e353` 及旧结果、支持、限制、场景和状态保持原含义。
+`observed_at` 仅定位到本对象原文所在的真实Git `83ae59e407313d7130811478a74646865d9e8bd3`；所列源码引用在该Git可恢复。
+这不声明整个旧source摘要等于Git83，不把旧运行重签到当前 `source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`。
+当前工作树新增四测试的资格另见本轮原始回执；本次没有提高本对象的行为验收状态。

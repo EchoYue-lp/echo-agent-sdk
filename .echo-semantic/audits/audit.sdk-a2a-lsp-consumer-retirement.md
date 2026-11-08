@@ -113,6 +113,20 @@
         "evidence.sdk-a2a-lsp-consumer-retirement"
       ],
       "result": "Original complete language entry natural0: TS369/PY450+18subtests/Java316, each1 Windows-only skip;3 quickstarts and all named R2/managed/stdio entries passed."
+    },
+    "formal83-current-retirement-regressions-20261104": {
+      "revision": "source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b",
+      "source_refs": [
+        "echo-sdk-protocol/src/scalar.rs",
+        "echo-sdk-host/tests/core_profile_e2e.rs",
+        "sdks/python/tests/test_jwt_values.py",
+        "sdks/typescript/test/jwt-values.test.js",
+        "sdks/java/src/test/java/com/echoagent/sdk/A2AValueTest.java"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-sandbox-and-canonical-input-consumption"
+      ],
+      "result": "作者对账：四测试154行已接收，HEAD沙箱夹具修复保留；五工程自然0、Rust589P/0F/0I、三语言定向各2P。before运行UNKNOWN，不声明跨版本运行等价、完整SDK或独立审查完成。"
     }
   },
   "boundary_ref": "boundary.sdk-integrations"
@@ -151,3 +165,9 @@ No remote push/merge/release, installed EKO GUI/native acceptance, external A2A/
 旧审查metadata与正文由 Git `1eac40fbf224e510ab29aea128ce59c20f8b4a52:.echo-semantic/audits/audit.sdk-a2a-lsp-consumer-retirement.md` 和本次写入前完整副本恢复（SHA256 `9e3682897abc3b5f03cf29434f7dcc1072dff3739b9ec65ff1430f399173159a`）。revision `source:dd04568ae1f1700a8164b4a114e267b9681927fa63f45513063afe92e94a2e92` 及全部challenge/result/旧资格文字仍属原历史审查；只把其同字节source_refs定位到1eac，不把它续为本根新运行独审。
 
 Root对本根94路径/1216输入的来源合流只读复审C0/I0/M0，限精确候选/AGENTS前缀/269退出及保留集合，不代替全部动态验收。当前实际109项Protocol定向测试、Host构建及小检查自然0单列于共用Evidence本日补充；fresh官方audit自然1出现四漏洞/十unsound是真实新阻断。完整Rust/三语言/117生成资格和最终TaskSemantic/暂存门禁尚需各自原件，不能由本审查文字或来源重绑推断。
+
+
+## 2026-11-04：正式83工作树的作者对账
+
+新增具名当前source挑战，旧revision、freshness及四个历史挑战的字段和结论不变。
+本段是作者对账；新增资料的独立审查另取实际结果，不以旧pass续签。

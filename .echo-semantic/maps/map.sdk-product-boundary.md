@@ -1,177 +1,232 @@
 ---
-schema_version: 1
-id: map.sdk-product-boundary
-kind: capability_map
-title: 独立 SDK 产品边界
-risk: high
-observed_at: source:f51bfb0d8716abba38aca735c79b78ca93680aae607629db88ec49344ec3e353
-boundary_refs:
-- boundary.sdk-product
-behavior_refs:
-- behavior.sdk-repository-ownership
-rule_refs:
-- rule.framework-runtime-authority
-evidence_refs:
-- evidence.sdk-source-consumption-validation
-- evidence.sdk-accepted-source-continuity-gate
-- evidence.sdk-source-import
-- evidence.sdk-source-continuity
-- evidence.sdk-framework-pin
-- evidence.sdk-wave2-cutover-repair
-- evidence.sdk-wave2-cutover-final-verification
-- evidence.sdk-compatibility-gates
-- evidence.sdk-feature-wiring-verification
-- evidence.sdk-current-reviewed-rust-gates
-- evidence.sdk-cargo-deny-bootstrap-closure
-finding_refs:
-- finding.sdk-wave2-cutover-integrity
-- finding.sdk-accepted-source-continuity
-- finding.sdk-dependency-warning-policy-conflict
-- finding.sdk-test-feature-wiring
-- finding.sdk-cargo-deny-bootstrap-toolchain-probe
-audit_refs:
-- audit.sdk-accepted-source-continuity-rereview
-- audit.sdk-wave2-cutover-final-rereview
-- audit.sdk-cargo-deny-bootstrap-closure
-related_map_refs: []
-scenarios:
-  compatibility-gates:
-    status: mapped
-    source_refs:
-    - echo-sdk-protocol/tests/facade_inventory.rs
-    - scripts/check-language-sdks.sh
-    - sdks/typescript/test/catalog.test.js
-    - sdks/python/tests/test_catalog.py
-    - sdks/java/src/test/java/com/echoagent/sdk/FacadeParityTest.java
-    - echo-sdk-host/src/core_profile/state.rs
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-compatibility-gates
-  source-history:
-    status: mapped
-    source_refs:
-    - MIGRATION-SOURCE.md
-    - docs/adr/0001-sdk-repository-boundary.md
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    evidence_refs:
-    - evidence.sdk-source-continuity
-    - evidence.sdk-wave2-cutover-repair
-    finding_refs:
-    - finding.sdk-wave2-cutover-integrity
-  protocol-and-host:
-    status: mapped
-    source_refs:
-    - echo-sdk-protocol/Cargo.toml
-    - echo-sdk-host/Cargo.toml
-    - echo-sdk-host/src/core_profile/wire.rs
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    evidence_refs:
-    - evidence.sdk-framework-pin
-    - evidence.sdk-wave2-cutover-repair
-    finding_refs:
-    - finding.sdk-wave2-cutover-integrity
-  accepted-contract:
-    status: mapped
-    source_refs:
-    - contracts/sdk/accepted-external-contract.json
-    - contracts/sdk/source-contract.json
-    - contracts/sdk/inventory-telemetry.json
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    evidence_refs:
-    - evidence.sdk-framework-pin
-    - evidence.sdk-wave2-cutover-repair
-    finding_refs:
-    - finding.sdk-wave2-cutover-integrity
-  language-clients:
-    status: mapped
-    source_refs:
-    - sdks/shared/contract-digests.json
-    - sdks/typescript/src/index.ts
-    - sdks/python/src/echo_agent_sdk/__init__.py
-    - sdks/java/pom.xml
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    evidence_refs:
-    - evidence.sdk-framework-pin
-    - evidence.sdk-wave2-cutover-repair
-    finding_refs:
-    - finding.sdk-wave2-cutover-integrity
-  wave2-cutover:
-    status: mapped
-    source_refs:
-    - Cargo.lock
-    - echo-sdk-host/Cargo.toml
-    - echo-sdk-protocol/src/facade.rs
-    - contracts/sdk/inventory-telemetry.json
-    - sdks/shared/contract-digests.json
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-wave2-cutover-repair
-    finding_refs:
-    - finding.sdk-wave2-cutover-integrity
-  semantic-ci-canonical-source-check:
-    status: mapped
-    source_refs:
-    - .github/workflows/rust-ci.yml
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-framework-pin
-    review_scope: CIjob定义/唯一官方action provenance/真实base失败关闭及已执行4994原30d资格；mapped不是newremoteexecutionpassed。
-    limitations: 新semanticjob尚未执行；SDKcontract13/B12/原task513/Windowsnative/SDKmain另留。
-    asset_refs:
-    - asset.sdk-historical-proof-location
-  self-contained-source-packages:
-    status: mapped
-    source_refs:
-    - scripts/export-language-sdk-catalog.sh
-    - scripts/check-language-sdks.sh
-    - sdks/typescript/package.json
-    - sdks/typescript/src/catalog.ts
-    - sdks/typescript/contracts/contract-digests.json
-    - sdks/typescript/contracts/facade-operation-catalog.json
-    - sdks/typescript/test/package-resources.test.js
-    - sdks/python/src/echo_agent_sdk/catalog.py
-    - sdks/python/src/echo_agent_sdk/contracts/contract-digests.json
-    - sdks/python/src/echo_agent_sdk/contracts/facade-operation-catalog.json
-    - sdks/python/tests/test_package_resources.py
-    - sdks/java/src/main/java/com/echoagent/sdk/FacadeCatalog.java
-    - sdks/java/src/main/java/com/echoagent/sdk/Example.java
-    - sdks/java/src/main/resources/com/echoagent/sdk/contracts/contract-digests.json
-    - sdks/java/src/main/resources/com/echoagent/sdk/contracts/facade-operation-catalog.json
-    - sdks/java/src/test/java/com/echoagent/sdk/PackageResourcesTest.java
-    - docs/sdk/source-packages.md
-    behavior_refs:
-    - behavior.sdk-repository-ownership
-    evidence_refs:
-    - evidence.sdk-source-consumption-validation
-    review_scope: 唯一producer生成包内资源，默认加载不依赖源码目录；私有及source-only保留，打包验证不代表发布。
-  retained-parquet-data-consumer:
-    status: mapped
-    source_refs:
-    - sdks/shared/testing/parquet_roundtrip_fixture.py
-    - sdks/typescript/test/parquet-roundtrip-host.test.js
-    - sdks/python/tests/test_parquet_roundtrip_host.py
-    - sdks/java/src/test/java/com/echoagent/sdk/ParquetRoundtripHostTest.java
-    - docs/sdk/governance/parquet-consumer-validation.md
-    behavior_refs:
-    - behavior.sdk-family-data
-    evidence_refs:
-    - evidence.sdk-source-consumption-validation
-    review_scope: 原Session.invoke调用与独立输入oracle，证据限旧精确Host及其显式保全合同；不证明当前Frame安全来源或新pin。
-asset_refs:
-- asset.sdk-historical-proof-location
+{
+  "schema_version": 1,
+  "id": "map.sdk-product-boundary",
+  "kind": "capability_map",
+  "title": "独立 SDK 产品边界",
+  "risk": "high",
+  "observed_at": "83ae59e407313d7130811478a74646865d9e8bd3",
+  "boundary_refs": [
+    "boundary.sdk-product"
+  ],
+  "behavior_refs": [
+    "behavior.sdk-repository-ownership"
+  ],
+  "rule_refs": [
+    "rule.framework-runtime-authority"
+  ],
+  "evidence_refs": [
+    "evidence.sdk-source-consumption-validation",
+    "evidence.sdk-accepted-source-continuity-gate",
+    "evidence.sdk-source-import",
+    "evidence.sdk-source-continuity",
+    "evidence.sdk-framework-pin",
+    "evidence.sdk-wave2-cutover-repair",
+    "evidence.sdk-wave2-cutover-final-verification",
+    "evidence.sdk-compatibility-gates",
+    "evidence.sdk-feature-wiring-verification",
+    "evidence.sdk-current-reviewed-rust-gates",
+    "evidence.sdk-cargo-deny-bootstrap-closure"
+  ],
+  "finding_refs": [
+    "finding.sdk-wave2-cutover-integrity",
+    "finding.sdk-accepted-source-continuity",
+    "finding.sdk-dependency-warning-policy-conflict",
+    "finding.sdk-test-feature-wiring",
+    "finding.sdk-cargo-deny-bootstrap-toolchain-probe"
+  ],
+  "audit_refs": [
+    "audit.sdk-accepted-source-continuity-rereview",
+    "audit.sdk-wave2-cutover-final-rereview",
+    "audit.sdk-cargo-deny-bootstrap-closure"
+  ],
+  "related_map_refs": [],
+  "scenarios": {
+    "compatibility-gates": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-protocol/tests/facade_inventory.rs",
+        "scripts/check-language-sdks.sh",
+        "sdks/typescript/test/catalog.test.js",
+        "sdks/python/tests/test_catalog.py",
+        "sdks/java/src/test/java/com/echoagent/sdk/FacadeParityTest.java",
+        "echo-sdk-host/src/core_profile/state.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-compatibility-gates"
+      ]
+    },
+    "source-history": {
+      "status": "mapped",
+      "source_refs": [
+        "MIGRATION-SOURCE.md",
+        "docs/adr/0001-sdk-repository-boundary.md"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-source-continuity",
+        "evidence.sdk-wave2-cutover-repair"
+      ],
+      "finding_refs": [
+        "finding.sdk-wave2-cutover-integrity"
+      ]
+    },
+    "protocol-and-host": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-protocol/Cargo.toml",
+        "echo-sdk-host/Cargo.toml",
+        "echo-sdk-host/src/core_profile/wire.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-framework-pin",
+        "evidence.sdk-wave2-cutover-repair"
+      ],
+      "finding_refs": [
+        "finding.sdk-wave2-cutover-integrity"
+      ]
+    },
+    "accepted-contract": {
+      "status": "mapped",
+      "source_refs": [
+        "contracts/sdk/accepted-external-contract.json",
+        "contracts/sdk/source-contract.json",
+        "contracts/sdk/inventory-telemetry.json"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-framework-pin",
+        "evidence.sdk-wave2-cutover-repair"
+      ],
+      "finding_refs": [
+        "finding.sdk-wave2-cutover-integrity"
+      ]
+    },
+    "language-clients": {
+      "status": "mapped",
+      "source_refs": [
+        "sdks/shared/contract-digests.json",
+        "sdks/typescript/src/index.ts",
+        "sdks/python/src/echo_agent_sdk/__init__.py",
+        "sdks/java/pom.xml"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-framework-pin",
+        "evidence.sdk-wave2-cutover-repair"
+      ],
+      "finding_refs": [
+        "finding.sdk-wave2-cutover-integrity"
+      ]
+    },
+    "wave2-cutover": {
+      "status": "mapped",
+      "source_refs": [
+        "Cargo.lock",
+        "echo-sdk-host/Cargo.toml",
+        "echo-sdk-protocol/src/facade.rs",
+        "contracts/sdk/inventory-telemetry.json",
+        "sdks/shared/contract-digests.json"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-wave2-cutover-repair"
+      ],
+      "finding_refs": [
+        "finding.sdk-wave2-cutover-integrity"
+      ]
+    },
+    "semantic-ci-canonical-source-check": {
+      "status": "mapped",
+      "source_refs": [
+        ".github/workflows/rust-ci.yml"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-framework-pin"
+      ],
+      "review_scope": "CIjob定义/唯一官方action provenance/真实base失败关闭及已执行4994原30d资格；mapped不是newremoteexecutionpassed。",
+      "limitations": "新semanticjob尚未执行；SDKcontract13/B12/原task513/Windowsnative/SDKmain另留。",
+      "asset_refs": [
+        "asset.sdk-historical-proof-location"
+      ]
+    },
+    "self-contained-source-packages": {
+      "status": "mapped",
+      "source_refs": [
+        "scripts/export-language-sdk-catalog.sh",
+        "scripts/check-language-sdks.sh",
+        "sdks/typescript/package.json",
+        "sdks/typescript/src/catalog.ts",
+        "sdks/typescript/contracts/contract-digests.json",
+        "sdks/typescript/contracts/facade-operation-catalog.json",
+        "sdks/typescript/test/package-resources.test.js",
+        "sdks/python/src/echo_agent_sdk/catalog.py",
+        "sdks/python/src/echo_agent_sdk/contracts/contract-digests.json",
+        "sdks/python/src/echo_agent_sdk/contracts/facade-operation-catalog.json",
+        "sdks/python/tests/test_package_resources.py",
+        "sdks/java/src/main/java/com/echoagent/sdk/FacadeCatalog.java",
+        "sdks/java/src/main/java/com/echoagent/sdk/Example.java",
+        "sdks/java/src/main/resources/com/echoagent/sdk/contracts/contract-digests.json",
+        "sdks/java/src/main/resources/com/echoagent/sdk/contracts/facade-operation-catalog.json",
+        "sdks/java/src/test/java/com/echoagent/sdk/PackageResourcesTest.java",
+        "docs/sdk/source-packages.md"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-repository-ownership"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-source-consumption-validation"
+      ],
+      "review_scope": "唯一producer生成包内资源，默认加载不依赖源码目录；私有及source-only保留，打包验证不代表发布。"
+    },
+    "retained-parquet-data-consumer": {
+      "status": "mapped",
+      "source_refs": [
+        "sdks/shared/testing/parquet_roundtrip_fixture.py",
+        "sdks/typescript/test/parquet-roundtrip-host.test.js",
+        "sdks/python/tests/test_parquet_roundtrip_host.py",
+        "sdks/java/src/test/java/com/echoagent/sdk/ParquetRoundtripHostTest.java",
+        "docs/sdk/governance/parquet-consumer-validation.md"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-family-data"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-source-consumption-validation"
+      ],
+      "review_scope": "原Session.invoke调用与独立输入oracle，证据限旧精确Host及其显式保全合同；不证明当前Frame安全来源或新pin。"
+    }
+  },
+  "asset_refs": [
+    "asset.sdk-historical-proof-location"
+  ]
+}
 ---
 
 # 独立 SDK 产品边界
@@ -285,3 +340,11 @@ B及工具另已批准，上游工具c0bc已发布，SDKaction/归档continuity/
 ## 历史证明存储的有界表示迁移
 
 原id/业务正文/status/supports/limitations/命令及原观察含义不改变；本冻结父 `7f14a1b9c751b0612ceb42224f83f29d09aea46c` 中此对象完整原header/source refs可由公开证据tag恢复。只将具体archive物理依赖交当前位置资产与真实same-role consumer，全部旧义务由显式Eq/CT承接，不把存储重观察冒原业务新审或旧失败变成功。
+
+
+## 2026-11-04：历史源码引用的可恢复定位
+
+原观察标签 `source:f51bfb0d8716abba38aca735c79b78ca93680aae607629db88ec49344ec3e353` 及旧结果、支持、限制、场景和状态保持原含义。
+`observed_at` 仅定位到本对象原文所在的真实Git `83ae59e407313d7130811478a74646865d9e8bd3`；所列源码引用在该Git可恢复。
+这不声明整个旧source摘要等于Git83，不把旧运行重签到当前 `source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`。
+当前工作树新增四测试的资格另见本轮原始回执；本次没有提高本对象的行为验收状态。
