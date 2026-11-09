@@ -20,11 +20,11 @@ The SDK builds on the stable [ACP v1](https://agentclientprotocol.com/protocol/v
 wire protocol. Everything standard is owned by the official artifacts pinned
 in [`contracts/sdk/acp-baseline.json`](../../contracts/sdk/acp-baseline.json):
 
-| Layer | Version (pinned) |
-|---|---|
-| ACP wire `protocolVersion` | `1` (latest stable; draft v2 explicitly excluded) |
-| `agent-client-protocol` crate | `2.1.0` |
-| `agent-client-protocol-schema` crate | `=1.7.0` |
+| Layer                                | Version (pinned)                                  |
+| ------------------------------------ | ------------------------------------------------- |
+| ACP wire `protocolVersion`           | `1` (latest stable; draft v2 explicitly excluded) |
+| `agent-client-protocol` crate        | `2.1.0`                                           |
+| `agent-client-protocol-schema` crate | `=1.7.0`                                          |
 
 The three layers are governed independently: none of them may be inferred
 from another (design §18). Tests assert both the lockfile match and that the
@@ -93,13 +93,13 @@ rejected before Session creation. See
 
 ## Two profiles
 
-| | Standard ACP profile | echo-agent SDK core profile |
-|---|---|---|
-| Consumer | any ACP v1 client | echo-agent SDK (TS/Python/Java, executable routes) |
-| Methods | standard ACP only | standard + negotiated `_echo_agent/*` core families |
-| Event view | ACP `session/update` (bounded projection) | full `EventEnvelope` extension stream + ACK/replay |
-| Negotiation | plain `initialize` | `initialize` + `_meta` hello/advertisement match |
-| Implementation | Rust Host | Source Host and three language clients; current governance candidate awaits final acceptance |
+|                | Standard ACP profile                      | echo-agent SDK core profile                                                                  |
+| -------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Consumer       | any ACP v1 client                         | echo-agent SDK (TS/Python/Java, executable routes)                                           |
+| Methods        | standard ACP only                         | standard + negotiated `_echo_agent/*` core families                                          |
+| Event view     | ACP `session/update` (bounded projection) | full `EventEnvelope` extension stream + ACK/replay                                           |
+| Negotiation    | plain `initialize`                        | `initialize` + `_meta` hello/advertisement match                                             |
+| Implementation | Rust Host                                 | Source Host and three language clients; current governance candidate awaits final acceptance |
 
 A standard client ignores the `_meta` capability and keeps working. An SDK
 client **fails closed** when the extension protocol version, contract/source
@@ -278,7 +278,6 @@ terminal or receipt (`run/wait` answers typed `host_exited`).
   repository such a change updates Host, SDKs, fixtures, manifest and docs
   in the same commit — no legacy fallback is kept.
 
-
 ## Extension bridge methods
 
 The bridge family lives under `_echo_agent/extension/*` and is advertised
@@ -305,13 +304,13 @@ carry canonical generation and attempt identities. Its descriptor must declare
 for the active resume heartbeat instead of guessing the remote store's lease.
 All three language SDKs validate the same operations, result shapes and bound.
 
-| Method | Direction | Purpose |
-|---|---|---|
-| `_echo_agent/extension/register` | Client → Host | Register a host-language implementation (typed per-kind descriptor). |
-| `_echo_agent/extension/unregister` | Client → Host | Idempotent release of a registration. |
-| `_echo_agent/extension/invoke` | Host → Client | Reverse invocation of one extension operation. |
-| `_echo_agent/extension/cancel` | Host → Client | Cancellation/deadline notice for an in-flight invocation. |
-| `_echo_agent/extension/stream` | Client → Host | Stream chunk or the single terminal of a streaming callback. |
+| Method                             | Direction     | Purpose                                                              |
+| ---------------------------------- | ------------- | -------------------------------------------------------------------- |
+| `_echo_agent/extension/register`   | Client → Host | Register a host-language implementation (typed per-kind descriptor). |
+| `_echo_agent/extension/unregister` | Client → Host | Idempotent release of a registration.                                |
+| `_echo_agent/extension/invoke`     | Host → Client | Reverse invocation of one extension operation.                       |
+| `_echo_agent/extension/cancel`     | Host → Client | Cancellation/deadline notice for an in-flight invocation.            |
+| `_echo_agent/extension/stream`     | Client → Host | Stream chunk or the single terminal of a streaming callback.         |
 
 ## Facade feature families
 
@@ -332,12 +331,24 @@ operations address the Session Agent's registry.
 `facade.resource.close` explicitly releases any owner-matched facade resource;
 repeat close is idempotent and foreign owners fail closed.
 
-Workflow and A2A family streams use pull operations on their existing family
-method. `workflow.graph.run_stream` / `a2a.task.stream.open` return a
-Host-issued `WireHandle(Stream)`. `workflow.stream.*` and `a2a.stream.*`
+Workflow family streams use pull operations on their existing family
+method. `workflow.graph.run_stream` returns a
+Host-issued `WireHandle(Stream)`. `workflow.stream.*`
 provide `next`, `cancel` and `close`. Each successful `next` advances the
 registry-owned sequence exactly once and yields a typed
 `echo_sdk::FacadeStreamEvent` (`item`, `complete`, `failed` or `cancelled`). The producer queue has
 capacity one; owner, generation, cancellation and idempotent close use the same
 `HandleRegistry` as Run and extension streams. Concurrent `next` calls are
 serialized per stream so dequeue and sequence advancement cannot race.
+
+## A2A/LSP consumer withdrawal
+
+The SDK no longer declares `_echo_agent/a2a/op` or `_echo_agent/lsp/op`,
+requires their framework features, or accepts their source operations and
+three named LSP plugin identities. Digests change through the existing
+generator. A peer requiring an old feature/digest cannot enter Extended mode;
+Standard ACP remains usable and obsolete extension requests receive explicit
+existing method/admission errors. No empty success, hidden field placeholder
+or fabricated recovery event is returned. Retained `feature_surfaces`,
+resource/stream/Session close owners stay unchanged. The framework itself
+still contains the old definitions at the independent build pin.

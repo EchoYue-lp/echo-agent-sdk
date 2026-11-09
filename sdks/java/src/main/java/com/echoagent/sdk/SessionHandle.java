@@ -70,6 +70,9 @@ public final class SessionHandle implements AutoCloseable {
 
     public CompletionStage<JsonNode> invoke(String operation, List<?> arguments) {
         if (closed.get()) return failedClosed("_echo_agent/facade/invoke");
+        if (EchoAgentClient.RETIRED_UNMANAGED_DELETE.equals(operation)) {
+            return client.call(operation, agent, prepend(arguments));
+        }
         var resolved = client.catalog().resolve(operation);
         return "_echo_agent/facade/invoke".equals(resolved.method())
                 ? client.call(operation, agent, prepend(arguments))

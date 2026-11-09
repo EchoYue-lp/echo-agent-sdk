@@ -1,5 +1,216 @@
 # SDK 全能力语义治理进度
 
+## 2026-10-29：完整SDK剩余工作的消费者与工程前置
+
+Root已正常保存第二43路径为`a2da104fe94d32fa620d95be6338ccd002f91d2c`，index回空并
+释放冻结；SDK继续整个剩余目标。当前只采用原作者唯一14路径后继`384f12f1…`，14个
+before均匹配当前owner；不重复叠旧包，TypeScript省去候选中已有字段的重复声明。
+修复既有工具定义strict的None/false/true丢失，并加入原LlmClient.chat/chat_stream真实
+ACP桥接、保留消息/usage与原确认字段拒绝控制，未增加独立accepted枚举身份。
+
+原消费者Protocol测试在旧DTO实际3通过/2失败，失败源码与二进制均保留；采用最小
+strict修复后，当前纯Protocol原lib/tests入口227项通过、零失败/忽略。原candidate
+producer130产物、语言资源export/check与退役checker自然0；完整producer尚未运行。
+Frame r02与SDK1290冻源的Host六控制已实际6通过、零失败/忽略/编译warning；214项
+filtered不冒全库。TypeScript源码/示例编译与新JS语法、Java所有test-compile均自然0。
+随后同target最小增量构建真正stdio Host，bridge-only的`d84ce91b…`票与libtest分列；
+因whole-loop实际使用read_file，Root准许仅追加framework-files，原locked图381节点/
+1082边、4a99锁字节不变。新Host `14ec5f9a92a156ce822332d9135d3d71e1026a122d8858994ac5aa0b01191287`
+下，三语nonstream/stream六组合实际TS6/PY6/Java1方法内6场景通过；实际provider HTTP
+三协议×四模式（success/StopContinue/cancel/EOF）TS12加关闭失败控制1、PY12、Java1方法
+内12场景也全部通过、零skip。它们不代表完整语言、quickstarts、data/Parquet或full facade。
+新增控制进入原CI与完整语言自动发现链，示例仍走原编译入口。
+
+独审发现旧三语夹具缺LLM外层、TS HTTP close失败跳过自有子进程收尾、原完整caller
+没有consumer root，原3项Important与原错误夹具完整保存。修后只补既有kind=llm外层，
+嵌套finally记录原子进程实际exit且保close错误；真Node子进程故障控制通过。caller默认
+分配主根内独立目录，保外部合法输入并拒相对/越根，四控制实际0/0/1/1，未改skip。
+真实live/replay仅WireValue map关联顺序不同，复用原canonical_replay完整entry多重集
+比较，事件/其它数组、全部字段、重复entry和原字符串保持。HTTP失败工具按Core原error
+回填判断；Python仅对真正带data的四类事件解码，所有原envelope仍完整记录。原notfound、
+各运行失败与收集错误均保留，不改Framework或放宽decoder来制造成功。
+HTTP还逐call_id核对原ToolResult事件的success/output/error与两物理效应各1：模型收到
+error文本不等于丢失raw output。旧token collector专用分支随已批准退役移除，不改变LLM
+delta类型；未选为公开正文的unit事件仍完整保留在原live/replay。
+
+原完整Python Ruff check/format各实际1：导出排序、四份测试import分组及两文件格式。
+原工具修复后七路径AST等价（仅原__all__成员顺序规范化）；新14中Python夹具另按
+原Ruff处理import/格式及Python>=3.10的socket.timeout同义别名，不改超时语义或deadline。
+完整Ruff入口已自然0；原失败保真，不新增ignore或放宽规则。
+
+只读full-facade preview绑定Frame r02索引`127d233ec0566bb3462267b39b7f334cd8168c53c95ba9cd5cd0dc4e89c813be`
+的2831成员，当前实际locked图658节点/2354边，643 registry身份仅相对其4a99 seed不漂。
+它与正式0dac并非source-only：已列registry+95/-92身份差，正式最小锁后继须以0dac为seed，
+经官方Cargo对真实新F Git源做最小必要resolve并独立复核风险，不能沿用F/CLI例外。
+旧4a已追至f1489原自然0的generate-lockfile --offline整锁生成，再由f1490原样复用；
+这不能证明所有升级为新F必需，逐身份必要性由真实新Git的官方最小resolve定案。
+未复制vendor，未改变正式f7/0dac/5352/431或source-contract。
+
+Root已准备精确私有nightly-2026-08-06/JSON61；当前source动态24leaf加default/full为
+26profiles，历史28不恢复已批准退役的A2A/LSP。真实新F本地commit后可按Root批准做
+file-Git preview，先证明commit/tree/fetch/metadata，再由原producer更新独立输出；它不
+等于正式远端pin。fullRust/Parquet/完整语言/producer重型窗口由Root独占排期，当前命令、
+target、空间估算与来源约束位于本仓任务目录
+`.echo-semantic/local/sdk-native-consumer-20261027/sdk-complete-consumer-resume-a2da104-20261029/exclusive-preparation.md`，不冒已执行。
+
+## 2026-10-29：响应观察与既有ToolChoice字段的受控消费
+
+从首切片提交`b0c597bd17de6428694658257ef8ac530b3756a3`继续，沿原Message/Delta
+运输固定九字段provider_response、工具错误三值与canonical Empty；D2保持原有界失败，
+不暴露raw partial、不建立usage归并或执行终态权威。正式说明与取舍见ADR0043。
+
+Root核验ChatRequest::tool_choice本身的accepted字段合同后，确认须跟随Core合法值
+承接auto/none/required与canonical具名Function对象。当前闭合DTO、Host原生serde双向
+值传及三语typed request bridge均已实施；保None/null与原名、拒未知shape，不JSON
+字符串化。该判定只更新既有字段聚合形状，不新增ToolChoice枚举族独立accepted身份。
+
+原metadata反例0pass/2fail和Function对象反例0pass/1fail保留。原候选producer实际生成
+130产物、language export/check及退役checker全部自然0，生成后Protocol56项全过；
+TS29/Python13/Java18（含typed request桥和包资源检查）全部通过，零失败/零跳过。
+三个完整Message示例继续由原编译/mock入口验证，不增接口。官网发布内容不随局部
+源码资格更新，不跨写网站。源码增量独审无Critical/Important/Minor finding。
+
+最后受控消费绑定Framework精确冻结索引
+`f327f63e34b7b4fea30d1c34f8559431fd2228172a2d427d8f1eac5912ee75c4`，2831成员
+SHA/权限全部核验；相对r02是10改/8增，Core公开字段与唯一serde同字节。SDK1280源
+r04冻结后仍使用原controller和658包seed锁4a99、Root隔离Rust1.99.1。最终Host选定
+Message/Delta/Source/Empty/ToolChoice与D2控制以该组合的具名原命令和日志为准；旧r02/
+SDKr03的8项String-only临时票不代表最终字段资格，也不称214项lib全库通过。
+
+r01上游构造点E0063与r02 SDK E0277/E0308编译101原件保留。f327的Framework最小生产
+check资格独立；其metadata runtime及两adapter metadata-only EOF后继不能被SDK值传
+结果替代。f7/0dac、accepted5352/431与source-contract未改；正式新Git pin、完整producer/
+aggregate delta、完整SDK/平台、native和精mainCI仍独立待验，外部source402与历史whole
+状态不重标。输入索引、命令与自然退出值保存在本仓任务目录
+`metadata-transport-next-slice-20261029/`。
+
+## 2026-10-28：Protocol114、候选6份资源同步与后继源码切片
+
+Root已独立核验并关闭两批独立窗口：纯Protocol原4条命令全部自然0，实际
+lib42／native8／extension42／core RPC22共114项通过、零编译warning；原target准确
+clean0后不存在。随后只复用保全原producer，不运行Cargo，原candidate生成、语言
+export／check及精确退役checker四条命令全部自然0。允许119产物中仅schema1、有效
+factory fixture1、shared及三包digest4发生字节变化，其余113不变。
+
+新schema为 `b68bf43ace8f269f4500e873a2dc24a1aef9799f1146d63bd184603b4992dd01`。
+accepted5352身份／431routes、全部catalog／签名与source-contract无漂移；三语言源码
+资源逐字节parity，未重新构建tgz／wheel／JAR。normal Task33实际0且globalClosure仍
+not_checked；1260份源回读无漂移。生成切点raw index3d6b与审查后8f的不同保留原观测，
+逐entry mode／blob／stage与HEAD相等，不声称raw index始终字节不变。
+
+后继源码由原SID正常preflight开启。本轮先修Java callback旧七字段视图拒绝当前native
+消息的问题：复用原严格codec和现有Message wire合同，补全native块／执行观察／批准
+块与工具provider来源，保留空与缺失区别及通知unit语义。原失败反例先取证；修复后
+CallbackAndEffects6／RuntimeTerminal5／TypedExtension8／StreamCancellationRoutes8共27项
+实际通过、零失败／零跳过；原Maven编译同时覆盖main中的Java示例。不运行Cargo，
+不改Rust／协议／pin／生成物或原Evidence，27项Java结果不能代替当前Host验收。
+
+CustomAgent canonical输出调用链和8项共享要求已具名交Root转Runtime／F；Runtime只做
+ignored候选，F solewriter正式合。SDK不新增stream owner／executor，也不从String、
+runtimeFinal或普通EOF补成功。当前String／用户函数／rich Message／callback能力保留。
+按真实producer核验，缺receipt.delivery和空恢复fingerprint为可收紧候选；运行中与
+Interrupted的None terminal／receipt、显式not_attempted、delivery_error的合法None及
+Unmanaged CAS联合保持。receipt／fingerprint迁移须完整联动producer、读取、合同和
+正负控，不能只改夹具或按名字删除；后继精确验证窗口单列，不冒当前已完成。
+
+所属ADR与extension bridge说明同步本批114和6份资源实际事实，原示例仍进入编译链。
+本次不新增产品承诺，官网正式发布说明仍待最终clean来源／完整资格；不跨写网站。
+当前Host／Framework消费、正式新pin、full producer、依赖／平台／native和精mainCI
+仍未完成；不套维护WIP保存例外提交。原命令／回执位于本仓任务目录
+`protocol-focused-6cb12d3-20261028/`、`wire-generation-6cb12d3-20261028/`，本轮源码／Java
+验证位于 `source-successor-20261028/`，调用链见 `custom-agent-canonical-source-trace-20261028/`。
+
+## 2026-10-28：维护后从6cb12d3恢复完整Message输入
+
+Root确认原完整Goal active后，SDK从干净WIP `6cb12d3af1649edb8dda1f6d19fe017e06bb8004`
+按原SID正常续接并归档旧blocked preflight，不把维护WIP保存例外当后续提交门禁豁免。
+原24路径rich Message补丁逐base/after核验后增量采用，范围为原CustomAgent四操作的完整
+Message/history载荷、两Message override、原文本消费者夹具、三语言示例/契约及所属ADR。
+Text便利入口构造user Message；Parts/ResourceLink、role/name、工具身份、原生元数据与
+history沿原转换值传，None与空列表区别保留。取消、scope、原callback/physical owner未另造。
+
+runtime FinalAnswer/on_final_answer、Guard安全正文、校验与收尾继续保留，不把通知当执行
+成功、不重复拼接最终正文。本次不改Framework v04 helper或事件shape，不跨写EKO。
+原accepted 5352/431、f7 pin/0dac锁、历史Evidence after/matched/unknown保持；新增Rust
+inventory或顶层gitlink不能代替SDK逐项accepted及精来源验收。
+
+该源码采用切点的Rust/Host批次尚未开放；随后纯Protocol与候选资源同步资格见顶部后继，不能
+手改JSON或用旧234/完整语言票标新输入通过。精确命令提案和当前静态/mock结果保存在
+本仓ignored `rich-message-resume-6cb12d3-20261028/`。当前项目Evidence仅收口source观察+
+open资格缺口提案，原门禁失败保真，不伪造等价证明。最终source、依赖、完整生成、平台、
+native与mainCI资格仍分别结算；本轮未stage/commit/push。
+
+## 2026-10-28：epoch18 SDK1 正式源码合流，删后验证待发布
+
+Root 核验旧 reader／target 全部交回并开放后继写窗后，SDK 唯一 writer 使用原 SID
+正常增量 preflight；fresh base `d5a5ee8a` 精确匹配治理 SDK1 manifest `69fc6a60`，
+仅增量应用已审补丁 `88524d06`。正式
+`echo-sdk-host/src/core_profile/facade/source_operations.rs` 的 after SHA256 为
+`8c1a456d6045d5e2104aa321db62df83b71e1dcd36393c41d2858938c0cf14a9`。
+
+原插件投影不再读取 `lsp_config_file`，Framework 原诊断原样通过，空诊断保持空；
+原保留组件投影继续复用。原测试改为诊断逐项保留，另增空诊断不补造控制；当前
+SearchProvider typed retry 映射、234 项原生合同测试修复和三语言成果不变。正式
+f7 pin／0dac 锁、accepted、生成物和旧 Evidence after／status／matched 均未改。
+
+本轮仅准备源码和所属文档，不启动 Cargo、不读取正在写入的 Framework 源码、不做
+新 Git／fresh 资格声明，也不 stage／commit／push。旧 234 项与完整语言绿票仍只对应
+原输入；本次删后薄接缝须等 Framework 新源码发布后，以原受控组合及新自有 target
+执行 full-profile lib、Host 和必要消费者验证。具体静态检查、前后 SHA、后续命令与
+验证边界保存在本仓任务目录 `retirement-sdk1-epoch18-20261028/`。正式行为说明见
+[退役边界](sdk/governance/a2a-lsp-retirement-boundary.md)。
+
+## 2026-10-28：epoch08 完整语言入口与只读重试修复
+
+Root 单独开放 SDK epoch08 reader 后，本线正常 preflight、冻结当前 SDK1248 项，逐 SHA 回读 Framework1490 项及19条审查路径零漂移；不继承旧1489租约。controlled lock 精确复用原 `4a99acce`，没有重新生成或版本漂移；正式 f7／0dac 不变。真实 locked metadata 为658包、29项 Host feature，Framework及5个vendor均在原目录；只复制三份manifest和独立lock，不复制业务或vendor源码。
+
+同一 `sdk-facade-all` Host 自然构建0、零编译warning，保全SHA `01e34d1e87ee3417474267186921f5b25bb6ac581267b410b9af2f5a407f8c1c`。原 Framework `telemetry_composition --no-run` collector 同源构建0、零warning，保全SHA `53ac572f930c5b36f1bc2e36dced2dc7e42817d184a5d3c5939b9ea399d6a9af`。默认mapper Rust1项、原publication9项及reservation1项共11项通过；不称234项lib全库。
+
+只读 SearchProvider 的公开 typed retryability 曾被SDK旧映射压为普通错误。最小修复仅对明确Always／AfterDelay的Failed／Timeout复用框架现有RemoteFailure，取消、Never、未知错误、其它组件与ExecutionNotSettled观察保原路径，不新增公开形状、重试循环或毫秒hint。Frame核验该Host真实承接默认2次retry／200ms退避，任意SDK预算接入不在本次证明内。默认五项真实Agent控制全部通过：永久失败和Timeout/Never各1次停止；三个typed暂态各由同一次模型工具调用自动跨过2个故障后恢复。实际HTTP/SSE、唯一工具发起和稳定call_id排除了独立调用或模型重发。旧32d三项RED、原不合理永久4callback预期RED和调查中的已撤回假设都保留。
+
+原未改 `scripts/check-language-sdks.sh` 使用原支持的双制品精确SHA完整执行，自然0：TS387项／零失败／1个Windows skip；PY462通过／1个Windows skip／18个subtest通过；Java82份fresh XML共327项／零失败／1个Windows skip。原39-family补证、collector场景、shared fixtures、包内资源和三个原quickstart均由原入口执行，没有筛除或摘要／来源绕过。此结果不覆盖Windows原生运行。Python／Java旧终态测试夹具与ACK fixture已按原生ExecutionStatus修正并加强完整journal校验；Java夹具stdout存自身日志，消除Corrupted-channel警告。
+
+独立审查对同一14路径候选源码有界pass；测试后SDK1248／Frame1490及19条路径均零漂移。全部自有监督句柄终态、进程[]，target及3个保全可执行文件lsof自然1且两空后，准确clean自然0，移除7664files／3.6GiB，target不存在，制品及日志均在target外。整批具名交回Root后由Root核验释放，不自行解除Framework租约。此后的说明更新属于非语义增量，不改代码、测试、合同或配置。
+
+上述仅是受控published1490完整消费，正式新pin、source402／fresh、完整producer／accepted delta、全Rust／平台矩阵与精mainCI仍独立，旧Evidence after/status/matched不重绑。SDK examples已由原完整入口验证；本修复没有新公开API或UI文案，官网无需同步。准确命令、自然exit、source/binary SHA、原HTTP帧与回执在本仓任务目录 `f1490-published-retry-candidate-20261028/` 和主根SDK协调目录。
+
+## 2026-10-28：published F1489 完整 profile 的受控消费后继
+
+Root 明确开放最终 published 索引 SHA `0b14e25a9a593987cccab5367fbb4c53ba1fceb21f6dabaa4c682c91a910e87d` 后，本线重新逐 SHA 核验 1489 项零漂移。旧 prepared45e 已撤回，不用于本次资格。受控 consumer 仍只复制三份 manifest 与独立 lock、链接原 SDK 源，并转发 Frame 原有两个 Polars patch 到原 vendor；没有业务源码或 vendor 副本，正式 f7／0dac 未改。
+
+仓库真实完整 profile `sdk-facade-all` Host 构建自然0、零编译 warning，保全二进制 SHA `32d76f9419726a682ae6be564be7d125edcd9de3aca31f933f97088ddb4f0321`。原八个 publication 控制及失败 reservation 控制全部通过，filter 另命中一项 ACK/replay 控制，实际共10项；不冒233项 lib测试全过。SDK Rust阶段1275身份项及Frame1489输入均零漂移。
+
+随后仅在三语原 native Host 回归中补 `adapter_generated` 不进入事件／模型历史的断言，并同步原生消息说明；生产实现、DTO、wire、schema不改。当前同一full Host的 native＋原R2定向 TS62／PY52／Java44 全部通过，零失败／零跳过；三个原 quickstart也全部自然0，Java 的 telemetry、分类、prompt、Run及usage步骤完整通过。旧41a8最小Host／155项／两个例子0及Java例子1继续只保其原切点。
+
+Frame 的新恢复来源类型、projector默认方法、model_streaming方法／字段及进程内serde-skip字段已按冻结源码具名定位并实际消费编译；SDK没有盲加wire字段。该观察不是完整rustdoc inventory，canonical source/kind／聚合签名及accepted delta仍待正式精pin下由原生成器列出，不预报零或自动接受。
+
+所有自有执行监督句柄已终态，Host／语言／后端／编译进程巡检为空；准确target递归lsof和保全可执行文件lsof均自然1、stdout／stderr两空后，独立cargo clean自然0，移除6077files／3.0GiB，准确target不存在。制品与原件留target外，交回Root核准整批reader释放，本线不自行解除F租约。
+
+本段只支持受控published1489路径与上述选定行为：正式新pin、source402／fresh、完整生成／全矩阵／mainCI仍未完成；不重绑旧退役Evidence的matched场景或提升whole closure。准确入口为本仓任务目录 `f1489-published-full-20261028/` 与主根SDK协调目录，原失败、撤回及各历史资格均保留。
+
+## 2026-10-28：主目录接管、原生消息受控消费与源码包自包含
+
+本节覆盖以下历史时态，不继承旧 pin／旧 main 的资格。SDK 仍在主根现有 `chore/Echoyue/root-workspace-convergence`，HEAD `525453fc`，Host 独立 pin `f7bac62`；原 94 路径 A2A/LSP 去依赖 WIP 原样承接，无 stage／commit／push。正式写入 SID 为 `01a17d6c-e195-7f90-a8a4-8da3dc80a009`，协调者统一集成。
+
+| 结果 | 当前事实与资格 |
+| --- | --- |
+| accepted／退役 | 当前保留 5352 身份、431 routes；原 269 身份／23 routes／39 operations 退役证明保留。ThinkTool／FinalAnswerTool 在当前 accepted 中精确命中为零，其完整 Rust inventory 变化仅为遥测。新 canonical source 的正式 delta 仍待精确来源与全生成。 |
+| Parquet 消费 | 新共享输入／独立 oracle，TS／Python／Java 各经真实旧 Host 完成五次调用，保中文、emoji、数值、空值、损坏文件错误和原输出；六种篡改负控制全拒绝。后继包资源变化后，三语已用显式保全旧 catalog／digest 再跑各 1 pass，未将旧 Host 握手续给新 schema。 |
+| 源码包自包含 | 唯一语言导出入口生成／逐字节检查六份包内资源。TS 真实 tgz 解包加载、Python wheel／sdist 与隔离导入、Java 隔离 JAR 默认资源均通过；当前 277056 schema 资源切点再次定向 TS5／PY4／Java2 全绿，另原 Node+npm-cli 启动回归及独审 pass 保留各自切点。`private`／`publish=false`／source-only 未变，未发布。 |
+| 第一原生协议切片 | 原纯协议 3 tests、111 产物候选生成、34 固定输入零漂移通过；实际只 schema 改变，accepted／source-contract／锁／pin 均未变。随后旧 pin Host adapter 2 tests＋Protocol3、227 输入零漂移通过，证明字段转换与旧源明确拒绝，不是新来源通过。两批均保全 binary／hash、核无 reader 后准确 clean。 |
+| 新历史与执行观察增量 | Message 三字段、Delta／stream blocks、ProviderOutputSource 和 ExecutionStatusWire 已接原转换。旧 pin Host 定向 9＋1＋1、Protocol7 均通过；首轮导入 warning 原件保留，受影响原命令修后重跑零 warning。74 固定输入零漂移，111 产物候选生成仅 schema 改变；当前 schema SHA 为 277056590395b06476b44068b0e8d7dd792d67e6d12e23fab6e8d7909a7160dc，唯一语言入口同步 shared 与六包资源。该批仍是旧源明确拒绝／协议资格。 |
+| V6 客户端接线 | TS／Python／Java 的 live、first_event、replay 沿原 feed／ACK／generation 关闭于 Framework 末尾事实。坏首事件保留已接受 Run 的 parent owner，非法 wire 整数转 serialization_violation；相关定向 TS23／PY52／Java17 零失败。旧事件名推断已删除；ACK 旧终态夹具迁移后的 TS19 项亦通过。 |
+| 当前 Frame 受控 Host | consumer 只用独立 manifests／lock 链接原 SDK 源码，依赖本根 Framework path（HEAD 0e404185＋冻结 dirty1475），不冒正式 f7。首次 build101 暴露两 SDK 接缝，修后同命令 build0／零 warning；SDK1270／Frame1475 在相应编译切点均零漂移。同一保全 Host SHA41a88976b80f88c81c204be603195d79822bbce66522bb19fad308f3283bbe06 的三语真实 stdio 各两次模型调用、九事件、完整 live／replay 一致、下一请求保留 provider 坐标。原探针和纳入原测试入口的三语正式回归均通过；模型为受控输入，不冒真实 provider。 |
+| 并行取消消费 | 同一受控 Host 的 TS 原并行 Agent 场景已执行：A 取消、关闭 Session／Agent 后 B 仍未结算，释放 B 后正常完成；两路 journal 及身份隔离保留。旧末尾 cancelled 断言实际失败原件保留，仅改为末尾 ExecutionStatus 后同命令 1 pass。此结果不替代完整三语言取消／恢复矩阵。 |
+
+已切换的实际权威路径：核心输入与 extension bridge 共用 `wire::message_from_wire`，旧重复转换已删；新 metadata 沿原 Message serde 逐字段保留，旧源忽略字段时明确失败。反向 CustomAgent 的 assistant block 转换已进入原 bridge。生产出站仍是原 `wire_envelope` 的无损投影，`from_framework` 辅助函数本身只属于转换测试接缝，不能称它另开了生产流。Framework 继续唯一拥有消息、执行与结算，SDK 没有第二个 executor／store。
+
+已完成的接缝收敛：三语言不再按 final_answer／error／cancelled 名称关闭 Run；V6 公开 ManagedStream 在原 EOF、join 原 producer 后发布批准块、兼容 FinalAnswer、最后唯一 ExecutionStatus。正式测试覆盖进度到最终、完整 journal 回放和历史 provider 坐标；单元覆盖 first_event、非法输入、ACK 与 generation。下一阶段须在正式新 pin 下将当前旧 pin 拒绝测试替换为新源正向合同，并完成完整生成、流／非流、Stop 继续、取消、父子 handle 和恢复矩阵。受控 dirty Frame Host 的有限正控不能代替这些资格。
+
+来源与安全真阻塞继续保留：原 fresh 4 漏洞／10 unsound、Framework zstd/source 402、正式可恢复来源、新 pin、完整生成／适用完整矩阵、精确 main CI、原生／SSH／IM、发布部署均未由本节关闭。SDK 不复制 vendor、不新增风险接受、不扩大 ignore，也不继承 CLI 六项或 Framework 的例外。
+
+本线协调和精确日志／出口／源码指纹／制品入口为主根 `.echo-semantic/local/parallel-executors-20261027/sdk/` 与本仓 `.echo-semantic/local/sdk-native-consumer-20261027/`。所有自有 Rust target 均已保全制品、核无 reader 后准确 clean；受控 Host 运行 PID 已退出，Frame reader 租约已报释放。下一负责者仍为 SDK 正式写入会话；新 Cargo／Frame 消费须另排冻结窗，Git 和外部动作仍由协调者按授权执行。
+
 ## 2026-10-22 精main工程已验收，accepted语义材料最终结算
 
 工程交付：PR7已合并至a9f267f636cd4d1553a8bff335c3203ab0b8a5ac，soleparent09f/tree01ac与已审24d2同，
@@ -603,3 +814,21 @@ Framework终态publish最终174Task/169Subagent全绿零警告，onlyprivatewrit
 TS/PY迟消费两个窗口各2trueHost绿，Java同2窗口与21断言绿，独立复审源码暂无新阻断，
 完整三语言匹配Host结果仍缺（最新failure均包含Rust栈问题、其他fixture业务已分派），不声称language通过。
 所有正式仓库仍未提交/PR/merge；inventory与behavior closure保持open。
+## 2026-10-29 SDK 原生 reverse 输出增量
+
+在 fa153f93 干净基线恢复唯一 SDK writer。已实际取得 Protocol 定向 RED：原 reverse
+chunk 无法承载 execution_status，0pass/1fail/0ignore，自然101；独立 SDK target 命令
+已终态。用户明确恢复后，复用原target实际完成原selector转绿、native9/extension42、
+原生成器及语言资源同步；全程保正式f7/0dac及accepted5352/431。
+实现与边界见 ADR0043 的 2026-10-29 后继：原 status/FinalAnswer 通知无损转运、同 source
+EOF 后 factory close、三语示例只在原 EOF 后提交真实原终态，不产生成功或新 owner。
+
+冻结v03真实消费首编译101/20错后已按真实API完成SDK必要适配，移除Checkpoint旧plan字段，
+保现行六字段与history；保with_id callback，旧无稳定managed身份删除明确拒绝，不补造ID。
+原native输出ACP控制及八个保留方法全过；同保全f81d98a6 Host三语原生stdio各1/0/0，
+现行值/示例组合TS30、PY33加18subtests、Java29通过；当前库仅绑定Rust1.99.0 epoch。
+全局stable切换时原channels控制spawn rustc失败101，保原件，1.99.1原命令另证。
+当前尚待：该channels控制与最终检查收口、新合格Git来源/精确pin、完整生成及accepted
+签名/具名退役逐项处置、完整SDK/平台/main CI。D1/D2不并入本slice。
+旧五项各 profile 结果保持原959+B53资格，正式f7/0dac/accepted5352与431routes未变，
+source115与source402仍真实未通过。无stage/commit/push/merge/clean。

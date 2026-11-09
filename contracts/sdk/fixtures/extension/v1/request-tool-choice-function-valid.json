@@ -1,0 +1,15 @@
+{
+  "name": "request-tool-choice-function-valid",
+  "kind": "valid",
+  "target": "LlmChatRequestWire",
+  "description": "既有accepted请求字段跟随Core canonical值；不新增独立API身份。",
+  "payload": {
+    "messages": [],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": " 原始工具🧪 "
+      }
+    }
+  }
+}

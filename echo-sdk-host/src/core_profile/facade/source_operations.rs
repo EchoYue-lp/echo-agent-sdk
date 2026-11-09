@@ -133,6 +133,24 @@ impl echo_agent::agent::Agent for FailedEvalAgent {
             Ok(futures::stream::once(async { Err(self.take_error()) }).boxed())
         })
     }
+
+    fn execute_stream_message_with_invocation_context<'a>(
+        &'a self,
+        _message: echo_agent::llm::types::Message,
+        _cancel: tokio_util::sync::CancellationToken,
+        _invocation: echo_agent::agent::AgentInvocationContext,
+    ) -> futures::future::BoxFuture<
+        'a,
+        echo_agent::error::Result<
+            futures::stream::BoxStream<
+                'a,
+                echo_agent::error::Result<echo_agent::agent::AgentEvent>,
+            >,
+        >,
+    > {
+        // 构造失败在canonical输入准入前拒绝；转交原错误，不造source或运行终态。
+        Box::pin(async { Err(self.take_error()) })
+    }
 }
 
 #[cfg(feature = "framework-content-guard")]
@@ -468,7 +486,8 @@ fn plugin_install_source(
 fn resolved_plugin_components_value(
     value: echo_agent::plugin::ResolvedComponents,
 ) -> Result<WireValue, EchoSdkError> {
-    // Framework owns retired discovery fields; SDK projects retained facts only.
+    // 旧声明的发现和诊断由Framework原resolver/prepare拥有；SDK只投影原事实。
+    // 不再读已退役专属字段，也不重复追加或从路径猜LSP来源。
     let diagnostics = value.diagnostics;
     let paths = |items: Vec<PathBuf>| {
         items
@@ -721,6 +740,11 @@ fn turn_outcome_classify(request: &FeatureOperationRequest) -> Result<WireValue,
     let wire = AgentEventWire::from_wire_value(value)
         .map_err(|error| invalid(format!("AgentEventWire payload is invalid: {error}")))?;
     let event = match wire {
+        AgentEventWire::ExecutionStatus(status) => Some(
+            super::super::native_message::status_to_framework(status).map_err(|error| {
+                invalid(format!("native runtime status is unsupported: {error}"))
+            })?,
+        ),
         AgentEventWire::FinalAnswer { text } => {
             Some(echo_agent::agent::AgentEvent::FinalAnswer(text))
         }
@@ -2141,8 +2165,16 @@ pub(crate) fn run_start_request(
     {
         return Err(facade_capability_error());
     }
-    let request: FeatureOperationRequest = serde_json::from_value(params.clone())
-        .map_err(|error| invalid(format!("facade request payload is malformed: {error}")))?;
+    // 外层请求 DTO 尚未解码成功；后续参数/业务值校验仍沿用 InvalidValue。
+    let request: FeatureOperationRequest =
+        serde_json::from_value(params.clone()).map_err(|error| {
+            wire::sdk_error(
+                ExtensionErrorCode::InvalidRequest,
+                format!("facade request payload is malformed: {error}"),
+                Retryability::Never,
+                METHOD,
+            )
+        })?;
     enum SourceInputKind {
         Text { execute: bool },
         Message { execute: bool },
@@ -2272,8 +2304,16 @@ pub(crate) fn run_steer_request(
     {
         return Err(facade_capability_error());
     }
-    let request: FeatureOperationRequest = serde_json::from_value(params.clone())
-        .map_err(|error| invalid(format!("facade request payload is malformed: {error}")))?;
+    // 外层请求 DTO 尚未解码成功；后续参数/业务值校验仍沿用 InvalidValue。
+    let request: FeatureOperationRequest =
+        serde_json::from_value(params.clone()).map_err(|error| {
+            wire::sdk_error(
+                ExtensionErrorCode::InvalidRequest,
+                format!("facade request payload is malformed: {error}"),
+                Retryability::Never,
+                METHOD,
+            )
+        })?;
     match request.operation.as_str() {
         "echo_core::agent::Agent::steer_input"
         | "echo_core::agent::Agent::steer_input_tracked"
@@ -2356,8 +2396,16 @@ pub(crate) fn agent_close_request(
     {
         return Err(facade_capability_error());
     }
-    let request: FeatureOperationRequest = serde_json::from_value(params.clone())
-        .map_err(|error| invalid(format!("facade request payload is malformed: {error}")))?;
+    // 外层请求 DTO 尚未解码成功；后续参数/业务值校验仍沿用 InvalidValue。
+    let request: FeatureOperationRequest =
+        serde_json::from_value(params.clone()).map_err(|error| {
+            wire::sdk_error(
+                ExtensionErrorCode::InvalidRequest,
+                format!("facade request payload is malformed: {error}"),
+                Retryability::Never,
+                METHOD,
+            )
+        })?;
     if request.operation != "echo_core::agent::Agent::close" {
         return Ok(None);
     }
@@ -3400,6 +3448,8 @@ async fn dispatch_non_git_source(
                 timeout,
                 source,
                 sandbox,
+                // 此API只构造独立资源，尚无活跃调用；取消与资源默认值由原框架提供。
+                ..Default::default()
             };
             let resource =
                 register_source_resource(state, &owner, "skills", "skills.prompt_context")?;
@@ -3542,8 +3592,12 @@ async fn dispatch_non_git_source(
                 ));
             }
             let policy = sandbox_policy_argument(request, 1)?;
+            let command_value = json_argument(request, 2, "sandbox command")?;
+            echo_sdk_protocol::facade::SANDBOX_COMMAND_PROJECTION
+                .validate_json(&command_value)
+                .map_err(invalid)?;
             let command: echo_agent::sandbox::SandboxCommand =
-                serde_json::from_value(json_argument(request, 2, "sandbox command")?)
+                serde_json::from_value(command_value)
                     .map_err(|error| invalid(format!("sandbox command is invalid: {error}")))?;
             let level = if expected == 4 {
                 let limits: Option<echo_agent::sandbox::ResourceLimits> =
@@ -3937,95 +3991,50 @@ async fn dispatch_non_git_source(
                 }
             }
         }
-        "echo_agent::state::clear_persisted_runtime_incarnation"
-        | "echo_agent::state::delete_persisted_conversation" => {
+        "echo_agent::state::clear_persisted_runtime_incarnation" => {
             let authorities = session_authorities(state, request).await?;
             let scope_id = string_argument(request, 1, "conversation scope id")?;
-            if request
-                .operation
-                .ends_with("clear_persisted_runtime_incarnation")
-            {
-                if request.arguments.len() != 3 {
-                    return Err(invalid(
-                        "clear_persisted_runtime_incarnation accepts [Session, scope_id, runtime_state_id]",
-                    ));
-                }
-                let runtime_state_id = string_argument(request, 2, "runtime state id")?;
-                let receipt = authorities
-                    .agent_handle
-                    .read_async(move |agent| {
-                        let conversation_store = agent.conversation_store().clone();
-                        let runtime_state_store = agent.state_store().clone();
-                        Box::pin(async move {
-                            let conversation_store = conversation_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no ConversationStore".to_string(),
-                                )
-                            })?;
-                            let runtime_state_store = runtime_state_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no RuntimeStateStore".to_string(),
-                                )
-                            })?;
-                            echo_agent::state::clear_persisted_runtime_incarnation(
-                                conversation_store.as_ref(),
-                                runtime_state_store.as_ref(),
-                                &scope_id,
-                                &runtime_state_id,
-                            )
-                            .await
-                        })
-                    })
-                    .await
-                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
-                snapshot_value(
-                    request,
-                    serde_json::json!({
-                        "scope_id": receipt.scope_id,
-                        "runtime_state_id": receipt.runtime_state_id,
-                        "checkpoint_removed": receipt.checkpoint_removed,
-                    }),
-                )
-            } else {
-                if request.arguments.len() != 2 {
-                    return Err(invalid(
-                        "delete_persisted_conversation accepts [Session, conversation_id]",
-                    ));
-                }
-                let receipt = authorities
-                    .agent_handle
-                    .read_async(move |agent| {
-                        let conversation_store = agent.conversation_store().clone();
-                        let runtime_state_store = agent.state_store().clone();
-                        Box::pin(async move {
-                            let conversation_store = conversation_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no ConversationStore".to_string(),
-                                )
-                            })?;
-                            let runtime_state_store = runtime_state_store.ok_or_else(|| {
-                                echo_agent::error::ReactError::Other(
-                                    "Session Agent has no RuntimeStateStore".to_string(),
-                                )
-                            })?;
-                            echo_agent::state::delete_persisted_conversation(
-                                conversation_store.as_ref(),
-                                runtime_state_store.as_ref(),
-                                &scope_id,
-                            )
-                            .await
-                        })
-                    })
-                    .await
-                    .map_err(|error| wire::framework_error(&error, &request.operation))?;
-                snapshot_value(
-                    request,
-                    serde_json::json!({
-                        "conversation_id": receipt.conversation_id,
-                        "runtime_state_ids": receipt.runtime_state_ids,
-                    }),
-                )
+            if request.arguments.len() != 3 {
+                return Err(invalid(
+                    "clear_persisted_runtime_incarnation accepts [Session, scope_id, runtime_state_id]",
+                ));
             }
+            let runtime_state_id = string_argument(request, 2, "runtime state id")?;
+            let receipt = authorities
+                .agent_handle
+                .read_async(move |agent| {
+                    let conversation_store = agent.conversation_store().clone();
+                    let runtime_state_store = agent.state_store().clone();
+                    Box::pin(async move {
+                        let conversation_store = conversation_store.ok_or_else(|| {
+                            echo_agent::error::ReactError::Other(
+                                "Session Agent has no ConversationStore".to_string(),
+                            )
+                        })?;
+                        let runtime_state_store = runtime_state_store.ok_or_else(|| {
+                            echo_agent::error::ReactError::Other(
+                                "Session Agent has no RuntimeStateStore".to_string(),
+                            )
+                        })?;
+                        echo_agent::state::clear_persisted_runtime_incarnation(
+                            conversation_store.as_ref(),
+                            runtime_state_store.as_ref(),
+                            &scope_id,
+                            &runtime_state_id,
+                        )
+                        .await
+                    })
+                })
+                .await
+                .map_err(|error| wire::framework_error(&error, &request.operation))?;
+            snapshot_value(
+                request,
+                serde_json::json!({
+                    "scope_id": receipt.scope_id,
+                    "runtime_state_id": receipt.runtime_state_id,
+                    "checkpoint_removed": receipt.checkpoint_removed,
+                }),
+            )
         }
         "echo_core::utils::fs::create_dir_all_durable" => {
             let _owner = source_session_owner(state, request).await?;
@@ -7258,7 +7267,8 @@ fn dispatch_agent_context_source<'a>(
                     authorities
                         .agent_handle
                         .write(|agent| agent.set_store(Arc::new(proxy)))
-                        .await;
+                        .await
+                        .map_err(|error| wire::framework_error(&error, &request.operation))?;
                     snapshot_value(request, serde_json::Value::Null)
                 }
                 #[cfg(not(feature = "sdk-extension-bridge"))]
@@ -8279,6 +8289,58 @@ fn dispatch_analysis_source<'a>(
 #[cfg(test)]
 mod classify_tests {
     use super::*;
+
+    #[test]
+    fn resolved_plugin_projection_preserves_components_and_source_diagnostics()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut components = echo_agent::plugin::ResolvedComponents::default();
+        components.skill_dirs.push(std::env::current_dir()?);
+        components.diagnostics.extend([
+            "original diagnostic".to_string(),
+            "retired component diagnostic from Framework".to_string(),
+        ]);
+        let value = resolved_plugin_components_value(components).map_err(|error| error.message)?;
+        let WireValue::Record { fields, .. } = value else {
+            return Err("expected resolved component record".into());
+        };
+        assert!(!fields.iter().any(|field| field.name == "lsp_config_file"));
+        assert!(fields.iter().any(|field| field.name == "skill_dirs"
+            && matches!(&field.value, WireValue::List(paths) if paths.len() == 1)));
+        let diagnostics = fields
+            .iter()
+            .find(|field| field.name == "diagnostics")
+            .ok_or("diagnostics absent")?;
+        let WireValue::List(messages) = &diagnostics.value else {
+            return Err("diagnostics are not a list".into());
+        };
+        assert_eq!(messages.len(), 2);
+        assert!(
+            matches!(messages.first(), Some(WireValue::String(message)) if message == "original diagnostic")
+        );
+        assert!(
+            matches!(messages.get(1), Some(WireValue::String(message)) if message == "retired component diagnostic from Framework")
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn resolved_plugin_projection_does_not_invent_empty_source_diagnostics()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let value =
+            resolved_plugin_components_value(echo_agent::plugin::ResolvedComponents::default())
+                .map_err(|error| error.message)?;
+        let WireValue::Record { fields, .. } = value else {
+            return Err("expected component record".into());
+        };
+        assert!(!fields.iter().any(|field| field.name == "lsp_config_file"));
+        let diagnostics = fields
+            .iter()
+            .find(|field| field.name == "diagnostics")
+            .ok_or("diagnostics absent")?;
+        assert!(matches!(&diagnostics.value, WireValue::List(messages) if messages.is_empty()));
+        Ok(())
+    }
+
     use echo_sdk_protocol::scalar::{WireField, WireMapEntry};
 
     const CLASSIFY: &str = "echo_orchestration::runtime::turn_driver::TurnOutcome::classify";
@@ -8339,8 +8401,14 @@ mod classify_tests {
     #[test]
     fn classify_projects_completed_cancelled_and_non_terminal() -> Result<(), String> {
         let completed = match turn_outcome_classify(&request(event(
-            "final_answer",
-            vec![string_field("text", "done")],
+            "execution_status",
+            vec![
+                string_field("execution_id", "original-classify-execution"),
+                string_field("request_id", "original-classify-request"),
+                string_field("sequence", "1"),
+                string_field("phase", "Terminal"),
+                string_field("status", "settled"),
+            ],
         ))) {
             Ok(value) => value,
             Err(error) => return Err(format!("final answer classification failed: {error:?}")),
@@ -8350,6 +8418,13 @@ mod classify_tests {
             WireValue::Variant { variant, fields, .. }
                 if variant == "completed" && fields.is_empty()
         ));
+
+        let final_notice = turn_outcome_classify(&request(event(
+            "final_answer",
+            vec![string_field("text", "done")],
+        )))
+        .map_err(|error| format!("final notice classification failed: {error:?}"))?;
+        assert_eq!(final_notice, WireValue::Null);
 
         let cancelled = match turn_outcome_classify(&request(event("cancelled", Vec::new()))) {
             Ok(value) => value,

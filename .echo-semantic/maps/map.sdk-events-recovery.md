@@ -1,205 +1,368 @@
 ---
-schema_version: 1
-id: map.sdk-events-recovery
-kind: capability_map
-title: 事件、ACK、replay、持久化
-risk: high
-observed_at: cd5b78467f77ac28919cf9dda6877662bed744f4
-boundary_refs:
-- boundary.sdk-events-recovery
-behavior_refs:
-- behavior.sdk-events-recovery
-- behavior.sdk-family-event-replay
-rule_refs:
-- rule.framework-runtime-authority
-evidence_refs:
-- evidence.sdk-ack-recovery-verification
-- evidence.sdk-gap-watermark-host-verification
-- evidence.sdk-events-resources-finite-observation
-finding_refs:
-- finding.sdk-ack-submission-consumption
-- finding.sdk-gap-ack-replay-watermark
-- finding.sdk-language-consumption-ack
-- finding.sdk-gap-duplicate-ack-successor-observation
-audit_refs:
-- audit.sdk-ack-recovery-rereview
-- audit.sdk-gap-watermark-host-rereview
-- audit.sdk-events-resources-finite-trigger-input
-- audit.sdk-events-resources-finite-result-side-effect
-- audit.sdk-events-resources-finite-state-authority
-- audit.sdk-events-resources-finite-data-durability
-- audit.sdk-events-resources-finite-time-lifecycle
-- audit.sdk-events-resources-finite-failure-concurrency
-- audit.sdk-events-resources-finite-permission-external
-- audit.sdk-events-resources-finite-contract-evidence
-related_map_refs:
-- map.sdk-product-boundary
-scenarios:
-  behavior-lifecycle-failure:
-    status: mapped
-    source_refs:
-    - echo-sdk-host/src/core_profile/events.rs
-    - echo-sdk-host/src/core_profile/persistence.rs
-    - echo-sdk-host/src/core_profile/handler.rs
-    - echo-sdk-host/src/core_profile/wire.rs
-    - echo-sdk-protocol/src/event.rs
-    - echo-sdk-host/src/core_profile/events.rs#real_journal_retention_page_authorizes_only_its_returned_watermark
-    - echo-sdk-host/src/core_profile/events.rs#replay_publication_failure_and_empty_future_page_grant_no_ack_coverage
-    - echo-sdk-host/tests/core_profile_e2e.rs#consumed_multiple_replay_page_ack_resumes_live_after_page_cursor
-    - sdks/shared/testing/gap_ack_fixture.py
-    - sdks/typescript/test/gap-ack-host.test.js
-    - sdks/python/tests/test_gap_ack_host.py
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    finding_refs:
-    - finding.sdk-ack-submission-consumption
-    - finding.sdk-gap-ack-replay-watermark
-    - finding.sdk-language-consumption-ack
-    review_scope: Entry, unique authority, normal lifecycle and named failure obligations
-      have been inspected and linked. Mapped records the model, not bug-free/runtime/main
-      closure; open Findings remain explicit.
-  family-event-replay:
-    status: mapped
-    source_refs:
-    - echo-sdk-host/src/core_profile/events.rs
-    - echo-sdk-host/src/core_profile/handler.rs
-    - echo-sdk-protocol/src/event.rs
-    - echo-sdk-host/tests/core_profile_e2e.rs
-    behavior_refs:
-    - behavior.sdk-family-event-replay
-    evidence_refs:
-    - evidence.sdk-candidate-behavior-verification
-    - evidence.sdk-parent-driver-candidate-verification
-    - evidence.sdk-events-resources-finite-observation
-    review_scope: Accepted event-replay behavior/uniqueauthority/lifecycle/failure
-      covered by named source review and original/new consumer proof. Fullgeneration/main
-      and physicalB remain explicit, no infinite combination requirement.
-  finite-events-resources-trigger-input:
-    status: mapped
-    source_refs: &id001
-    - echo-sdk-host/src/core_profile/events.rs
-    - echo-sdk-host/src/core_profile/persistence.rs
-    - echo-sdk-host/src/core_profile/handler.rs
-    - echo-sdk-host/src/core_profile/wire.rs
-    - echo-sdk-host/src/core_profile/handles.rs
-    - echo-sdk-host/src/core_profile/state.rs
-    - echo-sdk-host/src/core_profile/facade/stream.rs
-    - echo-sdk-host/src/core_profile/facade/mod.rs
-    - echo-sdk-host/src/bounded_stdio.rs
-    - echo-sdk-host/src/config.rs
-    - echo-sdk-protocol/src/event.rs
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-trigger-input
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
-  finite-events-resources-result-side-effect:
-    status: mapped
-    source_refs: *id001
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-result-side-effect
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
-  finite-events-resources-state-authority:
-    status: mapped
-    source_refs: *id001
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-state-authority
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
-  finite-events-resources-data-durability:
-    status: mapped
-    source_refs: *id001
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-data-durability
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
-  finite-events-resources-time-lifecycle:
-    status: mapped
-    source_refs: *id001
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-time-lifecycle
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
-  finite-events-resources-failure-concurrency:
-    status: mapped
-    source_refs: *id001
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-failure-concurrency
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
-  finite-events-resources-permission-external:
-    status: mapped
-    source_refs: *id001
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-permission-external
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
-  finite-events-resources-contract-evidence:
-    status: mapped
-    source_refs: *id001
-    behavior_refs:
-    - behavior.sdk-events-recovery
-    rule_refs:
-    - rule.framework-runtime-authority
-    evidence_refs:
-    - evidence.sdk-events-resources-finite-observation
-    audit_refs:
-    - audit.sdk-events-resources-finite-contract-evidence
-    review_scope: Actual original69b source audit; unchanged source restored in cd5;
-      finite livejournal native errors/isolation/restore added. Known physicalB and
-      current mutableA excluded.
+{
+  "schema_version": 1,
+  "id": "map.sdk-events-recovery",
+  "kind": "capability_map",
+  "title": "事件、ACK、replay、持久化",
+  "risk": "high",
+  "observed_at": "83ae59e407313d7130811478a74646865d9e8bd3",
+  "boundary_refs": [
+    "boundary.sdk-events-recovery"
+  ],
+  "behavior_refs": [
+    "behavior.sdk-events-recovery",
+    "behavior.sdk-family-event-replay"
+  ],
+  "rule_refs": [
+    "rule.framework-runtime-authority"
+  ],
+  "evidence_refs": [
+    "evidence.sdk-source-consumption-validation",
+    "evidence.sdk-ack-recovery-verification",
+    "evidence.sdk-gap-watermark-host-verification",
+    "evidence.sdk-events-resources-finite-observation"
+  ],
+  "finding_refs": [
+    "finding.sdk-ack-submission-consumption",
+    "finding.sdk-gap-ack-replay-watermark",
+    "finding.sdk-language-consumption-ack",
+    "finding.sdk-gap-duplicate-ack-successor-observation"
+  ],
+  "audit_refs": [
+    "audit.sdk-ack-recovery-rereview",
+    "audit.sdk-gap-watermark-host-rereview",
+    "audit.sdk-events-resources-finite-trigger-input",
+    "audit.sdk-events-resources-finite-result-side-effect",
+    "audit.sdk-events-resources-finite-state-authority",
+    "audit.sdk-events-resources-finite-data-durability",
+    "audit.sdk-events-resources-finite-time-lifecycle",
+    "audit.sdk-events-resources-finite-failure-concurrency",
+    "audit.sdk-events-resources-finite-permission-external",
+    "audit.sdk-events-resources-finite-contract-evidence"
+  ],
+  "related_map_refs": [
+    "map.sdk-product-boundary"
+  ],
+  "scenarios": {
+    "behavior-lifecycle-failure": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-protocol/src/event.rs",
+        "echo-sdk-host/src/core_profile/events.rs#real_journal_retention_page_authorizes_only_its_returned_watermark",
+        "echo-sdk-host/src/core_profile/events.rs#replay_publication_failure_and_empty_future_page_grant_no_ack_coverage",
+        "echo-sdk-host/tests/core_profile_e2e.rs#consumed_multiple_replay_page_ack_resumes_live_after_page_cursor",
+        "sdks/shared/testing/gap_ack_fixture.py",
+        "sdks/typescript/test/gap-ack-host.test.js",
+        "sdks/python/tests/test_gap_ack_host.py"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "finding_refs": [
+        "finding.sdk-ack-submission-consumption",
+        "finding.sdk-gap-ack-replay-watermark",
+        "finding.sdk-language-consumption-ack"
+      ],
+      "review_scope": "Entry, unique authority, normal lifecycle and named failure obligations have been inspected and linked. Mapped records the model, not bug-free/runtime/main closure; open Findings remain explicit."
+    },
+    "family-event-replay": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-protocol/src/event.rs",
+        "echo-sdk-host/tests/core_profile_e2e.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-family-event-replay"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-candidate-behavior-verification",
+        "evidence.sdk-parent-driver-candidate-verification",
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "review_scope": "Accepted event-replay behavior/uniqueauthority/lifecycle/failure covered by named source review and original/new consumer proof. Fullgeneration/main and physicalB remain explicit, no infinite combination requirement."
+    },
+    "finite-events-resources-trigger-input": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-trigger-input"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "finite-events-resources-result-side-effect": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-result-side-effect"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "finite-events-resources-state-authority": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-state-authority"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "finite-events-resources-data-durability": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-data-durability"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "finite-events-resources-time-lifecycle": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-time-lifecycle"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "finite-events-resources-failure-concurrency": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-failure-concurrency"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "finite-events-resources-permission-external": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-permission-external"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "finite-events-resources-contract-evidence": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-host/src/core_profile/events.rs",
+        "echo-sdk-host/src/core_profile/persistence.rs",
+        "echo-sdk-host/src/core_profile/handler.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/handles.rs",
+        "echo-sdk-host/src/core_profile/state.rs",
+        "echo-sdk-host/src/core_profile/facade/stream.rs",
+        "echo-sdk-host/src/core_profile/facade/mod.rs",
+        "echo-sdk-host/src/bounded_stdio.rs",
+        "echo-sdk-host/src/config.rs",
+        "echo-sdk-protocol/src/event.rs"
+      ],
+      "behavior_refs": [
+        "behavior.sdk-events-recovery"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-events-resources-finite-observation"
+      ],
+      "audit_refs": [
+        "audit.sdk-events-resources-finite-contract-evidence"
+      ],
+      "review_scope": "Actual original69b source audit; unchanged source restored in cd5; finite livejournal native errors/isolation/restore added. Known physicalB and current mutableA excluded."
+    },
+    "native-message-and-runtime-terminal": {
+      "status": "mapped",
+      "source_refs": [
+        "echo-sdk-protocol/src/methods.rs",
+        "echo-sdk-protocol/tests/native_message_contract.rs",
+        "echo-sdk-host/src/core_profile/native_message.rs",
+        "echo-sdk-host/src/core_profile/wire.rs",
+        "echo-sdk-host/src/core_profile/extension_bridge.rs",
+        "echo-sdk-host/src/core_profile/facade/source_operations.rs",
+        "sdks/typescript/src/client.ts",
+        "sdks/typescript/src/runtime_terminal.ts",
+        "sdks/typescript/test/runtime-terminal.test.js",
+        "sdks/typescript/test/native-message-host.test.js",
+        "sdks/typescript/test/ack-submission.test.js",
+        "sdks/typescript/test/host.test.js",
+        "sdks/python/src/echo_agent_sdk/client.py",
+        "sdks/python/src/echo_agent_sdk/_runtime_terminal.py",
+        "sdks/python/tests/test_runtime_terminal.py",
+        "sdks/python/tests/test_native_message_host.py",
+        "sdks/java/src/main/java/com/echoagent/sdk/EchoAgentClient.java",
+        "sdks/java/src/main/java/com/echoagent/sdk/RuntimeTerminal.java",
+        "sdks/java/src/test/java/com/echoagent/sdk/RuntimeTerminalTest.java",
+        "sdks/java/src/test/java/com/echoagent/sdk/NativeMessageHostTest.java",
+        "sdks/shared/testing/native_message_host_contract.json",
+        "docs/adr/0043-native-message-sdk-adapter.md",
+        "docs/sdk/native-messages.md"
+      ],
+      "rule_refs": [
+        "rule.framework-runtime-authority"
+      ],
+      "evidence_refs": [
+        "evidence.sdk-source-consumption-validation"
+      ],
+      "review_scope": "只映射无损转换、原运行时事实及现有feed消费；mapped不表示正式新pin、安全来源、完整矩阵或整体行为已验收。"
+    }
+  }
+}
 ---
 
 # 事件、ACK、replay、持久化
+
+## 2026-10-28 原生消息消费观察
+
+新增 native-message-and-runtime-terminal 场景复用本边界唯一 Map，未另设执行或结束权威。当前 source 摘要重新定位原有及新增引用；原有状态与历史证据保持各自范围。新的有限消费结果见 evidence.sdk-source-consumption-validation，不能据此重标旧记录或提升完整验收。
 
 ## 能力范围
 
@@ -291,3 +454,11 @@ review_scope：本对象在真实当前候选Git `56929154c1851473e9e4837901b610
 正式完整八job范围为5success/3failure；TS336及quickstart通过，Python413通过/2失败/18subtests，Java未达。两个合同job原13连续性阻断与旧证明分别保留，不从CI fail泛化未知生产缺陷。PID原Linux[]唯一cause仍unknown，Darwin2.5925s排队原反例不是该CI唯一cause。bootstrap单input实施只原配置/顺序依据，新remote error结算尚未证明，不提前resolved。原四已闭Mac缺陷不重开、B/12未决保持。
 
 原上文“第三repo工具交付权限待批准”属于候选准备时历史；Root后续已获得第三repo工具修复交付授权，实际工具修补/源码SHA/发布main与新CIjob结果尚未回报，本候选不冒已交付或官方原30d门禁已0。
+
+
+## 2026-11-04：历史源码引用的可恢复定位
+
+原观察标签 `source:f51bfb0d8716abba38aca735c79b78ca93680aae607629db88ec49344ec3e353` 及旧结果、支持、限制、场景和状态保持原含义。
+`observed_at` 仅定位到本对象原文所在的真实Git `83ae59e407313d7130811478a74646865d9e8bd3`；所列源码引用在该Git可恢复。
+这不声明整个旧source摘要等于Git83，不把旧运行重签到当前 `source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`。
+当前工作树新增四测试的资格另见本轮原始回执；本次没有提高本对象的行为验收状态。

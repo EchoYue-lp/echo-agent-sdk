@@ -1984,7 +1984,6 @@ const PROVEN_LANGUAGE_LOCAL_CONSTRUCTION_TYPES: &[&str] = &[
     "echo_agent::config::FrameworkConfig",
     "echo_agent::config::ModelConfig",
     "echo_agent::tools::builtin::human_in_loop::HumanInLoop",
-    "echo_agent::tools::builtin::think::ThinkTool",
     "echo_agent::tools::lsp::LspDiagnosticsTool",
     "echo_agent::tools::lsp::LspFindReferencesTool",
     "echo_agent::tools::lsp::LspGotoDefinitionTool",
@@ -3166,7 +3165,7 @@ fn family_operation_for_source(
     }
 }
 
-/// Typed extension-bridge kinds declared by [`TYPED_BRIDGE_TRAITS`].
+/// Typed extension-bridge kinds declared by `TYPED_BRIDGE_TRAITS`.
 /// Kinds without a trait identity here (only `Hook`, which registers by
 /// event descriptor, not by trait) still have Host handlers; the closed-set
 /// tests reconcile the manifest against this list.
@@ -3385,8 +3384,8 @@ pub fn canonical_source_identity(entry: &InventoryEntry) -> String {
 /// import/metadata APIs and Rust-owned Team controllers do not become remote
 /// operations merely because rustdoc discovers a public identity.
 pub fn governance_source_disposition(identity: &str) -> Option<&'static str> {
-    // ADR0042/Plan04 withdraws these SDK surfaces while pinned framework Rust
-    // definitions remain nonblocking inventory telemetry.
+    // ADR0042/Plan04 withdraw these SDK surfaces while the pinned upstream
+    // Rust definitions remain available as nonblocking inventory telemetry.
     if [
         "echo_agent::a2a::",
         "echo_core::lsp::",
@@ -3475,12 +3474,125 @@ pub fn governance_source_disposition(identity: &str) -> Option<&'static str> {
     None
 }
 
+/// ADR0045：原Rust类型拥有本机资源，SDK只投影已经接受的六字段命令值。
+/// 字段闭集由这里唯一声明；Host策略和reverse-call验证共用，不能恢复本机guard/token。
+pub struct SandboxCommandProjection {
+    pub serialized_fields: &'static [&'static str],
+    pub runtime_only_fields: &'static [&'static str],
+}
+
+pub const SANDBOX_COMMAND_PROJECTION: SandboxCommandProjection = SandboxCommandProjection {
+    serialized_fields: &[
+        "kind",
+        "minimum_isolation",
+        "working_dir",
+        "env",
+        "timeout",
+        "stdin",
+    ],
+    runtime_only_fields: &["resource_guards", "cancel"],
+};
+
+pub fn sandbox_command_projection(
+    entry: &InventoryEntry,
+) -> Option<&'static SandboxCommandProjection> {
+    (entry.kind == ItemKind::Struct
+        && canonical_source_identity(entry) == "echo_core::sandbox::SandboxCommand")
+        .then_some(&SANDBOX_COMMAND_PROJECTION)
+}
+
+impl SandboxCommandProjection {
+    pub fn validate_json(&self, value: &serde_json::Value) -> Result<(), &'static str> {
+        let fields = value
+            .as_object()
+            .ok_or("sandbox command must be an object")?;
+        if fields
+            .keys()
+            .any(|key| !self.serialized_fields.contains(&key.as_str()))
+        {
+            return Err("sandbox command contains a runtime-only or unknown field");
+        }
+        let kind = fields
+            .get("kind")
+            .and_then(serde_json::Value::as_object)
+            .filter(|kind| kind.len() == 1)
+            .ok_or("invalid sandbox command kind")?;
+        let valid_kind = match kind.iter().next() {
+            Some((name, value)) if name == "Shell" => value.is_string(),
+            Some((name, value)) if name == "Program" => value.as_object().is_some_and(|program| {
+                program
+                    .get("program")
+                    .is_some_and(serde_json::Value::is_string)
+                    && program
+                        .get("args")
+                        .and_then(serde_json::Value::as_array)
+                        .is_some_and(|args| args.iter().all(serde_json::Value::is_string))
+            }),
+            Some((name, value)) if name == "Code" => value.as_object().is_some_and(|code| {
+                code.get("language")
+                    .is_some_and(serde_json::Value::is_string)
+                    && code.get("code").is_some_and(serde_json::Value::is_string)
+            }),
+            _ => false,
+        };
+        if !valid_kind {
+            return Err("invalid sandbox command kind");
+        }
+        for name in ["working_dir", "stdin"] {
+            if fields
+                .get(name)
+                .is_some_and(|value| !value.is_null() && !value.is_string())
+            {
+                return Err("invalid optional sandbox command text");
+            }
+        }
+        if fields.get("minimum_isolation").is_some_and(|value| {
+            !value.is_null()
+                && !matches!(
+                    value.as_str(),
+                    Some("none" | "process" | "os-sandbox" | "container" | "orchestrated")
+                )
+        }) {
+            return Err("invalid minimum sandbox isolation");
+        }
+        let env = fields
+            .get("env")
+            .and_then(serde_json::Value::as_object)
+            .ok_or("sandbox command requires environment object")?;
+        if !env.values().all(serde_json::Value::is_string) {
+            return Err("invalid sandbox environment value");
+        }
+        // 保持原std::time::Duration serde表示及边界，不另造时间格式。
+        serde_json::from_value::<std::time::Duration>(
+            fields
+                .get("timeout")
+                .cloned()
+                .ok_or("sandbox command requires timeout")?,
+        )
+        .map_err(|_| "invalid sandbox command timeout")?;
+        Ok(())
+    }
+}
+
+pub fn validate_sandbox_command_value(
+    value: &crate::scalar::WireValue,
+) -> Result<(), &'static str> {
+    let json = value
+        .clone()
+        .into_json()
+        .map_err(|_| "invalid sandbox command wire value")?;
+    SANDBOX_COMMAND_PROJECTION.validate_json(&json)
+}
+
 pub fn resolve_route(
     entry: &InventoryEntry,
     class: SemanticClass,
     relationship: AcpRelationship,
     semantic_rule: &'static str,
 ) -> CanonicalRoute {
+    if sandbox_command_projection(entry).is_some() {
+        return CanonicalRoute::Value { family: None };
+    }
     let identity = canonical_source_identity(entry);
     // ADR 0034 migrates only the defining Rust source. Keep the accepted
     // operations and their existing Host adapter stable across that move.

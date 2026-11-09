@@ -1,6 +1,6 @@
 //! Namespaced echo-agent capability for ACP `initialize` `_meta`.
 //!
-//! ACP's extensibility rule (https://agentclientprotocol.com/protocol/v1/extensibility)
+//! ACP's extensibility rule (<https://agentclientprotocol.com/protocol/v1/extensibility>)
 //! puts vendor data under `_meta` and vendor methods behind underscore
 //! prefixes declared as capabilities. The Host publishes this structure under
 //! the `echo_agent` key of its `initialize` `_meta`; a standard ACP client

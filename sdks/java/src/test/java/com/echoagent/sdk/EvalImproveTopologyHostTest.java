@@ -54,10 +54,12 @@ class EvalImproveTopologyHostTest {
                 if ("agent_close".equals(operation)) { closed.add(id); instances.remove(id); return outcome(operation, null); }
                 executed.add(id);
                 try {
-                    var input = call.path("invocation").path("input"); String task = input.has("task") ? input.path("task").textValue() : input.path("message").textValue();
-                    if ("hang".equals(task)) { long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15); while (!cancel.isCancelled() && System.nanoTime() < deadline) java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1)); if (!cancel.isCancelled()) throw new IllegalStateException("native factory callback never received cancellation"); cancellations.incrementAndGet(); deadlineCancelled.complete(null); deadlineRelease.get(10, TimeUnit.SECONDS); return outcome(operation, JsonSupport.MAPPER.getNodeFactory().textNode("cancelled")); }
+                    var producer = operation.endsWith("_stream") ? new NativeProducerFixture(sdk, call) : null;
+                    if (producer != null) await(producer.start());
+                    var input = call.path("invocation").path("input"); var message = input.path(operation.startsWith("agent_execute") ? "task" : "message"); assertEquals("user", message.path("role").asText()); String task = JsonSupport.fromWire(message.path("content")).textValue();
+                    if ("hang".equals(task)) { long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15); while (!cancel.isCancelled() && System.nanoTime() < deadline) java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1)); if (!cancel.isCancelled()) throw new IllegalStateException("native factory callback never received cancellation"); cancellations.incrementAndGet(); deadlineCancelled.complete(null); deadlineRelease.get(10, TimeUnit.SECONDS); if (producer != null) { await(producer.finish("cancelled", true)); return ExtensionOutcome.stream(WireHandle.fromJson(call.path("stream"))).toJson(); } return outcome(operation, JsonSupport.MAPPER.getNodeFactory().textNode("cancelled")); }
                     String answer = "bad".equals(task) ? "wrong response" : spec.path("factory_answer").textValue();
-                    if (operation.endsWith("_stream")) { var stream = WireHandle.fromJson(call.path("stream")); var terminal = obj().put("kind", "agent").set("value", obj().put("event", "final_answer").set("data", obj().put("text", answer))); await(sdk.streamWriter(stream).complete(terminal)); return ExtensionOutcome.stream(stream).toJson(); }
+                    if (producer != null) { await(producer.finish(answer)); return ExtensionOutcome.stream(WireHandle.fromJson(call.path("stream"))).toJson(); }
                     return outcome(operation, JsonSupport.MAPPER.getNodeFactory().textNode(answer));
                 } catch (Exception error) { throw new CompletionException(error); }
                 finally { finalies.incrementAndGet(); }
@@ -66,7 +68,7 @@ class EvalImproveTopologyHostTest {
             var custom = await(sdk.registerCustomAgent("analysis-custom", obj().put("kind", "custom_agent").put("descriptor_version", 1).put("name", "analysis-custom").put("model_name", "analysis-custom").put("system_prompt", "analysis-custom").set("tool_names", JsonSupport.MAPPER.createArrayNode()), (call, cancel) -> CompletableFuture.supplyAsync(() -> {
                 String operation = call.path("invocation").path("operation").textValue(); callbacks.add(call.deepCopy()); if ("agent_close".equals(operation)) return outcome(operation, null);
                 String answer = "plain".equals(mode.get()) ? spec.path("factory_answer").textValue() : "grade".equals(mode.get()) ? spec.path("grade_good").toString() : "not valid JSON🙂";
-                try { if (operation.endsWith("_stream")) { var stream = WireHandle.fromJson(call.path("stream")); await(sdk.streamWriter(stream).complete(obj().put("kind", "agent").set("value", obj().put("event", "final_answer").set("data", obj().put("text", answer))))); return ExtensionOutcome.stream(stream).toJson(); } return outcome(operation, JsonSupport.MAPPER.getNodeFactory().textNode(answer)); }
+                try { if (operation.endsWith("_stream")) { var stream = WireHandle.fromJson(call.path("stream")); var producer = new NativeProducerFixture(sdk, call); await(producer.start()); await(producer.finish(answer)); return ExtensionOutcome.stream(stream).toJson(); } return outcome(operation, JsonSupport.MAPPER.getNodeFactory().textNode(answer)); }
                 catch (Exception error) { throw new CompletionException(error); }
             })));
             var agent = await(sdk.createAgent()); Map<String, SessionHandle> sessions = Map.of("a", await(agent.createSession()), "b", await(agent.createSession())); Map<String, JsonNode> values = new HashMap<>();

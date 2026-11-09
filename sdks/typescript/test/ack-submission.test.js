@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { client } from '@agentclientprotocol/sdk';
 import { EchoAgentClient, RunHandle } from '../dist/client.js';
+import { toWireValue } from '../dist/wire.js';
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return {promise,resolve,reject};};
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
@@ -99,7 +100,7 @@ test('gap plus empty after-gap page never grants an absent ACK cursor',async()=>
 for(const order of ['empty_gap_tail','reverse_gap','reverse_plain','disconnected'])test(`public replay connected coverage ${order}`,async()=>{
  const handle={id:'stream',generation:'1',kind:'stream'};
  const event=seq=>({stream_id:'stream',sequence:String(seq),event_id:`event-${seq}`,turn_id:'turn',content_hash:'sha256:'+'0'.repeat(64),schema_version:1,timestamp:{unix_seconds:'0',nanos:0},payload:{event_type:'delta',data:{kind:'null'}}});
- const page=(after,end,terminal=false)=>({requested_after_sequence:String(after),events:Array.from({length:end-after},(_,i)=>({...event(after+i+1),payload:{event_type:terminal&&after+i+1===end?'final_answer':'delta',data:{kind:'null'}}})),next_cursor:{stream_id:'stream',last_processed_sequence:String(end)}});
+ const page=(after,end,terminal=false)=>({requested_after_sequence:String(after),events:Array.from({length:end-after},(_,i)=>({...event(after+i+1),payload:terminal&&after+i+1===end?{event_type:'execution_status',data:toWireValue({execution_id:'execution',request_id:'request',sequence:'0',phase:'Terminal',status:'settled',reason:null})}:{event_type:'delta',data:{kind:'null'}}})),next_cursor:{stream_id:'stream',last_processed_sequence:String(end)}});
  const gap={...page(5,6),requested_after_sequence:'1',gap:{from_sequence:'2',to_sequence:'5',snapshot_watermark:'5',reason:'retention floor'}};
  const pages={empty_gap_tail:[page(6,6),gap,page(6,7,true)],reverse_gap:[page(6,8,true),gap],reverse_plain:[page(3,5,true),page(1,3)],disconnected:[page(8,10,true),gap]}[order];
  let response;let reader;const writes=[];const cx=client({name:'replay-closure'}).connect({readable:new ReadableStream({start(c){reader=c;}}),writable:new WritableStream({write(message){if(message.id!==undefined){reader.enqueue({jsonrpc:'2.0',id:message.id,result:response});return;}const done=deferred();writes.push(done);return done.promise;}})});

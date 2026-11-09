@@ -1,0 +1,70 @@
+{
+  "name": "message-provider-observation-valid",
+  "kind": "valid",
+  "target": "LlmMessageWire",
+  "description": "完整消息保自定义Role、工具错误false及观察；不产生执行终态。",
+  "payload": {
+    "role": "provider-specific-角色🧪",
+    "content": {
+      "kind": "null"
+    },
+    "tool_result_is_error": false,
+    "provider_response": {
+      "protocol": "responses",
+      "provider": "fixture-provider",
+      "stop_reason": {
+        "kind": "string",
+        "value": "provider-future-stop"
+      },
+      "status": {
+        "kind": "string",
+        "value": "provider-future-status"
+      },
+      "usage": {
+        "kind": "map",
+        "value": [
+          {
+            "key": {
+              "kind": "string",
+              "value": "tokens"
+            },
+            "value": {
+              "kind": "u64",
+              "value": "18446744073709551615"
+            }
+          },
+          {
+            "key": {
+              "kind": "string",
+              "value": "nested"
+            },
+            "value": {
+              "kind": "map",
+              "value": [
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "raw_text"
+                  },
+                  "value": {
+                    "kind": "string",
+                    "value": "00123"
+                  }
+                },
+                {
+                  "key": {
+                    "kind": "string",
+                    "value": "missing"
+                  },
+                  "value": {
+                    "kind": "null"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -557,7 +557,6 @@ class ScopeRetirementReceipt(ManagedValue):
 class AgentCheckpoint(ManagedValue):
     conversation_id: str
     messages_json: str
-    current_plan: str | None
     active_skills: tuple[str, ...]
     blocked_reason: str | None
     working_dir: Mapping[str, Any] | None
@@ -1257,7 +1256,6 @@ SCHEMA = {
         "fields": {
             "conversation_id": "String",
             "messages_json": "String",
-            "current_plan": "Option<String>",
             "active_skills": "Vec<String>",
             "blocked_reason": "Option<String>",
             "working_dir": "Option<WirePath>",

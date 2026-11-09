@@ -69,6 +69,15 @@ jobs:
       - name: Test core profile E2E (sdk-host group only)
         if: matrix.group == 'sdk-host'
         run: cargo test -p echo-sdk-host --features sdk-core-profile --lib --tests --locked
+      - name: 原生 reverse stream 与真实 EOF 收尾
+        if: matrix.group == 'sdk-host'
+        run: cargo test -p echo-sdk-host --no-default-features --features sdk-extension-bridge --lib physical_closed_decision_waits_for_real_guard_drop_before_factory_terminal_close --locked
+      - name: 保留消费者字段与真实 ACP 请求桥接
+        if: matrix.group == 'sdk-host'
+        env:
+          ECHO_AGENT_SDK_CONSUMER_ROOT: ${{ github.workspace }}/.echo-semantic/local/ci-consumer-compatibility
+        run: >-
+          cargo test -p echo-sdk-host --no-default-features --features sdk-extension-bridge --lib consumer_compatibility_tests:: --locked
       - name: Test extension bridge E2E (sdk-host group only)
         if: matrix.group == 'sdk-host'
         run: |
@@ -317,9 +326,45 @@ jobs:
           git cat-file -e "$base^{commit}"
           git merge-base --is-ancestor "$base" HEAD
           echo "revision=$base" >> "$GITHUB_OUTPUT"
+      - name: Reserve the ignored canonical tool checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${{ runner.temp }}/sdk-semantic-ci"
+          git rev-parse HEAD 'HEAD^{tree}' > "${{ runner.temp }}/sdk-semantic-ci/initial-candidate.txt"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          # 只保留CI临时工具子目录；不排除业务文件或正式语义对象。
+          printf '\n/.echo-semantic/local/ci-canonical/\n' >> "$(git rev-parse --git-path info/exclude)"
+      - name: Test the semantic CI view orchestration
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --python 3.12 python -B -m unittest discover -s scripts/tests -p test_semantic_ci_preflight.py -v \
+            2>&1 | tee "${{ runner.temp }}/sdk-semantic-ci/orchestration-tests.log"
+      - name: Checkout the exact original canonical producer and modules
+        uses: actions/checkout@v6
+        with:
+          repository: EchoYue-lp/echo-semantic
+          ref: c0bc306bd36d2b1b76def2b6c7308a07dda4f54b
+          path: .echo-semantic/local/ci-canonical
+          persist-credentials: false
+      - name: Replay the original preflight on the exact candidate tree
+        run: >-
+          uv run --python 3.12 python -B scripts/prepare-semantic-ci.py
+          --root "${{ github.workspace }}"
+          --base "${{ steps.semantic-base.outputs.revision }}"
+          --canonical-root "${{ github.workspace }}/.echo-semantic/local/ci-canonical"
+          --output "${{ runner.temp }}/sdk-semantic-ci"
       - name: Verify SDK with the published canonical semantic action
         uses: EchoYue-lp/echo-semantic@c0bc306bd36d2b1b76def2b6c7308a07dda4f54b
         with:
           root: ${{ github.workspace }}
           base: ${{ steps.semantic-base.outputs.revision }}
           require-change-evidence: "true"
+      - name: Preserve semantic CI preparation evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: sdk-semantic-ci-preparation
+          if-no-files-found: error
+          path: ${{ runner.temp }}/sdk-semantic-ci

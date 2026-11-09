@@ -50,7 +50,12 @@ async def fixture(handler):
         "stream": stream.to_dict(),
         "invocation": {
             "operation": "agent_execute_stream",
-            "input": {"task": "中文🌊"},
+            "input": {
+                "task": {
+                    "role": "user",
+                    "content": {"kind": "string", "value": "中文🌊"},
+                }
+            },
         },
     }
     await transport.incoming.put(

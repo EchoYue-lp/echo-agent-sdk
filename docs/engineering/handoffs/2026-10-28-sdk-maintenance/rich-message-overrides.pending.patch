@@ -1,0 +1,1218 @@
+--- a/docs/adr/0043-native-message-sdk-adapter.md
++++ b/docs/adr/0043-native-message-sdk-adapter.md
+@@ -1,4 +1,50 @@
+ # ADR0043：SDK 无损消费 Framework 原生消息
++
++## 2026-10-28：CustomAgent 完整 Message 输入候选
++
++本增量遵从用户开发阶段不保旧版本兼容的最新 Goal，当前仅存 ignored 候选，未合入正式
++SDK、未编译或消费新 Framework；正式 f7 pin／0dac 锁及旧验证结果保持原输入资格。
++与 NoCompat 清理清单分开，本次不删除合理 Agent API、Store、callback owner 或执行能力。
++
++当前真实注册链为 `apply_registered_extensions`／SubagentFactoryAdapter →
++`ExtensionCustomAgentProxy` → 既有 run_stream_scoped → 原 callback owner／ACP。
++两个 Message+invocation override 原先只匹配 Text，把 role、工具身份及原生消息字段丢掉，
++遇到 Parts/ResourceLink 直接报不支持；这是当前能力缺口，不能以“旧接口”免除。
++
++采用既有 `LlmMessageWire`。原 agent_execute(_stream) 的 task、agent_chat(_stream) 的
++message 均承载该完整 DTO；operation 继续区分 execute/chat。Text 便利调用先构造
++`Message::user`，再走同一转换，不保旧 String wire fallback、不新增操作族或执行器。
++两个现有输入 DTO 另携带原 invocation 的 history，继续复用 `Vec<LlmMessageWire>`；
++None 与 Some(empty) 分别保留。history 必须实际发送给远端实现方，不能仅保留于本地
++callback owner。工作目录、只读上界和进程内 guards 仍由同一个原 invocation/owner 管理，
++没有把诊断 wire context 冒作远端权限授权。
++Host Role 沿原生 serde 解码，未知值不能通过字符串转换悄悄降为 user。
++ResourceLink 的 meta/annotations 随原 content 保留，不从正文推测或重新编码来源。
++原 invocation、cancel token、history、只读上界及 callback owner 不重建、不降级。
++
++考虑过保留 task/message 字符串再额外加可选 rich 字段；该方案会留下双轨、优先级猜测和
++未知字段被忽略的问题，拒绝。也不新造 Message/ResourceLink DTO 或用户文本协议。
++官方 [MCP Tools](https://modelcontextprotocol.io/specification/2025-06-18/server/tools)
++使用结构化 resource_link；[Anthropic Messages](https://platform.claude.com/docs/en/api/messages/create)
++以 role 加 content block 承载消息。它们与本项目既有 Message 模型一致，支持复用完整载体。
++EKO ProjectAgentAdapter 只读对照显示原 Message+invocation 整体转发；本次不改 EKO。
++
++回归候选包含原 ACP reverse callback 对实际 dyn Agent 四个 typed 入口的调用：默认 Message、
++rich ResourceLink、空 meta 与非空 meta、tool role/name/call_id、Some(empty)/None、原 history
++和 scope；旧实现遇到 rich 输入会在 callback 前失败。另覆盖完整 native serde roundtrip、
++非法 role、旧 String payload、缺 role 和错误 operation/input 字段负控。协议测试不能
++代替 Host 测试。三语言旧消费者更新读取完整 DTO，三个示例进入原编译/检查链路。
++TS/Python 示例补 raw handler 普通结果、close、stream 三条 outcome 合同回归，避免把
++typed-handler 的裸 result 误用于原 raw handler；这些本地语言回归也不代替 Host 编译。
++
++Root 转交的 Framework canonical consumers v02 manifest `be8dbdc1` 是独立 ignored 候选，
++目前仅 syntax/apply 资格。其输入值传与原 history 方向一致；runtime FinalAnswer／
++on_final_answer、Guard 安全最终正文和原校验收尾继续保留，不能因两内置工具退役而删除。
++无 raw block 的安全正文仍须完整呈现；本请求已呈现的批准最终块不能再重复拼接。
++该规则不是本输入修复另造输出投影、事件 shape 或 final owner 的授权。
++
++唯一生成器的 schema／catalog 包资源同步和正式来源下 full producer、编译、Host／完整三语言
++及示例执行仍待 Root 新 pub／consumer 窗口；本候选不手改生成物、不宣称新源已通过。
+ 
+ ## 状态
+ 
+--- a/docs/sdk/sdk-extension-bridge.md
++++ b/docs/sdk/sdk-extension-bridge.md
+@@ -1,4 +1,27 @@
+ # SDK extension bridge (bidirectional)
++
++## CustomAgent 完整输入（2026-10-28 候选）
++
++候选沿现有四个 operation 传完整 `LlmMessageWire`：execute/execute_stream 的 `input.task`、
++chat/chat_stream 的 `input.message` 均为消息对象。它包含 role、原 WireValue content、
++tool_calls/name/tool_call_id、reasoning 和原生消息元数据；Text 便利接口也转换成 user
++Message，不再传裸字符串。ResourceLink 的 meta 与 None/空值区别随内容保留；实现方应把
++整个 Message 交给其处理函数，不能只取 content.value 作为通用多模态处理。
++原 invocation 的 history 同时放在 input.history，缺失与空列表区分；例子把完整 history
++交给实现方，不能靠当前输入重新构造历史。Java 示例向 consume 交完整 invocation JSON。
++
++三个可编译示例：
++
++- TypeScript：[custom-agent-message.ts](../../sdks/typescript/examples/custom-agent-message.ts)，随原 tsconfig.examples 编译。
++- Python：[custom_agent_message.py](../../sdks/python/examples/custom_agent_message.py)，随原 examples 检查入口验证。
++- Java：[RichMessageAgentExample.java](../../sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java)，随原主源码编译。
++
++示例复用原登记、取消信号和 streamWriter。callback 返回原 CustomAgent result，不在语言端
++发布 Run 执行成功或重建 owner；流与物理 callback 的结算仍由原权威负责。
++原 raw handler 的非流式 result 和 agent_close 必须返回 outcome/result 外层，不能直接
++返回裸 operation/value。stream 分支继续回显 Host 签发的原 stream handle。
++当前仍仅是 ignored 候选，原 schema/来源资格不自动覆盖它。正式 pin／生成物／真实 Host
++消费者验证须在新的受控窗口执行，不能用旧语言全票或 EKO 验收替代 SDK 验收。
+ 
+ The extension bridge lets a host language implement public `echo_agent`
+ framework traits and have the Rust Agent call them back over the same ACP
+--- a/echo-sdk-host/src/core_profile/extension_bridge.rs
++++ b/echo-sdk-host/src/core_profile/extension_bridge.rs
+@@ -8678,7 +8678,9 @@
+         Box::pin(async move {
+             let result = match self
+                 .run_once(ExtensionInvocation::AgentExecute(AgentTaskInput {
+-                    task: task.to_string(),
++                    task: message_wire(&echo_agent::llm::types::Message::user(task.to_string()))
++                        .map_err(ReactError::Other)?,
++                    history: None,
+                 }))
+                 .await
+             {
+@@ -8704,7 +8706,9 @@
+         Box::pin(async move {
+             let stream = match self
+                 .run_stream(ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+-                    task: task.to_string(),
++                    task: message_wire(&echo_agent::llm::types::Message::user(task.to_string()))
++                        .map_err(ReactError::Other)?,
++                    history: None,
+                 }))
+                 .await
+             {
+@@ -8750,7 +8754,21 @@
+             let stream = match self
+                 .run_stream_scoped(
+                     ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+-                        task: task.to_string(),
++                        task: message_wire(&echo_agent::llm::types::Message::user(
++                            task.to_string(),
++                        ))
++                        .map_err(ReactError::Other)?,
++                        history: invocation
++                            .history
++                            .as_ref()
++                            .map(|history| {
++                                history
++                                    .iter()
++                                    .map(message_wire)
++                                    .collect::<Result<Vec<_>, _>>()
++                            })
++                            .transpose()
++                            .map_err(ReactError::Other)?,
+                     }),
+                     cancel,
+                     Some(invocation),
+@@ -8781,7 +8799,11 @@
+             let stream = match self
+                 .run_stream_scoped(
+                     ExtensionInvocation::AgentChatStream(AgentMessageInput {
+-                        message: message.to_string(),
++                        message: message_wire(&echo_agent::llm::types::Message::user(
++                            message.to_string(),
++                        ))
++                        .map_err(ReactError::Other)?,
++                        history: None,
+                     }),
+                     cancel,
+                     None,
+@@ -8827,13 +8849,25 @@
+         >,
+     > {
+         Box::pin(async move {
+-            let text = match message.content {
+-                echo_agent::llm::types::MessageContent::Text(text) => text,
+-                _ => return Err(ReactError::Other("custom Agent accepted task wire supports text only; multimodal input is unsupported".to_string())),
+-            };
++            // role、Parts/ResourceLink、meta、工具身份与原生消息字段共用原转换。
++            // cancellation、invocation 和原 callback owner 继续沿 run_stream_scoped。
++            let message = message_wire(&message).map_err(ReactError::Other)?;
+             let stream = match self
+                 .run_stream_scoped(
+-                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput { task: text }),
++                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
++                        task: message,
++                        history: invocation
++                            .history
++                            .as_ref()
++                            .map(|history| {
++                                history
++                                    .iter()
++                                    .map(message_wire)
++                                    .collect::<Result<Vec<_>, _>>()
++                            })
++                            .transpose()
++                            .map_err(ReactError::Other)?,
++                    }),
+                     cancel,
+                     Some(invocation),
+                 )
+@@ -8878,13 +8912,25 @@
+         >,
+     > {
+         Box::pin(async move {
+-            let text = match message.content {
+-                echo_agent::llm::types::MessageContent::Text(text) => text,
+-                _ => return Err(ReactError::Other("custom Agent accepted message wire supports text only; multimodal input is unsupported".to_string())),
+-            };
++            // role、Parts/ResourceLink、meta、工具身份与原生消息字段共用原转换。
++            // cancellation、invocation 和原 callback owner 继续沿 run_stream_scoped。
++            let message = message_wire(&message).map_err(ReactError::Other)?;
+             let stream = match self
+                 .run_stream_scoped(
+-                    ExtensionInvocation::AgentChatStream(AgentMessageInput { message: text }),
++                    ExtensionInvocation::AgentChatStream(AgentMessageInput {
++                        message,
++                        history: invocation
++                            .history
++                            .as_ref()
++                            .map(|history| {
++                                history
++                                    .iter()
++                                    .map(message_wire)
++                                    .collect::<Result<Vec<_>, _>>()
++                            })
++                            .transpose()
++                            .map_err(ReactError::Other)?,
++                    }),
+                     cancel,
+                     Some(invocation),
+                 )
+@@ -8907,7 +8953,11 @@
+         Box::pin(async move {
+             let result = match self
+                 .run_once(ExtensionInvocation::AgentChat(AgentMessageInput {
+-                    message: message.to_string(),
++                    message: message_wire(&echo_agent::llm::types::Message::user(
++                        message.to_string(),
++                    ))
++                    .map_err(ReactError::Other)?,
++                    history: None,
+                 }))
+                 .await
+             {
+@@ -8933,7 +8983,11 @@
+         Box::pin(async move {
+             let stream = match self
+                 .run_stream(ExtensionInvocation::AgentChatStream(AgentMessageInput {
+-                    message: message.to_string(),
++                    message: message_wire(&echo_agent::llm::types::Message::user(
++                        message.to_string(),
++                    ))
++                    .map_err(ReactError::Other)?,
++                    history: None,
+                 }))
+                 .await
+             {
+@@ -9877,7 +9931,11 @@
+                     }
+                     let invocation = if custom_late_ack {
+                         ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+-                            task: "late-setup".to_string(),
++                            task: message_wire(&echo_agent::llm::types::Message::user(
++                                "late-setup".to_string(),
++                            ))
++                            .map_err(|error| RpcError::internal_error().data(error))?,
++                            history: None,
+                         })
+                     } else if streaming {
+                         ExtensionInvocation::ChannelHandleStream(ChannelHandleInput {
+@@ -12117,7 +12175,7 @@
+                 let invocation=echo_agent::agent::AgentInvocationContext {runtime:Some(echo_agent::tools::ExternalRunContext {
+                     run_id:context.run_id.clone(),execution_id:context.execution_id.clone(),..Default::default()
+                 }),resource_guards:context.resource_guards.clone(),..Default::default()};
+-                proxy.run_stream_scoped(ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:"original held work".to_string()}),CancellationToken::new(),Some(invocation)).await
++                proxy.run_stream_scoped(ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:message_wire(&echo_agent::llm::types::Message::user("original held work".to_string())).map_err(|error| RpcError::internal_error().data(error))?, history: None }),CancellationToken::new(),Some(invocation)).await
+                     .map_err(|error| RpcError::internal_error().data(format!("direct-setup phase: {error}")))?.map(|item| item.map(|_| ())).boxed()
+             } else {
+                 let proxy=tool_proxy.as_ref().ok_or_else(|| RpcError::internal_error().data("missing direct Tool"))?;
+@@ -12928,7 +12986,7 @@
+                     let entered=Arc::new(AtomicBool::new(false));let drops=Arc::new(std::sync::atomic::AtomicUsize::new(0));
+                     let descriptor=CustomAgentDescriptorWire{name:"release-child".to_string(),model_name:"fixture".to_string(),system_prompt:String::new(),tool_names:Vec::new()};
+                     bridge.register_factory_instance(&factory,&child,&descriptor).map_err(|error| RpcError::internal_error().data(error.message))?;
+-                    let invocation=ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:"controlled original release".to_string()});
++                    let invocation=ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:message_wire(&echo_agent::llm::types::Message::user("controlled original release".to_string())).map_err(|error| RpcError::internal_error().data(error))?, history: None });
+                     let (lease,_,authority)=bridge.prepare(&child,invocation.operation(),&invocation,CancellationToken::new()).map_err(|error| RpcError::internal_error().data(error.message))?;
+                     let original_context=ExtensionInvocationContext {session_id:Some("original-session".to_string()),run_id:Some("original-release-run".to_string()),execution_id:Some("original-release-execution".to_string()),stream_id:None,turn_id:None,message_id:None,call_id:None};
+                     let invocation_id=lease.identity().to_string();let stream=test_stream_handle("controlled-release-stream");
+@@ -14303,3 +14361,7 @@
+         Ok(())
+     }
+ }
++
++#[cfg(test)]
++#[path = "extension_bridge_message_tests.rs"]
++mod message_input_tests;
+--- /dev/null
++++ b/echo-sdk-host/src/core_profile/extension_bridge_message_tests.rs
+@@ -0,0 +1,253 @@
++//! 通过原 ACP reverse callback 核验真实 dyn Agent override；不另造执行器或 owner。
++use super::*;
++use agent_client_protocol::{Agent as AcpAgent, ByteStreams, Error as RpcError, Responder};
++use echo_agent::agent::AgentInvocationContext;
++use echo_agent::llm::types::{ContentPart, LinkedResource, Message, MessageContent};
++use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
++
++fn rich_message(meta: Option<bool>) -> Result<Message, String> {
++    let mut message = Message::tool_result("call-中文🧪".into(), "shell".into(), "output".into());
++    message.content = MessageContent::Parts(vec![
++        ContentPart::Text { text: "附件原文🙂".into() },
++        ContentPart::ResourceLink {
++            resource: Box::new(LinkedResource {
++                annotations: meta.map(|_| serde_json::from_value(serde_json::json!({"priority":0.75,"audience":["user"]})).map_err(|error| error.to_string())).transpose()?,
++                description: Some("原始附件".into()),
++                mime_type: Some("text/plain".into()),
++                name: "资料🧪.txt".into(),
++                size: Some(0),
++                title: None,
++                uri: "resource://fixture/原文".into(),
++                meta: meta.map(|empty| if empty { serde_json::json!({}) } else {
++                    serde_json::json!({"binding":{"id":"original-🧪","values":[],"empty":{},"none":null}})
++                }),
++            }),
++        },
++    ]);
++    message.tool_calls = Some(Vec::new());
++    message.reasoning_blocks = Some(Vec::new());
++    super::super::native_message::with_message_metadata(
++        message,
++        super::super::native_message::MessageMetadata {
++            assistant_blocks: Some(Vec::new()),
++            approved_assistant_blocks: Some(Vec::new()),
++            execution_status: None,
++        },
++    )
++}
++
++fn text_tool_message() -> Message {
++    let mut message = Message::tool_result(
++        "text-call-🧪".into(),
++        "shell".into(),
++        "纯文本也保留tool角色".into(),
++    );
++    message.reasoning_content = Some(String::new());
++    message.reasoning_blocks = Some(Vec::new());
++    message
++}
++
++#[test]
++fn custom_agent_message_roundtrip_preserves_parts_roles_tool_identity_and_empty_values()
++-> Result<(), String> {
++    for message in [
++        Message::default(),
++        Message::user("便利文本🧪".into()),
++        text_tool_message(),
++        rich_message(Some(false))?,
++        rich_message(Some(true))?,
++        rich_message(None)?,
++    ] {
++        let expected = serde_json::to_value(&message).map_err(|error| error.to_string())?;
++        let wire = message_wire(&message)?;
++        let restored = message_from_wire(wire)?;
++        assert_eq!(
++            serde_json::to_value(restored).map_err(|error| error.to_string())?,
++            expected
++        );
++    }
++    let mut wire = message_wire(&Message::user("invalid role".into()))?;
++    wire.role = "not-a-native-role".into();
++    assert!(
++        message_from_wire(wire).is_err(),
++        "未知 role 不能降级为 user"
++    );
++    Ok(())
++}
++
++#[tokio::test]
++async fn custom_agent_real_message_overrides_preserve_payload_and_original_invocation()
++-> Result<(), String> {
++    let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
++    let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
++        "schema_version":1,"default_agent":{
++            "model":{"provider":"fixture","name":"fixture","base_url":"http://127.0.0.1:1/v1","api_protocol":"chat_completions","auth_token":"fixture"},
++            "agent":{"name":"fixture","enable_tools":true}
++        }
++    })).map_err(|error| error.to_string())?;
++    let prepared = config.prepare().map_err(|error| error.to_string())?;
++    let state = CoreProfileState::install(
++        directory.path(),
++        crate::config::SdkProfileLimits::default(),
++        prepared.framework,
++        prepared.llm_client,
++    )
++    .map_err(|error| error.to_string())?;
++    let sessions = Arc::new(echo_agent::acp::SessionRegistry::new(
++        Arc::new(state.session_factory.clone()),
++        4,
++    ));
++    state.bind_services(Arc::new(echo_agent::acp::AcpConnectionServices::new(
++        sessions,
++        Arc::new(echo_agent::acp::AcpAdapterConfig::default()),
++    )));
++    let bridge = state.extension_bridge.clone();
++    let captures = Arc::new(Mutex::new(Vec::<(
++        ExtensionInvokeCall,
++        Option<AgentInvocationContext>,
++    )>::new()));
++    let sdk_captures = captures.clone();
++    let sdk_state = state.clone();
++    let finish = CancellationToken::new();
++    let sdk_finish = finish.clone();
++    let (host_io, sdk_io) = tokio::io::duplex(65_536);
++    let (host_read, host_write) = tokio::io::split(host_io);
++    let (sdk_read, sdk_write) = tokio::io::split(sdk_io);
++    let sdk = Client
++        .builder()
++        .on_receive_request(
++            async move |call: ExtensionInvokeCall,
++                        responder: Responder<ExtensionInvokeOutcome>,
++                        connection: ConnectionTo<AcpAgent>| {
++                let record = sdk_state
++                    .handles
++                    .extension(&call.extension)
++                    .map_err(|error| RpcError::internal_error().data(error.message))?;
++                let owner = record
++                    .callback_owners
++                    .lock()
++                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?
++                    .iter()
++                    .find(|owner| !owner.finished.is_cancelled())
++                    .cloned()
++                    .ok_or_else(|| {
++                        RpcError::internal_error().data("original callback owner missing")
++                    })?;
++                let invocation = owner
++                    ._agent_invocation
++                    .lock()
++                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?
++                    .clone();
++                sdk_captures
++                    .lock()
++                    .map_err(|error| RpcError::internal_error().data(error.to_string()))?
++                    .push((call.clone(), invocation));
++                let stream = call
++                    .stream
++                    .ok_or_else(|| RpcError::internal_error().data("real stream handle missing"))?;
++                responder.respond(ExtensionInvokeOutcome::Stream {
++                    stream: stream.clone(),
++                })?;
++                connection.send_notification(ExtensionStreamEvent::Complete {
++                    stream,
++                    sequence: echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string())
++                        .map_err(|error| RpcError::internal_error().data(error.to_string()))?,
++                    value: ExtensionStreamCompleteValue::Agent(
++                        AgentStreamTerminalWire::FinalAnswer {
++                            text: "callback original result".into(),
++                        },
++                    ),
++                })
++            },
++            agent_client_protocol::on_receive_request!(),
++        )
++        .connect_with(
++            ByteStreams::new(sdk_write.compat_write(), sdk_read.compat()),
++            async move |_| {
++                sdk_finish.cancelled().await;
++                Ok(())
++            },
++        );
++    let notification_shared = state.extension_shared.clone();
++    let host = AcpAgent.builder().on_receive_notification(
++        async move |event: ExtensionStreamEvent, _connection: ConnectionTo<Client>| {
++            notification_shared.deliver_stream_event(event).map_err(|error| RpcError::internal_error().data(error))
++        }, agent_client_protocol::on_receive_notification!()
++    ).connect_with(ByteStreams::new(host_write.compat_write(), host_read.compat()), async move |connection| {
++        let _finish_on_exit = finish.drop_guard();
++        bridge.shared.bind_connection(connection);
++        let descriptor = serde_json::from_value(serde_json::json!({
++            "kind":"custom_agent","descriptor_version":1,"name":"rich-message","model_name":"fixture","system_prompt":"typed forwarding","tool_names":[]
++        })).map_err(|error| RpcError::internal_error().data(error.to_string()))?;
++        let (extension, _) = state.handles.register_extension(
++            super::super::handles::ExtensionRegistrationLimits { max_extensions:4, max_descriptor_bytes:65_536 },
++            ExtensionKind::CustomAgent, "rich-message", descriptor, None, false,
++        ).map_err(|error| RpcError::internal_error().data(error.message))?;
++        let proxy: Box<dyn Agent> = Box::new(ExtensionCustomAgentProxy::for_registration(bridge, extension, "rich-session".into())
++            .ok_or_else(|| RpcError::internal_error().data("registered proxy unavailable"))?);
++        for (index, message) in [Message::default(), text_tool_message(), rich_message(Some(false)).map_err(|error| RpcError::internal_error().data(error))?, rich_message(Some(true)).map_err(|error| RpcError::internal_error().data(error))?, rich_message(None).map_err(|error| RpcError::internal_error().data(error))?].into_iter().enumerate() {
++            for chat in [false, true] {
++                for explicit in [false, true] {
++                    let expected = serde_json::to_value(&message).map_err(|error| RpcError::internal_error().data(error.to_string()))?;
++                    let invocation = AgentInvocationContext {
++                        working_dir: Some(directory.path().to_path_buf()),
++                        tool_access: Some(echo_agent::tools::ToolAccess::ReadOnly),
++                        allowed_tools: Some(Default::default()),
++                        history: Some(if index == 2 { Vec::new() } else { vec![message.clone()] }),
++                        runtime: Some(echo_agent::tools::ExternalRunContext {
++                            run_id: Some(format!("scope-{index}")), execution_id: Some(format!("attempt-{index}")),
++                            ..Default::default()
++                        }),
++                        ..Default::default()
++                    };
++                    let cancel = CancellationToken::new();
++                    let stream = match (chat, explicit) {
++                        (false, false) => proxy.as_ref().execute_stream_message_with_cancel(message.clone(), cancel).await,
++                        (true, false) => proxy.as_ref().chat_stream_message_with_cancel(message.clone(), cancel).await,
++                        (false, true) => proxy.as_ref().execute_stream_message_with_invocation_context(message.clone(), cancel, invocation).await,
++                        (true, true) => proxy.as_ref().chat_stream_message_with_invocation_context(message.clone(), cancel, invocation).await,
++                    }.map_err(|error| RpcError::internal_error().data(error.to_string()))?;
++                    let events = stream.collect::<Vec<_>>().await;
++                    assert_eq!(events.len(), 1);
++                    assert!(matches!(events.first(), Some(Ok(AgentEvent::FinalAnswer(value))) if value == "callback original result"));
++                    let (call, retained) = captures.lock().map_err(|error| RpcError::internal_error().data(error.to_string()))?
++                        .last().cloned().ok_or_else(|| RpcError::internal_error().data("callback was bypassed by a text/default entry"))?;
++                    let (delivered, delivered_history) = match (chat, call.invocation) {
++                        (false, ExtensionInvocation::AgentExecuteStream(input)) => (input.task, input.history),
++                        (true, ExtensionInvocation::AgentChatStream(input)) => (input.message, input.history),
++                        _ => return Err(RpcError::internal_error().data("wrong invocation override/operation")),
++                    };
++                    let restored = message_from_wire(delivered).map_err(|error| RpcError::internal_error().data(error))?;
++                    assert_eq!(serde_json::to_value(restored).map_err(|error| RpcError::internal_error().data(error.to_string()))?, expected);
++                    let expected_history = explicit.then(|| if index == 2 { Vec::new() } else { vec![expected.clone()] });
++                    let delivered_history = delivered_history.map(|history| history.into_iter().map(|item| {
++                        let native = message_from_wire(item)?;
++                        serde_json::to_value(native).map_err(|error| error.to_string())
++                    }).collect::<Result<Vec<_>, String>>()).transpose().map_err(|error| RpcError::internal_error().data(error))?;
++                    assert_eq!(delivered_history, expected_history, "remote history cannot be retained only in local owner");
++                    let retained = retained.ok_or_else(|| RpcError::internal_error().data("original invocation was not retained"))?;
++                    if explicit {
++                        assert_eq!(retained.working_dir.as_deref(), Some(directory.path()));
++                        assert_eq!(retained.tool_access, Some(echo_agent::tools::ToolAccess::ReadOnly));
++                        assert_eq!(retained.allowed_tools.as_ref().map(|tools| tools.len()), Some(0));
++                        let history = retained.history.ok_or_else(|| RpcError::internal_error().data("original history missing"))?;
++                        let retained_history = history.iter().map(serde_json::to_value).collect::<Result<Vec<_>, _>>().map_err(|error| RpcError::internal_error().data(error.to_string()))?;
++                        assert_eq!(Some(retained_history), expected_history);
++                        assert_eq!(call.context.and_then(|value| value.run_id), Some(format!("scope-{index}")));
++                    } else {
++                        assert!(retained.working_dir.is_none() && retained.history.is_none() && retained.tool_access.is_none());
++                    }
++                }
++            }
++        }
++        assert_eq!(captures.lock().map_err(|error| RpcError::internal_error().data(error.to_string()))?.len(), 20);
++        Ok(())
++    });
++    let (host, sdk) =
++        tokio::time::timeout(Duration::from_secs(10), async { tokio::join!(host, sdk) })
++            .await
++            .map_err(|error| error.to_string())?;
++    host.map_err(|error| error.to_string())?;
++    sdk.map_err(|error| error.to_string())?;
++    Ok(())
++}
+--- a/echo-sdk-host/src/core_profile/wire.rs
++++ b/echo-sdk-host/src/core_profile/wire.rs
+@@ -658,8 +658,11 @@
+     let reasoning_blocks = message
+         .reasoning_blocks
+         .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect());
++    // 复用原生 Role 的封闭 serde 合同；未知 role 不降级为 user。
++    let role = serde_json::from_value(serde_json::Value::String(message.role))
++        .map_err(|error| format!("invalid Message role: {error}"))?;
+     let native = Message {
+-        role: message.role.as_str().into(),
++        role,
+         content,
+         tool_calls,
+         name: message.name,
+--- a/echo-sdk-host/tests/core_profile_e2e.rs
++++ b/echo-sdk-host/tests/core_profile_e2e.rs
+@@ -7652,6 +7652,13 @@
+                             ));
+                         }
+                     };
++                    // 此夹具处理文本任务；传输仍是完整Message，不能按旧String wire消费。
++                    let content = task.content.into_json().map_err(|error| {
++                        agent_client_protocol::Error::internal_error().data(error.to_string())
++                    })?;
++                    let task = content.as_str().ok_or_else(|| {
++                        agent_client_protocol::Error::internal_error().data("text fixture received non-text Message")
++                    })?.to_string();
+                     let parked = *hang.lock().map_err(|_| {
+                         agent_client_protocol::Error::internal_error().data("hang lock poisoned")
+                     })?;
+--- a/echo-sdk-protocol/src/methods.rs
++++ b/echo-sdk-protocol/src/methods.rs
+@@ -1753,15 +1753,22 @@
+     pub system_prompt: String,
+     pub tool_names: Vec<String>,
+ }
+-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
++/// CustomAgent 执行输入复用完整 Message；文本便利入口先构造 Message::user。
++/// operation 保留执行/聊天模式，不能以内容类型选择另一个执行器。
++#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+ #[serde(deny_unknown_fields)]
+ pub struct AgentTaskInput {
+-    pub task: String,
+-}
+-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
++    pub task: LlmMessageWire,
++    /// 原invocation中的模型历史；None与Some(empty)保持区别。
++    #[serde(skip_serializing_if = "Option::is_none")]
++    pub history: Option<Vec<LlmMessageWire>>,
++}
++#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+ #[serde(deny_unknown_fields)]
+ pub struct AgentMessageInput {
+-    pub message: String,
++    pub message: LlmMessageWire,
++    #[serde(skip_serializing_if = "Option::is_none")]
++    pub history: Option<Vec<LlmMessageWire>>,
+ }
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema, Default)]
+ #[serde(deny_unknown_fields)]
+--- a/echo-sdk-protocol/tests/extension_contract.rs
++++ b/echo-sdk-protocol/tests/extension_contract.rs
+@@ -1141,7 +1141,7 @@
+     let original = serde_json::json!({
+         "extension":{"id":"child","generation":"7","kind":"extension"},
+         "factory_origin":{"id":"factory","generation":"7","kind":"extension"},
+-        "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":"任务"}},
++        "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":{"role":"user","content":{"kind":"string","value":"任务"}}}},
+         "deadline":{"seconds":"20","nanos":0}
+     });
+     let parsed: ExtensionInvokeCall =
+--- a/echo-sdk-protocol/tests/native_message_contract.rs
++++ b/echo-sdk-protocol/tests/native_message_contract.rs
+@@ -6,6 +6,86 @@
+ use echo_sdk_protocol::scalar::{WireField, WireU64, WireValue};
+ 
+ type TestResult = Result<(), Box<dyn std::error::Error>>;
++
++#[test]
++fn custom_agent_inputs_keep_the_shared_message_and_reject_old_string_payloads() -> TestResult {
++    use echo_sdk_protocol::methods::{AgentMessageInput, AgentTaskInput, ExtensionInvocation};
++    let message = LlmMessageWire {
++        role: "tool".into(),
++        content: WireValue::from_json(serde_json::json!([
++            {"type":"text","text":"完整输入🧪"},
++            {"type":"resource_link","resource":{"uri":"resource://fixture/附件","name":"资料.txt","_meta":{"binding":{"none":null,"empty":{},"values":[]}}}}
++        ]))?,
++        name: Some("shell".into()),
++        tool_call_id: Some("call-原身份🧪".into()),
++        tool_calls: Some(Vec::new()),
++        reasoning_content: Some(String::new()),
++        reasoning_blocks: Some(Vec::new()),
++        assistant_blocks: Some(Vec::new()),
++        approved_assistant_blocks: Some(Vec::new()),
++        execution_status: None,
++    };
++    for invocation in [
++        ExtensionInvocation::AgentExecute(AgentTaskInput {
++            task: message.clone(),
++            history: Some(Vec::new()),
++        }),
++        ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
++            task: message.clone(),
++            history: None,
++        }),
++        ExtensionInvocation::AgentChat(AgentMessageInput {
++            message: message.clone(),
++            history: Some(vec![message.clone()]),
++        }),
++        ExtensionInvocation::AgentChatStream(AgentMessageInput {
++            message: message.clone(),
++            history: None,
++        }),
++    ] {
++        let encoded = serde_json::to_value(&invocation)?;
++        let restored: ExtensionInvocation = serde_json::from_value(encoded)?;
++        assert_eq!(restored, invocation);
++    }
++    for (operation, key) in [
++        ("agent_execute", "task"),
++        ("agent_execute_stream", "task"),
++        ("agent_chat", "message"),
++        ("agent_chat_stream", "message"),
++    ] {
++        let mut input = serde_json::Map::new();
++        input.insert(
++            key.into(),
++            serde_json::Value::String("old text payload".into()),
++        );
++        assert!(
++            serde_json::from_value::<ExtensionInvocation>(
++                serde_json::json!({"operation":operation,"input":input})
++            )
++            .is_err()
++        );
++        input.insert(
++            key.into(),
++            serde_json::json!({"content":{"kind":"string","value":"missing role"}}),
++        );
++        assert!(
++            serde_json::from_value::<ExtensionInvocation>(
++                serde_json::json!({"operation":operation,"input":input})
++            )
++            .is_err()
++        );
++        let other_key = if key == "task" { "message" } else { "task" };
++        let mut wrong = serde_json::Map::new();
++        wrong.insert(other_key.into(), serde_json::to_value(&message)?);
++        assert!(
++            serde_json::from_value::<ExtensionInvocation>(
++                serde_json::json!({"operation":operation,"input":wrong})
++            )
++            .is_err()
++        );
++    }
++    Ok(())
++}
+ 
+ #[test]
+ fn native_message_provider_coordinates_and_unknown_original_phase_are_lossless() -> TestResult {
+--- /dev/null
++++ b/sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java
+@@ -0,0 +1,52 @@
++package com.echoagent.sdk;
++
++import com.fasterxml.jackson.databind.JsonNode;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.CompletionStage;
++import java.util.function.BiFunction;
++
++/** 示例：业务实现接收原完整 Message，包括 Parts、ResourceLink meta 与工具身份。 */
++public final class RichMessageAgentExample {
++    private RichMessageAgentExample() {}
++
++    public static CompletionStage<ExtensionRegistration> register(
++            EchoAgentClient sdk,
++            BiFunction<JsonNode, ExtensionCancellation, CompletionStage<String>> consume) {
++        var descriptor = JsonSupport.MAPPER.createObjectNode().put("kind", "custom_agent")
++                .put("descriptor_version", 1).put("name", "message-example")
++                .put("model_name", "example").put("system_prompt", "保留完整输入");
++        descriptor.putArray("tool_names");
++        return sdk.registerCustomAgent("message-example", descriptor, (call, cancel) -> {
++            var invocation = call.required("invocation");
++            String operation = invocation.required("operation").asText();
++            if ("agent_close".equals(operation))
++                return CompletableFuture.completedFuture(result(operation, JsonSupport.MAPPER.nullNode()));
++            String field = switch (operation) {
++                case "agent_execute", "agent_execute_stream" -> "task";
++                case "agent_chat", "agent_chat_stream" -> "message";
++                default -> throw new IllegalArgumentException("unexpected message Agent operation");
++            };
++            // consume接收整个operation/input，包含完整Message与可选history。
++            invocation.required("input").required(field);
++            return consume.apply(invocation, cancel).thenCompose(answer -> {
++                if (!operation.endsWith("_stream"))
++                    return CompletableFuture.completedFuture(result(operation, JsonSupport.MAPPER.getNodeFactory().textNode(answer)));
++                var stream = WireHandle.fromJson(call.required("stream"));
++                var data = JsonSupport.MAPPER.createObjectNode().put("text", answer);
++                var terminal = JsonSupport.MAPPER.createObjectNode().put("event", "final_answer");
++                terminal.set("data", data);
++                var payload = JsonSupport.MAPPER.createObjectNode().put("kind", "agent");
++                payload.set("value", terminal);
++                return sdk.streamWriter(stream).complete(payload).thenApply(ignored -> ExtensionOutcome.stream(stream).toJson());
++            });
++        });
++    }
++
++    private static JsonNode result(String operation, JsonNode value) {
++        var result = JsonSupport.MAPPER.createObjectNode().put("operation", operation);
++        result.set("value", value);
++        var outcome = JsonSupport.MAPPER.createObjectNode().put("outcome", "result");
++        outcome.set("result", result);
++        return outcome;
++    }
++}
+--- a/sdks/java/src/test/java/com/echoagent/sdk/EvalImproveTopologyHostTest.java
++++ b/sdks/java/src/test/java/com/echoagent/sdk/EvalImproveTopologyHostTest.java
+@@ -54,7 +54,7 @@
+                 if ("agent_close".equals(operation)) { closed.add(id); instances.remove(id); return outcome(operation, null); }
+                 executed.add(id);
+                 try {
+-                    var input = call.path("invocation").path("input"); String task = input.has("task") ? input.path("task").textValue() : input.path("message").textValue();
++                    var input = call.path("invocation").path("input"); var message = input.path(operation.startsWith("agent_execute") ? "task" : "message"); assertEquals("user", message.path("role").asText()); String task = JsonSupport.fromWire(message.path("content")).textValue();
+                     if ("hang".equals(task)) { long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15); while (!cancel.isCancelled() && System.nanoTime() < deadline) java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1)); if (!cancel.isCancelled()) throw new IllegalStateException("native factory callback never received cancellation"); cancellations.incrementAndGet(); deadlineCancelled.complete(null); deadlineRelease.get(10, TimeUnit.SECONDS); return outcome(operation, JsonSupport.MAPPER.getNodeFactory().textNode("cancelled")); }
+                     String answer = "bad".equals(task) ? "wrong response" : spec.path("factory_answer").textValue();
+                     if (operation.endsWith("_stream")) { var stream = WireHandle.fromJson(call.path("stream")); var terminal = obj().put("kind", "agent").set("value", obj().put("event", "final_answer").set("data", obj().put("text", answer))); await(sdk.streamWriter(stream).complete(terminal)); return ExtensionOutcome.stream(stream).toJson(); }
+--- a/sdks/java/src/test/java/com/echoagent/sdk/StreamCancellationRoutesTest.java
++++ b/sdks/java/src/test/java/com/echoagent/sdk/StreamCancellationRoutesTest.java
+@@ -30,7 +30,7 @@
+     @SuppressWarnings("unchecked") static Map<String,ExtensionHandler> handlers(EchoAgentClient sdk)throws Exception{var f=EchoAgentClient.class.getDeclaredField("extensionHandlers");f.setAccessible(true);return(Map<String,ExtensionHandler>)f.get(sdk);}
+     @SuppressWarnings("unchecked") static Map<String,ExtensionCancellation> cancellations(EchoAgentClient sdk)throws Exception{var f=EchoAgentClient.class.getDeclaredField("invocationCancellations");f.setAccessible(true);return(Map<String,ExtensionCancellation>)f.get(sdk);}
+     static Mono<JsonNode> invoke(EchoAgentClient sdk,JsonNode call)throws Exception{var f=EchoAgentClient.class.getDeclaredMethod("invokeExtension",JsonNode.class);f.setAccessible(true);@SuppressWarnings("unchecked") var result=(Mono<JsonNode>)f.invoke(sdk,call);return result;}
+-    static JsonNode call(){var p=JsonSupport.MAPPER.createObjectNode().put("invocation_id","original");p.set("extension",new WireHandle("extension","1","extension").toJson());p.set("stream",new WireHandle("stream","1","stream").toJson());p.putObject("invocation").put("operation","agent_execute_stream").putObject("input").put("task","中文🌊");return p;}
++    static JsonNode call(){var p=JsonSupport.MAPPER.createObjectNode().put("invocation_id","original");p.set("extension",new WireHandle("extension","1","extension").toJson());p.set("stream",new WireHandle("stream","1","stream").toJson());p.putObject("invocation").put("operation","agent_execute_stream").putObject("input").putObject("task").put("role","user").putObject("content").put("kind","string").put("value","中文🌊");return p;}
+     static JsonNode outcome(JsonNode call){var p=JsonSupport.MAPPER.createObjectNode().put("outcome","stream");p.set("stream",call.path("stream"));return p;}
+     static CompletableFuture<Void> send(Transport transport)throws Exception{var done=transport.entered.poll(2,TimeUnit.SECONDS);assertNotNull(done);return done;}
+     static JsonNode terminal(String generation){var p=JsonSupport.MAPPER.createObjectNode().put("event","cancelled").put("sequence","1");p.set("stream",new WireHandle("stream",generation,"stream").toJson());return p;}
+--- a/sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java
++++ b/sdks/java/src/test/java/com/echoagent/sdk/TaskSubagentHostTest.java
+@@ -45,7 +45,7 @@
+     var registrations=new ArrayList<ExtensionRegistration>();registrations.add(store(sdk,url,true));var counts=new ConcurrentHashMap<String,AtomicInteger>();var prompts=new ConcurrentHashMap<String,String>();var jobs=new CopyOnWriteArrayList<CompletableFuture<Void>>();var canonicalTaskRunScope=new AtomicReference<String>();
+     try{
+     for(var lane:List.of("a","b","c","d")){counts.put(lane,new AtomicInteger());registrations.add(sdk.registerExtension("custom_agent","task-"+lane,json(Map.of("kind","custom_agent","descriptor_version",1,"name","task-"+lane,"model_name","fixture","system_prompt","fixture","tool_names",List.of())),(call,cancel)->{
+-     String operation=call.path("invocation").path("operation").asText();if(operation.equals("agent_close"))return CompletableFuture.completedFuture(outcome(operation,null));check(operation.equals("agent_execute_stream"),operation);check(call.path("context").path("run_id").isTextual()&&call.path("context").path("run_id").asText().equals(canonicalTaskRunScope.get()),"Task callback canonical run_id mismatch");int attempt=counts.get(lane).incrementAndGet();String task=call.path("invocation").path("input").path("task").asText();prompts.put(lane+"/"+attempt,task);
++     String operation=call.path("invocation").path("operation").asText();if(operation.equals("agent_close"))return CompletableFuture.completedFuture(outcome(operation,null));check(operation.equals("agent_execute_stream"),operation);check(call.path("context").path("run_id").isTextual()&&call.path("context").path("run_id").asText().equals(canonicalTaskRunScope.get()),"Task callback canonical run_id mismatch");int attempt=counts.get(lane).incrementAndGet();String task=JsonSupport.fromWire(call.path("invocation").path("input").path("task").path("content")).asText();prompts.put(lane+"/"+attempt,task);
+      try{http(url,"/agent",Map.of("lane",lane,"attempt",attempt,"task",task,"extension",call.get("extension")));}catch(Exception e){return CompletableFuture.failedFuture(e);}
+      if(action.equals("observation")&&lane.equals("a")){
+       try{
+@@ -103,12 +103,12 @@
+    var registrations=new ArrayList<ExtensionRegistration>();if(kind.equals("crud-only"))registrations.add(store(sdk,url,false));AtomicInteger invocations=new AtomicInteger();AtomicReference<JsonNode> raw=new AtomicReference<>();var jobs=new CopyOnWriteArrayList<CompletableFuture<Void>>();
+    registrations.add(sdk.registerExtension("custom_agent","await-target",json(Map.of("kind","custom_agent","descriptor_version",1,"name","await-target","model_name","fixture","system_prompt","fixture","tool_names",List.of())),(call,cancel)->{
+     String operation=call.path("invocation").path("operation").asText();if(operation.equals("agent_close"))return CompletableFuture.completedFuture(outcome(operation,null));check(operation.equals("agent_execute_stream")||operation.equals("agent_execute"),operation);invocations.incrementAndGet();raw.set(call);
+-    try{http(url,"/agent",Map.of("lane","await","attempt",1,"task",call.path("invocation").path("input").path("task").asText(),"extension",call.get("extension")));}catch(Exception error){return CompletableFuture.failedFuture(error);}
++    try{http(url,"/agent",Map.of("lane","await","attempt",1,"task",JsonSupport.fromWire(call.path("invocation").path("input").path("task").path("content")).asText(),"extension",call.get("extension")));}catch(Exception error){return CompletableFuture.failedFuture(error);}
+     if(operation.endsWith("_stream")){jobs.add(CompletableFuture.runAsync(()->{try{http(url,"/gate",Map.of("lane","await","attempt",1));sdk.streamWriter(WireHandle.fromJson(call.get("stream"))).complete(json(Map.of("kind","agent","value",Map.of("event","final_answer","data",Map.of("text","full retained result 中文🧪"))))).toCompletableFuture().get(5,TimeUnit.SECONDS);}catch(Exception error){throw new CompletionException(error);}}));return CompletableFuture.completedFuture(json(Map.of("outcome","stream","stream",call.get("stream"))));}
+     return CompletableFuture.supplyAsync(()->{try{http(url,"/gate",Map.of("lane","await","attempt",1));return outcome(operation,"full retained result 中文🧪");}catch(Exception error){throw new CompletionException(error);}});
+    }).toCompletableFuture().get(5,TimeUnit.SECONDS));var agent=sdk.createAgent().toCompletableFuture().get(5,TimeUnit.SECONDS);var session=agent.createSession().toCompletableFuture().get(5,TimeUnit.SECONDS);var taskRun=session.taskRun().toJson();JsonNode observed;
+    if(kind.equals("crud-only")){rpc(sdk,"task/create",Map.of("task_run",taskRun,"spec",WireValues.value(Map.of("tasks",List.of(Map.of("id","pending","title","pending","description","no user call","extension",Map.of("subagent","await-target")))))));var before=http(url,"/inspect",null);var error=failure(sdk.request("_echo_agent/task/execute",json(Map.of("task_run",taskRun))));check(error.code().equals("feature_unavailable")&&error.handle().equals(session.taskRun()),"CRUD preflight error mismatch");check(http(url,"/inspect",null).equals(before)&&invocations.get()==0,"CRUD executed side effect");for(var task:rpc(sdk,"task/list",Map.of("task_run",taskRun)).path("tasks"))check(task.path("status").path("status").asText().equals("pending"),"CRUD changed state");observed=json(Map.of("kind",kind,"invocations",0,"execution_commits",0,"error","feature_unavailable"));}
+-   else{var payload=json(Map.of("session",session.wire().toJson(),"request",WireValues.value(Map.of("agent_name","await-target","task","await retained 中文🧪","mode_override","sync","constraints",List.of("constraint retained 🧪"),"prompt_context",Map.of("acceptance_criteria",List.of("field preserved")))),"idempotency_id","one-receipt"));var oneStage=sdk.request("_echo_agent/subagent/dispatch",payload);var twoStage=sdk.request("_echo_agent/subagent/dispatch",payload);var one=await(oneStage);var two=await(twoStage);check(one.get("subagent").equals(two.get("subagent")),"receipt duplicate attempt");until(()->invocations.get()==1);var shortWait=rpc(sdk,"subagent/await",Map.of("subagent",one.get("subagent"),"timeout",Map.of("seconds","0","nanos",5000000)));check(!shortWait.path("settled").asBoolean()&&!shortWait.has("result"),"short await consumed result");var conflict=payload.deepCopy();((ObjectNode)conflict).set("request",WireValues.value(Map.of("agent_name","await-target","task","conflicting payload")));check(failure(sdk.request("_echo_agent/subagent/dispatch",conflict)).code().equals("invalid_value"),"receipt conflict missing");http(url,"/release",Map.of("lane","await","attempt",1));var full=rpc(sdk,"subagent/await",Map.of("subagent",one.get("subagent")));check(full.equals(rpc(sdk,"subagent/await",Map.of("subagent",one.get("subagent"))))&&full.path("settled").asBoolean(),"repeated await changed");boolean output=false;for(var field:full.path("result").path("value"))if(field.path("key").path("value").asText().equals("output"))output=field.path("value").path("value").asText().equals("full retained result 中文🧪");check(output,"result field missing");check(raw.get().path("invocation").path("input").path("task").asText().contains("constraint retained 🧪"),"constraints lost");check(!rpc(sdk,"subagent/control",Map.of("subagent",one.get("subagent"),"action","guidance","payload","late")).path("accepted").asBoolean()&&invocations.get()==1,"late dispatch misuse");observed=json(Map.of("kind",kind,"invocations",1,"short",shortWait,"full",full,"rawCall",raw.get()));}
++   else{var payload=json(Map.of("session",session.wire().toJson(),"request",WireValues.value(Map.of("agent_name","await-target","task","await retained 中文🧪","mode_override","sync","constraints",List.of("constraint retained 🧪"),"prompt_context",Map.of("acceptance_criteria",List.of("field preserved")))),"idempotency_id","one-receipt"));var oneStage=sdk.request("_echo_agent/subagent/dispatch",payload);var twoStage=sdk.request("_echo_agent/subagent/dispatch",payload);var one=await(oneStage);var two=await(twoStage);check(one.get("subagent").equals(two.get("subagent")),"receipt duplicate attempt");until(()->invocations.get()==1);var shortWait=rpc(sdk,"subagent/await",Map.of("subagent",one.get("subagent"),"timeout",Map.of("seconds","0","nanos",5000000)));check(!shortWait.path("settled").asBoolean()&&!shortWait.has("result"),"short await consumed result");var conflict=payload.deepCopy();((ObjectNode)conflict).set("request",WireValues.value(Map.of("agent_name","await-target","task","conflicting payload")));check(failure(sdk.request("_echo_agent/subagent/dispatch",conflict)).code().equals("invalid_value"),"receipt conflict missing");http(url,"/release",Map.of("lane","await","attempt",1));var full=rpc(sdk,"subagent/await",Map.of("subagent",one.get("subagent")));check(full.equals(rpc(sdk,"subagent/await",Map.of("subagent",one.get("subagent"))))&&full.path("settled").asBoolean(),"repeated await changed");boolean output=false;for(var field:full.path("result").path("value"))if(field.path("key").path("value").asText().equals("output"))output=field.path("value").path("value").asText().equals("full retained result 中文🧪");check(output,"result field missing");check(JsonSupport.fromWire(raw.get().path("invocation").path("input").path("task").path("content")).asText().contains("constraint retained 🧪"),"constraints lost");check(!rpc(sdk,"subagent/control",Map.of("subagent",one.get("subagent"),"action","guidance","payload","late")).path("accepted").asBoolean()&&invocations.get()==1,"late dispatch misuse");observed=json(Map.of("kind",kind,"invocations",1,"short",shortWait,"full",full,"rawCall",raw.get()));}
+    Files.writeString(work.resolve("observed.json"),observed.toString());session.close();for(var registration:registrations)registration.close();agent.close();CompletableFuture.allOf(jobs.toArray(CompletableFuture[]::new)).get(5,TimeUnit.SECONDS);
+   }}finally{backend.destroy();backend.waitFor(3,TimeUnit.SECONDS);}
+  }
+--- /dev/null
++++ b/sdks/python/examples/custom_agent_message.py
+@@ -0,0 +1,55 @@
++"""CustomAgent 示例：原样向实现方交付完整 Message，不解析旧字符串载体。"""
++
++from collections.abc import Awaitable, Callable, Mapping, Sequence
++from typing import Any
++
++from echo_agent_sdk import EchoAgentClient, WireHandle
++
++
++async def register_message_agent(
++    sdk: EchoAgentClient,
++    consume: Callable[
++        [Mapping[str, Any], Sequence[Mapping[str, Any]] | None, Any], Awaitable[str]
++    ],
++):
++    async def handler(call, cancel):
++        invocation = call["invocation"]
++        operation = invocation["operation"]
++        if operation == "agent_close":
++            return {
++                "outcome": "result",
++                "result": {"operation": operation, "value": None},
++            }
++        if operation in {"agent_execute", "agent_execute_stream"}:
++            message = invocation["input"]["task"]
++        elif operation in {"agent_chat", "agent_chat_stream"}:
++            message = invocation["input"]["message"]
++        else:
++            raise ValueError("unexpected message Agent operation")
++        answer = await consume(message, invocation["input"].get("history"), cancel)
++        if not operation.endswith("_stream"):
++            return {
++                "outcome": "result",
++                "result": {"operation": operation, "value": answer},
++            }
++        writer = sdk.stream_writer(WireHandle.from_dict(call["stream"]))
++        await writer.complete(
++            {
++                "kind": "agent",
++                "value": {"event": "final_answer", "data": {"text": answer}},
++            }
++        )
++        return {"outcome": "stream", "stream": call["stream"]}
++
++    return await sdk.register_custom_agent(
++        "message-example",
++        {
++            "kind": "custom_agent",
++            "descriptor_version": 1,
++            "name": "message-example",
++            "model_name": "example",
++            "system_prompt": "保留完整输入",
++            "tool_names": [],
++        },
++        handler,
++    )
+--- /dev/null
++++ b/sdks/python/tests/test_custom_agent_message_example.py
+@@ -0,0 +1,87 @@
++import asyncio
++import runpy
++from pathlib import Path
++
++import pytest
++from echo_agent_sdk.client import _normalize_outcome
++
++
++@pytest.mark.asyncio
++async def test_raw_custom_agent_example_preserves_message_history_and_outcome():
++    register = runpy.run_path(
++        str(Path(__file__).resolve().parents[1] / "examples/custom_agent_message.py")
++    )["register_message_agent"]
++
++    class SDK:
++        async def register_custom_agent(self, _name, _descriptor, handler):
++            self.handler = handler
++            return "registered"
++
++        def stream_writer(self, stream):
++            class Writer:
++                async def complete(inner, value):
++                    completed.append((stream, value))
++
++            return Writer()
++
++    sdk = SDK()
++    completed = []
++    seen = []
++    message = {
++        "role": "tool",
++        "name": "shell",
++        "tool_call_id": "call-🧪",
++        "content": {"kind": "map", "value": []},
++        "approved_assistant_blocks": [],
++    }
++
++    async def consume(value, history, cancel):
++        assert value is message
++        assert not cancel.is_set()
++        seen.append(history)
++        return "处理完整输入🧪"
++
++    await register(sdk, consume)
++    stream = {"id": "original-stream", "generation": "1", "kind": "stream"}
++    for operation in (
++        "agent_execute",
++        "agent_chat",
++        "agent_execute_stream",
++        "agent_chat_stream",
++    ):
++        for history in (None, [], [message]):
++            key = "task" if operation.startswith("agent_execute") else "message"
++            result = await sdk.handler(
++                {
++                    "invocation": {
++                        "operation": operation,
++                        "input": {key: message, "history": history},
++                    },
++                    "stream": stream,
++                },
++                asyncio.Event(),
++            )
++            assert seen[-1] is history
++            assert _normalize_outcome(result) == result
++            assert result == (
++                {"outcome": "stream", "stream": stream}
++                if operation.endswith("_stream")
++                else {
++                    "outcome": "result",
++                    "result": {"operation": operation, "value": "处理完整输入🧪"},
++                }
++            )
++    assert len(completed) == 6
++    count = len(seen)
++    result = await sdk.handler(
++        {"invocation": {"operation": "agent_close", "input": None}}, asyncio.Event()
++    )
++    assert _normalize_outcome(result) == {
++        "outcome": "result",
++        "result": {"operation": "agent_close", "value": None},
++    }
++    assert len(seen) == count
++    with pytest.raises(ValueError):
++        await sdk.handler(
++            {"invocation": {"operation": "not-an-agent", "input": {}}}, asyncio.Event()
++        )
+--- a/sdks/python/tests/test_eval_improve_topology_host.py
++++ b/sdks/python/tests/test_eval_improve_topology_host.py
+@@ -9,8 +9,13 @@
+ from pathlib import Path
+ 
+ import pytest
+-
+-from echo_agent_sdk import EchoAgentClient, EchoAgentError, WireHandle, wire_utf8_path
++from echo_agent_sdk import (
++    EchoAgentClient,
++    EchoAgentError,
++    WireHandle,
++    from_wire,
++    wire_utf8_path,
++)
+ 
+ HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
+ if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
+@@ -107,9 +112,13 @@
+                 return outcome(op)
+             facts["executed"].append(identity)
+             try:
+-                task = call["invocation"]["input"].get(
+-                    "task", call["invocation"]["input"].get("message", "")
+-                )
++                payload = call["invocation"]["input"]
++                message = payload[
++                    "task" if op.startswith("agent_execute") else "message"
++                ]
++                assert message["role"] == "user"
++                task = from_wire(message["content"])
++                assert isinstance(task, str)
+                 if task == "hang":
+                     await asyncio.wait_for(cancel.wait(), 10)
+                     facts["cancel_observed"] += int(cancel.is_set())
+--- a/sdks/python/tests/test_protocol_integrity.py
++++ b/sdks/python/tests/test_protocol_integrity.py
+@@ -4,7 +4,6 @@
+ from unittest.mock import AsyncMock
+ 
+ import pytest
+-
+ from echo_agent_sdk import EchoAgentError, WireHandle, from_wire
+ from echo_agent_sdk.client import EchoAgentClient, ExtensionRegistration
+ 
+@@ -82,7 +81,12 @@
+         "extension": child.to_dict(),
+         "factory_origin": factory.to_dict(),
+         "invocation_id": "i",
+-        "invocation": {"operation": "agent_execute", "input": {"task": "任务"}},
++        "invocation": {
++            "operation": "agent_execute",
++            "input": {
++                "task": {"role": "user", "content": {"kind": "string", "value": "任务"}}
++            },
++        },
+     }
+     result = await callbacks.ext_method("echo_agent/extension/invoke", payload)
+     assert result["outcome"] == "result"
+@@ -135,7 +139,15 @@
+                 "extension": child.to_dict(),
+                 "factory_origin": factory.to_dict(),
+                 "invocation_id": child.id,
+-                "invocation": {"operation": "agent_chat", "input": {"message": "任务"}},
++                "invocation": {
++                    "operation": "agent_chat",
++                    "input": {
++                        "message": {
++                            "role": "user",
++                            "content": {"kind": "string", "value": "任务"},
++                        }
++                    },
++                },
+             },
+         )
+         assert result["outcome"] == "result"
+--- a/sdks/python/tests/test_stream_cancellation_routes.py
++++ b/sdks/python/tests/test_stream_cancellation_routes.py
+@@ -7,7 +7,6 @@
+ 
+ import pytest
+ from acp.client.connection import ClientSideConnection
+-
+ from echo_agent_sdk import EchoAgentError, WireHandle
+ from echo_agent_sdk.client import EchoAgentClient, ExtensionStreamWriter, _Callbacks
+ 
+@@ -50,7 +49,12 @@
+         "stream": stream.to_dict(),
+         "invocation": {
+             "operation": "agent_execute_stream",
+-            "input": {"task": "中文🌊"},
++            "input": {
++                "task": {
++                    "role": "user",
++                    "content": {"kind": "string", "value": "中文🌊"},
++                }
++            },
+         },
+     }
+     await transport.incoming.put(
+--- a/sdks/python/tests/test_task_subagent_host.py
++++ b/sdks/python/tests/test_task_subagent_host.py
+@@ -9,7 +9,6 @@
+ from pathlib import Path
+ 
+ import pytest
+-
+ from echo_agent_sdk import (
+     EchoAgentClient,
+     EchoAgentError,
+@@ -223,7 +222,9 @@
+                 assert call["context"]["run_id"] == canonical_task_run_scope
+                 counts[lane] += 1
+                 attempt = counts[lane]
+-                prompts[f"{lane}/{attempt}"] = call["invocation"]["input"]["task"]
++                prompts[f"{lane}/{attempt}"] = from_wire(
++                    call["invocation"]["input"]["task"]["content"]
++                )
+                 await http(
+                     "/agent",
+                     {
+@@ -696,7 +697,7 @@
+                 {
+                     "lane": "await",
+                     "attempt": 1,
+-                    "task": call["invocation"]["input"]["task"],
++                    "task": from_wire(call["invocation"]["input"]["task"]["content"]),
+                     "context": call.get("context"),
+                     "extension": call["extension"],
+                 },
+@@ -844,7 +845,9 @@
+             )
+             assert full == repeat and full["settled"]
+             assert from_wire(full["result"])["output"] == "full retained result 中文🧪"
+-            assert "constraint retained 🧪" in raw_call["invocation"]["input"]["task"]
++            assert "constraint retained 🧪" in from_wire(
++                raw_call["invocation"]["input"]["task"]["content"]
++            )
+             assert (
+                 await sdk.request(
+                     "_echo_agent/subagent/control",
+--- /dev/null
++++ b/sdks/typescript/examples/custom-agent-message.ts
+@@ -0,0 +1,28 @@
++import type { CustomAgentInvocation, EchoAgentClient, ExtensionInvokeCall, LlmMessage } from "../src/index.js";
++
++/** 示例：实现方接收完整 Message，不能先取文本而丢掉附件、meta 或工具身份。 */
++export async function registerMessageAgent(
++  sdk: EchoAgentClient,
++  consume: (message: LlmMessage, history: readonly LlmMessage[] | null | undefined, signal: AbortSignal) => Promise<string>,
++) {
++  return sdk.registerCustomAgent("message-example", {
++    kind: "custom_agent", descriptor_version: 1, name: "message-example",
++    model_name: "example", system_prompt: "保留完整输入", tool_names: [],
++  }, async (raw, signal) => {
++    // 原登记入口的 raw handler 边界；载荷合同由本次 Host/protocol 统一确定。
++    const call = raw as ExtensionInvokeCall<CustomAgentInvocation>;
++    const invocation = call.invocation;
++    if (invocation.operation === "agent_close") return { outcome: "result", result: { operation: "agent_close", value: null } };
++    let message: LlmMessage;
++    switch (invocation.operation) {
++      case "agent_execute": case "agent_execute_stream": message = invocation.input.task; break;
++      case "agent_chat": case "agent_chat_stream": message = invocation.input.message; break;
++      default: throw new Error("unexpected message Agent operation");
++    }
++    const answer = await consume(message, invocation.input.history, signal);
++    if (!invocation.operation.endsWith("_stream")) return { outcome: "result", result: { operation: invocation.operation, value: answer } };
++    if (!call.stream) throw new Error("original stream handle missing");
++    await sdk.streamWriter(call.stream).complete({ kind: "agent", value: { event: "final_answer", data: { text: answer } } });
++    return { outcome: "stream", stream: call.stream };
++  });
++}
+--- a/sdks/typescript/src/types.ts
++++ b/sdks/typescript/src/types.ts
+@@ -670,7 +670,13 @@
+   readonly input: CompressionInput;
+ };
+ 
+-export type ExtensionInvocation = AgentCallbackInvocation | ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
++/** CustomAgent 输入沿同一完整 Message 合同；文本调用也携带 user Message。 */
++export type CustomAgentInvocation =
++  | { readonly operation: "agent_execute" | "agent_execute_stream"; readonly input: { readonly task: LlmMessage; readonly history?: readonly LlmMessage[] | null } }
++  | { readonly operation: "agent_chat" | "agent_chat_stream"; readonly input: { readonly message: LlmMessage; readonly history?: readonly LlmMessage[] | null } }
++  | { readonly operation: "agent_close"; readonly input: null };
++
++export type ExtensionInvocation = CustomAgentInvocation | AgentCallbackInvocation | ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
+ 
+ export interface ExtensionInvocationContext {
+   readonly call_id?: string | null;
+--- /dev/null
++++ b/sdks/typescript/test/custom-agent-message-example.test.js
+@@ -0,0 +1,37 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { registerMessageAgent } from "../dist-examples/examples/custom-agent-message.js";
++
++test("raw CustomAgent example keeps full Message/history and returns raw outcomes", async () => {
++  let handler;
++  const completed = [];
++  const sdk = {
++    async registerCustomAgent(_id, _descriptor, selected) { handler = selected; return "registered"; },
++    streamWriter(stream) { return { async complete(value) { completed.push({ stream, value }); } }; },
++  };
++  const message = { role: "tool", name: "shell", tool_call_id: "call-🧪", content: { kind: "map", value: [] }, approved_assistant_blocks: [] };
++  const seen = [];
++  await registerMessageAgent(sdk, async (value, history, signal) => {
++    assert.equal(value, message);
++    assert.equal(signal.aborted, false);
++    seen.push(history);
++    return "处理完整输入🧪";
++  });
++  const stream = { id: "original-stream", generation: "1", kind: "stream" };
++  for (const operation of ["agent_execute", "agent_chat", "agent_execute_stream", "agent_chat_stream"]) {
++    for (const history of [undefined, [], [message]]) {
++      const input = { [operation.startsWith("agent_execute") ? "task" : "message"]: message, history };
++      const result = await handler({ invocation: { operation, input }, stream }, new AbortController().signal);
++      assert.equal(seen.at(-1), history);
++      assert.deepEqual(result, operation.endsWith("_stream")
++        ? { outcome: "stream", stream }
++        : { outcome: "result", result: { operation, value: "处理完整输入🧪" } });
++    }
++  }
++  assert.equal(completed.length, 6);
++  const calls = seen.length;
++  assert.deepEqual(await handler({ invocation: { operation: "agent_close", input: null } }, new AbortController().signal),
++    { outcome: "result", result: { operation: "agent_close", value: null } });
++  assert.equal(seen.length, calls, "close不能重新执行正文处理");
++  await assert.rejects(handler({ invocation: { operation: "not-an-agent", input: {} } }, new AbortController().signal));
++});
+--- a/sdks/typescript/test/eval-improve-topology-host.test.js
++++ b/sdks/typescript/test/eval-improve-topology-host.test.js
+@@ -4,7 +4,7 @@
+ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, readdirSync, renameSync, unlinkSync } from "node:fs";
+ import { join } from "node:path";
+ import { fileURLToPath } from "node:url";
+-import { EchoAgentClient, wireUtf8Path } from "../dist/index.js";
++import { EchoAgentClient, fromWireValue, wireUtf8Path } from "../dist/index.js";
+ const host=process.env.ECHO_AGENT_SDK_HOST;
+ if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==="1"&&!host)throw Error("required analysis Host missing");
+ const fixture=fileURLToPath(new URL("../../shared/testing/eval_improve_topology_fixture.py",import.meta.url));
+@@ -21,7 +21,7 @@
+    assert.deepEqual(call.factory_origin,factory.wire);const identity=call.extension.id;assert.ok(instances.has(identity));
+    if(op==="agent_close"){facts.closed.push(identity);instances.delete(identity);return outcome(op);}
+    facts.executed.push(identity);
+-   try{const task=call.invocation.input.task??call.invocation.input.message??"";
++   try{const message=op.startsWith("agent_execute")?call.invocation.input.task:call.invocation.input.message;const task=fromWireValue(message.content);assert.equal(message.role,"user");assert.equal(typeof task,"string");
+     if(task==="hang"){await new Promise(resolve=>signal.aborted?resolve():signal.addEventListener("abort",resolve,{once:true}));facts.cancel_observed+=Number(signal.aborted);noticeDeadline();await deadlineRelease;return outcome(op,"cancelled");}
+     const answer=task==="bad"?"wrong response":spec.factory_answer;
+     if(op.endsWith("_stream")){await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:answer}}});return {outcome:"stream",stream:call.stream};}return outcome(op,answer);
+--- a/sdks/typescript/test/task-subagent-host.test.js
++++ b/sdks/typescript/test/task-subagent-host.test.js
+@@ -31,8 +31,8 @@
+     if(operation==="agent_close")return{outcome:"result",result:{operation,value:null}};
+     assert.equal(operation,"agent_execute_stream");
+     assert.equal(call.context?.run_id,canonicalTaskRunScope,"Task callback must retain its active canonical TaskRun scope");
+-    const attempt=++counts[lane];prompts[`${lane}/${attempt}`]=call.invocation.input.task;
+-    await http("/agent",{lane,attempt,task:call.invocation.input.task,extension:call.extension});
++    const attempt=++counts[lane];prompts[`${lane}/${attempt}`]=fromWireValue(call.invocation.input.task.content);
++    await http("/agent",{lane,attempt,task:fromWireValue(call.invocation.input.task.content),extension:call.extension});
+     if(action==='observation'&&lane==='a'){
+      const binding=await http('/physical/admit',call);assert.deepEqual(binding.context,call.context);assert.equal(binding.factory_origin,null);
+      const error={code:'framework_error',retryable:'never',message:'same Task attempt remains physically held 中文🙂',operation:'_echo_agent/extension/invoke',details:{fields:[{key:'observation',value:'not_settled'},{key:'run_id',value:binding.run_id},{key:'execution_id',value:binding.execution_id}]}};
+@@ -148,7 +148,7 @@
+   registrations.push(await sdk.registerExtension("custom_agent","await-target",{kind:"custom_agent",descriptor_version:1,name:"await-target",model_name:"fixture",system_prompt:"fixture",tool_names:[]},async(call,signal)=>{
+    const operation=call.invocation.operation;if(operation==="agent_close")return{outcome:"result",result:{operation,value:null}};
+    assert.ok(["agent_execute","agent_execute_stream"].includes(operation),operation);invocations++;rawCall=call;
+-   await http("/agent",{lane:"await",attempt:1,task:call.invocation.input.task,context:call.context??null,extension:call.extension});
++   await http("/agent",{lane:"await",attempt:1,task:fromWireValue(call.invocation.input.task.content),context:call.context??null,extension:call.extension});
+    if(operation.endsWith("_stream")){
+     const job=Promise.resolve().then(async()=>{await http("/gate",{lane:"await",attempt:1});await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:"full retained result 中文🧪"}}});});job.catch(()=>{});callbackJobs.push(job);
+     return{outcome:"stream",stream:call.stream};
+@@ -170,7 +170,7 @@
+    await assert.rejects(sdk.request("_echo_agent/subagent/dispatch",{...payload,request:toWireValue({agent_name:"await-target",task:"conflicting payload"})}),error=>error.code==="invalid_value");
+    await http("/release",{lane:"await",attempt:1});
+    const full=await sdk.request("_echo_agent/subagent/await",{subagent:one.subagent}),repeat=await sdk.request("_echo_agent/subagent/await",{subagent:one.subagent});assert.deepEqual(full,repeat);assert.equal(full.settled,true);
+-   const result=fromWireValue(full.result);assert.equal(result.output,"full retained result 中文🧪");assert.ok(rawCall.invocation.input.task.includes("constraint retained 🧪"));
++   const result=fromWireValue(full.result);assert.equal(result.output,"full retained result 中文🧪");assert.ok(fromWireValue(rawCall.invocation.input.task.content).includes("constraint retained 🧪"));
+    assert.equal((await sdk.request("_echo_agent/subagent/control",{subagent:one.subagent,action:"guidance",payload:"late"})).accepted,false);assert.equal(invocations,1);
+    writeFileSync(join(work,"observed.json"),JSON.stringify({kind,invocations,short,full,rawCall}));
+   }

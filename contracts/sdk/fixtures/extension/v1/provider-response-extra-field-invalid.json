@@ -1,0 +1,12 @@
+{
+  "name": "provider-response-extra-field-invalid",
+  "kind": "invalid",
+  "target": "ProviderResponseMetadataWire",
+  "description": "固定观察字段不能接错形或增加SDK完成权威。",
+  "payload": {
+    "protocol": "responses",
+    "provider": "fixture-provider",
+    "finished": true
+  },
+  "expect_error": "invalid_value"
+}

@@ -337,7 +337,7 @@ mod tests {
         let mut agent = echo_agent::agent::ReactAgent::new(echo_agent::agent::AgentConfig::new(
             "unused", "test", "test",
         ));
-        agent.set_store(first.clone());
+        agent.set_store(first.clone())?;
         let handle = echo_agent::agent::AgentHandle::new(agent);
         let authorities = Arc::new(
             handle
@@ -358,7 +358,9 @@ mod tests {
                 .is_err_and(|error| error.code == ExtensionErrorCode::InvalidValue)
         );
         assert!(first.get(&["合法"], "key").await?.is_none());
-        handle.write(|agent| agent.set_store(second.clone())).await;
+        handle
+            .write(|agent| agent.set_store(second.clone()))
+            .await?;
         let put = request(
             "memory.store.put",
             vec![json!(["中文🌳"]), json!("key"), json!("B")],
@@ -402,7 +404,7 @@ mod failure_fidelity_regressions {
         let mut agent = echo_agent::agent::ReactAgent::new(echo_agent::agent::AgentConfig::new(
             "unused", "test", "test",
         ));
-        agent.set_store(store.clone());
+        agent.set_store(store.clone())?;
         let handle = echo_agent::agent::AgentHandle::new(agent);
         let authorities = Arc::new(
             handle

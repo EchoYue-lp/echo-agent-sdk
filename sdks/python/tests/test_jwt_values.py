@@ -1,19 +1,13 @@
 import json
 from pathlib import Path
 
-import pytest
-
-from echo_agent_sdk import JwtClaims, JwtConfig
+import echo_agent_sdk as sdk
 
 
-def test_jwt_config_and_claims_preserve_local_values() -> None:
-    config = JwtConfig.hs256("secret").with_issuer("echo-agent").with_audience("a2a")
-    assert config.is_enabled()
-    assert "[redacted]" in repr(config)
-    assert not JwtConfig.disabled().is_enabled()
-    assert JwtClaims(sub="subject").subject() == "subject"
-    with pytest.raises(ValueError, match="invalid RSA public key"):
-        JwtConfig.rs256("invalid")
+def test_a2a_jwt_exports_are_retired():
+    assert not hasattr(sdk, "JwtConfig")
+    assert not hasattr(sdk, "JwtClaims")
+    assert sdk.EchoAgentClient
 
 
 def test_retired_a2a_jwt_mappings_stay_outside_external_contract() -> None:
@@ -23,7 +17,7 @@ def test_retired_a2a_jwt_mappings_stay_outside_external_contract() -> None:
         (root / "contracts/sdk/accepted-external-contract.json").read_text()
     )
     adr = (root / "docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md").read_text()
-    # 只迁移已批准退役的九项；通用JWT本地值正控不变。
+    # 承接九项已批准退出约束；83的JWT导出退出断言继续保留，不恢复旧构造。
     retired = {
         "echo_agent::a2a::auth::JwtClaims::subject": "method",
         "echo_agent::a2a::auth::JwtConfig": "struct",

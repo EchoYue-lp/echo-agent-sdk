@@ -5,7 +5,7 @@
   "kind": "baseline",
   "source_snapshot": {
     "base_revision": "449934d22f3ab69b867f02cfb64565e073c8660e",
-    "content_digest": "e1864cc87ff524845908f5de781baa189dfed513a9b78551b23d5c59a0e2726b"
+    "content_digest": "f3bbd9c3ae4a6e0c2132f00d1f39be88a0855eb1d8b00265936ddfb0295dfde7"
   },
   "inventory_closure": "closed",
   "behavior_model_closure": "closed",
@@ -92,6 +92,10 @@
     {
       "path": "sdks",
       "status": "in_scope"
+    },
+    {
+      "path": ".gitattributes",
+      "status": "supporting"
     }
   ],
   "boundaries": [
@@ -943,8 +947,47 @@ HTTPS抓取网络失败、offline缺新crate和主动磁盘中断的原件各保
 只是来源观察归档；不重写原执行 HEAD、时间、失败或平台限制，不扩大任何行为／审计／风险接受。最后的纯元数据提交须另行核验精确 main CI。
 
 
-## 2026-11-01 StageA 源码摘要的便携校准候选
+## 2026-11-04：正式83工作树的本轮来源
 
-本次只校准 source_snapshot.content_digest。固定 canonical action c0bc306bd36d2b1b76def2b6c7308a07dda4f54b 的原 source_digest 对 StageA 业务源码实际得到 e1864cc87ff524845908f5de781baa189dfed513a9b78551b23d5c59a0e2726b，与 PR14 main 6cd2e1b6191aa2ed932dd50b2c22065405eb25f7 的原 semantic job 报告 actual 一致。该算法排除 .echo-semantic 材料；本候选不改变业务源码，也不修改原 base_revision 或既有 closure 字段。上文具名历史日期的旧摘要及执行结论保留。
+当前HEAD仍为 `83ae59e407313d7130811478a74646865d9e8bd3`，分支仍为 `chore/Echoyue/root-workspace-convergence`，
+本轮仅接收四测试154行及一份SDK说明。933个业务文件的原版校验器摘要为
+`source:0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`；installed0.5和固定c0bc原算法两读一致。候选7978仍属原接收根，
+不冒当前摘要。原base_revision、closure字段及旧执行资格不变，不宣main747合并或发行完成。
+当前Rust589及三语言定向各2的原件见本仓local的 `sdk-candidate-landing-20261104-r01/settlement.json`。
 
-原本地任务 Source18 / Final19 自然0仅为 scope=task、globalClosure=not_checked，原 task:e765c4549f9b989409b94194267faed09f9103ec2eb6d03138c1a545b9746cdd 与 contentDigest c152f4e81e8729b0389035abd6ad4c4c81ba1799fcaaf973debdf9af1198e809 继续作为当时任务证明；不能用本次摘要校准将其改签为全仓库验证。原 CI run41317513674 semantic job124880592010 的14项失败仍保留。本候选尚未正式应用或取得后继 exact main CI 结果；删除预检的固定 canonical 消费接口缺口仍未闭合，不补造 preflight，不关闭检查，不修改外部工具合同。
+
+## 2026-11-08：综合分支的主线语义移植来源
+
+本轮在 `0025d84e1a5a08634c9596092c46ca37eed0304c` 的综合分支工作树上，保留已有十份语义 WIP，
+只移植 main `6cd2e1b` 的生成前实际来源预检，以及 `747be937` 的来源便携校准意图。
+顶层 content_digest 改为固定 canonical c0bc 原 `source_digest` 函数实际得到的 `72b0eaf85279c30d8c46ffbe7e2c5fadf6f48a602ea8e2c9dda67eab2c195be8`，
+业务路径数为 934；该算法排除 `.echo-semantic`，包括本次正式检查脚本及新的静态回归测试。
+原 `base_revision`、inventory/behavior closure、Map 清单和全部历史段落保持，旧 `0e84c61ef79502743c58bf928b9a9ff208621580323d7ca6efb01a21f242731b`、
+`56b1a7e6…` 与 main StageA 的 `e1864cc8…` 均只代表各自旧来源，不能重签当前组合源码。
+
+当前 SDK 继续使用 Framework `340993201cc937fc8e4783b66be399ef9f14e3d5`、锁 `c4488065…`、
+accepted 5344 项及 430 条 route，原 49 组／107 身份 duplicate 合同未变。
+生成前预检复用当前精确 13 包 name/version/source，增加实际 checkout HEAD、跟踪源码 clean 与所有
+manifest 同 checkout 验证；原 native_message_contract 和退役检查保留，不回退 main 的 008/e151。
+
+本轮只运行无模型命令替身的六项预检回归及脚本语法检查，未执行真实 Cargo、rustdoc、生成器、
+三语言、Host 或 fresh scanner。固定 canonical c0bc 工具原件已由 Root 从原 Git 对象恢复到主根，SHA256 为
+`950a606e3b8225c802d61f1b0a6ce4b71ed0949d7b12ad73aec1cf76dbfd9c66`。本轮只执行其原
+source_digest/git_file_paths/run_git 三函数和原常量的 AST，算法未改，结果与 installed 0.5 原函数相同。
+完整 validator 的相对模块尚未恢复，旧删除预检接口缺口与原失败继续保留，完整 Source/Final 为 not_reached；
+来源摘要不代表全 SDK semantic 通过、main 已合流、精确 main CI 或发布完成。
+
+
+## 2026-11-09：本次整合工作源快照维护
+
+仅按固定 c0bc 原严格命令本次实际计算的业务摘要更新当前 content_digest，原摘要与完整写入前正文在本任务恢复材料中保留。当前业务源的本地合同、Rust 与三语言结果另有逐次原件；此快照维护不把历史 Source/Final、旧运行或未完成的 SDK main CI 改成通过，不提升现有库存／行为模型之外的全局闭合资格。原 source_snapshot 的 base_revision 若仍属于真实 main 祖先则保留。
+
+
+### 2026-11-09 原ADR章节补全后的实际摘要
+
+原producer实际拒绝ADR0046缺少候选章节。只将原取舍中已有的方案比较与影响边界补成具名章节，四条处置和API/生成记录不改。业务摘要从`source:6c9e273cf32e32ac8af48541dba9a4285fbd03ce1d91e1e8581252a0748d7048`更新为实际`source:3f52c537ef3dcccc7d3fa7f6c04236ae36ea968b94df9e0c5862d78adf2a0b64`；旧原件和失败保留，不重标先前矩阵的输入。
+
+
+### 2026-11-09 冷CI薄适配后的最终输入
+
+本次仅新增并验证CI原预检回放工程适配；原Action/producer/外部schema不变，Root将当前业务摘要从`source:3f52c537ef3dcccc7d3fa7f6c04236ae36ea968b94df9e0c5862d78adf2a0b64`更新为实际`source:745a7f65f51b53af86dd57528eab64cf4956c6b9600a4a99c64d50bf46a677d9`。两组历史strict原件与全部早先失败保留；新快照须执行原完整strict。

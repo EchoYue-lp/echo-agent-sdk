@@ -220,6 +220,7 @@ export type LlmReasoningBlock =
   | { readonly kind: "opaque"; readonly data: string; readonly id: string; readonly provider: string; readonly summary: readonly string[] };
 
 export interface LlmToolCall {
+  readonly provider_source?: ProviderOutputSource | null;
   readonly arguments: string;
   readonly call_type: string;
   readonly function_name: string;
@@ -232,16 +233,72 @@ export interface LlmMessage {
   readonly name?: string | null;
   readonly reasoning_blocks?: readonly LlmReasoningBlock[] | null;
   readonly reasoning_content?: string | null;
+  readonly assistant_blocks?: readonly AssistantMessageBlock[] | null;
+  readonly execution_status?: RuntimeExecutionStatus | null;
+  readonly approved_assistant_blocks?: readonly AssistantMessageBlock[] | null;
   readonly tool_call_id?: string | null;
+  readonly tool_result_is_error?: boolean | null;
+  readonly provider_response?: ProviderResponseMetadata | null;
   readonly tool_calls?: readonly LlmToolCall[] | null;
 }
 
+/** 原供应商观察固定九字段；属性缺失与WireValue Null分开，不累计usage或推导执行成功。 */
+export interface ProviderResponseMetadata {
+  readonly protocol: "chat_completions" | "responses" | "anthropic";
+  readonly provider: string;
+  readonly request_id?: string | null;
+  readonly model?: Extract<WireValue, {readonly kind: "string" | "null"}>;
+  readonly stop_reason?: Extract<WireValue, {readonly kind: "string" | "null"}>;
+  readonly stop_sequence?: Extract<WireValue, {readonly kind: "string" | "null"}>;
+  readonly status?: Extract<WireValue, {readonly kind: "string" | "null"}>;
+  readonly incomplete_details?: Extract<WireValue, {readonly kind: "map" | "null"}>;
+  readonly usage?: Extract<WireValue, {readonly kind: "map" | "null"}>;
+}
+
+/** Framework原生块的wire投影；complete/final_answer都不授予Run结束资格。 */
+export interface AssistantMessageBlock {
+  readonly provider_source?: ProviderOutputSource | null;
+  readonly block_id: string;
+  readonly request_id: string;
+  readonly sequence: WireU64;
+  readonly phase: "reasoning" | "commentary" | "partial_answer" | "final_answer" | "unknown";
+  readonly delta: string;
+  readonly complete: boolean;
+  readonly provider?: string | null;
+  readonly reasoning?: LlmReasoningBlock | null;
+}
+
+export interface ProviderOutputSource {
+  readonly protocol: "chat_completions" | "responses" | "anthropic";
+  readonly request_id: string;
+  readonly item_id: string;
+  readonly output_index: number;
+  readonly content_index?: number | null;
+  readonly content_kind?: string | null;
+  readonly phase?: string | null;
+}
+
+/** 原运行时的持久化观察；SDK不产生状态或据此判定TaskRun目标完成。 */
+export interface RuntimeExecutionStatus {
+  readonly execution_id: string;
+  readonly request_id?: string | null;
+  readonly sequence: WireU64;
+  readonly phase: "Thinking" | "Acting" | "Terminal";
+  readonly status: "started" | "waiting" | "tool_pending" | "candidate" | "settled" | "cancelled" | "failed";
+  readonly reason?: string | null;
+}
+
 export interface LlmToolDefinition {
+  readonly strict?: boolean | null;
   readonly description: string;
   readonly name: string;
   readonly parameters: WireValue;
   readonly tool_type: string;
 }
+
+/** 既有请求字段的canonical值；不代表新增独立Framework API身份。 */
+export type LlmToolChoice = "auto" | "none" | "required"
+  | { readonly type: "function"; readonly function: { readonly name: string } };
 
 export interface LlmChatRequest {
   readonly messages: readonly LlmMessage[];
@@ -251,7 +308,7 @@ export interface LlmChatRequest {
   readonly temperature?: number | null;
   readonly thinking?: WireValue | null;
   readonly timeouts?: WireValue | null;
-  readonly tool_choice?: string | null;
+  readonly tool_choice?: LlmToolChoice | null;
   readonly tools?: readonly LlmToolDefinition[] | null;
   readonly user_id?: string | null;
 }
@@ -633,7 +690,13 @@ export type ContextCompressorInvocation = {
   readonly input: CompressionInput;
 };
 
-export type ExtensionInvocation = AgentCallbackInvocation | ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
+/** CustomAgent 输入沿同一完整 Message 合同；文本调用也携带 user Message。 */
+export type CustomAgentInvocation =
+  | { readonly operation: "agent_execute" | "agent_execute_stream"; readonly input: { readonly task: LlmMessage; readonly history?: readonly LlmMessage[] | null } }
+  | { readonly operation: "agent_chat" | "agent_chat_stream"; readonly input: { readonly message: LlmMessage; readonly history?: readonly LlmMessage[] | null } }
+  | { readonly operation: "agent_close"; readonly input: null };
+
+export type ExtensionInvocation = CustomAgentInvocation | AgentCallbackInvocation | ToolInvocation | LlmInvocation | StoreInvocation | CriticInvocation | ContextCompressorInvocation | AgentComponentInvocation;
 
 export interface ExtensionInvocationContext {
   readonly call_id?: string | null;

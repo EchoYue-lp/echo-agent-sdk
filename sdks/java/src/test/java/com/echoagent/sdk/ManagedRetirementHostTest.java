@@ -226,10 +226,9 @@ class ManagedRetirementHostTest {
                 assertTrue(before.path("receipts").size() > 0); assertTrue(before.path("counters").path("projected_items").longValue() > 0);
                 proof.set("before", before);
                 var delete = failure(session.invoke(DELETE, List.of(scopeId)));
-                assertEquals("framework_error", delete.code()); assertEquals(DELETE, delete.operation());
-                assertTrue(delete.getMessage().contains("Managed runtime state requires compare-and-save"));
-                assertTrue(delete.getMessage().contains("managed conversation deletion requires"));
-                assertTrue(delete.details().path("fields").toString().contains("runtime_state"));
+                assertEquals("feature_unavailable", delete.code()); assertEquals(DELETE, delete.operation());
+                assertEquals("never", delete.retryable());
+                assertTrue(delete.getMessage().contains("unmanaged conversation deletion is retired"));
                 errors.add(errorFact(delete));
                 var afterDelete = backend.inspect(); assertEquals(durable(before), durable(afterDelete)); assertEquals(before.path("calls"), afterDelete.path("calls"));
                 JsonNode after;

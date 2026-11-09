@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
 from .segment_range_values import SegmentRange
+from .wire import from_wire
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,18 +60,12 @@ class PromptCacheLayout:
         )
 
         runtime_start = len(message_values)
-        for index in range(len(message_values) - 1, -1, -1):
-            text = _message_text(message_values[index])
-            if text is not None and text.lstrip().startswith("[runtime_context:"):
-                runtime_start = index
-                while runtime_start > system_end:
-                    previous = _message_text(message_values[runtime_start - 1])
-                    if previous is None or not previous.lstrip().startswith(
-                        "[runtime_context:"
-                    ):
-                        break
-                    runtime_start -= 1
+        # 旧公开字段名保持；其值只对应框架严格识别的连续 dynamic 尾段。
+        while runtime_start > system_end:
+            message = message_values[runtime_start - 1]
+            if message.get("role") == "system" or not _is_dynamic_tail_message(message):
                 break
+            runtime_start -= 1
 
         return cls(
             tuple(message_values[: min(canonical_start, system_end)]),
@@ -108,10 +104,80 @@ def _snapshot_values(
 
 
 def _message_text(message: Mapping[str, Any]) -> str | None:
-    content = message.get("content")
+    content = from_wire(message.get("content"))
     if isinstance(content, str):
-        return content
-    if isinstance(content, Mapping) and content.get("kind") == "string":
-        value = content.get("value")
-        return value if isinstance(value, str) else None
-    return None
+        return content or None
+    if not isinstance(content, list):
+        return None
+    texts = []
+    for part in content:
+        if not isinstance(part, Mapping):
+            continue
+        if part.get("type") == "text" and isinstance(part.get("text"), str):
+            texts.append(part["text"])
+        elif part.get("type") == "resource_link" and isinstance(
+            part.get("resource"), Mapping
+        ):
+            resource = part["resource"]
+            # 与 LinkedResource 字段一致：缺失 Option 为 null，忽略未知扩展字段。
+            fields = {
+                name: resource.get(name)
+                for name in (
+                    "annotations",
+                    "description",
+                    "mime_type",
+                    "name",
+                    "size",
+                    "title",
+                    "uri",
+                    "meta",
+                )
+            }
+            texts.append(
+                "[Linked resource]\n"
+                + json.dumps(fields, ensure_ascii=False, separators=(",", ":"))
+            )
+    # 完整文字视图只用于 canonical，不能供 dynamic 拼接信封。
+    return "".join(texts) if texts else None
+
+
+def _is_dynamic_tail_message(message: Mapping[str, Any]) -> bool:
+    content = from_wire(message.get("content"))
+    text = content if isinstance(content, str) else None
+    # 不拼接 Text parts：信封必须完整存在于首个 Text part。
+    if isinstance(content, list) and content:
+        first = content[0]
+        if isinstance(first, Mapping) and first.get("type") == "text":
+            value = first.get("text")
+            text = value if isinstance(value, str) else None
+    prefix = "<echo-agent-context-projection-v2>\n"
+    if text is None or not text.startswith(prefix):
+        return False
+    header, separator, _ = text[len(prefix) :].partition("\n\n")
+    if not separator:
+        return False
+    # str.splitlines 还识别 Unicode 分隔符；框架只按 LF/CRLF 切行。
+    lines = [line.removesuffix("\r") for line in header.split("\n")]
+    if (
+        len(lines) != 3
+        or not lines[0].startswith("marker=")
+        or lines[1] != "placement=tail"
+        or not lines[2].startswith("version=")
+    ):
+        return False
+    return _is_projection_string(lines[0][len("marker=") :]) and _is_projection_string(
+        lines[2][len("version=") :]
+    )
+
+
+def _is_projection_string(raw: str) -> bool:
+    try:
+        value = json.loads(raw)
+    except ValueError:
+        return False
+    # json.loads 允许未配对 surrogate；框架 serde_json::String 不接受。
+    return (
+        isinstance(value, str)
+        and bool(value)
+        and not any(0xD800 <= ord(character) <= 0xDFFF for character in value)
+    )

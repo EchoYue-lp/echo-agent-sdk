@@ -205,6 +205,9 @@ pub fn build_extension_schema_doc() -> serde_json::Value {
     schema_entry!(definitions, ExtensionStreamChunkValue);
     schema_entry!(definitions, ExtensionStreamCompleteValue);
     schema_entry!(definitions, AgentEventWire);
+    schema_entry!(definitions, ProviderResponseMetadataWire);
+    schema_entry!(definitions, LlmMessageWire);
+    schema_entry!(definitions, LlmChatRequestWire);
     schema_entry!(definitions, AgentStreamChunkWire);
     schema_entry!(definitions, AgentStreamTerminalWire);
     schema_entry!(definitions, ExtensionKind);
@@ -413,6 +416,7 @@ pub fn all_fixtures() -> Vec<Fixture> {
     push_facade_fixtures(&mut fixtures);
     push_channel_forward_fixtures(&mut fixtures);
     push_boundary_fixtures(&mut fixtures);
+    push_provider_response_fixtures(&mut fixtures);
     fixtures
 }
 
@@ -432,6 +436,153 @@ fn fixture(
         payload,
         expect_error: expect_error.map(str::to_string),
     }
+}
+
+fn push_provider_response_fixtures(fixtures: &mut Vec<Fixture>) {
+    for (name, choice, valid) in [
+        (
+            "request-tool-choice-function-valid",
+            serde_json::json!({"type":"function","function":{"name":" 原始工具🧪 "}}),
+            true,
+        ),
+        (
+            "request-tool-choice-null-valid",
+            serde_json::Value::Null,
+            true,
+        ),
+        (
+            "request-tool-choice-mode-valid",
+            serde_json::json!("required"),
+            true,
+        ),
+        (
+            "request-tool-choice-unknown-mode-invalid",
+            serde_json::json!("future"),
+            false,
+        ),
+        (
+            "request-tool-choice-extra-invalid",
+            serde_json::json!({"type":"function","function":{"name":"x","extra":true}}),
+            false,
+        ),
+        (
+            "request-tool-choice-blank-name-invalid",
+            serde_json::json!({"type":"function","function":{"name":"\u{00a0}"}}),
+            false,
+        ),
+    ] {
+        fixtures.push(fixture(
+            name,
+            if valid {
+                FixtureKind::Valid
+            } else {
+                FixtureKind::Invalid
+            },
+            "LlmChatRequestWire",
+            "既有accepted请求字段跟随Core canonical值；不新增独立API身份。",
+            serde_json::json!({"messages":[],"tool_choice":choice}),
+            if valid { None } else { Some("invalid_value") },
+        ));
+    }
+    let base = serde_json::json!({"protocol":"responses","provider":"fixture-provider"});
+    fixtures.push(fixture(
+        "provider-response-minimal-valid",
+        FixtureKind::Valid,
+        "ProviderResponseMetadataWire",
+        "观察缺失字段不补Null或终态。",
+        base.clone(),
+        None,
+    ));
+    let mut nulls = base.clone();
+    for name in [
+        "model",
+        "stop_reason",
+        "stop_sequence",
+        "status",
+        "incomplete_details",
+        "usage",
+    ] {
+        if let Some(fields) = nulls.as_object_mut() {
+            fields.insert(name.into(), serde_json::json!({"kind":"null"}));
+        }
+    }
+    fixtures.push(fixture(
+        "provider-response-null-fields-valid",
+        FixtureKind::Valid,
+        "ProviderResponseMetadataWire",
+        "显式Wire Null与缺失字段分别保存。",
+        nulls,
+        None,
+    ));
+    let mut unknown = base.clone();
+    if let Some(fields) = unknown.as_object_mut() {
+        fields.insert(
+            "stop_reason".into(),
+            serde_json::json!({"kind":"string","value":"provider-future-stop"}),
+        );
+        fields.insert(
+            "status".into(),
+            serde_json::json!({"kind":"string","value":"provider-future-status"}),
+        );
+        fields.insert("usage".into(), serde_json::json!({"kind":"map","value":[
+            {"key":{"kind":"string","value":"tokens"},"value":{"kind":"u64","value":"18446744073709551615"}},
+            {"key":{"kind":"string","value":"nested"},"value":{"kind":"map","value":[
+                {"key":{"kind":"string","value":"raw_text"},"value":{"kind":"string","value":"00123"}},
+                {"key":{"kind":"string","value":"missing"},"value":{"kind":"null"}}
+            ]}}
+        ]}));
+    }
+    fixtures.push(fixture(
+        "provider-response-unknown-usage-valid",
+        FixtureKind::Valid,
+        "ProviderResponseMetadataWire",
+        "未知字符串、嵌套usage和大整数沿原Scalar保值，不相加或猜测。",
+        unknown.clone(),
+        None,
+    ));
+    for (name, field, bad) in [
+        (
+            "provider-response-model-shape-invalid",
+            "model",
+            serde_json::json!({"kind":"bool","value":true}),
+        ),
+        (
+            "provider-response-usage-shape-invalid",
+            "usage",
+            serde_json::json!({"kind":"string","value":"{}"}),
+        ),
+        (
+            "provider-response-extra-field-invalid",
+            "finished",
+            serde_json::json!(true),
+        ),
+    ] {
+        let mut value = base.clone();
+        if let Some(fields) = value.as_object_mut() {
+            fields.insert(field.into(), bad);
+        }
+        fixtures.push(fixture(
+            name,
+            FixtureKind::Invalid,
+            "ProviderResponseMetadataWire",
+            "固定观察字段不能接错形或增加SDK完成权威。",
+            value,
+            Some("invalid_value"),
+        ));
+    }
+    fixtures.push(fixture(
+        "message-provider-observation-valid",
+        FixtureKind::Valid,
+        "LlmMessageWire",
+        "完整消息保自定义Role、工具错误false及观察；不产生执行终态。",
+        serde_json::json!({"role":"provider-specific-角色🧪","content":{"kind":"null"},
+            "tool_result_is_error":false,"provider_response":unknown}),
+        None,
+    ));
+    fixtures.push(fixture("llm-incomplete-bounded-failure-valid",FixtureKind::Valid,"AgentFailureWire",
+        "D2跨边界仅原六字段，不自动带raw/partial或HTTP状态。",
+        serde_json::json!({"category":"llm","terminal_kind":"failed","retryable":false,
+            "code":"llm_incomplete_response","http_status":null,"message":"Incomplete response from LLM"}),None));
 }
 
 fn push_scalar_fixtures(fixtures: &mut Vec<Fixture>) {
@@ -1163,18 +1314,61 @@ fn push_bridge_fixtures(fixtures: &mut Vec<Fixture>) {
         Some("invalid_value"),
     ));
     fixtures.push(fixture(
-        "extension-stream-agent-final-chunk-invalid",
-        FixtureKind::Invalid,
+        "extension-stream-agent-final-chunk-valid",
+        FixtureKind::Valid,
         "ExtensionStreamEvent",
-        "A CustomAgent final answer must use the outer complete terminal.",
+        "FinalAnswer 是原确认通知，消费者继续读取原执行状态和 EOF。",
         serde_json::json!({
             "event": "chunk",
             "stream": {"id": "stream-9", "generation": "2", "kind": "stream"},
             "sequence": "2",
             "value": {"kind": "agent", "value": {"event": "final_answer", "data": {"text": "done"}}}
         }),
-        Some("invalid_value"),
+        None,
     ));
+    for (name, outer, kind, phase, valid) in [
+        (
+            "status-started-chunk-valid",
+            "chunk",
+            "started",
+            "Thinking",
+            true,
+        ),
+        (
+            "status-settled-complete-valid",
+            "complete",
+            "settled",
+            "Terminal",
+            true,
+        ),
+        ("final-chunk-invalid", "chunk", "settled", "Terminal", false),
+        (
+            "status-candidate-complete-invalid",
+            "complete",
+            "candidate",
+            "Thinking",
+            false,
+        ),
+        (
+            "status-wrong-phase-invalid",
+            "complete",
+            "settled",
+            "Thinking",
+            false,
+        ),
+    ] {
+        fixtures.push(fixture(
+            &format!("extension-stream-agent-{name}"),
+            if valid { FixtureKind::Valid } else { FixtureKind::Invalid },
+            "ExtensionStreamEvent",
+            "原生 execution status 沿原 identity/sequence 转运；运输结束不能补造运行成功。",
+            serde_json::json!({"event":outer,"stream":{"id":"stream-9","generation":"2","kind":"stream"},
+                "sequence":"2","value":{"kind":"agent","value":{"event":"execution_status","data":{
+                    "execution_id":"original-execution","request_id":"original-request","sequence":u64::MAX.to_string(),
+                    "phase":phase,"status":kind}}}}),
+            if valid { None } else { Some("invalid_value") },
+        ));
+    }
     fixtures.push(fixture(
         "extension-stream-llm-empty-finish-invalid",
         FixtureKind::Invalid,
@@ -1747,12 +1941,18 @@ fn push_governance_fixtures(fixtures: &mut Vec<Fixture>) {
         serde_json::json!({"event":"transcript_projection_settlement","data":{"settlement":{
             "status":"deferred","operation_id":"projection-1","conversation_id":"会话","generation_id":"generation-1",
             "attempt":2,"error_class":"outcome_unknown","detail":"receipt lookup required"}}}), None));
-    fixtures.push(fixture("extension-factory-instance-origin-valid", FixtureKind::Valid,
-        "ExtensionInvokeCall", "A returned Agent instance retains its own handle and exact original factory.",
+    fixtures.push(fixture(
+        "extension-factory-instance-origin-valid",
+        FixtureKind::Valid,
+        "ExtensionInvokeCall",
+        "A returned Agent instance retains its own handle and exact original factory.",
         serde_json::json!({"extension":{"id":"child","generation":"7","kind":"extension"},
             "factory_origin":{"id":"factory","generation":"7","kind":"extension"},
-            "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":"任务"}},
-            "deadline":{"seconds":"20","nanos":0}}), None));
+            "invocation_id":"invocation","invocation":{"operation":"agent_execute","input":{"task":{
+                "role":"user","content":{"kind":"string","value":"任务"}}}},
+            "deadline":{"seconds":"20","nanos":0}}),
+        None,
+    ));
     fixtures.push(fixture("extension-callback-interrupted-canonical-id-valid", FixtureKind::Valid,
         "ExtensionInvocation", "Interruption preserves admitted input and canonical tool identity without fabricating a start.",
         serde_json::json!({"operation":"callback_on_tool_interrupted","input":{"agent":"智能体","call_id":"call-1",

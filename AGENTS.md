@@ -1,7 +1,33 @@
 # echo-agent-sdk AGENTS.md
 
+## 2026-11-09 SDK 新锁的独立精确裁决
+
+用户对列出精确 pin、锁和新增身份的本次问题直接回答：“同意，仅本次 SDK 精确绑定（推荐）”。原问题与回答保存在主根 `.echo-semantic/local/dependency-exact-binding-20261109-r01/authorization.json`，SHA256 `b940901e6c755ea39725be1ad184c6713aa6c9c388f9c29e8d1b4d2ffd305733`。
+
+本次仅接受 Framework main `3413d64dae23353c6d02c546ac374deded855827` 和 SDK 锁 `95e3caabaf5e72fc71ad1d6b79964eae1883b297f0006667e39c4c3a6eb8c5e5`（654 包）：原49组107个 name/version/source 身份全部保留，仅 quick-xml 组新增 `0.42.0`／`registry+https://github.com/rust-lang/crates.io-index`，现49组108身份。唯一机器权威为本仓 `.cargo/cargo-deny-duplicate-baseline.json`；cargo-deny0.20.2、原四策略命令、严格parser及原四项 audit ignore不变，不新增 allow/ignore。
+
+批准前 actual／canonical 默认 fresh audit均自然0、0漏洞及0额外warning（原4ignore保持），原四策略 deny scanner自然0；旧正式基线因锁变化拒绝的gate1与候选同raw校验0分别保留。批准后须执行原14控制并对完整原raw／receipt正式严格复核，不把候选结果改写成旧正式成功。本次不接受未来 pin、锁、身份或风险，不继承 Framework／CLI 裁决，不豁免完整 SDK、Host、三语、平台或精确 main CI。下方旧锁、旧来源和失败仍按原切点解释。
+
+正式采用后的原14项控制已实际自然0；原未改严格parser对完整原scanner0的raw／receipt执行正式复核自然0，`authorization=ACCEPTED_BY_HUMAN`、`matches_exact_baseline=true`、49组108身份。原raw为695282B／SHA256 `14a615b61b4518ea4b84315bd6be2e1823f2e82e527bc5d091f8145048575616`，未重跑scanner，旧正式gate1保留。采用后执行位于主根 `.echo-semantic/local/dependency-exact-binding-20261109-r01/formal-sdk-r01/execution.json`，SHA256 `5b9ad60aeda348f539f4144400e4b11b6cb66b20eae2a77021ec8342d67c1576`。本次actual／canonical fresh audit各自然0、原4ignore下0漏洞与0额外warning的原件为主根 `.echo-semantic/local/integrated-acceptance-20261108-r01/sdk-main-validation-r01/dependency-candidate-3413-r03/execution.json`（SHA256 `8fba40c1516e36ebafdde6e1ebd0fa6f8b17b57b9918bb5d25758bbb9aeb0e89`）。复核只签依赖输入范围，不冒完整SDK工作源无变化、Host／三语或精确main CI完成。
+
+## 2026-11-09 本次整合交付范围
+
+用户要求全部既有开发成果合入本仓 `main`，交付时仅保留主分支；旧迭代保留 baseline 分支的限定由本次范围更新，固定历史 tag 和必要恢复证据保留。仍在任务分支通过本仓适用的 Rust、合同、Host、三语言、平台及依赖门禁后 PR squash 合入 main，核验精确 main CI，再核对覆盖与远端 tip 清理旧分支。
+
+SDK 的精确 framework pin、锁和风险合同继续独立，不继承框架或 CLI 接受项。因已确认漏洞进行的 pin 升级必须保留全部来源、合同与薄适配验证；本次整合目标不自动接受新风险，也不把历史语义资料当新来源通过。
+
 本文件是 AI agent 在本仓库工作时的最高优先级约束。本仓库可独立检出使用，不依赖
 superproject 中的规则文件才能冷启动。
+
+## 本次 EKO 迭代的开发目录与构建清理
+
+用户指定唯一开发根 `/Users/ls/MyWork/code/ylp_agent_learn/lp-agent`。本仓在该根的 `echo-agent-sdk/` 内维护；源码、工程文档、构建产物、回执与恢复材料均写在主根内，不创建外部 worktree。已有外部工作树只作冻结迁移来源，备份、哈希回读和依赖核对完成后按授权回收。同一主根多会话按文件划分单一写权；验证期间冻结对应源码及依赖。
+
+同机最多五条 focused Rust 批次，jobs 不超过 5，dev/test debuginfo 关闭；完整 Rust/GUI/语言矩阵及正式性能测量按协调窗口串行。使用自有独立 target；每个 Cargo 批次结束先将原始日志、真实退出状态和需保留制品存到 target 外，确认没有活动 cargo/rustc/测试子进程/Host 或其它读取者，再 `cargo clean` 准确自有 target 并记录回执。批次前后检查空间，可用空间低于 5 GiB 停止新构建；不清其它会话缓存或源码/证据。未运行 Cargo 的文档/只读工作不为形式执行清理。
+
+## 文档语言
+
+后续新增或修改的设计、计划、说明、验收清单和交付报告统一使用中文，不再为形式新增英文副本。代码、命令、API/协议标识及原始日志保留原文；历史证据不因翻译而改写。
 
 ## 仓库定位
 
@@ -16,27 +42,6 @@ superproject 中的规则文件才能冷启动。
 不是 SDK 行为权威。依赖方向只能是 SDK 指向 framework，framework 不得依赖本仓库。
 
 ## 当前迁移门禁
-
-### 2026-11-01 Stage-A 当前独立来源与风险绑定
-
-本私有 Stage-A 的 Host 与根两个 Polars patch 固定 canonical HTTPS URL 的精确
-`0087353fd78eb73ffaa68b255cf4ef807ca96d4a`，13 个 Git 包同源；对象仅由已授权本地 Git
-传输取得，不宣称该修订已 HTTPS 发布。当前 Cargo.lock SHA256 为
-`e151fb4587c99463e90c82dbe9d1d4f7e76747be1c7f6241d21b74a0e9976a62`。
-SDK 自身 fresh 实际锁 audit、原五源视图 audit、cargo-deny0.20.2 四检查、原 capture
-与独立精确 caller 均自然0，原14项policy控制通过；deny完整保留原49组107身份提示，
-其它diagnostic为0。原4项ignore及policy/authorization/groups/tool/command不变。
-
-Root已接受独立原件复核与三字段提案，本Stage-A机器基线只维护lock_sha256、
-framework_pin、current_lock_validation；不新增风险接受，不继承Framework或CLI裁决。
-原822／0dac／013和全部历史失败按原epoch保留。accepted5352／shared431及生成物不变，
-完整17、Host／三语言／collector／当前task Source/final仍独立待验，Source按最终真实diff
-和正常preflight执行；不能把历史115／402默认签成当前Stage-A阻塞。
-
-本次只采用风险来源绑定与中文记录，不stage/compile或改正式SDK、顶层AGENTS及Root入口。
-后继正式main交付再统一真实版本；旧Rootr08与b714等旧源票不得执行采用后的新Source。
-
-### 历史 f7／Tokio 风险验收切点（原文与纪元保留）
 
 当前Host pin为已接受framework精main `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`/tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`，
 PR197/原mainCI39605663648七项SUCCESS及remote-only cold已由主协调者独审接受。
@@ -166,3 +171,22 @@ SDK 锁文件另固定 rustls 0.23.46 安全补丁。framework 签名、精确�
   [依赖警告政策](docs/sdk/governance/dependency-warning-policy-proposal.md)。
 - 不使用 `--no-verify`，不把预先存在或看似无关的失败作为合并豁免。
 - 推送后核对远端 SHA；superproject gitlink 只能引用已经推送的 commit。
+
+
+## 2026-10-27 Plan04 SDK 消费者退役候选
+
+本主目录在原 `525453fc9b9448358cc8a2f46bbcf401b10943ec` 上采用冻结候选
+`1eac40fbf224e510ab29aea128ce59c20f8b4a52` 的 SDK 去依赖闭包。仅撤销具名 A2A/LSP
+的269项 accepted 身份、23条 route、两 family/method 和39个操作；保留5352身份/431路由，
+新增接受与保留行漂移均为0。框架独立 pin 继续是 `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，
+旧框架仍含两能力；SDK不再请求或广告它们，不以整个Rust inventory决定删除。ACP/MCP、
+Task/Subagent、Host stdio、原父子close/取消/恢复和三个quickstart继续由各自原owner承载。
+
+候选锁 SHA256 `0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f`
+含653包，仅移除jsonwebtoken/pem/simple_asn1，保Tokio1.53.3与原checksum及其它保留身份。
+SDK自己的精确49组duplicate合同仍以`.cargo/cargo-deny-duplicate-baseline.json`为机器边界，
+新锁须真实重新扫描/比对，不继承历史扫描或CLI/framework豁免。
+
+候选原520项Rust、三语言及三个quickstart资格仅属于原外部工作树/1eac切点；本根适用
+生成、工程、依赖、语义与平台验证必须重新取证。上文历史记录原样保留，不因采用源码
+改称当前通过；整体Outcome、native、精确main CI、发布与官网部署仍单列，未经授权不执行。

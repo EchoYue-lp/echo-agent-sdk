@@ -1,0 +1,4 @@
+{
+  "empty": "{\"schema_version\":3,\"messages\":[]}",
+  "user_message": "{\"schema_version\":3,\"messages\":[{\"role\":\"user\",\"content\":\"保留所有字段🧭\"}]}"
+}

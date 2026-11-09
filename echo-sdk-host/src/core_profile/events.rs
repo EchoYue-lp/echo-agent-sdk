@@ -906,7 +906,7 @@ mod tests {
 
     #[test]
     fn real_journal_retention_page_authorizes_only_its_returned_watermark() -> EchoResult<()> {
-        use echo_agent::agent::{AgentEvent, EventIdentity};
+        use echo_agent::agent::EventIdentity;
         use echo_agent::state::journal::SegmentedFileEventJournal;
         use echo_agent::utils::fs::FileDurability;
         let work = tempfile::tempdir().map_err(|error| ReactError::Other(error.to_string()))?;
@@ -924,7 +924,8 @@ mod tests {
                     &identity,
                     sequence,
                     None,
-                    AgentEvent::Token("retained 中文🌊".to_string()),
+                    super::super::native_message::test_commentary_event("retained 中文🌊")
+                        .map_err(ReactError::Other)?,
                 )?)
                 .map_err(|error| {
                     ReactError::Other(format!("retention fixture journal append failed: {error}"))

@@ -21,6 +21,9 @@
 //! (ToolManager policy, run terminals, event envelopes, the session
 //! registry) stay untouched.
 
+use super::native_message::delta_tool_call_from_wire;
+use super::wire::{reasoning_block_from_wire, reasoning_block_wire};
+
 use agent_client_protocol::{Client, ConnectionTo};
 #[cfg(feature = "framework-channels")]
 use async_trait::async_trait;
@@ -32,7 +35,9 @@ use echo_agent::channels::{
     InboundMessage, MessageAttachment, MessageHandler, OutboundMessage,
 };
 use echo_agent::error::ReactError;
-use echo_agent::tools::{ToolContext, ToolParameters, ToolResult, ToolStreamEvent};
+use echo_agent::tools::{
+    InvocationResourceGuard, ToolContext, ToolParameters, ToolResult, ToolStreamEvent,
+};
 use futures::StreamExt as _;
 use std::collections::{HashMap, VecDeque};
 use std::pin::Pin;
@@ -43,6 +48,8 @@ use tokio::sync::{Notify, mpsc};
 
 use echo_sdk_protocol::error::{EchoSdkError, ExtensionErrorCode, Retryability};
 use echo_sdk_protocol::handle::{HandleKind, WireHandle};
+#[cfg(test)]
+use echo_sdk_protocol::methods::LlmUsageWire;
 use echo_sdk_protocol::methods::{
     ActivateSkillWire, AgentComponentCallInputWire, AgentComponentCallResultWire,
     AgentComponentCallWire, AgentComponentCapabilitiesWire, AgentComponentKindWire,
@@ -57,9 +64,9 @@ use echo_sdk_protocol::methods::{
     ExtensionOperation, ExtensionResult, ExtensionStreamChunkValue, ExtensionStreamCompleteValue,
     ExtensionStreamEvent, ExtensionUnit, HookResultWire, HookRunInput, HumanLoopKindWire,
     HumanLoopRequestWire, HumanLoopResponseWire, HumanRiskLevelWire, InterventionResultWire,
-    LlmChatChunkWire, LlmChatRequestWire, LlmChatResponseWire, LlmDeltaToolCallWire,
-    LlmMessageWire, LlmReasoningBlockWire, LlmStreamChunkWire, LlmStreamCompleteWire,
-    LlmToolCallWire, LlmToolDefinitionWire, PermissionDecisionWire, SandboxOutputChannelWire,
+    LlmChatChunkWire, LlmChatRequestWire, LlmChatResponseWire, LlmDeltaFunctionWire,
+    LlmDeltaToolCallWire, LlmMessageWire, LlmStreamChunkWire, LlmStreamCompleteWire,
+    LlmToolDefinitionWire, PermissionDecisionWire, SandboxOutputChannelWire,
     SandboxStreamChunkWire, SandboxStreamCompleteWire, SandboxStreamFailureWire,
     SkillDescriptorPolicyWire, StepTypeWire, StoreItemWire, StoreKeyInput,
     StoreListNamespacesInput, StoreNamespaceInput, StorePutInput, StoreSearchInput,
@@ -73,8 +80,6 @@ use echo_sdk_protocol::methods::{
     ChannelOutboundMessageWire, ChannelPluginDescriptorWire, ChannelReplyInput, ChannelSendInput,
     ChannelStartInput,
 };
-#[cfg(test)]
-use echo_sdk_protocol::methods::{LlmDeltaFunctionWire, LlmUsageWire};
 use echo_sdk_protocol::scalar::{WireI64, WirePath, WireU64, WireValue};
 
 use super::state::CoreProfileState;
@@ -94,6 +99,9 @@ const MCP_NOTIFICATION_QUEUE_CAPACITY: usize = 64;
 
 // ── Shared bridge state ─────────────────────────────────────────────────────
 
+#[cfg(test)]
+type ResponseRegistrationTestHook = Box<dyn FnOnce(Weak<CallbackInvocationOwner>) + Send>;
+
 /// Connection-captured state shared by every proxy of one connection.
 pub(crate) struct ExtensionBridgeShared {
     /// The official transport handle, captured from the first extension
@@ -111,6 +119,9 @@ pub(crate) struct ExtensionBridgeShared {
     /// them before releasing the corresponding extension handles.
     factory_cleanup_tasks: Mutex<Vec<tokio::task::JoinHandle<()>>>,
     cleanup_closed: AtomicBool,
+    /// 故障测试只在原send尝试和响应注册之间暂停调用者；不增加生产owner或协议。
+    #[cfg(test)]
+    before_response_registration_test_hook: Mutex<Option<ResponseRegistrationTestHook>>,
 }
 
 impl ExtensionBridgeShared {
@@ -121,6 +132,8 @@ impl ExtensionBridgeShared {
             active_session_callbacks: Mutex::new(HashMap::new()),
             factory_cleanup_tasks: Mutex::new(Vec::new()),
             cleanup_closed: AtomicBool::new(false),
+            #[cfg(test)]
+            before_response_registration_test_hook: Mutex::new(None),
         }
     }
 
@@ -648,6 +661,7 @@ struct ReverseInvocationScope<'a> {
     cancellation: CancellationToken,
     resolve_run_cancellation: bool,
     submitted: Option<&'a AtomicBool>,
+    command_resources: Vec<InvocationResourceGuard>,
 }
 
 /// Kinds whose callbacks mutate the implementation exclusively: a second
@@ -971,6 +985,7 @@ impl ExtensionBridge {
                 cancellation: framework_cancellation,
                 resolve_run_cancellation: true,
                 submitted: None,
+                command_resources: Vec::new(),
             },
         )
         .await
@@ -990,6 +1005,7 @@ impl ExtensionBridge {
                 cancellation: self.connection_cancellation(),
                 resolve_run_cancellation: false,
                 submitted: None,
+                command_resources: Vec::new(),
             },
         )
         .await
@@ -1071,6 +1087,7 @@ impl ExtensionBridge {
         if owns_physical_execution(&call.invocation) {
             let owner = Arc::new({
                 let mut callback_owner_init = CallbackInvocationOwner::default();
+                callback_owner_init.command_resources = Mutex::new(scope.command_resources);
                 callback_owner_init._session_callback = self.shared.enter_session_callback(
                     call.context
                         .as_ref()
@@ -1086,11 +1103,8 @@ impl ExtensionBridge {
                 cancellation,
                 CallbackStreamPolicy::CustomAgent,
                 owner.clone(),
-                None,
+                (None, scope.submitted),
             )?;
-            if let Some(submitted) = scope.submitted {
-                submitted.store(true, Ordering::Release);
-            }
             let mut drop_notice = InvocationDropNotice::new(self.clone(), &invocation_id);
             let response = owner.wait_original_response(completion).await;
             drop_notice.disarm();
@@ -1215,11 +1229,12 @@ impl ExtensionBridge {
         call_cancellation: CancellationToken,
         policy: CallbackStreamPolicy,
         owner: Arc<CallbackInvocationOwner>,
-        sink: Option<Arc<ExtensionStreamSink>>,
+        stream_and_submission: (Option<Arc<ExtensionStreamSink>>, Option<&AtomicBool>),
     ) -> std::result::Result<
         tokio::sync::oneshot::Receiver<std::result::Result<Option<ExtensionResult>, EchoSdkError>>,
         EchoSdkError,
     > {
+        let (sink, submitted) = stream_and_submission;
         owner.bind_invocation(self, &call);
         if call.invocation.operation() == ExtensionOperation::AgentClose
             && let Some(factory) = owner
@@ -1364,200 +1379,217 @@ impl ExtensionBridge {
         if let Some(observer) = &owner.facade_observer {
             observer.bind_original_callback();
         }
-        connection
-            .send_request(call)
-            .on_receiving_result(async move |answer| {
-                let actual_peer_response =
-                    CallbackInvocationOwner::has_original_peer_response(&answer);
-                // A Stream declaration, including a malformed ACK, is never a
-                // final callback return. Synthetic transport errors prove no
-                // peer response and cannot release the original physical owner.
-                let actual_final_response = match &answer {
-                    Ok(ExtensionInvokeOutcome::Result { .. }) => true,
-                    Ok(ExtensionInvokeOutcome::Error { error }) => {
-                        !super::wire::has_observation_hint(error)
-                    }
-                    Ok(ExtensionInvokeOutcome::Stream { .. }) => false,
-                    Err(error) => {
-                        actual_peer_response && !raw_observation_hint(error.data.as_ref())
-                    }
+        let sent = connection.send_request(call);
+        // send_request同步尝试发送；SentRequest不保证关闭/发送失败分支已成功入队。
+        // 此标记只表明不能再视作未尝试，不是入队或物理执行receipt。
+        if let Some(submitted) = submitted {
+            submitted.store(true, Ordering::Release);
+        }
+        #[cfg(test)]
+        {
+            let hook = self
+                .shared
+                .before_response_registration_test_hook
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .take();
+            if let Some(hook) = hook {
+                // 仅测试故障闸可能同步等待；让原runtime继续驱动真实transport/task actors。
+                tokio::task::block_in_place(|| hook(Arc::downgrade(&owner)));
+            }
+        }
+        sent.on_receiving_result(async move |answer| {
+            let actual_peer_response = CallbackInvocationOwner::has_original_peer_response(&answer);
+            // A Stream declaration, including a malformed ACK, is never a
+            // final callback return. Synthetic transport errors prove no
+            // peer response and cannot release the original physical owner.
+            let actual_final_response = match &answer {
+                Ok(ExtensionInvokeOutcome::Result { .. }) => true,
+                Ok(ExtensionInvokeOutcome::Error { error }) => {
+                    !super::wire::has_observation_hint(error)
+                }
+                Ok(ExtensionInvokeOutcome::Stream { .. }) => false,
+                Err(error) => actual_peer_response && !raw_observation_hint(error.data.as_ref()),
+            };
+            let Some(mut lease) = response_owner
+                .retained_lease
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .take()
+            else {
+                let error =
+                    invalid_observation("original callback response lost its retained lease");
+                response_owner.retain_unknown(error.clone());
+                let _ = sender.send(Err(error));
+                return Ok(());
+            };
+            let source_observation = match &answer {
+                Ok(ExtensionInvokeOutcome::Error { error })
+                    if super::wire::has_observation_hint(error) =>
+                {
+                    Some(error.clone())
+                }
+                Err(error) if raw_observation_hint(error.data.as_ref()) => {
+                    Some(transport_error(error))
+                }
+                Err(error)
+                    if response_policy == CallbackStreamPolicy::CustomAgent
+                        && agent_client_protocol::is_incoming_transport_closed(error) =>
+                {
+                    Some(invalid_observation(
+                        "original producer transport closed without physical settlement proof",
+                    ))
+                }
+                _ => None,
+            };
+            let actual_setup_ack = response_policy == CallbackStreamPolicy::CustomAgent
+                && matches!(&answer, Ok(ExtensionInvokeOutcome::Stream { stream })
+                        if expected_stream.as_ref() == Some(stream) && stream.validate().is_ok());
+            let acknowledged_factory_close = match &answer {
+                Ok(
+                    outcome @ ExtensionInvokeOutcome::Result {
+                        result: result @ ExtensionResult::AgentClose(_),
+                    },
+                ) if operation == ExtensionOperation::AgentClose
+                    && !response_owner.observed()
+                    && outcome.validate().is_ok()
+                    && bridge.ensure_payload_bound(result, false).is_ok() =>
+                {
+                    Some(result.clone())
+                }
+                _ => None,
+            };
+            let interruption = response_interrupted
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .clone()
+                .or_else(|| {
+                    response_cancellation.is_cancelled().then(|| {
+                        sdk_error(
+                            ExtensionErrorCode::Cancelled,
+                            "channel callback was cancelled",
+                            Retryability::Never,
+                            "_echo_agent/extension/invoke",
+                        )
+                    })
+                });
+            let result = if let Some(error) = source_observation {
+                Err(error)
+            } else if let Some(error) = interruption {
+                let settlement = if error.code == ExtensionErrorCode::ExtensionTimeout {
+                    echo_agent::acp::ExtensionSettlement::TimedOut
+                } else {
+                    echo_agent::acp::ExtensionSettlement::Cancelled
                 };
-                let Some(mut lease) = response_owner
+                lease.settle(settlement);
+                if actual_setup_ack {
+                    *response_owner
+                        .pending_failure
+                        .lock()
+                        .unwrap_or_else(|error| error.into_inner()) = Some(error);
+                    Ok(None)
+                } else {
+                    Err(error)
+                }
+            } else {
+                match answer {
+                    Ok(outcome) => bridge.settle_outcome(
+                        &mut lease,
+                        outcome,
+                        operation,
+                        expected_stream.as_ref(),
+                    ),
+                    Err(error) => {
+                        let typed = transport_error(&error);
+                        lease.settle(if typed.code == ExtensionErrorCode::ExtensionDisconnected {
+                            echo_agent::acp::ExtensionSettlement::Disconnected
+                        } else {
+                            echo_agent::acp::ExtensionSettlement::Answered
+                        });
+                        Err(typed)
+                    }
+                }
+            };
+            // A response is a callback-return fact. The lease and session guard
+            // must be released before the framework driver observes that fact.
+            // Prior stream notifications are routed inline by the ACP
+            // dispatch loop before this ordered response callback. At this
+            // point callback return without a terminal is an invalid flow,
+            // not permission to wait forever for user-detached work.
+            if response_policy == CallbackStreamPolicy::Channel
+                && matches!(&result, Ok(None))
+                && let Some(sink) = response_sink.as_ref()
+            {
+                sink.terminate(|sequence| ExtensionStreamEvent::Failed {
+                    stream: sink.stream_handle().clone(),
+                    sequence,
+                    error: sdk_error(
+                        ExtensionErrorCode::SerializationViolation,
+                        "channel callback returned without a stream terminal",
+                        Retryability::Never,
+                        "_echo_agent/extension/stream",
+                    ),
+                });
+            }
+            let result = match result {
+                Err(error) if super::wire::has_observation_hint(&error) => {
+                    let refusal = response_owner.retain_unknown(error.clone());
+                    Err(refusal.unwrap_or(error))
+                }
+                result => result,
+            };
+            let result = if response_policy == CallbackStreamPolicy::CustomAgent
+                && !actual_setup_ack
+                && !actual_final_response
+                && !matches!(&result, Err(error) if super::wire::has_observation_hint(error))
+            {
+                let diagnostic = invalid_observation(
+                    "original producer has no final peer response or matching stream ACK",
+                );
+                // The consumer must observe this same uncertainty, even
+                // without a legal framework identity. An ordinary decoder
+                // or ACK error would otherwise end the still-owned source.
+                Err(response_owner
+                    .retain_unknown(diagnostic.clone())
+                    .unwrap_or(diagnostic))
+            } else {
+                result
+            };
+            if response_policy == CallbackStreamPolicy::CustomAgent || response_owner.observed() {
+                // The existing CustomAgent protocol permits a setup answer
+                // before its producer sends terminal. Retain this same lease
+                // until both the real answer and declared terminal exist.
+                *response_owner
                     .retained_lease
                     .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .take()
-                else {
-                    let error =
-                        invalid_observation("original callback response lost its retained lease");
-                    response_owner.retain_unknown(error.clone());
-                    let _ = sender.send(Err(error));
-                    return Ok(());
-                };
-                let source_observation = match &answer {
-                    Ok(ExtensionInvokeOutcome::Error { error })
-                        if super::wire::has_observation_hint(error) =>
-                    {
-                        Some(error.clone())
-                    }
-                    Err(error) if raw_observation_hint(error.data.as_ref()) => {
-                        Some(transport_error(error))
-                    }
-                    Err(error)
-                        if response_policy == CallbackStreamPolicy::CustomAgent
-                            && agent_client_protocol::is_incoming_transport_closed(error) =>
-                    {
-                        Some(invalid_observation(
-                            "original producer transport closed without physical settlement proof",
-                        ))
-                    }
-                    _ => None,
-                };
-                let actual_setup_ack = response_policy == CallbackStreamPolicy::CustomAgent
-                    && matches!(&answer, Ok(ExtensionInvokeOutcome::Stream { stream })
-                        if expected_stream.as_ref() == Some(stream) && stream.validate().is_ok());
-                let acknowledged_factory_close = match &answer {
-                    Ok(
-                        outcome @ ExtensionInvokeOutcome::Result {
-                            result: result @ ExtensionResult::AgentClose(_),
-                        },
-                    ) if operation == ExtensionOperation::AgentClose
-                        && !response_owner.observed()
-                        && outcome.validate().is_ok()
-                        && bridge.ensure_payload_bound(result, false).is_ok() =>
-                    {
-                        Some(result.clone())
-                    }
-                    _ => None,
-                };
-                let interruption = response_interrupted
-                    .lock()
-                    .unwrap_or_else(|error| error.into_inner())
-                    .clone()
-                    .or_else(|| {
-                        response_cancellation.is_cancelled().then(|| {
-                            sdk_error(
-                                ExtensionErrorCode::Cancelled,
-                                "channel callback was cancelled",
-                                Retryability::Never,
-                                "_echo_agent/extension/invoke",
-                            )
-                        })
-                    });
-                let result = if let Some(error) = source_observation {
-                    Err(error)
-                } else if let Some(error) = interruption {
-                    let settlement = if error.code == ExtensionErrorCode::ExtensionTimeout {
-                        echo_agent::acp::ExtensionSettlement::TimedOut
-                    } else {
-                        echo_agent::acp::ExtensionSettlement::Cancelled
-                    };
-                    lease.settle(settlement);
-                    if actual_setup_ack {
-                        *response_owner
-                            .pending_failure
-                            .lock()
-                            .unwrap_or_else(|error| error.into_inner()) = Some(error);
-                        Ok(None)
-                    } else {
-                        Err(error)
-                    }
-                } else {
-                    match answer {
-                        Ok(outcome) => bridge.settle_outcome(
-                            &mut lease,
-                            outcome,
-                            operation,
-                            expected_stream.as_ref(),
-                        ),
-                        Err(error) => {
-                            let typed = transport_error(&error);
-                            lease.settle(
-                                if typed.code == ExtensionErrorCode::ExtensionDisconnected {
-                                    echo_agent::acp::ExtensionSettlement::Disconnected
-                                } else {
-                                    echo_agent::acp::ExtensionSettlement::Answered
-                                },
-                            );
-                            Err(typed)
-                        }
-                    }
-                };
-                // A response is a callback-return fact. The lease and session guard
-                // must be released before the framework driver observes that fact.
-                // Prior stream notifications are routed inline by the ACP
-                // dispatch loop before this ordered response callback. At this
-                // point callback return without a terminal is an invalid flow,
-                // not permission to wait forever for user-detached work.
-                if response_policy == CallbackStreamPolicy::Channel
-                    && matches!(&result, Ok(None))
-                    && let Some(sink) = response_sink.as_ref()
-                {
-                    sink.terminate(|sequence| ExtensionStreamEvent::Failed {
-                        stream: sink.stream_handle().clone(),
-                        sequence,
-                        error: sdk_error(
-                            ExtensionErrorCode::SerializationViolation,
-                            "channel callback returned without a stream terminal",
-                            Retryability::Never,
-                            "_echo_agent/extension/stream",
-                        ),
-                    });
-                }
-                let result = match result {
-                    Err(error) if super::wire::has_observation_hint(&error) => {
-                        let refusal = response_owner.retain_unknown(error.clone());
-                        Err(refusal.unwrap_or(error))
-                    }
-                    result => result,
-                };
-                let result = if response_policy == CallbackStreamPolicy::CustomAgent
-                    && !actual_setup_ack
-                    && !actual_final_response
-                    && !matches!(&result, Err(error) if super::wire::has_observation_hint(error))
-                {
-                    let diagnostic = invalid_observation(
-                        "original producer has no final peer response or matching stream ACK",
-                    );
-                    // The consumer must observe this same uncertainty, even
-                    // without a legal framework identity. An ordinary decoder
-                    // or ACK error would otherwise end the still-owned source.
-                    Err(response_owner
-                        .retain_unknown(diagnostic.clone())
-                        .unwrap_or(diagnostic))
-                } else {
-                    result
-                };
-                if response_policy == CallbackStreamPolicy::CustomAgent || response_owner.observed()
-                {
-                    // The existing CustomAgent protocol permits a setup answer
-                    // before its producer sends terminal. Retain this same lease
-                    // until both the real answer and declared terminal exist.
-                    *response_owner
-                        .retained_lease
-                        .lock()
-                        .unwrap_or_else(|error| error.into_inner()) = Some(lease);
-                } else {
-                    response_owner.finished.cancel();
-                    drop(lease);
-                }
-                response_owner.record_original_peer_response(actual_peer_response);
-                if response_policy == CallbackStreamPolicy::CustomAgent
-                    && actual_final_response
-                    && !response_owner.observed()
-                {
-                    // Return the same owner's guards and lease before either
-                    // the facade or consumer can observe this final response.
-                    response_owner
-                        .finish_original_physical_closure_with_reply(acknowledged_factory_close);
-                } else if let Some(sink) = response_sink.as_ref() {
-                    response_owner.finish_if_original_physical_facts(sink);
-                }
-                drop(response_owner);
-                let _ = sender.send(result);
-                Ok(())
-            })
-            .map_err(|error| transport_error(&error))?;
+                    .unwrap_or_else(|error| error.into_inner()) = Some(lease);
+            } else {
+                response_owner.finished.cancel();
+                drop(lease);
+            }
+            response_owner.record_original_peer_response(actual_peer_response);
+            if response_policy == CallbackStreamPolicy::CustomAgent
+                && actual_final_response
+                && !response_owner.observed()
+            {
+                // Return the same owner's guards and lease before either
+                // the facade or consumer can observe this final response.
+                response_owner
+                    .finish_original_physical_closure_with_reply(acknowledged_factory_close);
+            } else if let Some(sink) = response_sink.as_ref() {
+                response_owner.finish_if_original_physical_facts(sink);
+            }
+            drop(response_owner);
+            let _ = sender.send(result);
+            Ok(())
+        })
+        .map_err(|error| {
+            let error = transport_error(&error);
+            // 已越过send尝试，注册失败与driver退出均不提供原物理关闭证明。
+            // 用同一注册记录强持原owner；保持原transport错误映射，不补造执行身份。
+            let _ = owner.retain_unknown(error.clone());
+            error
+        })?;
         Ok(receiver)
     }
 
@@ -1606,7 +1638,7 @@ impl ExtensionBridge {
             cancellation,
             CallbackStreamPolicy::Channel,
             owner,
-            None,
+            (None, None),
         )?;
         response
             .await
@@ -1687,7 +1719,7 @@ impl ExtensionBridge {
             cancellation,
             CallbackStreamPolicy::Channel,
             owner.clone(),
-            Some(sink.clone()),
+            (Some(sink.clone()), None),
         )?;
         // Setup does not wait for the RPC response. Native callbacks may await
         // their entire producer/finally before returning that response.
@@ -1721,9 +1753,39 @@ impl ExtensionBridge {
         >,
         EchoSdkError,
     > {
+        self.invoke_owned_producer_stream_with_resources(
+            extension,
+            contexts,
+            invocation,
+            cancellation,
+            facade_observer,
+            (tool_context, Vec::new()),
+        )
+        .await
+    }
+
+    async fn invoke_owned_producer_stream_with_resources(
+        &self,
+        extension: &WireHandle,
+        contexts: (
+            ExtensionInvocationContext,
+            Option<echo_agent::agent::AgentInvocationContext>,
+        ),
+        invocation: ExtensionInvocation,
+        cancellation: CancellationToken,
+        facade_observer: Option<super::facade::stream::FacadeStreamProducer>,
+        resources: (Option<ToolContext>, Vec<InvocationResourceGuard>),
+    ) -> std::result::Result<
+        futures::stream::BoxStream<
+            'static,
+            std::result::Result<ExtensionStreamEvent, EchoSdkError>,
+        >,
+        EchoSdkError,
+    > {
         // Keep the original wire scope and retained framework context paired;
         // neither is rebuilt from the other or assigned a replacement owner.
         let (context, agent_invocation) = contexts;
+        let (tool_context, command_resources) = resources;
         let operation = invocation.operation();
         let (lease, record, _authority) =
             self.prepare(extension, operation, &invocation, cancellation.clone())?;
@@ -1742,6 +1804,7 @@ impl ExtensionBridge {
             callback_owner_init._agent_invocation = Mutex::new(agent_invocation);
             callback_owner_init.facade_observer = facade_observer;
             callback_owner_init.tool_context = Mutex::new(tool_context);
+            callback_owner_init.command_resources = Mutex::new(command_resources);
             callback_owner_init.retained_lease = Arc::new(Mutex::new(None));
             callback_owner_init.response_completed = CancellationToken::new();
             callback_owner_init.pending_failure = Mutex::new(None);
@@ -1786,7 +1849,7 @@ impl ExtensionBridge {
             cancellation,
             CallbackStreamPolicy::CustomAgent,
             owner.clone(),
-            Some(sink.clone()),
+            (Some(sink.clone()), None),
         )?;
         Ok(owned_callback_event_stream(
             owner,
@@ -2015,6 +2078,8 @@ pub(crate) struct CallbackInvocationOwner {
     context: Mutex<Option<ExtensionInvocationContext>>,
     factory_context: Mutex<Option<Arc<FactoryInstanceLease>>>,
     tool_context: Mutex<Option<ToolContext>>,
+    // 本机命令资源只交给此原owner；setup/观察者取消都不能替代物理闭合。
+    command_resources: Mutex<Vec<InvocationResourceGuard>>,
     observation: Mutex<Option<EchoSdkError>>,
     refusal: Mutex<Option<EchoSdkError>>,
     observation_changed: Notify,
@@ -2316,7 +2381,7 @@ impl CallbackInvocationOwner {
     }
 
     fn finish_original_physical_closure_with_reply(&self, original_reply: Option<ExtensionResult>) {
-        let (lease, tool_context, agent_invocation, factory_context, record) = {
+        let (lease, tool_context, command_resources, agent_invocation, factory_context, record) = {
             let _state = self
                 .state_gate
                 .lock()
@@ -2334,6 +2399,12 @@ impl CallbackInvocationOwner {
                 .lock()
                 .unwrap_or_else(|error| error.into_inner())
                 .take();
+            let command_resources = std::mem::take(
+                &mut *self
+                    .command_resources
+                    .lock()
+                    .unwrap_or_else(|error| error.into_inner()),
+            );
             let agent_invocation = self
                 ._agent_invocation
                 .lock()
@@ -2352,6 +2423,7 @@ impl CallbackInvocationOwner {
             (
                 lease,
                 tool_context,
+                command_resources,
                 agent_invocation,
                 factory_context,
                 record,
@@ -2364,6 +2436,7 @@ impl CallbackInvocationOwner {
             factory.clear_after_original_physical_closure();
         }
         drop(tool_context);
+        drop(command_resources);
         drop(agent_invocation);
         drop(lease);
         if let Some(factory) = factory_context.as_ref()
@@ -2729,6 +2802,38 @@ fn tool_react_error(error: EchoSdkError) -> ReactError {
     }
 }
 
+#[cfg(feature = "framework-web")]
+fn search_provider_error(error: EchoSdkError) -> ReactError {
+    if let Some(observation) = super::wire::observation_from_sdk_error(&error) {
+        return observation;
+    }
+    if !matches!(
+        error.retryable,
+        Retryability::Always | Retryability::AfterDelay
+    ) {
+        return react_error(error);
+    }
+    let category = match error.code {
+        ExtensionErrorCode::ExtensionFailed => echo_agent::tools::ToolFailureCategory::Transient,
+        ExtensionErrorCode::ExtensionTimeout => echo_agent::tools::ToolFailureCategory::Timeout,
+        _ => return react_error(error),
+    };
+    // 仅此只读SearchProvider边界能确认无副作用；其它组件不继承该承诺。
+    // SDK的AfterDelay没有时长字段，延迟与预算继续归框架中央重试配置所有。
+    let failure = echo_agent::tools::ToolFailure::new(category).retryable();
+    echo_agent::error::ToolError::RemoteFailure {
+        tool: "web_search".to_string(),
+        message: format!(
+            "extension bridge failure {}: {}",
+            error.code.as_str(),
+            error.message
+        ),
+        http_status: None,
+        failure: Box::new(failure),
+    }
+    .into()
+}
+
 // ToolManager accepts Complete results as-is. Preserve the framework's typed
 // failure policy here; descriptor risk tells it whether effects may have begun.
 fn tool_stream_failure(error: EchoSdkError, may_have_side_effects: bool) -> ToolResult {
@@ -3052,17 +3157,6 @@ fn agent_event_wire_from_framework(
     event: &AgentEvent,
 ) -> std::result::Result<AgentEventWire, String> {
     Ok(match event {
-        AgentEvent::Token(text) => AgentEventWire::Token { text: text.clone() },
-        AgentEvent::ThinkStart => AgentEventWire::ThinkStart,
-        AgentEvent::ThinkEnd {
-            prompt_tokens,
-            completion_tokens,
-        } => AgentEventWire::ThinkEnd {
-            prompt_tokens: WireU64::from_u64(u64::try_from(*prompt_tokens).unwrap_or(u64::MAX)),
-            completion_tokens: WireU64::from_u64(
-                u64::try_from(*completion_tokens).unwrap_or(u64::MAX),
-            ),
-        },
         AgentEvent::LlmUsage {
             model,
             prompt_tokens,
@@ -3071,21 +3165,31 @@ fn agent_event_wire_from_framework(
             cached_prompt_tokens,
             cache_creation_prompt_tokens,
             usage_reported,
-        } => AgentEventWire::LlmUsage {
-            model: model.clone(),
-            prompt_tokens: WireU64::from_u64(u64::try_from(*prompt_tokens).unwrap_or(u64::MAX)),
-            completion_tokens: WireU64::from_u64(
-                u64::try_from(*completion_tokens).unwrap_or(u64::MAX),
-            ),
-            total_tokens: WireU64::from_u64(u64::try_from(*total_tokens).unwrap_or(u64::MAX)),
-            cached_prompt_tokens: WireU64::from_u64(
-                u64::try_from(*cached_prompt_tokens).unwrap_or(u64::MAX),
-            ),
-            cache_creation_prompt_tokens: WireU64::from_u64(
-                u64::try_from(*cache_creation_prompt_tokens).unwrap_or(u64::MAX),
-            ),
-            usage_reported: *usage_reported,
-        },
+            observation,
+        } => {
+            // 旧 custom-agent wire 仅承诺七字段；真实事件走原完整 EventEnvelope。
+            // 该兼容 helper 不得把新 observation Some 静默降为无计时。
+            if observation.is_some() {
+                return Err(
+                    "custom-agent LlmUsage wire does not support model-call observations".into(),
+                );
+            }
+            AgentEventWire::LlmUsage {
+                model: model.clone(),
+                prompt_tokens: WireU64::from_u64(u64::try_from(*prompt_tokens).unwrap_or(u64::MAX)),
+                completion_tokens: WireU64::from_u64(
+                    u64::try_from(*completion_tokens).unwrap_or(u64::MAX),
+                ),
+                total_tokens: WireU64::from_u64(u64::try_from(*total_tokens).unwrap_or(u64::MAX)),
+                cached_prompt_tokens: WireU64::from_u64(
+                    u64::try_from(*cached_prompt_tokens).unwrap_or(u64::MAX),
+                ),
+                cache_creation_prompt_tokens: WireU64::from_u64(
+                    u64::try_from(*cache_creation_prompt_tokens).unwrap_or(u64::MAX),
+                ),
+                usage_reported: *usage_reported,
+            }
+        }
         AgentEvent::BudgetDecision {
             decision,
             reason,
@@ -3189,21 +3293,26 @@ fn agent_event_wire_from_framework(
         },
         AgentEvent::FinalAnswer(text) => AgentEventWire::FinalAnswer { text: text.clone() },
         AgentEvent::Cancelled => AgentEventWire::Cancelled,
-        _ => return Err("unsupported framework AgentEvent variant".to_string()),
+        _ => return super::native_message::from_framework(event),
     })
 }
 
 fn agent_event_from_wire(wire: AgentEventWire) -> std::result::Result<AgentEvent, String> {
     Ok(match wire {
-        AgentEventWire::Token { text } => AgentEvent::Token(text),
-        AgentEventWire::ThinkStart => AgentEvent::ThinkStart,
-        AgentEventWire::ThinkEnd {
-            prompt_tokens,
-            completion_tokens,
-        } => AgentEvent::ThinkEnd {
-            prompt_tokens: wire_usize(prompt_tokens, "prompt token count")?,
-            completion_tokens: wire_usize(completion_tokens, "completion token count")?,
-        },
+        AgentEventWire::ExecutionStatus(status) => {
+            return super::native_message::status_to_framework(status);
+        }
+        AgentEventWire::AssistantMessage { block } => {
+            return super::native_message::to_framework(block);
+        }
+        AgentEventWire::Token { .. }
+        | AgentEventWire::ThinkStart
+        | AgentEventWire::ThinkEnd { .. } => {
+            return Err(
+                "retired token/think event; use native assistant_message with its original phase"
+                    .into(),
+            );
+        }
         AgentEventWire::LlmUsage {
             model,
             prompt_tokens,
@@ -3223,6 +3332,7 @@ fn agent_event_from_wire(wire: AgentEventWire) -> std::result::Result<AgentEvent
                 "cache creation prompt token count",
             )?,
             usage_reported,
+            observation: None,
         },
         AgentEventWire::BudgetDecision {
             decision,
@@ -3758,7 +3868,8 @@ fn cache_hints_json(hints: &echo_agent::llm::cache::CacheHints) -> serde_json::V
             "system": range(hints.segments.system),
             "canonical": range(hints.segments.canonical),
             "history": range(hints.segments.history),
-            "runtime_context": range(hints.segments.runtime_context),
+            // 保留既有 wire key；范围取新 Framework 的规范尾部动态段，不与 canonical 混淆。
+            "runtime_context": range(hints.segments.dynamic),
         }
     })
 }
@@ -3788,118 +3899,59 @@ fn provider_capabilities(
     }
 }
 
-fn reasoning_block_wire(block: &echo_agent::llm::types::ReasoningBlock) -> LlmReasoningBlockWire {
-    match block {
-        echo_agent::llm::types::ReasoningBlock::Signed {
-            thinking,
-            signature,
-        } => LlmReasoningBlockWire::Signed {
-            thinking: thinking.clone(),
-            signature: signature.clone(),
-        },
-        echo_agent::llm::types::ReasoningBlock::Redacted { data } => {
-            LlmReasoningBlockWire::Redacted { data: data.clone() }
-        }
-        echo_agent::llm::types::ReasoningBlock::Opaque {
-            provider,
-            id,
-            data,
-            summary,
-        } => LlmReasoningBlockWire::Opaque {
-            provider: provider.clone(),
-            id: id.clone(),
-            data: data.clone(),
-            summary: summary.clone(),
-        },
-    }
-}
-
-fn reasoning_block_from_wire(
-    block: LlmReasoningBlockWire,
-) -> echo_agent::llm::types::ReasoningBlock {
-    match block {
-        LlmReasoningBlockWire::Signed {
-            thinking,
-            signature,
-        } => echo_agent::llm::types::ReasoningBlock::Signed {
-            thinking,
-            signature,
-        },
-        LlmReasoningBlockWire::Redacted { data } => {
-            echo_agent::llm::types::ReasoningBlock::Redacted { data }
-        }
-        LlmReasoningBlockWire::Opaque {
-            provider,
-            id,
-            data,
-            summary,
-        } => echo_agent::llm::types::ReasoningBlock::Opaque {
-            provider,
-            id,
-            data,
-            summary,
-        },
-    }
-}
-
 fn message_wire(
     message: &echo_agent::llm::types::Message,
 ) -> std::result::Result<LlmMessageWire, String> {
+    let metadata = super::native_message::message_metadata(message)?;
     Ok(LlmMessageWire {
         role: message.role.as_str().to_string(),
-        content: to_wire(&message.content)?,
-        tool_calls: message.tool_calls.as_ref().map(|calls| {
-            calls
-                .iter()
-                .map(|call| LlmToolCallWire {
-                    id: call.id.clone(),
-                    call_type: call.call_type.clone(),
-                    function_name: call.function.name.clone(),
-                    arguments: call.function.arguments.clone(),
-                })
-                .collect()
-        }),
+        content: if matches!(
+            message.content,
+            echo_agent::llm::types::MessageContent::Empty
+        ) {
+            WireValue::Null
+        } else {
+            to_wire(&message.content)?
+        },
+        tool_calls: message
+            .tool_calls
+            .as_ref()
+            .map(|calls| {
+                calls
+                    .iter()
+                    .map(super::native_message::tool_call_wire)
+                    .collect::<Result<Vec<_>, _>>()
+            })
+            .transpose()?,
         name: message.name.clone(),
         tool_call_id: message.tool_call_id.clone(),
+        tool_result_is_error: message.tool_result_is_error,
+        provider_response: message
+            .provider_response
+            .as_ref()
+            .map(super::native_message::provider_response_wire)
+            .transpose()?,
         reasoning_content: message.reasoning_content.clone(),
         reasoning_blocks: message
             .reasoning_blocks
             .as_ref()
             .map(|blocks| blocks.iter().map(reasoning_block_wire).collect()),
+        assistant_blocks: metadata.assistant_blocks,
+        approved_assistant_blocks: metadata.approved_assistant_blocks,
+        execution_status: metadata.execution_status,
     })
 }
 
 fn message_from_wire(
     message: LlmMessageWire,
 ) -> std::result::Result<echo_agent::llm::types::Message, String> {
-    Ok(echo_agent::llm::types::Message {
-        role: message.role.as_str().into(),
-        content: from_wire(message.content)?,
-        tool_calls: message.tool_calls.map(|calls| {
-            calls
-                .into_iter()
-                .map(|call| echo_agent::llm::types::ToolCall {
-                    id: call.id,
-                    call_type: call.call_type,
-                    function: echo_agent::llm::types::FunctionCall {
-                        name: call.function_name,
-                        arguments: call.arguments,
-                    },
-                })
-                .collect()
-        }),
-        name: message.name,
-        tool_call_id: message.tool_call_id,
-        reasoning_content: message.reasoning_content,
-        reasoning_blocks: message
-            .reasoning_blocks
-            .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect()),
-    })
+    super::wire::message_from_wire(message)
 }
 
 #[cfg(test)]
 fn delta_tool_call_wire(delta: &echo_agent::llm::types::DeltaToolCall) -> LlmDeltaToolCallWire {
     LlmDeltaToolCallWire {
+        provider_source: None,
         index: delta.index,
         id: delta.id.clone(),
         call_type: delta.call_type.clone(),
@@ -3913,25 +3965,17 @@ fn delta_tool_call_wire(delta: &echo_agent::llm::types::DeltaToolCall) -> LlmDel
     }
 }
 
-fn delta_tool_call_from_wire(wire: LlmDeltaToolCallWire) -> echo_agent::llm::types::DeltaToolCall {
-    echo_agent::llm::types::DeltaToolCall {
-        index: wire.index,
-        id: wire.id,
-        call_type: wire.call_type,
-        function: wire
-            .function
-            .map(|function| echo_agent::llm::types::DeltaFunctionCall {
-                name: function.name,
-                arguments: function.arguments,
-            }),
-    }
-}
-
 #[cfg(test)]
 fn chat_chunk_wire(
     chunk: &echo_agent::llm::ChatChunk,
 ) -> std::result::Result<LlmChatChunkWire, String> {
     Ok(LlmChatChunkWire {
+        provider_response: chunk
+            .delta
+            .provider_response
+            .as_ref()
+            .map(super::native_message::provider_response_wire)
+            .transpose()?,
         role: chunk.delta.role.clone(),
         content: chunk.delta.content.clone(),
         reasoning_content: chunk.delta.reasoning_content.clone(),
@@ -3940,6 +3984,14 @@ fn chat_chunk_wire(
             .reasoning_blocks
             .as_ref()
             .map(|blocks| blocks.iter().map(reasoning_block_wire).collect()),
+        assistant_blocks: {
+            // 仅借既有Message值转换保全部分块；不为DeltaMessage新增Serialize或执行owner。
+            let message = echo_agent::llm::types::Message {
+                assistant_blocks: chunk.delta.assistant_blocks.clone(),
+                ..Default::default()
+            };
+            super::native_message::message_metadata(&message)?.assistant_blocks
+        },
         tool_calls: chunk
             .delta
             .tool_calls
@@ -3958,6 +4010,10 @@ fn chat_chunk_from_wire(
     wire: LlmChatChunkWire,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
     let delta = echo_agent::llm::types::DeltaMessage {
+        provider_response: wire
+            .provider_response
+            .map(super::native_message::provider_response_from_wire)
+            .transpose()?,
         role: wire.role,
         content: wire.content,
         reasoning_content: wire.reasoning_content,
@@ -3966,8 +4022,16 @@ fn chat_chunk_from_wire(
             .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect()),
         tool_calls: wire
             .tool_calls
-            .map(|calls| calls.into_iter().map(delta_tool_call_from_wire).collect()),
+            .map(|calls| {
+                calls
+                    .into_iter()
+                    .map(delta_tool_call_from_wire)
+                    .collect::<Result<Vec<_>, _>>()
+            })
+            .transpose()?,
+        ..Default::default()
     };
+    let delta = super::native_message::with_delta_blocks(delta, wire.assistant_blocks)?;
     Ok(echo_agent::llm::ChatChunk {
         delta,
         finish_reason: wire.finish_reason,
@@ -3979,10 +4043,12 @@ fn chat_chunk_from_stream_chunk(
     wire: LlmStreamChunkWire,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
     chat_chunk_from_wire(LlmChatChunkWire {
+        provider_response: wire.provider_response,
         role: wire.role,
         content: wire.content,
         reasoning_content: wire.reasoning_content,
         reasoning_blocks: wire.reasoning_blocks,
+        assistant_blocks: wire.assistant_blocks,
         tool_calls: wire.tool_calls,
         finish_reason: None,
         usage: wire.usage,
@@ -3993,10 +4059,12 @@ fn chat_chunk_from_stream_complete(
     wire: LlmStreamCompleteWire,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
     chat_chunk_from_wire(LlmChatChunkWire {
+        provider_response: wire.provider_response,
         role: wire.role,
         content: wire.content,
         reasoning_content: wire.reasoning_content,
         reasoning_blocks: wire.reasoning_blocks,
+        assistant_blocks: wire.assistant_blocks,
         tool_calls: wire.tool_calls,
         finish_reason: Some(wire.finish_reason),
         usage: wire.usage,
@@ -4017,6 +4085,20 @@ fn chat_response_from_wire(
 fn chat_response_into_chunk(
     response: echo_agent::llm::ChatResponse,
 ) -> std::result::Result<echo_agent::llm::ChatChunk, String> {
+    let metadata = super::native_message::message_metadata(&response.message)?;
+    if metadata.execution_status.is_some() || metadata.approved_assistant_blocks.is_some() {
+        return Err(
+            "runtime/approved confirmation cannot be silently converted into a provider delta"
+                .to_string(),
+        );
+    }
+    if response.message.name.is_some()
+        || response.message.tool_call_id.is_some()
+        || response.message.tool_result_is_error.is_some()
+    {
+        return Err("Message participant/tool-result identity cannot be silently converted into a provider delta".into());
+    }
+    let assistant_blocks = metadata.assistant_blocks;
     let finish_reason = response
         .finish_reason
         .filter(|reason| !reason.trim().is_empty() && reason.chars().count() <= 256)
@@ -4032,14 +4114,16 @@ fn chat_response_into_chunk(
                 .into_iter()
                 .enumerate()
                 .map(|(index, call)| {
-                    Ok(echo_agent::llm::types::DeltaToolCall {
+                    let call = super::native_message::tool_call_wire(&call)?;
+                    delta_tool_call_from_wire(LlmDeltaToolCallWire {
+                        provider_source: call.provider_source,
                         index: u32::try_from(index)
                             .map_err(|_| "LLM response has too many tool calls".to_string())?,
                         id: Some(call.id),
                         call_type: Some(call.call_type),
-                        function: Some(echo_agent::llm::types::DeltaFunctionCall {
-                            name: Some(call.function.name),
-                            arguments: Some(call.function.arguments),
+                        function: Some(LlmDeltaFunctionWire {
+                            name: Some(call.function_name),
+                            arguments: Some(call.arguments),
                         }),
                     })
                 })
@@ -4047,13 +4131,18 @@ fn chat_response_into_chunk(
         })
         .transpose()?;
     Ok(echo_agent::llm::ChatChunk {
-        delta: echo_agent::llm::types::DeltaMessage {
-            role: Some(response.message.role.as_str().to_string()),
-            content: response.message.content.as_text(),
-            reasoning_content: response.message.reasoning_content,
-            reasoning_blocks: response.message.reasoning_blocks,
-            tool_calls,
-        },
+        delta: super::native_message::with_delta_blocks(
+            echo_agent::llm::types::DeltaMessage {
+                provider_response: response.message.provider_response,
+                role: Some(response.message.role.as_str().to_string()),
+                content: response.message.content.as_text(),
+                reasoning_content: response.message.reasoning_content,
+                reasoning_blocks: response.message.reasoning_blocks,
+                tool_calls,
+                ..Default::default()
+            },
+            assistant_blocks,
+        )?,
         finish_reason: Some(finish_reason),
         usage: response.usage,
     })
@@ -4120,12 +4209,24 @@ impl ExtensionLlmClientProxy {
                                 name: tool.function.name.clone(),
                                 description: tool.function.description.clone(),
                                 parameters: to_wire(&tool.function.parameters)?,
+                                strict: tool.function.strict,
                             })
                         })
                         .collect::<std::result::Result<Vec<_>, String>>()
                 })
                 .transpose()?,
-            tool_choice: request.tool_choice.clone(),
+            // 既有accepted字段跟随Core唯一serde，保字符串或具名对象，不新增provider规则。
+            tool_choice: request
+                .tool_choice
+                .as_ref()
+                .map(|choice| {
+                    serde_json::to_value(choice)
+                        .and_then(
+                            serde_json::from_value::<echo_sdk_protocol::methods::LlmToolChoiceWire>,
+                        )
+                        .map_err(|error| error.to_string())
+                })
+                .transpose()?,
             user_id: request.user_id.clone(),
             response_format: request.response_format.as_ref().map(to_wire).transpose()?,
             thinking: request.thinking.as_ref().map(to_wire).transpose()?,
@@ -4165,7 +4266,7 @@ impl echo_agent::llm::LlmClient for ExtensionLlmClientProxy {
                     "llm extension returned the wrong result variant".to_string(),
                 ));
             };
-            chat_response_from_wire(response).map_err(ReactError::Other)
+            chat_response_from_wire(*response).map_err(ReactError::Other)
         })
     }
 
@@ -4652,6 +4753,7 @@ impl ExtensionAgentComponentProxy {
                     cancellation: self.bridge.connection_cancellation(),
                     resolve_run_cancellation,
                     submitted: None,
+                    command_resources: Vec::new(),
                 },
             )
             .await
@@ -4659,6 +4761,10 @@ impl ExtensionAgentComponentProxy {
                 if managed {
                     managed_persistence_error(error, self.component)
                 } else {
+                    #[cfg(feature = "framework-web")]
+                    if operation == AgentComponentOperationWire::SearchProviderSearch {
+                        return search_provider_error(error);
+                    }
                     react_error(error)
                 }
             })?;
@@ -4675,12 +4781,53 @@ impl ExtensionAgentComponentProxy {
         Ok(result.result)
     }
 
+    async fn sandbox_invocation_scope<'scope>(
+        &self,
+        command: &mut echo_agent::sandbox::SandboxCommand,
+        explicit: Option<Arc<CancellationToken>>,
+    ) -> ReverseInvocationScope<'scope> {
+        let selected = explicit.or_else(|| command.cancel.take());
+        let cancellation = match selected.as_deref() {
+            Some(selected) => selected.clone(),
+            None => {
+                self.bridge
+                    .cancellation_for_context(
+                        Some(&session_invocation_context(&self.session_id)),
+                        self.bridge.connection_cancellation(),
+                    )
+                    .await
+            }
+        };
+        ReverseInvocationScope {
+            // 外层cleanup和原lease观察同一选择；后续不能再换成另一个active Run。
+            resolve_run_cancellation: false,
+            cancellation,
+            submitted: None,
+            command_resources: std::mem::take(&mut command.resource_guards),
+        }
+    }
+
     async fn invoke_with_cancellation(
         &self,
         call: AgentComponentCallInputWire,
-        cancellation: CancellationToken,
+        scope: ReverseInvocationScope<'_>,
     ) -> echo_agent::error::Result<AgentComponentCallResultWire> {
         let operation = call.operation();
+        // 普通execute/limits保持原Agent错误映射，带cancel入口保持原Sandbox错误映射。
+        let map_error: fn(EchoSdkError) -> ReactError =
+            if operation == AgentComponentOperationWire::SandboxExecuteWithLimitsAndCancel {
+                sandbox_react_error
+            } else {
+                react_error
+            };
+        if scope.cancellation.is_cancelled() {
+            return Err(map_error(sdk_error(
+                ExtensionErrorCode::Cancelled,
+                "sandbox command was cancelled before submission",
+                Retryability::Never,
+                "_echo_agent/extension/invoke",
+            )));
+        }
         if operation.component() != self.component {
             return Err(ReactError::Other(
                 "agent component operation does not match its descriptor".to_string(),
@@ -4688,17 +4835,17 @@ impl ExtensionAgentComponentProxy {
         }
         let result = self
             .bridge
-            .invoke_once(
+            .invoke_once_with_scope(
                 &self.extension,
                 Some(session_invocation_context(&self.session_id)),
                 ExtensionInvocation::AgentComponentCall(AgentComponentCallWire {
                     component: self.component,
                     call,
                 }),
-                cancellation,
+                scope,
             )
             .await
-            .map_err(sandbox_react_error)?;
+            .map_err(map_error)?;
         let ExtensionResult::AgentComponentCall(result) = result else {
             return Err(ReactError::Other(
                 "agent component extension returned the wrong result variant".to_string(),
@@ -5886,14 +6033,15 @@ impl echo_agent::compression::PreModelContextProjector for ExtensionAgentCompone
             values
                 .into_iter()
                 .map(|value| {
-                    Ok(echo_agent::compression::ContextProjection {
-                        marker: value.marker,
-                        message: value
+                    // 旧两字段 projector 仍表示边界替换，不推断 append/version。
+                    Ok(echo_agent::compression::ContextProjection::replacing(
+                        value.marker,
+                        value
                             .message
                             .map(message_from_wire)
                             .transpose()
                             .map_err(ReactError::Other)?,
-                    })
+                    ))
                 })
                 .collect()
         })
@@ -6347,7 +6495,7 @@ impl echo_agent::tasks::RevisionedTaskStore for ExtensionAgentComponentProxy {
 impl ExtensionAgentComponentProxy {
     pub(crate) fn execute_stream_with_cancel<'a>(
         &'a self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
         cancellation: CancellationToken,
         facade_observer: Option<super::facade::stream::FacadeStreamProducer>,
     ) -> futures::future::BoxFuture<
@@ -6361,22 +6509,35 @@ impl ExtensionAgentComponentProxy {
         >,
     > {
         Box::pin(async move {
+            let command_value = component_value(&command)?;
+            let scope = self
+                .sandbox_invocation_scope(&mut command, Some(Arc::new(cancellation)))
+                .await;
+            let cancellation = scope.cancellation;
+            if cancellation.is_cancelled() {
+                return Err(react_error(sdk_error(
+                    ExtensionErrorCode::Cancelled,
+                    "sandbox command was cancelled before submission",
+                    Retryability::Never,
+                    "_echo_agent/extension/invoke",
+                )));
+            }
             let invocation =
                 ExtensionInvocation::AgentComponentCallStream(AgentComponentCallWire {
                     component: self.component,
                     call: AgentComponentCallInputWire::SandboxExecuteStream {
-                        command: component_value(command)?,
+                        command: command_value,
                     },
                 });
             let source = self
                 .bridge
-                .invoke_owned_producer_stream(
+                .invoke_owned_producer_stream_with_resources(
                     &self.extension,
                     (session_invocation_context(&self.session_id), None),
                     invocation,
                     cancellation.clone(),
                     facade_observer,
-                    None,
+                    (None, scope.command_resources),
                 )
                 .await
                 .map_err(react_error)?;
@@ -6465,16 +6626,21 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
 
     fn execute(
         &self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
     ) -> futures::future::BoxFuture<
         '_,
         echo_agent::error::Result<echo_agent::sandbox::ExecutionResult>,
     > {
         Box::pin(async move {
+            let command_value = component_value(&command)?;
+            let scope = self.sandbox_invocation_scope(&mut command, None).await;
             let result = self
-                .invoke(AgentComponentCallInputWire::SandboxExecute {
-                    command: component_value(command)?,
-                })
+                .invoke_with_cancellation(
+                    AgentComponentCallInputWire::SandboxExecute {
+                        command: command_value,
+                    },
+                    scope,
+                )
                 .await?;
             match result {
                 AgentComponentCallResultWire::SandboxExecute { result } => component_decode(result),
@@ -6506,25 +6672,41 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
                 }))
                     as Pin<Box<dyn futures::Stream<Item = _> + Send + 'a>>);
             }
-            self.execute_stream_with_cancel(command, self.bridge.connection_cancellation(), None)
+            let cancellation = match command.cancel.as_deref() {
+                Some(cancellation) => cancellation.clone(),
+                None => {
+                    self.bridge
+                        .cancellation_for_context(
+                            Some(&session_invocation_context(&self.session_id)),
+                            self.bridge.connection_cancellation(),
+                        )
+                        .await
+                }
+            };
+            self.execute_stream_with_cancel(command, cancellation, None)
                 .await
         })
     }
 
     fn execute_with_limits(
         &self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
         limits: echo_agent::sandbox::ResourceLimits,
     ) -> futures::future::BoxFuture<
         '_,
         echo_agent::error::Result<echo_agent::sandbox::ExecutionResult>,
     > {
         Box::pin(async move {
+            let command_value = component_value(&command)?;
+            let scope = self.sandbox_invocation_scope(&mut command, None).await;
             let result = self
-                .invoke(AgentComponentCallInputWire::SandboxExecuteWithLimits {
-                    command: component_value(command)?,
-                    limits: component_value(limits)?,
-                })
+                .invoke_with_cancellation(
+                    AgentComponentCallInputWire::SandboxExecuteWithLimits {
+                        command: command_value,
+                        limits: component_value(limits)?,
+                    },
+                    scope,
+                )
                 .await?;
             match result {
                 AgentComponentCallResultWire::SandboxExecuteWithLimits { result } => {
@@ -6539,7 +6721,7 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
 
     fn execute_with_limits_and_cancel(
         &self,
-        command: echo_agent::sandbox::SandboxCommand,
+        mut command: echo_agent::sandbox::SandboxCommand,
         limits: echo_agent::sandbox::ResourceLimits,
         cancel: Option<Arc<CancellationToken>>,
     ) -> futures::future::BoxFuture<
@@ -6547,20 +6729,21 @@ impl echo_agent::sandbox::SandboxExecutor for ExtensionAgentComponentProxy {
         echo_agent::error::Result<echo_agent::sandbox::ExecutionResult>,
     > {
         Box::pin(async move {
-            let cancellation = cancel
-                .as_deref()
-                .cloned()
-                .unwrap_or_else(|| self.bridge.connection_cancellation());
+            let command_value = component_value(&command)?;
+            let submitted = AtomicBool::new(false);
+            let mut scope = self.sandbox_invocation_scope(&mut command, cancel).await;
+            scope.submitted = Some(&submitted);
+            let cancellation = scope.cancellation.clone();
             let result = self
                 .invoke_with_cancellation(
                     AgentComponentCallInputWire::SandboxExecuteWithLimitsAndCancel {
-                        command: component_value(command)?,
+                        command: command_value,
                         limits: component_value(limits)?,
                     },
-                    cancellation.clone(),
+                    scope,
                 )
                 .await;
-            if cancellation.is_cancelled() {
+            if cancellation.is_cancelled() && submitted.load(Ordering::Acquire) {
                 // Cleanup settles local resources after Run cancellation;
                 // inheriting that already-cancelled token would drop its
                 // response before the SDK acknowledges the actual cleanup.
@@ -7625,6 +7808,7 @@ impl ExtensionAgentCallbackProxy {
                         cancellation: bridge.connection_cancellation(),
                         resolve_run_cancellation,
                         submitted: None,
+                        command_resources: Vec::new(),
                     },
                 )
                 .await
@@ -7692,54 +7876,6 @@ impl echo_agent::agent::AgentCallback for ExtensionAgentCallbackProxy {
                     })
                 }),
         )
-    }
-
-    fn on_tool_start<'a>(
-        &'a self,
-        agent: &'a str,
-        tool: &'a str,
-        args: &'a serde_json::Value,
-    ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe(to_wire(args).map(|args| {
-            ExtensionInvocation::CallbackOnToolStart(CallbackToolStartInput {
-                agent: agent.to_string(),
-                call_id: None,
-                tool: tool.to_string(),
-                args,
-            })
-        }))
-    }
-
-    fn on_tool_end<'a>(
-        &'a self,
-        agent: &'a str,
-        tool: &'a str,
-        result: &'a str,
-    ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolEnd(
-            CallbackToolEndInput {
-                agent: agent.to_string(),
-                call_id: None,
-                tool: tool.to_string(),
-                result: result.to_string(),
-            },
-        )))
-    }
-
-    fn on_tool_error<'a>(
-        &'a self,
-        agent: &'a str,
-        tool: &'a str,
-        error: &'a ReactError,
-    ) -> futures::future::BoxFuture<'a, ()> {
-        self.observe_connection_scoped(Ok(ExtensionInvocation::CallbackOnToolError(
-            CallbackToolErrorInput {
-                agent: agent.to_string(),
-                call_id: None,
-                tool: tool.to_string(),
-                error: error.to_string(),
-            },
-        )))
     }
 
     fn on_tool_start_with_id<'a>(
@@ -8089,6 +8225,7 @@ impl echo_agent::agent::subagent::AgentFactory for SubagentFactoryAdapter {
                         cancellation: bridge.connection_cancellation(),
                         resolve_run_cancellation: true,
                         submitted: Some(&factory_lease.construction_submitted),
+                        command_resources: Vec::new(),
                     },
                 )
                 .await
@@ -8574,23 +8711,8 @@ fn close_factory_stream(
         |(mut stream, mut lease)| async move {
             match stream.next().await {
                 Some(item) => {
-                    let observation =
-                        matches!(item.as_ref(), Err(ReactError::ExecutionNotSettled { .. }));
-                    // The callback owner, not this delayed wrapper, decides
-                    // whether that invocation is still physically unknown.
-                    let terminal = (!observation && item.as_ref().is_err())
-                        || matches!(
-                            item.as_ref(),
-                            Ok(AgentEvent::FinalAnswer(_)
-                                | AgentEvent::Error { .. }
-                                | AgentEvent::Cancelled)
-                        );
-                    if terminal
-                        && let Some(owner) = lease.take()
-                        && let Err(close_error) = owner.close().await
-                    {
-                        return Some((Err(close_error), (stream, lease)));
-                    }
+                    // FinalAnswer、失败和取消都是当前 source 的观察。继续读取同一 source，
+                    // 由原 callback/physical owner 完成 drain；只有真实 EOF 才关闭原 factory。
                     Some((item, (stream, lease)))
                 }
                 None => {
@@ -8694,7 +8816,9 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let result = match self
                 .run_once(ExtensionInvocation::AgentExecute(AgentTaskInput {
-                    task: task.to_string(),
+                    task: message_wire(&echo_agent::llm::types::Message::user(task.to_string()))
+                        .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -8720,7 +8844,9 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let stream = match self
                 .run_stream(ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
-                    task: task.to_string(),
+                    task: message_wire(&echo_agent::llm::types::Message::user(task.to_string()))
+                        .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -8766,7 +8892,21 @@ impl Agent for ExtensionCustomAgentProxy {
             let stream = match self
                 .run_stream_scoped(
                     ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
-                        task: task.to_string(),
+                        task: message_wire(&echo_agent::llm::types::Message::user(
+                            task.to_string(),
+                        ))
+                        .map_err(ReactError::Other)?,
+                        history: invocation
+                            .history
+                            .as_ref()
+                            .map(|history| {
+                                history
+                                    .iter()
+                                    .map(message_wire)
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                            .transpose()
+                            .map_err(ReactError::Other)?,
                     }),
                     cancel,
                     Some(invocation),
@@ -8797,7 +8937,11 @@ impl Agent for ExtensionCustomAgentProxy {
             let stream = match self
                 .run_stream_scoped(
                     ExtensionInvocation::AgentChatStream(AgentMessageInput {
-                        message: message.to_string(),
+                        message: message_wire(&echo_agent::llm::types::Message::user(
+                            message.to_string(),
+                        ))
+                        .map_err(ReactError::Other)?,
+                        history: None,
                     }),
                     cancel,
                     None,
@@ -8843,13 +8987,25 @@ impl Agent for ExtensionCustomAgentProxy {
         >,
     > {
         Box::pin(async move {
-            let text = match message.content {
-                echo_agent::llm::types::MessageContent::Text(text) => text,
-                _ => return Err(ReactError::Other("custom Agent accepted task wire supports text only; multimodal input is unsupported".to_string())),
-            };
+            // role、Parts/ResourceLink、meta、工具身份与原生消息字段共用原转换。
+            // cancellation、invocation 和原 callback owner 继续沿 run_stream_scoped。
+            let message = message_wire(&message).map_err(ReactError::Other)?;
             let stream = match self
                 .run_stream_scoped(
-                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput { task: text }),
+                    ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
+                        task: message,
+                        history: invocation
+                            .history
+                            .as_ref()
+                            .map(|history| {
+                                history
+                                    .iter()
+                                    .map(message_wire)
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                            .transpose()
+                            .map_err(ReactError::Other)?,
+                    }),
                     cancel,
                     Some(invocation),
                 )
@@ -8894,13 +9050,25 @@ impl Agent for ExtensionCustomAgentProxy {
         >,
     > {
         Box::pin(async move {
-            let text = match message.content {
-                echo_agent::llm::types::MessageContent::Text(text) => text,
-                _ => return Err(ReactError::Other("custom Agent accepted message wire supports text only; multimodal input is unsupported".to_string())),
-            };
+            // role、Parts/ResourceLink、meta、工具身份与原生消息字段共用原转换。
+            // cancellation、invocation 和原 callback owner 继续沿 run_stream_scoped。
+            let message = message_wire(&message).map_err(ReactError::Other)?;
             let stream = match self
                 .run_stream_scoped(
-                    ExtensionInvocation::AgentChatStream(AgentMessageInput { message: text }),
+                    ExtensionInvocation::AgentChatStream(AgentMessageInput {
+                        message,
+                        history: invocation
+                            .history
+                            .as_ref()
+                            .map(|history| {
+                                history
+                                    .iter()
+                                    .map(message_wire)
+                                    .collect::<Result<Vec<_>, _>>()
+                            })
+                            .transpose()
+                            .map_err(ReactError::Other)?,
+                    }),
                     cancel,
                     Some(invocation),
                 )
@@ -8923,7 +9091,11 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let result = match self
                 .run_once(ExtensionInvocation::AgentChat(AgentMessageInput {
-                    message: message.to_string(),
+                    message: message_wire(&echo_agent::llm::types::Message::user(
+                        message.to_string(),
+                    ))
+                    .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -8949,7 +9121,11 @@ impl Agent for ExtensionCustomAgentProxy {
         Box::pin(async move {
             let stream = match self
                 .run_stream(ExtensionInvocation::AgentChatStream(AgentMessageInput {
-                    message: message.to_string(),
+                    message: message_wire(&echo_agent::llm::types::Message::user(
+                        message.to_string(),
+                    ))
+                    .map_err(ReactError::Other)?,
+                    history: None,
                 }))
                 .await
             {
@@ -9893,7 +10069,11 @@ mod tests {
                     }
                     let invocation = if custom_late_ack {
                         ExtensionInvocation::AgentExecuteStream(AgentTaskInput {
-                            task: "late-setup".to_string(),
+                            task: message_wire(&echo_agent::llm::types::Message::user(
+                                "late-setup".to_string(),
+                            ))
+                            .map_err(|error| RpcError::internal_error().data(error))?,
+                            history: None,
                         })
                     } else if streaming {
                         ExtensionInvocation::ChannelHandleStream(ChannelHandleInput {
@@ -9944,7 +10124,7 @@ mod tests {
                                     CallbackStreamPolicy::Channel
                                 },
                                 owner.clone(),
-                                streaming.then(|| sink.clone()),
+                                (streaming.then(|| sink.clone()), None),
                             )
                             .map_err(|error| RpcError::internal_error().data(error.message))?,
                     );
@@ -10071,7 +10251,7 @@ mod tests {
                             CancellationToken::new(),
                             CallbackStreamPolicy::Channel,
                             independent_owner,
-                            None,
+                            (None, None),
                         )
                         .map_err(|error| RpcError::internal_error().data(error.message))?;
                     assert!(matches!(
@@ -12133,7 +12313,7 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                 let invocation=echo_agent::agent::AgentInvocationContext {runtime:Some(echo_agent::tools::ExternalRunContext {
                     run_id:context.run_id.clone(),execution_id:context.execution_id.clone(),..Default::default()
                 }),resource_guards:context.resource_guards.clone(),..Default::default()};
-                proxy.run_stream_scoped(ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:"original held work".to_string()}),CancellationToken::new(),Some(invocation)).await
+                proxy.run_stream_scoped(ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:message_wire(&echo_agent::llm::types::Message::user("original held work".to_string())).map_err(|error| RpcError::internal_error().data(error))?, history: None }),CancellationToken::new(),Some(invocation)).await
                     .map_err(|error| RpcError::internal_error().data(format!("direct-setup phase: {error}")))?.map(|item| item.map(|_| ())).boxed()
             } else {
                 let proxy=tool_proxy.as_ref().ok_or_else(|| RpcError::internal_error().data("missing direct Tool"))?;
@@ -12944,7 +13124,7 @@ Some(ToolContext { resource_guards: vec![echo_agent::tools::InvocationResourceGu
                     let entered=Arc::new(AtomicBool::new(false));let drops=Arc::new(std::sync::atomic::AtomicUsize::new(0));
                     let descriptor=CustomAgentDescriptorWire{name:"release-child".to_string(),model_name:"fixture".to_string(),system_prompt:String::new(),tool_names:Vec::new()};
                     bridge.register_factory_instance(&factory,&child,&descriptor).map_err(|error| RpcError::internal_error().data(error.message))?;
-                    let invocation=ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:"controlled original release".to_string()});
+                    let invocation=ExtensionInvocation::AgentExecuteStream(AgentTaskInput{task:message_wire(&echo_agent::llm::types::Message::user("controlled original release".to_string())).map_err(|error| RpcError::internal_error().data(error))?, history: None });
                     let (lease,_,authority)=bridge.prepare(&child,invocation.operation(),&invocation,CancellationToken::new()).map_err(|error| RpcError::internal_error().data(error.message))?;
                     let original_context=ExtensionInvocationContext {session_id:Some("original-session".to_string()),run_id:Some("original-release-run".to_string()),execution_id:Some("original-release-execution".to_string()),stream_id:None,turn_id:None,message_id:None,call_id:None};
                     let invocation_id=lease.identity().to_string();let stream=test_stream_handle("controlled-release-stream");
@@ -12990,6 +13170,7 @@ callback_owner_init
                     assert!(callback.finished.is_cancelled());assert_eq!(drops.load(Ordering::Acquire),1);
                     let event=source.next().await.ok_or_else(|| RpcError::internal_error().data("original final value became EOF"))?.map_err(|error| RpcError::internal_error().data(format!("original final value replaced by premature close error: {error}")))?;
                     assert!(matches!(event,AgentEvent::FinalAnswer(text) if text=="release-boundary-final"));
+                    assert_eq!(calls.load(Ordering::Acquire),0,"FinalAnswer cannot close the factory before the original stream EOF");
                     assert!(source.next().await.is_none());drop(source);
                     assert!(owner.close().await.is_ok());assert_eq!(calls.load(Ordering::Acquire),1);
                     assert!(state.handles.is_closed(&child));assert_eq!(authority.in_flight(),0);
@@ -13664,6 +13845,87 @@ callback_owner_init
         Ok(())
     }
 
+    #[cfg(feature = "framework-web")]
+    #[test]
+    fn readonly_search_preserves_explicit_retryability_without_reclassifying_other_components() {
+        use echo_agent::tools::{
+            ToolFailure, ToolFailureCategory, ToolRecoveryAction, ToolSideEffect,
+        };
+
+        for retryable in [Retryability::Always, Retryability::AfterDelay] {
+            for (code, category) in [
+                (
+                    ExtensionErrorCode::ExtensionFailed,
+                    ToolFailureCategory::Transient,
+                ),
+                (
+                    ExtensionErrorCode::ExtensionTimeout,
+                    ToolFailureCategory::Timeout,
+                ),
+            ] {
+                let error = sdk_error(
+                    code,
+                    "original provider failure 中文🙂",
+                    retryable,
+                    "extension/invoke",
+                );
+                let failure = ToolFailure::from_error(&search_provider_error(error), false);
+                assert_eq!(failure.category, category);
+                assert_eq!(failure.recovery, ToolRecoveryAction::Retry);
+                assert_eq!(failure.side_effect, ToolSideEffect::None);
+            }
+            let error = sdk_error(
+                ExtensionErrorCode::ExtensionFailed,
+                "ordinary component failure",
+                retryable,
+                "extension/invoke",
+            );
+            let failure = ToolFailure::from_error(&react_error(error), false);
+            assert_eq!(failure.category, ToolFailureCategory::Permanent);
+            assert_eq!(failure.recovery, ToolRecoveryAction::Stop);
+            for (code, category) in [
+                (
+                    ExtensionErrorCode::Cancelled,
+                    ToolFailureCategory::Cancelled,
+                ),
+                (
+                    ExtensionErrorCode::InvalidValue,
+                    ToolFailureCategory::Permanent,
+                ),
+            ] {
+                let error = sdk_error(
+                    code,
+                    "original cancellation or unclassified failure",
+                    retryable,
+                    "extension/invoke",
+                );
+                let failure = ToolFailure::from_error(&search_provider_error(error), false);
+                assert_eq!(failure.category, category);
+                assert_eq!(failure.recovery, ToolRecoveryAction::Stop);
+            }
+        }
+        for (code, category) in [
+            (
+                ExtensionErrorCode::ExtensionFailed,
+                ToolFailureCategory::Permanent,
+            ),
+            (
+                ExtensionErrorCode::Cancelled,
+                ToolFailureCategory::Cancelled,
+            ),
+        ] {
+            let error = sdk_error(
+                code,
+                "original nonretryable failure",
+                Retryability::Never,
+                "extension/invoke",
+            );
+            let failure = ToolFailure::from_error(&search_provider_error(error), false);
+            assert_eq!(failure.category, category);
+            assert_eq!(failure.recovery, ToolRecoveryAction::Stop);
+        }
+    }
+
     // The original ToolManager consumes Complete directly. Exercise registered
     // proxies over actual ACP without cancelling the caller token locally.
     async fn remote_stream_terminal_case(
@@ -13900,6 +14162,7 @@ callback_owner_init
                 reasoning_content: None,
                 reasoning_blocks: None,
                 tool_calls: None,
+                ..Default::default()
             },
             finish_reason: Some("stop".to_string()),
             usage: None,
@@ -14016,14 +14279,73 @@ callback_owner_init
     }
 
     #[test]
+    fn cache_hint_legacy_wire_key_keeps_the_framework_dynamic_tail() -> Result<(), String> {
+        use echo_agent::llm::cache::{CacheHints, PromptCacheLayout};
+        use echo_agent::llm::types::Message;
+
+        let mut context = echo_agent::compression::ContextManager::builder(4096)
+            .with_system("system".into())
+            .build();
+        context.push(Message::system("[Canonical context — fixed]".into()));
+        context.push(Message::user("[runtime_context:ordinary-user-text]".into()));
+        context.push(Message::assistant("previous reply".into()));
+        context.append_versioned_projection(
+            "sdk:observed-fact",
+            "v1",
+            Some(Message::user("observed tail".into())),
+        );
+        let hints = CacheHints {
+            segments: PromptCacheLayout::from_messages(context.messages(), &[]).segment_ranges(),
+            ..CacheHints::default()
+        };
+        let actual = cache_hints_json(&hints);
+        assert_eq!(
+            actual.get("segments"),
+            Some(&serde_json::json!({
+                "system":{"start":0,"end":1}, "canonical":{"start":1,"end":2},
+                "history":{"start":2,"end":4}, "runtime_context":{"start":4,"end":5}
+            }))
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn typed_usage_helper_rejects_observation_without_loss() -> Result<(), String> {
+        let event = AgentEvent::LlmUsage {
+            model: "fixture".into(),
+            prompt_tokens: 2,
+            completion_tokens: 3,
+            total_tokens: 5,
+            cached_prompt_tokens: 1,
+            cache_creation_prompt_tokens: 0,
+            usage_reported: true,
+            observation: Some(echo_agent::agent::ModelCallObservation {
+                call_id: "原调用🙂".into(),
+                attempt_id: "原尝试".into(),
+                outcome: echo_agent::agent::ModelCallOutcome::Completed,
+                request_duration_ms: 3,
+                first_output_ms: None,
+                last_output_ms: None,
+                output_samples: 0,
+                timing_comparable: false,
+            }),
+        };
+        let before = serde_json::to_value(&event).map_err(|error| error.to_string())?;
+        let Err(error) = agent_event_wire_from_framework(&event) else {
+            return Err("unrepresentable observation was silently accepted".into());
+        };
+        assert!(error.contains("does not support model-call observations"));
+        assert_eq!(
+            serde_json::to_value(&event).map_err(|error| error.to_string())?,
+            before
+        );
+        Ok(())
+    }
+
+    #[test]
     fn every_public_agent_event_variant_round_trips() -> Result<(), String> {
         let events = vec![
-            AgentEvent::Token("token".to_string()),
-            AgentEvent::ThinkStart,
-            AgentEvent::ThinkEnd {
-                prompt_tokens: 2,
-                completion_tokens: 3,
-            },
+            super::super::native_message::test_commentary_event("native commentary")?,
             AgentEvent::LlmUsage {
                 model: "fixture-model".to_string(),
                 prompt_tokens: 2,
@@ -14032,6 +14354,7 @@ callback_owner_init
                 cached_prompt_tokens: 1,
                 cache_creation_prompt_tokens: 1,
                 usage_reported: true,
+                observation: None,
             },
             AgentEvent::BudgetDecision {
                 decision: echo_agent::agent::BudgetDecision::WindDown,
@@ -14237,3 +14560,11 @@ mod channel_forward_conversion_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "extension_bridge_message_tests.rs"]
+mod message_input_tests;
+
+#[cfg(test)]
+#[path = "consumer_compatibility_tests.rs"]
+mod consumer_compatibility_tests;

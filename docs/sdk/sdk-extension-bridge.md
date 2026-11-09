@@ -1,5 +1,71 @@
 # SDK extension bridge (bidirectional)
 
+## 工具定义strict与保留消费者
+
+LlmClient请求的tools中，每个定义沿原可选strict字段保留缺失、false与true；它与
+parameters并列，不把strict塞进参数schema。final schema自己的strict另行保留。
+完整Message仍保Parts、工具错误与响应观察；LlmClient非流式回填stream时不能把
+runtime/approved确认字段当作成功响应，原拒绝规则继续生效。
+
+## 响应观察值传（2026-10-29，第二切片）
+
+原完整Message及展开Delta DTO增加provider_response固定九字段，Message另保留
+tool_result_is_error的缺失/false/true。六个可空观察沿WireValue区分缺失与显式Null，
+usage使用原Scalar保留嵌套整数和数字样字符串；SDK不累计usage或解释供应商终态。
+metadata-only消息保持canonical Empty，过滤权威继续属于Framework。三语言示例接收的
+完整Message保留这些字段，不另建回调或执行接口。D2仍走原有界失败，未观察到native ID
+的partial工具来源不升级成成功回放，raw partial不自动暴露到跨语言错误合同。
+当前资格及冻结来源见ADR0043；正式pin、完整生成与完整消费者验收分别取证。
+
+原LlmClient请求的tool_choice现沿Core支持auto/none/required或具名Function对象
+`{type:"function",function:{name:"原始工具"}}`，保留原名。三语typed request bridge
+拒绝未知标签、额外字段与空白名，缺失/null沿原可选值处理。这是既有accepted字段的
+合法值形状演进，不新增独立ToolChoice API族；Host双向转换仍复用Core唯一serde。
+
+## 原生输出后继（2026-10-29，受控v03有限消费）
+
+原四个完整Message入口保留history、Role::Custom、附件meta与原invocation owner。
+Reverse chunk另承载原ExecutionStatus非终态和FinalAnswer/错误/取消通知；原生complete
+只提交原phase=Terminal的settled/failed/cancelled。实现方继续读到原source EOF，
+Factory也在同一EOF后关闭；String、ACK和断流不产生执行成功或第二个owner。
+
+三语言Message示例提供原source转运函数；Java沿现有Reactor按demand串行发送，
+保正在传输的future和背压，不创建线程或执行器。Checkpoint同步v03现行六字段，
+不保旧current_plan；工具回调使用原with_id路径。正式f7/0dac和accepted仍独立冻结，
+本切片新Host有限结果不代表正式来源或完整SDK通过，详见ADR0043及原生消息文档。
+
+## CustomAgent 完整输入（2026-10-28 协议与源码资源已验，Host待验）
+
+源码沿现有四个 operation 传完整 `LlmMessageWire`：execute/execute_stream 的 `input.task`、
+chat/chat_stream 的 `input.message` 均为消息对象。它包含 role、原 WireValue content、
+tool_calls/name/tool_call_id、reasoning 和原生消息元数据；Text 便利接口也转换成 user
+Message，不再传裸字符串。ResourceLink 的 meta 与 None/空值区别随内容保留；实现方应把
+整个 Message 交给其处理函数，不能只取 content.value 作为通用多模态处理。
+原 invocation 的 history 同时放在 input.history，缺失与空列表区分；例子把完整 history
+交给实现方，不能靠当前输入重新构造历史。Java 示例向 consume 交完整 invocation JSON。
+
+三个可编译示例：
+
+- TypeScript：[custom-agent-message.ts](../../sdks/typescript/examples/custom-agent-message.ts)，随原 tsconfig.examples 编译。
+- Python：[custom_agent_message.py](../../sdks/python/examples/custom_agent_message.py)，随原 examples 检查入口验证。
+- Java：[RichMessageAgentExample.java](../../sdks/java/src/main/java/com/echoagent/sdk/RichMessageAgentExample.java)，随原主源码编译。
+
+示例复用原登记、取消信号和 streamWriter。callback 返回原 CustomAgent result，不在语言端
+发布 Run 执行成功或重建 owner；流与物理 callback 的结算仍由原权威负责。
+原 raw handler 的非流式 result 和 agent_close 必须返回 outcome/result 外层，不能直接
+返回裸 operation/value。stream 分支继续回显 Host 签发的原 stream handle。
+Root 恢复 active Goal 后已从 `6cb12d3` 采用源码。纯Protocol定向114项实际通过，
+原candidate生成与语言资源同步四条原命令自然退出0；实际只改变schema、一个有效
+factory fixture和shared／三包的4份digest。5352身份／431routes、catalog／签名与
+source-contract没有漂移，三语言源码资源与shared逐字节一致。
+这是当前磁盘合同资格；正式新pin、full producer、重新构建的包与当前真实Host消费
+仍待受控窗口，不能用旧Host、旧语言全票或EKO验收代替。
+
+Java typed AgentCallback继续沿同一个完整消息合同保留assistant_blocks、execution_status、
+approved_assistant_blocks及工具调用provider_source。已批准块缺失与空列表不合并；原始
+provider phase、位置和reasoning签名／密文值传。未知字段及非法坐标仍被原严格codec
+拒绝，callback成功返回unit只确认通知处理，不替代原Run receipt或物理结束。
+
 The extension bridge lets a host language implement public `echo_agent`
 framework traits and have the Rust Agent call them back over the same ACP
 connection — with Rust semantics preserved under timeout, cancellation,
@@ -388,6 +454,32 @@ is preserved. This is necessary because ToolManager consumes a `Complete`
 result directly. LLM remote cancellation likewise remains the framework's
 Agent cancellation domain. Opaque SDK error details have no corresponding Rust
 failure field and are not invented as another DTO or inferred from messages.
+
+## 只读 SearchProvider 的失败与重试
+
+`SearchProvider` 回调抛出的普通异常没有声明暂态性质，按框架原有
+`Permanent / Stop / None` 合同只执行一次。错误文字、HTTP 状态文字及旧夹具
+固定次数均不能把永久失败改成可重试；成功与永久失败仍须分别经真实 Agent
+调用，并把结果完整带回下一次模型请求。
+
+SDK Host 的候选修复仅在 `SearchProviderSearch` 这一只读边界保留已公开的
+`retryable`：明确标记 `always` 或 `after_delay` 的 `extension_failed` 映射为
+框架现成 `ToolError::RemoteFailure` 的 `Transient / Retry / None`，
+`extension_timeout` 保留 `Timeout` 分类并声明安全重试。取消、`never`、其它
+错误码和其它 Agent component 继续沿原映射；不从诊断文字猜分类，也不为
+可能有副作用的其它组件扩大重试权限。
+
+SDK 的 `after_delay` 标签没有时长字段，因此不新增 hint 或第二套策略。
+重试预算、延迟、退避、取消及物理结算继续由框架唯一 ToolManager 执行。
+2026-10-28 的受控 epoch08 完整 Host 已完成真实 RED→GREEN：默认控制保留
+永久失败与 Timeout/Never 各单次停止，显式 Timeout/AfterDelay、
+Failed/AfterDelay、Failed/Always 由原中央机制跨过两个故障窗口后恢复。
+实际 HTTP 帧证明模型只发起一次 web_search，后续请求消费同一个 call_id；
+并非模型重发或 SDK 独立调用。默认 Rust 回归另覆盖取消、未知错误和其它组件。
+原完整语言、shared fixtures、collector 与示例入口亦已通过。
+这只证明该受控路径与默认预算，不证明任意 SDK RetryPolicy 接入，亦不替代
+正式 Git pin、source402、完整生成与发布验收；精确记录见
+[MASTER-PLAN](../MASTER-PLAN.md)。
 
 ## Verification
 

@@ -18,10 +18,13 @@ def prepare(work):
     if (work / "fixture.json").exists():
         raise ValueError("refuse replacing prior fixture inputs")
     work.mkdir(parents=True, exist_ok=True)
+    # 数据由当前Framework公开serialize_payload真实生成；不在夹具手抄私有schema。
+    payloads = json.loads(
+        Path(__file__).with_name("current_checkpoint_payloads.json").read_text()
+    )
     checkpoint = {
         "conversation_id": "runtime-A-中文🙂",
-        "messages_json": '[{"role":"user","content":"保留所有字段🧭"}]',
-        "current_plan": "legacy artifact-only text",
+        "messages_json": payloads["user_message"],
         "active_skills": ["技能A", "skill-🙂"],
         "blocked_reason": "等待输入中文",
         "working_dir": str(work.resolve()),
@@ -30,10 +33,9 @@ def prepare(work):
     second = dict(
         checkpoint,
         conversation_id="runtime-B-🙂",
-        current_plan=None,
         blocked_reason=None,
         active_skills=[],
-        messages_json="[]",
+        messages_json=payloads["empty"],
     )
     trace = {
         "run_id": "trace-中文🙂",

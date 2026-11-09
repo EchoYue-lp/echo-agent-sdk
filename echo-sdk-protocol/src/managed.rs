@@ -457,7 +457,6 @@ pub struct ScopeRetirementReceiptWire {
 pub struct AgentCheckpointWire {
     pub conversation_id: String,
     pub messages_json: String,
-    pub current_plan: Option<String>,
     pub active_skills: Vec<String>,
     pub blocked_reason: Option<String>,
     pub working_dir: Option<WirePath>,

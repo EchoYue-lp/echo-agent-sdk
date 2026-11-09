@@ -19,6 +19,7 @@ import java.util.function.BooleanSupplier;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /** Same shared model barriers and raw Host assertions as TypeScript/Python. */
@@ -137,8 +138,8 @@ class GapAckHostTest {
 
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 64})
-    void replayConsumedCursorAck(int pageSize) throws Exception {
+    @CsvSource({"1,false", "64,false", "1,true", "64,true"})
+    void replayConsumedCursorAck(int pageSize, boolean releaseBeforeAck) throws Exception {
         String host = System.getenv("ECHO_AGENT_SDK_HOST");
         assumeTrue(host != null && !host.isBlank(), "ECHO_AGENT_SDK_HOST is required for real Host E2E");
         Path work = Files.createTempDirectory("echo-sdk-page-java-");
@@ -180,14 +181,50 @@ class GapAckHostTest {
                 acknowledge(sdk, run, empty.path("next_cursor").path("last_processed_sequence").asText());
                 run.get().toCompletableFuture().get(5, TimeUnit.SECONDS);
                 assertEquals(before.size(), notifications(work).size());
+                final long coveredCursor = cursor;
+                var covered = new java.util.LinkedHashMap<>(consumed);
+                List<JsonNode> settledSuffix = null;
+                if (releaseBeforeAck) {
+                    Files.createFile(work.resolve("release"));
+                    assertTrue(run.waitForSettlement().toCompletableFuture().get(5, TimeUnit.SECONDS).path("settled").asBoolean());
+                    assertTrue(Long.parseLong(run.get().toCompletableFuture().get(5, TimeUnit.SECONDS).path("last_sequence").asText()) > coveredCursor);
+                    JsonNode page = run.replay(Long.toString(coveredCursor), 64).toCompletableFuture().get(5, TimeUnit.SECONDS);
+                    assertFalse(page.path("events").isEmpty());
+                    settledSuffix = new ArrayList<>();
+                    for (JsonNode event : page.path("events")) {
+                        var frame = JsonSupport.MAPPER.createObjectNode();
+                        frame.put("method", "_echo_agent/event");
+                        var params = frame.putObject("params");
+                        params.set("stream", run.stream().toJson());
+                        params.set("envelope", event);
+                        settledSuffix.add(frame);
+                    }
+                }
                 acknowledge(sdk, run, Long.toString(cursor));
                 run.get().toCompletableFuture().get(5, TimeUnit.SECONDS);
-                assertEquals(before.size(), notifications(work).size(), "consumed replay pages must not be sent live again");
-                Files.createFile(work.resolve("release"));
-                waitFor(() -> {
-                    try { return notifications(work).size() > before.size(); }
-                    catch (Exception error) { throw new IllegalStateException(error); }
-                });
+                List<JsonNode> afterAck = notifications(work);
+                assertUncoveredLiveFrames(afterAck.subList(before.size(), afterAck.size()), run.stream().toJson(), coveredCursor, covered, null);
+                if (releaseBeforeAck) {
+                    // settled 已清理 live delivery；只把公开 replay 后缀转成无损谓词视图。
+                    var realSuffix = settledSuffix;
+                    assertUncoveredLiveFrames(realSuffix, run.stream().toJson(), coveredCursor, covered, null);
+                    // 只验证真实帧上的断言谓词，不给客户端注入伪造事件。
+                    assertThrows(AssertionError.class, () -> assertEquals(0, realSuffix.size()));
+                    var prefixEvent = before.stream().filter(frame -> "_echo_agent/event".equals(frame.path("method").asText())).findFirst().orElseThrow();
+                    var prefixGap = before.stream().filter(frame -> "_echo_agent/gap".equals(frame.path("method").asText())).findFirst().orElseThrow();
+                    var suffixEvent = realSuffix.stream().filter(frame -> "_echo_agent/event".equals(frame.path("method").asText())).findFirst().orElseThrow();
+                    var replayedEvent = new ArrayList<>(realSuffix); replayedEvent.add(prefixEvent);
+                    var replayedGap = new ArrayList<>(realSuffix); replayedGap.add(prefixGap);
+                    assertThrows(AssertionError.class, () -> assertUncoveredLiveFrames(replayedEvent, run.stream().toJson(), coveredCursor, covered, null));
+                    assertThrows(AssertionError.class, () -> assertUncoveredLiveFrames(replayedGap, run.stream().toJson(), coveredCursor, covered, null));
+                    assertThrows(AssertionError.class, () -> assertUncoveredLiveFrames(List.of(suffixEvent, suffixEvent), run.stream().toJson(), coveredCursor, covered, null));
+                } else {
+                    Files.createFile(work.resolve("release"));
+                    waitFor(() -> {
+                        try { return notifications(work).size() > before.size(); }
+                        catch (Exception error) { throw new IllegalStateException(error); }
+                    });
+                }
                 List<JsonNode> live = notifications(work);
                 assertAfterWatermark(live.subList(before.size(), live.size()), cursor);
                 assertTrue(run.waitForSettlement().toCompletableFuture().get(5, TimeUnit.SECONDS).path("settled").asBoolean());
@@ -213,6 +250,9 @@ class GapAckHostTest {
                 }
                 assertEquals(1, terminalCount);
                 assertEquals(new ArrayList<>(consumed.values()), ids);
+                var allLive = notifications(work);
+                assertUncoveredLiveFrames(allLive.subList(before.size(), allLive.size()), run.stream().toJson(), coveredCursor, covered, all.path("events"));
+                if (settledSuffix != null) assertUncoveredLiveFrames(settledSuffix, run.stream().toJson(), coveredCursor, covered, all.path("events"));
                 session.close();
                 agent.close();
             }
@@ -414,6 +454,49 @@ class GapAckHostTest {
         Path first = work.resolve(name + "-before.json"), second = work.resolve(name + "-after.json");
         Files.writeString(first, before.toString()); Files.writeString(second, after.toString());
         assertTrue(journalFixture(work, "--compare-pages", first.toString(), second.toString()).path("same_complete_page").booleanValue());
+    }
+
+    /** ACK 只固定已消费前缀；后继通知须保持真实 stream、顺序、身份及持久化 hash。 */
+    private static void assertUncoveredLiveFrames(List<JsonNode> frames, JsonNode stream, long cursor,
+            Map<Long, String> consumed, Iterable<JsonNode> canonicalEvents) {
+        long previous = cursor;
+        var coveredIds = new java.util.HashSet<>(consumed.values());
+        var liveIds = new java.util.HashSet<String>();
+        var canonical = new java.util.HashMap<Long, JsonNode>();
+        if (canonicalEvents != null) {
+            for (JsonNode event : canonicalEvents) canonical.put(Long.parseLong(event.path("sequence").asText()), event);
+        }
+        for (JsonNode frame : frames) {
+            JsonNode params = frame.path("params");
+            assertEquals(stream, params.path("stream"));
+            if ("_echo_agent/gap".equals(frame.path("method").asText())) {
+                JsonNode gap = params.path("gap");
+                long from = Long.parseLong(gap.path("from_sequence").asText());
+                long to = Long.parseLong(gap.path("to_sequence").asText());
+                long watermark = Long.parseLong(gap.path("snapshot_watermark").asText());
+                assertTrue(from > cursor && from > previous, "gap cannot cover ACKed or previous live ranges");
+                assertTrue(to >= from && watermark >= to);
+                previous = watermark;
+            } else {
+                assertEquals("_echo_agent/event", frame.path("method").asText());
+                JsonNode event = params.path("envelope");
+                long current = Long.parseLong(event.path("sequence").asText());
+                String id = event.path("event_id").asText();
+                assertEquals(stream.path("id").asText(), event.path("stream_id").asText());
+                assertTrue(current > cursor && current > previous, "ACKed prefix and unordered events cannot be republished");
+                assertFalse(consumed.containsKey(current));
+                assertFalse(coveredIds.contains(id));
+                assertTrue(liveIds.add(id), "live identity must be unique");
+                assertFalse(event.path("content_hash").asText().isEmpty());
+                if (canonicalEvents != null) {
+                    JsonNode durable = canonical.get(current);
+                    assertTrue(durable != null, "live suffix must exist in durable replay");
+                    assertEquals(durable.path("event_id"), event.path("event_id"));
+                    assertEquals(durable.path("content_hash"), event.path("content_hash"));
+                }
+                previous = current;
+            }
+        }
     }
 
     private static void assertAfterWatermark(List<JsonNode> notifications, long watermark) {

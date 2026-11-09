@@ -98,3 +98,36 @@ Host case in each language, all without failures or skips. These are bounded
 runtime checks; complete SDK/main acceptance remains pending.
 
 This build-only change needs no new public example or website feature content.
+
+
+## 2026-10-31 后继候选：仅优化 Host 测试包
+
+当前 HTTPS Framework `340993201cc937fc8e4783b66be399ef9f14e3d5`、SDK lock
+`c4488065aa4a94a8a073e427aeddfefe7670d93b709b82555b39f2431954e1c7`
+组合的原完整 `cargo test --workspace --all-features --locked` 已实际退出 101。
+Host 单元测试为 267 通过；`core_profile_e2e` 为 33 通过、1 失败，失败属于
+Facade 错误分层负控制。剩余 Rust 与 Doc 测试尚未到达，不能记为通过。
+
+链接器另对 Host 的单个 `lib test` 报告 `__eh_frame` 超过 16 MiB。
+其实际程序 SHA256 为
+`6cda9f47bbcb40b76fa59f9ba5db0c9f7e5c9b192cab5bb24e4a9ecc748b26f8`，
+`otool` 测得 `__eh_frame = 16853884` 字节，比 16 MiB 多 76668 字节，
+`__unwind_info = 3235952` 字节。此为真实体积问题，不能按已知假阳性放行。
+
+沿用本 ADR 的单一配置权威，候选只在 `.cargo/config.toml` 增加
+`[profile.test.package.echo-sdk-host] opt-level = 2`。Cargo 的 test profile
+继承 dev，包级 override 仅调整该测试包的优化级别；既有断言与溢出检查仍启用，
+test harness 保持 unwind，不新增 test panic 配置，不改变 dev 或 release。
+这是待测量的单一优化假设，可能增加编译成本；目前没有优化后体积或零告警结论。
+单纯拆分 Rust 源文件仍链接同一个 libtest，不能作为修复证据；本候选不拆公开 API、
+测试 target 或 runner，也不更改测试发现、执行和断言。
+
+验证必须保留原完整矩阵及后续 Rust/Doc 目标、原回调 unwind 控制，并保存实际
+编译参数与 native fingerprint/profile。只有实际 `__eh_frame` 回到 16 MiB 以下、
+`__unwind_info` 保留、编译无告警且完整测试通过，才能确认本组合的改进。
+原 101、链接器告警、原始日志和旧段尺寸继续保留；若该假设失败，按新证据重新判断，
+不盲目枚举优化参数，不增加 warning suppression 或 `panic=abort`。
+
+依据沿用 [Cargo profiles](https://doc.rust-lang.org/cargo/reference/profiles.html)
+中的 test 继承和包级 override 规则。该编译与负控制更正不新增公共功能，
+`examples` 与官网无新接口或用法需要同步；原示例和完整语言验收仍须实际执行。

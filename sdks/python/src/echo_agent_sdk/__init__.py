@@ -56,6 +56,7 @@ from .client import (
     LlmChatCall,
     LlmClient,
     LlmClientDescriptor,
+    LlmToolChoice,
     McpTransportEmptyRequest,
     McpTransportPayloadRequest,
     McpTransportResult,
@@ -63,6 +64,7 @@ from .client import (
     MemoryPromoterResult,
     MemoryTriggerRequest,
     MemoryTriggerResult,
+    ProviderResponseMetadata,
     RevisionedTaskCompareAndCommitRequest,
     RevisionedTaskLoadRequest,
     RevisionedTaskStoreResult,
@@ -128,7 +130,6 @@ from .hook_event_values import HOOK_EVENT_ALL, HookEvent, HookEventCategory
 from .intervention_values import InterventionResult
 from .intrinsics import ParamValue, ToolCallParams, ToolEffect, ToolResult
 from .jsonrpc_values import JsonRpcNotification, JsonRpcRequest
-from .jwt_values import JwtClaims, JwtConfig
 from .llm_api_protocol_values import LlmApiProtocol
 from .memory_policy_values import (
     MemorySource,
@@ -302,13 +303,12 @@ __all__ = [
     "JsonRpcNotification",
     "JsonRpcRequest",
     "JsonSchemaSpec",
-    "JwtClaims",
-    "JwtConfig",
     "LlmApiProtocol",
     "LlmChatCall",
     "LlmClient",
     "LlmClientDescriptor",
     "LlmTimeouts",
+    "LlmToolChoice",
     "LlmUsageStats",
     "McpTransportEmptyRequest",
     "McpTransportPayloadRequest",
@@ -333,6 +333,7 @@ __all__ = [
     "PromptDiagnostics",
     "PromptSectionDiagnostic",
     "ProviderCapabilities",
+    "ProviderResponseMetadata",
     "ResolvedOperation",
     "ResourceLimits",
     "ResponseFormat",

@@ -1226,6 +1226,15 @@ async fn facade_admission(
             },
         ));
     }
+    // 结构/预算先校验；退役拒绝必须早于catalog及Session/Store解析，不能补造managed身份。
+    if request.operation == "echo_agent::state::delete_persisted_conversation" {
+        return Err(wire::sdk_error(
+            ExtensionErrorCode::FeatureUnavailable,
+            "unmanaged conversation deletion is retired; use delete_persisted_conversation_managed with the original request identity",
+            Retryability::Never,
+            method,
+        ).with_operation(request.operation.clone()));
+    }
     let catalog = CompiledOperationCatalog::global().map_err(|reason| {
         EchoSdkError::new(
             ExtensionErrorCode::InvalidConfig,
@@ -2068,6 +2077,18 @@ async fn facade_admission(
                         )
                     })
                     .and_then(|value| {
+                        // 校验原入站值，不能先让serde(skip)清掉本机/未知字段再检查净化结果。
+                        echo_sdk_protocol::facade::SANDBOX_COMMAND_PROJECTION
+                            .validate_json(&value)
+                            .map_err(|reason| {
+                                facade_error(
+                                    ExtensionErrorCode::InvalidValue,
+                                    format!("sandbox command is malformed: {reason}"),
+                                    Retryability::Never,
+                                    method,
+                                    FacadeFailureDetail::default(),
+                                )
+                            })?;
                         serde_json::from_value::<echo_agent::sandbox::SandboxCommand>(value)
                             .map_err(|error| {
                                 facade_error(
@@ -2582,5 +2603,294 @@ mod tests {
         assert_eq!(json.get("event_type"), Some(&serde_json::json!("complete")));
         assert!(receiver.recv().await.is_none());
         Ok(())
+    }
+}
+
+#[cfg(all(test, feature = "sdk-extension-bridge"))]
+mod store_setter_source_route_regressions {
+    use agent_client_protocol::{
+        Agent as AcpAgent, ByteStreams, Client, ConnectionTo, Error as RpcError, Responder,
+        UntypedMessage,
+    };
+    use echo_agent::evolution::MemoryLayerManager;
+    use echo_agent::evolution::audit::NullChangeLog;
+    use echo_agent::memory::{InMemoryStore, Store};
+    use echo_sdk_protocol::error::{EchoSdkError, ExtensionErrorCode, Retryability};
+    use echo_sdk_protocol::handle::WireHandle;
+    use echo_sdk_protocol::methods::*;
+    use echo_sdk_protocol::scalar::{WireU64, WireValue};
+    use std::sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    };
+    use tokio_util::compat::{TokioAsyncReadCompatExt as _, TokioAsyncWriteCompatExt as _};
+    use tokio_util::sync::CancellationToken;
+
+    const OPERATION: &str = "echo_agent::agent::react::ReactAgent::set_store";
+
+    fn source_digest() -> Result<String, String> {
+        let catalog: serde_json::Value = serde_json::from_str(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../contracts/sdk/accepted-facade-operation-catalog.json"
+        )))
+        .map_err(|error| error.to_string())?;
+        catalog
+            .get("routes")
+            .and_then(serde_json::Value::as_array)
+            .into_iter()
+            .flatten()
+            .find(|route| {
+                route.get("operation").and_then(serde_json::Value::as_str) == Some(OPERATION)
+            })
+            .and_then(|route| route.get("signature_digests"))
+            .and_then(serde_json::Value::as_array)
+            .and_then(|digests| digests.first())
+            .and_then(serde_json::Value::as_str)
+            .map(str::to_string)
+            .ok_or_else(|| "the frozen accepted set_store signature is missing".to_string())
+    }
+
+    async fn set_store_rpc(
+        connection: &ConnectionTo<AcpAgent>,
+        agent: &WireHandle,
+        session: &WireHandle,
+        store: &WireHandle,
+        digest: &str,
+    ) -> Result<serde_json::Value, RpcError> {
+        let params = serde_json::to_value(FeatureOperationRequest {
+            operation: OPERATION.to_string(),
+            signature_digest: digest.to_string(),
+            handle: Some(agent.clone()),
+            arguments: vec![
+                WireValue::Handle(session.clone()),
+                WireValue::Handle(store.clone()),
+            ],
+        })
+        .map_err(|error| RpcError::internal_error().data(error.to_string()))?;
+        connection
+            .send_request(UntypedMessage::new("_echo_agent/facade/invoke", params)?)
+            .block_task()
+            .await
+    }
+
+    fn refusal(result: Result<serde_json::Value, RpcError>) -> Result<EchoSdkError, String> {
+        match result {
+            Ok(value) => Err(format!(
+                "set_store incorrectly returned success, including possible Null: {value}"
+            )),
+            Err(error) => EchoSdkError::from_jsonrpc_data(error.data.as_ref()),
+        }
+    }
+
+    async fn unchanged(
+        authorities: &crate::factory::SessionAuthorityServices,
+        store: &Arc<dyn Store>,
+        manager: &Arc<MemoryLayerManager>,
+        tools: &[String],
+        reverse_calls: &AtomicUsize,
+    ) -> Result<(), String> {
+        authorities
+            .agent_handle
+            .read(|agent| {
+                if !agent
+                    .store()
+                    .is_some_and(|current| Arc::ptr_eq(current, store))
+                {
+                    return Err("rejected source route published replacement Store B".to_string());
+                }
+                if !agent
+                    .memory_layer_manager()
+                    .is_some_and(|current| Arc::ptr_eq(current, manager))
+                {
+                    return Err("rejected source route replaced the original manager".to_string());
+                }
+                let mut after = agent.tool_names();
+                after.sort();
+                if after.as_slice() != tools {
+                    return Err(
+                        "rejected raw setter changed the original tool registrations".to_string(),
+                    );
+                }
+                Ok(())
+            })
+            .await?;
+        let retained = store
+            .get(&["sdk"], "sentinel")
+            .await
+            .map_err(|error| error.to_string())?
+            .ok_or_else(|| "original Store A content disappeared".to_string())?;
+        if retained.value != serde_json::json!("original manager A 中文🙂") {
+            return Err("original Store A content changed".to_string());
+        }
+        if reverse_calls.load(Ordering::Acquire) != 0 {
+            return Err("a rejected setter invoked the replacement Store callback".to_string());
+        }
+        Ok(())
+    }
+
+    // 复用原Host ACP/profile接缝；只有预装manager使用crate-private原AgentHandle。
+    // set_store必须经真实Session/extension句柄、catalog、dispatch及RPC错误DTO。
+    #[tokio::test]
+    async fn set_store_rpc_refusal_keeps_session_store_and_manager_authority() -> Result<(), String>
+    {
+        let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+        let config: crate::SdkHostConfig = serde_json::from_value(serde_json::json!({
+            "schema_version": 1, "default_agent": {
+                "model": {"provider":"fixture", "name":"fixture",
+                    "base_url":"http://127.0.0.1:1/v1", "api_protocol":"chat_completions", "auth_token":"fixture"},
+                "agent": {"name":"fixture", "enable_tools":true, "enable_memory":false}
+            }
+        })).map_err(|error| error.to_string())?;
+        let prepared = config.prepare().map_err(|error| error.to_string())?;
+        let state = crate::core_profile::state::CoreProfileState::install(
+            root.path(),
+            crate::config::SdkProfileLimits::default(),
+            prepared.framework,
+            prepared.llm_client,
+        )
+        .map_err(|error| error.to_string())?;
+        let profile = crate::core_profile::SdkCoreProfile {
+            state: state.clone(),
+        };
+        let adapter = echo_agent::acp::AcpAgentAdapter::new(state.session_factory.clone())
+            .with_profile(profile);
+        let close_owner = adapter.close_owner();
+        let finish = CancellationToken::new();
+        let reverse_calls = Arc::new(AtomicUsize::new(0));
+        let (host_io, client_io) = tokio::io::duplex(32_768);
+        let (host_read, host_write) = tokio::io::split(host_io);
+        let (client_read, client_write) = tokio::io::split(client_io);
+        let host = agent_client_protocol::ConnectTo::connect_to(
+            adapter,
+            ByteStreams::new(host_write.compat_write(), host_read.compat()),
+        );
+        let (observed_tx, observed_rx) = tokio::sync::oneshot::channel::<Result<(), String>>();
+        let client = Client.builder().on_receive_request({
+            let reverse_calls = reverse_calls.clone();
+            async move |_call: ExtensionInvokeCall, responder: Responder<ExtensionInvokeOutcome>,
+                        _connection: ConnectionTo<AcpAgent>| {
+                reverse_calls.fetch_add(1, Ordering::AcqRel);
+                responder.respond(ExtensionInvokeOutcome::Error { error: EchoSdkError::new(
+                    ExtensionErrorCode::ExtensionFailed, "replacement Store callback must not run", Retryability::Never,
+                ) })
+            }
+        }, agent_client_protocol::on_receive_request!()).connect_with(
+            ByteStreams::new(client_write.compat_write(), client_read.compat()), {
+                let finish = finish.clone(); let reverse_calls = reverse_calls.clone();
+                async move |connection| {
+                    let observed = async {
+                        let mut initialize = agent_client_protocol::schema::v1::InitializeRequest::new(
+                            agent_client_protocol::schema::ProtocolVersion::V1,
+                        );
+                        let mut meta = agent_client_protocol::schema::v1::Meta::new();
+                        meta.insert("echo_agent".to_string(), serde_json::to_value(
+                            echo_sdk_protocol::capability::EchoAgentClientHello {
+                                extension_protocol_version: echo_sdk_protocol::EXTENSION_PROTOCOL_VERSION,
+                                contract_digest: state.advertisement.contract_digest.clone(),
+                                source_contract_digest: state.advertisement.source_contract_digest.clone(),
+                                required_features: Vec::new(), required_capabilities: Vec::new(),
+                            }
+                        ).map_err(|error| error.to_string())?);
+                        initialize.client_capabilities.meta = Some(meta);
+                        connection.send_request(initialize).block_task().await.map_err(|error| error.to_string())?;
+                        let agent = connection.send_request(AgentCreateRequest {
+                            config: AgentConfigWire::HostDefault, idempotency_id: None,
+                        }).block_task().await.map_err(|error| error.to_string())?.agent;
+                        let foreign_agent = connection.send_request(AgentCreateRequest {
+                            config: AgentConfigWire::HostDefault, idempotency_id: None,
+                        }).block_task().await.map_err(|error| error.to_string())?.agent;
+                        if agent == foreign_agent { return Err("fixture requires distinct Agent owners".to_string()); }
+                        let session = connection.send_request(SessionCreateRequest {
+                            agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: None,
+                        }).block_task().await.map_err(|error| error.to_string())?;
+                        let authorities = state.session_factory.session_services(&session.acp_session_id)
+                            .ok_or_else(|| "original Session authority is missing".to_string())?;
+                        let managed: Arc<dyn Store> = Arc::new(InMemoryStore::new());
+                        managed.put(&["sdk"], "sentinel", serde_json::json!("original manager A 中文🙂"))
+                            .await.map_err(|error| error.to_string())?;
+                        let manager = Arc::new(MemoryLayerManager::new(
+                            root.path().join("manager-A"), managed.clone(), Box::new(NullChangeLog),
+                        ));
+                        let tools = authorities.agent_handle.write(|agent| {
+                            agent.install_memory_layer_manager(manager.clone())?;
+                            let mut tools = agent.tool_names(); tools.sort();
+                            Ok::<_, echo_agent::error::ReactError>(tools)
+                        }).await.map_err(|error| error.to_string())?;
+                        let extension = connection.send_request(ExtensionRegisterRequest {
+                            kind: ExtensionKind::Store, implementation_id: "replacement-B".to_string(),
+                            descriptor: ExtensionDescriptor::Store { descriptor_version: 1, search_modes: Vec::new() },
+                            timeout: None,
+                        }).block_task().await.map_err(|error| error.to_string())?.extension;
+                        let digest = source_digest()?;
+
+                        let foreign = refusal(set_store_rpc(&connection, &foreign_agent, &session.session, &extension, &digest).await)?;
+                        if foreign.code != ExtensionErrorCode::InvalidValue || !foreign.message.contains("Session does not belong") {
+                            return Err(format!("foreign Session ownership was not rejected: {foreign:?}"));
+                        }
+                        unchanged(&authorities, &managed, &manager, &tools, &reverse_calls).await?;
+                        let wrong_kind = refusal(set_store_rpc(&connection, &agent, &session.session, &session.session, &digest).await)?;
+                        if wrong_kind.code != ExtensionErrorCode::InvalidValue || !wrong_kind.message.contains("Extension handle") {
+                            return Err(format!("non-Store resource kind was not rejected: {wrong_kind:?}"));
+                        }
+                        unchanged(&authorities, &managed, &manager, &tools, &reverse_calls).await?;
+                        if !extension.generation.to_u64().is_some_and(|generation| generation > 0) {
+                            return Err("fixture generation cannot provide a stale handle".to_string());
+                        }
+                        let mut stale_store = extension.clone(); stale_store.generation = WireU64::from_u64(0);
+                        let stale = refusal(set_store_rpc(&connection, &agent, &session.session, &stale_store, &digest).await)?;
+                        if stale.code != ExtensionErrorCode::StaleHandle {
+                            return Err(format!("stale Store generation was not rejected: {stale:?}"));
+                        }
+                        unchanged(&authorities, &managed, &manager, &tools, &reverse_calls).await?;
+
+                        let error = refusal(set_store_rpc(&connection, &agent, &session.session, &extension, &digest).await)?;
+                        if error.code != ExtensionErrorCode::FrameworkError || error.retryable != Retryability::Never
+                            || error.operation.as_deref() != Some(OPERATION)
+                            || !error.message.contains("MemoryLayerManager owns a different Store") {
+                            return Err(format!("original set_store refusal was lost at the real source route: {error:?}"));
+                        }
+                        let fields = error.details.as_ref().and_then(|details| details.fields.as_ref())
+                            .ok_or_else(|| "real source RPC lost canonical failure fields".to_string())?;
+                        for (key, expected) in [("framework_failure_code", "other"), ("framework_failure_category", "other"),
+                                                ("framework_terminal_kind", "failed"), ("framework_retryable", "false")] {
+                            if fields.iter().find(|field| field.key == key).map(|field| field.value.as_str()) != Some(expected) {
+                                return Err(format!("original failure field {key} was not preserved: {error:?}"));
+                            }
+                        }
+                        let restored: EchoSdkError = serde_json::from_value(serde_json::to_value(&error)
+                            .map_err(|error| error.to_string())?).map_err(|error| error.to_string())?;
+                        if restored != error { return Err("original error DTO failed round-trip".to_string()); }
+                        unchanged(&authorities, &managed, &manager, &tools, &reverse_calls).await?;
+                        if state.handles.extension(&extension).map_err(|error| error.message)?.kind != ExtensionKind::Store {
+                            return Err("rejected setter consumed or replaced the original Store registration".to_string());
+                        }
+                        connection.send_request(SessionCloseRequest { session: session.session }).block_task().await
+                            .map_err(|error| error.to_string())?;
+                        connection.send_request(ExtensionUnregisterRequest { extension }).block_task().await
+                            .map_err(|error| error.to_string())?;
+                        connection.send_request(AgentCloseRequest { agent }).block_task().await.map_err(|error| error.to_string())?;
+                        connection.send_request(AgentCloseRequest { agent: foreign_agent }).block_task().await.map_err(|error| error.to_string())?;
+                        Ok(())
+                    }.await;
+                    observed_tx.send(observed).map_err(|_| RpcError::internal_error().data("route-control observer disappeared"))?;
+                    finish.cancelled().await;
+                    Ok(())
+                }
+            },
+        );
+        tokio::pin!(host, client, observed_rx);
+        let observed = tokio::select! {
+            biased;
+            result = &mut observed_rx => match result { Ok(observed) => observed, Err(error) => Err(error.to_string()) },
+            result = &mut host => Err(format!("original Host transport ended before route evidence: {result:?}")),
+            result = &mut client => Err(format!("client transport ended before route evidence: {result:?}")),
+            () = tokio::time::sleep(std::time::Duration::from_secs(8)) => Err("source-route fixture did not finish".to_string()),
+        };
+        finish.cancel();
+        tokio::time::timeout(std::time::Duration::from_secs(2), close_owner.close())
+            .await
+            .map_err(|error| error.to_string())?
+            .map_err(|error| error.to_string())?;
+        observed
     }
 }

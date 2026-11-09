@@ -4,43 +4,46 @@ Status: SDK consumer withdrawal under [ADR 0042](../../adr/0042-sdk-a2a-lsp-reti
 The original266 inventory below is a historical baseline; current Plan04
 withdraws269. 消费者撤出、Framework物理删除及SDK正式采用删后源分别验收；原固定pin不反向证明新源已采用。This document is not a second accepted-contract authority.
 
-## 2026-11-01：008 同源来源候选与检查前置
+## 当前来源（2026-11-09）
 
-当前私有 Stage-A 将 Host `echo_agent`、根 `polars-arrow` 和 `polars-parquet` patch
-统一到 `0087353fd78eb73ffaa68b255cf4ef807ca96d4a`，canonical URL 仍为
-`https://github.com/EchoYue-lp/echo-agent.git`。8 个 runtime、3 个媒体包和两个 Polars
-在真实 Cargo metadata 中共 13 条来源，均来自同一 008 checkout；新锁 SHA-256 为
-`e151fb4587c99463e90c82dbe9d1d4f7e76747be1c7f6241d21b74a0e9976a62`。
-本次正常 localGit 取得、完整 metadata／locked-offline 和原五源投影均已自然 0；
-源身份与实际传输分开记实，不声称 008 已在 GitHub 发布或 HTTPS 冷恢复通过。
+SDK Host 当前精确采用 Framework main `3413d64dae23353c6d02c546ac374deded855827`，
+SDK 锁为 `95e3caabaf5e72fc71ad1d6b79964eae1883b297f0006667e39c4c3a6eb8c5e5`，
+共 654 包，13 个 Git 包同源。当前 accepted 范围仍为 5344 项身份／430 条路由。
+[ADR0046](../../adr/0046-cache-layout-source-identity-projection.md) 的两退役、两接受只替换缓存
+字段定义来源，保三语言旧公开名称；`ContextProjection` 保留行只增加派生 `Default`。
+本次完整生成、合同、Rust／Host 及三语言验证的实际结果与尚待执行的 strict Source／Final、
+精确 SDK main CI、平台原生边界见[当前验证状态](framework-development-pin-status.md)。
 
-`scripts/check-a2a-lsp-retirement.py` 先核对 Host 和根两个 patch 的精确 URL/revision，
-再继续原 269 项／23 路由／39 操作退役及 5352 项／431 路由保留行零漂移检查。
-`scripts/check-sdk-contracts.sh` 在唯一 producer 的 `--check` 前验证完整 13 包同源、
-实际 checkout HEAD 为 008、tracked 源码匹配 commit，且 13 个 manifest 均属于该
-checkout；不因本地传输而放宽为任意 revision，也不删除来源断言。
+以下各具名日期及原266／269表保留历史来源，不因本次 pin 后继改写其 SHA、数量或验证结论。
 
-唯一 `export_schema` 原本已从 Cargo metadata 读取实际 source 和 manifest_path，
-telemetry collector 也沿同一实际 manifest 定位；两者没有 f7 常量或需另建的来源算法。
-本轮不修改 producer、collector、协议/schema 或 generated JSON。完整动态生成、
-Rust、Host、三语言、Parquet及collector仍待Root后继窗口；本SDK的fresh风险scanner／
-独立49／107 caller已实际自然0并据独审由Root接受三字段绑定，详见
-[SDK自身风险绑定](dependency-warning-policy-proposal.md#2026-11-01-stage-a-008e151-同一sdk合同的精确绑定)。
-五源投影0本身不是scanner0；此次另有真实scanner原件。旧Rootr08／r07／b714／11cd／0dac
-票不能执行采用风险记录后的新Source。
+## 2026-11-04：接收退役边界回归测试（历史）
 
-这次更新只维护现有独立 pin 和合同权威；accepted 5352／431 不增删，ADR0100 的
-safe7→8 外部嵌套Rust类型身份例外仍保留。SDK机器基线现已只采用三字段维护，
-原受接受49／107完整身份、policy和4项ignore不变；不新增风险接受、不继承F／CLI。
-accepted5352／shared431和生成物仍原字节；当前task Source/final待最终full17稳定后正常验收。
-文件名五ID回归候选继续单列，未编译不签消费资格。
-没有新的公开调用方式，examples 与官网本轮无功能内容可同步；不跨写这些目录或仓库。
+当前 SDK 在 `83ae59e` 基础上接收候选的四份既有测试增量，共新增154行。
+Rust `scalar` 测试检查退役字段／变体被拒绝，同时允许用户自定义类型使用同名值；
+Java、Python 和 TypeScript 测试逐项核对 ADR0042 的九项 JWT 退役身份不进入
+accepted 合同，也不恢复退役语言义务。生产实现、Host pin、锁和生成合同不变。
 
-## 2026-11-01：初始本地消费者退役组装（历史，未正式采用）
+`echo-sdk-host/tests/core_profile_e2e.rs` 保留 HEAD 在仓库 `target/` 下创建夹具的
+沙箱可见性修复，不采用候选中的系统临时目录版本。此处测试接收不代表候选的
+历史验证已自动覆盖当前工作区；实际工程结果与剩余 Source／Final、风险及平台门禁分别结算。
 
-本候选从 `origin/main` `0930eef9f878cf436ed88384030b6bc03d6f6c53` 组装，保留实际 framework pin `f7bac62eee04a963f92a3e4308b6ea2336e91cc0` 与该基底 Cargo.lock SHA-256 `822ee9a6936f25978283d38d4d07e4e8d7e006ec5834bfeaf80542f79e1ed52e`。本阶段只解除 SDK 对 A2A/LSP 的消费者依赖；唯一生成器、Cargo.lock 依赖裁剪、accepted/generated 合同和三语言资源尚未运行，JWT value 也未退役，不能据此宣称正式采用或完整合同通过。
+本次未新增 API、调用方式或产品行为，已有 examples 和官网说明无需调整；
+四份回归测试进入各仓原有 Cargo／三语言测试入口，不新增平行合同或测试执行器。
 
-## 2026-10-28：Framework 删除后的薄投影接缝准备（历史切点）
+## 2026-10-31：正式采用删后来源（历史）
+
+当时 Host 通过 HTTPS 精确采用 framework `340993201cc937fc8e4783b66be399ef9f14e3d5`
+（tree `e6c28f37a881f41bb549452614313557b7c91c68`），SDK 锁 SHA-256 为
+`c4488065aa4a94a8a073e427aeddfefe7670d93b709b82555b39f2431954e1c7`。
+当时 accepted 集合从5352项退役11项、接受3项 with_id 方法后为5344项身份／430条路由；
+native 新增 Rust source 身份为零，没有超出具名批准范围的接受项。后续具名来源处置见
+[ADR0044](../../adr/0044-sdk-source-disposition-native-callback.md)。本地验证保留原18项
+各自源码与运行资格，正式采用通过完整内容身份桥接，不替代精确 main CI、平台原生或发布验收。
+
+下文2026-10-28准备、Plan04撤出及原基线表均为历史切点。原269身份／23路由／39操作、
+5352／431、旧 pin 和锁统计保持原值；当前430条路由不重写为原 LSP 多退役一条。
+
+## 2026-10-28：Framework 删除后的薄投影接缝准备（历史）
 
 SDK Host 的 `resolved_plugin_components_value` 已按治理 SDK1 补丁解除对
 `ResolvedComponents::lsp_config_file` 的编译依赖。旧声明的发现与诊断继续由
@@ -50,8 +53,8 @@ Framework resolver／prepare 拥有；Host 原样保留 `diagnostics` 的内容�
 
 本轮只采用正式源码、补充两项投影测试并同步所属文档。测试覆盖 Framework 原诊断
 逐项保留，以及空诊断不被补造；尚未启动 Cargo，删后组合的编译与运行资格待
-Framework writer 发布新源码并由 Root 开放受控验证窗口。该历史切点的 Host pin 为
-`f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，历史锁 SHA256 为
+Framework writer 发布新源码并由 Root 开放受控验证窗口。正式 Host pin 仍为
+`f7bac62eee04a963f92a3e4308b6ea2336e91cc0`，正式锁 SHA256 仍为
 `0dacbb873673a405fed4e820499ff33e40301cefc5905e8c2bc597558156231f`；本轮没有
 更新 accepted、生成物或来源校验，也不将旧 234 项 lib／三语言结果重标为删后通过。
 
@@ -79,10 +82,10 @@ to the task's local S baseline `961da0e0`; the contract CI job explicitly fetche
 and verifies tag `pre-retirement-2026-10-24` before checking. It also checks retained
 entry identity and prohibits unrelated contract drift. 原消费者撤出阶段无需pin升级（不适用于正式采用物理删除后的新源）.
 
-## Snapshot and scope（历史退役基线）
+## Snapshot and scope
 
 The enumeration uses SDK baseline `0930eef9f878cf436ed88384030b6bc03d6f6c53`.
-该历史切点的 Host 独立固定 framework
+The Host independently pins framework
 `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`; top-level framework baseline
 `51726454985fd6f064b21a7e9c539e22d494c987` is a distinct input from the approved
 cross-repository design. The original documentation-only slice changed no generator, manifest, pin,
@@ -159,9 +162,9 @@ All these candidate entries have the single feature `a2a` or `lsp`, respectively
 | [Integration adapter](../../../echo-sdk-host/src/core_profile/facade/integrations.rs)                                                                                                                                                                                          | `A2aClientRecord`, `LspManagerRecord`, a2a/lsp/lsp_clients maps, family handlers and owned teardown branches | MCP/topology in the same file and generic lifecycle owners remain                                                        |
 | [Facade admission](../../../echo-sdk-host/src/core_profile/facade/mod.rs), [registry](../../../echo-sdk-host/src/core_profile/facade/registry.rs), [streams](../../../echo-sdk-host/src/core_profile/facade/stream.rs)                                                         | Family-specific dispatch/resource references after their users go                                            | Generic invoke, ownership/generation, stream cancellation and error semantics remain                                     |
 | [Protocol family definitions](../../../echo-sdk-protocol/src/facade.rs), [method catalog](../../../echo-sdk-protocol/src/catalog.rs), [inventory classification](../../../echo-sdk-protocol/src/inventory.rs), [exporter](../../../echo-sdk-protocol/src/bin/export_schema.rs) | Two closed families, methods, exact accepted intrinsic groups and a2a/lsp profile inputs                     | Inspect shared WireValue/DTO/capability/handle users before removal; use the unique generator                            |
-| `TS A2A values`（当前候选退役：`../../../sdks/typescript/src/a2a.ts`）, [exports](../../../sdks/typescript/src/index.ts), `JWT values`（当前候选保留，待后续生成核对：`../../../sdks/typescript/src/jwt_values.ts`）, [catalog](../../../sdks/typescript/src/catalog.ts)                                                           | Exact A2A exports, helpers and catalog membership                                                            | Shared JWT/security consumers and generic Session invoke remain                                                          |
-| `Python A2A values`（当前候选退役：`../../../sdks/python/src/echo_agent_sdk/a2a.py`）, [exports](../../../sdks/python/src/echo_agent_sdk/__init__.py), `JWT values`（当前候选保留，待后续生成核对：`../../../sdks/python/src/echo_agent_sdk/jwt_values.py`）, [catalog](../../../sdks/python/src/echo_agent_sdk/catalog.py)        | Same exact accepted A2A subset and catalog membership                                                        | Shared value modules and generic Session invoke remain                                                                   |
-| [Java package](../../../sdks/java/src/main/java/com/echoagent/sdk/)                                                                                                                                                                                                            | A2A, AgentCard/builder, TaskState, A2A event/value members and facade catalog subset                      | These are names within this accepted subset, not authority to remove ordinary task state or all JWT code                 |
+| `TS A2A values`（已撤出历史路径：`../../../sdks/typescript/src/a2a.ts`）, [exports](../../../sdks/typescript/src/index.ts), `JWT values`（已撤出历史路径：`../../../sdks/typescript/src/jwt_values.ts`）, [catalog](../../../sdks/typescript/src/catalog.ts)                                                           | Exact A2A exports, helpers and catalog membership                                                            | Shared JWT/security consumers and generic Session invoke remain                                                          |
+| `Python A2A values`（已撤出历史路径：`../../../sdks/python/src/echo_agent_sdk/a2a.py`）, [exports](../../../sdks/python/src/echo_agent_sdk/__init__.py), `JWT values`（已撤出历史路径：`../../../sdks/python/src/echo_agent_sdk/jwt_values.py`）, [catalog](../../../sdks/python/src/echo_agent_sdk/catalog.py)        | Same exact accepted A2A subset and catalog membership                                                        | Shared value modules and generic Session invoke remain                                                                   |
+| [Java package](../../../sdks/java/src/main/java/com/echoagent/sdk/)                                                                                                                                                                                                            | A2A, AgentCard/builder, TaskState, relevant JWT value members and facade catalog subset                      | These are names within this accepted subset, not authority to remove ordinary task state or all JWT code                 |
 | [Shared language catalog](../../../sdks/shared/facade-operation-catalog.json)                                                                                                                                                                                                  | Exact 23 route projection and two family declarations                                                        | Generator-owned; generic invoke and all retained families stay                                                           |
 
 There is no dedicated LSP language module/class required by the inspected
@@ -587,3 +590,12 @@ Feature: `lsp`; Host passthrough: `framework-lsp`; family method: `_echo_agent/l
 绑定真实删除提交、正式manifest/lock、同源Host及原合同门禁；受控path只提供其明确范围。
 当前5352/431保留合同与269/23/39原撤销证明各自保持，不从完整inventory遥测推接受范围，
 不以共享投影文案更新冒编译或正式Git资格。旧固定基线表及历史失败回执不重标新结果。
+
+
+## 2026-10-31：Framework 340 组合的精确后继
+
+原 Plan04 的固定 rollback 基线、266 项家族身份＋3 项具名补充、23 条路由、39 个操作和 ADR0042 的269项对账继续逐项检查。当前组合在该基线上仅增加已批准的11项具名退休与3个带原生调用ID的回调接入，最终 accepted 为5344、可执行路由为430。
+
+13条保留记录按完整前后记录摘要精确承接，其余 retained 记录继续逐项相等；摘要不跳过签名、route、语言映射或其它字段。旧rollback到当前的7条保留route变化也逐条固定前后摘要；其中包含原Plan04已产生的value聚合变化，不能与formal3f到当前的6条变化混用。除原23条A2A/LSP路由外，只新增退出精确旧DELETE source route，家族和操作集合不扩张。
+
+正式caller的完整生成检查、语言导出检查、Protocol无Framework依赖图、五组Protocol原测试保持。来源metadata在all-features下完整解析，八个Framework与五个vendor的名字、版本、source须组成精确13包HTTPS340集合。来源pin接续不等于依赖风险接受；SDK deny基线仍按其独立真实scanner与精组复核另行裁决，不自动续期。

@@ -7,6 +7,12 @@ output="$repo_root/sdks/shared/facade-operation-catalog.json"
 digest_output="$repo_root/sdks/shared/contract-digests.json"
 schema="$repo_root/contracts/sdk/schema/echo-agent-extension-v1.schema.json"
 source_contract="$repo_root/contracts/sdk/source-contract.json"
+# 三语言分发副本只由本入口产生；shared 仍是同一 accepted 输入的投影。
+package_roots=(
+  "$repo_root/sdks/typescript/contracts"
+  "$repo_root/sdks/python/src/echo_agent_sdk/contracts"
+  "$repo_root/sdks/java/src/main/resources/com/echoagent/sdk/contracts"
+)
 
 test -f "$catalog"
 test -f "$schema"
@@ -38,6 +44,14 @@ if [[ "${1:-}" == "--check" ]]; then
     printf 'DRIFT: %s is not generated from current contract artifacts\n' "$digest_output" >&2
     exit 1
   }
+  for package_root in "${package_roots[@]}"; do
+    for name in facade-operation-catalog.json contract-digests.json; do
+      cmp -s "$repo_root/sdks/shared/$name" "$package_root/$name" || {
+        printf 'DRIFT: package resource %s differs from the canonical language projection\n' "$package_root/$name" >&2
+        exit 1
+      }
+    done
+  done
   printf 'ok: %s matches canonical facade catalog\n' "$output"
   exit 0
 fi
@@ -47,5 +61,11 @@ contract_digest="sha256:$(shasum -a 256 "$schema" | awk '{print $1}')"
 source_digest=$(jq -r '.aggregate_digest' "$source_contract")
 printf '{"contract_digest":"%s","source_contract_digest":"%s"}\n' \
   "$contract_digest" "$source_digest" > "$digest_output"
+
+for package_root in "${package_roots[@]}"; do
+  mkdir -p "$package_root"
+  cp "$output" "$package_root/facade-operation-catalog.json"
+  cp "$digest_output" "$package_root/contract-digests.json"
+done
 
 printf 'exported %s\n' "$output"

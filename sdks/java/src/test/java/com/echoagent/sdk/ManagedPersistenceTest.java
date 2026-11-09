@@ -49,7 +49,7 @@ class ManagedPersistenceTest {
     }
     @Test void checkpointAndSettlementRetainOpaqueSchemaFiveAndTypedPathTime() {
         String schemaFive = "{\"schema_version\":5,\"execution_facts\":[{\"call_id\":\"run/tool/1\",\"effects\":[{\"effect\":\"file_edit\",\"path\":\"中文😀\"}]}]}";
-        var checkpoint = new ManagedPersistence.AgentCheckpoint("中文", schemaFive, "plan", List.of("skill"), "blocked",
+        var checkpoint = new ManagedPersistence.AgentCheckpoint("中文", schemaFive, List.of("skill"), "blocked",
                 new ManagedPersistence.CheckpointPath.Unix("L3RtcC//", "non UTF-8"),
                 new ManagedPersistence.CheckpointTimestamp(new BigInteger("-9223372036854775808"), 999999999L, null));
         assertEquals(checkpoint, ManagedPersistence.decode(checkpoint.toJson(), ManagedPersistence.AgentCheckpoint.class));

@@ -5,6 +5,7 @@ import contextlib
 import inspect
 import math
 import os
+import re
 from collections import deque
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterable, Mapping
 from copy import deepcopy
@@ -18,8 +19,9 @@ from acp.connection import StreamDirection, StreamEvent
 from acp.schema import ClientCapabilities, Implementation
 from acp.stdio import spawn_agent_process
 from pydantic import ValidationError
-from typing_extensions import Self
+from typing_extensions import NotRequired, Self
 
+from ._runtime_terminal import runtime_terminal, validate_reverse_agent_value
 from .catalog import FacadeCatalog
 from .errors import EchoAgentError
 from .wire import MAX_U64, WireHandle, from_wire, to_wire
@@ -643,6 +645,58 @@ class ToolCall:
         )
 
 
+class ProviderResponseMetadata(TypedDict):
+    """原供应商固定观察；可选WireValue属性保缺失/Null，不相加usage或推断执行终态。"""
+
+    protocol: Literal["chat_completions", "responses", "anthropic"]
+    provider: str
+    request_id: NotRequired[str | None]
+    model: NotRequired[Mapping[str, Any]]
+    stop_reason: NotRequired[Mapping[str, Any]]
+    stop_sequence: NotRequired[Mapping[str, Any]]
+    status: NotRequired[Mapping[str, Any]]
+    incomplete_details: NotRequired[Mapping[str, Any]]
+    usage: NotRequired[Mapping[str, Any]]
+
+
+class LlmNamedFunction(TypedDict):
+    name: str
+
+
+class LlmNamedToolChoice(TypedDict):
+    type: Literal["function"]
+    function: LlmNamedFunction
+
+
+LlmToolChoice = Literal["auto", "none", "required"] | LlmNamedToolChoice
+
+
+def _validate_llm_tool_choice(value: object) -> None:
+    if value is None or (
+        isinstance(value, str) and value in {"auto", "none", "required"}
+    ):
+        return
+    if (
+        isinstance(value, Mapping)
+        and set(value) == {"type", "function"}
+        and value.get("type") == "function"
+    ):
+        function = value.get("function")
+        if isinstance(function, Mapping) and set(function) == {"name"}:
+            name = function.get("name")
+            # Core使用Unicode White_Space；Python str.strip还包含额外控制符，不能据其收窄原名。
+            if (
+                isinstance(name, str)
+                and re.fullmatch(
+                    r"[\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*",
+                    name,
+                )
+                is None
+            ):
+                return
+    raise ValueError("LlmClient tool_choice must be a canonical mode or named function")
+
+
 @dataclass(frozen=True, slots=True)
 class LlmChatCall:
     """Decoded LlmClient invocation with an additive request mapping."""
@@ -653,6 +707,10 @@ class LlmChatCall:
     invocation_id: str | None = None
     deadline: Mapping[str, Any] | None = None
     stream: WireHandle | None = None
+
+    @property
+    def tool_choice(self) -> LlmToolChoice | None:
+        return cast(LlmToolChoice | None, self.request.get("tool_choice"))
 
     @property
     def messages(self) -> tuple[Any, ...]:
@@ -673,6 +731,7 @@ class LlmChatCall:
         ):
             raise TypeError("LlmClient invocation input must contain messages")
         request = dict(raw_input)
+        _validate_llm_tool_choice(request.get("tool_choice"))
         return cls(
             request=request,
             operation=cast(Literal["llm_chat", "llm_chat_stream"], operation),
@@ -3048,14 +3107,7 @@ def _event_observers(
         try:
             if feed.accept_event(params):
                 envelope = params["envelope"]
-                payload = envelope.get("payload")
-                terminal = isinstance(payload, Mapping) and payload.get(
-                    "event_type"
-                ) in {
-                    "final_answer",
-                    "cancelled",
-                    "error",
-                }
+                terminal = runtime_terminal(envelope)
                 await _deliver_stream_item(feed, params, terminal=terminal)
         except EchoAgentError as error:
             feed.queue.fail(error)
@@ -3965,6 +4017,21 @@ class EchoAgentClient:
             session_id, _AsyncQueue(self._update_queue_size)
         ).__aiter__()
 
+    async def _publish_first_event(
+        self, stream: WireHandle, envelope: Mapping[str, Any]
+    ) -> None:
+        feed = self._events.setdefault(
+            stream.id, _EventFeed(_AsyncQueue(self._event_queue_size))
+        )
+        params = {"stream": stream.to_dict(), "envelope": envelope}
+        try:
+            if feed.accept_event(params):
+                await _deliver_stream_item(
+                    feed, params, terminal=runtime_terminal(envelope)
+                )
+        except EchoAgentError as error:
+            feed.queue.fail(error)
+
     def events_for(
         self, stream_id: str, stream: WireHandle | None = None
     ) -> AsyncIterator[Any]:
@@ -4585,6 +4652,7 @@ class ExtensionStreamWriter:
         return str(self._sequence)
 
     async def chunk(self, value: Any) -> None:
+        validate_reverse_agent_value(value, False)
         await self.client.notify(
             "echo_agent/extension/stream",
             {
@@ -4600,6 +4668,7 @@ class ExtensionStreamWriter:
         await self.chunk({"kind": "agent_component", "value": dict(value)})
 
     async def complete(self, value: Any) -> None:
+        validate_reverse_agent_value(value, True)
         await self.client.notify(
             "echo_agent/extension/stream",
             {
@@ -4709,6 +4778,9 @@ class SessionHandle:
             run._mark_closed()
         else:
             self._runs.add(run)
+            first = response.get("first_event")
+            if isinstance(first, Mapping):
+                await self.client._publish_first_event(run.stream, first)
         return run
 
     async def invoke(self, operation: str, arguments: Iterable[Any] = ()) -> Any:
@@ -4861,13 +4933,12 @@ class RunHandle:
         end = int(response["next_cursor"]["last_processed_sequence"])
         feed = self.client._events.get(self.stream.id)
         if feed is not None and feed.handle == self.stream:
+            terminal_sequence = None
             for event in response["events"]:
-                if event["payload"]["event_type"] in {
-                    "final_answer",
-                    "cancelled",
-                    "error",
-                }:
-                    feed.replay_terminal_sequence = int(event["sequence"])
+                if runtime_terminal(event):
+                    terminal_sequence = int(event["sequence"])
+            if terminal_sequence is not None:
+                feed.replay_terminal_sequence = terminal_sequence
         ranges = self.client._replay_ranges.setdefault(self.stream, [])
         # No-gap empty pages contain no coverage, not even their requested cursor.
         if not response.get("gap") and base == end:

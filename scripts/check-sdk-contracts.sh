@@ -24,34 +24,34 @@ fi
 
 python3 scripts/check-a2a-lsp-retirement.py
 
-# canonical来源身份与对象取得传输分别验收；本检查不宣称HTTPS发布或冷恢复。
-# 完整数据图的8个runtime、3个媒体包和2个Polars必须共同来自获准的精确修订。
-framework_revision="0087353fd78eb73ffaa68b255cf4ef807ca96d4a"
-framework_repository="git+https://github.com/EchoYue-lp/echo-agent.git"
-expected_framework_source="${framework_repository}?rev=${framework_revision}#${framework_revision}"
-framework_metadata=$(cargo metadata --all-features --format-version 1 --locked)
+# 先验证实际来源再编译/rustdoc：source 字符串不能证明缓存 checkout 的真实字节。
+# 固定已发布main3413与13个精确name/version，移植main的HEAD/clean/manifest同根检查。
+framework_revision="3413d64dae23353c6d02c546ac374deded855827"
+framework_metadata=$(cargo metadata --format-version 1 --all-features --locked)
+expected_framework_source="git+https://github.com/EchoYue-lp/echo-agent.git?rev=${framework_revision}#${framework_revision}"
+expected_git_packages='[["calamine","0.38.0"],["docx-rs","0.4.22"],["echo_agent","0.2.0"],["echo_core","0.2.0"],["echo_execution","0.2.0"],["echo_integration","0.2.0"],["echo_macros","0.2.0"],["echo_orchestration","0.2.0"],["echo_state","0.2.0"],["echo_tools","0.2.0"],["polars-arrow","0.55.2"],["polars-parquet","0.55.2"],["rust_xlsxwriter","0.82.0"]]'
+# 八个Framework与五个vendor须同属精HTTPS已发布main3413；不只检查echo_agent一个包。
 framework_packages=$(printf '%s\n' "$framework_metadata" | jq -er \
-  --arg source "$expected_framework_source" --arg repository "$framework_repository" '
-  ["echo_agent", "echo_core", "echo_execution", "echo_integration", "echo_macros",
-   "echo_orchestration", "echo_state", "echo_tools", "calamine", "docx-rs",
-   "rust_xlsxwriter", "polars-arrow", "polars-parquet"] as $expected
-  | [.packages[] | select(.name as $name | $expected | index($name))] as $packages
-  | [.packages[] | select((.source // "") as $origin
-      | $origin == $repository or ($origin | startswith($repository + "?"))
-        or ($origin | startswith($repository + "#")))] as $framework_packages
-  | if ($framework_packages | map(.name) | sort) != ($expected | sort)
-       or ($packages | map(.name) | sort) != ($expected | sort)
+  --arg source "$expected_framework_source" --argjson expected "$expected_git_packages" '
+  [.packages[] | select((.source // "") | startswith("git+"))] as $git
+  | [.packages[] | select(.name as $name | $expected | map(.[0]) | index($name))] as $packages
+  | if ($git | length) != 13
+       or ([$git[] | [.name, .version]] | sort) != ($expected | sort)
+       or ([$packages[] | [.name, .version]] | sort) != ($expected | sort)
        or any($packages[]; .source != $source or (.manifest_path | type) != "string")
-    then error("framework provenance requires exactly 13 packages from the approved canonical revision")
+    then error("exact 13-package HTTPS framework source set drifted")
     else $packages[] | [.name, .manifest_path] | @tsv end
-')
+') || {
+  echo "error: exact 13-package HTTPS framework source set drifted" >&2
+  exit 1
+}
 framework_manifest=$(printf '%s\n' "$framework_metadata" | jq -er '.packages[] | select(.name == "echo_agent") | .manifest_path')
 framework_checkout=$(GIT_OPTIONAL_LOCKS=0 git -C "$(dirname "$framework_manifest")" rev-parse --show-toplevel)
 [[ "$(GIT_OPTIONAL_LOCKS=0 git -C "$framework_checkout" rev-parse HEAD)" == "$framework_revision" ]] || {
   echo "error: framework checkout HEAD differs from the approved revision" >&2
   exit 1
 }
-# Cargo正常生成的未跟踪.cargo-ok不是源码；已跟踪源码必须仍匹配该精确commit。
+# Cargo生成的未跟踪.cargo-ok不是源码；检查包含已暂存和未暂存的跟踪文件变化。
 GIT_OPTIONAL_LOCKS=0 git -C "$framework_checkout" diff --quiet HEAD -- || {
   echo "error: framework checkout tracked source differs from its exact commit" >&2
   exit 1
@@ -63,8 +63,7 @@ while IFS=$'\t' read -r package manifest; do
   }
 done <<< "$framework_packages"
 
-
-# 来源预检通过后才进入会编译并调用rustdoc的唯一合同入口。
+# 来源预检通过后才进入唯一生成链；不能靠生成后的结果替代源码准入。
 cargo run -q -p echo-sdk-protocol --bin export_schema --locked -- --check
 scripts/export-language-sdk-catalog.sh --check
 
@@ -74,8 +73,8 @@ if printf '%s\n' "$protocol_tree" | grep -Eq '(^|[[:space:]])echo_(agent|core|ex
   exit 1
 fi
 
-
 cargo test -q -p echo-sdk-protocol \
+  --test native_message_contract \
   --test facade_inventory \
   --test acp_baseline \
   --test extension_contract \

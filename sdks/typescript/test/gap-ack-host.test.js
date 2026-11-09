@@ -26,6 +26,46 @@ async function notifications(work) {
     .filter(value => ["_echo_agent/event", "_echo_agent/gap"].includes(value.method));
 }
 
+// ACK 只证明已消费前缀；GET 的一次 tail 采样不冻结仍在写入的真实日志。
+function assertUncoveredLiveFrames(frames, stream, cursor, consumed, canonicalEvents) {
+  const prefix = BigInt(cursor);
+  let previous = prefix;
+  const coveredIds = new Set(consumed.values());
+  const liveIds = new Set();
+  const canonical = canonicalEvents && new Map(canonicalEvents.map(event => [event.sequence, event]));
+  for (const frame of frames) {
+    const params = frame.params;
+    assert.deepEqual(params.stream, stream, "suffix must preserve the exact stream generation");
+    if (frame.method === "_echo_agent/gap") {
+      const gap = params.gap;
+      const from = BigInt(gap.from_sequence);
+      const to = BigInt(gap.to_sequence);
+      const watermark = BigInt(gap.snapshot_watermark);
+      assert.ok(from > prefix && from > previous, "gap must not cover an ACKed or earlier live range");
+      assert.ok(to >= from && watermark >= to, "gap range and watermark must remain ordered");
+      previous = watermark;
+    } else {
+      assert.equal(frame.method, "_echo_agent/event");
+      const event = params.envelope;
+      const sequence = BigInt(event.sequence);
+      assert.equal(event.stream_id, stream.id);
+      assert.ok(sequence > prefix && sequence > previous, "ACKed prefix or unordered event must not be republished");
+      assert.ok(!consumed.has(event.sequence) && !coveredIds.has(event.event_id));
+      assert.ok(!liveIds.has(event.event_id), "live event identity must be unique");
+      assert.equal(typeof event.content_hash, "string");
+      assert.ok(event.content_hash.length > 0);
+      if (canonical) {
+        const durable = canonical.get(event.sequence);
+        assert.ok(durable, "live suffix must exist in the durable replay");
+        assert.equal(event.event_id, durable.event_id);
+        assert.equal(event.content_hash, durable.content_hash, "same event identity must preserve its durable content hash");
+      }
+      liveIds.add(event.event_id);
+      previous = sequence;
+    }
+  }
+}
+
 for (const mode of ["window", "oversized"]) {
  for (const consume of [false, true]) {
   test(`real Host ${mode} ${consume ? "consumer" : "raw"} gap ACK resumes strictly after snapshot watermark`, {
@@ -111,7 +151,8 @@ for (const mode of ["window", "oversized"]) {
 
 
 for (const pageSize of [1, 64]) {
-  test(`real Host replay-consumed cursor ACK page size ${pageSize}`, {skip: !realHost, timeout: 30000}, async () => {
+ for (const releaseBeforeAck of [false, true]) {
+  test(`real Host replay-consumed cursor ACK page size ${pageSize}${releaseBeforeAck ? " with real settled suffix" : ""}`, {skip: !realHost, timeout: 30000}, async () => {
     const work = await mkdtemp(join(tmpdir(), "echo-sdk-page-ts-"));
     const python = process.env.PYTHON ?? "python3";
     const model = spawn(python, [fixture, "--work", work, "--mode", "window"]);
@@ -150,11 +191,38 @@ for (const pageSize of [1, 64]) {
       await sdk.acknowledge(run.stream, empty.next_cursor.last_processed_sequence);
       await run.get();
       assert.equal((await notifications(work)).length, before.length);
+      const coveredCursor = cursor;
+      const covered = new Map(consumed);
+      let settledSuffix;
+      if (releaseBeforeAck) {
+        await writeFile(join(work, "release"), "");
+        assert.equal((await run.wait()).settled, true);
+        assert.ok(BigInt((await run.get()).last_sequence) > BigInt(coveredCursor));
+        const page = await run.replay(coveredCursor, 64);
+        assert.ok(page.events.length > 0);
+        settledSuffix = page.events.map(event => ({method: "_echo_agent/event", params: event}));
+      }
       await sdk.acknowledge(run.stream, cursor);
       await run.get();
-      assert.equal((await notifications(work)).length, before.length, "already consumed pages must not replay live");
-      await writeFile(join(work, "release"), "");
-      await waitFor(async () => (await notifications(work)).length > before.length);
+      const afterAck = (await notifications(work)).slice(before.length);
+      assertUncoveredLiveFrames(afterAck, run.stream, coveredCursor, covered);
+      if (releaseBeforeAck) {
+        // settled 会清理实时投递器；真实后缀由公开 replay 返回，不要求再次 live 发送。
+        const realSuffix = settledSuffix;
+        assertUncoveredLiveFrames(realSuffix, run.stream, coveredCursor, covered);
+        // 真实 producer 确实新增；这些负控只测试无损帧视图，不发送假 wire。
+        assert.throws(() => assert.equal(realSuffix.length, 0));
+        const prefixEvent = before.find(frame => frame.method === "_echo_agent/event");
+        const prefixGap = before.find(frame => frame.method === "_echo_agent/gap");
+        const suffixEvent = realSuffix.find(frame => frame.method === "_echo_agent/event");
+        assert.ok(prefixEvent && prefixGap && suffixEvent);
+        assert.throws(() => assertUncoveredLiveFrames([...realSuffix, prefixEvent], run.stream, coveredCursor, covered));
+        assert.throws(() => assertUncoveredLiveFrames([...realSuffix, prefixGap], run.stream, coveredCursor, covered));
+        assert.throws(() => assertUncoveredLiveFrames([suffixEvent, suffixEvent], run.stream, coveredCursor, covered));
+      } else {
+        await writeFile(join(work, "release"), "");
+        await waitFor(async () => (await notifications(work)).length > before.length);
+      }
       assert.ok((await notifications(work)).slice(before.length).every(value =>
         BigInt(value.params.gap?.from_sequence ?? value.params.envelope.sequence) > BigInt(cursor)));
       assert.equal((await run.wait()).settled, true);
@@ -175,6 +243,8 @@ for (const pageSize of [1, 64]) {
       const all = await run.replay("0", 64);
       assert.equal(all.events.filter(event => event.envelope.payload.event_type === "final_answer").length, 1);
       assert.deepEqual(all.events.map(event => event.envelope.event_id), [...consumed.values()]);
+      assertUncoveredLiveFrames((await notifications(work)).slice(before.length), run.stream, coveredCursor, covered, all.events.map(event => event.envelope));
+      if (settledSuffix) assertUncoveredLiveFrames(settledSuffix, run.stream, coveredCursor, covered, all.events.map(event => event.envelope));
       await session.close();
       await agent.close();
     } finally {
@@ -184,6 +254,7 @@ for (const pageSize of [1, 64]) {
       await rm(work, {recursive: true, force: true});
     }
   });
+ }
 }
 
 for(const window of [1,2])test(`paused consumer window ${window} external replay ACK merges queued gap without covered re-delivery`,{skip:!realHost,timeout:30000},async()=>{

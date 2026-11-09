@@ -70,7 +70,6 @@ def prepare(work):
         "message": {
             "role": "assistant",
             "content": wire(answer),
-            "name": "assistant-name🙂",
         },
         "finish_reason": "stop",
         "usage": usage,
@@ -86,6 +85,7 @@ def prepare(work):
     }
     spec = {
         "answer": answer,
+        "participant_name": "assistant-name🙂",
         "system": "system 中文🙂",
         "prompt": "request 用户🌊",
         "history_prompt": "history follow-up🙂",
@@ -212,6 +212,7 @@ def verify_llm(spec, rows):
     assert [row["mode"] for row in rows] == [
         "nonstream",
         "stream",
+        "participant_name",
         "missing_finish",
         "error",
         "cancel",
@@ -300,6 +301,8 @@ def verify_llm(spec, rows):
             assert (
                 "bounded finish reason"
                 if row["mode"] == "missing_finish"
+                else "Message participant/tool-result identity cannot be silently converted into a provider delta"
+                if row["mode"] == "participant_name"
                 else spec["failure"]["message"]
             ) in message
 

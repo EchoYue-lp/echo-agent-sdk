@@ -12,15 +12,16 @@ public enum PermissionMode {
 
     public static PermissionMode parse(String value) {
         if (value == null) throw new IllegalArgumentException("permission mode must be text");
-        return switch (value.trim().toLowerCase(java.util.Locale.ROOT)) {
-            case "default", "ask" -> DEFAULT;
+        // 只解析Framework当前canonical ID；不归一成已退役的兼容输入。
+        return switch (value) {
+            case "default" -> DEFAULT;
             case "plan" -> PLAN;
-            case "auto-edit", "autoedit", "accept-edits", "acceptedits" -> ACCEPT_EDITS;
-            case "full-auto", "fullauto", "bypass", "bypass-permissions", "bypasspermissions" -> BYPASS_PERMISSIONS;
+            case "auto-edit" -> ACCEPT_EDITS;
+            case "full-auto" -> BYPASS_PERMISSIONS;
             case "auto" -> AUTO;
             case "bubble" -> BUBBLE;
-            case "dont-ask", "dontask" -> DONT_ASK;
-            case "strict", "strict-confirm", "strict-confirmation" -> STRICT_CONFIRM;
+            case "dont-ask" -> DONT_ASK;
+            case "strict" -> STRICT_CONFIRM;
             default -> throw new IllegalArgumentException("invalid permission mode '" + value + "'");
         };
     }

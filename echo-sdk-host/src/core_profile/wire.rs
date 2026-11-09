@@ -8,9 +8,9 @@
 
 use echo_agent::agent::EventEnvelope;
 use echo_agent::error::{AgentFailure, ReactError};
-#[cfg(feature = "sdk-facade-adapters")]
+#[cfg(any(feature = "sdk-facade-adapters", test))]
 use echo_agent::error::{AgentFailureCategory, AgentTerminalKind};
-use echo_agent::llm::types::{FunctionCall, Message, MessageContent, ReasoningBlock, ToolCall};
+use echo_agent::llm::types::{Message, MessageContent};
 use echo_agent::runtime::{TurnDeliveryOutcome, TurnOutcome, TurnReceipt};
 use echo_agent::tools::ToolResult;
 use echo_sdk_protocol::error::{
@@ -535,7 +535,8 @@ pub(crate) fn failure_wire(failure: &AgentFailure) -> AgentFailureWire {
 
 /// Restore a framework failure from the closed wire value without flattening
 /// category, terminal kind, retryability, code, status, or message.
-#[cfg(feature = "sdk-facade-adapters")]
+// 生产仍只由 facade 消费；core 的现有失败投影回归也需复用这一个往返 codec。
+#[cfg(any(feature = "sdk-facade-adapters", test))]
 pub(crate) fn failure_from_wire(wire: AgentFailureWire) -> Result<AgentFailure, String> {
     let category = match wire.category.as_str() {
         "llm" => AgentFailureCategory::Llm,
@@ -577,66 +578,117 @@ pub(crate) fn failure_from_wire(wire: AgentFailureWire) -> Result<AgentFailure, 
     })
 }
 
+#[cfg(feature = "sdk-extension-bridge")]
+pub(crate) fn reasoning_block_wire(
+    block: &echo_agent::llm::types::ReasoningBlock,
+) -> LlmReasoningBlockWire {
+    match block {
+        echo_agent::llm::types::ReasoningBlock::Signed {
+            thinking,
+            signature,
+        } => LlmReasoningBlockWire::Signed {
+            thinking: thinking.clone(),
+            signature: signature.clone(),
+        },
+        echo_agent::llm::types::ReasoningBlock::Redacted { data } => {
+            LlmReasoningBlockWire::Redacted { data: data.clone() }
+        }
+        echo_agent::llm::types::ReasoningBlock::Opaque {
+            provider,
+            id,
+            data,
+            summary,
+        } => LlmReasoningBlockWire::Opaque {
+            provider: provider.clone(),
+            id: id.clone(),
+            data: data.clone(),
+            summary: summary.clone(),
+        },
+    }
+}
+
+pub(crate) fn reasoning_block_from_wire(
+    block: LlmReasoningBlockWire,
+) -> echo_agent::llm::types::ReasoningBlock {
+    match block {
+        LlmReasoningBlockWire::Signed {
+            thinking,
+            signature,
+        } => echo_agent::llm::types::ReasoningBlock::Signed {
+            thinking,
+            signature,
+        },
+        LlmReasoningBlockWire::Redacted { data } => {
+            echo_agent::llm::types::ReasoningBlock::Redacted { data }
+        }
+        LlmReasoningBlockWire::Opaque {
+            provider,
+            id,
+            data,
+            summary,
+        } => echo_agent::llm::types::ReasoningBlock::Opaque {
+            provider,
+            id,
+            data,
+            summary,
+        },
+    }
+}
+
 /// Convert the shared lossless Message wire DTO into the framework Message
 /// used by TurnRequest::from_message. This lives outside the extension bridge
 /// so core source-operation streams can consume the same DTO even when no
 /// reverse extension feature is enabled.
 pub(crate) fn message_from_wire(message: LlmMessageWire) -> Result<Message, String> {
-    let content = message
-        .content
-        .into_json()
-        .map_err(|error| error.to_string())
-        .and_then(|value| {
-            serde_json::from_value::<MessageContent>(value).map_err(|error| error.to_string())
-        })?;
-    let tool_calls = message.tool_calls.map(|calls| {
-        calls
-            .into_iter()
-            .map(|call| ToolCall {
-                id: call.id,
-                call_type: call.call_type,
-                function: FunctionCall {
-                    name: call.function_name,
-                    arguments: call.arguments,
-                },
-            })
-            .collect::<Vec<_>>()
-    });
-    let reasoning_blocks = message.reasoning_blocks.map(|blocks| {
-        blocks
-            .into_iter()
-            .map(|block| match block {
-                LlmReasoningBlockWire::Signed {
-                    thinking,
-                    signature,
-                } => ReasoningBlock::Signed {
-                    thinking,
-                    signature,
-                },
-                LlmReasoningBlockWire::Redacted { data } => ReasoningBlock::Redacted { data },
-                LlmReasoningBlockWire::Opaque {
-                    provider,
-                    id,
-                    data,
-                    summary,
-                } => ReasoningBlock::Opaque {
-                    provider,
-                    id,
-                    data,
-                    summary,
-                },
-            })
-            .collect::<Vec<_>>()
-    });
-    Ok(Message {
-        role: message.role.as_str().into(),
+    let content = if matches!(message.content, WireValue::Null) {
+        MessageContent::Empty
+    } else {
+        message
+            .content
+            .into_json()
+            .map_err(|error| error.to_string())
+            .and_then(|value| {
+                serde_json::from_value::<MessageContent>(value).map_err(|error| error.to_string())
+            })?
+    };
+    let tool_calls = message
+        .tool_calls
+        .map(|calls| {
+            calls
+                .into_iter()
+                .map(super::native_message::tool_call_from_wire)
+                .collect::<Result<Vec<_>, _>>()
+        })
+        .transpose()?;
+    let reasoning_blocks = message
+        .reasoning_blocks
+        .map(|blocks| blocks.into_iter().map(reasoning_block_from_wire).collect());
+    // 复用原生 Role 的封闭 serde 合同；未知 role 不降级为 user。
+    let role = serde_json::from_value(serde_json::Value::String(message.role))
+        .map_err(|error| format!("invalid Message role: {error}"))?;
+    let native = Message {
+        role,
         content,
         tool_calls,
         name: message.name,
         tool_call_id: message.tool_call_id,
+        tool_result_is_error: message.tool_result_is_error,
+        provider_response: message
+            .provider_response
+            .map(super::native_message::provider_response_from_wire)
+            .transpose()?,
         reasoning_content: message.reasoning_content,
         reasoning_blocks,
-    })
+        ..Message::default()
+    };
+    super::native_message::with_message_metadata(
+        native,
+        super::native_message::MessageMetadata {
+            assistant_blocks: message.assistant_blocks,
+            approved_assistant_blocks: message.approved_assistant_blocks,
+            execution_status: message.execution_status,
+        },
+    )
 }
 
 /// The single authoritative terminal projected from a framework receipt.
@@ -966,6 +1018,7 @@ pub(crate) fn framework_from_wire(
         max_tokens: config.model.max_tokens,
         temperature,
         context_window,
+        ..ModelConfig::default()
     };
     let agent = AgentSettings {
         name: config.agent.name.clone(),
@@ -1117,7 +1170,50 @@ mod tests {
         }
         Ok(())
     }
-    use echo_agent::agent::{AgentEvent, EventIdentity};
+
+    #[test]
+    fn incomplete_response_keeps_bounded_failure_without_partial_or_http_fabrication()
+    -> Result<(), String> {
+        let partial = Message::assistant("未批准正文与工具片段🧪".into());
+        let error = ReactError::from(echo_agent::error::LlmError::IncompleteResponse {
+            partial: Box::new(partial),
+        });
+        let expected = AgentFailure::try_from(&error).map_err(|error| error.to_string())?;
+        assert_eq!(expected.category, AgentFailureCategory::Llm);
+        assert_eq!(expected.terminal_kind, AgentTerminalKind::Failed);
+        assert_eq!(expected.code, "llm_incomplete_response");
+        assert!(!expected.retryable);
+        assert_eq!(expected.http_status, None);
+        let bounded = failure_wire(&expected);
+        assert_eq!(failure_from_wire(bounded)?, expected);
+        let reply = framework_error(&error, "_echo_agent/llm/chat");
+        assert_eq!(reply.retryable, Retryability::Never);
+        let value = serde_json::to_value(reply).map_err(|error| error.to_string())?;
+        let encoded = value.to_string();
+        assert!(!encoded.contains("未批准正文与工具片段"));
+        assert!(value.get("partial").is_none());
+        let fields = value
+            .get("details")
+            .and_then(|value| value.get("fields"))
+            .and_then(serde_json::Value::as_array)
+            .ok_or("missing bounded failure fields")?;
+        assert!(
+            fields
+                .iter()
+                .any(|value| value.get("key").and_then(serde_json::Value::as_str)
+                    == Some("framework_failure_code")
+                    && value.get("value").and_then(serde_json::Value::as_str)
+                        == Some("llm_incomplete_response"))
+        );
+        assert!(
+            !fields
+                .iter()
+                .any(|value| value.get("key").and_then(serde_json::Value::as_str)
+                    == Some("framework_http_status"))
+        );
+        Ok(())
+    }
+    use echo_agent::agent::EventIdentity;
 
     #[test]
     fn terminal_projects_cancelled() -> Result<(), ReactError> {
@@ -1135,14 +1231,106 @@ mod tests {
         Ok(())
     }
 
+    #[test]
+    fn live_usage_envelope_keeps_every_observation_field_and_large_u64()
+    -> std::result::Result<(), String> {
+        use echo_agent::agent::{AgentEvent, ModelCallObservation, ModelCallOutcome};
+        for outcome in [
+            ModelCallOutcome::Completed,
+            ModelCallOutcome::Failed,
+            ModelCallOutcome::Cancelled,
+        ] {
+            let identity = EventIdentity::new("原流", "原轮")
+                .and_then(|value| value.with_run_id("原运行"))
+                .and_then(|value| value.with_conversation_id("原会话"))
+                .map_err(|error| error.to_string())?;
+            let observation = ModelCallObservation {
+                call_id: "原调用🙂".into(),
+                attempt_id: "原尝试".into(),
+                outcome,
+                request_duration_ms: u64::MAX,
+                first_output_ms: Some(0),
+                last_output_ms: Some(u64::MAX),
+                output_samples: u64::MAX,
+                timing_comparable: false,
+            };
+            let expected_observation =
+                serde_json::to_value(&observation).map_err(|error| error.to_string())?;
+            let envelope = EventEnvelope::new(
+                &identity,
+                1,
+                None,
+                AgentEvent::LlmUsage {
+                    model: "controlled".into(),
+                    prompt_tokens: 2,
+                    completion_tokens: 3,
+                    total_tokens: 5,
+                    cached_prompt_tokens: 1,
+                    cache_creation_prompt_tokens: 0,
+                    usage_reported: true,
+                    observation: Some(observation),
+                },
+            )
+            .map_err(|error| error.to_string())?;
+            let expected =
+                serde_json::to_value(&envelope.payload).map_err(|error| error.to_string())?;
+            let projected = wire_envelope(&envelope).map_err(|error| error.message)?;
+            assert_eq!(projected.event_id, envelope.event_id.as_str());
+            assert_eq!(projected.content_hash, envelope.content_hash);
+            assert_eq!(projected.run_id.as_deref(), Some("原运行"));
+            assert_eq!(projected.conversation_id.as_deref(), Some("原会话"));
+            assert_eq!(projected.payload.event_type, "llm_usage");
+            let data = projected
+                .payload
+                .data
+                .ok_or("usage data missing")?
+                .into_json()
+                .map_err(|error| error.to_string())?;
+            assert_eq!(
+                data,
+                expected
+                    .get("data")
+                    .cloned()
+                    .ok_or("expected data missing")?
+            );
+            let actual = data
+                .get("observation")
+                .ok_or("Some observation disappeared")?;
+            assert_eq!(actual, &expected_observation);
+            assert_eq!(
+                actual
+                    .get("request_duration_ms")
+                    .and_then(serde_json::Value::as_u64),
+                Some(u64::MAX)
+            );
+            assert_eq!(
+                actual
+                    .get("output_samples")
+                    .and_then(serde_json::Value::as_u64),
+                Some(u64::MAX)
+            );
+            assert_eq!(
+                actual.get("call_id").and_then(serde_json::Value::as_str),
+                Some("原调用🙂")
+            );
+            assert_eq!(
+                actual.get("attempt_id").and_then(serde_json::Value::as_str),
+                Some("原尝试")
+            );
+        }
+        Ok(())
+    }
+
     #[tokio::test]
     async fn wire_envelope_preserves_identity() -> Result<(), ReactError> {
         let identity = EventIdentity::new("stream-wire", "turn-wire")?;
-        let envelope = EventEnvelope::new(&identity, 1, None, AgentEvent::Token("你好".into()))?;
+        let event = super::super::native_message::test_commentary_event("你好")
+            .map_err(ReactError::Other)?;
+        let envelope = EventEnvelope::new(&identity, 1, None, event)?;
         let wire = wire_envelope(&envelope).map_err(|error| ReactError::Other(error.message))?;
         assert_eq!(wire.sequence.to_u64(), Some(1));
         assert_eq!(wire.stream_id, "stream-wire");
-        assert_eq!(wire.payload.event_type, "token");
+        assert_eq!(wire.payload.event_type, "assistant_message");
         Ok(())
     }
 
@@ -1166,12 +1354,24 @@ mod tests {
         let mut checkpoint = echo_agent::state::AgentCheckpoint::new("中文🙂-generation");
         checkpoint.messages_json =
             r#"{"schema_version":2,"messages":[],"transcript_projection":null}"#.to_string();
-        checkpoint.current_plan = Some("artifact-only".to_string());
         checkpoint.active_skills = vec!["技能".to_string()];
         checkpoint.blocked_reason = Some("pending receipt".to_string());
         checkpoint.timestamp =
             chrono::DateTime::from_timestamp(-1, 123_456_789).ok_or("invalid fixture timestamp")?;
         let wire = checkpoint.clone().project()?;
+        let mut legacy = serde_json::to_value(&wire).map_err(|error| error.to_string())?;
+        assert!(legacy.get("current_plan").is_none());
+        legacy
+            .as_object_mut()
+            .ok_or("checkpoint wire must be an object")?
+            .insert(
+                "current_plan".into(),
+                serde_json::json!("retired runtime plan"),
+            );
+        assert!(
+            serde_json::from_value::<echo_sdk_protocol::managed::AgentCheckpointWire>(legacy)
+                .is_err()
+        );
         assert_eq!(wire.timestamp.unix_seconds.to_i64(), Some(-1));
         assert_eq!(wire.timestamp.nanos, 123_456_789);
         let restored = echo_agent::state::AgentCheckpoint::restore(wire)?;
@@ -1681,17 +1881,28 @@ pub(crate) mod managed {
         retention_floor_epoch,
         status
     );
-    structure!(
-        state::AgentCheckpoint,
-        AgentCheckpointWire,
-        conversation_id,
-        messages_json,
-        current_plan,
-        active_skills,
-        blocked_reason,
-        working_dir,
-        timestamp
-    );
+    impl Projection for state::AgentCheckpoint {
+        type Wire = AgentCheckpointWire;
+        fn project(self) -> Result<Self::Wire, String> {
+            Ok(AgentCheckpointWire {
+                conversation_id: self.conversation_id,
+                messages_json: self.messages_json,
+                active_skills: self.active_skills,
+                blocked_reason: self.blocked_reason,
+                working_dir: self.working_dir.project()?,
+                timestamp: self.timestamp.project()?,
+            })
+        }
+        fn restore(wire: Self::Wire) -> Result<Self, String> {
+            let mut checkpoint = Self::new(wire.conversation_id);
+            checkpoint.messages_json = wire.messages_json;
+            checkpoint.active_skills = wire.active_skills;
+            checkpoint.blocked_reason = wire.blocked_reason;
+            checkpoint.working_dir = Projection::restore(wire.working_dir)?;
+            checkpoint.timestamp = Projection::restore(wire.timestamp)?;
+            Ok(checkpoint)
+        }
+    }
     enumeration!(
         memory::ConversationProjectionLifecycle,
         ConversationProjectionLifecycleWire,

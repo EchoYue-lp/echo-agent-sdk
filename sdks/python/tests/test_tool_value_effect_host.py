@@ -420,15 +420,13 @@ async def test_search_provider_real_agent_result_and_failure():
         assert [call["request"]["query"] for call in calls] == [
             "success 中文🙂",
             "failure 中文🙂",
-            "failure 中文🙂",
-            "failure 中文🙂",
         ], calls
         assert all(
             call["request"]["operation"] == "search_provider_search"
             and call["request"]["max_results"] == 10
             for call in calls
         ), calls
-        assert len({call["invocation_id"] for call in calls}) == 4
+        assert len({call["invocation_id"] for call in calls}) == 2
         requests = [
             json.loads(line) for line in (work / "model.jsonl").read_text().splitlines()
         ]
@@ -445,6 +443,7 @@ async def test_search_provider_real_agent_result_and_failure():
             "provider failed 中文🙂" in str(m["content"]) for m in tool_messages
         ), tool_messages
         assert all(r["protected_before"] == r["protected_after"] for r in rows)
+        assert fixture.verify_search(work, data)["permanent_failure_attempts"] == 1
         print(
             "SearchProvider true Agent exact title/url/snippet/failure: evidence:", work
         )

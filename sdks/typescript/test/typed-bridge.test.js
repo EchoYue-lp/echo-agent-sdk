@@ -5,6 +5,31 @@ import { decodeExtensionInvokeCall, EchoAgentClient, ExtensionStreamWriter } fro
 const extension = { id: "ext-1", generation: "1", kind: "extension" };
 const deadline = { seconds: "30", nanos: 0 };
 
+test("Llm request bridge keeps canonical named choice and rejects malformed values", async () => {
+  const choices = [undefined, null, "auto", "none", "required",
+    {type:"function",function:{name:" 原始工具🧪 "}}, {type:"function",function:{name:"\uFEFF"}}];
+  const payload = (choice, operation = "llm_chat") => ({extension,invocation_id:"llm-choice",deadline,
+    invocation:{operation,input:{messages:[],...(choice === undefined ? {} : {tool_choice:choice})}}});
+  for (const choice of choices) for (const operation of ["llm_chat", "llm_chat_stream"]) {
+    assert.deepEqual(decodeExtensionInvokeCall(payload(choice, operation), "llm_client").invocation.input.tool_choice, choice);
+  }
+  for (const choice of ["future", true, [], {type:"tool",function:{name:"x"}},
+    {type:"function",function:{name:""}}, {type:"function",function:{name:"\u00A0"}},
+    {type:"function",function:{name:2}}, {type:"function",function:{name:"x",extra:true}},
+    {type:"function",function:{name:"x"},extra:true}]) {
+    assert.throws(() => decodeExtensionInvokeCall(payload(choice), "llm_client"), /tool_choice/);
+  }
+  let registered;
+  const sdk = {async registerExtension(...args) {registered = args[3]; return "registered";}};
+  const named = choices[5];
+  await EchoAgentClient.prototype.registerLlmClient.call(sdk, "choice-provider", {kind:"llm_client",descriptor_version:1,model_name:"fixture"}, call => {
+    assert.deepEqual(call.invocation.input.tool_choice, named);
+    return {operation:"llm_chat",value:{message:{role:"assistant",content:{kind:"string",value:"ok"}},raw:{kind:"map",value:[]}}};
+  });
+  const result = await registered(payload(named), new AbortController().signal);
+  assert.equal(result.outcome, "result");
+});
+
 test("typed bridge decoder preserves operation-discriminated inputs", () => {
   const call = decodeExtensionInvokeCall({
     extension,

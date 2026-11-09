@@ -6,6 +6,7 @@ import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {fileURLToPath} from "node:url";
 import {EchoAgentClient,toWireValue,fromWireValue} from "../dist/index.js";
+import {nativeProducerFixture} from "./native-producer-fixture.js";
 const host=process.env.ECHO_AGENT_SDK_HOST;
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==="1"&&!host)throw new Error("required real Task/Subagent Host binary missing");
 const fixture=fileURLToPath(new URL("../../shared/testing/task_subagent_fixture.py",import.meta.url));
@@ -31,24 +32,23 @@ async function scenario(action){
     if(operation==="agent_close")return{outcome:"result",result:{operation,value:null}};
     assert.equal(operation,"agent_execute_stream");
     assert.equal(call.context?.run_id,canonicalTaskRunScope,"Task callback must retain its active canonical TaskRun scope");
-    const attempt=++counts[lane];prompts[`${lane}/${attempt}`]=call.invocation.input.task;
-    await http("/agent",{lane,attempt,task:call.invocation.input.task,extension:call.extension});
+    const producer=nativeProducerFixture(sdk,call);await producer.start();
+    const attempt=++counts[lane];prompts[`${lane}/${attempt}`]=fromWireValue(call.invocation.input.task.content);
+    await http("/agent",{lane,attempt,task:fromWireValue(call.invocation.input.task.content),extension:call.extension});
     if(action==='observation'&&lane==='a'){
      const binding=await http('/physical/admit',call);assert.deepEqual(binding.context,call.context);assert.equal(binding.factory_origin,null);
      const error={code:'framework_error',retryable:'never',message:'same Task attempt remains physically held 中文🙂',operation:'_echo_agent/extension/invoke',details:{fields:[{key:'observation',value:'not_settled'},{key:'run_id',value:binding.run_id},{key:'execution_id',value:binding.execution_id}]}};
-     const writer=sdk.streamWriter(call.stream);
      const job=(async()=>{
-      await writer.failed(error);observations.push({call,binding,error});formalEvidence.original=observations[0];
+      await producer.failed(error);observations.push({call,binding,error});formalEvidence.original=observations[0];
       const joined=await http('/physical/join',{});assert.deepEqual(joined,{admitted:true,exit_code:0,stopped:binding});formalEvidence.joined=joined;
-      await writer.complete({kind:'agent',value:{event:'final_answer',data:{text:'A-after-physical-close 中文🧪'}}});
+      await producer.finish('A-after-physical-close 中文🧪');
      })();job.catch(()=>{});callbackJobs.push(job);return{outcome:'stream',stream:call.stream};
     }
     const job=Promise.resolve().then(async()=>{
      const interrupted=new Promise(resolve=>{if(signal.aborted)resolve();else signal.addEventListener("abort",resolve,{once:true});});
      if((lane==="a"||lane==="b")&&attempt===1)await Promise.race([http("/gate",{lane,attempt}),interrupted]);
-     const writer=sdk.streamWriter(call.stream);
-     if(signal.aborted){await writer.complete({kind:"agent",value:{event:"cancelled"}});}
-     else{const output=`${lane.toUpperCase()}-canonical-result 中文🧪`;completions.push({lane,attempt,output});await writer.complete({kind:"agent",value:{event:"final_answer",data:{text:output}}});}
+     if(signal.aborted){await producer.finish("cancelled",true);}
+     else{const output=`${lane.toUpperCase()}-canonical-result 中文🧪`;completions.push({lane,attempt,output});await producer.finish(output);}
     });job.catch(()=>{});callbackJobs.push(job);
     return{outcome:"stream",stream:call.stream};
    }));
@@ -148,9 +148,10 @@ async function singleScenario(kind){
   registrations.push(await sdk.registerExtension("custom_agent","await-target",{kind:"custom_agent",descriptor_version:1,name:"await-target",model_name:"fixture",system_prompt:"fixture",tool_names:[]},async(call,signal)=>{
    const operation=call.invocation.operation;if(operation==="agent_close")return{outcome:"result",result:{operation,value:null}};
    assert.ok(["agent_execute","agent_execute_stream"].includes(operation),operation);invocations++;rawCall=call;
-   await http("/agent",{lane:"await",attempt:1,task:call.invocation.input.task,context:call.context??null,extension:call.extension});
+   await http("/agent",{lane:"await",attempt:1,task:fromWireValue(call.invocation.input.task.content),context:call.context??null,extension:call.extension});
    if(operation.endsWith("_stream")){
-    const job=Promise.resolve().then(async()=>{await http("/gate",{lane:"await",attempt:1});await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:"full retained result 中文🧪"}}});});job.catch(()=>{});callbackJobs.push(job);
+    const producer=nativeProducerFixture(sdk,call);await producer.start();
+    const job=Promise.resolve().then(async()=>{await http("/gate",{lane:"await",attempt:1});await producer.finish("full retained result 中文🧪");});job.catch(()=>{});callbackJobs.push(job);
     return{outcome:"stream",stream:call.stream};
    }
    await http("/gate",{lane:"await",attempt:1});return{outcome:"result",result:{operation,value:"full retained result 中文🧪"}};
@@ -170,7 +171,7 @@ async function singleScenario(kind){
    await assert.rejects(sdk.request("_echo_agent/subagent/dispatch",{...payload,request:toWireValue({agent_name:"await-target",task:"conflicting payload"})}),error=>error.code==="invalid_value");
    await http("/release",{lane:"await",attempt:1});
    const full=await sdk.request("_echo_agent/subagent/await",{subagent:one.subagent}),repeat=await sdk.request("_echo_agent/subagent/await",{subagent:one.subagent});assert.deepEqual(full,repeat);assert.equal(full.settled,true);
-   const result=fromWireValue(full.result);assert.equal(result.output,"full retained result 中文🧪");assert.ok(rawCall.invocation.input.task.includes("constraint retained 🧪"));
+   const result=fromWireValue(full.result);assert.equal(result.output,"full retained result 中文🧪");assert.ok(fromWireValue(rawCall.invocation.input.task.content).includes("constraint retained 🧪"));
    assert.equal((await sdk.request("_echo_agent/subagent/control",{subagent:one.subagent,action:"guidance",payload:"late"})).accepted,false);assert.equal(invocations,1);
    writeFileSync(join(work,"observed.json"),JSON.stringify({kind,invocations,short,full,rawCall}));
   }

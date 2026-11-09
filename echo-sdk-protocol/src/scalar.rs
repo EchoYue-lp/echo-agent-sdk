@@ -550,11 +550,23 @@ impl WireValue {
             }
             Self::Record { type_id, fields } => {
                 validate_identity(type_id)?;
-                if fields
-                    .iter()
-                    .any(|field| retired_sdk_record_field(type_id, &field.name))
-                {
-                    return Err(ScalarError::ValueLimit("retired SDK field"));
+                // ADR0042 withdraws these two plugin fields, not the shared
+                // record algebra or the remaining plugin components.
+                if fields.iter().any(|field| {
+                    (matches!(
+                        type_id.as_str(),
+                        "echo_core::plugin::registry::ResolvedComponents"
+                            | "echo_agent::plugin::ResolvedComponents"
+                    ) && field.name == "lsp_config_file")
+                        || (matches!(
+                            type_id.as_str(),
+                            "echo_agent::plugin::prepared::PluginWiringResult"
+                                | "echo_agent::plugin::PluginWiringResult"
+                        ) && field.name == "lsp_discovered")
+                }) {
+                    return Err(ScalarError::ValueLimit(
+                        "retired LSP plugin field is unsupported",
+                    ));
                 }
                 validate_fields(fields, depth)
             }
@@ -565,8 +577,15 @@ impl WireValue {
             } => {
                 validate_identity(type_id)?;
                 validate_identity(variant)?;
-                if retired_sdk_variant(type_id, variant) {
-                    return Err(ScalarError::ValueLimit("retired SDK variant"));
+                if matches!(
+                    type_id.as_str(),
+                    "echo_core::plugin::capability::PluginCapability"
+                        | "echo_agent::plugin::PluginCapability"
+                ) && matches!(variant.as_str(), "LspServer" | "lsp_server")
+                {
+                    return Err(ScalarError::ValueLimit(
+                        "retired LSP plugin capability is unsupported",
+                    ));
                 }
                 validate_fields(fields, depth)
             }
@@ -658,24 +677,6 @@ impl WireValue {
     }
 }
 
-fn retired_sdk_record_field(type_id: &str, field: &str) -> bool {
-    matches!(
-        (type_id, field),
-        (
-            "echo_core::plugin::registry::ResolvedComponents",
-            "lsp_config_file"
-        ) | (
-            "echo_agent::plugin::prepared::PluginWiringResult",
-            "lsp_discovered"
-        )
-    )
-}
-
-fn retired_sdk_variant(type_id: &str, variant: &str) -> bool {
-    type_id == "echo_core::plugin::capability::PluginCapability"
-        && matches!(variant, "LspServer" | "lsp_server")
-}
-
 fn validate_fields(fields: &[WireField], depth: usize) -> Result<(), ScalarError> {
     validate_collection_len(fields.len())?;
     let mut names = std::collections::BTreeSet::new();
@@ -753,6 +754,7 @@ mod tests {
         );
     }
 
+    // 承接StageA具名退出与用户自定义同名值保留的定向回归；生产校验仍为83原实现。
     #[test]
     fn retired_sdk_identities_are_rejected_without_string_wide_filtering() {
         let retired_field = WireValue::Record {

@@ -751,13 +751,20 @@ mod tests {
                 }
                 ExtensionInvocation::AgentExecuteStream(_)=>{
                     callback_executions.fetch_add(1,Ordering::AcqRel);
+                    let execution_id=call.context.as_ref().and_then(|context|context.execution_id.clone()).unwrap_or_else(||call.invocation_id.clone());
+                    let request_id=call.context.as_ref().and_then(|context|context.message_id.clone()).unwrap_or_else(||call.invocation_id.clone());
                     let stream=call.stream.ok_or_else(|| agent_client_protocol::Error::internal_error().data("missing original stream"))?;
                     responder.respond(ExtensionInvokeOutcome::Stream{stream:stream.clone()})?;
                     let release=callback_release.clone();let entered=callback_entered.clone();let producer=connection.clone();
                     connection.spawn(async move {
+                        // 状态来自当前真实fixture producer；原admission/release门不提前结算。
+                        producer.send_notification(ExtensionStreamEvent::Chunk {stream:stream.clone(),sequence:echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string()).map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?,
+                            value:ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::ExecutionStatus(ExecutionStatusWire{execution_id:execution_id.clone(),request_id:Some(request_id.clone()),sequence:echo_sdk_protocol::scalar::WireU64::from_u64(0),phase:AgentPhaseWire::Thinking,status:ExecutionStatusKindWire::Started,reason:None}))})?;
                         entered.cancel();release.cancelled().await;
-                        producer.send_notification(ExtensionStreamEvent::Complete {stream,sequence:echo_sdk_protocol::scalar::WireNonZeroU64::try_from("1".to_string()).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?,
-                            value:ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::FinalAnswer{text:"original settled".to_string()})})
+                        producer.send_notification(ExtensionStreamEvent::Chunk {stream:stream.clone(),sequence:echo_sdk_protocol::scalar::WireNonZeroU64::try_from("2".to_string()).map_err(|error|agent_client_protocol::Error::internal_error().data(error.to_string()))?,
+                            value:ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::FinalAnswer{text:"original settled".to_string()})})?;
+                        producer.send_notification(ExtensionStreamEvent::Complete {stream,sequence:echo_sdk_protocol::scalar::WireNonZeroU64::try_from("3".to_string()).map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?,
+                            value:ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::ExecutionStatus(ExecutionStatusWire{execution_id,request_id:Some(request_id),sequence:echo_sdk_protocol::scalar::WireU64::from_u64(1),phase:AgentPhaseWire::Terminal,status:ExecutionStatusKindWire::Settled,reason:None}))})
                     })
                 }
                 ExtensionInvocation::AgentClose(_)=>responder.respond(ExtensionInvokeOutcome::Result{result:ExtensionResult::AgentClose(ExtensionUnit)}),

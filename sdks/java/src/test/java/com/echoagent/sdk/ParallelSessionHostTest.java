@@ -33,8 +33,26 @@ class ParallelSessionHostTest {
         for(int i=0;i<observed.size();i++){
             var envelope=observed.get(i).path("envelope"); assertEquals(Integer.toString(i+1),envelope.path("sequence").asText());
             assertEquals(replay.path(i).path("event_id"),envelope.path("event_id"));
+            assertEquals(replay.path(i), envelope);
         }
         assertEquals(1,observed.stream().filter(v->List.of("final_answer","cancelled","error").contains(v.path("envelope").path("payload").path("event_type").asText())).count());
+        assertEquals(1, observed.stream().filter(v -> "execution_status".equals(
+                v.path("envelope").path("payload").path("event_type").asText()))
+                .filter(v -> "Terminal".equals(statusField(v, "phase"))).count());
+    }
+    private static String statusField(JsonNode event, String name) {
+        var payload = event.path("envelope").path("payload");
+        assertEquals("execution_status", payload.path("event_type").asText());
+        for (var entry : payload.path("data").path("value")) {
+            if (name.equals(entry.path("key").path("value").asText()))
+                return entry.path("value").path("value").asText();
+        }
+        throw new AssertionError("missing runtime status field: " + name);
+    }
+    private static void assertTerminal(List<JsonNode> observed, String status) {
+        var last = observed.get(observed.size() - 1);
+        assertEquals("Terminal", statusField(last, "phase"));
+        assertEquals(status, statusField(last, "status"));
     }
     @Test void independentAgentsKeepBAliveAfterACancelAndEachOwnJournal() throws Exception {
         String host = System.getenv("ECHO_AGENT_SDK_HOST"); assumeTrue(host != null && !host.isBlank());
@@ -55,13 +73,13 @@ class ParallelSessionHostTest {
                 assertTrue(startedA.await(5, TimeUnit.SECONDS)); assertTrue(startedB.await(5, TimeUnit.SECONDS));
                 until(() -> Files.exists(work.resolve("parked-a")) && Files.exists(work.resolve("parked-b")));
                 await(runA.cancel()); assertEquals("cancelled", await(runA.waitForSettlement(Duration.ofSeconds(10))).path("terminal").path("status").asText());
-                assertTrue(doneA.await(5, TimeUnit.SECONDS)); assertNull(errorA.get()); assertEquals("cancelled", valuesA.get(valuesA.size()-1).path("envelope").path("payload").path("event_type").asText());
+                assertTrue(doneA.await(5, TimeUnit.SECONDS)); assertNull(errorA.get()); assertTerminal(valuesA, "cancelled");
                 verifyJournal(runA,valuesA); sessionA.close(); agentA.close();
                 assertFalse(doneB.await(250, TimeUnit.MILLISECONDS), "closing A must not complete B feed");
                 assertFalse(await(runB.waitForSettlement(Duration.ZERO)).path("settled").asBoolean());
                 Files.createFile(work.resolve("release-b"));
                 assertEquals("completed", await(runB.waitForSettlement(Duration.ofSeconds(10))).path("terminal").path("status").asText());
-                assertTrue(doneB.await(5, TimeUnit.SECONDS)); assertNull(errorB.get()); assertEquals("final_answer", valuesB.get(valuesB.size()-1).path("envelope").path("payload").path("event_type").asText());
+                assertTrue(doneB.await(5, TimeUnit.SECONDS)); assertNull(errorB.get()); assertTerminal(valuesB, "settled");
                 var idsA = new HashSet<String>(); valuesA.forEach(v -> idsA.add(v.path("envelope").path("event_id").asText()));
                 valuesB.forEach(v -> assertFalse(idsA.contains(v.path("envelope").path("event_id").asText())));
                 verifyJournal(runB,valuesB);

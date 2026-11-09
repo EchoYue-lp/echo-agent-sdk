@@ -1,0 +1,28 @@
+{
+  "name": "provider-response-null-fields-valid",
+  "kind": "valid",
+  "target": "ProviderResponseMetadataWire",
+  "description": "显式Wire Null与缺失字段分别保存。",
+  "payload": {
+    "protocol": "responses",
+    "provider": "fixture-provider",
+    "model": {
+      "kind": "null"
+    },
+    "stop_reason": {
+      "kind": "null"
+    },
+    "stop_sequence": {
+      "kind": "null"
+    },
+    "status": {
+      "kind": "null"
+    },
+    "incomplete_details": {
+      "kind": "null"
+    },
+    "usage": {
+      "kind": "null"
+    }
+  }
+}

@@ -951,7 +951,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:e10e47ed1ba1c49d39036a67414b83f75863dcc4a138d27c71b9a63d21f9f272"
+        "sha256:ed9e3f2eafc14adf62b50f1f6346b5be07ef5f881361fe237b95c63de4c612ef"
       ],
       "input": null,
       "result": null,
@@ -12421,7 +12421,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:8ae495416fbcd403420f614f6bea9d51058fdf1834aa1e2d9f47cd8497f2b82a"
+        "sha256:788faaaca980ceda61ce7bc12d2a971630c8cc53024af6ca5f57ba30efdaaf50"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -13837,30 +13837,6 @@
       "items": 1
     },
     {
-      "route": "source:echo_agent::state::delete_persisted_conversation",
-      "surface": "invoke",
-      "family": "source_operation",
-      "method": "_echo_agent/facade/invoke",
-      "operation": "echo_agent::state::delete_persisted_conversation",
-      "handler_operation": null,
-      "required_feature": null,
-      "required_features": [],
-      "feature_semantics": "default",
-      "signature_digests": [
-        "sha256:97b7ff491c492fa6e3b26e6130c5f51285ff1f1608ae64d447de744152c501e2"
-      ],
-      "input": {
-        "encoding": "wire_value_array",
-        "description": "FeatureOperationRequest.arguments"
-      },
-      "result": {
-        "encoding": "wire_value",
-        "description": "FeatureOperationResponse.value"
-      },
-      "operation_signatures": [],
-      "items": 1
-    },
-    {
       "route": "source:echo_core::agent::Agent::chat",
       "surface": "invoke",
       "family": "source_operation",
@@ -14039,7 +14015,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:fb9752c3f79c33f69eab8cb3d7207bab8203ef562ad04f51d8e9713988cab69f"
+        "sha256:6f9ff234cefcc1e989d012e63861279e468cc38ca8da2a7a9e190a3445b7d6c8"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -14063,7 +14039,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:b5e614a34602a2e9d2ab5ec4d01c60eb8b101d491a5b9bce96193d0e10192c39"
+        "sha256:95b9f71f60df371737ca22a1989f3b12469fe249219f750fd13befc9e60c5069"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -17382,7 +17358,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 141
+      "items": 135
     },
     {
       "route": "value",
@@ -17693,7 +17669,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 128
+      "items": 127
     },
     {
       "route": "value:statistics",
@@ -17870,6 +17846,6 @@
       "items": 147
     }
   ],
-  "total_items": 431,
+  "total_items": 430,
   "scope": "external_contract"
 }

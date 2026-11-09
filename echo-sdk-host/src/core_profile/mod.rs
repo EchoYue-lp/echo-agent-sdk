@@ -15,6 +15,7 @@ pub(crate) mod extension_bridge;
 pub(crate) mod facade;
 pub(crate) mod handler;
 pub(crate) mod handles;
+mod native_message;
 pub(crate) mod persistence;
 pub(crate) mod state;
 pub(crate) mod wire;
