@@ -5,7 +5,7 @@
 //! build actually compiled — never from runtime config — so a client can
 //! trust `feature_unavailable` to mean "not compiled in".
 //!
-//! [`FRAMEWORK_FEATURE_TABLE`] is the one declaration binding each Host
+//! `FRAMEWORK_FEATURE_TABLE` is the one declaration binding each Host
 //! Cargo feature to the root `echo_agent` leaf feature it activates.
 //! `compiled_leaf_features()` reads the compiled set through `cfg!`, and
 //! the reconciliation test fails the build when the table drifts from the

@@ -142,7 +142,6 @@
         "checkpoint": {
           "conversation_id": "fixture-conversation_id中文🙂",
           "messages_json": "{\"schema_version\":5,\"execution_facts\":[{\"call_id\":\"canonical/中文\",\"effects\":[{\"effect\":\"file_edit\",\"path\":\"/中文🙂\"}]}]}",
-          "current_plan": "fixture-current_plan中文🙂",
           "active_skills": [],
           "blocked_reason": "fixture-blocked_reason中文🙂",
           "working_dir": {
@@ -194,7 +193,6 @@
         "checkpoint": {
           "conversation_id": "fixture-conversation_id中文🙂",
           "messages_json": "{\"schema_version\":5,\"execution_facts\":[{\"call_id\":\"canonical/中文\",\"effects\":[{\"effect\":\"file_edit\",\"path\":\"/中文🙂\"}]}]}",
-          "current_plan": "fixture-current_plan中文🙂",
           "active_skills": [],
           "blocked_reason": "fixture-blocked_reason中文🙂",
           "working_dir": {
@@ -293,7 +291,6 @@
         "checkpoint": {
           "conversation_id": "fixture-conversation_id中文🙂",
           "messages_json": "{\"schema_version\":5,\"execution_facts\":[{\"call_id\":\"canonical/中文\",\"effects\":[{\"effect\":\"file_edit\",\"path\":\"/中文🙂\"}]}]}",
-          "current_plan": "fixture-current_plan中文🙂",
           "active_skills": [],
           "blocked_reason": "fixture-blocked_reason中文🙂",
           "working_dir": {

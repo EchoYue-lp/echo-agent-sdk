@@ -1016,11 +1016,12 @@ def verify(work, data):
 
 
 def verify_search(work, data):
+    from tool_behavior_fixture import decode_typed_data
+
     calls = data["calls"]
+    # 未分类的公开异常按既有永久失败合同停止；暂态重试由独立真实反控覆盖。
     assert [c["request"]["query"] for c in calls] == [
         "success 中文🙂",
-        "failure 中文🙂",
-        "failure 中文🙂",
         "failure 中文🙂",
     ], calls
     assert all(
@@ -1028,13 +1029,27 @@ def verify_search(work, data):
         and int(c["request"]["max_results"]) == 10
         for c in calls
     ), calls
-    assert len({c["invocation_id"] for c in calls}) == 4
+    assert len({c["invocation_id"] for c in calls}) == 2
     assert all(
         c["deadline"] == {"seconds": "30", "nanos": 0} and not c["cancelled"]
         for c in calls
     )
     assert data["rows"][0]["settled"]["terminal"]["status"] == "completed"
     assert data["rows"][1]["settled"]["terminal"]["status"] == "completed"
+    envelopes = [
+        item.get("envelope", item) for item in data["rows"][1]["replay"]["events"]
+    ]
+    failures = [
+        decode_typed_data(item["payload"]["data"])["result"]
+        for item in envelopes
+        if item["payload"]["event_type"] == "tool_result"
+    ]
+    assert len(failures) == 1 and failures[0]["success"] is False, failures
+    assert failures[0]["failure"] == {
+        "category": "permanent",
+        "recovery": "stop",
+        "side_effect": "none",
+    }, failures
     requests = [
         json.loads(line) for line in (work / "model.jsonl").read_text().splitlines()
     ]
@@ -1050,9 +1065,10 @@ def verify_search(work, data):
     )
     assert all(r["protected_before"] == r["protected_after"] for r in data["rows"])
     return {
-        "provider_calls": 4,
+        "provider_calls": 2,
         "success_calls": 1,
-        "failure_attempts": 3,
+        "permanent_failure_attempts": 1,
+        "transient_retry_coverage": "separate SearchProvider native retry controls",
         "title_url_snippet_exact": True,
         "canonical_agent_run_count": 2,
     }
@@ -1412,7 +1428,8 @@ def main():
             self.wfile.write(body)
 
         def do_POST(self):
-            request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            request_body = self.rfile.read(int(self.headers["Content-Length"]))
+            request = json.loads(request_body)
             with lock, (args.work / "model.jsonl").open("a", encoding="utf8") as f:
                 f.write(json.dumps(request, ensure_ascii=False) + "\n")
             messages = request.get("messages", [])
@@ -1502,6 +1519,24 @@ def main():
             else:
                 body = json.dumps(response, ensure_ascii=False).encode()
                 content_type = "application/json"
+            # 保全真正写入HTTP的字节，便于区分模型驱动、SDK桥接与框架重试。
+            # 仅观察本地合成请求，不改变响应、工具调用或原验收次数。
+            with (
+                lock,
+                (args.work / "model-http.jsonl").open("a", encoding="utf8") as output,
+            ):
+                output.write(
+                    json.dumps(
+                        {
+                            "path": self.path,
+                            "request_base64": base64.b64encode(request_body).decode(),
+                            "status": 200,
+                            "content_type": content_type,
+                            "response_base64": base64.b64encode(body).decode(),
+                        }
+                    )
+                    + "\n"
+                )
             self.send_response(200)
             self.send_header("Content-Type", content_type)
             self.send_header("Content-Length", str(len(body)))

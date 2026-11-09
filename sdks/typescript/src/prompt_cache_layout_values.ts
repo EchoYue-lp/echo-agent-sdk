@@ -1,5 +1,6 @@
-import type { LlmMessage, LlmToolDefinition, WireValue } from "./types.js";
+import type { LlmMessage, LlmToolDefinition } from "./types.js";
 import { SegmentRange } from "./segment_range_values.js";
+import { fromWireValue } from "./wire.js";
 
 /** Message-cache segment indexes without owning cache state. */
 export class SegmentRanges {
@@ -51,17 +52,11 @@ export class PromptCacheLayout {
     const canonicalStart = canonicalIndex < 0 ? sysEnd : canonicalIndex;
 
     let runtimeStart = messages.length;
-    for (let index = messages.length - 1; index >= 0; index -= 1) {
-      const candidate = messages[index];
-      if (candidate && (messageText(candidate)?.trimStart().startsWith("[runtime_context:") ?? false)) {
-        runtimeStart = index;
-        while (runtimeStart > sysEnd) {
-          const previous = messages[runtimeStart - 1];
-          if (!previous || !(messageText(previous)?.trimStart().startsWith("[runtime_context:") ?? false)) break;
-          runtimeStart -= 1;
-        }
-        break;
-      }
+    // 保留公开 runtimeContext 名称，只投影框架严格识别的连续 dynamic 尾段。
+    while (runtimeStart > sysEnd) {
+      const candidate = messages[runtimeStart - 1];
+      if (!candidate || candidate.role === "system" || !isDynamicTailMessage(candidate)) break;
+      runtimeStart -= 1;
     }
 
     return new PromptCacheLayout(
@@ -88,16 +83,62 @@ export class PromptCacheLayout {
 }
 
 function messageText(message: LlmMessage): string | null {
-  const content: unknown = message.content;
-  if (typeof content === "string") return content;
-  if (isWireString(content)) return content.value;
-  return null;
+  const content = fromWireValue(message.content);
+  if (typeof content === "string") return content || null;
+  if (!Array.isArray(content)) return null;
+  const texts: string[] = [];
+  for (const part of content) {
+    if (!isObject(part)) continue;
+    if (part.type === "text" && typeof part.text === "string") texts.push(part.text);
+    else if (part.type === "resource_link" && isObject(part.resource)) {
+      const resource = part.resource;
+      // 只识别框架 LinkedResource 的八个字段；缺失 Option 为 null，未知字段不进入视图。
+      const fields = {
+        annotations: resource.annotations ?? null,
+        description: resource.description ?? null,
+        mime_type: resource.mime_type ?? null,
+        name: resource.name,
+        size: resource.size ?? null,
+        title: resource.title ?? null,
+        uri: resource.uri,
+        meta: resource.meta ?? null,
+      };
+      texts.push(`[Linked resource]\n${JSON.stringify(fields)}`);
+    }
+  }
+  // canonical 使用完整 as_text 视图；dynamic 仍只读首个 Text part 的独立信封。
+  return texts.length > 0 ? texts.join("") : null;
 }
 
-function isWireString(value: unknown): value is Extract<WireValue, { readonly kind: "string" }> {
-  return typeof value === "object"
-    && value !== null
-    && !Array.isArray(value)
-    && (value as { readonly kind?: unknown }).kind === "string"
-    && typeof (value as { readonly value?: unknown }).value === "string";
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isDynamicTailMessage(message: LlmMessage): boolean {
+  const content = fromWireValue(message.content);
+  // 与框架一致：多模态信封只能来自首个 Text part，不能拼接其它正文补头。
+  const first: unknown = Array.isArray(content) ? content[0] : undefined;
+  const text = typeof content === "string" ? content
+    : typeof first === "object" && first !== null && "type" in first && first.type === "text"
+      && "text" in first && typeof first.text === "string" ? first.text : null;
+  const prefix = "<echo-agent-context-projection-v2>\n";
+  if (text === null || !text.startsWith(prefix)) return false;
+  const end = text.indexOf("\n\n", prefix.length);
+  if (end < 0) return false;
+  const lines = text.slice(prefix.length, end).split(/\r?\n/u);
+  const [marker, placement, version] = lines;
+  return lines.length === 3 && marker !== undefined && marker.startsWith("marker=")
+    && placement === "placement=tail" && version !== undefined && version.startsWith("version=")
+    && isProjectionString(marker.slice("marker=".length))
+    && isProjectionString(version.slice("version=".length));
+}
+
+function isProjectionString(raw: string): boolean {
+  try {
+    const value: unknown = JSON.parse(raw);
+    // serde_json::String 不接受未配对 surrogate；JS 的 JSON.parse 需要补这一检查。
+    return typeof value === "string" && value.length > 0 && !/[\uD800-\uDFFF]/u.test(value);
+  } catch {
+    return false;
+  }
 }

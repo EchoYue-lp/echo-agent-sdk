@@ -680,6 +680,7 @@ mod task_context_consumption_tests {
         TaskExecution, TaskGraphCommit, TaskGraphContext, TaskGraphExecutionMode, TaskPatchEffects,
         TaskSpec,
     };
+    use futures::StreamExt as _;
     use futures::future::BoxFuture;
     use futures::stream::BoxStream;
     use std::sync::Mutex;
@@ -725,13 +726,34 @@ mod task_context_consumption_tests {
                 ))
             })
         }
-        fn execute_stream_with_invocation_context<'a>(
+        fn execute_stream_message_with_invocation_context<'a>(
             &'a self,
-            task: &'a str,
+            message: echo_agent::llm::types::Message,
             _cancel: CancellationToken,
             context: AgentInvocationContext,
         ) -> BoxFuture<'a, Result<BoxStream<'a, Result<AgentEvent>>>> {
             Box::pin(async move {
+                let task = message
+                    .content
+                    .as_text()
+                    .ok_or_else(|| {
+                        ReactError::Other("context fixture expected complete text Message".into())
+                    })?
+                    .to_string();
+                let identity = echo_agent::agent::EventIdentity::from_invocation(&context)?;
+                let execution_id = identity
+                    .execution_id
+                    .as_ref()
+                    .map(|value| value.as_str())
+                    .unwrap_or(identity.turn_id.as_str())
+                    .to_string();
+                let request_id = identity
+                    .message_id
+                    .as_ref()
+                    .map(|value| value.as_str())
+                    .unwrap_or(identity.turn_id.as_str())
+                    .to_string();
+                let retained = (message, context.clone());
                 let runtime = context.runtime.as_ref().ok_or_else(|| {
                     ReactError::Other("dispatch context lost runtime".to_string())
                 })?;
@@ -767,13 +789,43 @@ mod task_context_consumption_tests {
                     .lock()
                     .map_err(|_| ReactError::Other("capture lock poisoned".to_string()))?
                     .push(CapturedInvocation {
-                        prompt: task.to_string(),
+                        prompt: task,
                         context,
                         original_claim,
                     });
-                Ok(Box::pin(futures::stream::iter([Ok(AgentEvent::FinalAnswer(
-                    "native canonical result 中文🌊".to_string(),
-                ))])) as BoxStream<'a, Result<AgentEvent>>)
+                let status = |kind, sequence, phase| {
+                    AgentEvent::ExecutionStatus(echo_agent::agent::ExecutionStatus {
+                        adapter_generated: false,
+                        execution_id: execution_id.clone(),
+                        request_id: Some(request_id.clone()),
+                        sequence,
+                        phase,
+                        status: kind,
+                        reason: None,
+                    })
+                };
+                // 原fixture producer自己报告事实；完整输入/上下文保留到同一source EOF。
+                let events = [
+                    Ok(status(
+                        echo_agent::agent::ExecutionStatusKind::Started,
+                        0,
+                        echo_agent::agent::AgentPhase::Thinking,
+                    )),
+                    Ok(AgentEvent::FinalAnswer(
+                        "native canonical result 中文🌊".to_string(),
+                    )),
+                    Ok(status(
+                        echo_agent::agent::ExecutionStatusKind::Settled,
+                        1,
+                        echo_agent::agent::AgentPhase::Terminal,
+                    )),
+                ];
+                Ok(futures::stream::iter(events)
+                    .map(move |event| {
+                        let _retained = &retained;
+                        event
+                    })
+                    .boxed())
             })
         }
     }

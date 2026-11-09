@@ -5,3 +5,8 @@ opt-level = 1
 debug-assertions = true
 overflow-checks = true
 panic = "unwind"
+
+# ADR0040 后继：仅以 Host 测试包 opt2 测量修复 libtest 的 EH 段超限。
+# 断言、溢出检查和 unwind 继承既有设置；不改变 dev/release。
+[profile.test.package.echo-sdk-host]
+opt-level = 2

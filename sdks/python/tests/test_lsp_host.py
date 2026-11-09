@@ -3,7 +3,7 @@ import pytest
 from echo_agent_sdk.catalog import FacadeCatalog
 
 
-def test_lsp_family_is_retired_from_catalog():
+def test_lsp_methods_are_retired_from_the_language_catalog():
     for operation in (
         "lsp.manager.open",
         "lsp.client.hover",

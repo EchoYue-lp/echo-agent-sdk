@@ -56,9 +56,9 @@ for (const enabled of [false, true]) test(`accepted managed exact clear retireme
     assert.ok(!JSON.parse(snapshot.checkpoint.messages_json).pending_transcript_projection);
     proof.before = before;
     await assert.rejects(session.invoke(DELETE, [scope]), error => {
-      assert.equal(error.code, "framework_error"); assert.equal(error.operation, DELETE);
-      assert.match(error.message, /managed conversation deletion requires/u);
-      assert.ok(error.details.fields.some(field => field.key === "framework_failure_code" && field.value === "runtime_state"));
+      assert.equal(error.code, "feature_unavailable"); assert.equal(error.operation, DELETE);
+      assert.equal(error.retryable, "never");
+      assert.match(error.message, /unmanaged conversation deletion is retired/u);
       proof.errors.push(fact(error)); return true;
     });
     const afterDelete = await http(url, "/inspect");

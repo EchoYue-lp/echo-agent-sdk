@@ -956,7 +956,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 28
+      "items": 22
     },
     {
       "route": "bridge:agent_component",
@@ -974,7 +974,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 311
+      "items": 317
     },
     {
       "route": "bridge:agent_factory",
@@ -1014,7 +1014,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 36
+      "items": 48
     },
     {
       "route": "bridge:channel_plugin",
@@ -1029,12 +1029,12 @@
       ],
       "feature_semantics": "any_of",
       "signature_digests": [
-        "sha256:dbe591e65786ee8e51081a28f6ac4841e8f61a65c8db699b6e7fd4a4c3e97e09"
+        "sha256:32e1a450a4bc7f7ae840908b930e5e1f9eac767b435986c374aa0abec0562454"
       ],
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 32
+      "items": 36
     },
     {
       "route": "bridge:context_compressor",
@@ -1139,12 +1139,12 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:f2e54a4329da7556be96d969281242e46c252ab9675b9c016b306afbc7af5c0d"
+        "sha256:4d5ac5db6bd054ea4df9c794b77eeb94b99f912c8fdfc62fda4ff6f0a8959b99"
       ],
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 20
+      "items": 22
     },
     {
       "route": "bridge:store",
@@ -1180,7 +1180,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 63
+      "items": 66
     },
     {
       "route": "core:event_replay",
@@ -1236,7 +1236,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 19
+      "items": 27
     },
     {
       "route": "core:task",
@@ -6236,7 +6236,7 @@
           }
         }
       ],
-      "items": 20
+      "items": 40
     },
     {
       "route": "family:chart",
@@ -10277,7 +10277,7 @@
           }
         }
       ],
-      "items": 2
+      "items": 3
     },
     {
       "route": "family:workflow",
@@ -10770,7 +10770,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 553
+      "items": 563
     },
     {
       "route": "intrinsic:language-local-agent-context",
@@ -10788,7 +10788,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 12
+      "items": 8
     },
     {
       "route": "intrinsic:language-local-agent-context-value",
@@ -10824,7 +10824,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 619
+      "items": 635
     },
     {
       "route": "intrinsic:language-local-cancellation",
@@ -10844,7 +10844,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 23
+      "items": 25
     },
     {
       "route": "intrinsic:language-local-exact-helper",
@@ -10992,7 +10992,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 21
+      "items": 22
     },
     {
       "route": "intrinsic:language-local-standard-acp-content-adapter",
@@ -11030,7 +11030,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 148
+      "items": 151
     },
     {
       "route": "intrinsic:language-local-turn-context",
@@ -11066,7 +11066,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 2827
+      "items": 2831
     },
     {
       "route": "intrinsic:language-local-wire-helper",
@@ -11140,7 +11140,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 144
+      "items": 153
     },
     {
       "route": "intrinsic:process-local-agent-owned-input-drain-hook",
@@ -11360,7 +11360,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 44
+      "items": 48
     },
     {
       "route": "intrinsic:process-local-channel-handler-factory",
@@ -11500,7 +11500,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 36
+      "items": 44
     },
     {
       "route": "intrinsic:process-local-channel-transport-state",
@@ -11515,12 +11515,12 @@
       ],
       "feature_semantics": "any_of",
       "signature_digests": [
-        "sha256:c556efb89cf101235e3398808681d817c3a1937fb9d955ea50837e29bedce57f"
+        "sha256:9fa1495989668b459ed5c87278f18fed8ce63ce5939624de09bc125e5127d3e3"
       ],
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 106
+      "items": 506
     },
     {
       "route": "intrinsic:process-local-circuit-breaker-state",
@@ -11734,12 +11734,12 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:78d1f5c7c89169115be75929a762fca2c7495644e9de430abcef352cea986a1c"
+        "sha256:6afb45d56d3649935ff4e08936cc32b925208e26c16cd3b66c2550d1e16ae058"
       ],
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 113
+      "items": 130
     },
     {
       "route": "intrinsic:process-local-filesystem-discovery-state",
@@ -11752,12 +11752,12 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:aa9ffb24eaadbbff1abdcaa18eee38b21337c494e2b60fd9e9be8ec3c1004fed"
+        "sha256:fa3d5dbf96ef1f604916aa3ae3d269c7a50f80edfaebe5178f382440eca9d320"
       ],
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 42
+      "items": 54
     },
     {
       "route": "intrinsic:process-local-fnonce-isolation-handle",
@@ -12427,7 +12427,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 51
+      "items": 52
     },
     {
       "route": "intrinsic:process-local-polars-dataframe",
@@ -12484,26 +12484,6 @@
       "result": null,
       "operation_signatures": [],
       "items": 252
-    },
-    {
-      "route": "intrinsic:process-local-retired-sdk-a2a-lsp",
-      "surface": "intrinsic",
-      "family": "intrinsic",
-      "method": null,
-      "operation": null,
-      "handler_operation": null,
-      "required_feature": null,
-      "required_features": [
-        "lsp"
-      ],
-      "feature_semantics": "any_of",
-      "signature_digests": [
-        "sha256:1a1837a304537789ae600666fb158af2f3a62ede7b2cc3affbd862014afdfc24"
-      ],
-      "input": null,
-      "result": null,
-      "operation_signatures": [],
-      "items": 538
     },
     {
       "route": "intrinsic:process-local-runtime-state-backend",
@@ -12577,7 +12557,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 27
+      "items": 31
     },
     {
       "route": "intrinsic:process-local-script-profile-composition",
@@ -12759,7 +12739,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 820
+      "items": 843
     },
     {
       "route": "intrinsic:process-local-subagent-event-bus-listener",
@@ -13011,15 +12991,17 @@
       "operation": null,
       "handler_operation": null,
       "required_feature": null,
-      "required_features": [],
-      "feature_semantics": "default",
+      "required_features": [
+        "files"
+      ],
+      "feature_semantics": "any_of",
       "signature_digests": [
-        "sha256:3eb0ba2a7845ecb80149e34025088813f5574f9ea7fe9e304045e9c7b11fa14a"
+        "sha256:d022801df224ced4afd0ab970b99fa99070c8408077cdb78bfd79a4df5ca8ee7"
       ],
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 6
+      "items": 10
     },
     {
       "route": "intrinsic:process-local-tool-registry-state",
@@ -13037,7 +13019,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 112
+      "items": 114
     },
     {
       "route": "intrinsic:process-local-tool-visibility-state",
@@ -13235,7 +13217,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 341
+      "items": 366
     },
     {
       "route": "intrinsic:rust-trait-implementation",
@@ -13253,7 +13235,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 1234
+      "items": 1317
     },
     {
       "route": "source:echo_agent::agent::react::ReactAgent::activate_skill",
@@ -13439,6 +13421,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:35c55429a252bd682261612e9281f97b7d787f61553a542f044e7373f384141e"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_agent::agent::react::ReactAgent::default_skill_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::default_skill_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:8ae710273731dd5090435dfbb4e8fce5d50a2090305175d49b87a20c74f05972"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -13942,6 +13948,54 @@
       "items": 3
     },
     {
+      "route": "source:echo_agent::agent::react::ReactAgent::discover_skills_with_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::discover_skills_with_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:04f594212351dd0a0b9ef14fe915e37975b7cc8114e91c854a44ed2a467b67d9"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_agent::agent::react::ReactAgent::discover_skills_with_sources",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::discover_skills_with_sources",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:cadfd0ed34897e359ceb0c7ceaec4651943bfa9d2c15a718753764fd532ab57d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
       "route": "source:echo_agent::agent::react::ReactAgent::execute_stream_message",
       "surface": "invoke",
       "family": "source_operation",
@@ -13953,6 +14007,32 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:c459c7f2c264df0f048593447ce8c0098f65eb2f65e1920afc1cd0fd7a965ed1"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_agent::agent::react::ReactAgent::file_system",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::file_system",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "files"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:d3b43468ac503f6b9034eb2cee50a881a069aaaaccda7b57b2421985709a520c"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -14454,6 +14534,32 @@
       "items": 3
     },
     {
+      "route": "source:echo_agent::agent::react::ReactAgent::mcp_clients_by_id",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::mcp_clients_by_id",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "mcp"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:b2d5a7559c86a7b97a466e274a37fa1faa7dbc44c32c65821294cd891bcba163"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
       "route": "source:echo_agent::agent::react::ReactAgent::mcp_server_names",
       "surface": "invoke",
       "family": "source_operation",
@@ -14539,6 +14645,54 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:4d48950a058fb10a0643eaa6550d60a07d9fb670203a3ff8b8692f540d335ea7"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_agent::agent::react::ReactAgent::register_prepared_skill_with_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::register_prepared_skill_with_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:47d435c8f697763885ef0ba005951e69d357c8e8cdbed4c6176ac2ed0251fb07"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_agent::agent::react::ReactAgent::register_skill_descriptor_with_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::register_skill_descriptor_with_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:0cf209b32bf2544200c9aa75575a92117bd14687934786719c9d6388f7338a10"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -14807,6 +14961,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:4419f7955991ed7c43f221a94c3b47ceb4edfcd62793a697453cae7e9ee0831e"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_agent::agent::react::ReactAgent::set_default_skill_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::react::ReactAgent::set_default_skill_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c3d78fb3917e72a722884e721ba622665c6a7b4850f00308bd269efff2fc517e"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -15238,7 +15416,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:8ae495416fbcd403420f614f6bea9d51058fdf1834aa1e2d9f47cd8497f2b82a"
+        "sha256:788faaaca980ceda61ce7bc12d2a971630c8cc53024af6ca5f57ba30efdaaf50"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -15780,17 +15958,17 @@
       "items": 1
     },
     {
-      "route": "source:echo_agent::config::SourcedModelConfig::apply_to_llm_config",
+      "route": "source:echo_agent::agent::snapshot::FileReadHistory",
       "surface": "invoke",
       "family": "source_operation",
       "method": "_echo_agent/facade/invoke",
-      "operation": "echo_agent::config::SourcedModelConfig::apply_to_llm_config",
+      "operation": "echo_agent::agent::snapshot::FileReadHistory",
       "handler_operation": null,
       "required_feature": null,
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:286d765497c046c3fe9628f30e3e48edf28bacfd9fef0999828251c6cb1d6dba"
+        "sha256:dd7b26346a04f2e7e264b6876e5b13e737508897ef1907e0a68785ae88be26e7"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -15801,20 +15979,22 @@
         "description": "FeatureOperationResponse.value"
       },
       "operation_signatures": [],
-      "items": 2
+      "items": 1
     },
     {
-      "route": "source:echo_agent::config::SourcedModelConfig::resolve_model_profile_at",
+      "route": "source:echo_agent::agent::subagent::registry::SubagentRegistration::definition",
       "surface": "invoke",
       "family": "source_operation",
       "method": "_echo_agent/facade/invoke",
-      "operation": "echo_agent::config::SourcedModelConfig::resolve_model_profile_at",
+      "operation": "echo_agent::agent::subagent::registry::SubagentRegistration::definition",
       "handler_operation": null,
       "required_feature": null,
-      "required_features": [],
-      "feature_semantics": "default",
+      "required_features": [
+        "subagent"
+      ],
+      "feature_semantics": "any_of",
       "signature_digests": [
-        "sha256:f053570df921b1e0126224a3c601aeefd22b2122055ea5a864563e709a5d25cf"
+        "sha256:79487f78b2847ca6f6b086f7d02d1355474bd0ca18fcd34f20fc2916550610a3"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -15825,7 +16005,137 @@
         "description": "FeatureOperationResponse.value"
       },
       "operation_signatures": [],
-      "items": 2
+      "items": 4
+    },
+    {
+      "route": "source:echo_agent::agent::subagent::registry::SubagentRegistration::has_instance",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::subagent::registry::SubagentRegistration::has_instance",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "subagent"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_agent::agent::subagent::registry::SubagentRegistration::is_factory_backed",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::subagent::registry::SubagentRegistration::is_factory_backed",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "subagent"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_agent::agent::subagent::registry::SubagentRegistration::is_same_registration",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::subagent::registry::SubagentRegistration::is_same_registration",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "subagent"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:dcc0377e8844246cbab35f174bc4c6f4d9efeb2141b0b34cff96b703ddbda8b5"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_agent::agent::subagent::registry::SubagentRegistration::revision",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::subagent::registry::SubagentRegistration::revision",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "subagent"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:e9bbf26565c1d3eb3abdacedfe431b17b53c9e6b19eaeda59808288e31c6d482"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_agent::agent::subagent::registry::SubagentRegistrationAdmission::admit",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_agent::agent::subagent::registry::SubagentRegistrationAdmission::admit",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "subagent"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:9e49d34b44554ec91157de7422d0418066ee0a3d19617aee72d1788699e6d637"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
     },
     {
       "route": "source:echo_agent::eval::grader::LlmGrader::grade",
@@ -18550,30 +18860,6 @@
       "items": 1
     },
     {
-      "route": "source:echo_agent::state::delete_persisted_conversation",
-      "surface": "invoke",
-      "family": "source_operation",
-      "method": "_echo_agent/facade/invoke",
-      "operation": "echo_agent::state::delete_persisted_conversation",
-      "handler_operation": null,
-      "required_feature": null,
-      "required_features": [],
-      "feature_semantics": "default",
-      "signature_digests": [
-        "sha256:97b7ff491c492fa6e3b26e6130c5f51285ff1f1608ae64d447de744152c501e2"
-      ],
-      "input": {
-        "encoding": "wire_value_array",
-        "description": "FeatureOperationRequest.arguments"
-      },
-      "result": {
-        "encoding": "wire_value",
-        "description": "FeatureOperationResponse.value"
-      },
-      "operation_signatures": [],
-      "items": 1
-    },
-    {
       "route": "source:echo_agent::state::delete_persisted_conversation_managed",
       "surface": "invoke",
       "family": "source_operation",
@@ -18609,30 +18895,6 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:6e5f611f2ff65e4193d9a024c5541750190f43246e9cd916ff4492fadb18d1c9"
-      ],
-      "input": {
-        "encoding": "wire_value_array",
-        "description": "FeatureOperationRequest.arguments"
-      },
-      "result": {
-        "encoding": "wire_value",
-        "description": "FeatureOperationResponse.value"
-      },
-      "operation_signatures": [],
-      "items": 1
-    },
-    {
-      "route": "source:echo_agent::state::delete_persisted_conversation_with_context",
-      "surface": "invoke",
-      "family": "source_operation",
-      "method": "_echo_agent/facade/invoke",
-      "operation": "echo_agent::state::delete_persisted_conversation_with_context",
-      "handler_operation": null,
-      "required_feature": null,
-      "required_features": [],
-      "feature_semantics": "default",
-      "signature_digests": [
-        "sha256:ad491fde1e7081ec1a8f21fcca8db1aa9b6d9f419502d5f4a0e2b21551d19d63"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -18900,7 +19162,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:fb9752c3f79c33f69eab8cb3d7207bab8203ef562ad04f51d8e9713988cab69f"
+        "sha256:6f9ff234cefcc1e989d012e63861279e468cc38ca8da2a7a9e190a3445b7d6c8"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -18924,7 +19186,7 @@
       "required_features": [],
       "feature_semantics": "default",
       "signature_digests": [
-        "sha256:b5e614a34602a2e9d2ab5ec4d01c60eb8b101d491a5b9bce96193d0e10192c39"
+        "sha256:95b9f71f60df371737ca22a1989f3b12469fe249219f750fd13befc9e60c5069"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -19346,6 +19608,222 @@
       "items": 2
     },
     {
+      "route": "source:echo_core::agent::ModelCallObservation::observed_output_tokens_per_second",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::ModelCallObservation::observed_output_tokens_per_second",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:0a87eff62dad4508e4d05ae921cdd0e4c7d0b5196ab9ad479f8abcf3db79fee6"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:9fa1495989668b459ed5c87278f18fed8ce63ce5939624de09bc125e5127d3e3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection::confirm_answer",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection::confirm_answer",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:d89f9521ed2bc018debd45a048a67f042da39395d62848f48fa41c3f3a528fc7"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection::execution_id",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection::execution_id",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:f2e54a4329da7556be96d969281242e46c252ab9675b9c016b306afbc7af5c0d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection::finish",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection::finish",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c7ec18e55fb3fb013d1f7b31cae7ad07a1fe20edce019f6e2c4228d83a7e7ab0"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection::observe_block",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection::observe_block",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:124f273d78deba47eb0b274aba657e170d5f3223e1e419a114638025e810ac7a"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection::observe_status",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection::observe_status",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:b3c37aa00d8ed70c045ef1c48c69af3f07add06f7cc210132a6648904bde2382"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection::take_final_presentation",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection::take_final_presentation",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:ad0d6a405e96c2dc6c5550533bf0ff138ba5cb7bd295137b99552cd5f2778e52"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::agent::output_projection::AgentOutputProjection::terminal_failure",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::agent::output_projection::AgentOutputProjection::terminal_failure",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:374eb6c6bd6e441a91e1ab21581ff179f3a902568ece588783095ae96375e2a4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "source:echo_core::audit::AuditEvent::apply_retention",
       "surface": "invoke",
       "family": "source_operation",
@@ -19368,6 +19846,174 @@
       },
       "operation_signatures": [],
       "items": 3
+    },
+    {
+      "route": "source:echo_core::compression::ContextProjection::is_append_version",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::compression::ContextProjection::is_append_version",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::compression::ContextProjection::replacing",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::compression::ContextProjection::replacing",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c43a4c8af5541c74442457c9b1b5c1222a30412361b54b263c1471f7b6590919"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::compression::ContextProjection::versioned",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::compression::ContextProjection::versioned",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:3a8a1a2e5525a3df9a9c9132f9516f0b45c751b5bf9f976686802fa69f9c9ccf"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::compression::ContextProjectionEnvelope::is_append_version",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::compression::ContextProjectionEnvelope::is_append_version",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::compression::ContextProjectionEnvelope::marker",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::compression::ContextProjectionEnvelope::marker",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:23a035a496156debe780688a05c8e49a9af4463a7516c76d807a6cc2e63ef825"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::compression::ContextProjectionEnvelope::version",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::compression::ContextProjectionEnvelope::version",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:23a035a496156debe780688a05c8e49a9af4463a7516c76d807a6cc2e63ef825"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::compression::projection_content_version",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::compression::projection_content_version",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:bd0a6847902e9343338e70e65fec4270bf02d3d2e6d47de83a40eb7ba67f0ea4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
     },
     {
       "route": "source:echo_core::guard::content::ContentGuard::check",
@@ -19498,6 +20144,198 @@
       },
       "operation_signatures": [],
       "items": 2
+    },
+    {
+      "route": "source:echo_core::llm::ToolChoice::function",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::ToolChoice::function",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:ea64a00a71fc64131672283dd1f3e36e8a6ca6856d70a110e1aa56cb4e244eed"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::llm::ToolChoice::to_openai_value",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::ToolChoice::to_openai_value",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:7834ca9259258fee46b22bf058f44b0d9f26d630209dd246d15001414fcd21ec"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::llm::cache::diagnostic::full_prompt_fingerprint",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::cache::diagnostic::full_prompt_fingerprint",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:ef0c601b385d7da5d375ea9258236829cdba71693e372863ce1dcb41b20a3fbc"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::llm::cache::diagnostic::prompt_prefix_diff",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::cache::diagnostic::prompt_prefix_diff",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:442e1e2754dae4618d1a6961e99312bacfe57d3f722af441be91e2684dc407d9"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::llm::cache::layout::is_dynamic_tail_message",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::cache::layout::is_dynamic_tail_message",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:785b49e266aaac90a46be879925a0c75ead200281f585ec8e1516a006955a1d6"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::llm::cache::wire::log_wire_prompt",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::cache::wire::log_wire_prompt",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:91d4dc7ee35f891a39bc37448cee3181760a09d67cbd19a32468b1a360b319d8"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::llm::cache::wire::wire_prompt_fingerprint",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::cache::wire::wire_prompt_fingerprint",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:9a67fbcf9037416d41613b3eaccb8cd5717ad248f3adbcb1d108901ab3c8af91"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::llm::cache::wire::wire_prompt_prefix_diff",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::llm::cache::wire::wire_prompt_prefix_diff",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:6623b9594c4779961d5b56bce17bdc13f54ad509683e4d44d1a073724fb1ea64"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
     },
     {
       "route": "source:echo_core::llm::capabilities::ModelFactConfidence::from_percent_saturating",
@@ -21090,6 +21928,32 @@
       "items": 1
     },
     {
+      "route": "source:echo_core::project_rules::InstructionResolver::resolve_with_file_system",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::project_rules::InstructionResolver::resolve_with_file_system",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "project-rules"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:053661ff881d92dbeb5a5e34317107616056cb08fdbd133a23fb884ad37a9f7c"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "source:echo_core::project_rules::load_project_rules",
       "surface": "invoke",
       "family": "source_operation",
@@ -21114,6 +21978,78 @@
       },
       "operation_signatures": [],
       "items": 1
+    },
+    {
+      "route": "source:echo_core::sandbox::SandboxCommand::ensure_physical_resource_ownership",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::sandbox::SandboxCommand::ensure_physical_resource_ownership",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:cf80dedb13ce3e53a9253e77a6fa7a57eed0cde83b08079b9208879ed9e7e4ab"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::sandbox::SandboxCommand::with_cancel",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::sandbox::SandboxCommand::with_cancel",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:19d490dd54016bcd46e38d4151d73f35cc7ac909c3d91a93e5fd30fdd39198a7"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::sandbox::SandboxCommand::with_resource_guards",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::sandbox::SandboxCommand::with_resource_guards",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:4fa2a86b37242c0ce187f7f72c9f6af8d6ed530900890b999f10d7b374aa1492"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
     },
     {
       "route": "source:echo_core::tokenizer::Tokenizer::count_tokens",
@@ -21236,6 +22172,1422 @@
       "items": 1
     },
     {
+      "route": "source:echo_core::tools::cell::CommandCellAdmission",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::cell::CommandCellAdmission",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:9fa1495989668b459ed5c87278f18fed8ce63ce5939624de09bc125e5127d3e3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::cell::CommandCellResourceAdmission",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::cell::CommandCellResourceAdmission",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:6a98080105447147d67acc1e3ba4dd290f7cfbb592d89140eee6f126112492a4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::cell::CommandCellResourceAdmission::admit",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::cell::CommandCellResourceAdmission::admit",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:585a3516ed7b0f8d2f53f8f7ea6ba9771d6247e6755d02b2974dc4fd2f7bb8da"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::cell::CommandCellResourceLease",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::cell::CommandCellResourceLease",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:522b708bc8aca36a03279f0d863115589107a7c375609fd8e556c766b4e77600"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::cell::CommandCellResourceLease::new",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::cell::CommandCellResourceLease::new",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:e2eacbced06f4685359648dd18344bd8b2d5e05a98065135c5ba7a823bf98ebf"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::cell::CommandCellResourceLease::requires_physical_resource_ownership",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::cell::CommandCellResourceLease::requires_physical_resource_ownership",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::cell::CommandCellResourceLease::requiring_physical_resource_ownership",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::cell::CommandCellResourceLease::requiring_physical_resource_ownership",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:838ded2c5c65a537ebd392df58a4b8e3cd4cf16730414ce29201037d1ca58f9a"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::DirectoryIdentityGuard",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::DirectoryIdentityGuard",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:6a98080105447147d67acc1e3ba4dd290f7cfbb592d89140eee6f126112492a4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::DirectoryIdentityGuard::verify",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::DirectoryIdentityGuard::verify",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:f85a7aac7906b087e0d3259beef435e8f616fdd2589276306c854d76b406cdf4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileEntry::file_name",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileEntry::file_name",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:548d0efa9274315f0412ede0bc2618de9e560c86d9502ee33dd34b477eb4887f"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileEntry::file_type",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileEntry::file_type",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:a050cae0723682ddfbec46b0bb12dd06d053a4d4c58f9f4a2885f271d9a9ff60"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileEntry::path",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileEntry::path",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:824fcbf5118f61e8621e4116c27265e2e53648eee0e1f878866b2517b7b4390a"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileMetadata::is_dir",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileMetadata::is_dir",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileMetadata::is_empty",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileMetadata::is_empty",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileMetadata::is_file",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileMetadata::is_file",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileMetadata::len",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileMetadata::len",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:e9bbf26565c1d3eb3abdacedfe431b17b53c9e6b19eaeda59808288e31c6d482"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:6a98080105447147d67acc1e3ba4dd290f7cfbb592d89140eee6f126112492a4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::append",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::append",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:7c597f33fcae56e5a42c5168179e93ee0ec2d906c489675d2b6a8b59a03600f3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::atomic_compare_and_swap",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::atomic_compare_and_swap",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:59b0b2021b9148b30aef98824222bfc64ffb23c48ff644a8b7dd80b5b389252c"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::atomic_write",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::atomic_write",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:7c597f33fcae56e5a42c5168179e93ee0ec2d906c489675d2b6a8b59a03600f3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::begin_read_session",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::begin_read_session",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:06aa5266c7ec304066be42268f45f7fed73a1086746058d2704d73410a31b0ef"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::cache_namespace",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::cache_namespace",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:23a035a496156debe780688a05c8e49a9af4463a7516c76d807a6cc2e63ef825"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::canonicalize",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::canonicalize",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:45fe1e610a3f58f6debd012470b3b1522c5b8cf3620092df4597694fbd8c7064"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::checkpoint",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::checkpoint",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:31daeb906f391fb622c693348ab94dfeba0459dca1d0435809920d32f2ecdc9d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::create_dir",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::create_dir",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:b106e2cdceb5712d29f81c8c4e923965896e03217a2b76893cba9dc9e6d05ea1"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::create_dir_all",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::create_dir_all",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:f85a7aac7906b087e0d3259beef435e8f616fdd2589276306c854d76b406cdf4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::create_file",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::create_file",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:f85a7aac7906b087e0d3259beef435e8f616fdd2589276306c854d76b406cdf4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::current_dir",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::current_dir",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:891ec29b208ea1df8926eef760719d70f7358f8cbe1d3bf741e8b5066ad25792"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::exists",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::exists",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:54d643eec2672f2945f8b7b7319fbd6a73c6e094fb533b043fec2ae3b5fbdb2f"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::first_existing_path",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::first_existing_path",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:8d0ac2c19bee477d377d42f1701f374fb35670a6a2c9807ac3b41c0cb31dad78"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::is_dir",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::is_dir",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:54d643eec2672f2945f8b7b7319fbd6a73c6e094fb533b043fec2ae3b5fbdb2f"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::is_file",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::is_file",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:54d643eec2672f2945f8b7b7319fbd6a73c6e094fb533b043fec2ae3b5fbdb2f"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::metadata",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::metadata",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:bf84ab0cd35aac209de335899eec067e5d5fa55299fe7fa690afcb83b4aaeeed"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::open_read",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::open_read",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:70c8d571fa7bd375d4a651dcd73e94db82d360a63b4ca13194dc047c5f42658c"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::paths_are_native",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::paths_are_native",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::read",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::read",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:70e7015ddd4dc1983970cd0a6e3f31de643ed69deb91bd0abe021ef7a477db90"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::read_dir",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::read_dir",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:9f460455dc00af33e6f65130de231f9558e9cc8957c50f1b5e8051744fadd422"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::read_to_string",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::read_to_string",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c8009fea9e6656ce47102c55ccbdc9993b0ec3828068129020173f7e41770d94"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::remove_dir",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::remove_dir",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:f85a7aac7906b087e0d3259beef435e8f616fdd2589276306c854d76b406cdf4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::remove_dir_all",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::remove_dir_all",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:f85a7aac7906b087e0d3259beef435e8f616fdd2589276306c854d76b406cdf4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::remove_file",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::remove_file",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:f85a7aac7906b087e0d3259beef435e8f616fdd2589276306c854d76b406cdf4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::rename",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::rename",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:e1a18bb63944242fd376e706a35b2cbc5bd73b3b76dc6e648d9a89fd97891825"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::retain_directory",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::retain_directory",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:80ff1674efd3e7051ada3fc210bfcb15615be52275f1efe0cdd70a08a4a5f8a1"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::set_mode",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::set_mode",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:d9b58dc1dafd34cf59a253dedc358f93cafbbc925383150aee07748b4157fc42"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::symlink_metadata",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::symlink_metadata",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:bf84ab0cd35aac209de335899eec067e5d5fa55299fe7fa690afcb83b4aaeeed"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystem::write",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystem::write",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:7c597f33fcae56e5a42c5168179e93ee0ec2d906c489675d2b6a8b59a03600f3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystemReadSession",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystemReadSession",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:85a6b3caee6094bd2aeff0555fbfb411a4316bb21a59feaa733f87f5eccbbcc9"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystemReadSession::files",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystemReadSession::files",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:fe3e0acfbb1e2368c1ace83eb878f604475703897a3d0f5effed76dcb4ae34c8"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileSystemReadSession::finish",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileSystemReadSession::finish",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:82499f4442e45f6bffbd64f976898a8dc259289ebb180653bed8df29fe6dd57a"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileType",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileType",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:456595f4abfb2ffee306822d2eaf2c3aa0ca706ec9fa3dd2071b547c6f126b4d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileType::is_dir",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileType::is_dir",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:1c6af3bbc65eb578ac434ef2ed2f96d26b6f3ed1754e68b9d9c0f36ec8b247c3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileType::is_file",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileType::is_file",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:1c6af3bbc65eb578ac434ef2ed2f96d26b6f3ed1754e68b9d9c0f36ec8b247c3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::FileType::is_symlink",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::FileType::is_symlink",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:1c6af3bbc65eb578ac434ef2ed2f96d26b6f3ed1754e68b9d9c0f36ec8b247c3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::filesystem::with_read_session",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::filesystem::with_read_session",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:82f0cd057922e47f5c802081a30d23499b7e7cbf0074a96f7f08e74565882e24"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::native_execution::NativeExecutionAdmissionError",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::native_execution::NativeExecutionAdmissionError",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:456595f4abfb2ffee306822d2eaf2c3aa0ca706ec9fa3dd2071b547c6f126b4d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::tools::native_execution::NativeExecutionResourceAdmission",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::native_execution::NativeExecutionResourceAdmission",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:6a98080105447147d67acc1e3ba4dd290f7cfbb592d89140eee6f126112492a4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::tools::native_execution::NativeExecutionResourceAdmission::admit",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::native_execution::NativeExecutionResourceAdmission::admit",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:32d8b8c906d44979a66b25187591b2e2fe15a245fd89162bad43bbb33f92b971"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::tools::native_execution::admit_native_execution",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::native_execution::admit_native_execution",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c5bfdc15a6938a532d1d0aa751d81892eb3ecf6f5e0843ecb08786b7b64883be"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_core::tools::native_execution::command_cell_resource_admission",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::native_execution::command_cell_resource_admission",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:a1f1c3b778e07e97beeaf887fc0eda753ab2085afb5f0c47e5020ae7e710b45c"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "source:echo_core::tools::permission::ToolApprovalReceipt",
       "surface": "invoke",
       "family": "source_operation",
@@ -21319,6 +23671,54 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:5b03dcea06e5b2ec1439442d857ebda66b7c730358c7d5a87c5aa5835c920297"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::tools::search::ContentSearchProvider",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::search::ContentSearchProvider",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:6a98080105447147d67acc1e3ba4dd290f7cfbb592d89140eee6f126112492a4"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_core::tools::search::ContentSearchProvider::search",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_core::tools::search::ContentSearchProvider::search",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:864cd5b6f8ceca5c63f9ddcb3d363bee67a10e8d5d07a096e72661f4faaae70c"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -21980,6 +24380,126 @@
       "items": 3
     },
     {
+      "route": "source:echo_execution::skills::external::loader::SkillFileSource",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::external::loader::SkillFileSource",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:9fa1495989668b459ed5c87278f18fed8ce63ce5939624de09bc125e5127d3e3"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_execution::skills::external::loader::SkillFileSource::is_local",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::external::loader::SkillFileSource::is_local",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c997f29d584e70981eb9d682462e0141582867d62fad12dc24b7049939fba862"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_execution::skills::external::loader::SkillFileSource::local",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::external::loader::SkillFileSource::local",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:0b16b62e4f3f1ee2faf2caf976fa8a5ff62c9be3ff58205b5b11947545191e6e"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_execution::skills::external::loader::SkillFileSource::new",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::external::loader::SkillFileSource::new",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:0c2b14e519edfa3c251fa7bf7b0bd67f27202cd692889984a567dad8628ea3d1"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_execution::skills::external::loader::SkillFileSource::sandbox",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::external::loader::SkillFileSource::sandbox",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:90dab0f19313575c18770ce34b38491f14edaa251b43db41917debf75547f51c"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "source:echo_execution::skills::external::prompt_exec::PromptContext",
       "surface": "invoke",
       "family": "source_operation",
@@ -22231,6 +24751,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:7f083f877e62e223885f909aad832f24a41867866fd940342a4ebc9ec5266efa"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_execution::skills::registry::SkillRegistry::file_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::registry::SkillRegistry::file_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:d7ed4c847ad6887a67ff577e785b0f786fb75504fbf86280537d246b3e2d9b5f"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -22580,6 +25124,30 @@
       "items": 3
     },
     {
+      "route": "source:echo_execution::skills::registry::SkillRegistry::register_descriptor_with_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::registry::SkillRegistry::register_descriptor_with_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:731ca8bcf58d94232a3fdfe562c663d5ca401f8b080ec2274bede5b7ce44a36d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
       "route": "source:echo_execution::skills::registry::SkillRegistry::register_prepared",
       "surface": "invoke",
       "family": "source_operation",
@@ -22591,6 +25159,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:66f1bf0a08e6131012efa9e27ae1fd500cb36a316af045186b9a2238be12f7b8"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 3
+    },
+    {
+      "route": "source:echo_execution::skills::registry::SkillRegistry::register_prepared_with_source",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_execution::skills::registry::SkillRegistry::register_prepared_with_source",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:e31acab8e0a09585d96ee0eefe2b388f37e371c3a2c5e469fb8d4cec166b6592"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -22928,6 +25520,58 @@
       "items": 4
     },
     {
+      "route": "source:echo_integration::channels::manager::ChannelHandle::management_snapshot",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::channels::manager::ChannelHandle::management_snapshot",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "channels"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:40f98c0b33dfbf77befd8417e75804b82e0e3617fc5adfbc60e790d1f81dd48d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_integration::channels::manager::ChannelHandle::replace_stopped_plugin",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::channels::manager::ChannelHandle::replace_stopped_plugin",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "channels"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:f3e500c53c1178f09d6f2f6484f211cb233e3a0cb3c04fcf657a2fd9e4599ee6"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
       "route": "source:echo_integration::channels::manager::ChannelHandle::reply_message",
       "surface": "invoke",
       "family": "source_operation",
@@ -23019,6 +25663,84 @@
       "feature_semantics": "any_of",
       "signature_digests": [
         "sha256:411b09bbe7fd715a538144bec6ea5aa07ab2e9734ea1cf2621c778a990f6b392"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_integration::channels::manager::ChannelHandle::transport_status",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::channels::manager::ChannelHandle::transport_status",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "channels"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:a8f2752058024fdd2beb80929db148ae88c26c59ee2202b155f6f7437d8fe527"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_integration::channels::types::ChannelIngressReceipt::publish",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::channels::types::ChannelIngressReceipt::publish",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "channels"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:a661ff5dda43614b7c5d4cef9b9fae5a383dabbda7631aa2ea65b06888b44248"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
+      "route": "source:echo_integration::channels::types::ChannelTransportSnapshot::unknown",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::channels::types::ChannelTransportSnapshot::unknown",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "channels"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:2f5eebc1ff134da6b6459e78f9782a92256ca70bd65dbd89d443791bc5dc4720"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -23812,6 +26534,30 @@
       "items": 3
     },
     {
+      "route": "source:echo_integration::providers::config::LlmConfig::build_client_with_http_client",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::providers::config::LlmConfig::build_client_with_http_client",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:d32958e8835d499ae4b1c5ddece1a9abb038e8ee121ccb08e96db01c4ade687d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
       "route": "source:echo_integration::providers::config::LlmConfig::resolve_model_profile_at",
       "surface": "invoke",
       "family": "source_operation",
@@ -23919,6 +26665,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:8123ff9f992a868eb5294f06798343527385ad46bc25a1aa7995b1d51e8926f1"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 2
+    },
+    {
+      "route": "source:echo_integration::providers::config::SourcedLlmConfig::build_client_with_http_client",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_integration::providers::config::SourcedLlmConfig::build_client_with_http_client",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:d32958e8835d499ae4b1c5ddece1a9abb038e8ee121ccb08e96db01c4ade687d"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -24078,6 +26848,32 @@
       "items": 4
     },
     {
+      "route": "source:echo_orchestration::human_loop::service::PermissionService::request_approval_with_context",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_orchestration::human_loop::service::PermissionService::request_approval_with_context",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "human-loop"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:b285de1477a79714694e6b748572165f254fe1339d14eb5f61d189ab4fa2f52d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 4
+    },
+    {
       "route": "source:echo_orchestration::planning::validator::PlanValidator::validate_task_snapshot",
       "surface": "invoke",
       "family": "source_operation",
@@ -24222,6 +27018,30 @@
       "items": 2
     },
     {
+      "route": "source:echo_orchestration::scheduler::runner::SchedulerCommitOutcome",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_orchestration::scheduler::runner::SchedulerCommitOutcome",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:456595f4abfb2ffee306822d2eaf2c3aa0ca706ec9fa3dd2071b547c6f126b4d"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "source:echo_orchestration::scheduler::runner::SchedulerInvocation::new",
       "surface": "invoke",
       "family": "source_operation",
@@ -24233,6 +27053,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:cb9f0c74b7eda1fb186161d47e75d31b7b82d3c9d1f8584db64a95ecab6c686f"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_orchestration::scheduler::runner::SchedulerJournalFailure",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_orchestration::scheduler::runner::SchedulerJournalFailure",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:9fa1495989668b459ed5c87278f18fed8ce63ce5939624de09bc125e5127d3e3"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -24684,6 +27528,32 @@
       "items": 1
     },
     {
+      "route": "source:echo_tools::filesystem::LocalFileSystem",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_tools::filesystem::LocalFileSystem",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "files"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:6749e2f932ead6ff16e3bed9f822258095d21cd8e121bf70752ce2ec4aa1b824"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "source:echo_tools::git_checkpoint::cleanup_old_checkpoints",
       "surface": "invoke",
       "family": "source_operation",
@@ -24695,6 +27565,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:23f8aa11359a4a9ff390ebb452495a622bb2126bf4c61207b7c623333ae6c9c9"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_tools::git_checkpoint::cleanup_old_checkpoints_with_backend",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_tools::git_checkpoint::cleanup_old_checkpoints_with_backend",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:77632e608af7ff734d4cad51762a830a89aaff56d74e97e588befa6d305d6988"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -24732,6 +27626,30 @@
       "items": 1
     },
     {
+      "route": "source:echo_tools::git_checkpoint::create_checkpoint_with_backend",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_tools::git_checkpoint::create_checkpoint_with_backend",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:a4fb6165fd58441643c4c39061115c92b35fc13e495278566b437d5514597677"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "source:echo_tools::git_checkpoint::rollback_to_checkpoint",
       "surface": "invoke",
       "family": "source_operation",
@@ -24743,6 +27661,30 @@
       "feature_semantics": "default",
       "signature_digests": [
         "sha256:fa7008e879997ccf0a2dca6d307c891d7e1bc63ed977698db2fafb0c25a52c81"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_tools::git_checkpoint::rollback_to_checkpoint_with_backend",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_tools::git_checkpoint::rollback_to_checkpoint_with_backend",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [],
+      "feature_semantics": "default",
+      "signature_digests": [
+        "sha256:c3f3caf939dce5d7f9617ea4b1040f0867ab0951a29bbbd56de1e5324641195a"
       ],
       "input": {
         "encoding": "wire_value_array",
@@ -24860,6 +27802,58 @@
       "items": 1
     },
     {
+      "route": "source:echo_tools::web::providers::exa::ExaSearchProvider::from_env",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_tools::web::providers::exa::ExaSearchProvider::from_env",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "web"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:aa5a8410f8871fcde94311fbf861de5cdcd677461f8f95c4e5e6c5fbb335cc86"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
+      "route": "source:echo_tools::web::providers::exa::ExaSearchProvider::new",
+      "surface": "invoke",
+      "family": "source_operation",
+      "method": "_echo_agent/facade/invoke",
+      "operation": "echo_tools::web::providers::exa::ExaSearchProvider::new",
+      "handler_operation": null,
+      "required_feature": null,
+      "required_features": [
+        "web"
+      ],
+      "feature_semantics": "any_of",
+      "signature_digests": [
+        "sha256:ea64a00a71fc64131672283dd1f3e36e8a6ca6856d70a110e1aa56cb4e244eed"
+      ],
+      "input": {
+        "encoding": "wire_value_array",
+        "description": "FeatureOperationRequest.arguments"
+      },
+      "result": {
+        "encoding": "wire_value",
+        "description": "FeatureOperationResponse.value"
+      },
+      "operation_signatures": [],
+      "items": 1
+    },
+    {
       "route": "standard:initialize+session/new",
       "surface": "standard",
       "family": "standard",
@@ -24913,7 +27907,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 320
+      "items": 346
     },
     {
       "route": "value",
@@ -24931,7 +27925,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 4744
+      "items": 5062
     },
     {
       "route": "value:channels",
@@ -24946,12 +27940,12 @@
       ],
       "feature_semantics": "any_of",
       "signature_digests": [
-        "sha256:663bff8c5efb04915b7670f724966d73226af541ef75f73dfc90a5a40f4a24e8"
+        "sha256:cb574e527b3ecb86a37a3fb2710c4e72512d831999a2f345b87cad59e6cfa488"
       ],
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 233
+      "items": 605
     },
     {
       "route": "value:content_guard",
@@ -25124,7 +28118,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 1191
+      "items": 1209
     },
     {
       "route": "value:permission",
@@ -25222,7 +28216,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 307
+      "items": 306
     },
     {
       "route": "value:statistics",
@@ -25262,7 +28256,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 1920
+      "items": 1924
     },
     {
       "route": "value:task",
@@ -25320,7 +28314,7 @@
       "input": null,
       "result": null,
       "operation_signatures": [],
-      "items": 14
+      "items": 15
     },
     {
       "route": "value:topology",
@@ -25399,5 +28393,5 @@
       "items": 432
     }
   ],
-  "total_items": 26719
+  "total_items": 27793
 }

@@ -1,34 +1,45 @@
 # echo-agent-sdk
 
+## SDK消费者解耦
+
+当前SDK源码已撤出A2A/LSP的执行feature、family adapter和对应语言菜单。原Plan04
+精确撤销269项accepted身份、23条路由、39个操作，保留5352项身份／431条路由，新增
+接受为0；该撤销证明不因Framework后继物理删除而重复执行。
+
+标准ACP、独立Host stdio、MCP、Task/Subagent、ProjectRoot/Instruction、合法自定义工具、
+签名、回放、取消与恢复继续保留。Host正式构建来源以其Cargo manifest／锁为准；消费者
+去依赖和共享投影适配不等于正式新Git pin、删后Host、合同生成或运行验收通过。
+详见[ADR0042](docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md)，下方历史验收保原来源与范围。
+
+
 Source-first TypeScript, Python, and Java SDKs for the Rust `echo-agent`
 framework, connected through a source-built ACP Host and the
 `_echo_agent/*` extension contract.
 
-## 当前私有来源候选
+## 当前来源与验证（2026-11-09）
 
-当前 Stage-A 的 Host 与根两条 Polars patch 统一选择 canonical HTTPS URL 的精确
-`0087353fd78eb73ffaa68b255cf4ef807ca96d4a`。对象通过本进程限定的本地 Git 传输由
-Cargo 正常取得，不能据此宣称该修订已在 HTTPS 发布或冷恢复通过。当前锁为
-`e151fb4587c99463e90c82dbe9d1d4f7e76747be1c7f6241d21b74a0e9976a62`：
-653 包中仅 13 个 Git 来源从前一混源切点统一到 008，版本、checksum 和依赖边不变。
-完整metadata、locked-offline及原五源审计投影已各自自然0；随后本SDK自身fresh真实锁／
-五源视图audit、deny四检查、原capture／独立49／107 caller均自然0，原policy14项通过。
-Root现只采用基线的lock/pin/验证说明三字段，原49组107身份、policy和4项ignore不变。
-新源producer、Host、三语言及完整工程门禁仍未运行，风险结果不代签这些资格。
+当前 Host 精确采用 Framework main `3413d64dae23353c6d02c546ac374deded855827`，
+SDK 锁 SHA-256 为 `95e3caabaf5e72fc71ad1d6b79964eae1883b297f0006667e39c4c3a6eb8c5e5`。
+锁内共 654 包，13 个 Git 包均来自同一精确 HTTPS 来源。accepted 范围为 5344 项身份／430 条路由；
+[ADR0046](docs/adr/0046-cache-layout-source-identity-projection.md) 的四条缓存字段来源处置
+保留三语言旧公开字段，仅映射真实 Rust `dynamic`，不新增语言 API。
 
-5352 项 accepted 身份／431 条路由和现有生成物保留原字节。来源检查仍要求精确
-修订、根 patch、13 包同源及真实 checkout；来源装配不授予新合同条目或消费者资格。
-详见[当前来源与退役边界](docs/sdk/governance/a2a-lsp-retirement-boundary.md)。
+本机完整生成、合同检查、Rust／Host 矩阵和三个语言完整入口已按实际快照通过。
+TypeScript 527 项通过，Python 601 项及 18 个子测试通过；Java 400 项测试零失败、零错误。
+各语言保留 1 个原有 Windows 原生跳过项，三个 quickstart 通过，完整语言入口零警告。
+这不是 Windows／Linux 原生或精确 SDK main CI 通过；本轮固定 c0bc 的 strict Source／Final
+尚未执行，SDK main 合并、精确 CI 与发布资格另行结算。来源、风险裁决及原始回执见
+[当前验证状态](docs/sdk/governance/framework-development-pin-status.md)。
 
-### 历史 f7 验收切点
+## 历史迁移记录
 
-下列历史切点的 source-built Host 固定 framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
+以下为历史 f7 接受切点，保留其原 SHA、CI 和验证范围。该切点的 Host 采用 framework `f7bac62eee04a963f92a3e4308b6ea2336e91cc0`
 (tree `0acc8d94603b647e4d795c0b2eea20ecb0c3da7d`), from
 [PR #197](https://github.com/EchoYue-lp/echo-agent/pull/197). Its original
 [main CI run 39605663648](https://github.com/EchoYue-lp/echo-agent/actions/runs/39605663648)
 completed all seven jobs, followed by an independent remote-only cold source
 check. This upstream acceptance is not a passing SDK Host or consumer result.
-The SDK lock SHA-256 is `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
+The historical pin-switch SDK lock SHA-256 was `1c865a57b7e17587fba2f668d956832cd7b0f6c6167e198304c965227f3debaa`: only the eight framework and three
 upstream vendored Git source identities change from the existing webpki-patched
 SDK lock; all 656 package versions, checksums and dependency edges are unchanged.
 A03 official Cargo update and locked offline metadata each exited 0 using frozen
@@ -40,7 +51,7 @@ and a GitHub-only cold source check using 36 necessary historical refs.
 It records 50 verified behaviors, 75 resolved Findings and one human-accepted
 historical risk; the four non-blocking Rust inventory drift artifacts remain
 telemetry and were not regenerated.
-Accepted membership remains 5,621 identity/kind keys and 454 routes. Pin/lock
+At that pre-withdrawal qualification cut, accepted membership remained5,621 identity/kind keys and454 routes. Pin/lock
 provenance does not authorize a 117-artifact update, new public language APIs,
 or automatic closure of the historical managed-exit cause.
 

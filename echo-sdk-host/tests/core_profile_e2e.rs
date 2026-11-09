@@ -4878,11 +4878,14 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
                     "kind": "variant",
                     "value": {
                         "type_id": "echo_sdk_protocol::methods::AgentEventWire",
-                        "variant": "final_answer",
-                        "fields": [{
-                            "name": "text",
-                            "value": {"kind": "string", "value": "done"}
-                        }]
+                        "variant": "execution_status",
+                        "fields": [
+                            {"name":"execution_id","value":{"kind":"string","value":"original-classify-execution"}},
+                            {"name":"request_id","value":{"kind":"string","value":"original-classify-request"}},
+                            {"name":"sequence","value":{"kind":"u64","value":"1"}},
+                            {"name":"phase","value":{"kind":"string","value":"Terminal"}},
+                            {"name":"status","value":{"kind":"string","value":"settled"}}
+                        ]
                     }
                 })],
             )
@@ -4893,6 +4896,17 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
                     ref variant, ref fields, ..
                 } if variant == "completed" && fields.is_empty()
             ));
+            let final_notice = invoke_facade_without_handle_wire(
+                &connection,
+                classify_operation,
+                vec![serde_json::json!({"kind":"variant","value":{
+                    "type_id":"echo_sdk_protocol::methods::AgentEventWire",
+                    "variant":"final_answer","fields":[{
+                        "name":"text","value":{"kind":"string","value":"done"}
+                    }]
+                }})],
+            ).await?;
+            assert_eq!(final_notice, echo_sdk_protocol::scalar::WireValue::Null);
             let pending_outcome = invoke_facade_without_handle_wire(
                 &connection,
                 classify_operation,
@@ -4956,14 +4970,37 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
                     .is_some_and(serde_json::Value::is_null)
             );
 
-            let invalid_arguments = invoke_facade(
+            // 裸 JSON null 不属于带 kind 标签的 WireValue，先验证请求结构错误。
+            let malformed_arguments = invoke_facade(
                 &connection,
                 status_operation,
                 &started.run,
                 vec![serde_json::json!(null)],
             )
             .await
-            .expect_err("TurnReceipt accessors must reject arguments");
+            .err()
+            .ok_or_else(|| {
+                agent_client_protocol::Error::internal_error()
+                    .data("raw null must fail facade request decoding")
+            })?;
+            let malformed_arguments = typed_facade_error(&malformed_arguments).map_err(|error| {
+                agent_client_protocol::Error::internal_error().data(error.to_string())
+            })?;
+            assert_eq!(malformed_arguments.code, ExtensionErrorCode::InvalidRequest);
+
+            // 合法 DTO 中仍不能向无参 accessor 传值，保持独立的参数语义负控制。
+            let invalid_arguments = invoke_facade_wire(
+                &connection,
+                status_operation,
+                &started.run,
+                vec![WireValue::Null],
+            )
+            .await
+            .err()
+            .ok_or_else(|| {
+                agent_client_protocol::Error::internal_error()
+                    .data("TurnReceipt accessors must reject arguments")
+            })?;
             let invalid_arguments = typed_facade_error(&invalid_arguments).map_err(|error| {
                 agent_client_protocol::Error::internal_error().data(error.to_string())
             })?;
@@ -4971,7 +5008,11 @@ async fn turn_receipt_source_operations_project_live_and_recovered()
 
             let invalid_receiver = invoke_facade(&connection, status_operation, &agent, vec![])
                 .await
-                .expect_err("TurnReceipt receiver must be a Run handle");
+                .err()
+                .ok_or_else(|| {
+                    agent_client_protocol::Error::internal_error()
+                        .data("TurnReceipt receiver must be a Run handle")
+                })?;
             let invalid_receiver = typed_facade_error(&invalid_receiver).map_err(|error| {
                 agent_client_protocol::Error::internal_error().data(error.to_string())
             })?;
@@ -5647,12 +5688,23 @@ async fn state_delivery_and_trace_families_use_framework_services()
             // a checkpoint, observe the runtime id, read it back, clear it.
             let checkpoint = serde_json::json!({
                 "conversation_id": "scope-e2e",
-                "messages_json": "[]",
-                "current_plan": null,
+                "messages_json": echo_agent::state::AgentCheckpoint::serialize_payload(Vec::new(), None)
+                    .map_err(|error| agent_client_protocol::Error::internal_error().data(error.to_string()))?,
                 "active_skills": [],
                 "blocked_reason": null,
                 "timestamp": "2026-09-08T00:00:00Z",
             });
+            let mut invalid_checkpoint = checkpoint.clone();
+            invalid_checkpoint.as_object_mut().ok_or_else(|| {
+                agent_client_protocol::Error::internal_error().data("checkpoint fixture must be an object")
+            })?.insert("messages_json".into(), serde_json::json!("[]"));
+            let rejected = connection.send_request(family_request(
+                "_echo_agent/state/op", "state.checkpoint.save",
+                vec![serde_json::json!("scope-e2e"), invalid_checkpoint],
+            )?).block_task().await.err().ok_or_else(|| {
+                agent_client_protocol::Error::internal_error().data("bare history array must remain invalid checkpoint input")
+            })?;
+            assert!(rejected.to_string().contains("Failed to deserialize current checkpoint payload"));
             let saved = decode(
                 connection
                     .send_request(family_request(
@@ -6871,14 +6923,16 @@ async fn integration_families_use_framework_managers_and_clients()
 async fn remaining_tool_families_execute_framework_tools_locally()
 -> Result<(), Box<dyn std::error::Error>> {
     let (endpoint, _request_seen) = start_model_server("unused").await?;
-    // 使用测试与 Host 子进程共同继承的 TMPDIR，避免在冻结源码下留下 target 目录。
-    // 独立夹具和状态根仍由 TempDir 持有，测试退出时自动清理。
+    // Fixtures live under the workspace `target/` tree so the Host child
+    // process (which may run under a stricter file sandbox than the test)
+    // sees exactly what the test creates.
+    std::fs::create_dir_all("../target").map_err(|error| format!("target dir: {error}"))?;
     let work = tempfile::Builder::new()
         .prefix("facade-tools-e2e-")
-        .tempdir()?;
+        .tempdir_in("../target")?;
     let state_root = tempfile::Builder::new()
         .prefix("facade-tools-state-")
-        .tempdir()?;
+        .tempdir_in("../target")?;
     // Canonicalize so the fixture path handed to the Host carries no `..`
     // component (the git family rejects traversal patterns).
     let work_root = std::fs::canonicalize(work.path())?;
@@ -7599,9 +7653,11 @@ where
 {
     use agent_client_protocol::Responder;
     use echo_sdk_protocol::methods::{
-        AgentStreamChunkWire, AgentStreamTerminalWire, ExtensionCancelNotice, ExtensionInvocation,
-        ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult, ExtensionStreamChunkValue,
-        ExtensionStreamCompleteValue, ExtensionStreamEvent, ExtensionUnit,
+        AgentPhaseWire, AgentStreamChunkWire, AgentStreamTerminalWire, AssistantMessageBlockWire,
+        AssistantPhaseWire, ExecutionStatusKindWire, ExecutionStatusWire, ExtensionCancelNotice,
+        ExtensionInvocation, ExtensionInvokeCall, ExtensionInvokeOutcome, ExtensionResult,
+        ExtensionStreamChunkValue, ExtensionStreamCompleteValue, ExtensionStreamEvent,
+        ExtensionUnit,
     };
     let _process_lock = acquire_e2e_process_lock();
     let transport = host_transport(&mut host.child);
@@ -7625,6 +7681,12 @@ where
                 let gate = gate.clone();
                 let cancellations = callback_cancellations.clone();
                 async move {
+                    let native_execution_id = call.context.as_ref()
+                        .and_then(|context| context.execution_id.clone())
+                        .unwrap_or_else(|| call.invocation_id.clone());
+                    let native_request_id = call.context.as_ref()
+                        .and_then(|context| context.message_id.clone())
+                        .unwrap_or_else(|| call.invocation_id.clone());
                     let (task, stream) = match call.invocation {
                         ExtensionInvocation::AgentExecute(input) => (input.task, None),
                         ExtensionInvocation::AgentExecuteStream(input) => {
@@ -7650,6 +7712,13 @@ where
                             ));
                         }
                     };
+                    // 此夹具处理文本任务；传输仍是完整Message，不能按旧String wire消费。
+                    let content = task.content.into_json().map_err(|error| {
+                        agent_client_protocol::Error::internal_error().data(error.to_string())
+                    })?;
+                    let task = content.as_str().ok_or_else(|| {
+                        agent_client_protocol::Error::internal_error().data("text fixture received non-text Message")
+                    })?.to_string();
                     let parked = *hang.lock().map_err(|_| {
                         agent_client_protocol::Error::internal_error().data("hang lock poisoned")
                     })?;
@@ -7677,6 +7746,17 @@ where
                             } else {
                                 Some(responder)
                             };
+                            if let Some(stream) = &stream {
+                                // 原callback producer已启动；状态不越过其原取消/释放门。
+                                connection.send_notification(ExtensionStreamEvent::Chunk {
+                                    stream: stream.clone(), sequence: nonzero(1),
+                                    value: ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::ExecutionStatus(ExecutionStatusWire {
+                                        execution_id: native_execution_id.clone(), request_id: Some(native_request_id.clone()),
+                                        sequence: echo_sdk_protocol::scalar::WireU64::from_u64(0),
+                                        phase: AgentPhaseWire::Thinking, status: ExecutionStatusKindWire::Started, reason: None,
+                                    })),
+                                })?;
+                            }
                             if let Some(gate) = gate {
                                 gate.prompts.lock().unwrap_or_else(|error| error.into_inner()).push(task);
                                 let released = gate.release.notified();
@@ -7698,24 +7778,36 @@ where
                                 if !cancelled {
                                     connection.send_notification(ExtensionStreamEvent::Chunk {
                                         stream: stream.clone(),
-                                        sequence: nonzero(1),
+                                        sequence: nonzero(2),
                                         value: ExtensionStreamChunkValue::Agent(
-                                            AgentStreamChunkWire::Token {
-                                                text: "SDK subagent executed".to_string(),
+                                            AgentStreamChunkWire::AssistantMessage {
+                                                block: AssistantMessageBlockWire {
+                                                    provider_source: None,
+                                                    block_id: format!("{native_execution_id}-block"),
+                                                    request_id: native_request_id.clone(),
+                                                    sequence: echo_sdk_protocol::scalar::WireU64::from_u64(0),
+                                                    phase: AssistantPhaseWire::Unknown,
+                                                    delta: "SDK subagent executed".to_string(), complete: true,
+                                                    provider: None, reasoning: None,
+                                                },
                                             },
                                         ),
+                                    })?;
+                                    connection.send_notification(ExtensionStreamEvent::Chunk {
+                                        stream: stream.clone(), sequence: nonzero(3),
+                                        value: ExtensionStreamChunkValue::Agent(AgentStreamChunkWire::FinalAnswer {
+                                            text: "SDK subagent executed".to_string(),
+                                        }),
                                     })?;
                                 }
                                 connection.send_notification(ExtensionStreamEvent::Complete {
                                     stream,
-                                    sequence: nonzero(if cancelled { 1 } else { 2 }),
-                                    value: ExtensionStreamCompleteValue::Agent(if cancelled {
-                                        AgentStreamTerminalWire::Cancelled
-                                    } else {
-                                        AgentStreamTerminalWire::FinalAnswer {
-                                            text: "SDK subagent executed".to_string(),
-                                        }
-                                    }),
+                                    sequence: nonzero(if cancelled { 2 } else { 4 }),
+                                    value: ExtensionStreamCompleteValue::Agent(AgentStreamTerminalWire::ExecutionStatus(ExecutionStatusWire {
+                                        execution_id: native_execution_id, request_id: Some(native_request_id),
+                                        sequence: echo_sdk_protocol::scalar::WireU64::from_u64(1), phase: AgentPhaseWire::Terminal,
+                                        status: if cancelled { ExecutionStatusKindWire::Cancelled } else { ExecutionStatusKindWire::Settled }, reason: None,
+                                    })),
                                 })?;
                             } else if let Some(responder) = responder {
                                 responder.respond(if cancelled {
@@ -8712,5 +8804,72 @@ async fn deferred_rust_inventory_invocations_fail_explicitly_without_success_def
         })
     }).await?;
     let _ = host.child.kill().await;
+    Ok(())
+}
+
+/// Exercise raw old addresses, bypassing all three language catalogs. The old
+/// signatures are frozen negative fixtures, not an alternate accepted registry.
+#[cfg(feature = "sdk-facade-adapters")]
+#[tokio::test]
+async fn retired_a2a_lsp_addresses_fail_on_the_real_host() -> Result<(), Box<dyn std::error::Error>>
+{
+    let retired: serde_json::Value = serde_json::from_str(include_str!(
+        "../../sdks/shared/testing/a2a_lsp_retirement_contract.json"
+    ))?;
+    let (endpoint, _seen) = start_model_server("retained").await?;
+    let work = tempfile::tempdir()?;
+    let state_root = tempfile::tempdir()?;
+    let config = write_config(work.path(), &endpoint, state_root.path(), None)?;
+    let mut host = spawn_host(&config).await?;
+    let (events, updates, gaps) = empty_collectors::<EventNotification>();
+    let result = drive(&mut host, events, updates, gaps, move |connection| {
+        Box::pin(async move {
+            let invalid = |message: &str| agent_client_protocol::Error::internal_error().data(message.to_string());
+            let initialized = connection.send_request(initialize_request(Some(client_hello()))).block_task().await?;
+            let capability: EchoAgentCapability = serde_json::from_value(initialized.agent_capabilities.meta.as_ref().and_then(|meta| meta.get("echo_agent")).cloned().ok_or_else(|| invalid("advertisement absent"))?).map_err(|error| invalid(&error.to_string()))?;
+            assert!(!capability.features.iter().any(|feature| matches!(feature.as_str(), "a2a" | "lsp")));
+            assert!(capability.declares(ExtensionCapability::FeatureSurfaces));
+            for feature in ["a2a", "lsp"] {
+                let mut hello = client_hello();
+                hello.required_features = vec![feature.to_string()];
+                assert!(!capability.negotiate_hello(&hello).is_empty());
+            }
+            let mut old_hello = client_hello();
+            old_hello.source_contract_digest = retired.get("old_source_contract_digest").and_then(serde_json::Value::as_str).ok_or_else(|| invalid("old digest absent"))?.to_string();
+            assert!(!capability.negotiate_hello(&old_hello).is_empty());
+            let agent = connection.send_request(AgentCreateRequest { config: AgentConfigWire::HostDefault, idempotency_id: None }).block_task().await?.agent;
+            let session = connection.send_request(SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            let routes = retired.get("routes").and_then(serde_json::Value::as_array).ok_or_else(|| invalid("old routes absent"))?;
+            let families = retired.get("families").and_then(serde_json::Value::as_array).ok_or_else(|| invalid("old families absent"))?;
+            let mut count = 0_usize;
+            for family in families {
+                let name = family.get("family").and_then(serde_json::Value::as_str).ok_or_else(|| invalid("family name absent"))?;
+                let method = family.get("methods").and_then(serde_json::Value::as_array).and_then(|methods| methods.first()).and_then(serde_json::Value::as_str).ok_or_else(|| invalid("method absent"))?;
+                let route_id = format!("family:{name}");
+                let route = routes.iter().find(|route| route.get("route").and_then(serde_json::Value::as_str) == Some(route_id.as_str())).ok_or_else(|| invalid("family route absent"))?;
+                for signature in route.get("operation_signatures").and_then(serde_json::Value::as_array).ok_or_else(|| invalid("old signatures absent"))? {
+                    let request = serde_json::json!({"operation": signature.get("operation"), "signature_digest": signature.get("signature_digests").and_then(serde_json::Value::as_array).and_then(|values| values.first()), "handle": session.session, "arguments": []});
+                    let error = connection.send_request(UntypedMessage::new(method, request)?).block_task().await.err().ok_or_else(|| invalid("retired method returned success"))?;
+                    assert_eq!(error.code, agent_client_protocol::Error::method_not_found().code);
+                    count = count.saturating_add(1);
+                }
+            }
+            assert_eq!(count, 39);
+            for route in routes.iter().filter(|route| route.get("operation").is_some_and(|value| !value.is_null())) {
+                let request = serde_json::json!({"operation": route.get("operation"), "signature_digest": route.get("signature_digests").and_then(serde_json::Value::as_array).and_then(|values| values.first()), "handle": agent, "arguments": [WireValue::Handle(session.session.clone())]});
+                let error = connection.send_request(UntypedMessage::new("_echo_agent/facade/invoke", request)?).block_task().await.err().ok_or_else(|| invalid("retired source returned success"))?;
+                let typed = typed_facade_error(&error).map_err(|error| invalid(&error.to_string()))?;
+                assert_eq!(typed.code, ExtensionErrorCode::InvalidValue);
+                assert!(typed.message.contains("not a canonical route of this contract"));
+            }
+            connection.send_request(SessionCloseRequest { session: session.session }).block_task().await?;
+            let other = connection.send_request(SessionCreateRequest { agent: agent.clone(), working_dir: None, session_id: None, idempotency_id: None }).block_task().await?;
+            connection.send_request(SessionCloseRequest { session: other.session }).block_task().await?;
+            connection.send_request(AgentCloseRequest { agent }).block_task().await?;
+            Ok(())
+        })
+    }).await;
+    let _ = host.child.kill().await;
+    result?;
     Ok(())
 }

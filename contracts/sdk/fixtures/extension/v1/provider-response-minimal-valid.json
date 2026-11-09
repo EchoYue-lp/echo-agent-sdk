@@ -1,0 +1,10 @@
+{
+  "name": "provider-response-minimal-valid",
+  "kind": "valid",
+  "target": "ProviderResponseMetadataWire",
+  "description": "观察缺失字段不补Null或终态。",
+  "payload": {
+    "protocol": "responses",
+    "provider": "fixture-provider"
+  }
+}

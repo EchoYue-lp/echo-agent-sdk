@@ -1,13 +1,12 @@
 {
   "schema_version": 1,
   "kind": "rust_public_inventory_telemetry",
-  "framework_source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=f7bac62eee04a963f92a3e4308b6ea2336e91cc0#f7bac62eee04a963f92a3e4308b6ea2336e91cc0",
+  "framework_source": "git+https://github.com/EchoYue-lp/echo-agent.git?rev=3413d64dae23353c6d02c546ac374deded855827#3413d64dae23353c6d02c546ac374deded855827",
   "extension_protocol_version": 1,
   "rustdoc_format_version": 61,
   "profiles": [
     "default",
     "full",
-    "feature:a2a",
     "feature:acp",
     "feature:channels",
     "feature:chart",
@@ -19,7 +18,6 @@
     "feature:git",
     "feature:human-loop",
     "feature:improve",
-    "feature:lsp",
     "feature:mcp",
     "feature:media",
     "feature:project-rules",
@@ -34,14 +32,14 @@
     "feature:topology",
     "feature:web"
   ],
-  "inventory_digest": "sha256:fa09cc34d4cb2e720c65707967a165a17e70256bf6f2fde24c21fd8d3f698cea",
-  "canonical_items": 10974,
+  "inventory_digest": "sha256:447d661033d57ca016e7319654173a921a16afb4e421a1faa99118c405319509",
+  "canonical_items": 11250,
   "scope_counts": {
-    "deferred": 2507,
-    "external_contract": 5352,
-    "host_or_rust_only": 2217,
-    "internal_helper": 91,
-    "language_intrinsic": 807
+    "deferred": 3005,
+    "external_contract": 5344,
+    "host_or_rust_only": 1963,
+    "internal_helper": 95,
+    "language_intrinsic": 843
   },
   "blocking_scope": "external_contract",
   "runtime_negotiation_excludes": [

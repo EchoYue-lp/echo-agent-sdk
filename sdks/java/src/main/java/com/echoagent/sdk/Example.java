@@ -32,11 +32,11 @@ public final class Example {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 3) {
-            throw new IllegalArgumentException("usage: Example <host-command> <host-config> <catalog>");
+        if (args.length < 2) {
+            throw new IllegalArgumentException("usage: Example <host-command> <host-config> [catalog]");
         }
-        Path catalog = Path.of(args[2]);
-        Path digest = catalog.resolveSibling("contract-digests.json");
+        Path catalog = args.length > 2 ? Path.of(args[2]) : null;
+        Path digest = catalog == null ? null : catalog.resolveSibling("contract-digests.json");
         EchoAgentClient client = EchoAgentClient
                 .spawn(args[0], List.of("--config", args[1]), catalog, digest, Map.of())
                 .toCompletableFuture()
@@ -73,8 +73,8 @@ public final class Example {
                     "echo_sdk_protocol::methods::AgentEventWire",
                     "final_answer",
                     Map.of("text", "classified"))).toCompletableFuture().get();
-            if (!"variant".equals(classified.path("kind").asText())
-                    || !"completed".equals(classified.path("value").path("variant").asText())) {
+            // FinalAnswer只是通知；完成正例由后续真实Run的原结算与receipt检查提供。
+            if (!classified.isNull()) {
                 throw new IllegalStateException("unexpected TurnOutcome classification: " + classified);
             }
             var prompt = session.prompt("hello").toCompletableFuture().get();

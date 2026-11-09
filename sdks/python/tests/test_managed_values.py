@@ -129,7 +129,6 @@ def test_schema_five_checkpoint_facts_remain_exact_history_bytes():
     checkpoint = AgentCheckpoint(
         "conversation",
         history,
-        None,
         (),
         None,
         {"encoding": "unix", "bytes_base64": "L3RtcC//"},

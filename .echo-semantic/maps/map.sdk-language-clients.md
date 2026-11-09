@@ -14,6 +14,7 @@ behavior_refs:
 rule_refs:
 - rule.framework-runtime-authority
 evidence_refs:
+- evidence.sdk-sandbox-and-canonical-input-consumption
 - evidence.sdk-source-continuity
 - evidence.sdk-event-identity-nested-parent-closure
 - evidence.sdk-language-client-lifecycle-current

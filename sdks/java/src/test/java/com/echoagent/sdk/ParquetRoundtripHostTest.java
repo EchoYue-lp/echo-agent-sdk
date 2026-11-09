@@ -46,8 +46,8 @@ class ParquetRoundtripHostTest {
         helper(work, "prepare", python, fixture.toString(), "--work", work.toString());
         var rows = JSON.createArrayNode();
         String catalogOverride = System.getenv("ECHO_AGENT_SDK_CATALOG_PATH");
-        Path catalog = catalogOverride == null ? Path.of("../shared/facade-operation-catalog.json") : Path.of(catalogOverride);
-        Path digest = catalog.resolveSibling("contract-digests.json");
+        Path catalog = catalogOverride == null ? null : Path.of(catalogOverride);
+        Path digest = catalog == null ? null : catalog.resolveSibling("contract-digests.json");
         try (var sdk = await(EchoAgentClient.spawn(host, java.util.List.of("--config", work.resolve("host.json").toString()),
                 catalog, digest, java.util.Map.of()))) {
             var agent = await(sdk.createAgent());

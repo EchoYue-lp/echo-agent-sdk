@@ -1,15 +1,11 @@
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { JwtClaims, JwtConfig } from "../dist/index.js";
-
-test("JWT config and claims preserve local value semantics", () => {
-  const config = JwtConfig.hs256("secret").withIssuer("echo-agent").withAudience("a2a");
-  assert.equal(config.isEnabled(), true);
-  assert.match(config.toString(), /verification_key: \[redacted\]/);
-  assert.equal(JwtConfig.disabled().isEnabled(), false);
-  assert.equal(new JwtClaims(null, "subject").subject(), "subject");
-  assert.throws(() => JwtConfig.rs256("invalid"), /invalid RSA public key/);
+import * as sdk from "../dist/index.js";
+test("A2A JWT constructors are withdrawn while non-A2A security helpers remain", () => {
+  assert.equal(Object.hasOwn(sdk, "JwtConfig"), false);
+  assert.equal(Object.hasOwn(sdk, "JwtClaims"), false);
+  assert.equal(typeof sdk.EchoAgentClient, "function");
 });
 
 test("retired A2A JWT mappings stay outside the external contract", () => {
@@ -20,7 +16,7 @@ test("retired A2A JWT mappings stay outside the external contract", () => {
     readFileSync(new URL("../../../contracts/sdk/accepted-external-contract.json", import.meta.url), "utf8"),
   );
   const adr = readFileSync(new URL("../../../docs/adr/0042-sdk-a2a-lsp-retirement-boundary.md", import.meta.url), "utf8");
-  // 只检查ADR0042已批准退出的九项；上面的通用JWT本地值正控保持。
+  // 承接ADR0042九项退出负控；保留83导出退出断言，不恢复旧本地构造。
   const retired = [
     ["echo_agent::a2a::auth::JwtClaims::subject", "method"],
     ["echo_agent::a2a::auth::JwtConfig", "struct"],

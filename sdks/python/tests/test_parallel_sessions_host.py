@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from echo_agent_sdk import EchoAgentClient
+from echo_agent_sdk import EchoAgentClient, from_wire
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
@@ -61,6 +61,7 @@ async def verify_journal(run, observed):
     assert [item["event_id"] for item in observed] == [
         item["event_id"] for item in replay
     ]
+    assert observed == replay
     assert len({item["event_id"] for item in observed}) == len(observed)
     assert (
         sum(
@@ -69,6 +70,21 @@ async def verify_journal(run, observed):
         )
         == 1
     )
+    # 文本交付后仍须保留唯一原生终态，事件流只在该事实之后自然结束。
+    terminal = [
+        item
+        for item in observed
+        if item["payload"]["event_type"] == "execution_status"
+        and from_wire(item["payload"]["data"])["phase"] == "Terminal"
+    ]
+    assert len(terminal) == 1
+    assert terminal[0] == observed[-1]
+
+
+def assert_completed(envelope):
+    assert envelope["payload"]["event_type"] == "execution_status"
+    status = from_wire(envelope["payload"]["data"])
+    assert status["phase"] == "Terminal" and status["status"] == "settled"
 
 
 async def test_normal_live_terminal_natural_eof(tmp_path):
@@ -83,7 +99,7 @@ async def test_normal_live_terminal_natural_eof(tmp_path):
         (tmp_path / "release-normal").touch()
         assert (await run.wait(timeout=10))["settled"]
         observed = await asyncio.wait_for(consumer, 5)
-        assert observed[-1]["payload"]["event_type"] == "final_answer"
+        assert_completed(observed[-1])
         await verify_journal(run, observed)
         assert (tmp_path / "completed-normal").exists()
         await session.close()
@@ -124,7 +140,7 @@ async def test_parallel_session_cancel_close_does_not_end_other_feed(tmp_path):
         (tmp_path / "release-b").touch()
         assert (await run_b.wait(timeout=10))["terminal"]["status"] == "completed"
         observed_b = await asyncio.wait_for(consumer_b, 5)
-        assert observed_b[-1]["payload"]["event_type"] == "final_answer"
+        assert_completed(observed_b[-1])
         await verify_journal(run_b, observed_b)
         assert {item["event_id"] for item in observed_a}.isdisjoint(
             item["event_id"] for item in observed_b

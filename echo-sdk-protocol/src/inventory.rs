@@ -3263,9 +3263,16 @@ pub fn manifest_entries(merged: &[InventoryEntry]) -> Vec<ManifestEntry> {
                 .and_then(|alias| alias.clone());
             let route =
                 route_obligation_for(entry, classification, acp_relationship, semantic_rule);
+            // raw分类保持事实；仅单source/kind的已批准值投影改变SDK语言合同。
+            let language_classification =
+                if crate::facade::sandbox_command_projection(entry).is_some() {
+                    SemanticClass::WireValue
+                } else {
+                    classification
+                };
             let (language_status, language_contract_suffix) = language_status_for(
                 &crate::facade::canonical_source_identity(entry),
-                classification,
+                language_classification,
                 &route,
             );
             let languages: BTreeMap<String, LanguageStatusRecord> = LANGUAGES
@@ -3275,7 +3282,7 @@ pub fn manifest_entries(merged: &[InventoryEntry]) -> Vec<ManifestEntry> {
                         (*language).to_string(),
                         LanguageStatusRecord {
                             status: language_status,
-                            target: language_target(classification).to_string(),
+                            target: language_target(language_classification).to_string(),
                             contract_test: format!(
                                 "sdk-parity/{language}/{language_contract_suffix}"
                             ),

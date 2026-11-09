@@ -5,7 +5,8 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, readdirSync, renameSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { EchoAgentClient, wireUtf8Path } from "../dist/index.js";
+import { EchoAgentClient, fromWireValue, wireUtf8Path } from "../dist/index.js";
+import { nativeProducerFixture } from "./native-producer-fixture.js";
 const host=process.env.ECHO_AGENT_SDK_HOST;
 if(process.env.ECHO_AGENT_SDK_REQUIRE_HOST_E2E==="1"&&!host)throw Error("required analysis Host missing");
 const fixture=fileURLToPath(new URL("../../shared/testing/eval_improve_topology_fixture.py",import.meta.url));
@@ -22,16 +23,18 @@ for(const group of ["eval","improve","topology"])test(`native ${group} accepted 
    assert.deepEqual(call.factory_origin,factory.wire);const identity=call.extension.id;assert.ok(instances.has(identity));
    if(op==="agent_close"){facts.closed.push(identity);instances.delete(identity);return outcome(op);}
    facts.executed.push(identity);
-   try{const task=call.invocation.input.task??call.invocation.input.message??"";
-    if(task==="hang"){await new Promise(resolve=>signal.aborted?resolve():signal.addEventListener("abort",resolve,{once:true}));facts.cancel_observed+=Number(signal.aborted);noticeDeadline();await deadlineRelease;return outcome(op,"cancelled");}
+   const producer=op.endsWith("_stream")?nativeProducerFixture(sdk,call):null;
+   if(producer)await producer.start();
+   try{const message=op.startsWith("agent_execute")?call.invocation.input.task:call.invocation.input.message;const task=fromWireValue(message.content);assert.equal(message.role,"user");assert.equal(typeof task,"string");
+    if(task==="hang"){await new Promise(resolve=>signal.aborted?resolve():signal.addEventListener("abort",resolve,{once:true}));facts.cancel_observed+=Number(signal.aborted);noticeDeadline();await deadlineRelease;if(producer){await producer.finish("cancelled",true);return{outcome:"stream",stream:call.stream};}return outcome(op,"cancelled");}
     const answer=task==="bad"?"wrong response":spec.factory_answer;
-    if(op.endsWith("_stream")){await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:answer}}});return {outcome:"stream",stream:call.stream};}return outcome(op,answer);
+    if(producer){await producer.finish(answer);return {outcome:"stream",stream:call.stream};}return outcome(op,answer);
    }finally{facts.factory_finally++;}
   });
   const custom=await sdk.registerCustomAgent("analysis-custom",{kind:"custom_agent",descriptor_version:1,name:"analysis-custom",model_name:"analysis-custom",system_prompt:"analysis-custom",tool_names:[]},async call=>{
    const op=call.invocation.operation;facts.callbacks.push(call);if(op==="agent_close")return outcome(op);
    const answer=mode==="plain"?spec.factory_answer:mode==="grade"?JSON.stringify(spec.grade_good):"not valid JSON🙂";
-   if(op.endsWith("_stream")){await sdk.streamWriter(call.stream).complete({kind:"agent",value:{event:"final_answer",data:{text:answer}}});return {outcome:"stream",stream:call.stream};}return outcome(op,answer);
+   if(op.endsWith("_stream")){const producer=nativeProducerFixture(sdk,call);await producer.start();await producer.finish(answer);return {outcome:"stream",stream:call.stream};}return outcome(op,answer);
   });
   const agent=await sdk.createAgent(),sessions={a:await agent.createSession(),b:await agent.createSession()};
   const resolve=value=>{if(Array.isArray(value))return value.map(resolve);if(value===null||typeof value!=="object")return value;if("$ref"in value){let selected=values[value.$ref];for(const key of value.path??[])selected=selected[key];return selected;}if("$path"in value)return wireUtf8Path(join(work,value.$path));if("$string_path"in value)return join(work,value.$string_path);if("$u64"in value)return {kind:"u64",value:value.$u64};if("$f64"in value)return {kind:"f64",value:value.$f64};if("$factory"in value)return factory.wire;if("$custom"in value)return custom.wire;return Object.fromEntries(Object.entries(value).map(([key,item])=>[key,resolve(item)]));};

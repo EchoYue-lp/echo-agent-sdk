@@ -44,6 +44,48 @@ def sequence(value: dict) -> int:
     )
 
 
+def assert_uncovered_live_frames(
+    frames, stream, cursor, consumed, canonical_events=None
+):
+    """ACK 固定已消费前缀，不冻结真实 producer 的后继日志。"""
+    previous = cursor
+    covered_ids = set(consumed.values())
+    live_ids = set()
+    canonical = (
+        {int(event["sequence"]): event for event in canonical_events}
+        if canonical_events is not None
+        else None
+    )
+    for frame in frames:
+        params = frame["params"]
+        assert params["stream"] == stream
+        if frame["method"] == "_echo_agent/gap":
+            gap = params["gap"]
+            start, end, watermark = (
+                int(gap["from_sequence"]),
+                int(gap["to_sequence"]),
+                int(gap["snapshot_watermark"]),
+            )
+            assert start > cursor and start > previous
+            assert end >= start and watermark >= end
+            previous = watermark
+        else:
+            assert frame["method"] == "_echo_agent/event"
+            event = params["envelope"]
+            current = int(event["sequence"])
+            assert event["stream_id"] == stream["id"]
+            assert current > cursor and current > previous
+            assert current not in consumed and event["event_id"] not in covered_ids
+            assert event["event_id"] not in live_ids
+            assert isinstance(event["content_hash"], str) and event["content_hash"]
+            if canonical is not None:
+                durable = canonical[current]
+                assert event["event_id"] == durable["event_id"]
+                assert event["content_hash"] == durable["content_hash"]
+            live_ids.add(event["event_id"])
+            previous = current
+
+
 @pytest.mark.skipif(
     not HOST, reason="ECHO_AGENT_SDK_HOST is required for real Host E2E"
 )
@@ -179,8 +221,11 @@ async def test_gap_ack_snapshot_continuation(
     not HOST, reason="ECHO_AGENT_SDK_HOST is required for real Host E2E"
 )
 @pytest.mark.parametrize("page_size", [1, 64])
+@pytest.mark.parametrize("release_before_ack", [False, True])
 @pytest.mark.asyncio
-async def test_replay_consumed_cursor_ack(page_size: int, tmp_path: Path) -> None:
+async def test_replay_consumed_cursor_ack(
+    page_size: int, release_before_ack: bool, tmp_path: Path
+) -> None:
     model = await asyncio.create_subprocess_exec(
         "python3",
         str(TESTING / "gap_ack_fixture.py"),
@@ -241,6 +286,22 @@ async def test_replay_consumed_cursor_ack(page_size: int, tmp_path: Path) -> Non
             )
             await run.get()
             assert len(notifications(tmp_path)) == len(before)
+            covered_cursor = cursor
+            covered = dict(consumed)
+            settled_suffix = None
+            if release_before_ack:
+                (tmp_path / "release").touch()
+                assert (await run.wait(timeout=5))["settled"]
+                assert int((await run.get())["last_sequence"]) > covered_cursor
+                page = await run.replay(str(covered_cursor), 64)
+                assert page["events"]
+                settled_suffix = [
+                    {
+                        "method": "_echo_agent/event",
+                        "params": {"stream": run.stream.to_dict(), "envelope": event},
+                    }
+                    for event in page["events"]
+                ]
             await sdk.notify(
                 "echo_agent/event/ack",
                 {
@@ -251,9 +312,44 @@ async def test_replay_consumed_cursor_ack(page_size: int, tmp_path: Path) -> Non
                 },
             )
             await run.get()
-            assert len(notifications(tmp_path)) == len(before)
-            (tmp_path / "release").touch()
-            await wait_for(lambda: len(notifications(tmp_path)) > len(before))
+            assert_uncovered_live_frames(
+                notifications(tmp_path)[len(before) :],
+                run.stream.to_dict(),
+                covered_cursor,
+                covered,
+            )
+            if release_before_ack:
+                # settled 后实时投递器已清理，使用公开 replay 的真实后缀无损视图。
+                real_suffix = settled_suffix
+                assert_uncovered_live_frames(
+                    real_suffix, run.stream.to_dict(), covered_cursor, covered
+                )
+                # 只用真实帧测试谓词；不向 SDK/Host 发送伪造事件。
+                with pytest.raises(AssertionError):
+                    assert not real_suffix
+                prefix_event = next(
+                    frame for frame in before if frame["method"] == "_echo_agent/event"
+                )
+                prefix_gap = next(
+                    frame for frame in before if frame["method"] == "_echo_agent/gap"
+                )
+                suffix_event = next(
+                    frame
+                    for frame in real_suffix
+                    if frame["method"] == "_echo_agent/event"
+                )
+                for invalid in (
+                    [*real_suffix, prefix_event],
+                    [*real_suffix, prefix_gap],
+                    [suffix_event, suffix_event],
+                ):
+                    with pytest.raises(AssertionError):
+                        assert_uncovered_live_frames(
+                            invalid, run.stream.to_dict(), covered_cursor, covered
+                        )
+            else:
+                (tmp_path / "release").touch()
+                await wait_for(lambda: len(notifications(tmp_path)) > len(before))
             assert all(
                 sequence(value) > cursor
                 for value in notifications(tmp_path)[len(before) :]
@@ -289,6 +385,21 @@ async def test_replay_consumed_cursor_ack(page_size: int, tmp_path: Path) -> Non
             assert [event["event_id"] for event in all_events] == list(
                 consumed.values()
             )
+            assert_uncovered_live_frames(
+                notifications(tmp_path)[len(before) :],
+                run.stream.to_dict(),
+                covered_cursor,
+                covered,
+                all_events,
+            )
+            if settled_suffix is not None:
+                assert_uncovered_live_frames(
+                    settled_suffix,
+                    run.stream.to_dict(),
+                    covered_cursor,
+                    covered,
+                    all_events,
+                )
             await session.close()
             await agent.close()
     finally:

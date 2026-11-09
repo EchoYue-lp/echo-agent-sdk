@@ -1,0 +1,2 @@
+# 原始 unified diff 的 context 空行以单个空格开头；该字节属于补丁格式，禁止清理或换行转换。
+docs/engineering/handoffs/2026-10-28-sdk-maintenance/rich-message-overrides.pending.patch -text -whitespace

@@ -41,7 +41,7 @@ class ManagedComponentOperationsTest {
                 request("runtime_load_managed_state_with_context", stateInput)).runtimeStateId());
         var authority = new ConversationProjectionAuthority(conversation.conversationId(), U, U, ConversationProjectionLifecycle.live, U);
         var receipt = new TranscriptProjectionApplyReceipt("operation", "digest", authority, new TranscriptProjectionApplyStatus.Fenced(U, ConversationProjectionLifecycle.deleted));
-        var checkpoint = new AgentCheckpoint(conversation.conversationId(), "{\"schema_version\":5}", null, List.of(), null,
+        var checkpoint = new AgentCheckpoint(conversation.conversationId(), "{\"schema_version\":5}", List.of(), null,
                 new CheckpointPath.Windows("QwA6AFwAeAA", "C:\\x"), new CheckpointTimestamp(BigInteger.valueOf(-1), 123456789L, "1969-12-31T23:59:59.123456789Z"));
         var expected = new RuntimeStateExpectedVersion.Unmanaged("digest");
         var transition = new ManagedImportEpochTransition(new ManagedConversationImport(1, "import", "digest", conversation.conversationId(), U, U, "generation", List.of(message)), receipt);

@@ -2928,20 +2928,195 @@
         "released"
       ]
     },
+    "AgentPhaseWire": {
+      "description": "与Framework AgentPhase的原生serde拼写一致，不从正文推导执行阶段。",
+      "type": "string",
+      "enum": [
+        "Thinking",
+        "Acting",
+        "Terminal"
+      ]
+    },
+    "AssistantMessageBlockWire": {
+      "description": "无损投影一个 Framework assistant block；块结束不授予执行结束资格。",
+      "type": "object",
+      "required": [
+        "block_id",
+        "complete",
+        "delta",
+        "request_id",
+        "sequence"
+      ],
+      "properties": {
+        "block_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "delta": {
+          "type": "string"
+        },
+        "phase": {
+          "default": "unknown",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AssistantPhaseWire"
+            }
+          ]
+        },
+        "provider": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "provider_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderOutputSourceWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasoning": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/LlmReasoningBlockWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "$ref": "#/definitions/WireU64"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AssistantPhaseWire": {
+      "description": "Framework 原生消息阶段的 wire 投影；缺失阶段保持 Unknown，不从文字推断。",
+      "type": "string",
+      "enum": [
+        "reasoning",
+        "commentary",
+        "partial_answer",
+        "final_answer",
+        "unknown"
+      ]
+    },
+    "ExecutionStatusKindWire": {
+      "type": "string",
+      "enum": [
+        "started",
+        "waiting",
+        "tool_pending",
+        "candidate",
+        "settled",
+        "cancelled",
+        "failed"
+      ]
+    },
+    "ExecutionStatusWire": {
+      "description": "Framework执行观察的投影；不与TaskRun目标完成合并，也不在SDK产生状态。",
+      "type": "object",
+      "required": [
+        "execution_id",
+        "phase",
+        "sequence",
+        "status"
+      ],
+      "properties": {
+        "execution_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "$ref": "#/definitions/AgentPhaseWire"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "request_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sequence": {
+          "$ref": "#/definitions/WireU64"
+        },
+        "status": {
+          "$ref": "#/definitions/ExecutionStatusKindWire"
+        }
+      },
+      "additionalProperties": false
+    },
     "LlmMessageWire": {
+      "additionalProperties": false,
+      "title": "LlmMessageWire",
       "type": "object",
       "required": [
         "content",
         "role"
       ],
       "properties": {
+        "approved_assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
+        "assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
         "content": {
           "$ref": "#/definitions/WireValue"
+        },
+        "execution_status": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ExecutionStatusWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "name": {
           "type": [
             "string",
             "null"
+          ]
+        },
+        "provider_response": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderResponseMetadataWire"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "reasoning_blocks": {
@@ -2976,9 +3151,14 @@
           "items": {
             "$ref": "#/definitions/LlmToolCallWire"
           }
+        },
+        "tool_result_is_error": {
+          "type": [
+            "boolean",
+            "null"
+          ]
         }
-      },
-      "additionalProperties": false
+      }
     },
     "LlmReasoningBlockWire": {
       "oneOf": [
@@ -3080,9 +3260,192 @@
         },
         "id": {
           "type": "string"
+        },
+        "provider_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderOutputSourceWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false
+    },
+    "ProviderOutputSourceWire": {
+      "description": "原生坐标及原始phase；保留未知phase文本，不推导呈现或完成资格。",
+      "type": "object",
+      "required": [
+        "item_id",
+        "output_index",
+        "protocol",
+        "request_id"
+      ],
+      "properties": {
+        "content_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "content_kind": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "output_index": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "phase": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "protocol": {
+          "$ref": "#/definitions/LlmApiProtocolWire"
+        },
+        "request_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProviderResponseMetadataWire": {
+      "additionalProperties": false,
+      "title": "ProviderResponseMetadataWire",
+      "description": "原供应商响应观察的固定字段投影；可选WireValue保缺失与显式Null，整数沿既有Scalar。 这不是执行状态，也不计算usage或决定重试/正文批准。",
+      "type": "object",
+      "required": [
+        "protocol",
+        "provider"
+      ],
+      "properties": {
+        "incomplete_details": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "map",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "model": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "protocol": {
+          "$ref": "#/definitions/LlmApiProtocolWire"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "stop_reason": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "stop_sequence": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "usage": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/WireValue"
+            },
+            {
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "map",
+                    "null"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "RunInput": {
       "oneOf": [
@@ -4854,12 +5217,6 @@
         },
         "conversation_id": {
           "type": "string"
-        },
-        "current_plan": {
-          "type": [
-            "string",
-            "null"
-          ]
         },
         "messages_json": {
           "type": "string"
@@ -7118,20 +7475,40 @@
         "message"
       ],
       "properties": {
+        "history": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LlmMessageWire"
+          }
+        },
         "message": {
-          "type": "string"
+          "$ref": "#/definitions/LlmMessageWire"
         }
       },
       "additionalProperties": false
     },
     "AgentTaskInput": {
+      "description": "CustomAgent 执行输入复用完整 Message；文本便利入口先构造 Message::user。 operation 保留执行/聊天模式，不能以内容类型选择另一个执行器。",
       "type": "object",
       "required": [
         "task"
       ],
       "properties": {
+        "history": {
+          "description": "原invocation中的模型历史；None与Some(empty)保持区别。",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LlmMessageWire"
+          }
+        },
         "task": {
-          "type": "string"
+          "$ref": "#/definitions/LlmMessageWire"
         }
       },
       "additionalProperties": false
@@ -8653,6 +9030,8 @@
       ]
     },
     "LlmChatRequestWire": {
+      "additionalProperties": false,
+      "title": "LlmChatRequestWire",
       "type": "object",
       "required": [
         "messages"
@@ -8720,9 +9099,13 @@
           ]
         },
         "tool_choice": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/LlmToolChoiceWire"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "tools": {
@@ -8740,8 +9123,61 @@
             "null"
           ]
         }
+      }
+    },
+    "LlmNamedFunctionWire": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "[^\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000]"
+        }
       },
       "additionalProperties": false
+    },
+    "LlmNamedToolChoiceWire": {
+      "type": "object",
+      "required": [
+        "function",
+        "type"
+      ],
+      "properties": {
+        "function": {
+          "$ref": "#/definitions/LlmNamedFunctionWire"
+        },
+        "type": {
+          "$ref": "#/definitions/LlmToolChoiceFunctionKindWire"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LlmToolChoiceFunctionKindWire": {
+      "type": "string",
+      "enum": [
+        "function"
+      ]
+    },
+    "LlmToolChoiceModeWire": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "none",
+        "required"
+      ]
+    },
+    "LlmToolChoiceWire": {
+      "description": "既有ChatRequest字段的固定形状投影；Core serde仍是语义权威，不新增accepted API身份。",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/LlmToolChoiceModeWire"
+        },
+        {
+          "$ref": "#/definitions/LlmNamedToolChoiceWire"
+        }
+      ]
     },
     "LlmToolDefinitionWire": {
       "type": "object",
@@ -8760,6 +9196,12 @@
         },
         "parameters": {
           "$ref": "#/definitions/WireValue"
+        },
+        "strict": {
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "tool_type": {
           "type": "string"
@@ -9275,7 +9717,7 @@
       "additionalProperties": false
     },
     "SkillDescriptorPolicyWire": {
-      "description": "Lossless public projection passed to a host-language [`SkillLoadPolicy`]. Fields skipped by the framework's persistence serde remain explicit here because a live policy may legitimately inspect their runtime values.",
+      "description": "Lossless public projection passed to a host-language `SkillLoadPolicy`. Fields skipped by the framework's persistence serde remain explicit here because a live policy may legitimately inspect their runtime values.",
       "type": "object",
       "required": [
         "allowed_tools",
@@ -14520,6 +14962,148 @@
           ],
           "properties": {
             "data": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ExecutionStatusWire"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "started",
+                        "waiting",
+                        "tool_pending",
+                        "candidate"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "execution_status"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "final_answer"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "failure",
+                "message",
+                "source"
+              ],
+              "properties": {
+                "failure": {
+                  "$ref": "#/definitions/WireValue"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "error"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "event"
+          ],
+          "properties": {
+            "event": {
+              "type": "string",
+              "enum": [
+                "cancelled"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "block"
+              ],
+              "properties": {
+                "block": {
+                  "$ref": "#/definitions/AssistantMessageBlockWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "assistant_message"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
               "type": "object",
               "required": [
                 "settlement"
@@ -15068,10 +15652,49 @@
         }
       ],
       "title": "AgentStreamChunkWire",
-      "description": "Non-terminal CustomAgent stream event. Terminal variants intentionally do not appear here, so generated SDKs cannot emit a framework terminal as an ordinary chunk."
+      "description": "CustomAgent 原生输出观察；FinalAnswer 是确认通知，仍须读取原执行终态与物理 EOF。 ExecutionStatus 的 chunk/complete 分类由原 stream validate 统一检查。"
     },
     "AgentStreamTerminalWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ExecutionStatusWire"
+                },
+                {
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "Terminal"
+                      ]
+                    },
+                    "status": {
+                      "enum": [
+                        "settled",
+                        "failed",
+                        "cancelled"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "execution_status"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [
@@ -15153,7 +15776,7 @@
         }
       ],
       "title": "AgentStreamTerminalWire",
-      "description": "Terminal CustomAgent stream event. The outer stream `complete` variant accepts only these framework terminal facts."
+      "description": "原 producer 已结束后的运输末尾。原生状态必须为 Terminal/settled、failed 或 cancelled； 既有普通结果不升级为原生执行结算事实。"
     },
     "ExtensionStreamChunkValue": {
       "oneOf": [
@@ -15405,6 +16028,16 @@
           "type": "integer",
           "format": "uint32",
           "minimum": 0.0
+        },
+        "provider_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderOutputSourceWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -15412,10 +16045,29 @@
     "LlmStreamChunkWire": {
       "type": "object",
       "properties": {
+        "assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
         "content": {
           "type": [
             "string",
             "null"
+          ]
+        },
+        "provider_response": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderResponseMetadataWire"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "reasoning_blocks": {
@@ -15467,6 +16119,15 @@
         "finish_reason"
       ],
       "properties": {
+        "assistant_blocks": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/AssistantMessageBlockWire"
+          }
+        },
         "content": {
           "type": [
             "string",
@@ -15477,6 +16138,16 @@
           "type": "string",
           "maxLength": 256,
           "minLength": 1
+        },
+        "provider_response": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ProviderResponseMetadataWire"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "reasoning_blocks": {
           "type": [
@@ -16072,6 +16743,53 @@
     },
     "AgentEventWire": {
       "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "$ref": "#/definitions/ExecutionStatusWire"
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "execution_status"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "data",
+            "event"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "block"
+              ],
+              "properties": {
+                "block": {
+                  "$ref": "#/definitions/AssistantMessageBlockWire"
+                }
+              },
+              "additionalProperties": false
+            },
+            "event": {
+              "type": "string",
+              "enum": [
+                "assistant_message"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "required": [

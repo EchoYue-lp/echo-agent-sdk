@@ -95,11 +95,13 @@ class FactoryHostTest {
                     }
                     if (!operation.equals("agent_execute_stream") && !operation.equals("agent_chat_stream")) throw new IllegalStateException("unexpected operation " + operation);
                     var stream = WireHandle.fromJson(call.path("stream"));
+                    var producer = new NativeProducerFixture(sdk, call);
                     boolean coordinate = concurrent.get();
                     boolean first = coordinate && concurrentFirst.compareAndSet(null, extension);
                     if (coordinate) twoExecuting.countDown();
                     CompletableFuture.runAsync(() -> {
                         try {
+                            await(producer.start());
                             if (coordinate) {
                                 if (!twoExecuting.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("two independent sessions did not execute concurrently");
                                 if (!first) {
@@ -108,11 +110,7 @@ class FactoryHostTest {
                                     coordinatedClose.set(true);
                                 }
                             }
-                            var terminal = JsonSupport.MAPPER.createObjectNode().put("event", "complete").put("sequence", "1");
-                            terminal.set("stream", stream.toJson());
-                            terminal.set("value", JsonSupport.MAPPER.createObjectNode().put("kind", "agent").set("value",
-                                    JsonSupport.MAPPER.createObjectNode().put("event", "final_answer").set("data", JsonSupport.MAPPER.createObjectNode().put("text", state.state))));
-                            await(sdk.notify("_echo_agent/extension/stream", terminal));
+                            await(producer.finish(state.state));
                         } catch (Exception error) { violations.add(error.toString()); }
                     });
                     return CompletableFuture.completedFuture(ExtensionOutcome.stream(stream).toJson());

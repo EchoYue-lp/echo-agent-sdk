@@ -10,5 +10,5 @@ default-members = [
 resolver = "3"
 
 [patch.crates-io]
-polars-arrow = { git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "0087353fd78eb73ffaa68b255cf4ef807ca96d4a" }
-polars-parquet = { git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "0087353fd78eb73ffaa68b255cf4ef807ca96d4a" }
+polars-arrow = { git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "3413d64dae23353c6d02c546ac374deded855827" }
+polars-parquet = { git = "https://github.com/EchoYue-lp/echo-agent.git", rev = "3413d64dae23353c6d02c546ac374deded855827" }

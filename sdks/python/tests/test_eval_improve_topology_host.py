@@ -9,8 +9,15 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from native_producer_fixture import NativeProducerFixture
 
-from echo_agent_sdk import EchoAgentClient, EchoAgentError, WireHandle, wire_utf8_path
+from echo_agent_sdk import (
+    EchoAgentClient,
+    EchoAgentError,
+    WireHandle,
+    from_wire,
+    wire_utf8_path,
+)
 
 HOST = os.environ.get("ECHO_AGENT_SDK_HOST")
 if os.environ.get("ECHO_AGENT_SDK_REQUIRE_HOST_E2E") == "1" and not HOST:
@@ -107,28 +114,30 @@ async def test_eval_improve_topology_native(group):
                 return outcome(op)
             facts["executed"].append(identity)
             try:
-                task = call["invocation"]["input"].get(
-                    "task", call["invocation"]["input"].get("message", "")
+                producer = (
+                    NativeProducerFixture(sdk, call) if op.endswith("_stream") else None
                 )
+                if producer:
+                    await producer.start()
+                payload = call["invocation"]["input"]
+                message = payload[
+                    "task" if op.startswith("agent_execute") else "message"
+                ]
+                assert message["role"] == "user"
+                task = from_wire(message["content"])
+                assert isinstance(task, str)
                 if task == "hang":
                     await asyncio.wait_for(cancel.wait(), 10)
                     facts["cancel_observed"] += int(cancel.is_set())
                     deadline_cancelled.set()
                     await asyncio.wait_for(deadline_release.wait(), 10)
+                    if producer:
+                        await producer.finish("cancelled", cancelled=True)
+                        return {"outcome": "stream", "stream": call["stream"]}
                     return outcome(op, "cancelled")
                 answer = "wrong response" if task == "bad" else spec["factory_answer"]
-                if op.endswith("_stream"):
-                    await sdk.stream_writer(
-                        WireHandle.from_dict(call["stream"])
-                    ).complete(
-                        {
-                            "kind": "agent",
-                            "value": {
-                                "event": "final_answer",
-                                "data": {"text": answer},
-                            },
-                        }
-                    )
+                if producer:
+                    await producer.finish(answer)
                     return {"outcome": "stream", "stream": call["stream"]}
                 return outcome(op, answer)
             finally:
@@ -153,12 +162,9 @@ async def test_eval_improve_topology_native(group):
                 else "not valid JSON🙂"
             )
             if op.endswith("_stream"):
-                await sdk.stream_writer(WireHandle.from_dict(call["stream"])).complete(
-                    {
-                        "kind": "agent",
-                        "value": {"event": "final_answer", "data": {"text": answer}},
-                    }
-                )
+                producer = NativeProducerFixture(sdk, call)
+                await producer.start()
+                await producer.finish(answer)
                 return {"outcome": "stream", "stream": call["stream"]}
             return outcome(op, answer)
 

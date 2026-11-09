@@ -96,3 +96,24 @@ Root的新空bare仅从远端exact fetch main30d7与三个必要tags，actual0�
 SDK PR5已squash到精main [1e1c4f03](https://github.com/EchoYue-lp/echo-agent-sdk/commit/1e1c4f03f670561d6ca804a56d35967eeea191ce)，soleparent30d7e219，tree98c4与已审7361一致，GitHub签名valid；原pushCI [39394908918](https://github.com/EchoYue-lp/echo-agent-sdk/actions/runs/39394908918) 九job全部SUCCESS。实际范围含Linux原套件、三语言原完整入口及Windows编译检查；不冒Windows原生运行全覆盖。仅remote main+35必要公开tags的新空仓固定c0bc strict/base30d/changeEvidence实际0。Host仍pinframework356，accepted5621/454不扩；CLI后继Builder不触发SDK改pin/生成。
 
 全新empty仓由GitHub仅fetch main和35个必要annotated证据tag；无alternates/shallow/task/PR ref或本地对象导入。tag可保其祖先引用，不为每个祖先另造同名标签。固定校验器c0bc306在精main1e1/tree98c4以strict-snapshot/base30d/require-change-evidence实际0。原raw230B/SHA2566b40ca6ffad467dc89bb6b8a7b35b0e0f52fe57d19d19e51dd8c5e53eef30c65；旧各tag/观察来源和历史runtime资格不改。这证明当前来源可恢复，不代表nativeHook/Stop或历史managed未知根因已解决；不新增私有tag、release或registry发布。
+
+## 2026-11-09 冷 CI 的原预检回放与必要历史引用
+
+原 c0bc 的删除检查需要当前机器生成的 ignored `preflight.json`，不能提交本地绝对目录、时间或复用旧收据。
+SDK CI 从事件取得真实 base，记录精确 candidate SHA/tree；仅在业务差异实际有删除时，由
+`scripts/prepare-semantic-ci.py` 在 base HEAD 上正常 squash candidate，并证明 index、工作文件等于
+candidate tree，再以候选版本中的 `.github/semantic-preflight-args.json` 调用同精 c0bc 原 producer。
+参数只是原 CLI 字符串数组，具名 Finding、Evidence、ADR 与七条删除授权不自动扩为未来删除。
+原 producer 自然生成当前 root/base/时间，随后正常切回 candidate，保留 ignored 记录并复核干净等树；
+原 Action 仍执行完整 strict 与真实 base 的删除检查。无删除时不回放旧参数，直接保留原 Action 验证。
+CI 原始命令、出口、视图身份和恢复结果保存在 `sdk-semantic-ci-preparation` artifact；编排测试和
+producer 调用都不是 strict 成功证据，最终 snapshot/current Eq 与精确 main CI 须另行绑定。
+
+本次历史 Eq 的必要源码 Git `1eac40fbf224e510ab29aea128ce59c20f8b4a52` 原先仅由本地私有 archive refs
+可达。Root 按完整 SHA 同名约定仅创建并正常 atomic push annotated
+`evidence/sdk-governance/1eac40fbf224e510ab29aea128ce59c20f8b4a52`，tag object
+`098ac4d0b9c5bee2d452b130d0462cbc1b3f896a`，peeled commit 为1eac，tree
+`34e41d1c9f582ab18561db3dd1a1de2a9fc4bc67`；远端精确回读一致，原件为主根
+`.echo-semantic/local/integrated-acceptance-20261108-r01/sdk-historical-source-refs-r01/receipt.json`。
+没有 force、发行或推送私有 archive。本条不宣称已冷 fetch 或新精确 main CI 通过；旧 task 身份和运行
+资格不变。Git0025已由远端 `archive/2026-11-09/` 下具名0025、43dd、4cc引用精读可达，不额外造tag。

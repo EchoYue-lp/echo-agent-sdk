@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { EchoAgentClient } from "../dist/index.js";
+import { EchoAgentClient, fromWireValue } from "../dist/index.js";
 
 test("source SDK reaches a real Host when configured", { skip: !process.env.ECHO_AGENT_SDK_HOST }, async () => {
   const work = await mkdtemp(join(tmpdir(), "sdk-ts-smoke-"));
@@ -54,12 +54,27 @@ test("source SDK reaches a real Host when configured", { skip: !process.env.ECHO
     assert.equal(stored.value, "ok");
     const telemetry = await sdk.call("telemetry.status", undefined);
     assert.equal(typeof telemetry.initialized, "boolean");
-    const classifiedOutcome = await sdk.classifyTurnOutcome({
+    const finalNoticeOutcome = await sdk.classifyTurnOutcome({
       kind: "variant",
       value: {
         type_id: "echo_sdk_protocol::methods::AgentEventWire",
         variant: "final_answer",
         fields: [{ name: "text", value: { kind: "string", value: "classified" } }],
+      },
+    });
+    assert.equal(finalNoticeOutcome, null);
+    const classifiedOutcome = await sdk.classifyTurnOutcome({
+      kind: "variant",
+      value: {
+        type_id: "echo_sdk_protocol::methods::AgentEventWire",
+        variant: "execution_status",
+        fields: [
+          { name: "execution_id", value: { kind: "string", value: "original-classify-execution" } },
+          { name: "request_id", value: { kind: "string", value: "original-classify-request" } },
+          { name: "sequence", value: { kind: "u64", value: "1" } },
+          { name: "phase", value: { kind: "string", value: "Terminal" } },
+          { name: "status", value: { kind: "string", value: "settled" } },
+        ],
       },
     });
     assert.deepEqual(classifiedOutcome, {
@@ -98,7 +113,8 @@ test("source SDK reaches a real Host when configured", { skip: !process.env.ECHO
     assert.equal(waited.settled, true);
     const events = await observedEvents;
     assert.ok(events.length > 0);
-    assert.equal(events.at(-1).envelope.payload.event_type, "final_answer");
+    assert.equal(events.at(-1).envelope.payload.event_type, "execution_status");
+    assert.equal(fromWireValue(events.at(-1).envelope.payload.data).status, "settled");
     assert.ok(events.every((item) => item.stream.id === run.stream.id));
     const runState = await run.get();
     assert.equal(runState.status, "completed");
@@ -143,7 +159,8 @@ test("parallel Agent feeds isolate cancellation and preserve B natural terminal"
     await waitFor(() => exists(join(work, "parked-a")) && exists(join(work, "parked-b")));
     await runA.cancel(); assert.equal((await runA.wait()).terminal.status, "cancelled");
     const observedA = await bounded(eventsA);
-    assert.equal(observedA.at(-1).envelope.payload.event_type, "cancelled");
+    assert.equal(observedA.at(-1).envelope.payload.event_type, "execution_status");
+    assert.equal(fromWireValue(observedA.at(-1).envelope.payload.data).status, "cancelled");
     await verifyJournal(runA,observedA);
     await sessionA.close(); await agentA.close();
     assert.equal(endedB,false,"closing A cannot end B feed");
@@ -151,7 +168,8 @@ test("parallel Agent feeds isolate cancellation and preserve B natural terminal"
     await writeFile(join(work, "release-b"), "");
     assert.equal((await runB.wait()).terminal.status, "completed");
     const observedB = await bounded(eventsB);
-    assert.equal(observedB.at(-1).envelope.payload.event_type, "final_answer");
+    assert.equal(observedB.at(-1).envelope.payload.event_type, "execution_status");
+    assert.equal(fromWireValue(observedB.at(-1).envelope.payload.data).status, "settled");
     const idsA = new Set(observedA.map(item => item.envelope.event_id));
     assert.ok(observedB.every(item => !idsA.has(item.envelope.event_id)));
     await verifyJournal(runB,observedB);

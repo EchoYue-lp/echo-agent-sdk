@@ -1,0 +1,560 @@
+{
+  "responses": {
+    "responses": [
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "checking tools"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "responses",
+                "request_id": "request-0",
+                "item_id": "item-0-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "reasoning",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-0-0",
+              "request_id": "request-0",
+              "sequence": "0",
+              "phase": "reasoning",
+              "delta": "",
+              "complete": true,
+              "provider": "responses",
+              "reasoning": {
+                "kind": "opaque",
+                "provider": "responses",
+                "id": "reasoning-1",
+                "data": "opaque-exact==",
+                "summary": [
+                  "public-summary"
+                ]
+              }
+            },
+            {
+              "provider_source": {
+                "protocol": "responses",
+                "request_id": "request-0",
+                "item_id": "item-0-1",
+                "output_index": 1,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-0-1",
+              "request_id": "request-0",
+              "sequence": "1",
+              "phase": "commentary",
+              "delta": "checking tools",
+              "complete": true,
+              "provider": "responses"
+            }
+          ],
+          "reasoning_blocks": [
+            {
+              "kind": "opaque",
+              "provider": "responses",
+              "id": "reasoning-1",
+              "data": "opaque-exact==",
+              "summary": [
+                "public-summary"
+              ]
+            }
+          ],
+          "tool_calls": [
+            {
+              "provider_source": {
+                "protocol": "responses",
+                "request_id": "request-0",
+                "item_id": "item-0-2",
+                "output_index": 2,
+                "content_index": 0,
+                "content_kind": "function_call",
+                "phase": "original-provider-phase"
+              },
+              "id": "call-a",
+              "call_type": "function",
+              "function_name": "read_file",
+              "arguments": "{\"path\": \"__WORK__/fixture.txt\"}"
+            },
+            {
+              "provider_source": {
+                "protocol": "responses",
+                "request_id": "request-0",
+                "item_id": "item-0-3",
+                "output_index": 3,
+                "content_index": 0,
+                "content_kind": "function_call",
+                "phase": "original-provider-phase"
+              },
+              "id": "call-b",
+              "call_type": "function",
+              "function_name": "read_file",
+              "arguments": "{\"path\": \"__WORK__/missing.txt\"}"
+            }
+          ]
+        },
+        "finish_reason": "tool_calls",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      },
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "partial evidence"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "responses",
+                "request_id": "request-1",
+                "item_id": "item-1-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-1-0",
+              "request_id": "request-1",
+              "sequence": "0",
+              "phase": "partial_answer",
+              "delta": "partial evidence",
+              "complete": true,
+              "provider": "responses"
+            }
+          ]
+        },
+        "finish_reason": "stop",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      },
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "confirmed final"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "responses",
+                "request_id": "request-2",
+                "item_id": "item-2-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-2-0",
+              "request_id": "request-2",
+              "sequence": "0",
+              "phase": "final_answer",
+              "delta": "confirmed final",
+              "complete": true,
+              "provider": "responses"
+            }
+          ]
+        },
+        "finish_reason": "stop",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      }
+    ],
+    "expected_model_calls": 3,
+    "expected_phases": [
+      "reasoning",
+      "commentary",
+      "partial_answer",
+      "final_answer"
+    ],
+    "final_answer": "confirmed final",
+    "reasoning": {
+      "kind": "opaque",
+      "provider": "responses",
+      "id": "reasoning-1",
+      "data": "opaque-exact==",
+      "summary": [
+        "public-summary"
+      ]
+    },
+    "qualification": "controlled normalized SDK callback; not vendor replay/live or model capability"
+  },
+  "anthropic": {
+    "responses": [
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "checking tools"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "anthropic",
+                "request_id": "request-0",
+                "item_id": "item-0-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "reasoning",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-0-0",
+              "request_id": "request-0",
+              "sequence": "0",
+              "phase": "reasoning",
+              "delta": "",
+              "complete": true,
+              "provider": "anthropic",
+              "reasoning": {
+                "kind": "signed",
+                "thinking": "native-exact",
+                "signature": "signature-exact=="
+              }
+            },
+            {
+              "provider_source": {
+                "protocol": "anthropic",
+                "request_id": "request-0",
+                "item_id": "item-0-1",
+                "output_index": 1,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-0-1",
+              "request_id": "request-0",
+              "sequence": "1",
+              "phase": "commentary",
+              "delta": "checking tools",
+              "complete": true,
+              "provider": "anthropic"
+            }
+          ],
+          "reasoning_blocks": [
+            {
+              "kind": "signed",
+              "thinking": "native-exact",
+              "signature": "signature-exact=="
+            }
+          ],
+          "tool_calls": [
+            {
+              "provider_source": {
+                "protocol": "anthropic",
+                "request_id": "request-0",
+                "item_id": "item-0-2",
+                "output_index": 2,
+                "content_index": 0,
+                "content_kind": "function_call",
+                "phase": "original-provider-phase"
+              },
+              "id": "call-a",
+              "call_type": "function",
+              "function_name": "read_file",
+              "arguments": "{\"path\": \"__WORK__/fixture.txt\"}"
+            },
+            {
+              "provider_source": {
+                "protocol": "anthropic",
+                "request_id": "request-0",
+                "item_id": "item-0-3",
+                "output_index": 3,
+                "content_index": 0,
+                "content_kind": "function_call",
+                "phase": "original-provider-phase"
+              },
+              "id": "call-b",
+              "call_type": "function",
+              "function_name": "read_file",
+              "arguments": "{\"path\": \"__WORK__/missing.txt\"}"
+            }
+          ]
+        },
+        "finish_reason": "tool_calls",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      },
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "partial evidence"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "anthropic",
+                "request_id": "request-1",
+                "item_id": "item-1-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-1-0",
+              "request_id": "request-1",
+              "sequence": "0",
+              "phase": "partial_answer",
+              "delta": "partial evidence",
+              "complete": true,
+              "provider": "anthropic"
+            }
+          ]
+        },
+        "finish_reason": "stop",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      },
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "confirmed final"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "anthropic",
+                "request_id": "request-2",
+                "item_id": "item-2-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-2-0",
+              "request_id": "request-2",
+              "sequence": "0",
+              "phase": "final_answer",
+              "delta": "confirmed final",
+              "complete": true,
+              "provider": "anthropic"
+            }
+          ]
+        },
+        "finish_reason": "stop",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      }
+    ],
+    "expected_model_calls": 3,
+    "expected_phases": [
+      "reasoning",
+      "commentary",
+      "partial_answer",
+      "final_answer"
+    ],
+    "final_answer": "confirmed final",
+    "reasoning": {
+      "kind": "signed",
+      "thinking": "native-exact",
+      "signature": "signature-exact=="
+    },
+    "qualification": "controlled normalized SDK callback; not vendor replay/live or model capability"
+  },
+  "chat_completions": {
+    "responses": [
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "checking tools"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "chat_completions",
+                "request_id": "request-0",
+                "item_id": "item-0-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "reasoning",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-0-0",
+              "request_id": "request-0",
+              "sequence": "0",
+              "phase": "reasoning",
+              "delta": "",
+              "complete": true,
+              "provider": "chat_completions",
+              "reasoning": {
+                "kind": "signed",
+                "thinking": "native-exact",
+                "signature": "normalized-callback-signature=="
+              }
+            },
+            {
+              "provider_source": {
+                "protocol": "chat_completions",
+                "request_id": "request-0",
+                "item_id": "item-0-1",
+                "output_index": 1,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-0-1",
+              "request_id": "request-0",
+              "sequence": "1",
+              "phase": "commentary",
+              "delta": "checking tools",
+              "complete": true,
+              "provider": "chat_completions"
+            }
+          ],
+          "reasoning_blocks": [
+            {
+              "kind": "signed",
+              "thinking": "native-exact",
+              "signature": "normalized-callback-signature=="
+            }
+          ],
+          "tool_calls": [
+            {
+              "provider_source": {
+                "protocol": "chat_completions",
+                "request_id": "request-0",
+                "item_id": "item-0-2",
+                "output_index": 2,
+                "content_index": 0,
+                "content_kind": "function_call",
+                "phase": "original-provider-phase"
+              },
+              "id": "call-a",
+              "call_type": "function",
+              "function_name": "read_file",
+              "arguments": "{\"path\": \"__WORK__/fixture.txt\"}"
+            },
+            {
+              "provider_source": {
+                "protocol": "chat_completions",
+                "request_id": "request-0",
+                "item_id": "item-0-3",
+                "output_index": 3,
+                "content_index": 0,
+                "content_kind": "function_call",
+                "phase": "original-provider-phase"
+              },
+              "id": "call-b",
+              "call_type": "function",
+              "function_name": "read_file",
+              "arguments": "{\"path\": \"__WORK__/missing.txt\"}"
+            }
+          ]
+        },
+        "finish_reason": "tool_calls",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      },
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "partial evidence"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "chat_completions",
+                "request_id": "request-1",
+                "item_id": "item-1-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-1-0",
+              "request_id": "request-1",
+              "sequence": "0",
+              "phase": "partial_answer",
+              "delta": "partial evidence",
+              "complete": true,
+              "provider": "chat_completions"
+            }
+          ]
+        },
+        "finish_reason": "stop",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      },
+      {
+        "message": {
+          "role": "assistant",
+          "content": {
+            "kind": "string",
+            "value": "confirmed final"
+          },
+          "assistant_blocks": [
+            {
+              "provider_source": {
+                "protocol": "chat_completions",
+                "request_id": "request-2",
+                "item_id": "item-2-0",
+                "output_index": 0,
+                "content_index": 0,
+                "content_kind": "text",
+                "phase": "original-provider-phase"
+              },
+              "block_id": "block-2-0",
+              "request_id": "request-2",
+              "sequence": "0",
+              "phase": "final_answer",
+              "delta": "confirmed final",
+              "complete": true,
+              "provider": "chat_completions"
+            }
+          ]
+        },
+        "finish_reason": "stop",
+        "raw": {
+          "kind": "map",
+          "value": []
+        }
+      }
+    ],
+    "expected_model_calls": 3,
+    "expected_phases": [
+      "reasoning",
+      "commentary",
+      "partial_answer",
+      "final_answer"
+    ],
+    "final_answer": "confirmed final",
+    "reasoning": {
+      "kind": "signed",
+      "thinking": "native-exact",
+      "signature": "normalized-callback-signature=="
+    },
+    "qualification": "controlled normalized SDK callback; not vendor replay/live or model capability"
+  }
+}

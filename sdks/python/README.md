@@ -1,5 +1,15 @@
 # echo-agent Python SDK (source)
 
+默认 catalog／digest 随 wheel／sdist 进入 `echo_agent_sdk/contracts/`，不会回退到仓库相邻 `shared`；显式 `catalog_path` 仍可覆盖。[自包含合同与验证](../../docs/sdk/source-packages.md)保留 source-only 定位，不代表已发布。[原生消息候选](../../docs/sdk/native-messages.md)的 block 身份／阶段／顺序和 reasoning 原数据沿现有 wire 字典保留，final phase／空 final 不授予 Run 结束资格；新 Host／精确 pin 和真实执行单独验收。
+
+## A2A/LSP consumer withdrawal
+
+A2A/LSP families, native A2A/JWT values and the three named LSP plugin
+identities are withdrawn from this SDK. Old source/digest/feature/family
+requests fail explicitly. ACP/MCP/Task/Subagent, Host stdio, streams and R2
+parent/child close keep their original owners. The framework pin stays fixed,
+and the existing example stays in the full executable language gate.
+
 The Python SDK is source-only. It uses the official `agent-client-protocol`
 asyncio client and launches the Host command supplied by the caller. It does
 not install Python, Rust, or a prebuilt Host.
@@ -58,10 +68,6 @@ modifiers; structured payloads use the shared lossless WireValue conversion.
 Failure categories are validated as a closed set with the Rust recovery
 mapping, and ordinary JSON objects are encoded as maps even when they contain
 `kind`/`value` keys.
-本 SDK 当前候选已撤出 A2A 的 Python value、card、task envelope 和 typed stream
-公开入口；旧名称仅保留在退役负控与历史说明中，不再作为当前 API 或协议路由。
-普通 client、callback、stream、Task/Subagent 和 Host-owned 生命周期继续保留。
-JWT 配置与 claims 仍按独立本地值合同保留，待唯一生成器与后续合同检查核对。
 `ThinkingLevel.parse(...)` preserves the Rust reasoning-effort aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` preserve steering boundaries;
 the live receipt and turn remain Host-owned.
@@ -81,8 +87,7 @@ execution.
 rule evaluation remains Host-owned.
 `RuleBehavior` preserves allow/deny/ask payloads and `to_decision` conversion;
 rule evaluation remains Host-owned.
-`PermissionMode` preserves aliases and write/interaction/classifier helpers;
-mode evaluation remains Host-owned.
+`PermissionMode` 仅解析八个精确 canonical ID，拒绝旧别名、大小写变化和首尾空白；write/interaction/classifier helper 与 wire 输出保持原义，权限求值仍归 Host。
 `RuleMatcher` preserves pure tool/pattern/permission/all matching semantics;
 evaluation remains Host-owned.
 `CommandCellPhase` preserves stable phases and terminal classification without
@@ -97,8 +102,6 @@ runtime values without owning the connection or event ledger.
 errors, and the shutdown duration without constructing an ACP adapter.
 `ExtensionLeaseError` preserves typed lease failure text while admission and
 concurrency remain Host-owned.
-`JwtConfig` and `JwtClaims` preserve local JWT auth configuration and subject
-projection; token verification remains Host-owned.
 `DependencyKind` and `SkillSource` preserve dependency/source values without
 probing or loading skills.
 `ContextInheritance` preserves the local inheritance defaults without owning
@@ -356,7 +359,6 @@ declared encoding, and Unicode is never byte-truncated. Unknown tagged values
 round-trip; malformed known values or missing nested discriminators fail.
 Map keys such as `kind` remain domain data rather than an implicit wire tag.
 
-
 ### Channel handler consumption examples
 
 The real Host examples for the six canonical Channel operations and Sandbox
@@ -374,3 +376,11 @@ wrong-generation or failed terminal sends and failed close retain the route
 for retry on the same stream. Neither ACK nor notification delivery lets the
 SDK infer physical cleanup. Full inventory and intrinsic membership remain
 non-blocking telemetry.
+
+## 当前 Sandbox 命令与退役删除边界
+
+Sandbox命令继续传递六字段值：`kind`、`minimum_isolation`、`working_dir`、`env`、`timeout`、`stdin`，保持原Shell/Program/Code、可选缺省/Null与Duration表示。Host拒绝未知顶层字段和本机`resource_guards`/`cancel`注入；这两个字段只由原Rust物理调用owner持有，不能通过JSON构造。裸SandboxCommand没有新增可调用handle。
+
+旧`echo_agent::state::delete_persisted_conversation`已退出可执行catalog；精确调用返回`feature_unavailable`、`never`、原operation与退役说明。本地拒绝不提交RPC或生成managed身份；managed删除必须保留原请求身份。相近名字、大小写、未知操作与关闭句柄继续原语言合同。
+
+本地已关闭Session继续优先返回`closed_handle`，早于退役或未知操作查找。

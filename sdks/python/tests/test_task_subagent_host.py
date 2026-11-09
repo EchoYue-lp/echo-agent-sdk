@@ -9,6 +9,7 @@ import urllib.request
 from pathlib import Path
 
 import pytest
+from native_producer_fixture import NativeProducerFixture
 
 from echo_agent_sdk import (
     EchoAgentClient,
@@ -221,9 +222,13 @@ async def test_exact_task_control(action):
                     }
                 assert operation == "agent_execute_stream", operation
                 assert call["context"]["run_id"] == canonical_task_run_scope
+                producer = NativeProducerFixture(sdk, call)
+                await producer.start()
                 counts[lane] += 1
                 attempt = counts[lane]
-                prompts[f"{lane}/{attempt}"] = call["invocation"]["input"]["task"]
+                prompts[f"{lane}/{attempt}"] = from_wire(
+                    call["invocation"]["input"]["task"]["content"]
+                )
                 await http(
                     "/agent",
                     {
@@ -253,10 +258,9 @@ async def test_exact_task_control(action):
                             ]
                         },
                     }
-                    writer = sdk.stream_writer(WireHandle.from_dict(call["stream"]))
 
                     async def observed_producer():
-                        await writer.failed(error)
+                        await producer.failed(error)
                         facts["original"] = {
                             "call": call,
                             "binding": binding,
@@ -264,15 +268,7 @@ async def test_exact_task_control(action):
                         }
                         observed.set()
                         facts["joined"] = await http("/physical/join", {})
-                        await writer.complete(
-                            {
-                                "kind": "agent",
-                                "value": {
-                                    "event": "final_answer",
-                                    "data": {"text": "A-after-physical-close 中文🧪"},
-                                },
-                            }
-                        )
+                        await producer.finish("A-after-physical-close 中文🧪")
 
                     jobs.append(asyncio.create_task(observed_producer()))
                     return {"outcome": "stream", "stream": call["stream"]}
@@ -290,19 +286,10 @@ async def test_exact_task_control(action):
                             )
                             for task in pending:
                                 task.cancel()
-                        value = (
-                            {"event": "cancelled"}
-                            if cancel.is_set()
-                            else {
-                                "event": "final_answer",
-                                "data": {
-                                    "text": f"{lane.upper()}-canonical-result 中文🧪"
-                                },
-                            }
+                        await producer.finish(
+                            f"{lane.upper()}-canonical-result 中文🧪",
+                            cancelled=cancel.is_set(),
                         )
-                        await sdk.stream_writer(
-                            WireHandle.from_dict(call["stream"])
-                        ).complete({"kind": "agent", "value": value})
                     except Exception as error:
                         callback_errors.append(repr(error))
                         raise
@@ -696,26 +683,18 @@ async def test_subagent_receipt_and_crud_admission(kind):
                 {
                     "lane": "await",
                     "attempt": 1,
-                    "task": call["invocation"]["input"]["task"],
+                    "task": from_wire(call["invocation"]["input"]["task"]["content"]),
                     "context": call.get("context"),
                     "extension": call["extension"],
                 },
             )
             if operation.endswith("_stream"):
+                producer = NativeProducerFixture(sdk, call)
+                await producer.start()
 
                 async def produce():
                     await http("/gate", {"lane": "await", "attempt": 1})
-                    await sdk.stream_writer(
-                        WireHandle.from_dict(call["stream"])
-                    ).complete(
-                        {
-                            "kind": "agent",
-                            "value": {
-                                "event": "final_answer",
-                                "data": {"text": "full retained result 中文🧪"},
-                            },
-                        }
-                    )
+                    await producer.finish("full retained result 中文🧪")
 
                 jobs.append(asyncio.create_task(produce()))
                 return {"outcome": "stream", "stream": call["stream"]}
@@ -844,7 +823,9 @@ async def test_subagent_receipt_and_crud_admission(kind):
             )
             assert full == repeat and full["settled"]
             assert from_wire(full["result"])["output"] == "full retained result 中文🧪"
-            assert "constraint retained 🧪" in raw_call["invocation"]["input"]["task"]
+            assert "constraint retained 🧪" in from_wire(
+                raw_call["invocation"]["input"]["task"]["content"]
+            )
             assert (
                 await sdk.request(
                     "_echo_agent/subagent/control",

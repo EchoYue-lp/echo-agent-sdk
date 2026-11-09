@@ -1,5 +1,15 @@
 # echo-agent Java SDK (source)
 
+catalog／digest 随 JAR 进入 `com/echoagent/sdk/contracts/`；现有构造的两个路径为 null 时读取包内资源，显式路径仍可覆盖，Example 的第三个 catalog 参数改为可选。[自包含合同与验证](../../docs/sdk/source-packages.md)保留 source-only 定位，不代表已发布。[原生消息候选](../../docs/sdk/native-messages.md)的 block 身份／阶段／顺序和 reasoning 原数据沿现有 JsonNode wire 保留，final phase／空 final 不授予 Run 结束资格；新 Host／精确 pin 和真实执行单独验收。
+
+## A2A/LSP consumer withdrawal
+
+A2A/LSP families, native A2A/JWT values and the three named LSP plugin
+identities are withdrawn from this SDK. Old source/digest/feature/family
+requests fail explicitly. ACP/MCP/Task/Subagent, Host stdio, streams and R2
+parent/child close keep their original owners. The framework pin stays fixed,
+and the existing example stays in the full executable language gate.
+
 This is a source-only Java 17 ACP v1 client built on the official
 `com.agentclientprotocol:acp-core:0.17.0` transport/session runtime. The Host executable is supplied
 explicitly by the caller; this module does not bundle a JDK, Host binary or
@@ -69,10 +79,6 @@ shape.
 Failure categories are closed and preserve Rust recovery actions; ordinary
 JSON objects passed to `successJson`/`withData` are recursively encoded as
 maps, while the `JsonNode` overload remains the explicit pre-encoded path.
-本 SDK 当前候选已撤出 A2A 的 Java value、card、task envelope 和 typed stream
-公开入口；对应旧类与方法只保留在历史来源说明中，不再作为当前 API 或协议路由。
-普通 `EchoAgentClient`、callback、stream、Task/Subagent 和 Host-owned 生命周期继续保留。
-JWT 配置与 claims 仍按独立本地值合同保留，待唯一生成器与后续合同检查核对。
 `ThinkingLevel.parse(...)` preserves the Rust reasoning-effort aliases.
 `AgentSteerState` and `AgentSteerTurnOutcome` expose the same local lifecycle
 values while the active receipt remains Host-owned.
@@ -92,8 +98,7 @@ remains framework-owned.
 rule evaluation remains framework-owned.
 `RuleBehavior` exposes allow/deny/ask payloads and decision conversion while
 rule evaluation remains framework-owned.
-`PermissionMode` exposes aliases and policy helpers while mode evaluation
-remains framework-owned.
+`PermissionMode` 只解析八个精确 canonical ID，拒绝旧别名、大小写变化及首尾空白；策略 helper 与 wire 输出保持，权限求值仍归 Framework。
 `RuleMatcher` exposes pure tool/pattern/permission/all matching semantics while
 registry evaluation remains framework-owned.
 `CommandCellPhase` exposes stable phases and terminal classification while
@@ -109,8 +114,6 @@ event-ledger ownership remain in the Host/Rust runtime.
 shutdown-duration validation without constructing the ACP adapter.
 `AcpValues.ExtensionLeaseError` preserves typed lease failure text while the
 Host retains admission and concurrency authority.
-`JwtConfig` and `JwtClaims` preserve local JWT auth configuration and subject
-projection while JWT verification remains Host/Rust-owned.
 `DependencyKind` and `SkillSource` expose dependency/source values while
 probing and skill loading remain framework-owned.
 `ContextInheritance` exposes sync/fresh/fork/teammate/team defaults while
@@ -350,7 +353,6 @@ retain their tagged encoding. Unknown tagged values round-trip; malformed
 known values and missing nested discriminators fail. Object keys such as
 `kind` remain domain data unless explicitly inside a wire envelope.
 
-
 ### Channel handler consumption examples
 
 The real Host examples for the six canonical Channel operations and Sandbox
@@ -370,3 +372,11 @@ SDK infer physical cleanup. Full inventory and intrinsic membership remain
 non-blocking telemetry.
 
 The source verification suite and standalone quickstart use a test-scoped `slf4j-nop` provider matching `slf4j-api` 2.0.18. This explicitly preserves SLF4J’s default no-operation behavior without missing-provider warnings. The SDK library’s compile/runtime dependencies do not include this provider; applications choose their own logging provider.
+
+## 当前 Sandbox 命令与退役删除边界
+
+Sandbox命令继续传递六字段值：`kind`、`minimum_isolation`、`working_dir`、`env`、`timeout`、`stdin`，保持原Shell/Program/Code、可选缺省/Null与Duration表示。Host拒绝未知顶层字段和本机`resource_guards`/`cancel`注入；这两个字段只由原Rust物理调用owner持有，不能通过JSON构造。裸SandboxCommand没有新增可调用handle。
+
+旧`echo_agent::state::delete_persisted_conversation`已退出可执行catalog；精确调用返回`feature_unavailable`、`never`、原operation与退役说明。本地拒绝不提交RPC或生成managed身份；managed删除必须保留原请求身份。相近名字、大小写、未知操作与关闭句柄继续原语言合同。
+
+Java的`invoke`、`call`和`SessionHandle.invoke`通过失败CompletionStage交付精确退役拒绝；已关闭Session优先`stale_handle`，已开始关闭的Client对精确旧DELETE优先`host_exited`。普通未知操作和FacadeCatalog元数据查询保持原同步查找异常。

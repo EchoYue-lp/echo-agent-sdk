@@ -1,0 +1,17 @@
+{
+  "name": "request-tool-choice-extra-invalid",
+  "kind": "invalid",
+  "target": "LlmChatRequestWire",
+  "description": "既有accepted请求字段跟随Core canonical值；不新增独立API身份。",
+  "payload": {
+    "messages": [],
+    "tool_choice": {
+      "type": "function",
+      "function": {
+        "name": "x",
+        "extra": true
+      }
+    }
+  },
+  "expect_error": "invalid_value"
+}

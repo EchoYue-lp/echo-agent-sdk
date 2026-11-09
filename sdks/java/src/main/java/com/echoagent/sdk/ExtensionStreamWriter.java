@@ -27,6 +27,7 @@ public final class ExtensionStreamWriter {
     }
 
     public CompletionStage<Void> chunk(JsonNode value) {
+        RuntimeTerminal.validateReverseAgentValue(value, false);
         return send("chunk", value);
     }
 
@@ -38,6 +39,7 @@ public final class ExtensionStreamWriter {
     }
 
     public CompletionStage<Void> complete(JsonNode value) {
+        RuntimeTerminal.validateReverseAgentValue(value, true);
         CompletionStage<Void> result = send("complete", value);
         closed = true;
         return result;
